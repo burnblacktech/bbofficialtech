@@ -164,6 +164,10 @@ try {
   router.use('/cabot', require('./cabot'));
   enterpriseLogger.info('CA Bot routes loaded successfully');
   
+  enterpriseLogger.info('Loading ERI routes...');
+  router.use('/eri', require('./eri'));
+  enterpriseLogger.info('ERI routes loaded successfully');
+  
   enterpriseLogger.info('All routes loaded successfully');
 } catch (error) {
   enterpriseLogger.error('Error loading routes', { 
@@ -213,7 +217,8 @@ router.use('*', (req, res) => {
       '/api/notifications',
       '/api/tickets',
       '/api/ca-firms',
-      '/api/cabot'
+      '/api/cabot',
+      '/api/eri'
     ]
   });
 });

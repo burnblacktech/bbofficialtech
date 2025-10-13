@@ -19,11 +19,21 @@ passport.use(new GoogleStrategy({
     const state = req.query.state;
     const sessionState = req.session?.oauthState;
     
+    enterpriseLogger.info('OAuth state validation attempt', {
+      providedState: state,
+      sessionState: sessionState,
+      sessionId: req.sessionID,
+      ip: req.ip,
+      sessionExists: !!req.session
+    });
+    
     if (!state || !sessionState || state !== sessionState) {
       enterpriseLogger.warn('OAuth state validation failed', {
         providedState: state,
         sessionState: sessionState,
-        ip: req.ip
+        sessionId: req.sessionID,
+        ip: req.ip,
+        sessionExists: !!req.session
       });
       return done(new Error('Invalid state parameter'), null);
     }

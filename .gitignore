@@ -248,6 +248,9 @@ secrets.json
 # docs/
 # facts/
 
+# Markdown documentation files
+*.md
+
 # Temporary files
 tmp/
 temp/

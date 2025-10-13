@@ -36,15 +36,8 @@ export const AuthProvider = ({ children }) => {
     if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
     setUser(userData);
     
-    // Centralized redirection logic
-    switch (userData.role) {
-      case 'SUPER_ADMIN':
-      case 'PLATFORM_ADMIN':
-        navigate('/admin/dashboard');
-        break;
-      default:
-        navigate('/dashboard');
-    }
+    // Always redirect to /home - HomeRedirect will handle role-based routing
+    navigate('/home');
   };
 
   const value = { user, isLoading, login, logout };

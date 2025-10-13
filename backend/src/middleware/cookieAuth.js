@@ -203,7 +203,7 @@ const handleTokenRefresh = async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        full_name: user.fullName,
+        fullName: user.fullName,
         role: user.role,
         status: user.status,
         onboardingCompleted: user.onboardingCompleted

@@ -30,6 +30,7 @@ import CAStaffDashboard from './pages/Dashboard/CAStaffDashboard';
 import UserDashboard from './pages/Dashboard/UserDashboard';
 import StartFiling from './pages/ITR/StartFiling';
 import ITRFiling from './pages/ITR/ITRFiling';
+import DynamicFilingPage from './pages/ITR/DynamicFilingPage';
 import FilingHistory from './pages/ITR/FilingHistory';
 import AddMembers from './pages/Members/AddMembers';
 import UserSettings from './pages/User/UserSettings';
@@ -138,6 +139,14 @@ const AppContent = () => {
             element={
               <Layout>
                 <ITRFiling />
+              </Layout>
+            } 
+          />
+          <Route 
+            path="/dynamic-filing/:id" 
+            element={
+              <Layout>
+                <DynamicFilingPage />
               </Layout>
             } 
           />

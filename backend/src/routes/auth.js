@@ -222,7 +222,7 @@ router.post('/login',
       user: {
         id: user.id,
         email: user.email,
-        full_name: user.fullName,
+        fullName: user.fullName,
         role: user.role,
         status: user.status,
         onboardingCompleted: user.onboardingCompleted,
@@ -507,6 +507,12 @@ router.get('/google', (req, res, next) => {
   // Generate and store state parameter for CSRF protection
   const state = require('crypto').randomBytes(32).toString('hex');
   req.session.oauthState = state;
+  
+  enterpriseLogger.info('Google OAuth initiation', {
+    state: state,
+    sessionId: req.sessionID,
+    ip: req.ip
+  });
   
   passport.authenticate('google', {
     scope: ['profile', 'email'],

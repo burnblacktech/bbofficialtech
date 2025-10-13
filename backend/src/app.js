@@ -55,10 +55,12 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'your-session-secret',
   resave: false,
   saveUninitialized: false,
+  name: 'burnblack.sid', // Custom session name
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 15 * 60 * 1000 // 15 minutes for OAuth state
+    maxAge: 15 * 60 * 1000, // 15 minutes for OAuth state
+    sameSite: 'lax' // Allow cross-site requests for OAuth
   }
 }));
 
