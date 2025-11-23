@@ -36,10 +36,11 @@ import UserSettings from './pages/User/UserSettings';
 import ProfileSettings from './pages/User/ProfileSettings';
 import FinancialProfilePage from './pages/FinancialProfile/FinancialProfilePage';
 import ServiceTicketManagement from './pages/Service/ServiceTicketManagement';
-import BillingInvoicing from './pages/Service/BillingInvoicing';
-import CABotPage from './pages/CABot/CABotPage';
-import UpgradeToProfessional from './pages/Upgrade/UpgradeToProfessional';
+// Design System Components (Development only)
+import StyleGuide from './components/DesignSystem/StyleGuide';
 
+// CABot Page (Development/Testing)
+import CABotPage from './pages/CABot/CABotPage';
 
 // Context providers
 import { AuthProvider } from './contexts/AuthContext';
