@@ -1,13 +1,14 @@
 // =====================================================
 // BANK STATEMENT UPLOAD COMPONENT
 // Auto-categorization and tax-relevant transaction detection
- another game-changing feature for competitive advantage
+// Another game-changing feature for competitive advantage
 // =====================================================
 
 import React, { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { bankStatementService } from '../../../services';
-import { Card, Button, Alert, Progress, Select } from '../../DesignSystem';
+import { Card, Button, Alert, Progress } from '../../DesignSystem';
+import { Select } from '../../UI';
 
 const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '' }) => {
   const [isUploading, setIsUploading] = useState(false);

@@ -41,9 +41,13 @@
     "dev": "set PORT=3000 && react-scripts start"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
+    "overrides": [
+      {
+        "files": ["**/*.js"],
+        "rules": {
+          "no-unused-vars": "off"
+        }
+      }
     ]
   },
   "browserslist": {

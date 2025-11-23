@@ -1,140 +1,204 @@
+// =====================================================
+// ITR FILING HEADER COMPONENT
+// Header component for ITR filing forms
+// =====================================================
+
 import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Save, 
-  Download, 
-  Clock, 
+import {
+  FileText,
+  Calendar,
+  User,
+  Shield,
+  Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft,
+  HelpCircle
 } from 'lucide-react';
 
-const FilingHeader = ({ 
-  filingData, 
-  completionPercentage, 
-  lastSaved, 
-  isSaving, 
-  onSave 
+const FilingHeader = ({
+  itrType,
+  step,
+  title,
+  subtitle,
+  showProgress = true,
+  onBack,
+  showHelp = true,
+  onHelp,
+  filingStatus = 'in_progress'
 }) => {
-  const formatLastSaved = (date) => {
-    if (!date) return 'Never saved';
-    
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minutes ago`;
-    
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours} hours ago`;
-    
-    return date.toLocaleDateString();
-  };
-
-  const getStatusColor = () => {
-    if (completionPercentage >= 90) return 'text-green-600';
-    if (completionPercentage >= 70) return 'text-orange-600';
-    return 'text-gray-600';
-  };
-
   const getStatusIcon = () => {
-    if (completionPercentage >= 90) return CheckCircle;
-    if (completionPercentage >= 70) return AlertCircle;
-    return Clock;
+    switch (filingStatus) {
+      case 'completed':
+        return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case 'error':
+        return <AlertCircle className="w-5 h-5 text-red-600" />;
+      case 'in_progress':
+      default:
+        return <Clock className="w-5 h-5 text-blue-600" />;
+    }
   };
 
-  const StatusIcon = getStatusIcon();
+  const getStatusText = () => {
+    switch (filingStatus) {
+      case 'completed':
+        return 'Completed';
+      case 'error':
+        return 'Needs Attention';
+      case 'in_progress':
+      default:
+        return 'In Progress';
+    }
+  };
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className="px-8 py-6">
-        <div className="flex items-center justify-between">
-          {/* Left Side - Filing Info */}
-          <div className="flex items-center space-x-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                ITR Filing - {filingData?.assessmentYear}
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                PAN: {filingData?.pan} • Assessment Year: {filingData?.assessmentYear}
-              </p>
+    <div className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-6">
+          {/* Top Row */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="font-medium">Back</span>
+                </button>
+              )}
+
+              <div className="flex items-center space-x-3">
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    ITR-{itrType || '1'} Filing
+                  </h1>
+                  {subtitle && (
+                    <p className="text-gray-600 mt-1">{subtitle}</p>
+                  )}
+                </div>
+              </div>
             </div>
-            
-            {/* Progress Indicator */}
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
-                <StatusIcon className={`h-5 w-5 ${getStatusColor()}`} />
-                <span className={`text-sm font-medium ${getStatusColor()}`}>
-                  {completionPercentage}% Complete
+
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm">
+                {getStatusIcon()}
+                <span className={`font-medium ${
+                  filingStatus === 'completed' ? 'text-green-600' :
+                  filingStatus === 'error' ? 'text-red-600' : 'text-blue-600'
+                }`}>
+                  {getStatusText()}
                 </span>
               </div>
-              
-              {/* Progress Bar */}
-              <div className="w-32 bg-gray-200 rounded-full h-2">
-                <motion.div
-                  className={`h-2 rounded-full ${
-                    completionPercentage >= 90 ? 'bg-green-500' :
-                    completionPercentage >= 70 ? 'bg-orange-500' : 'bg-gray-400'
-                  }`}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${completionPercentage}%` }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                />
-              </div>
-            </div>
-          </div>
 
-          {/* Right Side - Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Save Status */}
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              {isSaving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  <span>Saved {formatLastSaved(lastSaved)}</span>
-                </>
+              {showHelp && onHelp && (
+                <button
+                  onClick={onHelp}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  <HelpCircle className="w-5 h-5" />
+                  <span className="font-medium">Help</span>
+                </button>
               )}
             </div>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={onSave}
-                disabled={isSaving}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <Save className="h-4 w-4" />
-                <span>Save Draft</span>
-              </button>
-              
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
+          {/* Progress Bar */}
+          {showProgress && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                      1
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Personal Info</span>
+                  </div>
+
+                  <div className="flex-1 h-px bg-gray-300 mx-2"></div>
+
+                  <div className={`flex items-center space-x-2 ${
+                    step >= 2 ? 'text-blue-600' : 'text-gray-400'
+                  }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                    }`}>
+                      2
+                    </div>
+                    <span className="text-sm font-medium">Income Details</span>
+                  </div>
+
+                  <div className="flex-1 h-px bg-gray-300 mx-2"></div>
+
+                  <div className={`flex items-center space-x-2 ${
+                    step >= 3 ? 'text-blue-600' : 'text-gray-400'
+                  }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                    }`}>
+                      3
+                    </div>
+                    <span className="text-sm font-medium">Deductions</span>
+                  </div>
+
+                  <div className="flex-1 h-px bg-gray-300 mx-2"></div>
+
+                  <div className={`flex items-center space-x-2 ${
+                    step >= 4 ? 'text-blue-600' : 'text-gray-400'
+                  }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      step >= 4 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                    }`}>
+                      4
+                    </div>
+                    <span className="text-sm font-medium">Tax Summary</span>
+                  </div>
+
+                  <div className="flex-1 h-px bg-gray-300 mx-2"></div>
+
+                  <div className={`flex items-center space-x-2 ${
+                    step >= 5 ? 'text-blue-600' : 'text-gray-400'
+                  }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      step >= 5 ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                    }`}>
+                      5
+                    </div>
+                    <span className="text-sm font-medium">Review & File</span>
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  Step {step} of 5
+                </div>
+              </div>
             </div>
+          )}
+
+          {/* Additional Info */}
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex items-center space-x-6 text-sm text-gray-600">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4" />
+                <span>Assessment Year: 2024-25</span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Shield className="w-4 h-4" />
+                <span>Secure & Encrypted</span>
+              </div>
+            </div>
+
+            {title && (
+              <div className="text-lg font-semibold text-gray-900">
+                {title}
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Status Messages */}
-        {completionPercentage < 70 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg"
-          >
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="h-4 w-4 text-orange-600" />
-              <p className="text-sm text-orange-800">
-                Complete all sections to proceed with filing. You're {100 - completionPercentage}% away from completion.
-              </p>
-            </div>
-          </motion.div>
-        )}
       </div>
     </div>
   );

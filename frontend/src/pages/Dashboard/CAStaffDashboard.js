@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { apiClient } from '../../services/apiClient';
+import { apiClient } from '../../services';
 import { toast } from 'react-hot-toast';
 import { 
   Users, 

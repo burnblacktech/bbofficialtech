@@ -30,12 +30,7 @@ export const ContextProvider = ({ children }) => {
 /**
  * Individual context exports for selective usage
  */
-export {
-  AuthProvider,
-  ITRProvider,
-  AppProvider,
-  NotificationProvider
-} from './AuthContext';
+export { AuthProvider } from './AuthContext';
 export { ITRProvider } from './ITRContext';
 export { AppProvider } from './AppContext';
 export { NotificationProvider } from './NotificationContext';

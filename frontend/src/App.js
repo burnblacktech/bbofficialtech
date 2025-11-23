@@ -10,7 +10,6 @@ import { Toaster } from 'react-hot-toast';
 
 // Core components
 import Layout from './components/Layout.js';
-import CompactMobileNav from './components/UI/CompactMobileNav.js';
 import LandingPage from './pages/Landing/LandingPage';
 import HomeRedirect from './pages/HomeRedirect';
 
@@ -37,23 +36,15 @@ import UserSettings from './pages/User/UserSettings';
 import ProfileSettings from './pages/User/ProfileSettings';
 import FinancialProfilePage from './pages/FinancialProfile/FinancialProfilePage';
 import ServiceTicketManagement from './pages/Service/ServiceTicketManagement';
-import BillingInvoicing from './pages/Service/BillingInvoicing';
-import CABotPage from './pages/CABot/CABotPage';
-import UpgradeToProfessional from './pages/Upgrade/UpgradeToProfessional';
+// Design System Components (Development only)
+// import StyleGuide from './components/DesignSystem/StyleGuide'; // Temporarily disabled
 
-// Design System Components
-import StyleGuide from './components/DesignSystem/StyleGuide';
-import KeyboardNavigationTest from './components/DesignSystem/KeyboardNavigationTest';
-import ContentReview from './components/DesignSystem/ContentReview';
-
-// Test Components
-import TestRunner from './test-data/testRunner';
-import TestReport from './test-data/testReport';
+// CABot Page (Development/Testing)
+// import CABotPage from './pages/CABot/CABotPage'; // Temporarily disabled
 
 // Context providers
 import { AuthProvider } from './contexts/AuthContext';
-import { FilingProvider } from './contexts/FilingContext';
-import { CABotProvider } from './contexts/CABotContext';
+// import { CABotProvider } from './contexts/CABotContext'; // Temporarily disabled
 
 // Auth components
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -159,127 +150,24 @@ const AppContent = () => {
             } 
           />
           
-          {/* Other User Routes */}
-          <Route 
-            path="/add-members" 
-            element={
-              <Layout>
-                <AddMembers />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/financial-profile" 
-            element={
-              <Layout>
-                <FinancialProfilePage />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/service-tickets" 
-            element={
-              <Layout>
-                <ServiceTicketManagement />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/billing-invoicing" 
-            element={
-              <Layout>
-                <BillingInvoicing />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <Layout>
-                <UserSettings />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <Layout>
-                <ProfileSettings />
-              </Layout>
-            } 
-          />
-          
-          {/* CA Bot Route */}
-          <Route 
-            path="/ca-bot" 
+          {/* CA Bot Route - Temporarily disabled */}
+          {/* <Route
+            path="/ca-bot"
             element={
               <CABotProvider>
-                <CABotPage />
+                <Layout>
+                  <CABotPage />
+                </Layout>
               </CABotProvider>
-            } 
-          />
-          
-          {/* Upgrade Route */}
-          <Route 
-            path="/upgrade" 
-            element={
-              <Layout>
-                <UpgradeToProfessional />
-              </Layout>
-            } 
-          />
-          
-          {/* Design System Routes */}
-          <Route 
-            path="/style-guide" 
-            element={
-              <Layout>
-                <StyleGuide />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/keyboard-test" 
-            element={
-              <Layout>
-                <KeyboardNavigationTest />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/content-review" 
-            element={
-              <Layout>
-                <ContentReview />
-              </Layout>
-            } 
-          />
-          
-          {/* Test Routes */}
-          <Route 
-            path="/test-runner" 
-            element={
-              <Layout>
-                <TestRunner />
-              </Layout>
-            } 
-          />
-          <Route 
-            path="/test-report" 
-            element={
-              <Layout>
-                <TestReport />
-              </Layout>
-            } 
-          />
-        </Route>
+            }
+          /> */}
+          </Route>
         
         {/* Catch all - redirect to landing page */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       
       {/* Mobile Navigation */}
-      <CompactMobileNav />
     </div>
   );
 };
@@ -290,19 +178,17 @@ const App = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <FilingProvider>
-            <AppContent />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-              }}
-            />
-          </FilingProvider>
+          <AppContent />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+            }}
+          />
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

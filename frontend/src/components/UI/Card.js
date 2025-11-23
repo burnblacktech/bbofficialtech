@@ -1,100 +1,67 @@
 // =====================================================
-// ENHANCED CARD COMPONENT - DESIGN SYSTEM INTEGRATION
+// CARD COMPONENT
+// Reusable card component for content containers
 // =====================================================
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { cn } from '../../utils/cn';
 
-const Card = React.forwardRef(({ 
-  children, 
-  className = '', 
+const Card = React.forwardRef(({
+  className,
+  children,
+  padding = 'md',
+  shadow = 'sm',
+  border = true,
+  rounded = 'lg',
   hover = false,
-  ...props 
+  ...props
 }, ref) => {
-  const baseClasses = 'rounded-xl border bg-white text-neutral-900 shadow-sm transition-all duration-200';
-  const hoverClasses = hover ? 'hover:shadow-md hover:scale-[1.01] cursor-pointer' : '';
-  const classes = `${baseClasses} ${hoverClasses} ${className}`;
-  
+  const paddingClasses = {
+    none: '',
+    sm: 'p-4',
+    md: 'p-6',
+    lg: 'p-8',
+    xl: 'p-10'
+  };
+
+  const shadowClasses = {
+    none: '',
+    sm: 'shadow-sm',
+    md: 'shadow-md',
+    lg: 'shadow-lg',
+    xl: 'shadow-xl'
+  };
+
+  const roundedClasses = {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl',
+    full: 'rounded-full'
+  };
+
+  const baseClasses = cn(
+    'bg-white',
+    border && 'border border-gray-200',
+    paddingClasses[padding],
+    shadowClasses[shadow],
+    roundedClasses[rounded],
+    hover && 'hover:shadow-md transition-shadow duration-200',
+    className
+  );
+
   return (
-    <motion.div
+    <div
+      className={baseClasses}
       ref={ref}
-      className={classes}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   );
 });
 
 Card.displayName = 'Card';
 
-const CardHeader = React.forwardRef(({ children, className = '', ...props }, ref) => {
-  const baseClasses = 'flex flex-col space-y-1.5 p-6';
-  const classes = `${baseClasses} ${className}`;
-  
-  return (
-    <div ref={ref} className={classes} {...props}>
-      {children}
-    </div>
-  );
-});
-
-CardHeader.displayName = 'CardHeader';
-
-const CardTitle = React.forwardRef(({ children, className = '', ...props }, ref) => {
-  const baseClasses = 'text-xl font-semibold leading-none tracking-tight';
-  const classes = `${baseClasses} ${className}`;
-  
-  return (
-    <h3 ref={ref} className={classes} {...props}>
-      {children}
-    </h3>
-  );
-});
-
-CardTitle.displayName = 'CardTitle';
-
-const CardDescription = React.forwardRef(({ children, className = '', ...props }, ref) => {
-  const baseClasses = 'text-sm text-neutral-600';
-  const classes = `${baseClasses} ${className}`;
-  
-  return (
-    <p ref={ref} className={classes} {...props}>
-      {children}
-    </p>
-  );
-});
-
-CardDescription.displayName = 'CardDescription';
-
-const CardContent = React.forwardRef(({ children, className = '', ...props }, ref) => {
-  const baseClasses = 'p-6 pt-0';
-  const classes = `${baseClasses} ${className}`;
-  
-  return (
-    <div ref={ref} className={classes} {...props}>
-      {children}
-    </div>
-  );
-});
-
-CardContent.displayName = 'CardContent';
-
-const CardFooter = React.forwardRef(({ children, className = '', ...props }, ref) => {
-  const baseClasses = 'flex items-center p-6 pt-0';
-  const classes = `${baseClasses} ${className}`;
-  
-  return (
-    <div ref={ref} className={classes} {...props}>
-      {children}
-    </div>
-  );
-});
-
-CardFooter.displayName = 'CardFooter';
-
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };
 export default Card;

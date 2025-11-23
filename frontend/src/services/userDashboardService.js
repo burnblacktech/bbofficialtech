@@ -2,7 +2,7 @@
 // USER DASHBOARD SERVICE - BACKEND INTEGRATION
 // =====================================================
 
-import apiClient from './apiClient';
+import apiClient from './core/APIClient';
 
 class UserDashboardService {
   /**

@@ -1,62 +1,129 @@
 // =====================================================
-// ENHANCED BUTTON COMPONENT - DESIGN SYSTEM INTEGRATION
+// BUTTON COMPONENT
+// Reusable button component with multiple variants
 // =====================================================
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { cn } from '../../utils/cn';
 
-const Button = React.forwardRef(({ 
-  children, 
-  variant = 'primary', 
-  size = 'md', 
-  loading = false,
+const buttonVariants = {
+  variant: {
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300',
+    outline: 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700',
+    ghost: 'hover:bg-gray-100 text-gray-700',
+    success: 'bg-green-600 hover:bg-green-700 text-white shadow-sm',
+    warning: 'bg-yellow-600 hover:bg-yellow-700 text-white shadow-sm',
+    danger: 'bg-red-600 hover:bg-red-700 text-white shadow-sm',
+    link: 'text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline p-0 h-auto',
+  },
+  size: {
+    sm: 'h-9 px-3 text-sm',
+    md: 'h-10 px-4 py-2',
+    lg: 'h-11 px-8 text-lg',
+    xl: 'h-12 px-10 text-xl',
+    icon: 'h-10 w-10',
+    'icon-sm': 'h-8 w-8',
+    'icon-lg': 'h-12 w-12',
+  },
+  fullWidth: {
+    true: 'w-full',
+    false: 'w-auto',
+  },
+  rounded: {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl',
+    full: 'rounded-full',
+  }
+};
+
+const Button = React.forwardRef(({
+  className,
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
+  rounded = 'md',
+  type = 'button',
   disabled = false,
-  className = '', 
+  loading = false,
+  icon,
+  iconPosition = 'left',
+  children,
   onClick,
-  ...props 
+  ...props
 }, ref) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
-  
-  const variants = {
-    primary: 'bg-primary-500 text-white hover:bg-primary-600 focus-visible:ring-primary-500 shadow-sm hover:shadow-md',
-    secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-500 shadow-sm hover:shadow-md',
-    outline: 'border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 focus-visible:ring-primary-500',
-    ghost: 'text-neutral-700 hover:bg-neutral-100 focus-visible:ring-primary-500',
-    success: 'bg-success-500 text-white hover:bg-success-600 focus-visible:ring-success-500 shadow-sm hover:shadow-md',
-    warning: 'bg-warning-500 text-white hover:bg-warning-600 focus-visible:ring-warning-500 shadow-sm hover:shadow-md',
-    error: 'bg-error-500 text-white hover:bg-error-600 focus-visible:ring-error-500 shadow-sm hover:shadow-md',
+  const baseClasses = cn(
+    // Base styles
+    'inline-flex items-center justify-center font-medium transition-colors duration-200',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+    'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+
+    // Variant styles
+    buttonVariants.variant[variant],
+
+    // Size styles
+    buttonVariants.size[size],
+
+    // Width styles
+    buttonVariants.fullWidth[fullWidth],
+
+    // Border radius styles
+    buttonVariants.rounded[rounded],
+
+    className
+  );
+
+  const renderIcon = () => {
+    if (!icon) return null;
+
+    const iconSize = size.includes('icon') ?
+      (size === 'icon-sm' ? 'w-4 h-4' : size === 'icon-lg' ? 'w-6 h-6' : 'w-5 h-5') :
+      (size === 'sm' ? 'w-4 h-4' : size === 'lg' || size === 'xl' ? 'w-6 h-6' : 'w-5 h-5');
+
+    return <span className={cn(iconSize, 'flex-shrink-0')}>{icon}</span>;
   };
-  
-  const sizes = {
-    xs: 'h-8 px-2 text-xs rounded-md',
-    sm: 'h-9 px-3 text-sm rounded-md',
-    md: 'h-10 px-4 text-sm rounded-lg',
-    lg: 'h-11 px-6 text-base rounded-lg',
-    xl: 'h-12 px-8 text-lg rounded-xl',
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <>
+          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          {children && <span>{children}</span>}
+        </>
+      );
+    }
+
+    if (icon && !children) {
+      return renderIcon();
+    }
+
+    if (icon && children) {
+      return (
+        <>
+          {iconPosition === 'left' && renderIcon()}
+          <span>{children}</span>
+          {iconPosition === 'right' && renderIcon()}
+        </>
+      );
+    }
+
+    return children;
   };
-  
-  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`;
-  
+
   return (
-    <motion.button
-      ref={ref}
-      className={classes}
+    <button
+      className={baseClasses}
+      type={type}
       disabled={disabled || loading}
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.1 }}
+      ref={ref}
       {...props}
     >
-      {loading ? (
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          <span>Loading...</span>
-        </div>
-      ) : (
-        children
-      )}
-    </motion.button>
+      {renderContent()}
+    </button>
   );
 });
 

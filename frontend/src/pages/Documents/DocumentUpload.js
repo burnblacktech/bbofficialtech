@@ -8,7 +8,7 @@ import { useDropzone } from 'react-dropzone';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
-import apiClient from '../../services/apiClient';
+import apiClient from '../../services';
 import toast from 'react-hot-toast';
 
 const DocumentUpload = () => {

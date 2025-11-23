@@ -2,7 +2,7 @@
 // FILING SERVICE
 // =====================================================
 
-import apiClient from './apiClient';
+import apiClient from './core/APIClient';
 import { enterpriseLogger } from '../utils/logger';
 
 class FilingService {

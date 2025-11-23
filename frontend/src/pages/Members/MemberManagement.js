@@ -9,7 +9,7 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
 import Modal from '../../components/common/Modal';
-import apiClient from '../../services/apiClient';
+import apiClient from '../../services';
 import toast from 'react-hot-toast';
 
 const MemberManagement = () => {

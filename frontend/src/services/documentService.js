@@ -2,7 +2,7 @@
 // DOCUMENT SERVICE - FRONTEND BACKEND INTEGRATION
 // =====================================================
 
-import apiClient from './apiClient';
+import apiClient from './core/APIClient';
 
 class DocumentService {
   /**

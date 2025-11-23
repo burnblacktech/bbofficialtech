@@ -18,26 +18,11 @@ export {
   Badge
 } from './components';
 
-// Behavioral psychology components
-export {
-  SecurityBadge,
-  TrustIndicator,
-  ProgressStepper,
-  DeadlineCountdown,
-  RefundEstimator,
-  SocialProof,
-  MicroCelebration,
-  SuccessCelebration,
-  EmotionalStateIndicator
-} from './behavioral';
-
 // Legacy exports for backward compatibility
 import DESIGN_TOKENS from './tokens';
 import Components from './components';
-import BehavioralComponents from './behavioral';
 
 export default {
   DESIGN_TOKENS,
-  ...Components,
-  ...BehavioralComponents
+  ...Components
 };

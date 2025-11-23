@@ -5,9 +5,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useFilingContext } from '../../contexts/FilingContext';
+import { useITR } from '../../contexts/ITRContext';
 import { useAuth } from '../../contexts/AuthContext';
-import Button from '../../components/UI/Button';
+import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import { 
   User, 
@@ -40,14 +40,14 @@ const ITRFiling = () => {
   const location = useLocation();
   const { user } = useAuth();
   
-  const { 
-    filingData, 
-    updateFilingData, 
-    updateSection,
+  const {
+    currentFiling,
+    updateFiling,
+    updateFilingSection,
     saveDraft,
     progress,
-    isLoading 
-  } = useFilingContext();
+    isLoading
+  } = useITR();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
@@ -134,14 +134,14 @@ const ITRFiling = () => {
   useEffect(() => {
     if (location.state) {
       const { context, userId } = location.state;
-      updateFilingData({
+      updateFiling({
         context: context || 'self',
         userId: userId || user?.id,
         assessmentYear: '2024-25',
         status: 'draft'
       });
     }
-  }, [location.state, user?.id, updateFilingData]);
+  }, [location.state, user?.id, updateFiling]);
 
   // Calculate progress percentage
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
@@ -218,7 +218,7 @@ const ITRFiling = () => {
 
   // Handle form data update
   const handleFormUpdate = (data) => {
-    updateSection(steps[currentStep].id, data);
+    updateFilingSection(steps[currentStep].id, data);
   };
 
   // Navigation handlers
@@ -255,7 +255,7 @@ const ITRFiling = () => {
                   ITR Filing - {itrType || 'ITR-1'}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Assessment Year: {filingData.assessmentYear || '2024-25'}
+                  Assessment Year: {currentFiling?.assessmentYear || '2024-25'}
                 </p>
               </div>
             </div>

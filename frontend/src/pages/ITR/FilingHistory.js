@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useFilingContext } from '../../contexts/FilingContext';
+import { useITR } from '../../contexts/ITRContext';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 const FilingHistory = () => {
   const { user } = useAuth();
-  const { getUserFilings } = useFilingContext();
+  const { getUserFilings } = useITR();
   const navigate = useNavigate();
   
   const [filings, setFilings] = useState([]);

@@ -3,7 +3,7 @@
 // Future bank API integration for transaction fetching
 // =====================================================
 
-import apiClient from './apiClient';
+import apiClient from './core/APIClient';
 import { enterpriseLogger } from '../utils/logger';
 
 export class BankAPIService {
