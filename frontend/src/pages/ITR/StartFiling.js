@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 
 const StartFiling = () => {
   const { user } = useAuth();
-  const { resetFilingData } = useFilingContext();
+  const { resetFiling } = useITR();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(false);
