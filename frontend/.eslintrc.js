@@ -12,10 +12,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'react-app',
-    'react-app/jest',
-    'react-hooks',
-    'import',
-    'jsx-a11y'
+    'react-app/jest'
   ],
   parserOptions: {
     ecmaFeatures: {
