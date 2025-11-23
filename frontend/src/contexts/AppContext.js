@@ -1,155 +1,122 @@
 // =====================================================
-// APP CONTEXT
+// APP CONTEXT - STRATEGIC CONTEXT 3
+// App-wide settings & preferences
 // =====================================================
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import authService from '../services/authService';
-import { enterpriseLogger } from '../utils/logger';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 
 // Initial state
 const initialState = {
-  // Authentication state
-  isAuthenticated: false,
-  user: null,
-  loading: true,
-  
   // UI state
   theme: 'light',
   sidebarOpen: true,
-  notifications: [],
-  
+  language: 'en',
+
+  // Preferences
+  preferences: {
+    autoSave: true,
+    notifications: true,
+    emailAlerts: true,
+    darkMode: false,
+    compactMode: false
+  },
+
   // Feature flags
   features: {
     aiAssist: true,
     ocr: true,
     eriIntegration: true,
-    mfa: true
+    mfa: true,
+    betaFeatures: false
   },
-  
-  // Filing state
-  currentFiling: null,
-  filingHistory: [],
-  
-  // Error state
-  error: null
+
+  // App state
+  isOnline: navigator.onLine,
+  lastActivity: Date.now(),
+
+  // Loading states
+  globalLoading: false
 };
 
 // Action types
 const ActionTypes = {
-  // Authentication actions
-  LOGIN_START: 'LOGIN_START',
-  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
-  LOGIN_FAILURE: 'LOGIN_FAILURE',
-  LOGOUT: 'LOGOUT',
-  SET_USER: 'SET_USER',
-  
   // UI actions
   SET_THEME: 'SET_THEME',
   TOGGLE_SIDEBAR: 'TOGGLE_SIDEBAR',
-  ADD_NOTIFICATION: 'ADD_NOTIFICATION',
-  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
-  CLEAR_NOTIFICATIONS: 'CLEAR_NOTIFICATIONS',
-  
+  SET_LANGUAGE: 'SET_LANGUAGE',
+  SET_ONLINE_STATUS: 'SET_ONLINE_STATUS',
+  SET_GLOBAL_LOADING: 'SET_GLOBAL_LOADING',
+
+  // Preference actions
+  SET_PREFERENCES: 'SET_PREFERENCES',
+  UPDATE_PREFERENCE: 'UPDATE_PREFERENCE',
+
   // Feature flag actions
   SET_FEATURES: 'SET_FEATURES',
   TOGGLE_FEATURE: 'TOGGLE_FEATURE',
-  
-  // Filing actions
-  SET_CURRENT_FILING: 'SET_CURRENT_FILING',
-  SET_FILING_HISTORY: 'SET_FILING_HISTORY',
-  UPDATE_FILING: 'UPDATE_FILING',
-  
-  // Error actions
-  SET_ERROR: 'SET_ERROR',
-  CLEAR_ERROR: 'CLEAR_ERROR',
-  
-  // Loading actions
-  SET_LOADING: 'SET_LOADING'
+
+  // Activity tracking
+  UPDATE_ACTIVITY: 'UPDATE_ACTIVITY'
 };
 
 // Reducer
 const appReducer = (state, action) => {
   switch (action.type) {
-    case ActionTypes.LOGIN_START:
-      return {
-        ...state,
-        loading: true,
-        error: null
-      };
-      
-    case ActionTypes.LOGIN_SUCCESS:
-      return {
-        ...state,
-        isAuthenticated: true,
-        user: action.payload.user,
-        loading: false,
-        error: null
-      };
-      
-    case ActionTypes.LOGIN_FAILURE:
-      return {
-        ...state,
-        isAuthenticated: false,
-        user: null,
-        loading: false,
-        error: action.payload.error
-      };
-      
-    case ActionTypes.LOGOUT:
-      return {
-        ...state,
-        isAuthenticated: false,
-        user: null,
-        currentFiling: null,
-        filingHistory: [],
-        error: null
-      };
-      
-    case ActionTypes.SET_USER:
-      return {
-        ...state,
-        user: action.payload.user,
-        isAuthenticated: !!action.payload.user
-      };
-      
     case ActionTypes.SET_THEME:
       return {
         ...state,
-        theme: action.payload.theme
+        theme: action.payload.theme,
+        preferences: {
+          ...state.preferences,
+          darkMode: action.payload.theme === 'dark'
+        }
       };
-      
+
     case ActionTypes.TOGGLE_SIDEBAR:
       return {
         ...state,
         sidebarOpen: !state.sidebarOpen
       };
-      
-    case ActionTypes.ADD_NOTIFICATION:
+
+    case ActionTypes.SET_LANGUAGE:
       return {
         ...state,
-        notifications: [...state.notifications, action.payload.notification]
+        language: action.payload.language
       };
-      
-    case ActionTypes.REMOVE_NOTIFICATION:
+
+    case ActionTypes.SET_ONLINE_STATUS:
       return {
         ...state,
-        notifications: state.notifications.filter(
-          notification => notification.id !== action.payload.id
-        )
+        isOnline: action.payload.isOnline
       };
-      
-    case ActionTypes.CLEAR_NOTIFICATIONS:
+
+    case ActionTypes.SET_GLOBAL_LOADING:
       return {
         ...state,
-        notifications: []
+        globalLoading: action.payload.loading
       };
-      
+
+    case ActionTypes.SET_PREFERENCES:
+      return {
+        ...state,
+        preferences: { ...state.preferences, ...action.payload.preferences }
+      };
+
+    case ActionTypes.UPDATE_PREFERENCE:
+      return {
+        ...state,
+        preferences: {
+          ...state.preferences,
+          [action.payload.key]: action.payload.value
+        }
+      };
+
     case ActionTypes.SET_FEATURES:
       return {
         ...state,
         features: { ...state.features, ...action.payload.features }
       };
-      
+
     case ActionTypes.TOGGLE_FEATURE:
       return {
         ...state,
@@ -158,46 +125,13 @@ const appReducer = (state, action) => {
           [action.payload.feature]: !state.features[action.payload.feature]
         }
       };
-      
-    case ActionTypes.SET_CURRENT_FILING:
+
+    case ActionTypes.UPDATE_ACTIVITY:
       return {
         ...state,
-        currentFiling: action.payload.filing
+        lastActivity: action.payload.timestamp
       };
-      
-    case ActionTypes.SET_FILING_HISTORY:
-      return {
-        ...state,
-        filingHistory: action.payload.history
-      };
-      
-    case ActionTypes.UPDATE_FILING:
-      return {
-        ...state,
-        currentFiling: action.payload.filing,
-        filingHistory: state.filingHistory.map(filing =>
-          filing.id === action.payload.filing.id ? action.payload.filing : filing
-        )
-      };
-      
-    case ActionTypes.SET_ERROR:
-      return {
-        ...state,
-        error: action.payload.error
-      };
-      
-    case ActionTypes.CLEAR_ERROR:
-      return {
-        ...state,
-        error: null
-      };
-      
-    case ActionTypes.SET_LOADING:
-      return {
-        ...state,
-        loading: action.payload.loading
-      };
-      
+
     default:
       return state;
   }
@@ -210,205 +144,188 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  // Initialize app
+  // Initialize app settings from localStorage
   useEffect(() => {
-    const initializeApp = async () => {
+    const initializeApp = () => {
       try {
-        // Check if user is already authenticated
-        if (authService.isAuthenticated()) {
-          const userInfo = authService.getUserInfo();
-          if (userInfo) {
-            dispatch({
-              type: ActionTypes.SET_USER,
-              payload: { user: userInfo }
-            });
-          }
+        // Load preferences from localStorage
+        const savedPreferences = localStorage.getItem('appPreferences');
+        if (savedPreferences) {
+          const preferences = JSON.parse(savedPreferences);
+          dispatch({
+            type: ActionTypes.SET_PREFERENCES,
+            payload: { preferences }
+          });
         }
-        
+
+        // Load theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        dispatch({
+          type: ActionTypes.SET_THEME,
+          payload: { theme: savedTheme }
+        });
+
+        // Load language from localStorage
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        dispatch({
+          type: ActionTypes.SET_LANGUAGE,
+          payload: { language: savedLanguage }
+        });
+
         // Load feature flags from localStorage
         const savedFeatures = localStorage.getItem('featureFlags');
         if (savedFeatures) {
-          try {
-            const features = JSON.parse(savedFeatures);
-            dispatch({
-              type: ActionTypes.SET_FEATURES,
-              payload: { features }
-            });
-          } catch (error) {
-            enterpriseLogger.error('Error parsing saved feature flags', {
-              error: error.message
-            });
-          }
-        }
-        
-        // Load theme from localStorage
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
+          const features = JSON.parse(savedFeatures);
           dispatch({
-            type: ActionTypes.SET_THEME,
-            payload: { theme: savedTheme }
+            type: ActionTypes.SET_FEATURES,
+            payload: { features }
           });
         }
-        
-        dispatch({
-          type: ActionTypes.SET_LOADING,
-          payload: { loading: false }
-        });
       } catch (error) {
-        enterpriseLogger.error('App initialization error', {
-          error: error.message
-        });
-        
-        dispatch({
-          type: ActionTypes.SET_LOADING,
-          payload: { loading: false }
-        });
+        console.error('App initialization error:', error);
       }
     };
 
     initializeApp();
   }, []);
 
+  // Save preferences to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('appPreferences', JSON.stringify(state.preferences));
+  }, [state.preferences]);
+
   // Save theme to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('theme', state.theme);
+    document.documentElement.setAttribute('data-theme', state.theme);
   }, [state.theme]);
+
+  // Save language to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('language', state.language);
+  }, [state.language]);
 
   // Save feature flags to localStorage when they change
   useEffect(() => {
     localStorage.setItem('featureFlags', JSON.stringify(state.features));
   }, [state.features]);
 
-  // Context value
+  // Listen for online/offline events
+  useEffect(() => {
+    const handleOnline = () => {
+      dispatch({
+        type: ActionTypes.SET_ONLINE_STATUS,
+        payload: { isOnline: true }
+      });
+    };
+
+    const handleOffline = () => {
+      dispatch({
+        type: ActionTypes.SET_ONLINE_STATUS,
+        payload: { isOnline: false }
+      });
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Activity tracking
+  useEffect(() => {
+    const trackActivity = () => {
+      dispatch({
+        type: ActionTypes.UPDATE_ACTIVITY,
+        payload: { timestamp: Date.now() }
+      });
+    };
+
+    // Track activity on various user interactions
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(event => {
+      document.addEventListener(event, trackActivity, { passive: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, trackActivity);
+      });
+    };
+  }, []);
+
+  // Context value with memoized functions
   const value = {
     state,
     dispatch,
-    
-    // Authentication actions
-    login: async (email, password) => {
-      dispatch({ type: ActionTypes.LOGIN_START });
-      try {
-        const response = await authService.login(email, password);
-        if (response.success) {
-          dispatch({
-            type: ActionTypes.LOGIN_SUCCESS,
-            payload: { user: response.user }
-          });
-        } else {
-          dispatch({
-            type: ActionTypes.LOGIN_FAILURE,
-            payload: { error: response.message }
-          });
-        }
-        return response;
-      } catch (error) {
-        dispatch({
-          type: ActionTypes.LOGIN_FAILURE,
-          payload: { error: error.message }
-        });
-        throw error;
-      }
-    },
-    
-    logout: async () => {
-      try {
-        await authService.logout();
-        dispatch({ type: ActionTypes.LOGOUT });
-      } catch (error) {
-        enterpriseLogger.error('Logout error', { error: error.message });
-        // Still clear local state even if logout fails
-        dispatch({ type: ActionTypes.LOGOUT });
-      }
-    },
-    
+
     // UI actions
-    setTheme: (theme) => {
+    setTheme: useCallback((theme) => {
       dispatch({
         type: ActionTypes.SET_THEME,
         payload: { theme }
       });
-    },
-    
-    toggleSidebar: () => {
+    }, []),
+
+    toggleSidebar: useCallback(() => {
       dispatch({ type: ActionTypes.TOGGLE_SIDEBAR });
-    },
-    
-    addNotification: (notification) => {
-      const id = Date.now() + Math.random();
+    }, []),
+
+    setLanguage: useCallback((language) => {
       dispatch({
-        type: ActionTypes.ADD_NOTIFICATION,
-        payload: { notification: { ...notification, id } }
+        type: ActionTypes.SET_LANGUAGE,
+        payload: { language }
       });
-      
-      // Auto-remove notification after 5 seconds
-      setTimeout(() => {
-        dispatch({
-          type: ActionTypes.REMOVE_NOTIFICATION,
-          payload: { id }
-        });
-      }, 5000);
-    },
-    
-    removeNotification: (id) => {
+    }, []),
+
+    setGlobalLoading: useCallback((loading) => {
       dispatch({
-        type: ActionTypes.REMOVE_NOTIFICATION,
-        payload: { id }
+        type: ActionTypes.SET_GLOBAL_LOADING,
+        payload: { loading }
       });
-    },
-    
-    clearNotifications: () => {
-      dispatch({ type: ActionTypes.CLEAR_NOTIFICATIONS });
-    },
-    
+    }, []),
+
+    // Preference actions
+    setPreferences: useCallback((preferences) => {
+      dispatch({
+        type: ActionTypes.SET_PREFERENCES,
+        payload: { preferences }
+      });
+    }, []),
+
+    updatePreference: useCallback((key, value) => {
+      dispatch({
+        type: ActionTypes.UPDATE_PREFERENCE,
+        payload: { key, value }
+      });
+    }, []),
+
     // Feature flag actions
-    toggleFeature: (feature) => {
+    toggleFeature: useCallback((feature) => {
       dispatch({
         type: ActionTypes.TOGGLE_FEATURE,
         payload: { feature }
       });
-    },
-    
-    // Filing actions
-    setCurrentFiling: (filing) => {
+    }, []),
+
+    setFeatures: useCallback((features) => {
       dispatch({
-        type: ActionTypes.SET_CURRENT_FILING,
-        payload: { filing }
+        type: ActionTypes.SET_FEATURES,
+        payload: { features }
       });
-    },
-    
-    setFilingHistory: (history) => {
-      dispatch({
-        type: ActionTypes.SET_FILING_HISTORY,
-        payload: { history }
-      });
-    },
-    
-    updateFiling: (filing) => {
-      dispatch({
-        type: ActionTypes.UPDATE_FILING,
-        payload: { filing }
-      });
-    },
-    
-    // Error actions
-    setError: (error) => {
-      dispatch({
-        type: ActionTypes.SET_ERROR,
-        payload: { error }
-      });
-    },
-    
-    clearError: () => {
-      dispatch({ type: ActionTypes.CLEAR_ERROR });
-    },
-    
-    // Loading actions
-    setLoading: (loading) => {
-      dispatch({
-        type: ActionTypes.SET_LOADING,
-        payload: { loading }
-      });
-    }
+    }, []),
+
+    // Utility functions
+    isFeatureEnabled: useCallback((feature) => {
+      return state.features[feature] || false;
+    }, [state.features]),
+
+    getPreference: useCallback((key, defaultValue = null) => {
+      return state.preferences[key] !== undefined ? state.preferences[key] : defaultValue;
+    }, [state.preferences])
   };
 
   return (
@@ -426,8 +343,5 @@ export const useApp = () => {
   }
   return context;
 };
-
-// Export action types for external use
-export { ActionTypes };
 
 export default AppContext;

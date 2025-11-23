@@ -1,46 +1,140 @@
+// =====================================================
+// AUTH CONTEXT - STRATEGIC CONTEXT 1
+// User authentication & profile management
+// =====================================================
+
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
+import { authService } from '../services';
 
 const AuthContext = createContext(null);
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  const logout = useCallback(() => {
-    setUser(null);
-    authService.logout(); // The service handles token removal
-    navigate('/login');
-  }, [navigate]);
-
+  // Initialize authentication state
   useEffect(() => {
-    const verifySession = async () => {
+    const initializeAuth = async () => {
       try {
-        const currentUser = await authService.getProfile();
-        setUser(currentUser);
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          setIsAuthenticated(true);
+
+          // Load user profile
+          try {
+            const profileData = await authService.getProfile();
+            setProfile(profileData);
+          } catch (error) {
+            console.warn('Failed to load user profile:', error);
+          }
+        }
       } catch (error) {
-        // This is expected if the user has no valid token
+        console.error('Auth initialization error:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    verifySession();
+
+    initializeAuth();
   }, []);
 
-  const login = (userData, accessToken, refreshToken) => {
-    localStorage.setItem('accessToken', accessToken);
-    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
-    setUser(userData);
-    
-    // Always redirect to /home - HomeRedirect will handle role-based routing
-    navigate('/home');
-  };
+  // Login function
+  const login = useCallback(async (credentials) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.login(credentials);
+      if (response.success) {
+        setUser(response.user);
+        setIsAuthenticated(true);
 
-  const value = { user, isLoading, login, logout };
+        // Load profile after successful login
+        try {
+          const profileData = await authService.getProfile();
+          setProfile(profileData);
+        } catch (error) {
+          console.warn('Failed to load user profile after login:', error);
+        }
+
+        navigate('/home');
+        return { success: true };
+      }
+      return { success: false, message: response.message };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, message: error.message };
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate]);
+
+  // Logout function
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      setProfile(null);
+      setIsAuthenticated(false);
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  // Update user profile
+  const updateProfile = useCallback(async (profileData) => {
+    try {
+      const response = await authService.updateProfile(profileData);
+      if (response.success) {
+        setProfile(response.profile);
+        return { success: true };
+      }
+      return { success: false, message: response.message };
+    } catch (error) {
+      console.error('Profile update error:', error);
+      return { success: false, message: error.message };
+    }
+  }, []);
+
+  // Check if user has specific role
+  const hasRole = useCallback((role) => {
+    return user?.roles?.includes(role) || user?.role === role;
+  }, [user]);
+
+  // Check if user has specific permission
+  const hasPermission = useCallback((permission) => {
+    return user?.permissions?.includes(permission) || hasRole('admin');
+  }, [user, hasRole]);
+
+  const value = {
+    // State
+    user,
+    profile,
+    isLoading,
+    isAuthenticated,
+
+    // Actions
+    login,
+    logout,
+    updateProfile,
+
+    // Utilities
+    hasRole,
+    hasPermission
+  };
 
   return (
     <AuthContext.Provider value={value}>
@@ -48,3 +142,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
