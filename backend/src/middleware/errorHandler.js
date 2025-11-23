@@ -1,65 +1,87 @@
 // =====================================================
-// GLOBAL ERROR HANDLER MIDDLEWARE
+// ENHANCED GLOBAL ERROR HANDLER MIDDLEWARE
+// Standardized error response format
+// Error categorization (validation, business, system)
+// Structured logging with correlation IDs
+// Integration with monitoring systems
 // =====================================================
 
 const enterpriseLogger = require('../utils/logger');
+const { ErrorFactory } = require('../utils/errorClasses');
 
 /**
  * Global error handler middleware
  * Handles all unhandled errors in the application
  */
 const globalErrorHandler = (err, req, res, next) => {
-  // Log the error
-  enterpriseLogger.error('Unhandled error', {
-    error: err.message,
-    stack: err.stack,
-    url: req.url,
+  // Convert plain errors to AppError instances
+  const appError = ErrorFactory.fromError(err);
+
+  // Structured error logging with correlation ID
+  const logData = {
+    correlationId: appError.correlationId,
+    statusCode: appError.statusCode,
+    code: appError.code,
+    category: appError.category,
+    message: appError.message,
+    url: req.originalUrl,
     method: req.method,
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    userId: req.user?.id
-  });
+    userId: req.user?.id,
+    requestId: req.id,
+    timestamp: appError.timestamp,
+    isOperational: appError.isOperational
+  };
 
-  // Default error response
-  let statusCode = 500;
-  let message = 'Internal server error';
-  let code = 'INTERNAL_SERVER_ERROR';
-
-  // Handle specific error types
-  if (err.name === 'ValidationError') {
-    statusCode = 400;
-    message = 'Validation error';
-    code = 'VALIDATION_ERROR';
-  } else if (err.name === 'UnauthorizedError') {
-    statusCode = 401;
-    message = 'Unauthorized';
-    code = 'UNAUTHORIZED';
-  } else if (err.name === 'ForbiddenError') {
-    statusCode = 403;
-    message = 'Forbidden';
-    code = 'FORBIDDEN';
-  } else if (err.name === 'NotFoundError') {
-    statusCode = 404;
-    message = 'Resource not found';
-    code = 'NOT_FOUND';
-  } else if (err.name === 'ConflictError') {
-    statusCode = 409;
-    message = 'Resource conflict';
-    code = 'CONFLICT';
-  } else if (err.name === 'RateLimitError') {
-    statusCode = 429;
-    message = 'Too many requests';
-    code = 'RATE_LIMIT_EXCEEDED';
+  // Add category-specific logging data
+  if (appError.category === 'validation' && appError.field) {
+    logData.field = appError.field;
+    logData.value = appError.value;
+  }
+  if (appError.category === 'authorization' && appError.requiredRole) {
+    logData.requiredRole = appError.requiredRole;
+  }
+  if (appError.category === 'external_service' && appError.service) {
+    logData.service = appError.service;
+    logData.operation = appError.operation;
+  }
+  if (appError.category === 'database' && appError.operation) {
+    logData.operation = appError.operation;
   }
 
-  // Send error response
-  res.status(statusCode).json({
-    status: 'error',
-    message,
-    code,
-    timestamp: new Date().toISOString(),
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
+  // Log with appropriate level
+  if (appError.statusCode >= 500) {
+    enterpriseLogger.error('Server error', logData, { stack: appError.stack });
+  } else if (appError.statusCode === 429) {
+    enterpriseLogger.warn('Rate limit exceeded', logData);
+  } else if (appError.isOperational) {
+    enterpriseLogger.info('Operational error', logData);
+  } else {
+    enterpriseLogger.error('Application error', logData, { stack: appError.stack });
+  }
+
+  // Send standardized error response
+  const errorResponse = appError.toJSON();
+
+  // Add request context
+  errorResponse.request = {
+    method: req.method,
+    url: req.originalUrl,
+    requestId: req.id,
+    timestamp: new Date().toISOString()
+  };
+
+  // Add monitoring and alerting data
+  if (appError.statusCode >= 500) {
+    errorResponse.alert = {
+      level: 'high',
+      needsAttention: true,
+      correlationId: appError.correlationId
+    };
+  }
+
+  res.status(appError.statusCode).json(errorResponse);
 };
 
 /**
