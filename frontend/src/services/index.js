@@ -18,11 +18,26 @@ import paymentService from './api/paymentService';
 import validationService from './utils/validationService';
 import storageService from './utils/storageService';
 
-// Export services
+// Tax and financial services
 import { itrJsonExportService } from './itrJsonExportService';
 import { form16ExtractionService } from './form16ExtractionService';
 import { bankStatementService } from './bankStatementService';
 import { taxSavingsService } from './taxSavingsService';
+
+// Data integration services
+import { dataIntegrationService } from './DataIntegrationService';
+import { financialProfileService } from './FinancialProfileService';
+import { aisForm26ASService } from './AISForm26ASService';
+import { documentProcessingService } from './DocumentProcessingService';
+import { autoPopulationITRService } from './AutoPopulationITRService';
+
+// Broker integration
+import BrokerAPIService, { createBrokerService } from './BrokerAPIService';
+
+// Specialized services
+import BankAPIService from './BankAPIService';
+import DeductionOCRService from './DeductionOCRService';
+import CABotService from './CABotService';
 
 // =====================================================
 // EXPORTS
