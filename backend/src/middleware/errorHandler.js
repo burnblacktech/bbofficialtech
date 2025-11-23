@@ -7,7 +7,7 @@
 // =====================================================
 
 const enterpriseLogger = require('../utils/logger');
-const { ErrorFactory } = require('../utils/errorClasses');
+const { ErrorFactory, AppError } = require('../utils/errorClasses');
 
 /**
  * Global error handler middleware
