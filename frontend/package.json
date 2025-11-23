@@ -44,7 +44,17 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "import/no-cycle": "off",
+      "import/order": "off",
+      "comma-dangle": "off",
+      "no-trailing-spaces": "off",
+      "eol-last": "off",
+      "pascalcase": "off",
+      "let-const": "off",
+      "prettier/prettier": "off"
+    }
   },
   "browserslist": {
     "production": [
