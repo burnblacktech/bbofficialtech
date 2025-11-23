@@ -37,6 +37,12 @@ export {
   paymentService
 };
 
+// Utility services
+export {
+  validationService,
+  storageService
+};
+
 // Service categories
 export const core = {
   apiClient,
@@ -51,8 +57,14 @@ export const api = {
   paymentService
 };
 
+export const utils = {
+  validationService,
+  storageService
+};
+
 // Default export
 export default {
   ...core,
-  ...api
+  ...api,
+  ...utils
 };
