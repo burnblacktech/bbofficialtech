@@ -43,7 +43,8 @@ export {
 // Utility services
 export {
   validationService,
-  storageService
+  storageService,
+  itrJsonExportService
 };
 
 // Service categories
