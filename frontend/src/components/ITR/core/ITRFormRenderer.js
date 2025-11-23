@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { useITR } from '../../../contexts';
 import { validationService } from '../../../services';
 import { ProgressStepper, Card, Button, Input } from '../../DesignSystem';
+import ITRJsonDownload from './ITRJsonDownload';
 
 const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft }) => {
   const { currentFiling, updateFilingSection, validateFiling } = useITR();
