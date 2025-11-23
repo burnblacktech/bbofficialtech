@@ -40,14 +40,6 @@ import BillingInvoicing from './pages/Service/BillingInvoicing';
 import CABotPage from './pages/CABot/CABotPage';
 import UpgradeToProfessional from './pages/Upgrade/UpgradeToProfessional';
 
-// Design System Components
-import StyleGuide from './components/DesignSystem/StyleGuide';
-import KeyboardNavigationTest from './components/DesignSystem/KeyboardNavigationTest';
-import ContentReview from './components/DesignSystem/ContentReview';
-
-// Test Components
-import TestRunner from './test-data/testRunner';
-import TestReport from './test-data/testReport';
 
 // Context providers
 import { AuthProvider } from './contexts/AuthContext';
