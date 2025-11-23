@@ -370,7 +370,6 @@ class AutoPopulationITRService {
             interestOnHousingLoan: consolidatedData.rentalIncome?.housingLoanInterest || 0
           }
         },
-        },
         foreignIncome: {
           addressOutsideIndia: [],
           foreignBankAccounts: [],
