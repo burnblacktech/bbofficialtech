@@ -22,9 +22,6 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: [
-    'react-hooks',
-    'import',
-    'jsx-a11y',
     'react'
   ],
   rules: {
