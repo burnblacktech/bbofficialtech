@@ -255,7 +255,7 @@ const ITRFiling = () => {
                   ITR Filing - {itrType || 'ITR-1'}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Assessment Year: {filingData.assessmentYear || '2024-25'}
+                  Assessment Year: {currentFiling?.assessmentYear || '2024-25'}
                 </p>
               </div>
             </div>
