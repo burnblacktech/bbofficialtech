@@ -1,181 +1,113 @@
 // =====================================================
-// MAIN ROUTES INDEX - ENTERPRISE ROUTE MANAGEMENT
+// MAIN ROUTES INDEX - AUTOMATIC ROUTE DISCOVERY SYSTEM
 // =====================================================
 
 const express = require('express');
 const enterpriseLogger = require('../utils/logger');
+const { getRouteDiscovery, routeInfoMiddleware } = require('./router');
 
 const router = express.Router();
 
 // =====================================================
-// API INFORMATION ROUTE
+// API INFORMATION ROUTE (DYNAMIC)
 // =====================================================
 
-router.get('/', (req, res) => {
-  res.json({
-    message: 'BurnBlack ITR Platform API',
-    version: '1.0.0',
-    status: 'operational',
-    timestamp: new Date().toISOString(),
-    documentation: '/api/docs',
-    health: '/api/health',
-    endpoints: {
-      auth: '/api/auth',
-      itr: '/api/itr',
-      users: '/api/users',
+router.get('/', async (req, res) => {
+  try {
+    const discovery = getRouteDiscovery();
+    const routeHealth = await discovery.getRouteHealth();
+    const apiDocs = discovery.getAPIDocumentation();
+
+    res.json({
+      message: 'BurnBlack ITR Platform API',
+      version: '1.0.0',
+      status: 'operational',
+      timestamp: new Date().toISOString(),
+      documentation: '/api/docs',
       health: '/api/health',
-      admin: '/api/admin',
-      documents: '/api/documents',
-      notifications: '/api/notifications',
-      tickets: '/api/tickets'
-    }
-  });
+      routeDiscovery: {
+        totalRoutes: routeHealth.totalRoutes,
+        routes: Object.keys(routeHealth.routes)
+      },
+      endpoints: Object.keys(routeHealth.routes).reduce((acc, routeName) => {
+        acc[routeName] = `/api/${routeHealth.routes[routeName].path}`;
+        return acc;
+      }, {})
+    });
+  } catch (error) {
+    enterpriseLogger.error('Error in API info route', { error: error.message });
+    res.status(500).json({
+      error: 'Failed to get API information',
+      message: error.message
+    });
+  }
 });
 
 // =====================================================
-// API DOCUMENTATION ROUTE
+// API DOCUMENTATION ROUTE (AUTO-GENERATED)
 // =====================================================
 
-router.get('/docs', (req, res) => {
-  res.json({
-    title: 'BurnBlack ITR Platform API Documentation',
-    version: '1.0.0',
-    description: 'Enterprise-grade Indian Income Tax Return filing platform',
-    endpoints: {
+router.get('/docs', async (req, res) => {
+  try {
+    const discovery = getRouteDiscovery();
+    const apiDocs = discovery.getAPIDocumentation();
+
+    if (apiDocs.error) {
+      return res.status(503).json({
+        error: 'Documentation not available',
+        message: apiDocs.error
+      });
+    }
+
+    res.json({
+      ...apiDocs,
       authentication: {
-        'POST /api/auth/register': 'Register new user',
-        'POST /api/auth/login': 'User login',
-        'POST /api/auth/logout': 'User logout',
-        'GET /api/auth/profile': 'Get user profile',
-        'PUT /api/auth/profile': 'Update user profile'
+        type: 'JWT Bearer Token',
+        header: 'Authorization: Bearer <token>'
       },
-      itr: {
-        'GET /api/itr/types': 'Get available ITR types',
-        'POST /api/itr/create': 'Create new ITR filing',
-        'GET /api/itr/:id': 'Get ITR filing details',
-        'PUT /api/itr/:id': 'Update ITR filing',
-        'POST /api/itr/:id/submit': 'Submit ITR filing'
+      rateLimiting: {
+        requests: '100 per 15 minutes per IP',
+        burst: '10 requests per second'
       },
-      users: {
-        'GET /api/users': 'Get all users (admin)',
-        'GET /api/users/:id': 'Get user by ID',
-        'PUT /api/users/:id': 'Update user',
-        'DELETE /api/users/:id': 'Delete user'
-      },
-      documents: {
-        'POST /api/documents/presign': 'Generate presigned upload URL',
-        'POST /api/documents/complete': 'Complete file upload',
-        'GET /api/documents': 'Get user documents',
-        'GET /api/documents/:id/download': 'Get document download URL',
-        'DELETE /api/documents/:id': 'Delete document',
-        'GET /api/documents/stats': 'Get document statistics',
-        'GET /api/documents/categories': 'Get document categories'
-      },
-      notifications: {
-        'GET /api/notifications': 'Get user notifications',
-        'PUT /api/notifications/:id/read': 'Mark notification as read',
-        'DELETE /api/notifications/:id': 'Delete notification'
-      },
-      tickets: {
-        'POST /api/tickets': 'Create service ticket',
-        'GET /api/tickets': 'Get user tickets',
-        'GET /api/tickets/:id': 'Get ticket details',
-        'POST /api/tickets/:id/messages': 'Add message to ticket',
-        'PUT /api/tickets/:id/status': 'Update ticket status',
-        'PUT /api/tickets/:id/assign': 'Assign ticket',
-        'GET /api/tickets/stats': 'Get ticket statistics',
-        'GET /api/tickets/types': 'Get ticket types',
-        'GET /api/tickets/priorities': 'Get ticket priorities'
-      },
-      health: {
-        'GET /api/health': 'Basic health check',
-        'GET /api/health/detailed': 'Detailed health check',
-        'GET /api/health/db': 'Database health check'
+      discovery: {
+        enabled: true,
+        description: 'Routes are automatically discovered and registered'
       }
-    },
-    authentication: {
-      type: 'JWT Bearer Token',
-      header: 'Authorization: Bearer <token>'
-    },
-    rateLimiting: {
-      requests: '100 per 15 minutes per IP',
-      burst: '10 requests per second'
-    }
-  });
+    });
+  } catch (error) {
+    enterpriseLogger.error('Error generating API docs', { error: error.message });
+    res.status(500).json({
+      error: 'Failed to generate API documentation',
+      message: error.message
+    });
+  }
 });
 
 // =====================================================
-// ROUTE LOADING
+// ROUTE DISCOVERY HEALTH ROUTE
 // =====================================================
 
-// Load all route modules
-try {
-  // Core API routes
-  enterpriseLogger.info('Loading auth routes...');
-  router.use('/auth', require('./auth'));
-  enterpriseLogger.info('Auth routes loaded successfully');
-  
-  enterpriseLogger.info('Loading ITR routes...');
-  router.use('/itr', require('./itr'));
-  enterpriseLogger.info('ITR routes loaded successfully');
-  
-  enterpriseLogger.info('Loading user routes...');
-  router.use('/users', require('./user'));
-  enterpriseLogger.info('User routes loaded successfully');
-  
-  enterpriseLogger.info('Loading member routes...');
-  router.use('/members', require('./members'));
-  enterpriseLogger.info('Member routes loaded successfully');
-  
-  enterpriseLogger.info('Loading health routes...');
-  router.use('/health', require('./health'));
-  enterpriseLogger.info('Health routes loaded successfully');
-  
-  enterpriseLogger.info('Loading admin routes...');
-  router.use('/admin', require('./admin'));
-  enterpriseLogger.info('Admin routes loaded successfully');
-  
-  // Additional feature routes
-  enterpriseLogger.info('Loading document routes...');
-  router.use('/documents', require('./documents'));
-  enterpriseLogger.info('Document routes loaded successfully');
-  
-  enterpriseLogger.info('Loading notification routes...');
-  router.use('/notifications', require('./notifications'));
-  enterpriseLogger.info('Notification routes loaded successfully');
-  
-  enterpriseLogger.info('Loading ticket routes...');
-  router.use('/tickets', require('./tickets'));
-  enterpriseLogger.info('Ticket routes loaded successfully');
-  
-  enterpriseLogger.info('Loading CA firm routes...');
-  router.use('/ca-firms', require('./ca-firms'));
-  enterpriseLogger.info('CA firm routes loaded successfully');
-  
-  enterpriseLogger.info('Loading broker routes...');
-  router.use('/broker', require('./broker'));
-  enterpriseLogger.info('Broker routes loaded successfully');
-  
-  enterpriseLogger.info('Loading bank routes...');
-  router.use('/bank', require('./bank'));
-  enterpriseLogger.info('Bank routes loaded successfully');
-  
-  enterpriseLogger.info('Loading CA Bot routes...');
-  router.use('/cabot', require('./cabot'));
-  enterpriseLogger.info('CA Bot routes loaded successfully');
-  
-  enterpriseLogger.info('Loading ERI routes...');
-  router.use('/eri', require('./eri'));
-  enterpriseLogger.info('ERI routes loaded successfully');
-  
-  enterpriseLogger.info('All routes loaded successfully');
-} catch (error) {
-  enterpriseLogger.error('Error loading routes', { 
-    error: error.message, 
-    stack: error.stack,
-    name: error.name 
-  });
-}
+router.get('/routes', async (req, res) => {
+  try {
+    const discovery = getRouteDiscovery();
+    const routeHealth = await discovery.getRouteHealth();
+
+    res.json({
+      discovery: {
+        status: routeHealth.status,
+        totalRoutes: routeHealth.totalRoutes,
+        timestamp: new Date().toISOString()
+      },
+      routes: routeHealth.routes
+    });
+  } catch (error) {
+    enterpriseLogger.error('Error getting route health', { error: error.message });
+    res.status(500).json({
+      error: 'Failed to get route information',
+      message: error.message
+    });
+  }
+});
 
 // =====================================================
 // GLOBAL ERROR HANDLER FOR ROUTES
