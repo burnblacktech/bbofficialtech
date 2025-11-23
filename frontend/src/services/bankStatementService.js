@@ -1,7 +1,8 @@
 // =====================================================
+// =====================================================
 // BANK STATEMENT IMPORT SERVICE
 // Imports and parses bank statements for auto-categorization
- another critical feature for competitive advantage
+// Another critical feature for competitive advantage
 // =====================================================
 
 import { apiClient } from './core/APIClient';
