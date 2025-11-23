@@ -40,7 +40,7 @@ import ServiceTicketManagement from './pages/Service/ServiceTicketManagement';
 import StyleGuide from './components/DesignSystem/StyleGuide';
 
 // CABot Page (Development/Testing)
-import CABotPage from './pages/CABot/CABotPage';
+// import CABotPage from './pages/CABot/CABotPage'; // Temporarily disabled
 
 // Context providers
 import { AuthProvider } from './contexts/AuthContext';
