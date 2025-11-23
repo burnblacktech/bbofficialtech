@@ -1,7 +1,8 @@
 // =====================================================
+// =====================================================
 // BANK STATEMENT UPLOAD COMPONENT
 // Auto-categorization and tax-relevant transaction detection
- another game-changing feature for competitive advantage
+// Another game-changing feature for competitive advantage
 // =====================================================
 
 import React, { useState, useRef, useCallback } from 'react';
