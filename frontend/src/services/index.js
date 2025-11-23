@@ -18,6 +18,9 @@ import paymentService from './api/paymentService';
 import validationService from './utils/validationService';
 import storageService from './utils/storageService';
 
+// Export services
+import { itrJsonExportService } from './itrJsonExportService';
+
 // =====================================================
 // EXPORTS
 // =====================================================
