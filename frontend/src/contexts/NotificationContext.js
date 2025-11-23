@@ -1,5 +1,6 @@
 // =====================================================
-// NOTIFICATION CONTEXT
+// NOTIFICATION CONTEXT - STRATEGIC CONTEXT 4
+// System notifications and alerts management
 // =====================================================
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
