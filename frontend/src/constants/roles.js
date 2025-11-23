@@ -210,6 +210,24 @@ export const ROLE_PERMISSIONS = {
   ]
 };
 
+// Time-based permission definitions
+export const TIME_BASED_ACCESS = {
+  TEMPORARY: 'temporary',
+  SCHEDULED: 'scheduled',
+  SEASONAL: 'seasonal',
+  PROJECT_BASED: 'project_based'
+};
+
+export const ACCESS_DURATIONS = {
+  ONE_DAY: 1,
+  ONE_WEEK: 7,
+  ONE_MONTH: 30,
+  THREE_MONTHS: 90,
+  SIX_MONTHS: 180,
+  ONE_YEAR: 365,
+  CUSTOM: 'custom'
+};
+
 // Helper functions
 export const hasRole = (userRole, requiredRole) => {
   return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[requiredRole];
@@ -217,6 +235,26 @@ export const hasRole = (userRole, requiredRole) => {
 
 export const hasPermission = (userRole, permission) => {
   return ROLE_PERMISSIONS[userRole]?.includes(permission) || false;
+};
+
+export const hasModulePermission = (userRole, module, action) => {
+  const permission = `${module}.${action}`;
+  return ROLE_PERMISSIONS[userRole]?.includes(permission) || false;
+};
+
+export const canManageStaff = (userRole) => {
+  return [
+    ROLES.SUPER_ADMIN,
+    ROLES.PLATFORM_ADMIN,
+    ROLES.CA_FIRM_ADMIN,
+    ROLES.INDEPENDENT_CA_ADMIN
+  ].includes(userRole);
+};
+
+export const canGrantTemporaryAccess = (userRole) => {
+  return ROLE_PERMISSIONS[userRole]?.some(p =>
+    p.includes('grant_temporary_access') || p.includes('manage_permissions')
+  ) || false;
 };
 
 export const getRoleLabel = (role) => {
@@ -231,12 +269,57 @@ export const isAdmin = (role) => {
   return [ROLES.SUPER_ADMIN, ROLES.PLATFORM_ADMIN].includes(role);
 };
 
+export const isCAFirmAdmin = (role) => {
+  return [ROLES.CA_FIRM_ADMIN, ROLES.INDEPENDENT_CA_ADMIN].includes(role);
+};
+
+export const isIndependentCA = (role) => {
+  return role && role.startsWith('INDEPENDENT_CA');
+};
+
+export const isFirmCA = (role) => {
+  return role && role.startsWith('CA_FIRM_');
+};
+
 export const isCA = (role) => {
-  return [ROLES.CA_FIRM_ADMIN, ROLES.CA].includes(role);
+  return [
+    ROLES.CA_FIRM_ADMIN, ROLES.CA_FIRM_SENIOR_CA, ROLES.CA_FIRM_CA,
+    ROLES.CA_FIRM_JUNIOR_CA, ROLES.CA_FIRM_ASSISTANT,
+    ROLES.INDEPENDENT_CA_ADMIN, ROLES.INDEPENDENT_CA_SENIOR_CA,
+    ROLES.INDEPENDENT_CA, ROLES.INDEPENDENT_CA_JUNIOR, ROLES.INDEPENDENT_CA_ASSISTANT
+  ].includes(role);
 };
 
 export const isEndUser = (role) => {
   return role === ROLES.END_USER;
+};
+
+export const getRoleCategory = (role) => {
+  if (isAdmin(role)) return 'admin';
+  if (isIndependentCA(role)) return 'independent_ca';
+  if (isFirmCA(role)) return 'firm_ca';
+  if (isEndUser(role)) return 'end_user';
+  return 'unknown';
+};
+
+export const getAvailableRolesForCA = (caType) => {
+  if (caType === 'independent') {
+    return [
+      ROLES.INDEPENDENT_CA_ADMIN,
+      ROLES.INDEPENDENT_CA_SENIOR_CA,
+      ROLES.INDEPENDENT_CA,
+      ROLES.INDEPENDENT_CA_JUNIOR,
+      ROLES.INDEPENDENT_CA_ASSISTANT
+    ];
+  } else {
+    return [
+      ROLES.CA_FIRM_ADMIN,
+      ROLES.CA_FIRM_SENIOR_CA,
+      ROLES.CA_FIRM_CA,
+      ROLES.CA_FIRM_JUNIOR_CA,
+      ROLES.CA_FIRM_ASSISTANT
+    ];
+  }
 };
 
 export default ROLES;
