@@ -69,8 +69,21 @@ export const ROLE_HIERARCHY = {
 export const ROLE_DASHBOARD_ROUTES = {
   [ROLES.SUPER_ADMIN]: '/admin/super',
   [ROLES.PLATFORM_ADMIN]: '/admin/platform',
+
+  // B2B Model Routes
   [ROLES.CA_FIRM_ADMIN]: '/firm/dashboard',
-  [ROLES.CA]: '/ca/clients',
+  [ROLES.CA_FIRM_SENIOR_CA]: '/firm/clients',
+  [ROLES.CA_FIRM_CA]: '/firm/clients',
+  [ROLES.CA_FIRM_JUNIOR_CA]: '/firm/tasks',
+  [ROLES.CA_FIRM_ASSISTANT]: '/firm/tasks',
+
+  // Independent CA Routes
+  [ROLES.INDEPENDENT_CA_ADMIN]: '/independent/dashboard',
+  [ROLES.INDEPENDENT_CA_SENIOR_CA]: '/independent/clients',
+  [ROLES.INDEPENDENT_CA]: '/independent/clients',
+  [ROLES.INDEPENDENT_CA_JUNIOR]: '/independent/tasks',
+  [ROLES.INDEPENDENT_CA_ASSISTANT]: '/independent/tasks',
+
   [ROLES.END_USER]: '/dashboard'
 };
 
