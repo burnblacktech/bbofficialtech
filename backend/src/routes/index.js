@@ -110,6 +110,42 @@ router.get('/routes', async (req, res) => {
 });
 
 // =====================================================
+// AUTOMATIC ROUTE DISCOVERY INITIALIZATION
+// =====================================================
+
+// Initialize route discovery and register all routes
+let routeDiscoveryInitialized = false;
+
+async function initializeRouteDiscovery() {
+  if (routeDiscoveryInitialized) {
+    return;
+  }
+
+  try {
+    enterpriseLogger.info('Initializing automatic route discovery...');
+
+    const { initializeRouter } = require('./router');
+    const autoRouter = await initializeRouter();
+
+    // Mount the automatically discovered routes
+    router.use(autoRouter);
+
+    routeDiscoveryInitialized = true;
+    enterpriseLogger.info('Automatic route discovery completed successfully');
+
+  } catch (error) {
+    enterpriseLogger.error('Route discovery initialization failed', {
+      error: error.message,
+      stack: error.stack
+    });
+    // Fallback: continue with basic routes if discovery fails
+  }
+}
+
+// Initialize routes when this module is loaded
+initializeRouteDiscovery();
+
+// =====================================================
 // GLOBAL ERROR HANDLER FOR ROUTES
 // =====================================================
 
@@ -118,41 +154,57 @@ router.use((err, req, res, next) => {
     error: err.message,
     stack: err.stack,
     url: req.url,
-    method: req.method
+    method: req.method,
+    routeDiscovery: routeDiscoveryInitialized
   });
-  
+
   res.status(500).json({
     status: 'error',
     message: 'Internal server error',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// =====================================================
-// 404 HANDLER FOR UNKNOWN ROUTES
-// =====================================================
-
-router.use('*', (req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: `Route ${req.originalUrl} not found`,
     timestamp: new Date().toISOString(),
-    availableRoutes: [
-      '/api',
-      '/api/docs',
-      '/api/auth',
-      '/api/itr',
-      '/api/users',
-      '/api/health',
-      '/api/admin',
-      '/api/documents',
-      '/api/notifications',
-      '/api/tickets',
-      '/api/ca-firms',
-      '/api/cabot',
-      '/api/eri'
-    ]
+    routeDiscovery: routeDiscoveryInitialized
   });
 });
+
+// =====================================================
+// 404 HANDLER FOR UNKNOWN ROUTES (DYNAMIC)
+// =====================================================
+
+router.use('*', async (req, res) => {
+  try {
+    const discovery = getRouteDiscovery();
+    const routeHealth = await discovery.getRouteHealth();
+    const availableRoutes = Object.keys(routeHealth.routes).map(routeName =>
+      `/api${routeHealth.routes[routeName].path}`
+    );
+
+    res.status(404).json({
+      status: 'error',
+      message: `Route ${req.originalUrl} not found`,
+      timestamp: new Date().toISOString(),
+      routeDiscovery: routeDiscoveryInitialized,
+      availableRoutes: [
+        '/api',
+        '/api/docs',
+        '/api/routes',
+        ...availableRoutes
+      ]
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'error',
+      message: `Route ${req.originalUrl} not found`,
+      timestamp: new Date().toISOString(),
+      routeDiscovery: routeDiscoveryInitialized
+    });
+  }
+});
+
+// =====================================================
+// EXPORTS
+// =====================================================
 
 module.exports = router;
+
+// Also export the initialization function for external use
+module.exports.initializeRouteDiscovery = initializeRouteDiscovery;
