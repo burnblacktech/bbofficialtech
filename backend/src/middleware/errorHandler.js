@@ -241,5 +241,6 @@ module.exports = {
   timeoutHandler,
   CircuitBreaker,
   withCircuitBreaker,
-  circuitBreaker
+  circuitBreaker,
+  AppError
 };
