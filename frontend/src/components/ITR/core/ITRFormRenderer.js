@@ -311,6 +311,63 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {/* Auto-Import Section - Shows at the beginning */}
+      {showAutoImportSection && currentSection === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 space-y-6"
+        >
+          {/* Import Options Header */}
+          <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                🚀 Save Time with Smart Import
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Upload your documents and let AI do the work. Fill your ITR 90% faster!
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAutoImportSection(false)}
+              >
+                Skip to Manual Entry
+              </Button>
+            </div>
+          </Card>
+
+          {/* Form 16 Upload */}
+          <Form16Upload
+            onExtractionComplete={(result) => {
+              console.log('Form 16 extracted:', result);
+            }}
+            onAutoPopulate={handleForm16AutoPopulate}
+          />
+
+          {/* Bank Statement Upload */}
+          <BankStatementUpload
+            onAnalysisComplete={(result) => {
+              console.log('Bank statement analyzed:', result);
+            }}
+            onAutoPopulate={handleBankStatementAutoPopulate}
+          />
+
+          {/* Tax Savings Recommendations */}
+          <TaxSavingsRecommendations
+            userProfile={{
+              age: 30,
+              annualIncome: formData.income?.salaryIncome || 500000,
+              riskProfile: 'moderate',
+              hasHomeLoan: false,
+              dependents: []
+            }}
+            currentInvestments={formData.investments || {}}
+            onRecommendationSelect={handleRecommendationSelect}
+          />
+        </motion.div>
+      )}
+
       {/* Progress Stepper */}
       <div className="mb-8">
         <ProgressStepper
