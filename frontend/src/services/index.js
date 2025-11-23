@@ -68,6 +68,28 @@ export {
   taxSavingsService
 };
 
+// Data integration services
+export {
+  dataIntegrationService,
+  financialProfileService,
+  aisForm26ASService,
+  documentProcessingService,
+  autoPopulationITRService
+};
+
+// Broker integration
+export {
+  BrokerAPIService,
+  createBrokerService
+};
+
+// Specialized services
+export {
+  BankAPIService,
+  DeductionOCRService,
+  CABotService
+};
+
 // Service categories
 export const core = {
   apiClient,
@@ -91,13 +113,31 @@ export const utils = {
   taxSavingsService
 };
 
+export const dataIntegration = {
+  dataIntegrationService,
+  financialProfileService,
+  aisForm26ASService,
+  documentProcessingService,
+  autoPopulationITRService
+};
+
+export const brokerIntegration = {
+  BrokerAPIService,
+  createBrokerService
+};
+
+export const specialized = {
+  BankAPIService,
+  DeductionOCRService,
+  CABotService
+};
+
 // Default export
 export default {
   ...core,
   ...api,
   ...utils,
-  itrJsonExportService,
-  form16ExtractionService,
-  bankStatementService,
-  taxSavingsService
+  ...dataIntegration,
+  ...brokerIntegration,
+  ...specialized
 };
