@@ -1,11 +1,13 @@
 // =====================================================
-// S3 SERVICE - CANONICAL CLOUD STORAGE MANAGEMENT
+// UNIFIED FILE STORAGE SERVICE (S3 + FILE UPLOAD)
 // Handles S3 interactions: presigned URLs, uploads, downloads
+// Integrated file upload validation and processing
 // Supports local fallback for development
 // =====================================================
 
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const multer = require('multer');
 const path = require('path');
 const fs = require('fs-extra');
 const { v4: uuid_generate_v4 } = require('uuid');
