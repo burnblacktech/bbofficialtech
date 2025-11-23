@@ -270,6 +270,34 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
     }
   };
 
+  // Handle Form 16 auto-population
+  const handleForm16AutoPopulate = useCallback((extractedData) => {
+    const populatedData = form16ExtractionService.autoPopulateITRForm(extractedData, formData);
+    setFormData(populatedData);
+  }, [formData]);
+
+  // Handle bank statement auto-population
+  const handleBankStatementAutoPopulate = useCallback((bankData) => {
+    const populatedData = bankStatementService.autoPopulateITRForm(bankData, formData);
+    setFormData(populatedData);
+  }, [formData]);
+
+  // Handle recommendation selection
+  const handleRecommendationSelect = useCallback((recommendation) => {
+    // Update form data with investment information
+    setFormData(prev => ({
+      ...prev,
+      investments: {
+        ...prev.investments,
+        [recommendation.name]: {
+          amount: recommendation.suggestedAmount,
+          section: recommendation.section,
+          category: recommendation.category
+        }
+      }
+    }));
+  }, []);
+
   if (!config) {
     return (
       <div className="flex justify-center items-center h-64">
