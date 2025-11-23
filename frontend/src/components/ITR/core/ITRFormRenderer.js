@@ -10,6 +10,9 @@ import { useITR } from '../../../contexts';
 import { validationService } from '../../../services';
 import { ProgressStepper, Card, Button, Input } from '../../DesignSystem';
 import ITRJsonDownload from './ITRJsonDownload';
+import Form16Upload from './Form16Upload';
+import BankStatementUpload from './BankStatementUpload';
+import TaxSavingsRecommendations from './TaxSavingsRecommendations';
 
 const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft }) => {
   const { currentFiling, updateFilingSection, validateFiling } = useITR();
