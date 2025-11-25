@@ -38,6 +38,7 @@ import FilingHistory from './pages/ITR/FilingHistory';
 import AddMembers from './pages/Members/AddMembers';
 import UserSettings from './pages/User/UserSettings';
 import ProfileSettings from './pages/User/ProfileSettings';
+import Documents from './pages/User/Documents';
 import FinancialProfilePage from './pages/FinancialProfile/FinancialProfilePage';
 import ServiceTicketManagement from './pages/Service/ServiceTicketManagement';
 // Design System Components (Development only)
@@ -82,82 +83,108 @@ const AppContent = () => {
         {/* CA Registration Routes */}
         <Route path="/ca/register" element={<RegisterCAFirm />} />
         <Route path="/ca/registration-success" element={<RegistrationSuccess />} />
-        
+
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           {/* Smart redirector - determines correct dashboard based on role */}
           <Route path="/home" element={<HomeRedirect />} />
-          
+
           {/* User Routes */}
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
               <Layout>
                 <UserDashboard />
               </Layout>
-            } 
+            }
           />
-          
+
           {/* Admin Routes */}
-          <Route 
-            path="/admin/dashboard" 
+          <Route
+            path="/admin/dashboard"
             element={
               <AdminLayout>
                 <AdminDashboard />
               </AdminLayout>
-            } 
+            }
           />
-          <Route 
-            path="/firm/dashboard" 
+          <Route
+            path="/firm/dashboard"
             element={
               <AdminLayout>
                 <CAFirmAdminDashboard />
               </AdminLayout>
-            } 
+            }
           />
-          <Route 
-            path="/ca/clients" 
+          <Route
+            path="/ca/clients"
             element={
               <Layout>
                 <CAStaffDashboard />
               </Layout>
-            } 
+            }
           />
-          
+
           {/* ITR Filing Routes */}
-          <Route 
-            path="/itr/start" 
+          <Route
+            path="/itr/start"
             element={
               <Layout>
                 <StartFiling />
               </Layout>
-            } 
+            }
           />
-          <Route 
-            path="/itr/filing" 
+          <Route
+            path="/itr/filing"
             element={
               <Layout>
                 <ITRFiling />
               </Layout>
-            } 
+            }
           />
-          <Route 
-            path="/dynamic-filing/:id" 
+          <Route
+            path="/dynamic-filing/:id"
             element={
               <Layout>
                 <DynamicFilingPage />
               </Layout>
-            } 
+            }
           />
-          <Route 
-            path="/filing-history" 
+          <Route
+            path="/filing-history"
             element={
               <Layout>
                 <FilingHistory />
               </Layout>
-            } 
+            }
           />
-          
+
+          {/* User Management Routes */}
+          <Route
+            path="/documents"
+            element={
+              <Layout>
+                <Documents />
+              </Layout>
+            }
+          />
+          <Route
+            path="/add-members"
+            element={
+              <Layout>
+                <AddMembers />
+              </Layout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Layout>
+                <ProfileSettings />
+              </Layout>
+            }
+          />
+
           {/* CA Bot Route - Temporarily disabled */}
           {/* <Route
             path="/ca-bot"
@@ -170,11 +197,11 @@ const AppContent = () => {
             }
           /> */}
           </Route>
-        
+
         {/* Catch all - redirect to landing page */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      
+
       {/* Mobile Navigation */}
     </div>
   );

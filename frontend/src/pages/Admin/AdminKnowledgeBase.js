@@ -4,12 +4,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  FileText, 
-  Search, 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  FileText,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
   Eye,
   Tag,
   Calendar,
@@ -20,13 +20,13 @@ import {
   BookOpen,
   Lightbulb,
   HelpCircle,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const AdminKnowledgeBase = () => {
@@ -52,7 +52,7 @@ const AdminKnowledgeBase = () => {
       helpful: 89,
       createdBy: 'Admin User',
       createdAt: '2024-01-10T10:00:00Z',
-      updatedAt: '2024-01-15T14:30:00Z'
+      updatedAt: '2024-01-15T14:30:00Z',
     },
     {
       id: '2',
@@ -65,8 +65,8 @@ const AdminKnowledgeBase = () => {
       helpful: 67,
       createdBy: 'Admin User',
       createdAt: '2024-01-08T09:00:00Z',
-      updatedAt: '2024-01-12T16:45:00Z'
-    }
+      updatedAt: '2024-01-12T16:45:00Z',
+    },
   ];
 
   const categories = [
@@ -74,7 +74,7 @@ const AdminKnowledgeBase = () => {
     { id: 'filing', name: 'Filing Process' },
     { id: 'tips', name: 'Tips & Tricks' },
     { id: 'technical', name: 'Technical Support' },
-    { id: 'billing', name: 'Billing & Payments' }
+    { id: 'billing', name: 'Billing & Payments' },
   ];
 
   useEffect(() => {
@@ -141,7 +141,7 @@ const AdminKnowledgeBase = () => {
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -226,7 +226,7 @@ const AdminKnowledgeBase = () => {
                       <span className="text-xs text-gray-500">+{article.tags.length - 2}</span>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <button className="text-blue-600 hover:text-blue-800">
                       <Eye className="w-4 h-4" />

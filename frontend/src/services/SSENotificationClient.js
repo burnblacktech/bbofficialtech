@@ -32,15 +32,15 @@ class SSENotificationClient {
       }
 
       const url = `${window.location.origin}/api/notifications/sse`;
-      
+
       this.eventSource = new EventSource(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       this.setupEventListeners();
-      
+
       enterpriseLogger.info('SSE client connecting', { userId, url });
 
     } catch (error) {
@@ -60,7 +60,7 @@ class SSENotificationClient {
         const data = JSON.parse(event.data);
         this.isConnected = true;
         this.reconnectAttempts = 0;
-        
+
         enterpriseLogger.info('SSE client connected', { userId: this.userId });
         this.emit('connected', data);
       } catch (error) {
@@ -72,13 +72,13 @@ class SSENotificationClient {
     this.eventSource.addEventListener('notification', (event) => {
       try {
         const notification = JSON.parse(event.data);
-        
+
         enterpriseLogger.info('SSE notification received', {
           userId: this.userId,
           type: notification.type,
-          id: notification.id
+          id: notification.id,
         });
-        
+
         this.emit('notification', notification);
         this.emit(notification.type, notification);
       } catch (error) {
@@ -91,7 +91,7 @@ class SSENotificationClient {
       enterpriseLogger.error('SSE connection error', { userId: this.userId });
       this.isConnected = false;
       this.emit('error', event);
-      
+
       // Attempt to reconnect
       this.attemptReconnect();
     });
@@ -115,11 +115,11 @@ class SSENotificationClient {
     }
 
     this.reconnectAttempts++;
-    
+
     enterpriseLogger.info('SSE attempting reconnect', {
       userId: this.userId,
       attempt: this.reconnectAttempts,
-      maxAttempts: this.maxReconnectAttempts
+      maxAttempts: this.maxReconnectAttempts,
     });
 
     setTimeout(() => {
@@ -137,10 +137,10 @@ class SSENotificationClient {
         this.eventSource.close();
         this.eventSource = null;
       }
-      
+
       this.isConnected = false;
       this.reconnectAttempts = 0;
-      
+
       enterpriseLogger.info('SSE client disconnected', { userId: this.userId });
       this.emit('disconnected');
     } catch (error) {
@@ -197,9 +197,9 @@ class SSENotificationClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.token}`
+          'Authorization': `Bearer ${this.token}`,
         },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message }),
       });
 
       if (!response.ok) {
@@ -224,7 +224,7 @@ class SSENotificationClient {
       isConnected: this.isConnected,
       reconnectAttempts: this.reconnectAttempts,
       maxReconnectAttempts: this.maxReconnectAttempts,
-      userId: this.userId
+      userId: this.userId,
     };
   }
 

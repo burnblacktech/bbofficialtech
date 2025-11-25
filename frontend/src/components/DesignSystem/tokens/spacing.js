@@ -11,7 +11,7 @@ export const SPACING = {
   '2xl': '3rem',   // 48px
   '3xl': '4rem',   // 64px
   '4xl': '5rem',   // 80px
-  '5xl': '6rem'    // 96px
+  '5xl': '6rem',    // 96px
 };
 
 export default SPACING;

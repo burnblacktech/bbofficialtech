@@ -23,7 +23,7 @@ import {
   Star,
   Clock,
   Users,
-  DollarSign
+  DollarSign,
 } from 'lucide-react';
 import { Button, Card, Alert } from '../../components/UI';
 import api from '../../services/api';
@@ -56,7 +56,7 @@ const RegisterCAFirm = () => {
       city: '',
       state: '',
       pincode: '',
-      country: 'India'
+      country: 'India',
     },
 
     // Professional Details
@@ -74,12 +74,12 @@ const RegisterCAFirm = () => {
       caCertificate: null,
       panCard: null,
       addressProof: null,
-      gstCertificate: null
+      gstCertificate: null,
     },
 
     // Agreement
     termsAccepted: false,
-    privacyAccepted: false
+    privacyAccepted: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -93,22 +93,22 @@ const RegisterCAFirm = () => {
       name: 'Starter',
       price: 999,
       features: ['Up to 50 clients', 'Basic ITR forms', 'Email support', '5GB storage'],
-      popular: false
+      popular: false,
     },
     {
       id: 'PROFESSIONAL',
       name: 'Professional',
       price: 2499,
       features: ['Up to 200 clients', 'All ITR forms', 'Priority support', '50GB storage', 'Staff management', 'Advanced analytics'],
-      popular: true
+      popular: true,
     },
     {
       id: 'ENTERPRISE',
       name: 'Enterprise',
       price: 5999,
       features: ['Unlimited clients', 'All features', '24/7 phone support', 'Unlimited storage', 'Custom branding', 'API access'],
-      popular: false
-    }
+      popular: false,
+    },
   ];
 
   // Validation rules
@@ -202,7 +202,7 @@ const RegisterCAFirm = () => {
         setUploadProgress(prev => ({ ...prev, [documentType]: 100 }));
         setFormData(prev => ({
           ...prev,
-          documents: { ...prev.documents, [documentType]: file }
+          documents: { ...prev.documents, [documentType]: file },
         }));
         toast.success(`${documentType.replace(/([A-Z])/g, ' $1').trim()} uploaded successfully`);
       }, 1000);
@@ -232,7 +232,7 @@ const RegisterCAFirm = () => {
       });
 
       const response = await api.post('/api/ca/register', formDataToSend, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
     },
@@ -241,14 +241,14 @@ const RegisterCAFirm = () => {
       navigate('/ca/registration-success', {
         state: {
           applicationId: data.applicationId,
-          estimatedReviewTime: '24-48 hours'
-        }
+          estimatedReviewTime: '24-48 hours',
+        },
       });
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
       setIsSubmitting(false);
-    }
+    },
   });
 
   // Handle next step
@@ -452,7 +452,7 @@ const RegisterCAFirm = () => {
                   value={formData.address.line1}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    address: { ...prev.address, line1: e.target.value }
+                    address: { ...prev.address, line1: e.target.value },
                   }))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Building name, street"
@@ -467,7 +467,7 @@ const RegisterCAFirm = () => {
                   value={formData.address.line2}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    address: { ...prev.address, line2: e.target.value }
+                    address: { ...prev.address, line2: e.target.value },
                   }))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Area, locality"
@@ -482,7 +482,7 @@ const RegisterCAFirm = () => {
                     value={formData.address.city}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
-                      address: { ...prev.address, city: e.target.value }
+                      address: { ...prev.address, city: e.target.value },
                     }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Mumbai"
@@ -497,7 +497,7 @@ const RegisterCAFirm = () => {
                     value={formData.address.state}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
-                      address: { ...prev.address, state: e.target.value }
+                      address: { ...prev.address, state: e.target.value },
                     }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Maharashtra"
@@ -514,7 +514,7 @@ const RegisterCAFirm = () => {
                     value={formData.address.pincode}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
-                      address: { ...prev.address, pincode: e.target.value }
+                      address: { ...prev.address, pincode: e.target.value },
                     }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="400001"
@@ -530,7 +530,7 @@ const RegisterCAFirm = () => {
                     value={formData.address.country}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
-                      address: { ...prev.address, country: e.target.value }
+                      address: { ...prev.address, country: e.target.value },
                     }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="India"
@@ -640,7 +640,7 @@ const RegisterCAFirm = () => {
                         <button
                           onClick={() => setFormData(prev => ({
                             ...prev,
-                            documents: { ...prev.documents, [docType]: null }
+                            documents: { ...prev.documents, [docType]: null },
                           }))}
                           className="text-red-500 hover:text-red-700"
                         >

@@ -25,7 +25,7 @@ const Modal = ({
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
-    full: 'max-w-full mx-4'
+    full: 'max-w-full mx-4',
   };
 
   const handleClose = () => {
@@ -61,10 +61,10 @@ const Modal = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{
-                type: "spring",
+                type: 'spring',
                 stiffness: 300,
                 damping: 30,
-                duration: 0.2
+                duration: 0.2,
               }}
               className={`
                 relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-xl

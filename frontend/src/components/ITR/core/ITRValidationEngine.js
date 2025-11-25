@@ -20,19 +20,19 @@ class ITRValidationEngine {
         type: 'text',
         minLength: 3,
         pattern: '^[a-zA-Z\\s\\.]+$',
-        message: 'Please enter a valid name (letters, spaces, and dots only, min 3 characters)'
+        message: 'Please enter a valid name (letters, spaces, and dots only, min 3 characters)',
       },
       pan: {
         required: true,
         type: 'text',
         pattern: '[A-Z]{5}[0-9]{4}[A-Z]{1}',
-        message: 'PAN must be 10 characters: 5 letters, 4 numbers, 1 letter'
+        message: 'PAN must be 10 characters: 5 letters, 4 numbers, 1 letter',
       },
       aadhaar: {
         required: false,
         type: 'text',
         pattern: '^\\d{12}$',
-        message: 'Aadhaar must be exactly 12 digits'
+        message: 'Aadhaar must be exactly 12 digits',
       },
       dob: {
         required: true,
@@ -42,20 +42,20 @@ class ITRValidationEngine {
           if (age < 18) return 'You must be at least 18 years old';
           if (age > 120) return 'Please enter a valid date of birth';
           return null;
-        }
+        },
       },
       email: {
         required: true,
         type: 'email',
         pattern: '[^@]+@[^@]+\\.[^@]+',
-        message: 'Please enter a valid email address'
+        message: 'Please enter a valid email address',
       },
       phone: {
         required: true,
         type: 'tel',
         pattern: '[6-9]\\d{9}',
-        message: 'Mobile number must start with 6-9 and be 10 digits'
-      }
+        message: 'Mobile number must start with 6-9 and be 10 digits',
+      },
     });
 
     // Income validation rules
@@ -65,25 +65,25 @@ class ITRValidationEngine {
         type: 'number',
         min: 0,
         max: 100000000,
-        message: 'Gross salary must be between 0 and ₹10 crore'
+        message: 'Gross salary must be between 0 and ₹10 crore',
       },
       rental_income: {
         required: false,
         type: 'number',
         min: 0,
-        message: 'Rental income must be non-negative'
+        message: 'Rental income must be non-negative',
       },
       interest_income: {
         required: false,
         type: 'number',
         min: 0,
-        message: 'Interest income must be non-negative'
+        message: 'Interest income must be non-negative',
       },
       capital_gains: {
         required: false,
         type: 'number',
-        message: 'Capital gains must be a valid number'
-      }
+        message: 'Capital gains must be a valid number',
+      },
     });
 
     // Deduction validation rules
@@ -93,22 +93,22 @@ class ITRValidationEngine {
         type: 'number',
         min: 0,
         max: 150000,
-        message: 'Section 80C deduction cannot exceed ₹1.5 lakh'
+        message: 'Section 80C deduction cannot exceed ₹1.5 lakh',
       },
       section_80d: {
         required: false,
         type: 'number',
         min: 0,
         max: 25000,
-        message: 'Section 80D deduction cannot exceed ₹25,000 (₹50,000 for senior citizens)'
+        message: 'Section 80D deduction cannot exceed ₹25,000 (₹50,000 for senior citizens)',
       },
       section_80e: {
         required: false,
         type: 'number',
         min: 0,
         max: 150000,
-        message: 'Section 80E deduction cannot exceed ₹1.5 lakh total'
-      }
+        message: 'Section 80E deduction cannot exceed ₹1.5 lakh total',
+      },
     });
   }
 
@@ -185,7 +185,7 @@ class ITRValidationEngine {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -202,7 +202,7 @@ class ITRValidationEngine {
       const fieldValue = sectionData[fieldId];
       const validation = this.validateField(sectionId, fieldId, fieldValue, {
         ...formData,
-        [sectionId]: sectionData
+        [sectionId]: sectionData,
       });
 
       if (!validation.isValid) {
@@ -213,7 +213,7 @@ class ITRValidationEngine {
 
     return {
       isValid,
-      errors
+      errors,
     };
   }
 
@@ -244,7 +244,7 @@ class ITRValidationEngine {
     return {
       isValid,
       errors: allErrors,
-      warnings: this.generateWarnings(formData, itrType)
+      warnings: this.generateWarnings(formData, itrType),
     };
   }
 
@@ -347,19 +347,19 @@ class ITRValidationEngine {
         aadhaar: 'Aadhaar Number',
         dob: 'Date of Birth',
         email: 'Email Address',
-        phone: 'Mobile Number'
+        phone: 'Mobile Number',
       },
       income: {
         gross_salary: 'Gross Salary',
         rental_income: 'Rental Income',
         interest_income: 'Interest Income',
-        capital_gains: 'Capital Gains'
+        capital_gains: 'Capital Gains',
       },
       deductions: {
         section_80c: 'Section 80C Deduction',
         section_80d: 'Section 80D Deduction',
-        section_80e: 'Section 80E Deduction'
-      }
+        section_80e: 'Section 80E Deduction',
+      },
     };
 
     return labels[section]?.[fieldId] || fieldId;

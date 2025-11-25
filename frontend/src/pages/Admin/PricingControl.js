@@ -7,19 +7,19 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
-import { 
-  DollarSign, 
-  Users, 
-  Building2, 
-  Settings, 
-  Save, 
-  Edit, 
-  Trash2, 
+import {
+  DollarSign,
+  Users,
+  Building2,
+  Settings,
+  Save,
+  Edit,
+  Trash2,
   Plus,
   CheckCircle,
   AlertCircle,
   TrendingUp,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 
 const PricingControl = () => {
@@ -32,17 +32,17 @@ const PricingControl = () => {
     clientLimit: '',
     monthlyPrice: '',
     annualPrice: '',
-    features: []
+    features: [],
   });
 
   // Mock pricing data
   useEffect(() => {
     const fetchPricingData = async () => {
       setLoading(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockData = {
         endUserFilingFee: 2500,
         expertReviewFee: 500,
@@ -57,10 +57,10 @@ const PricingControl = () => {
               'Up to 50 clients',
               'Basic ITR filing support',
               'Email support',
-              'Standard templates'
+              'Standard templates',
             ],
             activeSubscribers: 12,
-            revenue: 600000
+            revenue: 600000,
           },
           {
             id: 2,
@@ -74,10 +74,10 @@ const PricingControl = () => {
               'Priority support',
               'Custom templates',
               'Bulk operations',
-              'Analytics dashboard'
+              'Analytics dashboard',
             ],
             activeSubscribers: 8,
-            revenue: 1200000
+            revenue: 1200000,
           },
           {
             id: 3,
@@ -92,26 +92,26 @@ const PricingControl = () => {
               'Custom integrations',
               'White-label options',
               'Advanced analytics',
-              'API access'
+              'API access',
             ],
             activeSubscribers: 3,
-            revenue: 1500000
-          }
+            revenue: 1500000,
+          },
         ],
         pricingHistory: [
           {
             date: new Date('2024-01-01'),
             endUserFee: 2000,
-            expertReviewFee: 400
+            expertReviewFee: 400,
           },
           {
             date: new Date('2024-01-15'),
             endUserFee: 2500,
-            expertReviewFee: 500
-          }
-        ]
+            expertReviewFee: 500,
+          },
+        ],
       };
-      
+
       setPricingData(mockData);
       setLoading(false);
     };
@@ -123,14 +123,14 @@ const PricingControl = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
   const handleSaveEndUserFee = (newFee) => {
     setPricingData(prev => ({
       ...prev,
-      endUserFilingFee: newFee
+      endUserFilingFee: newFee,
     }));
     // API call to save pricing
     console.log('Saving end user filing fee:', newFee);
@@ -139,7 +139,7 @@ const PricingControl = () => {
   const handleSaveExpertReviewFee = (newFee) => {
     setPricingData(prev => ({
       ...prev,
-      expertReviewFee: newFee
+      expertReviewFee: newFee,
     }));
     // API call to save pricing
     console.log('Saving expert review fee:', newFee);
@@ -148,9 +148,9 @@ const PricingControl = () => {
   const handleSavePlan = (plan) => {
     setPricingData(prev => ({
       ...prev,
-      caSubscriptionPlans: prev.caSubscriptionPlans.map(p => 
-        p.id === plan.id ? plan : p
-      )
+      caSubscriptionPlans: prev.caSubscriptionPlans.map(p =>
+        p.id === plan.id ? plan : p,
+      ),
     }));
     setEditingPlan(null);
     // API call to save plan
@@ -165,20 +165,20 @@ const PricingControl = () => {
       monthlyPrice: parseInt(newPlan.monthlyPrice),
       annualPrice: parseInt(newPlan.annualPrice),
       activeSubscribers: 0,
-      revenue: 0
+      revenue: 0,
     };
-    
+
     setPricingData(prev => ({
       ...prev,
-      caSubscriptionPlans: [...prev.caSubscriptionPlans, plan]
+      caSubscriptionPlans: [...prev.caSubscriptionPlans, plan],
     }));
-    
+
     setNewPlan({
       name: '',
       clientLimit: '',
       monthlyPrice: '',
       annualPrice: '',
-      features: []
+      features: [],
     });
     setShowAddPlan(false);
     // API call to add plan
@@ -188,7 +188,7 @@ const PricingControl = () => {
   const handleDeletePlan = (planId) => {
     setPricingData(prev => ({
       ...prev,
-      caSubscriptionPlans: prev.caSubscriptionPlans.filter(p => p.id !== planId)
+      caSubscriptionPlans: prev.caSubscriptionPlans.filter(p => p.id !== planId),
     }));
     // API call to delete plan
     console.log('Deleting plan:', planId);
@@ -254,7 +254,7 @@ const PricingControl = () => {
                   This is the fee charged to end users for ITR filing
                 </Typography.Small>
               </div>
-              
+
               <div>
                 <Typography.Small className="font-medium text-neutral-700 mb-2">
                   Expert Review Fee

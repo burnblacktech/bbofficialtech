@@ -37,7 +37,7 @@ const buttonVariants = {
     lg: 'rounded-lg',
     xl: 'rounded-xl',
     full: 'rounded-full',
-  }
+  },
 };
 
 const Button = React.forwardRef(({
@@ -73,7 +73,7 @@ const Button = React.forwardRef(({
     // Border radius styles
     buttonVariants.rounded[rounded],
 
-    className
+    className,
   );
 
   const renderIcon = () => {

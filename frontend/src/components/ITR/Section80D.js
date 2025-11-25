@@ -5,19 +5,19 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Plus, 
-  Trash2, 
-  Edit, 
-  Heart, 
-  Shield, 
-  Users, 
+import {
+  Plus,
+  Trash2,
+  Edit,
+  Heart,
+  Shield,
+  Users,
   User,
   Calendar,
   Building,
   AlertCircle,
   CheckCircle2,
-  Activity
+  Activity,
 } from 'lucide-react';
 import { section80DService } from '../../services/apiService';
 import { formValidators } from '../../utils/validators';
@@ -36,51 +36,51 @@ const Section80D = ({ filingId }) => {
     premiumFrequency: 'annual',
     policyStartDate: '',
     policyEndDate: '',
-    financialYear: '2024-25'
+    financialYear: '2024-25',
   });
   const [formErrors, setFormErrors] = useState({});
 
   // Policy Types with BurnBlack styling
   const policyTypes = [
-    { 
-      id: 'self_family', 
-      name: 'Self & Family', 
-      icon: Users, 
+    {
+      id: 'self_family',
+      name: 'Self & Family',
+      icon: Users,
       color: 'emerald',
       limit: 25000,
-      description: 'Health insurance for self and family'
+      description: 'Health insurance for self and family',
     },
-    { 
-      id: 'parents', 
-      name: 'Parents', 
-      icon: Heart, 
+    {
+      id: 'parents',
+      name: 'Parents',
+      icon: Heart,
       color: 'gold',
       limit: 25000,
-      description: 'Health insurance for parents'
+      description: 'Health insurance for parents',
     },
-    { 
-      id: 'senior_citizen_self', 
-      name: 'Senior Citizen Self', 
-      icon: User, 
+    {
+      id: 'senior_citizen_self',
+      name: 'Senior Citizen Self',
+      icon: User,
       color: 'royal',
       limit: 50000,
-      description: 'Health insurance for senior citizen self'
+      description: 'Health insurance for senior citizen self',
     },
-    { 
-      id: 'senior_citizen_parents', 
-      name: 'Senior Citizen Parents', 
-      icon: Heart, 
+    {
+      id: 'senior_citizen_parents',
+      name: 'Senior Citizen Parents',
+      icon: Heart,
       color: 'crimson',
       limit: 50000,
-      description: 'Health insurance for senior citizen parents'
-    }
+      description: 'Health insurance for senior citizen parents',
+    },
   ];
 
   // Fetch 80D deductions
   const { data: deductionsData, isLoading } = useQuery({
     queryKey: ['section80D', filingId],
     queryFn: () => section80DService.getDeductions(filingId),
-    enabled: !!filingId
+    enabled: !!filingId,
   });
 
   // Add deduction mutation
@@ -90,7 +90,7 @@ const Section80D = ({ filingId }) => {
       queryClient.invalidateQueries(['section80D', filingId]);
       resetForm();
       setShowAddForm(false);
-    }
+    },
   });
 
   // Update deduction mutation
@@ -100,7 +100,7 @@ const Section80D = ({ filingId }) => {
       queryClient.invalidateQueries(['section80D', filingId]);
       resetForm();
       setEditingDeduction(null);
-    }
+    },
   });
 
   // Delete deduction mutation
@@ -108,18 +108,18 @@ const Section80D = ({ filingId }) => {
     mutationFn: (deductionId) => section80DService.deleteDeduction(deductionId),
     onSuccess: () => {
       queryClient.invalidateQueries(['section80D', filingId]);
-    }
+    },
   });
 
   const deductions = deductionsData?.data?.deductions || [];
-  
+
   // Calculate limits by policy type
   const limitsByType = policyTypes.reduce((acc, type) => {
     acc[type.id] = {
       limit: type.limit,
       used: deductions
         .filter(d => d.policyType === type.id)
-        .reduce((sum, d) => sum + d.premiumAmount, 0)
+        .reduce((sum, d) => sum + d.premiumAmount, 0),
     };
     return acc;
   }, {});
@@ -129,7 +129,7 @@ const Section80D = ({ filingId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     const validation = formValidators.section80D(formData);
     if (!validation.isValid) {
@@ -141,7 +141,7 @@ const Section80D = ({ filingId }) => {
       if (editingDeduction) {
         await updateDeductionMutation.mutateAsync({
           deductionId: editingDeduction.id,
-          data: formData
+          data: formData,
         });
       } else {
         await addDeductionMutation.mutateAsync(formData);
@@ -163,7 +163,7 @@ const Section80D = ({ filingId }) => {
       premiumFrequency: deduction.premiumFrequency || 'annual',
       policyStartDate: deduction.policyStartDate || '',
       policyEndDate: deduction.policyEndDate || '',
-      financialYear: deduction.financialYear || '2024-25'
+      financialYear: deduction.financialYear || '2024-25',
     });
     setShowAddForm(true);
   };
@@ -185,7 +185,7 @@ const Section80D = ({ filingId }) => {
       premiumFrequency: 'annual',
       policyStartDate: '',
       policyEndDate: '',
-      financialYear: '2024-25'
+      financialYear: '2024-25',
     });
     setFormErrors({});
     setEditingDeduction(null);
@@ -236,7 +236,7 @@ const Section80D = ({ filingId }) => {
           const limits = limitsByType[type.id];
           const utilizationPercentage = Math.round((limits.used / limits.limit) * 100);
           const IconComponent = type.icon;
-          
+
           return (
             <div
               key={type.id}
@@ -251,14 +251,14 @@ const Section80D = ({ filingId }) => {
                   <p className="text-xs text-neutral-600">Limit: ₹{type.limit.toLocaleString()}</p>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-600">Used</span>
                   <span className="font-medium">₹{limits.used.toLocaleString()}</span>
                 </div>
                 <div className="w-full bg-neutral-200 rounded-lg h-2">
-                  <div 
+                  <div
                     className={`bg-${type.color}-500 h-2 rounded-lg transition-all duration-500`}
                     style={{ width: `${Math.min(utilizationPercentage, 100)}%` }}
                   />
@@ -277,7 +277,7 @@ const Section80D = ({ filingId }) => {
         {deductions.map((deduction) => {
           const typeInfo = getPolicyTypeInfo(deduction.policyType);
           const IconComponent = typeInfo.icon;
-          
+
           return (
             <div
               key={deduction.id}
@@ -571,10 +571,10 @@ const Section80D = ({ filingId }) => {
                   disabled={addDeductionMutation.isLoading || updateDeductionMutation.isLoading}
                   className="flex-1 px-6 py-3 bg-gradient-burnblack-emerald text-white rounded-xl hover:shadow-emerald-glow transition-all duration-200 disabled:opacity-50"
                 >
-                  {addDeductionMutation.isLoading || updateDeductionMutation.isLoading 
-                    ? 'Saving...' 
-                    : editingDeduction 
-                      ? 'Update Policy' 
+                  {addDeductionMutation.isLoading || updateDeductionMutation.isLoading
+                    ? 'Saving...'
+                    : editingDeduction
+                      ? 'Update Policy'
                       : 'Add Policy'
                   }
                 </button>

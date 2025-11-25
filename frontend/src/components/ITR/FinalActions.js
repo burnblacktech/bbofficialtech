@@ -16,7 +16,7 @@ import {
   Eye,
   Upload,
   Calculator,
-  CreditCard
+  CreditCard,
 } from 'lucide-react';
 
 const FinalActions = ({
@@ -31,7 +31,7 @@ const FinalActions = ({
   validationErrors = [],
   isSubmitting = false,
   isDraftSaving = false,
-  filingStatus = 'ready'
+  filingStatus = 'ready',
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 

@@ -7,28 +7,28 @@ import Button from '../UI/Button';
 import Card from '../common/Card';
 import { enterpriseLogger } from '../../utils/logger';
 
-const ReviewForm = ({ 
-  data = {}, 
-  onSave, 
-  onSubmit, 
+const ReviewForm = ({
+  data = {},
+  onSave,
+  onSubmit,
   onPrevious,
   taxComputation = null,
-  loading = false 
+  loading = false,
 }) => {
-  
+
   const calculateTotalIncome = () => {
     let total = 0;
-    
+
     // Salary income
     if (data.income?.salary?.totalSalary) {
       total += parseFloat(data.income.salary.totalSalary) || 0;
     }
-    
+
     // House property income
     if (data.income?.houseProperty?.netRentalIncome) {
       total += parseFloat(data.income.houseProperty.netRentalIncome) || 0;
     }
-    
+
     // Capital gains
     if (data.income?.capitalGains?.shortTerm) {
       total += parseFloat(data.income.capitalGains.shortTerm) || 0;
@@ -36,52 +36,52 @@ const ReviewForm = ({
     if (data.income?.capitalGains?.longTerm) {
       total += parseFloat(data.income.capitalGains.longTerm) || 0;
     }
-    
+
     // Business income
     if (data.income?.businessIncome?.netProfit) {
       total += parseFloat(data.income.businessIncome.netProfit) || 0;
     }
-    
+
     // Other income
     Object.values(data.income?.otherIncome || {}).forEach(amount => {
       if (amount) {
         total += parseFloat(amount) || 0;
       }
     });
-    
+
     return total;
   };
 
   const calculateTotalDeductions = () => {
     let total = 0;
-    
+
     // Section 80C (max ₹1,50,000)
     const total80C = Math.min(
       Object.values(data.deductions?.section80C || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0),
-      150000
+      150000,
     );
     total += total80C;
-    
+
     // Section 80D (max ₹25,000)
     const total80D = Math.min(
       Object.values(data.deductions?.section80D || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0),
-      25000
+      25000,
     );
     total += total80D;
-    
+
     // Other deductions
     total += parseFloat(data.deductions?.section80E?.educationLoanInterest) || 0;
     total += parseFloat(data.deductions?.section80G?.donations) || 0;
     total += Math.min(parseFloat(data.deductions?.section80TTA?.savingsInterest) || 0, 10000);
     total += Math.min(parseFloat(data.deductions?.section80TTB?.bankInterest) || 0, 50000);
     total += Math.min(parseFloat(data.deductions?.section24?.homeLoanInterest) || 0, 200000);
-    
+
     // Other deductions
     total += parseFloat(data.deductions?.otherDeductions?.standardDeduction) || 0;
     total += parseFloat(data.deductions?.otherDeductions?.hra) || 0;
     total += parseFloat(data.deductions?.otherDeductions?.lta) || 0;
     total += parseFloat(data.deductions?.otherDeductions?.medicalReimbursement) || 0;
-    
+
     return total;
   };
 
@@ -104,7 +104,9 @@ const ReviewForm = ({
   };
 
   const handlePrevious = () => {
-    onPrevious && onPrevious();
+    if (onPrevious) {
+      onPrevious();
+    }
   };
 
   return (
@@ -259,8 +261,8 @@ const ReviewForm = ({
             <h3>Declaration</h3>
             <div className="declaration">
               <p>
-                I hereby declare that the information provided in this return is true and correct 
-                to the best of my knowledge and belief. I understand that any false information 
+                I hereby declare that the information provided in this return is true and correct
+                to the best of my knowledge and belief. I understand that any false information
                 provided may result in penalties under the Income Tax Act, 1961.
               </p>
               <div className="declaration-checkbox">
@@ -281,7 +283,7 @@ const ReviewForm = ({
           >
             Previous
           </Button>
-          
+
           <Button
             variant="secondary"
             onClick={handleSave}
@@ -290,7 +292,7 @@ const ReviewForm = ({
           >
             Save Draft
           </Button>
-          
+
           <Button
             variant="success"
             onClick={handleSubmit}

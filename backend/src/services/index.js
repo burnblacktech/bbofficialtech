@@ -19,7 +19,7 @@ const {
   BrokerFileProcessingService,
   DeductionTypeDetectionService,
   ERIIntegrationService,
-  eriSigningService
+  eriSigningService,
 } = require('./business');
 
 // Utility services
@@ -59,12 +59,12 @@ module.exports = {
   core: {
     TaxComputationEngine,
     ValidationEngine,
-    DocumentService
+    DocumentService,
   },
   integration: {
     S3Service,
     EmailService,
-    AIService
+    AIService,
   },
   business: {
     ExpertReviewService,
@@ -75,10 +75,10 @@ module.exports = {
     BrokerFileProcessingService,
     DeductionTypeDetectionService,
     ERIIntegrationService,
-    eriSigningService
+    eriSigningService,
   },
   utils: {
     AuditService,
-    NotificationService
-  }
+    NotificationService,
+  },
 };

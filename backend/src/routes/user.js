@@ -7,6 +7,10 @@ const router = express.Router();
 const userController = require('../controllers/UserController');
 const { authenticateToken } = require('../middleware/auth');
 const rateLimit = require('express-rate-limit');
+const { Op } = require('sequelize');
+const enterpriseLogger = require('../utils/logger');
+const { AppError } = require('../middleware/errorHandler');
+const { FamilyMember } = require('../models');
 
 // Rate limiting for sensitive operations
 const sensitiveOperationLimit = rateLimit({
@@ -14,8 +18,8 @@ const sensitiveOperationLimit = rateLimit({
   max: 5, // 5 attempts per window
   message: {
     status: 'error',
-    message: 'Too many attempts, please try again later'
-  }
+    message: 'Too many attempts, please try again later',
+  },
 });
 
 // Apply authentication middleware to all routes

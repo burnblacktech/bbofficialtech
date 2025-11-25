@@ -27,7 +27,7 @@ export {
   SocialProof,
   MicroCelebration,
   SuccessCelebration,
-  EmotionalStateIndicator
+  EmotionalStateIndicator,
 } from './DesignSystem';
 
 // Layout Components

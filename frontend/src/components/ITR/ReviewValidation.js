@@ -4,9 +4,9 @@
 // =====================================================
 
 import React, { useState } from 'react';
-import { 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  CheckCircle,
+  AlertCircle,
   AlertTriangle,
   Info,
   Lightbulb,
@@ -19,107 +19,107 @@ import {
   Home,
   TrendingUp,
   Globe,
-  FileText
+  FileText,
 } from 'lucide-react';
 
-const ReviewValidation = ({ 
-  filingData, 
-  updateFilingData, 
-  validationResults, 
-  aiSuggestions, 
-  onValidate, 
-  isValidating 
+const ReviewValidation = ({
+  filingData,
+  updateFilingData,
+  validationResults,
+  aiSuggestions,
+  onValidate,
+  isValidating,
 }) => {
   const [expandedSections, setExpandedSections] = useState({
     income: true,
     deductions: true,
     taxes: true,
-    validation: true
+    validation: true,
   });
-  
+
   const [showAITooltip, setShowAITooltip] = useState(null);
-  
+
   // Toggle section expansion
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
-  
+
   // Get validation summary
   const getValidationSummary = () => {
     const errors = validationResults.filter(result => result.severity === 'error');
     const warnings = validationResults.filter(result => result.severity === 'warning');
     const success = validationResults.filter(result => result.severity === 'success');
-    
+
     return { errors, warnings, success };
   };
-  
+
   // Calculate totals
   const calculateTotals = () => {
     let totalIncome = 0;
     let totalDeductions = 0;
-    
+
     // Income calculations
     if (filingData.income.salary) {
       const { basicSalary = 0, hra = 0, allowances = 0 } = filingData.income.salary;
       totalIncome += basicSalary + hra + allowances;
     }
-    
+
     if (filingData.income.houseProperty) {
       const { annualValue = 0, municipalTaxes = 0, interestOnLoan = 0, isSelfOccupied = false } = filingData.income.houseProperty;
       const netAnnualValue = annualValue - municipalTaxes;
-      
+
       if (isSelfOccupied) {
         totalIncome += Math.max(-200000, -interestOnLoan);
       } else {
         totalIncome += netAnnualValue - interestOnLoan;
       }
     }
-    
+
     if (filingData.income.otherIncome) {
       const { bankInterest = 0, fdInterest = 0, dividendIncome = 0, otherSources = 0 } = filingData.income.otherIncome;
       totalIncome += bankInterest + fdInterest + dividendIncome + otherSources;
     }
-    
+
     // Deduction calculations
     if (filingData.deductions.section80C) {
       const section80C = filingData.deductions.section80C;
-      const total80C = (section80C.licPremium || 0) + 
-                       (section80C.ppfContribution || 0) + 
-                       (section80C.pfContribution || 0) + 
-                       (section80C.elssInvestment || 0) + 
-                       (section80C.tuitionFees || 0) + 
+      const total80C = (section80C.licPremium || 0) +
+                       (section80C.ppfContribution || 0) +
+                       (section80C.pfContribution || 0) +
+                       (section80C.elssInvestment || 0) +
+                       (section80C.tuitionFees || 0) +
                        (section80C.homeLoanPrincipal || 0);
       totalDeductions += Math.min(150000, total80C);
     }
-    
+
     if (filingData.deductions.section80D) {
       const section80D = filingData.deductions.section80D;
       const total80D = (section80D.medicalInsurance || 0) + (section80D.preventiveHealth || 0);
       totalDeductions += Math.min(25000, total80D);
     }
-    
+
     if (filingData.deductions.hra) {
       totalDeductions += filingData.deductions.hra.claimedExemption || 0;
     }
-    
+
     if (filingData.deductions.section80G) {
       totalDeductions += filingData.deductions.section80G.donations || 0;
     }
-    
+
     const taxableIncome = Math.max(0, totalIncome - totalDeductions);
-    
+
     return { totalIncome, totalDeductions, taxableIncome };
   };
-  
+
   const { totalIncome, totalDeductions, taxableIncome } = calculateTotals();
   const { errors, warnings, success } = getValidationSummary();
-  
+
   // Check readiness for filing
   const isReadyForFiling = errors.length === 0;
-  
+
   // Render section header
   const renderSectionHeader = (title, icon, sectionKey, count) => (
     <button
@@ -128,7 +128,7 @@ const ReviewValidation = ({
     >
       <div className="flex items-center space-x-3">
         <div className="p-2 rounded-lg bg-burnblack-gold bg-opacity-20">
-          {React.createElement(icon, { className: "h-5 w-5 text-burnblack-gold" })}
+          {React.createElement(icon, { className: 'h-5 w-5 text-burnblack-gold' })}
         </div>
         <div>
           <h3 className="text-lg font-semibold text-burnblack-black">{title}</h3>
@@ -144,7 +144,7 @@ const ReviewValidation = ({
       )}
     </button>
   );
-  
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -160,7 +160,7 @@ const ReviewValidation = ({
             </p>
           </div>
         </div>
-        
+
         {/* Validation Status */}
         <div className="grid grid-cols-3 gap-4">
           <div className="p-3 bg-success-50 rounded-lg">
@@ -170,7 +170,7 @@ const ReviewValidation = ({
             </div>
             <p className="text-lg font-bold text-success-900">{success.length}</p>
           </div>
-          
+
           <div className="p-3 bg-warning-50 rounded-lg">
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-4 w-4 text-warning-600" />
@@ -178,7 +178,7 @@ const ReviewValidation = ({
             </div>
             <p className="text-lg font-bold text-warning-900">{warnings.length}</p>
           </div>
-          
+
           <div className="p-3 bg-error-50 rounded-lg">
             <div className="flex items-center space-x-2">
               <AlertCircle className="h-4 w-4 text-error-600" />
@@ -188,12 +188,12 @@ const ReviewValidation = ({
           </div>
         </div>
       </div>
-      
+
       {/* Income Summary */}
       <div className="dashboard-card-burnblack">
-        {renderSectionHeader('Income Summary', DollarSign, 'income', 
+        {renderSectionHeader('Income Summary', DollarSign, 'income',
           Object.keys(filingData.income || {}).length)}
-        
+
         {expandedSections.income && (
           <div className="px-4 pb-4 space-y-4">
             {/* Salary Income */}
@@ -210,7 +210,7 @@ const ReviewValidation = ({
                 </div>
               </div>
             )}
-            
+
             {/* House Property */}
             {filingData.income.houseProperty && (
               <div className="p-3 bg-neutral-50 rounded-lg">
@@ -220,7 +220,7 @@ const ReviewValidation = ({
                     ₹{(() => {
                       const { annualValue = 0, municipalTaxes = 0, interestOnLoan = 0, isSelfOccupied = false } = filingData.income.houseProperty;
                       const netAnnualValue = annualValue - municipalTaxes;
-                      
+
                       if (isSelfOccupied) {
                         return Math.max(-200000, -interestOnLoan).toLocaleString();
                       } else {
@@ -231,7 +231,7 @@ const ReviewValidation = ({
                 </div>
               </div>
             )}
-            
+
             {/* Other Income */}
             {filingData.income.otherIncome && (
               <div className="p-3 bg-neutral-50 rounded-lg">
@@ -246,7 +246,7 @@ const ReviewValidation = ({
                 </div>
               </div>
             )}
-            
+
             <div className="border-t border-neutral-200 pt-3">
               <div className="flex justify-between">
                 <span className="text-lg font-semibold text-burnblack-black">Total Income</span>
@@ -258,30 +258,30 @@ const ReviewValidation = ({
           </div>
         )}
       </div>
-      
+
       {/* Deductions Summary */}
       <div className="dashboard-card-burnblack">
-        {renderSectionHeader('Deductions Summary', Shield, 'deductions', 
+        {renderSectionHeader('Deductions Summary', Shield, 'deductions',
           Object.keys(filingData.deductions || {}).length)}
-        
+
         {expandedSections.deductions && (
           <div className="px-4 pb-4 space-y-4">
             {Object.entries(filingData.deductions || {}).map(([key, value]) => {
               if (!value || typeof value !== 'object') return null;
-              
+
               let deductionAmount = 0;
               let deductionName = '';
-              
+
               switch (key) {
                 case 'section80C':
-                  deductionAmount = Math.min(150000, 
-                    (value.licPremium || 0) + (value.ppfContribution || 0) + 
-                    (value.pfContribution || 0) + (value.elssInvestment || 0) + 
+                  deductionAmount = Math.min(150000,
+                    (value.licPremium || 0) + (value.ppfContribution || 0) +
+                    (value.pfContribution || 0) + (value.elssInvestment || 0) +
                     (value.tuitionFees || 0) + (value.homeLoanPrincipal || 0));
                   deductionName = 'Section 80C';
                   break;
                 case 'section80D':
-                  deductionAmount = Math.min(25000, 
+                  deductionAmount = Math.min(25000,
                     (value.medicalInsurance || 0) + (value.preventiveHealth || 0));
                   deductionName = 'Section 80D';
                   break;
@@ -296,9 +296,9 @@ const ReviewValidation = ({
                 default:
                   return null;
               }
-              
+
               if (deductionAmount === 0) return null;
-              
+
               return (
                 <div key={key} className="p-3 bg-neutral-50 rounded-lg">
                   <div className="flex justify-between items-center">
@@ -310,7 +310,7 @@ const ReviewValidation = ({
                 </div>
               );
             })}
-            
+
             <div className="border-t border-neutral-200 pt-3">
               <div className="flex justify-between">
                 <span className="text-lg font-semibold text-burnblack-black">Total Deductions</span>
@@ -322,11 +322,11 @@ const ReviewValidation = ({
           </div>
         )}
       </div>
-      
+
       {/* Tax Computation */}
       <div className="dashboard-card-burnblack">
         {renderSectionHeader('Tax Computation', TrendingUp, 'taxes', 1)}
-        
+
         {expandedSections.taxes && (
           <div className="px-4 pb-4 space-y-4">
             <div className="p-3 bg-neutral-50 rounded-lg">
@@ -337,7 +337,7 @@ const ReviewValidation = ({
                 </span>
               </div>
             </div>
-            
+
             {filingData.taxComputation && (
               <>
                 <div className="p-3 bg-neutral-50 rounded-lg">
@@ -348,7 +348,7 @@ const ReviewValidation = ({
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="border-t border-neutral-200 pt-3">
                   <div className="flex justify-between">
                     <span className="text-lg font-semibold text-burnblack-black">
@@ -366,11 +366,11 @@ const ReviewValidation = ({
           </div>
         )}
       </div>
-      
+
       {/* Validation Results */}
       <div className="dashboard-card-burnblack">
         {renderSectionHeader('Validation Results', AlertCircle, 'validation', validationResults.length)}
-        
+
         {expandedSections.validation && (
           <div className="px-4 pb-4 space-y-3">
             {validationResults.length === 0 ? (
@@ -382,7 +382,7 @@ const ReviewValidation = ({
             ) : (
               validationResults.map((result, index) => (
                 <div key={index} className={`p-3 rounded-lg ${
-                  result.severity === 'error' ? 'bg-error-50' : 
+                  result.severity === 'error' ? 'bg-error-50' :
                   result.severity === 'warning' ? 'bg-warning-50' : 'bg-success-50'
                 }`}>
                   <div className="flex items-start space-x-2">
@@ -395,14 +395,14 @@ const ReviewValidation = ({
                     )}
                     <div className="flex-1">
                       <p className={`text-sm font-medium ${
-                        result.severity === 'error' ? 'text-error-800' : 
+                        result.severity === 'error' ? 'text-error-800' :
                         result.severity === 'warning' ? 'text-warning-800' : 'text-success-800'
                       }`}>
                         {result.field}: {result.error}
                       </p>
                       {result.suggestion && (
                         <p className={`text-xs mt-1 ${
-                          result.severity === 'error' ? 'text-error-600' : 
+                          result.severity === 'error' ? 'text-error-600' :
                           result.severity === 'warning' ? 'text-warning-600' : 'text-success-600'
                         }`}>
                           {result.suggestion}
@@ -416,7 +416,7 @@ const ReviewValidation = ({
           </div>
         )}
       </div>
-      
+
       {/* AI Suggestions */}
       {aiSuggestions.length > 0 && (
         <div className="dashboard-card-burnblack p-4">
@@ -443,7 +443,7 @@ const ReviewValidation = ({
           </div>
         </div>
       )}
-      
+
       {/* Filing Readiness */}
       <div className={`dashboard-card-burnblack p-4 ${
         isReadyForFiling ? 'border-success-300' : 'border-error-300'
@@ -463,13 +463,13 @@ const ReviewValidation = ({
             <p className={`text-sm ${
               isReadyForFiling ? 'text-success-600' : 'text-error-600'
             }`}>
-              {isReadyForFiling 
+              {isReadyForFiling
                 ? 'All validations passed. You can proceed to file your ITR-1.'
                 : `Please fix ${errors.length} error(s) before filing.`}
             </p>
           </div>
         </div>
-        
+
         {!isReadyForFiling && (
           <div className="mt-4">
             <button

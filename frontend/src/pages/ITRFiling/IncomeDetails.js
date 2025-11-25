@@ -5,15 +5,15 @@ import enterpriseDebugger from '../../services/EnterpriseDebugger';
 import EnterpriseErrorBoundary from '../../components/EnterpriseErrorBoundary';
 import BreakdownInput from '../../components/BreakdownInput';
 import {
-  ArrowRight, ArrowLeft, CheckCircle, Calculator, 
-  TrendingUp, Building2, Home, Briefcase, Info
+  ArrowRight, ArrowLeft, CheckCircle, Calculator,
+  TrendingUp, Building2, Home, Briefcase, Info,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
   EnterpriseStatCard,
-  EnterpriseInput
+  EnterpriseInput,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 // Income Details Screen - Granular income capture using BreakdownInput
@@ -22,7 +22,7 @@ import {
 const IncomeDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Get interaction mode context from navigation state
   const { selectedITR: passedITR, interactionMode, fromModeSelection } = location.state || {};
   const [selectedITR, setSelectedITR] = useState(passedITR || null);
@@ -32,7 +32,7 @@ const IncomeDetails = () => {
     otherSources: [],
     capitalGains: [],
     houseProperty: [],
-    businessIncome: []
+    businessIncome: [],
   });
   const [totals, setTotals] = useState({});
   const [isCalculating, setIsCalculating] = useState(false);
@@ -50,33 +50,33 @@ const IncomeDetails = () => {
   // Calculate totals for each income head
   const calculateTotals = useCallback(() => {
     setIsCalculating(true);
-    
+
     const newTotals = {};
-    
+
     // Calculate salary total
     newTotals.salary = incomeData.salary.reduce((sum, item) => sum + (item.amount || 0), 0);
-    
+
     // Calculate other sources total
     newTotals.otherSources = incomeData.otherSources.reduce((sum, item) => sum + (item.amount || 0), 0);
-    
+
     // Calculate capital gains total
     newTotals.capitalGains = incomeData.capitalGains.reduce((sum, item) => sum + (item.amount || 0), 0);
-    
+
     // Calculate house property total
     newTotals.houseProperty = incomeData.houseProperty.reduce((sum, item) => sum + (item.amount || 0), 0);
-    
+
     // Calculate business income total
     newTotals.businessIncome = incomeData.businessIncome.reduce((sum, item) => sum + (item.amount || 0), 0);
-    
+
     // Calculate gross total income
     newTotals.grossTotalIncome = Object.values(newTotals).reduce((sum, total) => sum + total, 0);
-    
+
     setTotals(newTotals);
     setIsCalculating(false);
-    
+
     enterpriseDebugger.log('INFO', 'IncomeDetails', 'Totals calculated', {
       totals: newTotals,
-      selectedITR
+      selectedITR,
     });
   }, [incomeData, selectedITR]);
 
@@ -89,13 +89,13 @@ const IncomeDetails = () => {
   const updateIncomeData = (head, items) => {
     setIncomeData(prev => ({
       ...prev,
-      [head]: items
+      [head]: items,
     }));
-    
+
     enterpriseDebugger.log('INFO', 'IncomeDetails', 'Income data updated', {
       head,
       itemCount: items.length,
-      totalAmount: items.reduce((sum, item) => sum + (item.amount || 0), 0)
+      totalAmount: items.reduce((sum, item) => sum + (item.amount || 0), 0),
     });
   };
 
@@ -128,10 +128,10 @@ const IncomeDetails = () => {
       icon: Briefcase,
       rules: {
         minAmount: 0,
-        proofRequired: true
+        proofRequired: true,
       },
       showProofUpload: true,
-      placeholder: 'Enter salary amount'
+      placeholder: 'Enter salary amount',
     },
     {
       id: 'otherSources',
@@ -140,10 +140,10 @@ const IncomeDetails = () => {
       icon: Building2,
       rules: {
         minAmount: 0,
-        proofRequired: true
+        proofRequired: true,
       },
       showProofUpload: true,
-      placeholder: 'Enter amount'
+      placeholder: 'Enter amount',
     },
     {
       id: 'capitalGains',
@@ -152,10 +152,10 @@ const IncomeDetails = () => {
       icon: TrendingUp,
       rules: {
         minAmount: 0,
-        proofRequired: true
+        proofRequired: true,
       },
       showProofUpload: true,
-      placeholder: 'Enter gain amount'
+      placeholder: 'Enter gain amount',
     },
     {
       id: 'houseProperty',
@@ -164,10 +164,10 @@ const IncomeDetails = () => {
       icon: Home,
       rules: {
         minAmount: 0,
-        proofRequired: true
+        proofRequired: true,
       },
       showProofUpload: true,
-      placeholder: 'Enter rental income'
+      placeholder: 'Enter rental income',
     },
     {
       id: 'businessIncome',
@@ -176,11 +176,11 @@ const IncomeDetails = () => {
       icon: Calculator,
       rules: {
         minAmount: 0,
-        proofRequired: true
+        proofRequired: true,
       },
       showProofUpload: true,
-      placeholder: 'Enter business income'
-    }
+      placeholder: 'Enter business income',
+    },
   ];
 
   const currentStepConfig = steps[currentStep];
@@ -189,7 +189,7 @@ const IncomeDetails = () => {
     <EnterpriseErrorBoundary>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 py-8">
-          
+
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Income Details</h1>
@@ -232,7 +232,7 @@ const IncomeDetails = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* Main Content */}
             <div className="lg:col-span-2">
               <BreakdownInput
@@ -257,7 +257,7 @@ const IncomeDetails = () => {
                   <ArrowLeft className="w-4 h-4" />
                   <span>Previous</span>
                 </button>
-                
+
                 <button
                   onClick={handleNext}
                   disabled={isCalculating}
@@ -277,7 +277,7 @@ const IncomeDetails = () => {
                     <Calculator className="w-5 h-5 mr-2" />
                     Income Summary
                   </h3>
-                  
+
                   {isCalculating ? (
                     <div className="text-center py-4">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
@@ -295,7 +295,7 @@ const IncomeDetails = () => {
                           <span className="font-medium">₹{totals.salary.toLocaleString()}</span>
                         </div>
                       )}
-                      
+
                       {/* Other Sources */}
                       {totals.otherSources > 0 && (
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -306,7 +306,7 @@ const IncomeDetails = () => {
                           <span className="font-medium">₹{totals.otherSources.toLocaleString()}</span>
                         </div>
                       )}
-                      
+
                       {/* Capital Gains */}
                       {totals.capitalGains > 0 && (
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -317,7 +317,7 @@ const IncomeDetails = () => {
                           <span className="font-medium">₹{totals.capitalGains.toLocaleString()}</span>
                         </div>
                       )}
-                      
+
                       {/* House Property */}
                       {totals.houseProperty > 0 && (
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -328,7 +328,7 @@ const IncomeDetails = () => {
                           <span className="font-medium">₹{totals.houseProperty.toLocaleString()}</span>
                         </div>
                       )}
-                      
+
                       {/* Business Income */}
                       {totals.businessIncome > 0 && (
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -339,7 +339,7 @@ const IncomeDetails = () => {
                           <span className="font-medium">₹{totals.businessIncome.toLocaleString()}</span>
                         </div>
                       )}
-                      
+
                       {/* Gross Total Income */}
                       <div className="pt-3 border-t border-gray-200">
                         <div className="flex justify-between items-center">
@@ -351,7 +351,7 @@ const IncomeDetails = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Help Text */}
                   <div className="mt-6 p-3 bg-blue-50 rounded-lg">
                     <div className="flex items-start space-x-2">

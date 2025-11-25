@@ -144,7 +144,7 @@ class ITRService {
   async generatePDF(id) {
     try {
       const response = await apiClient.get(`/itr/${id}/generate-pdf`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
       return response.data;
     } catch (error) {

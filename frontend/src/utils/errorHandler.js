@@ -10,14 +10,14 @@ export const ERROR_TYPES = {
   FILE_UPLOAD: 'file_upload',
   PERMISSION: 'permission',
   RATE_LIMIT: 'rate_limit',
-  MAINTENANCE: 'maintenance'
+  MAINTENANCE: 'maintenance',
 };
 
 export const ERROR_SEVERITY = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
-  CRITICAL: 'critical'
+  CRITICAL: 'critical',
 };
 
 export class AppError extends Error {
@@ -51,7 +51,7 @@ export class AppError extends Error {
       timestamp: this.timestamp,
       userId: this.userId,
       stack: this.stack,
-      originalError: this.originalError?.message
+      originalError: this.originalError?.message,
     };
   }
 }
@@ -62,50 +62,50 @@ export const ERROR_MESSAGES = {
     title: 'Connection Problem',
     message: 'Unable to connect to our servers. Please check your internet connection.',
     suggestion: 'Try refreshing the page or check your network settings.',
-    icon: '📶'
+    icon: '📶',
   },
   [ERROR_TYPES.AUTHENTICATION]: {
     title: 'Authentication Required',
     message: 'Your session has expired or you need to log in again.',
     suggestion: 'Please log in to continue.',
-    icon: '🔐'
+    icon: '🔐',
   },
   [ERROR_TYPES.VALIDATION]: {
     title: 'Invalid Input',
     message: 'Please check your input and try again.',
     suggestion: 'Review the highlighted fields and correct any errors.',
-    icon: '⚠️'
+    icon: '⚠️',
   },
   [ERROR_TYPES.SERVER]: {
     title: 'Server Error',
     message: 'Something went wrong on our end. Our team has been notified.',
     suggestion: 'Please try again in a few moments.',
-    icon: '🔧'
+    icon: '🔧',
   },
   [ERROR_TYPES.FILE_UPLOAD]: {
     title: 'Upload Failed',
     message: 'Unable to upload your file. Please check the file format and size.',
     suggestion: 'Ensure the file is under 10MB and in a supported format.',
-    icon: '📎'
+    icon: '📎',
   },
   [ERROR_TYPES.PERMISSION]: {
     title: 'Permission Denied',
     message: 'You don\'t have permission to perform this action.',
     suggestion: 'Contact your administrator if you believe this is an error.',
-    icon: '🚫'
+    icon: '🚫',
   },
   [ERROR_TYPES.RATE_LIMIT]: {
     title: 'Too Many Requests',
     message: 'You\'ve made too many requests. Please wait before trying again.',
     suggestion: 'Wait a few minutes before retrying.',
-    icon: '⏱️'
+    icon: '⏱️',
   },
   [ERROR_TYPES.MAINTENANCE]: {
     title: 'Under Maintenance',
     message: 'The service is currently under maintenance.',
     suggestion: 'Please check back later.',
-    icon: '🔨'
-  }
+    icon: '🔨',
+  },
 };
 
 // HTTP status code to error type mapping
@@ -119,7 +119,7 @@ export const HTTP_STATUS_MAPPING = {
   500: ERROR_TYPES.SERVER,
   502: ERROR_TYPES.SERVER,
   503: ERROR_TYPES.MAINTENANCE,
-  504: ERROR_TYPES.NETWORK
+  504: ERROR_TYPES.NETWORK,
 };
 
 // Error parsing and classification
@@ -134,7 +134,7 @@ export const parseError = (error) => {
       errorType,
       status >= 500 ? ERROR_SEVERITY.HIGH : ERROR_SEVERITY.MEDIUM,
       status,
-      error
+      error,
     );
   }
 
@@ -145,7 +145,7 @@ export const parseError = (error) => {
       ERROR_TYPES.NETWORK,
       ERROR_SEVERITY.HIGH,
       null,
-      error
+      error,
     );
   }
 
@@ -155,7 +155,7 @@ export const parseError = (error) => {
     ERROR_TYPES.CLIENT,
     ERROR_SEVERITY.MEDIUM,
     null,
-    error
+    error,
   );
 };
 
@@ -168,7 +168,7 @@ export const getErrorDisplay = (error) => {
     ...config,
     severity: error.severity,
     code: error.code,
-    timestamp: error.timestamp
+    timestamp: error.timestamp,
   };
 };
 
@@ -207,7 +207,7 @@ export const logError = (error, context = {}) => {
     context,
     userAgent: navigator.userAgent,
     url: window.location.href,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   // Log to console in development
@@ -243,13 +243,13 @@ export const setupGlobalErrorHandler = () => {
       ERROR_TYPES.CLIENT,
       ERROR_SEVERITY.HIGH,
       null,
-      event.error
+      event.error,
     );
     logError(error, {
       type: 'uncaught_error',
       filename: event.filename,
       lineno: event.lineno,
-      colno: event.colno
+      colno: event.colno,
     });
   });
 
@@ -272,14 +272,14 @@ export const showErrorToast = (error, toast) => {
     duration: error.severity === ERROR_SEVERITY.CRITICAL ? 10000 : 5000,
     action: error.type === ERROR_TYPES.NETWORK ? {
       label: 'Retry',
-      onClick: () => window.location.reload()
-    } : undefined
+      onClick: () => window.location.reload(),
+    } : undefined,
   });
 };
 
 export const showSuccessToast = (message, toast) => {
   toast.success(message, {
-    duration: 3000
+    duration: 3000,
   });
 };
 
@@ -307,7 +307,7 @@ export const handleValidationError = (errors) => {
     ERROR_TYPES.VALIDATION,
     ERROR_SEVERITY.LOW,
     'VALIDATION_ERROR',
-    { fieldErrors: errors }
+    { fieldErrors: errors },
   );
 };
 
@@ -351,7 +351,7 @@ const errorHandlerUtils = {
   showSuccessToast,
   handleFileUploadError,
   handleValidationError,
-  handleApiError
+  handleApiError,
 };
 
 export default errorHandlerUtils;

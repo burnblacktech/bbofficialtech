@@ -9,7 +9,7 @@ export const useMemoryOptimization = () => {
       if (window.tempData) {
         delete window.tempData;
       }
-      
+
       // Force garbage collection if available (Chrome DevTools)
       if (window.gc) {
         window.gc();
@@ -82,7 +82,7 @@ export const useMemoryMonitor = () => {
           usedJSHeapSize: performance.memory.usedJSHeapSize,
           totalJSHeapSize: performance.memory.totalJSHeapSize,
           jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
-          usagePercent: (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100
+          usagePercent: (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100,
         });
       }
     };
@@ -101,5 +101,5 @@ export default {
   useDebounce,
   MemoizedComponent,
   useLazyLoad,
-  useMemoryMonitor
+  useMemoryMonitor,
 };

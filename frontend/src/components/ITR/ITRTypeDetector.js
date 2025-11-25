@@ -9,11 +9,11 @@ import Modal from '../common/Modal';
 import StatusBadge from '../common/StatusBadge';
 import { enterpriseLogger } from '../../utils/logger';
 
-const ITRTypeDetector = ({ 
-  onITRTypeSelected, 
-  memberData, 
-  isOpen = false, 
-  onClose 
+const ITRTypeDetector = ({
+  onITRTypeSelected,
+  memberData,
+  isOpen = false,
+  onClose,
 }) => {
   const [detectedType, setDetectedType] = useState(null);
   const [confidence, setConfidence] = useState(0);
@@ -32,10 +32,10 @@ const ITRTypeDetector = ({
         'Has only one house property or no house property',
         'No business/profession income',
         'No capital gains from shares/mutual funds',
-        'Total income from all sources ≤ ₹50 lakhs'
+        'Total income from all sources ≤ ₹50 lakhs',
       ],
       incomeSources: ['salary', 'house_property', 'other_income'],
-      exclusions: ['business_income', 'capital_gains_shares', 'capital_gains_property']
+      exclusions: ['business_income', 'capital_gains_shares', 'capital_gains_property'],
     },
     'ITR-2': {
       name: 'ITR-2',
@@ -45,10 +45,10 @@ const ITRTypeDetector = ({
         'Has capital gains from property',
         'Has foreign income',
         'Has more than one house property',
-        'Total income from all sources ≤ ₹50 lakhs'
+        'Total income from all sources ≤ ₹50 lakhs',
       ],
       incomeSources: ['salary', 'house_property', 'capital_gains', 'foreign_income', 'other_income'],
-      exclusions: ['business_income']
+      exclusions: ['business_income'],
     },
     'ITR-3': {
       name: 'ITR-3',
@@ -57,10 +57,10 @@ const ITRTypeDetector = ({
         'Has business income',
         'Has profession income',
         'Has presumptive income under section 44AD/44ADA',
-        'Total income from all sources ≤ ₹50 lakhs'
+        'Total income from all sources ≤ ₹50 lakhs',
       ],
       incomeSources: ['salary', 'house_property', 'business_income', 'capital_gains', 'other_income'],
-      exclusions: []
+      exclusions: [],
     },
     'ITR-4': {
       name: 'ITR-4 (Sugam)',
@@ -69,11 +69,11 @@ const ITRTypeDetector = ({
         'Has presumptive business income under section 44AD',
         'Has presumptive profession income under section 44ADA',
         'Total income from all sources ≤ ₹50 lakhs',
-        'No capital gains from shares/mutual funds'
+        'No capital gains from shares/mutual funds',
       ],
       incomeSources: ['salary', 'house_property', 'presumptive_income', 'other_income'],
-      exclusions: ['capital_gains_shares', 'foreign_income']
-    }
+      exclusions: ['capital_gains_shares', 'foreign_income'],
+    },
   };
 
   useEffect(() => {
@@ -85,27 +85,27 @@ const ITRTypeDetector = ({
   const detectITRType = async () => {
     try {
       setLoading(true);
-      
+
       // Simulate AI-like detection process
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       const detection = await performITRDetection(memberData);
-      
+
       setDetectedType(detection.type);
       setConfidence(detection.confidence);
       setDetectionReasons(detection.reasons);
-      
+
       enterpriseLogger.info('ITR type detected', {
         memberId: memberData.id,
         detectedType: detection.type,
         confidence: detection.confidence,
-        reasons: detection.reasons
+        reasons: detection.reasons,
       });
-      
+
     } catch (error) {
       enterpriseLogger.error('ITR type detection failed', {
         error: error.message,
-        memberData: memberData.id
+        memberData: memberData.id,
       });
     } finally {
       setLoading(false);
@@ -121,7 +121,7 @@ const ITRTypeDetector = ({
       businessIncome: memberData.hasBusinessIncome || false,
       foreignIncome: memberData.hasForeignIncome || false,
       presumptiveIncome: memberData.hasPresumptiveIncome || false,
-      totalIncome: memberData.estimatedIncome || 0
+      totalIncome: memberData.estimatedIncome || 0,
     };
 
     const scores = {};
@@ -167,7 +167,7 @@ const ITRTypeDetector = ({
       type: bestMatch,
       confidence: confidence,
       reasons: reasons[bestMatch],
-      allScores: scores
+      allScores: scores,
     };
   };
 
@@ -177,23 +177,23 @@ const ITRTypeDetector = ({
       detectionMethod: 'auto',
       confidence: confidence,
       reasons: detectionReasons,
-      userOverride: !!userOverride
+      userOverride: !!userOverride,
     });
-    
+
     enterpriseLogger.info('ITR type selected via auto-detection', {
       selectedType: finalType,
       confidence: confidence,
-      userOverride: !!userOverride
+      userOverride: !!userOverride,
     });
   };
 
   const handleManualSelection = (selectedType) => {
     setUserOverride(selectedType);
     setShowManualSelection(false);
-    
+
     enterpriseLogger.info('ITR type manually overridden', {
       originalType: detectedType,
-      overrideType: selectedType
+      overrideType: selectedType,
     });
   };
 
@@ -242,22 +242,22 @@ const ITRTypeDetector = ({
                       color={getConfidenceColor(confidence)}
                     />
                   </div>
-                  
+
                   <p className="recommendation-description">
                     {detectionRules[detectedType].description}
                   </p>
-                  
+
                   <div className="confidence-meter">
                     <div className="confidence-label">
                       Confidence: {confidence}%
                     </div>
                     <div className="confidence-bar">
-                      <div 
+                      <div
                         className="confidence-fill"
-                        style={{ 
+                        style={{
                           width: `${confidence}%`,
-                          backgroundColor: getConfidenceColor(confidence) === 'green' ? '#10B981' : 
-                                         getConfidenceColor(confidence) === 'yellow' ? '#F59E0B' : '#EF4444'
+                          backgroundColor: getConfidenceColor(confidence) === 'green' ? '#10B981' :
+                                         getConfidenceColor(confidence) === 'yellow' ? '#F59E0B' : '#EF4444',
                         }}
                       ></div>
                     </div>
@@ -284,7 +284,7 @@ const ITRTypeDetector = ({
                 >
                   ✅ Use {detectedType} (Recommended)
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   onClick={() => setShowManualSelection(true)}
@@ -296,8 +296,8 @@ const ITRTypeDetector = ({
 
               <div className="ca-note">
                 <p>
-                  💡 <strong>CA-like Guidance:</strong> Our system analyzed your income sources 
-                  like a CA would. You can override if you know better, but our recommendation 
+                  💡 <strong>CA-like Guidance:</strong> Our system analyzed your income sources
+                  like a CA would. You can override if you know better, but our recommendation
                   is based on tax law compliance.
                 </p>
               </div>
@@ -308,8 +308,8 @@ const ITRTypeDetector = ({
                 <h4>Choose ITR Type Manually</h4>
                 <div className="itr-options">
                   {Object.keys(detectionRules).map(itrType => (
-                    <Card 
-                      key={itrType} 
+                    <Card
+                      key={itrType}
                       className={`itr-option ${userOverride === itrType ? 'selected' : ''}`}
                       onClick={() => handleManualSelection(itrType)}
                     >

@@ -10,5 +10,5 @@ const DocumentService = require('./DocumentService');
 module.exports = {
   TaxComputationEngine,
   ValidationEngine,
-  DocumentService
+  DocumentService,
 };

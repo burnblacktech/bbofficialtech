@@ -22,7 +22,7 @@ export const usePerformanceMonitor = (componentName) => {
     if (window.gtag && renderTime > 100) {
       window.gtag('event', 'slow_render', {
         component_name: componentName,
-        render_time: renderTime
+        render_time: renderTime,
       });
     }
 
@@ -30,7 +30,7 @@ export const usePerformanceMonitor = (componentName) => {
   });
 
   return {
-    getRenderTime: () => Date.now() - startTime.current
+    getRenderTime: () => Date.now() - startTime.current,
   };
 };
 
@@ -39,7 +39,7 @@ export const withPerformanceOptimization = (WrappedComponent, componentName) => 
   const OptimizedComponent = memo(WrappedComponent, (prevProps, nextProps) => {
     // Custom comparison logic
     const keysToCompare = Object.keys(prevProps).filter(key =>
-      key.startsWith('on') || typeof prevProps[key] === 'function'
+      key.startsWith('on') || typeof prevProps[key] === 'function',
     );
 
     // Check if all non-function props are equal
@@ -68,7 +68,7 @@ export const OptimizedList = memo(({
   renderItem,
   keyExtractor,
   emptyMessage = 'No items found',
-  className = ''
+  className = '',
 }) => {
   const memoizedItems = useMemo(() => items, [items]);
 
@@ -93,7 +93,7 @@ export const OptimizedList = memo(({
   return (
     prevProps.items.length === nextProps.items.length &&
     prevProps.items.every((item, index) =>
-      prevProps.keyExtractor(item) === nextProps.keyExtractor(nextProps.items[index])
+      prevProps.keyExtractor(item) === nextProps.keyExtractor(nextProps.items[index]),
     ) &&
     prevProps.emptyMessage === nextProps.emptyMessage &&
     prevProps.className === nextProps.className
@@ -122,22 +122,22 @@ export const createLazyComponent = (importFunc, fallback = null) => {
 // Preconfigured lazy components
 export const LazyDashboard = createLazyComponent(
   () => import('../pages/Dashboard'),
-  <div className="p-8 text-center">Loading Dashboard...</div>
+  <div className="p-8 text-center">Loading Dashboard...</div>,
 );
 
 export const LazyITRForm = createLazyComponent(
   () => import('../pages/ITRForm'),
-  <div className="p-8 text-center">Loading ITR Form...</div>
+  <div className="p-8 text-center">Loading ITR Form...</div>,
 );
 
 export const LazyDocuments = createLazyComponent(
   () => import('../pages/Documents'),
-  <div className="p-8 text-center">Loading Documents...</div>
+  <div className="p-8 text-center">Loading Documents...</div>,
 );
 
 export const LazySettings = createLazyComponent(
   () => import('../pages/Settings'),
-  <div className="p-8 text-center">Loading Settings...</div>
+  <div className="p-8 text-center">Loading Settings...</div>,
 );
 
 // Route-based code splitting utilities
@@ -158,8 +158,8 @@ export const useInfiniteScroll = (callback, hasMore) => {
       },
       {
         threshold: 1.0,
-        rootMargin: '100px'
-      }
+        rootMargin: '100px',
+      },
     );
 
     if (node) observer.current.observe(node);
@@ -201,13 +201,13 @@ export const useVirtualScroll = (items, itemHeight, containerHeight) => {
     const startIndex = Math.floor(scrollTop / itemHeight);
     const endIndex = Math.min(
       startIndex + Math.ceil(containerHeight / itemHeight) + 1,
-      items.length
+      items.length,
     );
 
     return {
       startIndex,
       endIndex,
-      visibleItems: items.slice(startIndex, endIndex)
+      visibleItems: items.slice(startIndex, endIndex),
     };
   }, [items, itemHeight, containerHeight, scrollTop]);
 
@@ -218,7 +218,7 @@ export const useVirtualScroll = (items, itemHeight, containerHeight) => {
   return {
     ...visibleItems,
     totalHeight: items.length * itemHeight,
-    handleScroll
+    handleScroll,
   };
 };
 
@@ -243,7 +243,7 @@ export const LazyImage = React.memo(({
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (imgRef.current) {
@@ -347,7 +347,7 @@ export const useBundleSizeMonitor = () => {
           console.log('📦 Bundle Performance:', {
             domContentLoaded: Math.round(navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart),
             loadComplete: Math.round(navEntry.loadEventEnd - navEntry.loadEventStart),
-            transferSize: navEntry.transferSize
+            transferSize: navEntry.transferSize,
           });
         }
       }

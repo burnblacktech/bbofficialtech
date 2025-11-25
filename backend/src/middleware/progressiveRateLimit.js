@@ -18,7 +18,7 @@ const progressiveRateLimit = (options = {}) => {
     windowMs = 15 * 60 * 1000, // 15 minutes
     maxAttempts = 5,
     lockoutDuration = 30 * 60 * 1000, // 30 minutes
-    skipSuccessfulRequests = true
+    skipSuccessfulRequests = true,
   } = options;
 
   return async (req, res, next) => {
@@ -28,7 +28,7 @@ const progressiveRateLimit = (options = {}) => {
     // Check if IP is currently locked out
     if (lockouts.has(key) && lockouts.get(key) > now) {
       const remainingTime = Math.ceil((lockouts.get(key) - now) / 1000 / 60);
-      
+
       await AuditLog.logAuthEvent({
         userId: null,
         action: 'rate_limit_exceeded',
@@ -37,15 +37,15 @@ const progressiveRateLimit = (options = {}) => {
         userAgent: req.headers['user-agent'],
         metadata: {
           reason: 'IP locked out',
-          remainingMinutes: remainingTime
+          remainingMinutes: remainingTime,
         },
         success: false,
-        errorMessage: `Too many failed attempts. Try again in ${remainingTime} minutes.`
+        errorMessage: `Too many failed attempts. Try again in ${remainingTime} minutes.`,
       });
 
       return res.status(429).json({
         error: `Too many failed attempts. Try again in ${remainingTime} minutes.`,
-        retryAfter: Math.ceil((lockouts.get(key) - now) / 1000)
+        retryAfter: Math.ceil((lockouts.get(key) - now) / 1000),
       });
     }
 
@@ -56,7 +56,7 @@ const progressiveRateLimit = (options = {}) => {
 
     // Get current failed attempts
     const attempts = failedAttempts.get(key) || { count: 0, firstAttempt: now };
-    
+
     // Reset if window has passed
     if (now - attempts.firstAttempt > windowMs) {
       attempts.count = 0;
@@ -77,21 +77,21 @@ const progressiveRateLimit = (options = {}) => {
         userAgent: req.headers['user-agent'],
         metadata: {
           reason: 'Max failed attempts exceeded',
-          lockoutDuration: lockoutDuration / 1000 / 60
+          lockoutDuration: lockoutDuration / 1000 / 60,
         },
         success: false,
-        errorMessage: 'IP address locked out due to excessive failed attempts'
+        errorMessage: 'IP address locked out due to excessive failed attempts',
       });
 
       enterpriseLogger.warn('IP address locked out', {
         ip: key,
         attempts: attempts.count,
-        lockoutDuration: lockoutDuration / 1000 / 60
+        lockoutDuration: lockoutDuration / 1000 / 60,
       });
 
       return res.status(429).json({
         error: `Too many failed attempts. IP locked for ${lockoutDuration / 1000 / 60} minutes.`,
-        retryAfter: Math.ceil(lockoutDuration / 1000)
+        retryAfter: Math.ceil(lockoutDuration / 1000),
       });
     }
 
@@ -112,7 +112,7 @@ const recordFailedAttempt = async (req, res, next) => {
 
   // Get current attempts
   const attempts = failedAttempts.get(key) || { count: 0, firstAttempt: now };
-  
+
   // Increment failed attempts
   attempts.count++;
   if (attempts.count === 1) {
@@ -129,16 +129,16 @@ const recordFailedAttempt = async (req, res, next) => {
     userAgent: req.headers['user-agent'],
     metadata: {
       attemptCount: attempts.count,
-      timeSinceFirstAttempt: now - attempts.firstAttempt
+      timeSinceFirstAttempt: now - attempts.firstAttempt,
     },
     success: false,
-    errorMessage: 'Failed authentication attempt'
+    errorMessage: 'Failed authentication attempt',
   });
 
   enterpriseLogger.warn('Failed authentication attempt', {
     ip: key,
     attemptCount: attempts.count,
-    userAgent: req.headers['user-agent']
+    userAgent: req.headers['user-agent'],
   });
 
   next();
@@ -149,10 +149,10 @@ const recordFailedAttempt = async (req, res, next) => {
  */
 const clearFailedAttempts = async (req, res, next) => {
   const key = req.ip || req.connection.remoteAddress;
-  
+
   if (failedAttempts.has(key)) {
     failedAttempts.delete(key);
-    
+
     await AuditLog.logAuthEvent({
       userId: req.user?.userId || null,
       action: 'failed_attempts_cleared',
@@ -160,14 +160,14 @@ const clearFailedAttempts = async (req, res, next) => {
       ipAddress: key,
       userAgent: req.headers['user-agent'],
       metadata: {
-        reason: 'Successful authentication'
+        reason: 'Successful authentication',
       },
-      success: true
+      success: true,
     });
 
     enterpriseLogger.info('Failed attempts cleared', {
       ip: key,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
   }
 
@@ -181,7 +181,7 @@ const standardRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   message: {
-    error: 'Too many requests from this IP, please try again later.'
+    error: 'Too many requests from this IP, please try again later.',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -194,16 +194,16 @@ const standardRateLimit = rateLimit({
       userAgent: req.headers['user-agent'],
       metadata: {
         reason: 'Standard rate limit exceeded',
-        endpoint: req.originalUrl
+        endpoint: req.originalUrl,
       },
       success: false,
-      errorMessage: 'Too many requests from this IP'
+      errorMessage: 'Too many requests from this IP',
     });
 
     res.status(429).json({
-      error: 'Too many requests from this IP, please try again later.'
+      error: 'Too many requests from this IP, please try again later.',
     });
-  }
+  },
 });
 
 /**
@@ -213,7 +213,7 @@ const strictRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // Limit each IP to 5 requests per windowMs
   message: {
-    error: 'Too many requests to sensitive endpoint, please try again later.'
+    error: 'Too many requests to sensitive endpoint, please try again later.',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -226,16 +226,16 @@ const strictRateLimit = rateLimit({
       userAgent: req.headers['user-agent'],
       metadata: {
         reason: 'Strict rate limit exceeded',
-        endpoint: req.originalUrl
+        endpoint: req.originalUrl,
       },
       success: false,
-      errorMessage: 'Too many requests to sensitive endpoint'
+      errorMessage: 'Too many requests to sensitive endpoint',
     });
 
     res.status(429).json({
-      error: 'Too many requests to sensitive endpoint, please try again later.'
+      error: 'Too many requests to sensitive endpoint, please try again later.',
     });
-  }
+  },
 });
 
 module.exports = {
@@ -243,5 +243,5 @@ module.exports = {
   recordFailedAttempt,
   clearFailedAttempts,
   standardRateLimit,
-  strictRateLimit
+  strictRateLimit,
 };

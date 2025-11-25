@@ -12,12 +12,12 @@ class AuditService {
   async getAuditLogs(filters = {}) {
     try {
       const response = await api.get('/audit/logs', { params: filters });
-      
+
       if (response.data.success) {
         return {
           logs: response.data.data.logs,
           pagination: response.data.data.pagination,
-          success: true
+          success: true,
         };
       } else {
         throw new Error(response.data.error || 'Failed to get audit logs');
@@ -33,11 +33,11 @@ class AuditService {
   async getAuditStatistics() {
     try {
       const response = await api.get('/audit/statistics');
-      
+
       if (response.data.success) {
         return {
           statistics: response.data.data.statistics,
-          success: true
+          success: true,
         };
       } else {
         throw new Error(response.data.error || 'Failed to get audit statistics');
@@ -53,11 +53,11 @@ class AuditService {
   async getEventTypes() {
     try {
       const response = await api.get('/audit/event-types');
-      
+
       if (response.data.success) {
         return {
           eventTypes: response.data.data.eventTypes,
-          success: true
+          success: true,
         };
       } else {
         throw new Error(response.data.error || 'Failed to get event types');
@@ -73,11 +73,11 @@ class AuditService {
   async getAuditLevels() {
     try {
       const response = await api.get('/audit/levels');
-      
+
       if (response.data.success) {
         return {
           auditLevels: response.data.data.auditLevels,
-          success: true
+          success: true,
         };
       } else {
         throw new Error(response.data.error || 'Failed to get audit levels');
@@ -94,22 +94,22 @@ class AuditService {
     try {
       const response = await api.post('/audit/export', {
         ...filters,
-        format
+        format,
       }, {
-        responseType: format === 'csv' ? 'blob' : 'json'
+        responseType: format === 'csv' ? 'blob' : 'json',
       });
-      
+
       if (format === 'csv') {
         return {
           data: response.data,
           filename: 'audit_logs.csv',
-          success: true
+          success: true,
         };
       } else {
         return {
           data: response.data.data,
           filename: 'audit_logs.json',
-          success: true
+          success: true,
         };
       }
     } catch (error) {
@@ -123,11 +123,11 @@ class AuditService {
   async getAuditLogDetails(auditId) {
     try {
       const response = await api.get(`/audit/logs/${auditId}`);
-      
+
       if (response.data.success) {
         return {
           log: response.data.data.log,
-          success: true
+          success: true,
         };
       } else {
         throw new Error(response.data.error || 'Failed to get audit log details');
@@ -143,12 +143,12 @@ class AuditService {
   async searchAuditLogs(searchCriteria) {
     try {
       const response = await api.post('/audit/search', searchCriteria);
-      
+
       if (response.data.success) {
         return {
           logs: response.data.data.logs,
           pagination: response.data.data.pagination,
-          success: true
+          success: true,
         };
       } else {
         throw new Error(response.data.error || 'Failed to search audit logs');
@@ -167,7 +167,7 @@ class AuditService {
         this.getAuditLogs({ limit: 100, offset: 0 }),
         this.getAuditStatistics(),
         this.getEventTypes(),
-        this.getAuditLevels()
+        this.getAuditLevels(),
       ]);
 
       return {
@@ -176,7 +176,7 @@ class AuditService {
         statistics: statsRes.statistics,
         eventTypes: typesRes.eventTypes,
         auditLevels: levelsRes.auditLevels,
-        success: true
+        success: true,
       };
     } catch (error) {
       throw new Error(error.message || 'Failed to get audit dashboard data');

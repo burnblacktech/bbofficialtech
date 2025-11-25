@@ -157,7 +157,7 @@ export const useFilingListStore = create(
           if (index !== -1) {
             state.filings[index] = { ...state.filings[index], ...updates };
           }
-          
+
           if (state.selectedFiling && state.selectedFiling.id === filingId) {
             state.selectedFiling = { ...state.selectedFiling, ...updates };
           }
@@ -168,7 +168,7 @@ export const useFilingListStore = create(
         set((state) => {
           state.filings = state.filings.filter(filing => filing.id !== filingId);
           state.totalCount = Math.max(0, state.totalCount - 1);
-          
+
           if (state.selectedFiling && state.selectedFiling.id === filingId) {
             state.selectedFiling = null;
           }
@@ -177,8 +177,8 @@ export const useFilingListStore = create(
     })),
     {
       name: 'filing-list-store',
-    }
-  )
+    },
+  ),
 );
 
 // Service Ticket Store
@@ -249,7 +249,7 @@ export const useServiceTicketStore = create(
           if (index !== -1) {
             state.tickets[index] = { ...state.tickets[index], ...updates };
           }
-          
+
           if (state.selectedTicket && state.selectedTicket.id === ticketId) {
             state.selectedTicket = { ...state.selectedTicket, ...updates };
           }
@@ -260,7 +260,7 @@ export const useServiceTicketStore = create(
         set((state) => {
           state.tickets = state.tickets.filter(ticket => ticket.id !== ticketId);
           state.totalCount = Math.max(0, state.totalCount - 1);
-          
+
           if (state.selectedTicket && state.selectedTicket.id === ticketId) {
             state.selectedTicket = null;
           }
@@ -269,8 +269,8 @@ export const useServiceTicketStore = create(
     })),
     {
       name: 'service-ticket-store',
-    }
-  )
+    },
+  ),
 );
 
 // Dashboard Store
@@ -316,7 +316,7 @@ export const useDashboardStore = create(
 
         try {
           const response = await apiClient.get('/dashboard/summary');
-          
+
           if (response.success) {
             set((state) => {
               state.summary = response.data;
@@ -329,20 +329,20 @@ export const useDashboardStore = create(
         } catch (error) {
           const message = error.message || 'Failed to load dashboard';
           toast.error(message);
-          
+
           set((state) => {
             state.isLoading = false;
             state.error = message;
           });
-          
+
           throw error;
         }
       },
     })),
     {
       name: 'dashboard-store',
-    }
-  )
+    },
+  ),
 );
 
 // App Store
@@ -398,12 +398,12 @@ export const useAppStore = create(
           theme: state.theme,
           sidebarCollapsed: state.sidebarCollapsed,
         }),
-      }
+      },
     ),
     {
       name: 'app-store',
-    }
-  )
+    },
+  ),
 );
 
 // =====================================================

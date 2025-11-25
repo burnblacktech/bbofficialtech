@@ -9,18 +9,18 @@ import { useITR } from '../../contexts/ITRContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
-import { 
-  User, 
-  DollarSign, 
-  Calculator, 
-  FileText, 
-  Save, 
-  ArrowLeft, 
+import {
+  User,
+  DollarSign,
+  Calculator,
+  FileText,
+  Save,
+  ArrowLeft,
   ArrowRight,
   CheckCircle,
   AlertCircle,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -39,64 +39,64 @@ const ITRFiling = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  
+
   const {
     currentFiling,
     updateFiling,
     updateFilingSection,
     saveDraft,
     progress,
-    isLoading
+    isLoading,
   } = useITR();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Enhanced steps configuration
   const steps = [
     {
       id: 'personalInfo',
       title: 'Personal Information',
       description: 'Basic details and contact information',
-      icon: User
+      icon: User,
     },
     {
       id: 'income',
       title: 'Income Details',
       description: 'Salary, business, and other income sources',
-      icon: DollarSign
+      icon: DollarSign,
     },
     {
       id: 'deductions',
       title: 'Deductions',
       description: 'Tax-saving investments and expenses',
-      icon: Calculator
+      icon: Calculator,
     },
     {
       id: 'taxesPaid',
       title: 'Taxes Paid',
       description: 'TDS, advance tax, and other payments',
-      icon: FileText
+      icon: FileText,
     },
     {
       id: 'review',
       title: 'Review & File',
       description: 'Final review and submission',
-      icon: CheckCircle
-    }
+      icon: CheckCircle,
+    },
   ];
 
   // Mock data for live tax summary
   const [incomeData, setIncomeData] = useState({
     salary: 1200000,
     interest: 8500,
-    other: 0
+    other: 0,
   });
-  
+
   const [deductionData, setDeductionData] = useState({
     section80C: 120000,
     section80D: 25000,
-    section80G: 10000
+    section80G: 10000,
   });
 
   // Step navigation handlers
@@ -138,7 +138,7 @@ const ITRFiling = () => {
         context: context || 'self',
         userId: userId || user?.id,
         assessmentYear: '2024-25',
-        status: 'draft'
+        status: 'draft',
       });
     }
   }, [location.state, user?.id, updateFiling]);
@@ -149,7 +149,7 @@ const ITRFiling = () => {
   // Render current step content
   const renderStepContent = () => {
     const currentStepData = steps[currentStep];
-    
+
     switch (currentStepData.id) {
       case 'personalInfo':
         return <PersonalInfoForm />;
@@ -161,13 +161,13 @@ const ITRFiling = () => {
               subtitle="Add all your income sources for the assessment year"
               sources={[
                 { id: 1, name: 'Salary from XYZ Corp', amount: 1200000, type: 'salary' },
-                { id: 2, name: 'Interest Income', amount: 8500, type: 'interest' }
+                { id: 2, name: 'Interest Income', amount: 8500, type: 'interest' },
               ]}
               sourceTypes={[
                 { id: 'salary', name: 'Salary', description: 'Income from employment' },
                 { id: 'business', name: 'Business', description: 'Income from business or profession' },
                 { id: 'interest', name: 'Interest', description: 'Interest from savings, FDs, etc.' },
-                { id: 'other', name: 'Other Sources', description: 'Any other income sources' }
+                { id: 'other', name: 'Other Sources', description: 'Any other income sources' },
               ]}
               onAddSource={(data) => console.log('Add income source:', data)}
               onEditSource={(id, data) => console.log('Edit income source:', id, data)}
@@ -194,12 +194,12 @@ const ITRFiling = () => {
               title="Other Deductions"
               subtitle="Add other eligible deductions"
               sources={[
-                { id: 1, name: 'Donation to Charity', amount: 10000, type: 'donation' }
+                { id: 1, name: 'Donation to Charity', amount: 10000, type: 'donation' },
               ]}
               sourceTypes={[
                 { id: 'donation', name: 'Donation', description: 'Charitable donations under 80G' },
                 { id: 'education', name: 'Education', description: 'Education loan interest' },
-                { id: 'home', name: 'Home Loan', description: 'Home loan interest and principal' }
+                { id: 'home', name: 'Home Loan', description: 'Home loan interest and principal' },
               ]}
               onAddSource={(data) => console.log('Add deduction:', data)}
               onEditSource={(id, data) => console.log('Edit deduction:', id, data)}
@@ -259,7 +259,7 @@ const ITRFiling = () => {
                 </p>
               </div>
             </div>
-            
+
             <Button
               variant="outline"
               onClick={handleSaveDraft}
@@ -289,7 +289,7 @@ const ITRFiling = () => {
             <Card>
               <div className="p-6">
                 {renderStepContent()}
-                
+
                 {/* Navigation Buttons */}
                 <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
                   <Button
@@ -301,7 +301,7 @@ const ITRFiling = () => {
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Previous
                   </Button>
-                  
+
                   <Button
                     onClick={handleNext}
                     disabled={currentStep === steps.length - 1}

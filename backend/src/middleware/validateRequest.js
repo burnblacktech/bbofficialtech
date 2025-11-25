@@ -19,14 +19,14 @@ const validateRequest = (schema, property = 'body') => {
       const { error, value } = schema.validate(req[property], {
         abortEarly: false,
         allowUnknown: false,
-        stripUnknown: true
+        stripUnknown: true,
       });
 
       if (error) {
         const errorDetails = error.details.map(detail => ({
           field: detail.path.join('.'),
           message: detail.message,
-          value: detail.context?.value
+          value: detail.context?.value,
         }));
 
         enterpriseLogger.warn('Request validation failed', {
@@ -34,28 +34,28 @@ const validateRequest = (schema, property = 'body') => {
           errors: errorDetails,
           url: req.url,
           method: req.method,
-          userId: req.user?.id
+          userId: req.user?.id,
         });
 
         return res.status(400).json({
           success: false,
           message: 'Validation failed',
-          errors: errorDetails
+          errors: errorDetails,
         });
       }
 
       // Replace the request property with validated and sanitized data
       req[property] = value;
-      
+
       next();
     } catch (err) {
       enterpriseLogger.error('Validation middleware error', {
         error: err.message,
         property,
         url: req.url,
-        method: req.method
+        method: req.method,
       });
-      
+
       next(new AppError('Validation error', 500));
     }
   };
@@ -70,13 +70,13 @@ const validateMultiple = (schemas) => {
   return (req, res, next) => {
     try {
       const errors = [];
-      
+
       for (const [property, schema] of Object.entries(schemas)) {
         if (req[property]) {
           const { error, value } = schema.validate(req[property], {
             abortEarly: false,
             allowUnknown: false,
-            stripUnknown: true
+            stripUnknown: true,
           });
 
           if (error) {
@@ -84,9 +84,9 @@ const validateMultiple = (schemas) => {
               field: detail.path.join('.'),
               message: detail.message,
               value: detail.context?.value,
-              property
+              property,
             }));
-            
+
             errors.push(...errorDetails);
           } else {
             req[property] = value;
@@ -99,13 +99,13 @@ const validateMultiple = (schemas) => {
           errors,
           url: req.url,
           method: req.method,
-          userId: req.user?.id
+          userId: req.user?.id,
         });
 
         return res.status(400).json({
           success: false,
           message: 'Validation failed',
-          errors
+          errors,
         });
       }
 
@@ -115,9 +115,9 @@ const validateMultiple = (schemas) => {
         error: err.message,
         schemas: Object.keys(schemas),
         url: req.url,
-        method: req.method
+        method: req.method,
       });
-      
+
       next(new AppError('Validation error', 500));
     }
   };
@@ -132,18 +132,18 @@ const commonSchemas = {
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(100).default(10),
     sort: Joi.string().valid('asc', 'desc').default('desc'),
-    sortBy: Joi.string().default('createdAt')
+    sortBy: Joi.string().default('createdAt'),
   }),
 
   // Search
   search: Joi.object({
     q: Joi.string().min(1).max(100),
-    filters: Joi.object().pattern(Joi.string(), Joi.any())
+    filters: Joi.object().pattern(Joi.string(), Joi.any()),
   }),
 
   // ID parameter
   idParam: Joi.object({
-    id: Joi.string().uuid().required()
+    id: Joi.string().uuid().required(),
   }),
 
   // Email
@@ -159,7 +159,7 @@ const commonSchemas = {
   pan: Joi.string().pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/).required(),
 
   // Aadhaar number
-  aadhaar: Joi.string().pattern(/^\d{12}$/).required()
+  aadhaar: Joi.string().pattern(/^\d{12}$/).required(),
 };
 
 /**
@@ -169,7 +169,7 @@ const validators = {
   // Auth validators
   login: validateRequest(Joi.object({
     email: commonSchemas.email,
-    password: Joi.string().min(1).required()
+    password: Joi.string().min(1).required(),
   })),
 
   register: validateRequest(Joi.object({
@@ -177,7 +177,7 @@ const validators = {
     password: commonSchemas.password,
     fullName: Joi.string().min(2).max(100).required(),
     phone: commonSchemas.phone,
-    role: Joi.string().valid('END_USER', 'CA', 'CA_FIRM_ADMIN', 'PLATFORM_ADMIN', 'SUPER_ADMIN').required()
+    role: Joi.string().valid('END_USER', 'CA', 'CA_FIRM_ADMIN', 'PLATFORM_ADMIN', 'SUPER_ADMIN').required(),
   })),
 
   // User validators
@@ -190,26 +190,26 @@ const validators = {
       city: Joi.string().max(100),
       state: Joi.string().max(100),
       pincode: Joi.string().pattern(/^\d{6}$/),
-      country: Joi.string().max(100).default('India')
-    })
+      country: Joi.string().max(100).default('India'),
+    }),
   })),
 
   // ITR validators
   createITR: validateRequest(Joi.object({
     itrType: Joi.string().valid('ITR1', 'ITR2', 'ITR3', 'ITR4').required(),
     assessmentYear: Joi.string().pattern(/^\d{4}-\d{2}$/).required(),
-    filingData: Joi.object().required()
+    filingData: Joi.object().required(),
   })),
 
   updateITR: validateRequest(Joi.object({
-    filingData: Joi.object().required()
+    filingData: Joi.object().required(),
   })),
 
   // Document validators
   uploadDocument: validateRequest(Joi.object({
     category: Joi.string().valid('FORM_16', 'PAN_CARD', 'AADHAAR', 'BANK_STATEMENT', 'INVESTMENT_PROOF', 'OTHER').required(),
     description: Joi.string().max(500),
-    tags: Joi.array().items(Joi.string().max(50))
+    tags: Joi.array().items(Joi.string().max(50)),
   })),
 
   // Member validators
@@ -220,7 +220,7 @@ const validators = {
     dateOfBirth: Joi.date().max('now').required(),
     relationship: Joi.string().valid('SPOUSE', 'CHILD', 'PARENT', 'SIBLING', 'OTHER').required(),
     email: Joi.string().email(),
-    phone: commonSchemas.phone
+    phone: commonSchemas.phone,
   })),
 
   // CA Bot validators
@@ -231,19 +231,19 @@ const validators = {
       language: Joi.string().valid('en', 'hi').required(),
       currentStep: Joi.string().required(),
       collectedData: Joi.object(),
-      steps: Joi.array().items(Joi.string())
-    }).required()
+      steps: Joi.array().items(Joi.string()),
+    }).required(),
   })),
 
   // Generic validators
   pagination: validateRequest(commonSchemas.pagination, 'query'),
   search: validateRequest(commonSchemas.search, 'query'),
-  idParam: validateRequest(commonSchemas.idParam, 'params')
+  idParam: validateRequest(commonSchemas.idParam, 'params'),
 };
 
 module.exports = {
   validateRequest,
   validateMultiple,
   commonSchemas,
-  validators
+  validators,
 };

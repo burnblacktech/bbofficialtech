@@ -18,8 +18,8 @@ const createOrderSchema = Joi.object({
   notes: Joi.object({
     filingId: Joi.string().optional(),
     expertReview: Joi.boolean().optional(),
-    service: Joi.string().optional()
-  }).optional()
+    service: Joi.string().optional(),
+  }).optional(),
 });
 
 const verifyPaymentSchema = Joi.object({
@@ -28,7 +28,7 @@ const verifyPaymentSchema = Joi.object({
   razorpay_signature: Joi.string().required(),
   filingId: Joi.string().optional(),
   expertReview: Joi.boolean().optional(),
-  amount: Joi.number().required()
+  amount: Joi.number().required(),
 });
 
 const createSubscriptionOrderSchema = Joi.object({
@@ -46,12 +46,12 @@ const createSubscriptionOrderSchema = Joi.object({
       city: Joi.string().required(),
       state: Joi.string().required(),
       pincode: Joi.string().pattern(/^\d{6}$/).required(),
-      country: Joi.string().default('India')
+      country: Joi.string().default('India'),
     }).required(),
     gstNumber: Joi.string().optional(),
     panNumber: Joi.string().pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/).required(),
-    registrationNumber: Joi.string().optional()
-  }).required()
+    registrationNumber: Joi.string().optional(),
+  }).required(),
 });
 
 const verifySubscriptionPaymentSchema = Joi.object({
@@ -70,49 +70,49 @@ const verifySubscriptionPaymentSchema = Joi.object({
       city: Joi.string().required(),
       state: Joi.string().required(),
       pincode: Joi.string().pattern(/^\d{6}$/).required(),
-      country: Joi.string().default('India')
+      country: Joi.string().default('India'),
     }).required(),
     gstNumber: Joi.string().optional(),
     panNumber: Joi.string().pattern(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/).required(),
-    registrationNumber: Joi.string().optional()
-  }).required()
+    registrationNumber: Joi.string().optional(),
+  }).required(),
 });
 
 // ITR Filing Payment Routes
-router.post('/create-order', 
-  authenticateToken, 
-  validateRequest(createOrderSchema), 
-  paymentController.createITRFilingOrder
+router.post('/create-order',
+  authenticateToken,
+  validateRequest(createOrderSchema),
+  paymentController.createITRFilingOrder,
 );
 
-router.post('/verify-signature', 
-  authenticateToken, 
-  validateRequest(verifyPaymentSchema), 
-  paymentController.verifyITRFilingPayment
+router.post('/verify-signature',
+  authenticateToken,
+  validateRequest(verifyPaymentSchema),
+  paymentController.verifyITRFilingPayment,
 );
 
 // CA Subscription Payment Routes
-router.post('/subscription/create-order', 
-  authenticateToken, 
-  validateRequest(createSubscriptionOrderSchema), 
-  paymentController.createSubscriptionOrder
+router.post('/subscription/create-order',
+  authenticateToken,
+  validateRequest(createSubscriptionOrderSchema),
+  paymentController.createSubscriptionOrder,
 );
 
-router.post('/subscription/verify-signature', 
-  authenticateToken, 
-  validateRequest(verifySubscriptionPaymentSchema), 
-  paymentController.verifySubscriptionPayment
+router.post('/subscription/verify-signature',
+  authenticateToken,
+  validateRequest(verifySubscriptionPaymentSchema),
+  paymentController.verifySubscriptionPayment,
 );
 
 // Payment Status and History Routes
-router.get('/status/:paymentId', 
-  authenticateToken, 
-  paymentController.getPaymentStatus
+router.get('/status/:paymentId',
+  authenticateToken,
+  paymentController.getPaymentStatus,
 );
 
-router.get('/history', 
-  authenticateToken, 
-  paymentController.getPaymentHistory
+router.get('/history',
+  authenticateToken,
+  paymentController.getPaymentHistory,
 );
 
 module.exports = router;

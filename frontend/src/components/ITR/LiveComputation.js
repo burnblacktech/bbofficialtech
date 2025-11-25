@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Calculator, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  Calculator,
+  TrendingUp,
+  TrendingDown,
   DollarSign,
   ChevronDown,
   ChevronUp,
   Info,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 const LiveComputation = ({ taxCalculation, filingData, isLoading }) => {
@@ -35,7 +35,7 @@ const LiveComputation = ({ taxCalculation, filingData, isLoading }) => {
     totalTaxesPaid,
     refund,
     taxDue,
-    breakdown
+    breakdown,
   } = taxCalculation;
 
   const hasRefund = refund > 0;
@@ -69,14 +69,14 @@ const LiveComputation = ({ taxCalculation, filingData, isLoading }) => {
               ₹{totalIncome?.toLocaleString() || 0}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Total Deductions</span>
             <span className="text-sm font-medium text-green-600">
               - ₹{totalDeductions?.toLocaleString() || 0}
             </span>
           </div>
-          
+
           <div className="border-t border-gray-200 pt-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">Taxable Income</span>
@@ -95,14 +95,14 @@ const LiveComputation = ({ taxCalculation, filingData, isLoading }) => {
               ₹{breakdown?.taxBreakdown?.slab1 + breakdown?.taxBreakdown?.slab2 + breakdown?.taxBreakdown?.slab3 + breakdown?.taxBreakdown?.slab4 || 0}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Health & Education Cess</span>
             <span className="text-sm font-medium text-gray-900">
               ₹{breakdown?.taxBreakdown?.cess?.toLocaleString() || 0}
             </span>
           </div>
-          
+
           <div className="border-t border-gray-200 pt-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">Total Tax Liability</span>
@@ -287,11 +287,11 @@ const LiveComputation = ({ taxCalculation, filingData, isLoading }) => {
               <div className="text-sm">
                 <p className="text-blue-800 font-medium">AI Insight</p>
                 <p className="text-blue-700 mt-1">
-                  {hasRefund 
+                  {hasRefund
                     ? "Great! You're getting a refund. Consider investing it in tax-saving instruments for next year."
                     : hasTaxDue
-                    ? "You have tax due. Consider making advance tax payments to avoid interest charges."
-                    : "Your tax planning looks good. Consider maximizing deductions to optimize your tax liability."
+                    ? 'You have tax due. Consider making advance tax payments to avoid interest charges.'
+                    : 'Your tax planning looks good. Consider maximizing deductions to optimize your tax liability.'
                   }
                 </p>
               </div>

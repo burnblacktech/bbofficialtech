@@ -21,7 +21,7 @@ const Card = React.forwardRef(({
     sm: 'p-4',
     md: 'p-6',
     lg: 'p-8',
-    xl: 'p-10'
+    xl: 'p-10',
   };
 
   const shadowClasses = {
@@ -29,7 +29,7 @@ const Card = React.forwardRef(({
     sm: 'shadow-sm',
     md: 'shadow-md',
     lg: 'shadow-lg',
-    xl: 'shadow-xl'
+    xl: 'shadow-xl',
   };
 
   const roundedClasses = {
@@ -38,7 +38,7 @@ const Card = React.forwardRef(({
     md: 'rounded-md',
     lg: 'rounded-lg',
     xl: 'rounded-xl',
-    full: 'rounded-full'
+    full: 'rounded-full',
   };
 
   const baseClasses = cn(
@@ -48,7 +48,7 @@ const Card = React.forwardRef(({
     shadowClasses[shadow],
     roundedClasses[rounded],
     hover && 'hover:shadow-md transition-shadow duration-200',
-    className
+    className,
   );
 
   return (

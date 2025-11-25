@@ -72,7 +72,7 @@ const Input = React.forwardRef(({
         {animated && !disabled ? (
           <motion.div
             whileFocus={{ scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           >
             {inputElement}
           </motion.div>

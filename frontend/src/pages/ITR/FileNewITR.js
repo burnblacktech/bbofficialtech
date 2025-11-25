@@ -5,24 +5,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle, 
-  FileText, 
-  Calculator, 
-  Upload, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  FileText,
+  Calculator,
+  Upload,
   User,
   Building,
   DollarSign,
   AlertCircle,
-  Info
+  Info,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const FileNewITR = () => {
@@ -35,7 +35,7 @@ const FileNewITR = () => {
     incomeSources: {},
     deductions: {},
     attachments: [],
-    summary: {}
+    summary: {},
   });
 
   const steps = [
@@ -44,7 +44,7 @@ const FileNewITR = () => {
     { id: 3, title: 'Income Sources', icon: DollarSign, description: 'Salary, business, capital gains' },
     { id: 4, title: 'Deductions', icon: Calculator, description: '80C, 80D, 80G and other deductions' },
     { id: 5, title: 'Attachments', icon: Upload, description: 'Upload supporting documents' },
-    { id: 6, title: 'Review & Submit', icon: CheckCircle, description: 'Final review and submission' }
+    { id: 6, title: 'Review & Submit', icon: CheckCircle, description: 'Final review and submission' },
   ];
 
   const itrTypes = [
@@ -54,7 +54,7 @@ const FileNewITR = () => {
       description: 'For salaried individuals with income from salary, one house property, and other sources',
       applicable: 'Salary + One house property + Other sources (interest, etc.)',
       icon: User,
-      color: 'bg-blue-50 border-blue-200 text-blue-800'
+      color: 'bg-blue-50 border-blue-200 text-blue-800',
     },
     {
       id: 'ITR-2',
@@ -62,7 +62,7 @@ const FileNewITR = () => {
       description: 'For individuals and HUFs not having income from business or profession',
       applicable: 'Salary + Multiple house properties + Capital gains + Other sources',
       icon: Building,
-      color: 'bg-green-50 border-green-200 text-green-800'
+      color: 'bg-green-50 border-green-200 text-green-800',
     },
     {
       id: 'ITR-3',
@@ -70,7 +70,7 @@ const FileNewITR = () => {
       description: 'For individuals and HUFs having income from business or profession',
       applicable: 'Business/Professional income + All other sources',
       icon: Calculator,
-      color: 'bg-purple-50 border-purple-200 text-purple-800'
+      color: 'bg-purple-50 border-purple-200 text-purple-800',
     },
     {
       id: 'ITR-4',
@@ -78,8 +78,8 @@ const FileNewITR = () => {
       description: 'For individuals, HUFs and firms having presumptive income from business',
       applicable: 'Presumptive business income (up to ₹2 crores)',
       icon: DollarSign,
-      color: 'bg-orange-50 border-orange-200 text-orange-800'
-    }
+      color: 'bg-orange-50 border-orange-200 text-orange-800',
+    },
   ];
 
   const handleITRTypeSelect = (type) => {
@@ -119,7 +119,7 @@ const FileNewITR = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Select ITR Type</h2>
               <p className="text-gray-600">Choose the appropriate ITR form based on your income sources</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {itrTypes.map((type) => {
                 const Icon = type.icon;
@@ -150,7 +150,7 @@ const FileNewITR = () => {
                 <div>
                   <h4 className="font-medium text-blue-900">Need Help Choosing?</h4>
                   <p className="text-sm text-blue-700 mt-1">
-                    If you're unsure about which ITR form to use, our system will guide you through 
+                    If you're unsure about which ITR form to use, our system will guide you through
                     questions to determine the most appropriate form for your situation.
                   </p>
                 </div>
@@ -166,14 +166,14 @@ const FileNewITR = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Personal Information</h2>
               <p className="text-gray-600">Provide your basic details and PAN information</p>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-yellow-900">Coming Soon</h4>
                   <p className="text-sm text-yellow-700 mt-1">
-                    Personal information form will be implemented next. This will include PAN verification, 
+                    Personal information form will be implemented next. This will include PAN verification,
                     address details, and bank account information.
                   </p>
                 </div>
@@ -189,14 +189,14 @@ const FileNewITR = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Income Sources</h2>
               <p className="text-gray-600">Enter your income from various sources</p>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-yellow-900">Coming Soon</h4>
                   <p className="text-sm text-yellow-700 mt-1">
-                    Income sources form will include salary details, business income, capital gains, 
+                    Income sources form will include salary details, business income, capital gains,
                     rental income, and other sources based on the selected ITR type.
                   </p>
                 </div>
@@ -212,14 +212,14 @@ const FileNewITR = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Deductions</h2>
               <p className="text-gray-600">Claim eligible deductions to reduce your tax liability</p>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-yellow-900">Coming Soon</h4>
                   <p className="text-sm text-yellow-700 mt-1">
-                    Deductions form will include 80C, 80D, 80G, and other eligible deductions 
+                    Deductions form will include 80C, 80D, 80G, and other eligible deductions
                     with proper validation and breakdown components.
                   </p>
                 </div>
@@ -235,14 +235,14 @@ const FileNewITR = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Attachments</h2>
               <p className="text-gray-600">Upload supporting documents for your ITR filing</p>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-yellow-900">Coming Soon</h4>
                   <p className="text-sm text-yellow-700 mt-1">
-                    Document upload will support Form-16, bank statements, investment proofs, 
+                    Document upload will support Form-16, bank statements, investment proofs,
                     and other required documents with proper validation.
                   </p>
                 </div>
@@ -258,14 +258,14 @@ const FileNewITR = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Review & Submit</h2>
               <p className="text-gray-600">Review your ITR details before final submission</p>
             </div>
-            
+
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-yellow-900">Coming Soon</h4>
                   <p className="text-sm text-yellow-700 mt-1">
-                    Review page will show a comprehensive summary of all entered information 
+                    Review page will show a comprehensive summary of all entered information
                     with tax computation and final submission to ITD.
                   </p>
                 </div>
@@ -291,7 +291,7 @@ const FileNewITR = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </button>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">File New ITR</h1>
@@ -299,7 +299,7 @@ const FileNewITR = () => {
                 Complete your income tax return filing for Assessment Year 2024-25
               </p>
             </div>
-            
+
             <div className="text-right">
               <div className="text-sm text-gray-500">Assessment Year</div>
               <div className="font-semibold text-gray-900">2024-25</div>
@@ -314,14 +314,14 @@ const FileNewITR = () => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
               const isCompleted = currentStep > step.id;
-              
+
               return (
                 <div key={step.id} className="flex items-center">
                   <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                    isCompleted 
-                      ? 'bg-green-500 border-green-500 text-white' 
-                      : isActive 
-                        ? 'bg-blue-500 border-blue-500 text-white' 
+                    isCompleted
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : isActive
+                        ? 'bg-blue-500 border-blue-500 text-white'
                         : 'bg-white border-gray-300 text-gray-400'
                   }`}>
                     {isCompleted ? (
@@ -330,7 +330,7 @@ const FileNewITR = () => {
                       <Icon className="h-5 w-5" />
                     )}
                   </div>
-                  
+
                   {index < steps.length - 1 && (
                     <div className={`w-16 h-0.5 mx-2 ${
                       isCompleted ? 'bg-green-500' : 'bg-gray-300'
@@ -340,7 +340,7 @@ const FileNewITR = () => {
               );
             })}
           </div>
-          
+
           <div className="mt-4">
             <div className="text-center">
               <h3 className="font-semibold text-gray-900">
@@ -380,7 +380,7 @@ const FileNewITR = () => {
             >
               Save Draft
             </button>
-            
+
             <button
               onClick={handleNext}
               disabled={currentStep === steps.length}

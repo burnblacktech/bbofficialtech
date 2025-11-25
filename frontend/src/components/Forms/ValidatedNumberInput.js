@@ -28,7 +28,7 @@ const ValidatedNumberInput = ({
     errors: [],
     warnings: [],
     suggestions: [],
-    isTouched: false
+    isTouched: false,
   });
   const [isFocused, setIsFocused] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
@@ -39,7 +39,7 @@ const ValidatedNumberInput = ({
     if (!num || isNaN(num)) return '';
     return new Intl.NumberFormat('en-IN', {
       maximumFractionDigits: 2,
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(num);
   };
 
@@ -72,7 +72,7 @@ const ValidatedNumberInput = ({
           errors: result.errors,
           warnings: result.warnings,
           suggestions: [...result.suggestions, ...suggestions],
-          isTouched: true
+          isTouched: true,
         });
       } catch (error) {
         console.error('Validation error:', error);

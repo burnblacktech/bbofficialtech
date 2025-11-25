@@ -10,7 +10,7 @@ const ITRDraft = sequelize.define('ITRDraft', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   filingId: {
     type: DataTypes.UUID,
@@ -18,8 +18,8 @@ const ITRDraft = sequelize.define('ITRDraft', {
     field: 'filing_id',
     references: {
       model: 'itr_filings',
-      key: 'id'
-    }
+      key: 'id',
+    },
   },
   step: {
     type: DataTypes.ENUM(
@@ -30,85 +30,85 @@ const ITRDraft = sequelize.define('ITRDraft', {
       'bank_details',
       'verification',
       'review',
-      'submit'
+      'submit',
     ),
-    allowNull: false
+    allowNull: false,
   },
   data: {
     type: DataTypes.JSONB,
     allowNull: true,
-    comment: 'Partial form data for this step'
+    comment: 'Partial form data for this step',
   },
   isCompleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-    field: 'is_completed'
+    field: 'is_completed',
   },
   validationErrors: {
     type: DataTypes.JSONB,
     allowNull: true,
-    field: 'validation_errors'
+    field: 'validation_errors',
   },
   lastSavedAt: {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
-    field: 'last_saved_at'
+    field: 'last_saved_at',
   },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'created_at'
+    field: 'created_at',
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updated_at'
-  }
+    field: 'updated_at',
+  },
 }, {
   tableName: 'itr_drafts',
   timestamps: true,
   underscored: true,
   indexes: [
     {
-      fields: ['filing_id']
+      fields: ['filing_id'],
     },
     {
-      fields: ['step']
+      fields: ['step'],
     },
     {
-      fields: ['is_completed']
+      fields: ['is_completed'],
     },
     {
-      fields: ['last_saved_at']
+      fields: ['last_saved_at'],
     },
     {
       unique: true,
       fields: ['filing_id', 'step'],
-      name: 'unique_draft_per_step'
-    }
-  ]
+      name: 'unique_draft_per_step',
+    },
+  ],
 });
 
 // Instance methods
 ITRDraft.prototype.markCompleted = async function() {
   try {
-    await this.update({ 
+    await this.update({
       isCompleted: true,
-      lastSavedAt: new Date()
+      lastSavedAt: new Date(),
     });
-    
+
     enterpriseLogger.info('Draft step marked as completed', {
       draftId: this.id,
       filingId: this.filingId,
-      step: this.step
+      step: this.step,
     });
-    
+
     return this;
   } catch (error) {
     enterpriseLogger.error('Mark draft completed error', {
       draftId: this.id,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -118,27 +118,27 @@ ITRDraft.prototype.updateData = async function(newData, validationErrors = null)
   try {
     const updateData = {
       data: newData,
-      lastSavedAt: new Date()
+      lastSavedAt: new Date(),
     };
-    
+
     if (validationErrors !== null) {
       updateData.validationErrors = validationErrors;
     }
-    
+
     await this.update(updateData);
-    
+
     enterpriseLogger.info('Draft data updated', {
       draftId: this.id,
       filingId: this.filingId,
       step: this.step,
-      hasValidationErrors: !!validationErrors
+      hasValidationErrors: !!validationErrors,
     });
-    
+
     return this;
   } catch (error) {
     enterpriseLogger.error('Update draft data error', {
       draftId: this.id,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -146,16 +146,16 @@ ITRDraft.prototype.updateData = async function(newData, validationErrors = null)
 
 ITRDraft.prototype.clearValidationErrors = async function() {
   try {
-    await this.update({ 
+    await this.update({
       validationErrors: null,
-      lastSavedAt: new Date()
+      lastSavedAt: new Date(),
     });
-    
+
     return this;
   } catch (error) {
     enterpriseLogger.error('Clear validation errors error', {
       draftId: this.id,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -166,12 +166,12 @@ ITRDraft.findByFiling = async function(filingId) {
   try {
     return await ITRDraft.findAll({
       where: { filingId },
-      order: [['step', 'ASC']]
+      order: [['step', 'ASC']],
     });
   } catch (error) {
     enterpriseLogger.error('Find drafts by filing error', {
       filingId,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -180,13 +180,13 @@ ITRDraft.findByFiling = async function(filingId) {
 ITRDraft.findByFilingAndStep = async function(filingId, step) {
   try {
     return await ITRDraft.findOne({
-      where: { filingId, step }
+      where: { filingId, step },
     });
   } catch (error) {
     enterpriseLogger.error('Find draft by filing and step error', {
       filingId,
       step,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -196,9 +196,9 @@ ITRDraft.getCompletionStatus = async function(filingId) {
   try {
     const drafts = await ITRDraft.findAll({
       where: { filingId },
-      attributes: ['step', 'isCompleted', 'lastSavedAt']
+      attributes: ['step', 'isCompleted', 'lastSavedAt'],
     });
-    
+
     const stepOrder = [
       'personal_info',
       'income_sources',
@@ -207,22 +207,22 @@ ITRDraft.getCompletionStatus = async function(filingId) {
       'bank_details',
       'verification',
       'review',
-      'submit'
+      'submit',
     ];
-    
+
     const status = {
       totalSteps: stepOrder.length,
       completedSteps: 0,
       currentStep: null,
       lastSavedAt: null,
-      progress: 0
+      progress: 0,
     };
-    
+
     let foundCurrentStep = false;
-    
+
     for (const step of stepOrder) {
       const draft = drafts.find(d => d.step === step);
-      
+
       if (draft) {
         if (draft.isCompleted) {
           status.completedSteps++;
@@ -230,7 +230,7 @@ ITRDraft.getCompletionStatus = async function(filingId) {
           status.currentStep = step;
           foundCurrentStep = true;
         }
-        
+
         if (draft.lastSavedAt && (!status.lastSavedAt || draft.lastSavedAt > status.lastSavedAt)) {
           status.lastSavedAt = draft.lastSavedAt;
         }
@@ -239,14 +239,14 @@ ITRDraft.getCompletionStatus = async function(filingId) {
         foundCurrentStep = true;
       }
     }
-    
+
     status.progress = Math.round((status.completedSteps / status.totalSteps) * 100);
-    
+
     return status;
   } catch (error) {
     enterpriseLogger.error('Get completion status error', {
       filingId,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -259,28 +259,28 @@ ITRDraft.createOrUpdate = async function(filingId, step, data, validationErrors 
       defaults: {
         data,
         validationErrors,
-        lastSavedAt: new Date()
-      }
+        lastSavedAt: new Date(),
+      },
     });
-    
+
     if (!created) {
       await draft.updateData(data, validationErrors);
     }
-    
+
     enterpriseLogger.info('Draft created or updated', {
       draftId: draft.id,
       filingId,
       step,
       created,
-      hasValidationErrors: !!validationErrors
+      hasValidationErrors: !!validationErrors,
     });
-    
+
     return draft;
   } catch (error) {
     enterpriseLogger.error('Create or update draft error', {
       filingId,
       step,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }

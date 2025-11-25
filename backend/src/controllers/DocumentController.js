@@ -2,7 +2,7 @@
 // DOCUMENT CONTROLLER (API ENDPOINTS)
 // =====================================================
 
-const documentService = require('../services/DocumentService');
+const documentService = require('../services/core/DocumentService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 
@@ -27,27 +27,27 @@ class DocumentController {
         { fileName, fileType, sizeBytes, category, filingId, memberId },
         userId,
         uploadedBy,
-        ipAddress
+        ipAddress,
       );
 
       enterpriseLogger.info('Presigned URL generated via API', {
         userId,
         fileName,
         category,
-        sizeBytes
+        sizeBytes,
       });
 
       res.status(200).json({
         success: true,
         message: 'Presigned URL generated successfully',
-        data: uploadData
+        data: uploadData,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to generate presigned URL via API', {
         error: error.message,
         userId: req.user?.id,
-        body: req.body
+        body: req.body,
       });
       next(error);
     }
@@ -77,27 +77,27 @@ class DocumentController {
         { s3Key, localPath, fileName, fileType, sizeBytes, category, filingId, memberId },
         userId,
         uploadedBy,
-        ipAddress
+        ipAddress,
       );
 
       enterpriseLogger.info('Document upload completed via API', {
         userId,
         fileName,
         category,
-        documentId: result.document.id
+        documentId: result.document.id,
       });
 
       res.status(201).json({
         success: true,
         message: 'Document uploaded successfully',
-        data: result.document
+        data: result.document,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to complete upload via API', {
         error: error.message,
         userId: req.user?.id,
-        body: req.body
+        body: req.body,
       });
       next(error);
     }
@@ -115,7 +115,7 @@ class DocumentController {
         category: req.query.category,
         verificationStatus: req.query.verificationStatus,
         limit: parseInt(req.query.limit) || 50,
-        offset: parseInt(req.query.offset) || 0
+        offset: parseInt(req.query.offset) || 0,
       };
 
       // Remove undefined filters
@@ -130,7 +130,7 @@ class DocumentController {
       enterpriseLogger.info('User documents retrieved via API', {
         userId,
         count: documents.length,
-        filters
+        filters,
       });
 
       res.status(200).json({
@@ -139,15 +139,15 @@ class DocumentController {
         data: {
           documents,
           count: documents.length,
-          filters
-        }
+          filters,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get user documents via API', {
         error: error.message,
         userId: req.user?.id,
-        query: req.query
+        query: req.query,
       });
       next(error);
     }
@@ -168,12 +168,12 @@ class DocumentController {
         id,
         userId,
         requestedBy,
-        ipAddress
+        ipAddress,
       );
 
       enterpriseLogger.info('Document download URL generated via API', {
         documentId: id,
-        userId
+        userId,
       });
 
       res.status(200).json({
@@ -181,15 +181,15 @@ class DocumentController {
         message: 'Download URL generated successfully',
         data: {
           downloadUrl,
-          expiresIn: 3600 // 1 hour
-        }
+          expiresIn: 3600, // 1 hour
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get download URL via API', {
         error: error.message,
         documentId: req.params.id,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -210,19 +210,19 @@ class DocumentController {
 
       enterpriseLogger.info('Document deleted via API', {
         documentId: id,
-        userId
+        userId,
       });
 
       res.status(200).json({
         success: true,
-        message: 'Document deleted successfully'
+        message: 'Document deleted successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to delete document via API', {
         error: error.message,
         documentId: req.params.id,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -239,19 +239,19 @@ class DocumentController {
       const stats = await documentService.getDocumentStats(userId);
 
       enterpriseLogger.info('Document statistics retrieved via API', {
-        userId
+        userId,
       });
 
       res.status(200).json({
         success: true,
         message: 'Document statistics retrieved successfully',
-        data: stats
+        data: stats,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get document statistics via API', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -269,68 +269,68 @@ class DocumentController {
           label: 'Form 16',
           description: 'Salary certificate from employer',
           icon: '📄',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'BANK_STATEMENT',
           label: 'Bank Statement',
           description: 'Bank account statements',
           icon: '🏦',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'INVESTMENT_PROOF',
           label: 'Investment Proof',
           description: 'Investment certificates and statements',
           icon: '📈',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'RENT_RECEIPTS',
           label: 'Rent Receipts',
           description: 'Rent payment receipts',
           icon: '🏠',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'CAPITAL_GAINS',
           label: 'Capital Gains',
           description: 'Capital gains statements and certificates',
           icon: '💰',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'BUSINESS_INCOME',
           label: 'Business Income',
           description: 'Business income documents',
           icon: '🏢',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'HOUSE_PROPERTY',
           label: 'House Property',
           description: 'House property related documents',
           icon: '🏘️',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png']
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png'],
         },
         {
           key: 'OTHER',
           label: 'Other',
           description: 'Other supporting documents',
           icon: '📎',
-          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-        }
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        },
       ];
 
       res.status(200).json({
         success: true,
         message: 'Document categories retrieved successfully',
-        data: categories
+        data: categories,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get document categories via API', {
-        error: error.message
+        error: error.message,
       });
       next(error);
     }
@@ -347,12 +347,12 @@ class DocumentController {
       res.status(200).json({
         success: true,
         message: 'Document service status retrieved successfully',
-        data: status
+        data: status,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get service status via API', {
-        error: error.message
+        error: error.message,
       });
       next(error);
     }
@@ -387,31 +387,31 @@ class DocumentController {
           sizeBytes: file.size,
           category,
           filingId,
-          memberId
+          memberId,
         },
         userId,
         uploadedBy,
-        ipAddress
+        ipAddress,
       );
 
       enterpriseLogger.info('Local file uploaded via API', {
         userId,
         fileName: file.originalname,
         category,
-        documentId: result.document.id
+        documentId: result.document.id,
       });
 
       res.status(201).json({
         success: true,
         message: 'File uploaded successfully',
-        data: result.document
+        data: result.document,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to upload local file via API', {
         error: error.message,
         userId: req.user?.id,
-        file: req.file?.originalname
+        file: req.file?.originalname,
       });
       next(error);
     }
@@ -446,15 +446,15 @@ class DocumentController {
         message: 'Local file download endpoint',
         data: {
           path: decodedPath,
-          note: 'This is a development endpoint. Implement file streaming for production.'
-        }
+          note: 'This is a development endpoint. Implement file streaming for production.',
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to download local file via API', {
         error: error.message,
         path: req.params.path,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }

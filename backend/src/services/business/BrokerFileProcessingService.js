@@ -4,8 +4,8 @@
 // =====================================================
 
 const XLSX = require('xlsx');
-const enterpriseLogger = require('../utils/logger');
-const { AppError } = require('../middleware/errorHandler');
+const enterpriseLogger = require('../../utils/logger');
+const { AppError } = require('../../middleware/errorHandler');
 
 class BrokerFileProcessingService {
   constructor() {
@@ -31,7 +31,7 @@ class BrokerFileProcessingService {
       enterpriseLogger.info('Broker file processed successfully', {
         brokerId,
         userId,
-        transactionCount: result.transactions.length
+        transactionCount: result.transactions.length,
       });
 
       return result;
@@ -39,7 +39,7 @@ class BrokerFileProcessingService {
       enterpriseLogger.error('Broker file processing failed', {
         brokerId,
         userId,
-        error: error.message
+        error: error.message,
       });
       throw error;
     }
@@ -51,7 +51,7 @@ class BrokerFileProcessingService {
       angelone: this.processAngelOne.bind(this),
       groww: this.processGroww.bind(this),
       upstox: this.processUpstox.bind(this),
-      icici: this.processICICI.bind(this)
+      icici: this.processICICI.bind(this),
     };
 
     return processors[brokerId];
@@ -75,8 +75,8 @@ class BrokerFileProcessingService {
         sttPaid: row['STT Paid'] === 'Yes',
         type: this.determineTransactionType(
           row['Buy Date'] || row['buy_date'],
-          row['Sell Date'] || row['sell_date']
-        )
+          row['Sell Date'] || row['sell_date'],
+        ),
       };
 
       transaction.exempt = this.isExempt(transaction);
@@ -96,7 +96,7 @@ class BrokerFileProcessingService {
       shortTerm: Math.round(shortTermTotal * 100) / 100,
       longTerm: Math.round(longTermTotal * 100) / 100,
       exemptLongTerm: Math.round(exemptLongTermTotal * 100) / 100,
-      totalGains: Math.round((shortTermTotal + longTermTotal + exemptLongTermTotal) * 100) / 100
+      totalGains: Math.round((shortTermTotal + longTermTotal + exemptLongTermTotal) * 100) / 100,
     };
   }
 
@@ -118,8 +118,8 @@ class BrokerFileProcessingService {
         sttPaid: true, // Assume STT paid for Angel One
         type: this.determineTransactionType(
           row['Purchase Date'] || row['Buy Date'],
-          row['Sale Date'] || row['Sell Date']
-        )
+          row['Sale Date'] || row['Sell Date'],
+        ),
       };
 
       transaction.exempt = this.isExempt(transaction);
@@ -139,7 +139,7 @@ class BrokerFileProcessingService {
       shortTerm: Math.round(shortTermTotal * 100) / 100,
       longTerm: Math.round(longTermTotal * 100) / 100,
       exemptLongTerm: Math.round(exemptLongTermTotal * 100) / 100,
-      totalGains: Math.round((shortTermTotal + longTermTotal + exemptLongTermTotal) * 100) / 100
+      totalGains: Math.round((shortTermTotal + longTermTotal + exemptLongTermTotal) * 100) / 100,
     };
   }
 
@@ -159,7 +159,7 @@ class BrokerFileProcessingService {
   }
 
   parseDate(dateString) {
-    if (!dateString) return null;
+    if (!dateString) {return null;}
     const date = new Date(dateString);
     return isNaN(date) ? null : date.toISOString().split('T')[0];
   }
@@ -168,7 +168,7 @@ class BrokerFileProcessingService {
     const buy = new Date(buyDate);
     const sell = new Date(sellDate);
     const daysDiff = Math.floor((sell - buy) / (1000 * 60 * 60 * 24));
-    
+
     // Less than 365 days = short term, otherwise long term
     return daysDiff < 365 ? 'short_term' : 'long_term';
   }

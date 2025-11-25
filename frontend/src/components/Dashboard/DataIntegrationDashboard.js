@@ -23,7 +23,7 @@ import {
   Database,
   Building,
   CreditCard,
-  FileSpreadsheet
+  FileSpreadsheet,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -33,7 +33,7 @@ import {
   financialProfileService,
   aisForm26ASService,
   autoPopulationITRService,
-  documentProcessingService
+  documentProcessingService,
 } from '../../services';
 
 const DataIntegrationDashboard = ({ userId }) => {
@@ -42,7 +42,7 @@ const DataIntegrationDashboard = ({ userId }) => {
     lastSync: null,
     isSyncing: false,
     connectedSources: [],
-    dataQuality: 0
+    dataQuality: 0,
   });
 
   const [financialData, setFinancialData] = useState({
@@ -50,21 +50,21 @@ const DataIntegrationDashboard = ({ userId }) => {
     totalDeductions: 0,
     totalTDS: 0,
     taxLiability: 0,
-    dataSources: []
+    dataSources: [],
   });
 
   const [autoPopulation, setAutoPopulation] = useState({
     available: false,
     confidence: 0,
     missingFields: [],
-    recommendations: []
+    recommendations: [],
   });
 
   const [connectedAccounts, setConnectedAccounts] = useState({
     banks: [],
     brokers: [],
     employers: [],
-    landlords: []
+    landlords: [],
   });
 
   // Load dashboard data on component mount
@@ -87,7 +87,7 @@ const DataIntegrationDashboard = ({ userId }) => {
         lastSync: new Date().toISOString(),
         isSyncing: false,
         connectedSources: ['bank_statements', 'form_16', 'broker_apis'],
-        dataQuality: 85
+        dataQuality: 85,
       });
 
       // Calculate financial summary
@@ -126,7 +126,7 @@ const DataIntegrationDashboard = ({ userId }) => {
           lastSync: new Date().toISOString(),
           isSyncing: false,
           connectedSources: Array.from(syncResults.summary.dataSourcesConnected),
-          dataQuality: 95
+          dataQuality: 95,
         });
 
         // Update financial data
@@ -166,7 +166,7 @@ const DataIntegrationDashboard = ({ userId }) => {
       const autoPopResult = await autoPopulationITRService.autoPopulateITR(
         userId,
         itrType,
-        '2024-25'
+        '2024-25',
       );
 
       if (autoPopResult.success) {
@@ -199,8 +199,8 @@ const DataIntegrationDashboard = ({ userId }) => {
       dataSources: [
         { type: 'bank_statement', name: 'HDFC Bank', status: 'active', lastSync: '2024-01-15' },
         { type: 'broker', name: 'Zerodha', status: 'active', lastSync: '2024-01-15' },
-        { type: 'form_16', name: 'ABC Corporation', status: 'active', lastSync: '2024-01-10' }
-      ]
+        { type: 'form_16', name: 'ABC Corporation', status: 'active', lastSync: '2024-01-10' },
+      ],
     };
   };
 
@@ -218,15 +218,15 @@ const DataIntegrationDashboard = ({ userId }) => {
           type: 'additional_document',
           title: 'Upload Rent Receipts',
           description: 'Maximize HRA deduction by uploading rent receipts',
-          action: 'upload_rent_receipts'
+          action: 'upload_rent_receipts',
         },
         {
           type: 'tax_optimization',
           title: 'Optimize Section 80D',
           description: 'Upload medical insurance policies for tax benefits',
-          action: 'upload_insurance_policies'
-        }
-      ]
+          action: 'upload_insurance_policies',
+        },
+      ],
     };
   };
 

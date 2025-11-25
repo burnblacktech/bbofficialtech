@@ -31,7 +31,7 @@ import {
   Filter,
   Search,
   SortAsc,
-  SortDesc
+  SortDesc,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -97,7 +97,7 @@ const FinancialProfilePage = () => {
     queryFn: fetchFinancialProfile,
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
-    enabled: !!user?.user_id
+    enabled: !!user?.user_id,
   });
 
   const { data: history, isLoading: historyLoading } = useQuery({
@@ -105,7 +105,7 @@ const FinancialProfilePage = () => {
     queryFn: fetchFinancialHistory,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    enabled: !!user?.user_id
+    enabled: !!user?.user_id,
   });
 
   const { data: insights, isLoading: insightsLoading } = useQuery({
@@ -113,7 +113,7 @@ const FinancialProfilePage = () => {
     queryFn: fetchInsights,
     staleTime: 15 * 60 * 1000,
     refetchOnWindowFocus: false,
-    enabled: !!user?.user_id
+    enabled: !!user?.user_id,
   });
 
   // Refresh mutation
@@ -129,7 +129,7 @@ const FinancialProfilePage = () => {
     onError: (error) => {
       setIsRefreshing(false);
       toast.error('Failed to refresh: ' + error.message);
-    }
+    },
   });
 
   // Handle refresh
@@ -163,7 +163,7 @@ const FinancialProfilePage = () => {
       averageDeductions,
       averageTaxPaid,
       averageRefund,
-      effectiveTaxRate
+      effectiveTaxRate,
     };
   }, [history]);
 
@@ -171,8 +171,8 @@ const FinancialProfilePage = () => {
   const trends = useMemo(() => {
     if (!history || history.length < 2) return null;
 
-    const sortedHistory = [...history].sort((a, b) => 
-      new Date(a.assessment_year) - new Date(b.assessment_year)
+    const sortedHistory = [...history].sort((a, b) =>
+      new Date(a.assessment_year) - new Date(b.assessment_year),
     );
 
     const incomeTrend = sortedHistory.map((h, index) => {
@@ -181,7 +181,7 @@ const FinancialProfilePage = () => {
       return {
         year: h.assessment_year,
         income: h.gross_income,
-        change: index > 0 ? change : 0
+        change: index > 0 ? change : 0,
       };
     });
 
@@ -191,7 +191,7 @@ const FinancialProfilePage = () => {
       return {
         year: h.assessment_year,
         deductions: h.deductions,
-        change: index > 0 ? change : 0
+        change: index > 0 ? change : 0,
       };
     });
 
@@ -276,7 +276,7 @@ const FinancialProfilePage = () => {
                 PAN: {profile.pan}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleRefresh}
@@ -286,7 +286,7 @@ const FinancialProfilePage = () => {
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh'}
               </button>
-              
+
               <button
                 onClick={() => navigate('/dashboard')}
                 className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
@@ -363,7 +363,7 @@ const FinancialProfilePage = () => {
                 <span className="text-sm text-green-600">+12.5%</span>
               </div>
             </div>
-            
+
             <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-center">
                 <LineChart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
@@ -382,7 +382,7 @@ const FinancialProfilePage = () => {
                 <span className="text-sm text-blue-600">80C: 65%</span>
               </div>
             </div>
-            
+
             <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-center">
                 <PieChart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
@@ -406,7 +406,7 @@ const FinancialProfilePage = () => {
                 {showInsights ? 'Hide' : 'Show'} Insights
               </button>
             </div>
-            
+
             {showInsights && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {insights.map((insight, index) => (
@@ -447,7 +447,7 @@ const FinancialProfilePage = () => {
                   <option value="5y">Last 5 Years</option>
                   <option value="all">All Time</option>
                 </select>
-                
+
                 <button className="flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
                   <Download className="w-4 h-4 mr-1" />
                   Export
@@ -455,7 +455,7 @@ const FinancialProfilePage = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">

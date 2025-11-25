@@ -7,24 +7,24 @@ const useBulkUpdateFilings = () => {
   const bulkUpdate = useCallback(async (filingIds, updates) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Mock API call - replace with actual API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       console.log('Bulk updating filings:', filingIds, updates);
-      
+
       // Mock success response
       return {
         success: true,
         updatedCount: filingIds.length,
-        message: `${filingIds.length} filings updated successfully`
+        message: `${filingIds.length} filings updated successfully`,
       };
     } catch (err) {
       setError(err.message);
       return {
         success: false,
-        error: err.message
+        error: err.message,
       };
     } finally {
       setLoading(false);
@@ -34,7 +34,7 @@ const useBulkUpdateFilings = () => {
   return {
     bulkUpdate,
     loading,
-    error
+    error,
   };
 };
 

@@ -10,7 +10,7 @@ const ServiceTicketMessage = sequelize.define('ServiceTicketMessage', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   ticketId: {
     type: DataTypes.UUID,
@@ -18,8 +18,8 @@ const ServiceTicketMessage = sequelize.define('ServiceTicketMessage', {
     field: 'ticket_id',
     references: {
       model: 'service_tickets',
-      key: 'id'
-    }
+      key: 'id',
+    },
   },
   senderId: {
     type: DataTypes.UUID,
@@ -27,22 +27,22 @@ const ServiceTicketMessage = sequelize.define('ServiceTicketMessage', {
     field: 'sender_id',
     references: {
       model: 'users',
-      key: 'id'
-    }
+      key: 'id',
+    },
   },
   senderType: {
     type: DataTypes.ENUM(
       'USER',
       'CA',
       'ADMIN',
-      'SYSTEM'
+      'SYSTEM',
     ),
     allowNull: false,
-    field: 'sender_type'
+    field: 'sender_type',
   },
   message: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
   },
   messageType: {
     type: DataTypes.ENUM(
@@ -51,48 +51,48 @@ const ServiceTicketMessage = sequelize.define('ServiceTicketMessage', {
       'STATUS_CHANGE',
       'PRIORITY_CHANGE',
       'ASSIGNMENT_CHANGE',
-      'SYSTEM_NOTIFICATION'
+      'SYSTEM_NOTIFICATION',
     ),
     allowNull: false,
     defaultValue: 'TEXT',
-    field: 'message_type'
+    field: 'message_type',
   },
   isInternal: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
-    field: 'is_internal'
+    field: 'is_internal',
   },
   attachments: {
     type: DataTypes.JSONB,
     allowNull: false,
-    defaultValue: []
+    defaultValue: [],
   },
   metadata: {
     type: DataTypes.JSONB,
     allowNull: false,
-    defaultValue: {}
+    defaultValue: {},
   },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'created_at'
+    field: 'created_at',
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updated_at'
+    field: 'updated_at',
   },
   isDeleted: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
-    field: 'is_deleted'
+    field: 'is_deleted',
   },
   deletedAt: {
     type: DataTypes.DATE,
     allowNull: true,
-    field: 'deleted_at'
+    field: 'deleted_at',
   },
   deletedBy: {
     type: DataTypes.UUID,
@@ -100,31 +100,31 @@ const ServiceTicketMessage = sequelize.define('ServiceTicketMessage', {
     field: 'deleted_by',
     references: {
       model: 'users',
-      key: 'id'
-    }
-  }
+      key: 'id',
+    },
+  },
 }, {
   tableName: 'service_ticket_messages',
   timestamps: true,
   underscored: true,
   indexes: [
     {
-      fields: ['ticket_id']
+      fields: ['ticket_id'],
     },
     {
-      fields: ['sender_id']
+      fields: ['sender_id'],
     },
     {
-      fields: ['created_at']
+      fields: ['created_at'],
     },
     {
-      fields: ['is_deleted']
+      fields: ['is_deleted'],
     },
     {
       fields: ['ticket_id', 'created_at'],
-      where: { is_deleted: false }
-    }
-  ]
+      where: { is_deleted: false },
+    },
+  ],
 });
 
 // Instance methods
@@ -133,7 +133,7 @@ ServiceTicketMessage.prototype.getSenderTypeColor = function() {
     'USER': 'blue',
     'CA': 'green',
     'ADMIN': 'purple',
-    'SYSTEM': 'gray'
+    'SYSTEM': 'gray',
   };
   return senderTypeColors[this.senderType] || 'gray';
 };
@@ -143,7 +143,7 @@ ServiceTicketMessage.prototype.getSenderTypeIcon = function() {
     'USER': '👤',
     'CA': '👨‍💼',
     'ADMIN': '👑',
-    'SYSTEM': '🤖'
+    'SYSTEM': '🤖',
   };
   return senderTypeIcons[this.senderType] || '❓';
 };
@@ -155,7 +155,7 @@ ServiceTicketMessage.prototype.getMessageTypeIcon = function() {
     'STATUS_CHANGE': '🔄',
     'PRIORITY_CHANGE': '⚡',
     'ASSIGNMENT_CHANGE': '👥',
-    'SYSTEM_NOTIFICATION': '🔔'
+    'SYSTEM_NOTIFICATION': '🔔',
   };
   return messageTypeIcons[this.messageType] || '💬';
 };
@@ -197,18 +197,18 @@ ServiceTicketMessage.prototype.formatMessage = function() {
 
 ServiceTicketMessage.prototype.formatSystemMessage = function() {
   const metadata = this.metadata || {};
-  
+
   switch (this.messageType) {
-    case 'STATUS_CHANGE':
-      return `Status changed from "${metadata.oldStatus}" to "${metadata.newStatus}"`;
-    case 'PRIORITY_CHANGE':
-      return `Priority changed from "${metadata.oldPriority}" to "${metadata.newPriority}"`;
-    case 'ASSIGNMENT_CHANGE':
-      return `Ticket assigned to ${metadata.assignedToName || 'Unknown'}`;
-    case 'SYSTEM_NOTIFICATION':
-      return this.message;
-    default:
-      return this.message;
+  case 'STATUS_CHANGE':
+    return `Status changed from "${metadata.oldStatus}" to "${metadata.newStatus}"`;
+  case 'PRIORITY_CHANGE':
+    return `Priority changed from "${metadata.oldPriority}" to "${metadata.newPriority}"`;
+  case 'ASSIGNMENT_CHANGE':
+    return `Ticket assigned to ${metadata.assignedToName || 'Unknown'}`;
+  case 'SYSTEM_NOTIFICATION':
+    return this.message;
+  default:
+    return this.message;
   }
 };
 
@@ -218,7 +218,7 @@ ServiceTicketMessage.getSenderTypeLabel = function(senderType) {
     'USER': 'User',
     'CA': 'CA',
     'ADMIN': 'Admin',
-    'SYSTEM': 'System'
+    'SYSTEM': 'System',
   };
   return labels[senderType] || 'Unknown';
 };
@@ -230,7 +230,7 @@ ServiceTicketMessage.getMessageTypeLabel = function(messageType) {
     'STATUS_CHANGE': 'Status Change',
     'PRIORITY_CHANGE': 'Priority Change',
     'ASSIGNMENT_CHANGE': 'Assignment Change',
-    'SYSTEM_NOTIFICATION': 'System Notification'
+    'SYSTEM_NOTIFICATION': 'System Notification',
   };
   return labels[messageType] || 'Unknown';
 };
@@ -243,16 +243,16 @@ ServiceTicketMessage.createSystemMessage = async function(ticketId, message, mes
     message,
     messageType,
     isInternal: true,
-    metadata
+    metadata,
   });
-  
+
   enterpriseLogger.info('System message created', {
     messageId: systemMessage.id,
     ticketId,
     messageType,
-    message
+    message,
   });
-  
+
   return systemMessage;
 };
 
@@ -264,8 +264,8 @@ ServiceTicketMessage.createStatusChangeMessage = async function(ticketId, oldSta
     {
       oldStatus,
       newStatus,
-      changedBy
-    }
+      changedBy,
+    },
   );
 };
 
@@ -277,8 +277,8 @@ ServiceTicketMessage.createPriorityChangeMessage = async function(ticketId, oldP
     {
       oldPriority,
       newPriority,
-      changedBy
-    }
+      changedBy,
+    },
   );
 };
 
@@ -289,8 +289,8 @@ ServiceTicketMessage.createAssignmentMessage = async function(ticketId, assigned
     'ASSIGNMENT_CHANGE',
     {
       assignedToName,
-      assignedBy
-    }
+      assignedBy,
+    },
   );
 };
 
@@ -301,7 +301,7 @@ ServiceTicketMessage.afterCreate(async (message) => {
     ticketId: message.ticketId,
     senderType: message.senderType,
     messageType: message.messageType,
-    isInternal: message.isInternal
+    isInternal: message.isInternal,
   });
 });
 

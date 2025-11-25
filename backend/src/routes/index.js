@@ -27,18 +27,18 @@ router.get('/', async (req, res) => {
       health: '/api/health',
       routeDiscovery: {
         totalRoutes: routeHealth.totalRoutes,
-        routes: Object.keys(routeHealth.routes)
+        routes: Object.keys(routeHealth.routes),
       },
       endpoints: Object.keys(routeHealth.routes).reduce((acc, routeName) => {
         acc[routeName] = `/api/${routeHealth.routes[routeName].path}`;
         return acc;
-      }, {})
+      }, {}),
     });
   } catch (error) {
     enterpriseLogger.error('Error in API info route', { error: error.message });
     res.status(500).json({
       error: 'Failed to get API information',
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -55,7 +55,7 @@ router.get('/docs', async (req, res) => {
     if (apiDocs.error) {
       return res.status(503).json({
         error: 'Documentation not available',
-        message: apiDocs.error
+        message: apiDocs.error,
       });
     }
 
@@ -63,22 +63,22 @@ router.get('/docs', async (req, res) => {
       ...apiDocs,
       authentication: {
         type: 'JWT Bearer Token',
-        header: 'Authorization: Bearer <token>'
+        header: 'Authorization: Bearer <token>',
       },
       rateLimiting: {
         requests: '100 per 15 minutes per IP',
-        burst: '10 requests per second'
+        burst: '10 requests per second',
       },
       discovery: {
         enabled: true,
-        description: 'Routes are automatically discovered and registered'
-      }
+        description: 'Routes are automatically discovered and registered',
+      },
     });
   } catch (error) {
     enterpriseLogger.error('Error generating API docs', { error: error.message });
     res.status(500).json({
       error: 'Failed to generate API documentation',
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -96,15 +96,15 @@ router.get('/routes', async (req, res) => {
       discovery: {
         status: routeHealth.status,
         totalRoutes: routeHealth.totalRoutes,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
-      routes: routeHealth.routes
+      routes: routeHealth.routes,
     });
   } catch (error) {
     enterpriseLogger.error('Error getting route health', { error: error.message });
     res.status(500).json({
       error: 'Failed to get route information',
-      message: error.message
+      message: error.message,
     });
   }
 });
@@ -128,7 +128,8 @@ async function initializeRouteDiscovery() {
     const autoRouter = await initializeRouter();
 
     // Mount the automatically discovered routes
-    router.use(autoRouter);
+    // Mount at root path since routes already have their paths (e.g., /auth, /health)
+    router.use('/', autoRouter);
 
     routeDiscoveryInitialized = true;
     enterpriseLogger.info('Automatic route discovery completed successfully');
@@ -136,14 +137,25 @@ async function initializeRouteDiscovery() {
   } catch (error) {
     enterpriseLogger.error('Route discovery initialization failed', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
     // Fallback: continue with basic routes if discovery fails
   }
 }
 
 // Initialize routes when this module is loaded
-initializeRouteDiscovery();
+// Handle async initialization without blocking
+// Note: Routes will be available after initialization completes
+initializeRouteDiscovery().catch(error => {
+  enterpriseLogger.error('Failed to initialize route discovery during module load', {
+    error: error.message,
+    stack: error.stack,
+  });
+  // Don't crash the app, continue with basic routes
+});
+
+// Export initialization function for synchronous access if needed
+module.exports.initializeRouteDiscovery = initializeRouteDiscovery;
 
 // =====================================================
 // GLOBAL ERROR HANDLER FOR ROUTES
@@ -155,14 +167,14 @@ router.use((err, req, res, next) => {
     stack: err.stack,
     url: req.url,
     method: req.method,
-    routeDiscovery: routeDiscoveryInitialized
+    routeDiscovery: routeDiscoveryInitialized,
   });
 
   res.status(500).json({
     status: 'error',
     message: 'Internal server error',
     timestamp: new Date().toISOString(),
-    routeDiscovery: routeDiscoveryInitialized
+    routeDiscovery: routeDiscoveryInitialized,
   });
 });
 
@@ -175,7 +187,7 @@ router.use('*', async (req, res) => {
     const discovery = getRouteDiscovery();
     const routeHealth = await discovery.getRouteHealth();
     const availableRoutes = Object.keys(routeHealth.routes).map(routeName =>
-      `/api${routeHealth.routes[routeName].path}`
+      `/api${routeHealth.routes[routeName].path}`,
     );
 
     res.status(404).json({
@@ -187,15 +199,15 @@ router.use('*', async (req, res) => {
         '/api',
         '/api/docs',
         '/api/routes',
-        ...availableRoutes
-      ]
+        ...availableRoutes,
+      ],
     });
   } catch (error) {
     res.status(404).json({
       status: 'error',
       message: `Route ${req.originalUrl} not found`,
       timestamp: new Date().toISOString(),
-      routeDiscovery: routeDiscoveryInitialized
+      routeDiscovery: routeDiscoveryInitialized,
     });
   }
 });

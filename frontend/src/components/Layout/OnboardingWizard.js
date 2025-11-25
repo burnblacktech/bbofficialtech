@@ -13,7 +13,7 @@ import {
   BarChart3,
   Calendar,
   Monitor,
-  Tablet
+  Tablet,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -24,7 +24,7 @@ const OnboardingWizard = ({ onComplete }) => {
     filingFrequency: '',
     preferredDevice: '',
     mainConcern: '',
-    timeAvailable: ''
+    timeAvailable: '',
   });
 
   const steps = [
@@ -33,36 +33,36 @@ const OnboardingWizard = ({ onComplete }) => {
       title: 'Welcome to ITR Filing',
       icon: Sparkles,
       description: 'Let\'s get you started with your tax filing journey',
-      component: WelcomeStep
+      component: WelcomeStep,
     },
     {
       id: 'experience',
       title: 'Your Experience',
       icon: User,
       description: 'Tell us about your tax filing experience',
-      component: ExperienceStep
+      component: ExperienceStep,
     },
     {
       id: 'assessment',
       title: 'Quick Assessment',
       icon: Target,
       description: 'Help us understand your needs',
-      component: AssessmentStep
+      component: AssessmentStep,
     },
     {
       id: 'preferences',
       title: 'Your Preferences',
       icon: Smartphone,
       description: 'Set up your preferred filing experience',
-      component: PreferencesStep
+      component: PreferencesStep,
     },
     {
       id: 'ready',
       title: 'You\'re All Set!',
       icon: CheckCircle,
       description: 'Ready to start your tax filing journey',
-      component: ReadyStep
-    }
+      component: ReadyStep,
+    },
   ];
 
   const handleNext = () => {
@@ -252,7 +252,7 @@ const ExperienceStep = ({ userProfile, onUpdate }) => (
             { value: 'first_time', label: 'First Time Filer', desc: 'New to tax filing' },
             { value: 'some_experience', label: 'Some Experience', desc: 'Filed taxes before but need help' },
             { value: 'experienced', label: 'Experienced', desc: 'Regular filer, know the process' },
-            { value: 'expert', label: 'Tax Expert', desc: 'Professional or very experienced' }
+            { value: 'expert', label: 'Tax Expert', desc: 'Professional or very experienced' },
           ].map((option) => (
             <button
               key={option.value}
@@ -289,7 +289,7 @@ const AssessmentStep = ({ userProfile, onUpdate }) => (
           {[
             { value: 'first_time', label: 'First Time', icon: User },
             { value: 'annual', label: 'Every Year', icon: Calendar },
-            { value: 'occasional', label: 'Occasionally', icon: Clock }
+            { value: 'occasional', label: 'Occasionally', icon: Clock },
           ].map((option) => (
             <button
               key={option.value}
@@ -316,7 +316,7 @@ const AssessmentStep = ({ userProfile, onUpdate }) => (
             { value: 'accuracy', label: 'Getting it right', desc: 'Want to ensure accurate filing' },
             { value: 'time', label: 'Saving time', desc: 'Quick and efficient process' },
             { value: 'max_refund', label: 'Maximum refund', desc: 'Optimize tax savings' },
-            { value: 'compliance', label: 'Stay compliant', desc: 'Follow all rules and regulations' }
+            { value: 'compliance', label: 'Stay compliant', desc: 'Follow all rules and regulations' },
           ].map((option) => (
             <button
               key={option.value}
@@ -353,7 +353,7 @@ const PreferencesStep = ({ userProfile, onUpdate }) => (
           {[
             { value: 'desktop', label: 'Desktop/Laptop', icon: Monitor },
             { value: 'mobile', label: 'Mobile Phone', icon: Smartphone },
-            { value: 'tablet', label: 'Tablet', icon: Tablet }
+            { value: 'tablet', label: 'Tablet', icon: Tablet },
           ].map((option) => (
             <button
               key={option.value}
@@ -379,7 +379,7 @@ const PreferencesStep = ({ userProfile, onUpdate }) => (
           {[
             { value: 'quick', label: 'Quick Session', desc: '< 30 minutes' },
             { value: 'moderate', label: 'Moderate Time', desc: '30-60 minutes' },
-            { value: 'detailed', label: 'Take My Time', desc: 'Multiple sessions' }
+            { value: 'detailed', label: 'Take My Time', desc: 'Multiple sessions' },
           ].map((option) => (
             <button
               key={option.value}

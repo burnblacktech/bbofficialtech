@@ -14,7 +14,7 @@ export const useChat = (ticketId) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+
   const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -243,19 +243,19 @@ export const useChat = (ticketId) => {
     onlineUsers,
     error,
     loading,
-    
+
     // Actions
     sendMessage,
     handleTyping,
     stopTyping,
     updateStatus,
-    
+
     // Utilities
     formatTimestamp,
     isOwnMessage,
     getTypingText,
     scrollToBottom,
-    messagesEndRef
+    messagesEndRef,
   };
 };
 

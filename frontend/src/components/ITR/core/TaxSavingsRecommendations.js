@@ -18,7 +18,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
   const riskProfiles = [
     { value: 'conservative', label: 'Conservative (Low Risk)', description: 'Safe investments with steady returns' },
     { value: 'moderate', label: 'Moderate (Balanced Risk)', description: 'Balanced approach with good returns' },
-    { value: 'aggressive', label: 'Aggressive (High Risk)', description: 'High returns with higher risk' }
+    { value: 'aggressive', label: 'Aggressive (High Risk)', description: 'High returns with higher risk' },
   ];
 
   useEffect(() => {
@@ -37,12 +37,12 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
     try {
       const userProfileWithRisk = {
         ...userProfile,
-        riskProfile: selectedRiskProfile
+        riskProfile: selectedRiskProfile,
       };
 
       const result = await taxSavingsService.generateRecommendations(
         userProfileWithRisk,
-        currentInvestments || {}
+        currentInvestments || {},
       );
 
       if (result.success) {
@@ -79,7 +79,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
     const colors = {
       low: 'text-green-600 bg-green-100',
       medium: 'text-yellow-600 bg-yellow-100',
-      high: 'text-red-600 bg-red-100'
+      high: 'text-red-600 bg-red-100',
     };
     return colors[risk] || 'text-gray-600 bg-gray-100';
   };
@@ -91,7 +91,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
     const colors = {
       high: 'text-red-600 bg-red-100',
       medium: 'text-yellow-600 bg-yellow-100',
-      low: 'text-green-600 bg-green-100'
+      low: 'text-green-600 bg-green-100',
     };
     return colors[urgency] || 'text-gray-600 bg-gray-100';
   };

@@ -22,5 +22,5 @@ module.exports = {
   BrokerFileProcessingService,
   DeductionTypeDetectionService,
   ERIIntegrationService,
-  eriSigningService
+  eriSigningService,
 };

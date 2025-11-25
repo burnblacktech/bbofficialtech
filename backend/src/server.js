@@ -11,6 +11,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const enterpriseLogger = require('./utils/logger');
+const { initializeDatabase, testConnection } = require('./config/database');
 const app = require('./app');
 
 // =====================================================
@@ -31,11 +32,11 @@ if (NODE_ENV === 'production' && process.env.SSL_ENABLED === 'true') {
   // HTTPS server configuration;
   const sslOptions = {
     key: fs.readFileSync(
-      process.env.SSL_KEY_PATH || path.join(__dirname, '../ssl/private.key')
+      process.env.SSL_KEY_PATH || path.join(__dirname, '../ssl/private.key'),
     ),
     cert: fs.readFileSync(
       process.env.SSL_CERT_PATH ||
-        path.join(__dirname, '../ssl/certificate.crt')
+        path.join(__dirname, '../ssl/certificate.crt'),
     ),
     ca: process.env.SSL_CA_PATH
       ? fs.readFileSync(process.env.SSL_CA_PATH)
@@ -71,16 +72,16 @@ server.on('error', error => {
   const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
 
   switch (error.code) {
-    case 'EACCES':
-      enterpriseLogger.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      enterpriseLogger.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-    default:
-      throw error;
+  case 'EACCES':
+    enterpriseLogger.error(`${bind} requires elevated privileges`);
+    process.exit(1);
+    break;
+  case 'EADDRINUSE':
+    enterpriseLogger.error(`${bind} is already in use`);
+    process.exit(1);
+    break;
+  default:
+    throw error;
   }
 });
 
@@ -139,14 +140,48 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 // SERVER STARTUP;
 // =====================================================
 
-// Start the server;
-server.listen(PORT, HOST, () => {
-  enterpriseLogger.info('Server listening', {
-    host: HOST,
-    port: PORT,
-    environment: NODE_ENV,
-  });
-});
+// Initialize database and start server
+const startServer = async () => {
+  try {
+    // Test database connection first
+    enterpriseLogger.info('Testing database connection...');
+    const dbConnected = await testConnection();
+    
+    if (!dbConnected) {
+      enterpriseLogger.error('Database connection failed. Server will not start.');
+      process.exit(1);
+    }
+    
+    // Verify schema exists
+    enterpriseLogger.info('Verifying database schema...');
+    const { sequelize } = require('./config/database');
+    const tables = await sequelize.getQueryInterface().showAllTables();
+    enterpriseLogger.info('Database schema verified', { 
+      tableCount: tables.length,
+      tables: tables.slice(0, 10), // Log first 10 tables
+    });
+    
+    // Start the server
+    server.listen(PORT, HOST, () => {
+      enterpriseLogger.info('Server listening', {
+        host: HOST,
+        port: PORT,
+        environment: NODE_ENV,
+        databaseConnected: true,
+        tablesFound: tables.length,
+      });
+    });
+  } catch (error) {
+    enterpriseLogger.error('Failed to start server', {
+      error: error.message,
+      stack: error.stack,
+    });
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();
 
 // =====================================================
 // HEALTH CHECK ENDPOINT (FOR LOAD BALANCERS)

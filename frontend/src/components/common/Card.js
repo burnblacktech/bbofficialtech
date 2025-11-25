@@ -26,7 +26,7 @@ const Card = ({
 
   // Base classes
   const baseClasses = 'card';
-  
+
   // Variant classes
   const variantClasses = {
     default: 'card-default',
@@ -39,40 +39,40 @@ const Card = ({
     light: 'card-light',
     dark: 'card-dark',
     outline: 'card-outline',
-    ghost: 'card-ghost'
+    ghost: 'card-ghost',
   };
-  
+
   // Size classes
   const sizeClasses = {
     small: 'card-sm',
     medium: 'card-md',
     large: 'card-lg',
-    xlarge: 'card-xl'
+    xlarge: 'card-xl',
   };
-  
+
   // Padding classes
   const paddingClasses = {
     none: 'card-padding-none',
     small: 'card-padding-sm',
     medium: 'card-padding-md',
     large: 'card-padding-lg',
-    xlarge: 'card-padding-xl'
+    xlarge: 'card-padding-xl',
   };
-  
+
   // Shadow classes
   const shadowClasses = {
     none: 'card-shadow-none',
     small: 'card-shadow-sm',
     medium: 'card-shadow-md',
     large: 'card-shadow-lg',
-    xlarge: 'card-shadow-xl'
+    xlarge: 'card-shadow-xl',
   };
-  
+
   // State classes
   const stateClasses = {
     border: border ? 'card-border' : 'card-no-border',
     hover: hover ? 'card-hover' : '',
-    clickable: onClick ? 'card-clickable' : ''
+    clickable: onClick ? 'card-clickable' : '',
   };
 
   // Combine all classes
@@ -85,7 +85,7 @@ const Card = ({
     stateClasses.border,
     stateClasses.hover,
     stateClasses.clickable,
-    className
+    className,
   ].filter(Boolean).join(' ');
 
   return (

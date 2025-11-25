@@ -16,7 +16,7 @@ const mockITR1Config = {
   description: 'For individuals having income from salaries, one house property',
   eligibility: {
     maxIncome: 5000000,
-    incomeSources: ['salary', 'houseProperty', 'otherSources']
+    incomeSources: ['salary', 'houseProperty', 'otherSources'],
   },
   sections: [
     {
@@ -29,29 +29,29 @@ const mockITR1Config = {
           type: 'text',
           label: 'First Name',
           required: true,
-          validation: { minLength: 2, maxLength: 50 }
+          validation: { minLength: 2, maxLength: 50 },
         },
         {
           id: 'lastName',
           type: 'text',
           label: 'Last Name',
           required: true,
-          validation: { minLength: 1, maxLength: 50 }
+          validation: { minLength: 1, maxLength: 50 },
         },
         {
           id: 'email',
           type: 'email',
           label: 'Email Address',
           required: true,
-          validation: { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ }
+          validation: { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
         },
         {
           id: 'dateOfBirth',
           type: 'date',
           label: 'Date of Birth',
-          required: true
-        }
-      ]
+          required: true,
+        },
+      ],
     },
     {
       id: 'income',
@@ -63,14 +63,14 @@ const mockITR1Config = {
           type: 'number',
           label: 'Income from Salary',
           required: true,
-          validation: { min: 0 }
+          validation: { min: 0 },
         },
         {
           id: 'otherIncome',
           type: 'number',
           label: 'Other Income',
           required: false,
-          validation: { min: 0 }
+          validation: { min: 0 },
         },
         {
           id: 'hasHouseProperty',
@@ -79,8 +79,8 @@ const mockITR1Config = {
           required: true,
           options: [
             { value: 'yes', label: 'Yes' },
-            { value: 'no', label: 'No' }
-          ]
+            { value: 'no', label: 'No' },
+          ],
         },
         {
           id: 'housePropertyIncome',
@@ -88,16 +88,16 @@ const mockITR1Config = {
           label: 'Income from House Property',
           required: false,
           conditional: { field: 'hasHouseProperty', value: 'yes' },
-          validation: { min: 0 }
-        }
-      ]
-    }
-  ]
+          validation: { min: 0 },
+        },
+      ],
+    },
+  ],
 };
 
 // Mock the dynamic import for ITR configuration
 jest.mock('../components/ITR/config/ITR1Config.js', () => ({
-  default: mockITR1Config
+  default: mockITR1Config,
 }));
 
 // Test wrapper with contexts
@@ -125,7 +125,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -146,7 +146,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -179,7 +179,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Navigate to income section
@@ -224,7 +224,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -243,9 +243,9 @@ describe('Dynamic ITR Form System Integration Tests', () => {
       expect(mockOnSaveDraft).toHaveBeenCalledWith(
         expect.objectContaining({
           personal: expect.objectContaining({
-            firstName: 'John'
-          })
-        })
+            firstName: 'John',
+          }),
+        }),
       );
     });
   });
@@ -258,7 +258,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -298,12 +298,12 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           personal: expect.objectContaining({
             firstName: 'John',
             lastName: 'Doe',
-            email: 'john.doe@example.com'
+            email: 'john.doe@example.com',
           }),
           income: expect.objectContaining({
-            salaryIncome: '500000'
-          })
-        })
+            salaryIncome: '500000',
+          }),
+        }),
       );
     });
   });
@@ -316,7 +316,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -354,7 +354,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {
@@ -380,7 +380,7 @@ describe('Dynamic ITR Form System Integration Tests', () => {
           onSubmit={mockOnSubmit}
           onSaveDraft={mockOnSaveDraft}
         />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     await waitFor(() => {

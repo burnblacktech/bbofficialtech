@@ -8,17 +8,17 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCABot } from '../../contexts/CABotContext';
 import CABot from '../../components/CABot/CABot.tsx';
-import { 
-  ArrowLeft, 
-  Settings, 
-  RotateCcw, 
-  FileText, 
+import {
+  ArrowLeft,
+  Settings,
+  RotateCcw,
+  FileText,
   Calculator,
   Users,
   Globe,
   Volume2,
   Bot,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -33,14 +33,14 @@ const CABotPage = () => {
     currentStep,
     createSession,
     destroySession,
-    resetConversation
+    resetConversation,
   } = useCABot();
 
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState({
     userType: 'educated',
     language: 'en',
-    voiceEnabled: false
+    voiceEnabled: false,
   });
 
   // Initialize bot session on mount
@@ -56,9 +56,9 @@ const CABotPage = () => {
       await createSession({
         userType: settings.userType,
         language: settings.language,
-        voiceEnabled: settings.voiceEnabled
+        voiceEnabled: settings.voiceEnabled,
       });
-      
+
       toast.success('CA Bot session started successfully!');
     } catch (error) {
       toast.error('Failed to start CA Bot session');
@@ -77,7 +77,7 @@ const CABotPage = () => {
   const handleSettingsChange = (newSettings) => {
     setSettings(newSettings);
     setShowSettings(false);
-    
+
     // Restart session with new settings
     if (isActive) {
       destroySession();
@@ -107,14 +107,14 @@ const CABotPage = () => {
       'deductions',
       'tax_computation',
       'review',
-      'submission'
+      'submission',
     ];
-    
+
     const currentIndex = steps.indexOf(currentStep);
     return {
       current: currentIndex + 1,
       total: steps.length,
-      percentage: ((currentIndex + 1) / steps.length) * 100
+      percentage: ((currentIndex + 1) / steps.length) * 100,
     };
   };
 
@@ -123,9 +123,9 @@ const CABotPage = () => {
     const types = {
       non_educated: { label: 'Simple', color: 'bg-green-100 text-green-800' },
       educated: { label: 'Balanced', color: 'bg-blue-100 text-blue-800' },
-      ultra_educated: { label: 'Advanced', color: 'bg-purple-100 text-purple-800' }
+      ultra_educated: { label: 'Advanced', color: 'bg-purple-100 text-purple-800' },
     };
-    
+
     return types[userType] || types.educated;
   };
 
@@ -161,7 +161,7 @@ const CABotPage = () => {
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                   <Bot className="w-6 h-6 text-white" />
@@ -250,13 +250,13 @@ const CABotPage = () => {
               <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Bot className="w-12 h-12 text-white" />
               </div>
-              
+
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 Welcome to CA Bot
               </h1>
-              
+
               <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                Experience the future of ITR filing with our conversational AI assistant. 
+                Experience the future of ITR filing with our conversational AI assistant.
                 Get personalized guidance, real-time tax computation, and expert-level accuracy.
               </p>
 
@@ -348,7 +348,7 @@ const CABotPage = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
                 How It Works
               </h2>
-              
+
               <div className="grid md:grid-cols-4 gap-6">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -410,7 +410,7 @@ const CABotPage = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               CA Bot Settings
             </h2>
-            
+
             <div className="space-y-4">
               {/* User Type */}
               <div>

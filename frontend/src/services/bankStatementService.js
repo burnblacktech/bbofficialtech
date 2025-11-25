@@ -26,7 +26,7 @@ class BankStatementService {
         { regex: /wage/i, weight: 8 },
         { regex: /payslip/i, weight: 10 },
         { regex: /basic\s+pay/i, weight: 9 },
-        { regex: /company\s+name/i, weight: 7 }
+        { regex: /company\s+name/i, weight: 7 },
       ],
 
       // Interest income patterns
@@ -38,7 +38,7 @@ class BankStatementService {
         { regex: /recurring\s+deposit/i, weight: 9 },
         { regex: /savings\s+interest/i, weight: 8 },
         { regex: /bank\s+interest/i, weight: 7 },
-        { regex: /quarterly\s+interest/i, weight: 9 }
+        { regex: /quarterly\s+interest/i, weight: 9 },
       ],
 
       // TDS patterns
@@ -48,7 +48,7 @@ class BankStatementService {
         { regex: /income\s+tax/i, weight: 9 },
         { regex: /tcs/i, weight: 10 },
         { regex: /tax\s+collected/i, weight: 9 },
-        { regex: /section\s+194/i, weight: 8 }
+        { regex: /section\s+194/i, weight: 8 },
       ],
 
       // Investment patterns
@@ -60,7 +60,7 @@ class BankStatementService {
         { regex: /nsc/i, weight: 9 },
         { regex: /ppf/i, weight: 10 },
         { regex: /elss/i, weight: 10 },
-        { regex: /tax\s+saving/i, weight: 8 }
+        { regex: /tax\s+saving/i, weight: 8 },
       ],
 
       // Rent patterns
@@ -69,7 +69,7 @@ class BankStatementService {
         { regex: /lease/i, weight: 8 },
         { regex: /rental/i, weight: 9 },
         { regex: /property\s+income/i, weight: 8 },
-        { regex: /house\s+rent/i, weight: 7 }
+        { regex: /house\s+rent/i, weight: 7 },
       ],
 
       // Professional income patterns
@@ -78,8 +78,8 @@ class BankStatementService {
         { regex: /consultancy/i, weight: 9 },
         { regex: /freelance/i, weight: 9 },
         { regex: /contractor/i, weight: 8 },
-        { regex: /service\s+charges/i, weight: 8 }
-      ]
+        { regex: /service\s+charges/i, weight: 8 },
+      ],
     };
   }
 
@@ -97,7 +97,7 @@ class BankStatementService {
         { bank: 'Kotak', rate: 2.75, balanceRanges: [{ min: 0, max: 50000 }, { min: 50000, max: Infinity, rate: 3.0 }] },
         { bank: 'PNB', rate: 2.75, balanceRanges: [{ min: 0, max: 100000 }, { min: 100000, max: Infinity, rate: 3.25 }] },
         { bank: 'Canara', rate: 2.90, balanceRanges: [{ min: 0, max: 100000 }, { min: 100000, max: Infinity, rate: 3.55 }] },
-        { bank: 'Bank of Baroda', rate: 2.75, balanceRanges: [{ min: 0, max: 50000 }, { min: 50000, max: Infinity, rate: 3.35 }] }
+        { bank: 'Bank of Baroda', rate: 2.75, balanceRanges: [{ min: 0, max: 50000 }, { min: 50000, max: Infinity, rate: 3.35 }] },
       ],
 
       // Fixed deposit rates (approximate for FY 2024-25)
@@ -106,7 +106,7 @@ class BankStatementService {
         { duration: '1-2 years', rate: 6.8 },
         { duration: '2-3 years', rate: 7.0 },
         { duration: '3-5 years', rate: 7.1 },
-        { duration: '5+ years', rate: 7.0 }
+        { duration: '5+ years', rate: 7.0 },
       ],
 
       // Recurring deposit rates (approximate)
@@ -114,8 +114,8 @@ class BankStatementService {
         { duration: '6-12 months', rate: 6.6 },
         { duration: '1-2 years', rate: 6.9 },
         { duration: '2-3 years', rate: 7.1 },
-        { duration: '3-5 years', rate: 7.2 }
-      ]
+        { duration: '3-5 years', rate: 7.2 },
+      ],
     };
   }
 
@@ -131,8 +131,8 @@ class BankStatementService {
 
       const response = await apiClient.post(this.apiEndpoint, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (!response.success) {
@@ -149,8 +149,8 @@ class BankStatementService {
           bankName,
           accountType: response.accountType || 'savings',
           period: response.period,
-          totalTransactions: response.transactions?.length || 0
-        }
+          totalTransactions: response.transactions?.length || 0,
+        },
       };
 
     } catch (error) {
@@ -168,7 +168,7 @@ class BankStatementService {
     }
 
     const categorizedTransactions = transactions.map(transaction =>
-      this.categorizeTransaction(transaction)
+      this.categorizeTransaction(transaction),
     );
 
     const summary = this.generateSummary(categorizedTransactions);
@@ -178,7 +178,7 @@ class BankStatementService {
       transactions: categorizedTransactions,
       summary,
       insights,
-      taxImplications: this.calculateTaxImplications(categorizedTransactions)
+      taxImplications: this.calculateTaxImplications(categorizedTransactions),
     };
   }
 
@@ -196,7 +196,7 @@ class BankStatementService {
       investment: 0,
       rent: 0,
       professional: 0,
-      other: 0
+      other: 0,
     };
 
     const description = (transaction.description || '').toLowerCase();
@@ -240,14 +240,14 @@ class BankStatementService {
         'hra': /hra|house\s+rent/i,
         'special_allowance': /special\s+allowance|allowance/i,
         'bonus': /bonus|incentive/i,
-        'arrears': /arrears|back\s+pay/i
+        'arrears': /arrears|back\s+pay/i,
       },
       interest: {
         'savings_interest': /savings\s+interest/i,
         'fd_interest': /fd|fixed\s+deposit/i,
         'rd_interest': /rd|recurring\s+deposit/i,
         'corporate_fd': /corporate\s+fd/i,
-        'post_office': /post\s+office/i
+        'post_office': /post\s+office/i,
       },
       investment: {
         'mutual_fund': /mutual\s+fund/i,
@@ -255,8 +255,8 @@ class BankStatementService {
         'ppf': /ppf/i,
         'elss': /elss|tax\s+saver/i,
         'nsc': /nsc/i,
-        'lic': /lic|life\s+insurance/i
-      }
+        'lic': /lic|life\s+insurance/i,
+      },
     };
 
     if (subcategories[category]) {
@@ -275,7 +275,7 @@ class BankStatementService {
    */
   isTaxRelevant(category) {
     const taxRelevantCategories = [
-      'salary', 'interest', 'rent', 'professional', 'tds'
+      'salary', 'interest', 'rent', 'professional', 'tds',
     ];
     return taxRelevantCategories.includes(category);
   }
@@ -291,7 +291,7 @@ class BankStatementService {
       categories: {},
       taxRelevantAmount: 0,
       interestIncome: 0,
-      salaryIncome: 0
+      salaryIncome: 0,
     };
 
     transactions.forEach(transaction => {
@@ -308,7 +308,7 @@ class BankStatementService {
         summary.categories[transaction.category] = {
           count: 0,
           totalAmount: 0,
-          transactions: []
+          transactions: [],
         };
       }
 
@@ -356,7 +356,7 @@ class BankStatementService {
         title: 'Salary Income Detected',
         description: `Found ${salaryTransactions.length} salary credits totaling ₹${monthlySalary.toLocaleString('en-IN')}`,
         action: 'Add to salary income section in ITR',
-        priority: 'high'
+        priority: 'high',
       });
     }
 
@@ -369,7 +369,7 @@ class BankStatementService {
         title: 'Interest Income Detected',
         description: `Found interest income of ₹${totalInterest.toLocaleString('en-IN')} from bank deposits`,
         action: 'Declare under "Income from Other Sources"',
-        priority: 'high'
+        priority: 'high',
       });
     }
 
@@ -382,7 +382,7 @@ class BankStatementService {
         title: 'TDS Deducted',
         description: `Total TDS of ₹${totalTDS.toLocaleString('en-IN')} detected`,
         action: 'Claim as tax credit in ITR',
-        priority: 'high'
+        priority: 'high',
       });
     }
 
@@ -395,7 +395,7 @@ class BankStatementService {
         title: 'Tax-Saving Investments',
         description: `Tax-saving investments of ₹${totalInvestment.toLocaleString('en-IN')} detected`,
         action: 'Declare under Section 80C/other deductions',
-        priority: 'medium'
+        priority: 'medium',
       });
     }
 
@@ -408,7 +408,7 @@ class BankStatementService {
         title: 'Rental Income Detected',
         description: `Rental income of ₹${totalRent.toLocaleString('en-IN')} detected`,
         action: 'Declare under "Income from House Property"',
-        priority: 'medium'
+        priority: 'medium',
       });
     }
 
@@ -421,7 +421,7 @@ class BankStatementService {
         title: 'Professional Income Detected',
         description: `Professional fees of ₹${totalProfessional.toLocaleString('en-IN')} detected`,
         action: 'Declare under "Income from Business/Profession"',
-        priority: 'medium'
+        priority: 'medium',
       });
     }
 
@@ -439,18 +439,18 @@ class BankStatementService {
         rent: 0,
         professional: 0,
         other: 0,
-        total: 0
+        total: 0,
       },
       taxCredits: {
         tds: 0,
         tcs: 0,
-        total: 0
+        total: 0,
       },
       deductions: {
         investment: 0,
         other: 0,
-        total: 0
-      }
+        total: 0,
+      },
     };
 
     transactions.forEach(transaction => {
@@ -512,14 +512,14 @@ class BankStatementService {
         categories: {},
         taxRelevantAmount: 0,
         interestIncome: 0,
-        salaryIncome: 0
+        salaryIncome: 0,
       },
       insights: [],
       taxImplications: {
         taxableIncome: { salary: 0, interest: 0, rent: 0, professional: 0, other: 0, total: 0 },
         taxCredits: { tds: 0, tcs: 0, total: 0 },
-        deductions: { investment: 0, other: 0, total: 0 }
-      }
+        deductions: { investment: 0, other: 0, total: 0 },
+      },
     };
   }
 
@@ -535,20 +535,20 @@ class BankStatementService {
         'Ensure it covers the full financial year (Apr-Mar)',
         'Upload the PDF or Excel file',
         'Review categorized transactions',
-        'Add relevant entries to your ITR form'
+        'Add relevant entries to your ITR form',
       ],
       acceptedFormats: ['.pdf', '.xlsx', '.xls', '.csv'],
       maxFileSize: '15MB',
       supportedBanks: [
         'SBI', 'HDFC', 'ICICI', 'Axis', 'Kotak', 'PNB',
-        'Canara', 'Bank of Baroda', 'Union Bank', 'Indian Bank'
+        'Canara', 'Bank of Baroda', 'Union Bank', 'Indian Bank',
       ],
       tips: [
         'Download statements for all bank accounts',
         'Ensure statements are password-free',
         'Include all pages of the statement',
-        'Check that dates cover the complete financial year'
-      ]
+        'Check that dates cover the complete financial year',
+      ],
     };
   }
 
@@ -565,19 +565,19 @@ class BankStatementService {
       ...populatedData.income,
       salaryIncome: (populatedData.income?.salaryIncome || 0) + (summary.salaryIncome || 0),
       otherIncome: (populatedData.income?.otherIncome || 0) + (summary.interestIncome || 0),
-      bankInterest: summary.interestIncome || 0
+      bankInterest: summary.interestIncome || 0,
     };
 
     // Populate tax information
     populatedData.taxes = {
       ...populatedData.taxes,
-      totalTDS: (populatedData.taxes?.totalTDS || 0) + (taxImplications.taxCredits.tds || 0)
+      totalTDS: (populatedData.taxes?.totalTDS || 0) + (taxImplications.taxCredits.tds || 0),
     };
 
     // Populate deductions
     populatedData.deductions = {
       ...populatedData.deductions,
-      section80C: Math.min(150000, (populatedData.deductions?.section80C || 0) + (taxImplications.deductions.investment || 0))
+      section80C: Math.min(150000, (populatedData.deductions?.section80C || 0) + (taxImplications.deductions.investment || 0)),
     };
 
     // Add metadata
@@ -585,7 +585,7 @@ class BankStatementService {
       analysisDate: new Date().toISOString(),
       totalTransactions: summary.categories ? Object.values(summary.categories).reduce((sum, cat) => sum + cat.count, 0) : 0,
       taxRelevantAmount: summary.taxRelevantAmount || 0,
-      insights: bankStatementData.insights || []
+      insights: bankStatementData.insights || [],
     };
 
     return populatedData;
@@ -597,7 +597,7 @@ class BankStatementService {
   validateBankStatementFile(file) {
     const validation = {
       isValid: true,
-      errors: []
+      errors: [],
     };
 
     // Check file type
@@ -605,7 +605,7 @@ class BankStatementService {
       'application/pdf',
       'application/vnd.ms-excel',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'text/csv'
+      'text/csv',
     ];
     if (!allowedTypes.includes(file.type)) {
       validation.isValid = false;

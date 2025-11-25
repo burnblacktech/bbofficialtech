@@ -15,12 +15,12 @@ router.use(authMiddleware.authenticateToken);
 const requireAdmin = (req, res, next) => {
   console.log('Admin middleware - User:', req.user);
   console.log('Admin middleware - Role:', req.user?.role);
-  
+
   if (!['SUPER_ADMIN', 'PLATFORM_ADMIN'].includes(req.user.role)) {
     console.log('Admin access denied for role:', req.user.role);
     return res.status(403).json({
       success: false,
-      message: 'Admin access required'
+      message: 'Admin access required',
     });
   }
   console.log('Admin access granted for role:', req.user.role);
@@ -52,13 +52,13 @@ router.use((error, req, res, next) => {
     stack: error.stack,
     url: req.url,
     method: req.method,
-    adminId: req.user?.id
+    adminId: req.user?.id,
   });
 
   res.status(error.statusCode || 500).json({
-        success: false,
+    success: false,
     message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
   });
 });
 

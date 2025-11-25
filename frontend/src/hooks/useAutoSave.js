@@ -21,7 +21,7 @@ const useAutoSave = (data, delay = 2000) => {
   return {
     isSaving,
     lastSaved,
-    saveData
+    saveData,
   };
 };
 

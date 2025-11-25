@@ -16,7 +16,7 @@ export const useTaxComputation = () => {
     try {
       const result = await taxService.computeTax({
         ...incomeData,
-        regime
+        regime,
       });
 
       setTaxData(result);
@@ -39,7 +39,7 @@ export const useTaxComputation = () => {
     loading,
     error,
     computeTax,
-    resetTaxData
+    resetTaxData,
   };
 };
 

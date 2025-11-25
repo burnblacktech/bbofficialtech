@@ -8,6 +8,7 @@ const { CAFirm, User } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 const { requireRole, requirePermission, requireCAFirmAccess } = require('../middleware/rbac');
 const enterpriseLogger = require('../utils/logger');
+const { Op } = require('sequelize');
 
 const router = express.Router();
 
@@ -22,11 +23,11 @@ router.get('/', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFORM_ADMIN']
     const offset = (page - 1) * limit;
 
     const whereClause = {};
-    if (status) whereClause.status = status;
+    if (status) {whereClause.status = status;}
     if (search) {
       whereClause[Op.or] = [
         { name: { [Op.iLike]: `%${search}%` } },
-        { email: { [Op.iLike]: `%${search}%` } }
+        { email: { [Op.iLike]: `%${search}%` } },
       ];
     }
 
@@ -36,12 +37,12 @@ router.get('/', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFORM_ADMIN']
         {
           model: User,
           as: 'createdByUser',
-          attributes: ['id', 'email', 'fullName']
-        }
+          attributes: ['id', 'email', 'fullName'],
+        },
       ],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
     });
 
     // Get stats for each firm
@@ -50,9 +51,9 @@ router.get('/', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFORM_ADMIN']
         const stats = await CAFirm.getFirmStats(firm.id);
         return {
           ...firm.toJSON(),
-          stats: stats.stats
+          stats: stats.stats,
         };
-      })
+      }),
     );
 
     res.json({
@@ -63,19 +64,19 @@ router.get('/', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFORM_ADMIN']
           total: count,
           page: parseInt(page),
           limit: parseInt(limit),
-          totalPages: Math.ceil(count / limit)
-        }
-      }
+          totalPages: Math.ceil(count / limit),
+        },
+      },
     });
   } catch (error) {
     enterpriseLogger.error('Get CA firms failed', {
       error: error.message,
       stack: error.stack,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -84,21 +85,21 @@ router.get('/', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFORM_ADMIN']
 router.get('/:firmId', authenticateToken, requireCAFirmAccess('firmId'), async (req, res) => {
   try {
     const { firmId } = req.params;
-    
+
     const firm = await CAFirm.findByPk(firmId, {
       include: [
         {
           model: User,
           as: 'createdByUser',
-          attributes: ['id', 'email', 'fullName']
-        }
-      ]
+          attributes: ['id', 'email', 'fullName'],
+        },
+      ],
     });
 
     if (!firm) {
       return res.status(404).json({
         success: false,
-        error: 'CA firm not found'
+        error: 'CA firm not found',
       });
     }
 
@@ -109,20 +110,20 @@ router.get('/:firmId', authenticateToken, requireCAFirmAccess('firmId'), async (
       data: {
         firm: {
           ...firm.toJSON(),
-          stats: stats.stats
-        }
-      }
+          stats: stats.stats,
+        },
+      },
     });
   } catch (error) {
     enterpriseLogger.error('Get CA firm failed', {
       error: error.message,
       stack: error.stack,
       firmId: req.params.firmId,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -140,29 +141,29 @@ router.post('/', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFORM_ADMIN'
       phone,
       email,
       createdBy,
-      status: 'active'
+      status: 'active',
     });
 
     enterpriseLogger.info('CA firm created', {
       firmId: firm.id,
       name: firm.name,
-      createdBy
+      createdBy,
     });
 
     res.status(201).json({
       success: true,
       data: { firm },
-      message: 'CA firm created successfully'
+      message: 'CA firm created successfully',
     });
   } catch (error) {
     enterpriseLogger.error('Create CA firm failed', {
       error: error.message,
       stack: error.stack,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -177,7 +178,7 @@ router.put('/:firmId', authenticateToken, requireCAFirmAccess('firmId'), async (
     if (!firm) {
       return res.status(404).json({
         success: false,
-        error: 'CA firm not found'
+        error: 'CA firm not found',
       });
     }
 
@@ -187,30 +188,30 @@ router.put('/:firmId', authenticateToken, requireCAFirmAccess('firmId'), async (
       address,
       phone,
       email,
-      status
+      status,
     });
 
     enterpriseLogger.info('CA firm updated', {
       firmId: firm.id,
       updatedFields: Object.keys(req.body),
-      userId: req.user.userId
+      userId: req.user.userId,
     });
 
     res.json({
       success: true,
       data: { firm },
-      message: 'CA firm updated successfully'
+      message: 'CA firm updated successfully',
     });
   } catch (error) {
     enterpriseLogger.error('Update CA firm failed', {
       error: error.message,
       stack: error.stack,
       firmId: req.params.firmId,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -224,7 +225,7 @@ router.delete('/:firmId', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFO
     if (!firm) {
       return res.status(404).json({
         success: false,
-        error: 'CA firm not found'
+        error: 'CA firm not found',
       });
     }
 
@@ -232,23 +233,23 @@ router.delete('/:firmId', authenticateToken, requireRole(['SUPER_ADMIN', 'PLATFO
 
     enterpriseLogger.info('CA firm deactivated', {
       firmId: firm.id,
-      userId: req.user.userId
+      userId: req.user.userId,
     });
 
     res.json({
       success: true,
-      message: 'CA firm deactivated successfully'
+      message: 'CA firm deactivated successfully',
     });
   } catch (error) {
     enterpriseLogger.error('Delete CA firm failed', {
       error: error.message,
       stack: error.stack,
       firmId: req.params.firmId,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -265,26 +266,26 @@ router.get('/:firmId/staff', authenticateToken, requireCAFirmAccess('firmId'), a
     const staff = await User.findAll({
       where: {
         caFirmId: firmId,
-        role: ['CA', 'CA_FIRM_ADMIN']
+        role: ['CA', 'CA_FIRM_ADMIN'],
       },
       attributes: ['id', 'email', 'fullName', 'role', 'status', 'createdAt'],
-      order: [['role', 'DESC'], ['createdAt', 'ASC']]
+      order: [['role', 'DESC'], ['createdAt', 'ASC']],
     });
 
     res.json({
       success: true,
-      data: { staff }
+      data: { staff },
     });
   } catch (error) {
     enterpriseLogger.error('Get CA firm staff failed', {
       error: error.message,
       stack: error.stack,
       firmId: req.params.firmId,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -300,7 +301,7 @@ router.post('/:firmId/staff', authenticateToken, requirePermission('ca_firm.staf
     if (!firm) {
       return res.status(404).json({
         success: false,
-        error: 'CA firm not found'
+        error: 'CA firm not found',
       });
     }
 
@@ -309,37 +310,37 @@ router.post('/:firmId/staff', authenticateToken, requirePermission('ca_firm.staf
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: 'User not found',
       });
     }
 
     // Update user's CA firm association
     await user.update({
       caFirmId: firmId,
-      role: role || 'CA'
+      role: role || 'CA',
     });
 
     enterpriseLogger.info('Staff added to CA firm', {
       firmId,
       userId,
       role,
-      addedBy: req.user.userId
+      addedBy: req.user.userId,
     });
 
     res.json({
       success: true,
-      message: 'Staff added to CA firm successfully'
+      message: 'Staff added to CA firm successfully',
     });
   } catch (error) {
     enterpriseLogger.error('Add staff to CA firm failed', {
       error: error.message,
       stack: error.stack,
       firmId: req.params.firmId,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });
@@ -353,25 +354,25 @@ router.delete('/:firmId/staff/:userId', authenticateToken, requirePermission('ca
     if (!user || user.caFirmId !== firmId) {
       return res.status(404).json({
         success: false,
-        error: 'Staff member not found in this CA firm'
+        error: 'Staff member not found in this CA firm',
       });
     }
 
     // Remove CA firm association
     await user.update({
       caFirmId: null,
-      role: 'END_USER'
+      role: 'END_USER',
     });
 
     enterpriseLogger.info('Staff removed from CA firm', {
       firmId,
       userId,
-      removedBy: req.user.userId
+      removedBy: req.user.userId,
     });
 
     res.json({
       success: true,
-      message: 'Staff removed from CA firm successfully'
+      message: 'Staff removed from CA firm successfully',
     });
   } catch (error) {
     enterpriseLogger.error('Remove staff from CA firm failed', {
@@ -379,11 +380,11 @@ router.delete('/:firmId/staff/:userId', authenticateToken, requirePermission('ca
       stack: error.stack,
       firmId: req.params.firmId,
       userId: req.params.userId,
-      removedBy: req.user?.userId
+      removedBy: req.user?.userId,
     });
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 });

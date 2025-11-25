@@ -8,11 +8,11 @@ import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
-import { 
-  CreditCard, 
-  Shield, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  CreditCard,
+  Shield,
+  CheckCircle,
+  AlertCircle,
   ArrowLeft,
   Building2,
   Users,
@@ -22,7 +22,7 @@ import {
   Headphones,
   BarChart3,
   Settings,
-  Code
+  Code,
 } from 'lucide-react';
 
 const Checkout = () => {
@@ -36,17 +36,17 @@ const Checkout = () => {
       city: '',
       state: '',
       pincode: '',
-      country: 'India'
+      country: 'India',
     },
     gstNumber: '',
     panNumber: '',
-    registrationNumber: ''
+    registrationNumber: '',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const { plan, billingCycle } = location.state || {};
 
   useEffect(() => {
@@ -57,99 +57,99 @@ const Checkout = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setFormData(prev => ({
         ...prev,
         [parent]: {
           ...prev[parent],
-          [child]: value
-        }
+          [child]: value,
+        },
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.firmName.trim()) {
       newErrors.firmName = 'Firm name is required';
     }
-    
+
     if (!formData.contactPerson.trim()) {
       newErrors.contactPerson = 'Contact person is required';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    
+
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone)) {
       newErrors.phone = 'Phone number is invalid';
     }
-    
+
     if (!formData.address.street.trim()) {
       newErrors['address.street'] = 'Street address is required';
     }
-    
+
     if (!formData.address.city.trim()) {
       newErrors['address.city'] = 'City is required';
     }
-    
+
     if (!formData.address.state.trim()) {
       newErrors['address.state'] = 'State is required';
     }
-    
+
     if (!formData.address.pincode.trim()) {
       newErrors['address.pincode'] = 'Pincode is required';
     } else if (!/^\d{6}$/.test(formData.address.pincode)) {
       newErrors['address.pincode'] = 'Pincode must be 6 digits';
     }
-    
+
     if (!formData.panNumber.trim()) {
       newErrors.panNumber = 'PAN number is required';
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNumber)) {
       newErrors.panNumber = 'PAN number is invalid';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
       // Create subscription order
       const orderResponse = await fetch('/api/subscriptions/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           planId: plan.id,
@@ -157,8 +157,8 @@ const Checkout = () => {
           amount: billingCycle === 'monthly' ? plan.monthlyPrice * 100 : plan.annualPrice * 100,
           currency: 'INR',
           firmDetails: formData,
-          receipt: `subscription_${plan.id}_${Date.now()}`
-        })
+          receipt: `subscription_${plan.id}_${Date.now()}`,
+        }),
       });
 
       const orderData = await orderResponse.json();
@@ -178,7 +178,7 @@ const Checkout = () => {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
               },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
@@ -186,8 +186,8 @@ const Checkout = () => {
                 razorpay_signature: response.razorpay_signature,
                 planId: plan.id,
                 billingCycle: billingCycle,
-                firmDetails: formData
-              })
+                firmDetails: formData,
+              }),
             });
 
             const verifyData = await verifyResponse.json();
@@ -198,8 +198,8 @@ const Checkout = () => {
                   type: 'subscription',
                   plan: plan,
                   billingCycle: billingCycle,
-                  paymentId: response.razorpay_payment_id
-                }
+                  paymentId: response.razorpay_payment_id,
+                },
               });
             } else {
               setErrors({ submit: 'Payment verification failed' });
@@ -212,16 +212,16 @@ const Checkout = () => {
         prefill: {
           name: formData.contactPerson,
           email: formData.email,
-          contact: formData.phone
+          contact: formData.phone,
         },
         theme: {
-          color: '#0b0b0b'
+          color: '#0b0b0b',
         },
         modal: {
           ondismiss: () => {
             setLoading(false);
-          }
-        }
+          },
+        },
       };
 
       const razorpay = new window.Razorpay(options);
@@ -239,7 +239,7 @@ const Checkout = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -313,7 +313,7 @@ const Checkout = () => {
                         </Typography.Small>
                       )}
                     </div>
-                    
+
                     <div>
                       <label htmlFor="contactPerson" className="block text-sm font-medium text-neutral-700 mb-2">
                         Contact Person *
@@ -360,7 +360,7 @@ const Checkout = () => {
                         </Typography.Small>
                       )}
                     </div>
-                    
+
                     <div>
                       <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-2">
                         Phone Number *
@@ -407,7 +407,7 @@ const Checkout = () => {
                           </Typography.Small>
                         )}
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <input
@@ -426,7 +426,7 @@ const Checkout = () => {
                             </Typography.Small>
                           )}
                         </div>
-                        
+
                         <div>
                           <input
                             type="text"
@@ -444,7 +444,7 @@ const Checkout = () => {
                             </Typography.Small>
                           )}
                         </div>
-                        
+
                         <div>
                           <input
                             type="text"
@@ -490,7 +490,7 @@ const Checkout = () => {
                         </Typography.Small>
                       )}
                     </div>
-                    
+
                     <div>
                       <label htmlFor="gstNumber" className="block text-sm font-medium text-neutral-700 mb-2">
                         GST Number

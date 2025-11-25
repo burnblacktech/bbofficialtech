@@ -12,16 +12,16 @@ const useFilingStatistics = () => {
     monthlyTrends: [],
     yearlyComparison: {},
     loading: false,
-    error: null
+    error: null,
   });
 
   const fetchStatistics = useCallback(async (period = 'current_year') => {
     setStatistics(prev => ({ ...prev, loading: true, error: null }));
-    
+
     try {
       // Mock API call - replace with actual API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockData = {
         totalFilings: 25,
         completedFilings: 20,
@@ -33,25 +33,25 @@ const useFilingStatistics = () => {
         monthlyTrends: [
           { month: 'Jan', filings: 5, completed: 4 },
           { month: 'Feb', filings: 8, completed: 7 },
-          { month: 'Mar', filings: 12, completed: 9 }
+          { month: 'Mar', filings: 12, completed: 9 },
         ],
         yearlyComparison: {
           currentYear: 25,
           previousYear: 18,
-          growth: 38.9
-        }
+          growth: 38.9,
+        },
       };
-      
+
       setStatistics(prev => ({
         ...prev,
         ...mockData,
-        loading: false
+        loading: false,
       }));
     } catch (error) {
       setStatistics(prev => ({
         ...prev,
         error: error.message,
-        loading: false
+        loading: false,
       }));
     }
   }, []);
@@ -67,14 +67,14 @@ const useFilingStatistics = () => {
         { status: 'in_progress', count: statistics.pendingFilings },
         { status: 'submitted', count: statistics.completedFilings },
         { status: 'acknowledged', count: statistics.completedFilings },
-        { status: 'rejected', count: statistics.rejectedFilings }
+        { status: 'rejected', count: statistics.rejectedFilings },
       ],
       monthlyTrends: statistics.monthlyTrends,
-      yearlyComparison: statistics.yearlyComparison
+      yearlyComparison: statistics.yearlyComparison,
     },
     loading: statistics.loading,
     error: statistics.error,
-    refetch: fetchStatistics
+    refetch: fetchStatistics,
   };
 };
 

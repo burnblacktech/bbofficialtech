@@ -19,16 +19,16 @@ const useAuthStore = create(
           const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(credentials)
+            body: JSON.stringify(credentials),
           });
-          
+
           if (response.ok) {
             const data = await response.json();
             set({
               user: data.user,
               token: data.token,
               isAuthenticated: true,
-              loading: false
+              loading: false,
             });
             return data;
           } else {
@@ -45,29 +45,29 @@ const useAuthStore = create(
           user: null,
           token: null,
           isAuthenticated: false,
-          error: null
+          error: null,
         });
       },
 
       updateUser: (userData) => {
         set(state => ({
-          user: { ...state.user, ...userData }
+          user: { ...state.user, ...userData },
         }));
       },
 
       clearError: () => {
         set({ error: null });
-      }
+      },
     }),
     {
       name: 'auth-storage',
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        isAuthenticated: state.isAuthenticated
-      })
-    }
-  )
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
 );
 
 export { default as useAuthStore } from './authStore';

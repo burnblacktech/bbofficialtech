@@ -15,7 +15,7 @@ class ITRComputationEngine {
           { min: 750001, max: 1000000, rate: 15, cess: 4 },
           { min: 1000001, max: 1250000, rate: 20, cess: 4 },
           { min: 1250001, max: 1500000, rate: 25, cess: 4 },
-          { min: 1500001, max: Infinity, rate: 30, cess: 4 }
+          { min: 1500001, max: Infinity, rate: 30, cess: 4 },
         ],
         seniorCitizen: [
           { min: 0, max: 300000, rate: 0, cess: 0 },
@@ -24,7 +24,7 @@ class ITRComputationEngine {
           { min: 750001, max: 1000000, rate: 15, cess: 4 },
           { min: 1000001, max: 1250000, rate: 20, cess: 4 },
           { min: 1250001, max: 1500000, rate: 25, cess: 4 },
-          { min: 1500001, max: Infinity, rate: 30, cess: 4 }
+          { min: 1500001, max: Infinity, rate: 30, cess: 4 },
         ],
         superSeniorCitizen: [
           { min: 0, max: 500000, rate: 0, cess: 0 },
@@ -32,14 +32,14 @@ class ITRComputationEngine {
           { min: 750001, max: 1000000, rate: 10, cess: 4 },
           { min: 1000001, max: 1250000, rate: 15, cess: 4 },
           { min: 1250001, max: 1500000, rate: 20, cess: 4 },
-          { min: 1500001, max: Infinity, rate: 30, cess: 4 }
-        ]
-      }
+          { min: 1500001, max: Infinity, rate: 30, cess: 4 },
+        ],
+      },
     };
 
     this.rebate87A = {
       maxIncome: 500000,
-      rebate: 12500
+      rebate: 12500,
     };
   }
 
@@ -58,7 +58,7 @@ class ITRComputationEngine {
       balanceTax: 0,
       rebate: {},
       refundOrPayable: 0,
-      breakdown: {}
+      breakdown: {},
     };
 
     try {
@@ -102,7 +102,7 @@ class ITRComputationEngine {
       computation.breakdown.final = {
         finalTaxLiability,
         taxesPaid: computation.taxesPaid.total,
-        balanceTax: computation.balanceTax
+        balanceTax: computation.balanceTax,
       };
 
     } catch (error) {
@@ -155,7 +155,7 @@ class ITRComputationEngine {
       section_80e: parseFloat(deductions.section_80e || 0),
       section_80g: parseFloat(deductions.section_80g || 0),
       other_deductions: parseFloat(deductions.other_deductions || 0),
-      total: Math.round(total)
+      total: Math.round(total),
     };
   }
 
@@ -190,7 +190,7 @@ class ITRComputationEngine {
           slab: `₹${slabMin.toLocaleString('en-IN')} - ₹${slabItem.max === Infinity ? '∞' : slabItem.max.toLocaleString('en-IN')}`,
           rate: `${slabItem.rate}%`,
           taxableAmount: slabMax - slabMin,
-          tax: slabTax
+          tax: slabTax,
         });
       }
 
@@ -210,7 +210,7 @@ class ITRComputationEngine {
     return {
       section: '87A',
       amount: rebateAmount,
-      applicable: taxableIncome <= this.rebate87A.maxIncome
+      applicable: taxableIncome <= this.rebate87A.maxIncome,
     };
   }
 
@@ -225,7 +225,7 @@ class ITRComputationEngine {
       advanceTax,
       tdsTcs,
       selfAssessmentTax,
-      total: advanceTax + tdsTcs + selfAssessmentTax
+      total: advanceTax + tdsTcs + selfAssessmentTax,
     };
   }
 
@@ -239,14 +239,14 @@ class ITRComputationEngine {
         profits_in_lieu_of_salary: parseFloat(income.profits_in_lieu_of_salary || 0),
         total: parseFloat(income.gross_salary || 0) +
                parseFloat(income.perquisites || 0) +
-               parseFloat(income.profits_in_lieu_of_salary || 0)
+               parseFloat(income.profits_in_lieu_of_salary || 0),
       },
       houseProperty: income.has_house_property ? {
         rentalIncome: parseFloat(income.annual_rental_income || 0),
         deductions: parseFloat(income.municipal_taxes || 0) +
                     parseFloat(income.interest_on_loan || 0) +
                     (parseFloat(income.annual_rental_income || 0) * 0.3),
-        net: this.calculateNetHousePropertyIncome(income)
+        net: this.calculateNetHousePropertyIncome(income),
       } : { total: 0 },
       other: {
         interest_income: parseFloat(income.interest_income || 0),
@@ -256,8 +256,8 @@ class ITRComputationEngine {
         total: parseFloat(income.interest_income || 0) +
                 parseFloat(income.dividend_income || 0) +
                 parseFloat(income.capital_gains || 0) +
-                parseFloat(income.other_sources || 0)
-      }
+                parseFloat(income.other_sources || 0),
+      },
     };
   }
 
@@ -277,26 +277,26 @@ class ITRComputationEngine {
       section_80c: {
         description: 'Investment in PPF, EPF, Life Insurance, etc.',
         amount: parseFloat(deductions.section_80c || 0),
-        maxLimit: 150000
+        maxLimit: 150000,
       },
       section_80d: {
         description: 'Health Insurance Premium',
         amount: parseFloat(deductions.section_80d || 0),
-        maxLimit: 25000
+        maxLimit: 25000,
       },
       section_80e: {
         description: 'Education Loan Interest',
         amount: parseFloat(deductions.section_80e || 0),
-        maxLimit: 150000
+        maxLimit: 150000,
       },
       section_80g: {
         description: 'Donations to Approved Institutions',
-        amount: parseFloat(deductions.section_80g || 0)
+        amount: parseFloat(deductions.section_80g || 0),
       },
       other_deductions: {
         description: 'Other Deductions',
-        amount: parseFloat(deductions.other_deductions || 0)
-      }
+        amount: parseFloat(deductions.other_deductions || 0),
+      },
     };
   }
 
@@ -336,8 +336,8 @@ class ITRComputationEngine {
           'Purchase life insurance policies',
           'Invest in ELSS mutual funds',
           'Pay home loan principal',
-          'Tuition fees for children\'s education'
-        ]
+          'Tuition fees for children\'s education',
+        ],
       });
     }
 
@@ -357,8 +357,8 @@ class ITRComputationEngine {
           'Purchase health insurance for self',
           'Health insurance for spouse/children',
           'Preventive health check-ups (up to ₹5,000)',
-          'Parents health insurance (up to ₹25,000 additional)'
-        ]
+          'Parents health insurance (up to ₹25,000 additional)',
+        ],
       });
     }
 

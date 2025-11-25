@@ -16,7 +16,7 @@ class BrokerAPIService {
       ICICI_DIRECT: 'icici_direct',
       HDFC_SECURITIES: 'hdfc_securities',
       KOTAK_SECURITIES: 'kotak_securities',
-      SBICAP_SECURITIES: 'sbicap_securities'
+      SBICAP_SECURITIES: 'sbicap_securities',
     };
 
     this.endpoints = {
@@ -26,22 +26,22 @@ class BrokerAPIService {
       TRADES: '/broker/trades',
       CAPITAL_GAINS: '/broker/capital-gains',
       STATEMENT: '/broker/statement',
-      TAX_REPORT: '/broker/tax-report'
+      TAX_REPORT: '/broker/tax-report',
     };
 
     this.capitalGainsRates = {
       EQUITY: {
         SHORT_TERM: 0.15,    // 15% for holding period < 1 year
-        LONG_TERM: 0.10     // 10% for holding period > 1 year (above ₹1 lakh)
+        LONG_TERM: 0.10,     // 10% for holding period > 1 year (above ₹1 lakh)
       },
       DEBT: {
         SHORT_TERM: 0.30,    // As per income slab
-        LONG_TERM: 0.20     // 20% with indexation or 10% without indexation
+        LONG_TERM: 0.20,     // 20% with indexation or 10% without indexation
       },
       OTHER_ASSETS: {
         SHORT_TERM: 0.30,    // As per income slab
-        LONG_TERM: 0.20     // 20% with indexation
-      }
+        LONG_TERM: 0.20,     // 20% with indexation
+      },
     };
   }
 
@@ -55,7 +55,7 @@ class BrokerAPIService {
       const authRequest = {
         brokerCode: this.brokerCode,
         credentials: this.encryptCredentials(credentials),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       const response = await apiClient.post(this.endpoints.AUTHENTICATE, authRequest);
@@ -67,7 +67,7 @@ class BrokerAPIService {
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
           expiresAt: response.data.expiresAt,
-          userId: response.data.userId
+          userId: response.data.userId,
         };
       }
 
@@ -90,7 +90,7 @@ class BrokerAPIService {
         userId,
         brokerCode: this.brokerCode,
         assessmentYear,
-        includeAllSegments: true
+        includeAllSegments: true,
       };
 
       const response = await apiClient.post(this.endpoints.TRADES, request);
@@ -119,8 +119,8 @@ class BrokerAPIService {
             lossMakingTrades: capitalGains.lossMakingTrades,
             totalGains: capitalGains.totalGains,
             totalLosses: capitalGains.totalLosses,
-            netGains: capitalGains.netGains
-          }
+            netGains: capitalGains.netGains,
+          },
         };
       }
 
@@ -141,7 +141,7 @@ class BrokerAPIService {
 
       const request = {
         userId,
-        brokerCode: this.brokerCode
+        brokerCode: this.brokerCode,
       };
 
       const response = await apiClient.post(this.endpoints.HOLDINGS, request);
@@ -153,13 +153,13 @@ class BrokerAPIService {
         const processedHoldings = holdings.map(holding => ({
           ...holding,
           taxImplications: this.calculateHoldingTaxImplications(holding),
-          unrealizedGains: this.calculateUnrealizedGains(holding)
+          unrealizedGains: this.calculateUnrealizedGains(holding),
         }));
 
         return {
           success: true,
           holdings: processedHoldings,
-          summary: this.generateHoldingsSummary(processedHoldings)
+          summary: this.generateHoldingsSummary(processedHoldings),
         };
       }
 
@@ -191,7 +191,7 @@ class BrokerAPIService {
         charges: parseFloat(transaction.charges || 0),
         stt: parseFloat(transaction.stt || 0),
         gst: parseFloat(transaction.gst || 0),
-        totalCharges: this.calculateTotalCharges(transaction)
+        totalCharges: this.calculateTotalCharges(transaction),
       };
     });
 
@@ -214,8 +214,8 @@ class BrokerAPIService {
         totalGains: 0,
         totalLosses: 0,
         netGains: 0,
-        taxLiability: 0
-      }
+        taxLiability: 0,
+      },
     };
 
     for (const transaction of transactions) {
@@ -232,7 +232,7 @@ class BrokerAPIService {
           price: transaction.price,
           tradeDate: transaction.tradeDate,
           totalCost: transaction.value + transaction.totalCharges,
-          totalCharges: transaction.totalCharges
+          totalCharges: transaction.totalCharges,
         });
       } else if (transaction.type === 'SELL') {
         // Calculate gains using FIFO
@@ -269,7 +269,7 @@ class BrokerAPIService {
             type: gainType,
             exempt: isExempt,
             stt: transaction.stt * (sellQuantity / transaction.quantity),
-            tax: this.calculateTaxOnGain(capitalGain, gainType, isExempt, transaction.segment)
+            tax: this.calculateTaxOnGain(capitalGain, gainType, isExempt, transaction.segment),
           };
 
           if (gainType === 'LONG_TERM') {
@@ -306,25 +306,25 @@ class BrokerAPIService {
         buyTransactions: transactions.filter(t => t.type === 'BUY').length,
         sellTransactions: transactions.filter(t => t.type === 'SELL').length,
         totalValue: transactions.reduce((sum, t) => sum + t.value, 0),
-        totalCharges: transactions.reduce((sum, t) => sum + t.totalCharges, 0)
+        totalCharges: transactions.reduce((sum, t) => sum + t.totalCharges, 0),
       },
       capitalGains: {
         shortTerm: {
           count: capitalGains.shortTerm.length,
           totalGains: capitalGains.summary.shortTermGains,
           totalLosses: capitalGains.shortTerm.filter(g => g.capitalGain < 0).reduce((sum, g) => sum + g.capitalGain, 0),
-          taxLiability: this.calculateSTTaxLiability(capitalGains.shortTerm)
+          taxLiability: this.calculateSTTaxLiability(capitalGains.shortTerm),
         },
         longTerm: {
           count: capitalGains.longTerm.length,
           totalGains: capitalGains.summary.longTermGains,
           exemptGains: capitalGains.summary.exemptLongTermGains,
           taxableGains: capitalGains.summary.longTermGains - capitalGains.summary.exemptLongTermGains,
-          taxLiability: this.calculateLTTaxLiability(capitalGains.longTerm)
-        }
+          taxLiability: this.calculateLTTaxLiability(capitalGains.longTerm),
+        },
       },
       detailedTransactions: [...capitalGains.shortTerm, ...capitalGains.longTerm],
-      taxOptimization: this.generateTaxOptimizationSuggestions(capitalGains)
+      taxOptimization: this.generateTaxOptimizationSuggestions(capitalGains),
     };
   }
 
@@ -353,7 +353,7 @@ class BrokerAPIService {
     // Check for tax loss harvesting opportunities
     const currentHoldings = this.getCurrentHoldings();
     const lossMakingHoldings = currentHoldings.filter(holding =>
-      holding.currentValue < holding.averageCost
+      holding.currentValue < holding.averageCost,
     );
 
     if (lossMakingHoldings.length > 0) {
@@ -365,8 +365,8 @@ class BrokerAPIService {
         potentialSavings: this.calculateLossHarvestingSavings(lossMakingHoldings),
         holdings: lossMakingHoldings.map(h => ({
           symbol: h.symbol,
-          currentLoss: h.currentValue - h.averageCost
-        }))
+          currentLoss: h.currentValue - h.averageCost,
+        })),
       });
     }
 
@@ -385,8 +385,8 @@ class BrokerAPIService {
         holdings: nearOneYearHoldings.map(h => ({
           symbol: h.symbol,
           daysToLTCG: 365 - this.calculateHoldingPeriod(h.purchaseDate, new Date()),
-          taxBenefit: this.calculateLTCGTaxBenefit(h)
-        }))
+          taxBenefit: this.calculateLTCGTaxBenefit(h),
+        })),
       });
     }
 
@@ -400,7 +400,7 @@ class BrokerAPIService {
     // In production, use proper encryption
     return {
       ...credentials,
-      encrypted: true
+      encrypted: true,
     };
   }
 
@@ -454,7 +454,7 @@ class BrokerAPIService {
       totalLosses: Math.abs(totalLosses),
       netGains,
       taxLiability,
-      effectiveTaxRate: netGains > 0 ? (taxLiability / netGains) * 100 : 0
+      effectiveTaxRate: netGains > 0 ? (taxLiability / netGains) * 100 : 0,
     };
   }
 
@@ -500,7 +500,7 @@ class BrokerAPIService {
       taxRate: isLongTerm ?
         (holding.segment === 'EQUITY' ? 0.10 : 0.20) :
         (holding.segment === 'EQUITY' ? 0.15 : 0.30),
-      potentialTax: this.calculateTaxOnGain(unrealizedGain, isLongTerm ? 'LONG_TERM' : 'SHORT_TERM', false, holding.segment)
+      potentialTax: this.calculateTaxOnGain(unrealizedGain, isLongTerm ? 'LONG_TERM' : 'SHORT_TERM', false, holding.segment),
     };
   }
 
@@ -518,7 +518,7 @@ class BrokerAPIService {
       totalValue,
       totalCost,
       totalUnrealizedGains,
-      unrealizedGainPercentage: totalCost > 0 ? (totalUnrealizedGains / totalCost) * 100 : 0
+      unrealizedGainPercentage: totalCost > 0 ? (totalUnrealizedGains / totalCost) * 100 : 0,
     };
   }
 }

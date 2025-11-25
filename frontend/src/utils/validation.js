@@ -14,13 +14,13 @@ export const VALIDATION_RULES = {
       required: 'Full name is required',
       minLength: 'Name must be at least 2 characters',
       maxLength: 'Name cannot exceed 100 characters',
-      pattern: 'Name can only contain letters, spaces, and periods'
+      pattern: 'Name can only contain letters, spaces, and periods',
     },
     suggestions: [
       'Use your official name as per PAN card',
       'Include middle name if applicable',
-      'Avoid special characters except periods'
-    ]
+      'Avoid special characters except periods',
+    ],
   },
 
   pan: {
@@ -28,27 +28,27 @@ export const VALIDATION_RULES = {
     pattern: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
     messages: {
       required: 'PAN number is required',
-      pattern: 'Invalid PAN format. Must be AAAAA1111A'
+      pattern: 'Invalid PAN format. Must be AAAAA1111A',
     },
     suggestions: [
       'Format: First 5 letters, then 4 numbers, then 1 letter',
       'Check your PAN card for the exact format',
-      'All letters should be in uppercase'
+      'All letters should be in uppercase',
     ],
-    autoCorrect: (value) => value.toUpperCase()
+    autoCorrect: (value) => value.toUpperCase(),
   },
 
   aadhaar: {
     required: false,
     pattern: /^\d{12}$/,
     messages: {
-      pattern: 'Aadhaar number must be exactly 12 digits'
+      pattern: 'Aadhaar number must be exactly 12 digits',
     },
     suggestions: [
       'Enter 12-digit Aadhaar number without spaces',
       'Remove any spaces or hyphens',
-      'Aadhaar is optional but recommended for verification'
-    ]
+      'Aadhaar is optional but recommended for verification',
+    ],
   },
 
   mobile: {
@@ -56,13 +56,13 @@ export const VALIDATION_RULES = {
     pattern: /^[6-9]\d{9}$/,
     messages: {
       required: 'Mobile number is required',
-      pattern: 'Invalid mobile number format'
+      pattern: 'Invalid mobile number format',
     },
     suggestions: [
       'Enter 10-digit mobile number starting with 6-9',
       'Remove country code (+91) if present',
-      'Use the number registered with your bank'
-    ]
+      'Use the number registered with your bank',
+    ],
   },
 
   email: {
@@ -70,13 +70,13 @@ export const VALIDATION_RULES = {
     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     messages: {
       required: 'Email address is required',
-      pattern: 'Invalid email address format'
+      pattern: 'Invalid email address format',
     },
     suggestions: [
       'Use your primary email address',
       'Check for typos in domain name',
-      'Avoid special characters in username'
-    ]
+      'Avoid special characters in username',
+    ],
   },
 
   pincode: {
@@ -84,13 +84,13 @@ export const VALIDATION_RULES = {
     pattern: /^\d{6}$/,
     messages: {
       required: 'PIN code is required',
-      pattern: 'PIN code must be exactly 6 digits'
+      pattern: 'PIN code must be exactly 6 digits',
     },
     suggestions: [
       'Enter 6-digit PIN code',
       'Find PIN code on India Post website',
-      'Use PIN code of your communication address'
-    ]
+      'Use PIN code of your communication address',
+    ],
   },
 
   // Income Validation
@@ -100,38 +100,38 @@ export const VALIDATION_RULES = {
     max: 50000000, // ₹5 crores
     messages: {
       min: 'Salary cannot be negative',
-      max: 'Salary amount seems unusually high'
+      max: 'Salary amount seems unusually high',
     },
     suggestions: [
       'Enter annual gross salary before deductions',
       'Include HRA, Conveyance, LTA if applicable',
-      'Refer to Form 16 for exact amount'
-    ]
+      'Refer to Form 16 for exact amount',
+    ],
   },
 
   houseProperty: {
     required: false,
     messages: {
-      invalid: 'Invalid house property details'
+      invalid: 'Invalid house property details',
     },
     suggestions: [
       'Enter annual rental income if property is let out',
       'For self-occupied: enter 0 or leave blank',
-      'Calculate after deducting municipal taxes'
-    ]
+      'Calculate after deducting municipal taxes',
+    ],
   },
 
   business: {
     required: false,
     min: 0,
     messages: {
-      min: 'Business income cannot be negative'
+      min: 'Business income cannot be negative',
     },
     suggestions: [
       'Enter net profit after all business expenses',
       'Include presumptive taxation if applicable',
-      'Refer to audited financial statements'
-    ]
+      'Refer to audited financial statements',
+    ],
   },
 
   // Deductions Validation
@@ -140,13 +140,13 @@ export const VALIDATION_RULES = {
     min: 0,
     max: 150000,
     messages: {
-      max: 'Section 80C deduction cannot exceed ₹1,50,000'
+      max: 'Section 80C deduction cannot exceed ₹1,50,000',
     },
     suggestions: [
       'Maximum limit is ₹1,50,000 per year',
       'Includes PPF, ELSS, Life Insurance, etc.',
-      'Keep investment proofs for verification'
-    ]
+      'Keep investment proofs for verification',
+    ],
   },
 
   section80D: {
@@ -154,13 +154,13 @@ export const VALIDATION_RULES = {
     min: 0,
     max: 25000,
     messages: {
-      max: 'Section 80D deduction cannot exceed ₹25,000'
+      max: 'Section 80D deduction cannot exceed ₹25,000',
     },
     suggestions: [
       '₹25,000 for self, spouse, and dependent children',
       'Additional ₹25,000 for parents if they are senior citizens',
-      'Keep medical insurance receipts'
-    ]
+      'Keep medical insurance receipts',
+    ],
   },
 
   section80TTA: {
@@ -168,14 +168,14 @@ export const VALIDATION_RULES = {
     min: 0,
     max: 10000,
     messages: {
-      max: 'Section 80TTA deduction cannot exceed ₹10,000'
+      max: 'Section 80TTA deduction cannot exceed ₹10,000',
     },
     suggestions: [
       'Maximum limit is ₹10,000 per year',
       'For interest earned on savings account',
-      'Available to individuals and HUFs only'
-    ]
-  }
+      'Available to individuals and HUFs only',
+    ],
+  },
 };
 
 // Validation Engine Class
@@ -200,7 +200,7 @@ export class ValidationEngine {
       errors.push({
         type: 'required',
         message: rules.messages.required,
-        severity: 'error'
+        severity: 'error',
       });
       return { isValid: false, errors, warnings, suggestions };
     }
@@ -215,7 +215,7 @@ export class ValidationEngine {
       errors.push({
         type: 'pattern',
         message: rules.messages.pattern,
-        severity: 'error'
+        severity: 'error',
       });
     }
 
@@ -224,7 +224,7 @@ export class ValidationEngine {
       errors.push({
         type: 'minLength',
         message: rules.messages.minLength,
-        severity: 'error'
+        severity: 'error',
       });
     }
 
@@ -232,7 +232,7 @@ export class ValidationEngine {
       errors.push({
         type: 'maxLength',
         message: rules.messages.maxLength,
-        severity: 'error'
+        severity: 'error',
       });
     }
 
@@ -241,7 +241,7 @@ export class ValidationEngine {
       errors.push({
         type: 'min',
         message: rules.messages.min,
-        severity: 'error'
+        severity: 'error',
       });
     }
 
@@ -251,14 +251,14 @@ export class ValidationEngine {
         errors.push({
           type: 'max',
           message: rules.messages.max,
-          severity: 'error'
+          severity: 'error',
         });
       } else {
         // Slightly over limit - warning
         warnings.push({
           type: 'max',
           message: `Value is close to maximum limit of ${rules.max.toLocaleString()}`,
-          severity: 'warning'
+          severity: 'warning',
         });
       }
     }
@@ -269,8 +269,8 @@ export class ValidationEngine {
       if (parseFloat(value) > max80C) {
         warnings.push({
           type: 'crossField',
-          message: `Section 80C limit is 10% of income or ₹1,50,000 (whichever is lower)`,
-          severity: 'warning'
+          message: 'Section 80C limit is 10% of income or ₹1,50,000 (whichever is lower)',
+          severity: 'warning',
         });
       }
     }
@@ -279,7 +279,7 @@ export class ValidationEngine {
       isValid: errors.length === 0,
       errors,
       warnings,
-      suggestions
+      suggestions,
     };
   }
 
@@ -312,7 +312,7 @@ export class ValidationEngine {
       isValid: Object.keys(sectionErrors).length === 0,
       errors: sectionErrors,
       warnings: sectionWarnings,
-      suggestions: sectionSuggestions
+      suggestions: sectionSuggestions,
     };
   }
 
@@ -342,7 +342,7 @@ export class ValidationEngine {
       errors.income = [{
         type: 'required',
         message: 'At least one income source is required',
-        severity: 'error'
+        severity: 'error',
       }];
     }
 
@@ -352,7 +352,7 @@ export class ValidationEngine {
       warnings.totalIncome = [{
         type: 'highIncome',
         message: 'Total income is very high. Please verify the amounts.',
-        severity: 'warning'
+        severity: 'warning',
       }];
     }
 
@@ -363,7 +363,7 @@ export class ValidationEngine {
         warnings.businessCompliance = [{
           type: 'compliance',
           message: 'Business income may require GST registration and audit',
-          severity: 'warning'
+          severity: 'warning',
         }];
       }
     }
@@ -379,7 +379,7 @@ export class ValidationEngine {
       warnings.totalDeductions = [{
         type: 'limit',
         message: `Total deductions exceed standard limit of ₹${maxDeductionLimit.toLocaleString()}`,
-        severity: 'warning'
+        severity: 'warning',
       }];
     }
 
@@ -390,7 +390,7 @@ export class ValidationEngine {
         warnings.deductionRatio = [{
           type: 'ratio',
           message: 'Deduction amount is unusually high compared to income',
-          severity: 'warning'
+          severity: 'warning',
         }];
       }
     }
@@ -440,7 +440,7 @@ export const useValidation = (initialData = {}) => {
     errors: {},
     warnings: {},
     suggestions: {},
-    touched: new Set()
+    touched: new Set(),
   });
 
   const engine = React.useMemo(() => new ValidationEngine(), []);
@@ -452,16 +452,16 @@ export const useValidation = (initialData = {}) => {
       ...prev,
       errors: {
         ...prev.errors,
-        [fieldName]: result.errors
+        [fieldName]: result.errors,
       },
       warnings: {
         ...prev.warnings,
-        [fieldName]: result.warnings
+        [fieldName]: result.warnings,
       },
       suggestions: {
         ...prev.suggestions,
-        [fieldName]: result.suggestions
-      }
+        [fieldName]: result.suggestions,
+      },
     }));
 
     return result;
@@ -474,7 +474,7 @@ export const useValidation = (initialData = {}) => {
       ...prev,
       errors: { ...prev.errors, ...result.errors },
       warnings: { ...prev.warnings, ...result.warnings },
-      suggestions: { ...prev.suggestions, ...result.suggestions }
+      suggestions: { ...prev.suggestions, ...result.suggestions },
     }));
 
     return result;
@@ -483,7 +483,7 @@ export const useValidation = (initialData = {}) => {
   const markFieldAsTouched = React.useCallback((fieldName) => {
     setValidationState(prev => ({
       ...prev,
-      touched: new Set([...prev.touched, fieldName])
+      touched: new Set([...prev.touched, fieldName]),
     }));
   }, []);
 
@@ -491,7 +491,7 @@ export const useValidation = (initialData = {}) => {
     setValidationState(prev => ({
       ...prev,
       errors: { ...prev.errors, [fieldName]: [] },
-      warnings: { ...prev.warnings, [fieldName]: [] }
+      warnings: { ...prev.warnings, [fieldName]: [] },
     }));
   }, []);
 
@@ -506,7 +506,7 @@ export const useValidation = (initialData = {}) => {
       errors: isTouched ? errors : [],
       warnings: isTouched ? warnings : [],
       suggestions,
-      isTouched
+      isTouched,
     };
   }, [validationState]);
 
@@ -515,7 +515,7 @@ export const useValidation = (initialData = {}) => {
       errors: {},
       warnings: {},
       suggestions: {},
-      touched: new Set()
+      touched: new Set(),
     });
   }, []);
 
@@ -526,7 +526,7 @@ export const useValidation = (initialData = {}) => {
     clearFieldErrors,
     getFieldValidation,
     resetValidation,
-    validationState
+    validationState,
   };
 };
 
@@ -535,7 +535,7 @@ export const formatValidationMessage = (error) => {
   return {
     message: error.message,
     severity: error.severity,
-    type: error.type
+    type: error.type,
   };
 };
 

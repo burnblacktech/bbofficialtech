@@ -15,7 +15,7 @@ const StartFiling = () => {
   const { user } = useAuth();
   const { resetFiling } = useITR();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(false);
   const [filingContext, setFilingContext] = useState('self');
 
@@ -23,18 +23,18 @@ const StartFiling = () => {
     try {
       setLoading(true);
       setFilingContext(context);
-      
+
       // Reset filing data for new filing
       resetFiling();
-      
+
       // Navigate to ITR filing form
-      navigate('/itr/filing', { 
-        state: { 
+      navigate('/itr/filing', {
+        state: {
           context,
-          userId: user.id 
-        } 
+          userId: user.id,
+        },
       });
-      
+
     } catch (error) {
       console.error('Error starting filing:', error);
       toast.error('Failed to start filing. Please try again.');
@@ -50,7 +50,7 @@ const StartFiling = () => {
       description: 'Start a new ITR filing for your own income',
       icon: User,
       color: 'bg-blue-500',
-      action: () => handleStartFiling('self')
+      action: () => handleStartFiling('self'),
     },
     {
       id: 'family',
@@ -58,7 +58,7 @@ const StartFiling = () => {
       description: 'File ITR for a family member',
       icon: Users,
       color: 'bg-green-500',
-      action: () => handleStartFiling('family')
+      action: () => handleStartFiling('family'),
     },
     {
       id: 'client',
@@ -66,8 +66,8 @@ const StartFiling = () => {
       description: 'File ITR for a client (CA users)',
       icon: FileText,
       color: 'bg-purple-500',
-      action: () => handleStartFiling('client')
-    }
+      action: () => handleStartFiling('client'),
+    },
   ];
 
   return (
@@ -87,7 +87,7 @@ const StartFiling = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {filingOptions.map((option) => (
             <Card key={option.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-              <div 
+              <div
                 className="p-6 text-center"
                 onClick={option.action}
               >

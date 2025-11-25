@@ -18,7 +18,7 @@ class SubscriptionController {
 
       enterpriseLogger.info('SubscriptionController: Getting subscription plans', {
         limit,
-        offset
+        offset,
       });
 
       // Mock subscription plans (in production, this would come from database)
@@ -34,10 +34,10 @@ class SubscriptionController {
             'Basic ITR filing support',
             'Email support',
             'Standard templates',
-            'Basic analytics'
+            'Basic analytics',
           ],
           popular: false,
-          recommended: false
+          recommended: false,
         },
         {
           id: 2,
@@ -52,10 +52,10 @@ class SubscriptionController {
             'Custom templates',
             'Bulk operations',
             'Advanced analytics',
-            'Team collaboration'
+            'Team collaboration',
           ],
           popular: true,
-          recommended: false
+          recommended: false,
         },
         {
           id: 3,
@@ -71,30 +71,30 @@ class SubscriptionController {
             'White-label options',
             'Advanced analytics',
             'API access',
-            'Custom workflows'
+            'Custom workflows',
           ],
           popular: false,
-          recommended: true
-        }
+          recommended: true,
+        },
       ];
 
       res.json({
         success: true,
         data: {
           plans: plans.slice(offset, offset + limit),
-          total: plans.length
-        }
+          total: plans.length,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error getting subscription plans', {
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to get subscription plans'
+        message: 'Failed to get subscription plans',
       });
     }
   }
@@ -109,7 +109,7 @@ class SubscriptionController {
       const { planId } = req.params;
 
       enterpriseLogger.info('SubscriptionController: Getting subscription plan', {
-        planId
+        planId,
       });
 
       // Mock subscription plan (in production, this would come from database)
@@ -125,10 +125,10 @@ class SubscriptionController {
             'Basic ITR filing support',
             'Email support',
             'Standard templates',
-            'Basic analytics'
+            'Basic analytics',
           ],
           popular: false,
-          recommended: false
+          recommended: false,
         },
         2: {
           id: 2,
@@ -143,10 +143,10 @@ class SubscriptionController {
             'Custom templates',
             'Bulk operations',
             'Advanced analytics',
-            'Team collaboration'
+            'Team collaboration',
           ],
           popular: true,
-          recommended: false
+          recommended: false,
         },
         3: {
           id: 3,
@@ -162,11 +162,11 @@ class SubscriptionController {
             'White-label options',
             'Advanced analytics',
             'API access',
-            'Custom workflows'
+            'Custom workflows',
           ],
           popular: false,
-          recommended: true
-        }
+          recommended: true,
+        },
       };
 
       const plan = plans[planId];
@@ -174,25 +174,25 @@ class SubscriptionController {
       if (!plan) {
         return res.status(404).json({
           success: false,
-          message: 'Subscription plan not found'
+          message: 'Subscription plan not found',
         });
       }
 
       res.json({
         success: true,
-        data: plan
+        data: plan,
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error getting subscription plan', {
         error: error.message,
         planId: req.params.planId,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to get subscription plan'
+        message: 'Failed to get subscription plan',
       });
     }
   }
@@ -211,7 +211,7 @@ class SubscriptionController {
         userId,
         planId,
         billingCycle,
-        amount
+        amount,
       });
 
       // Validate plan exists
@@ -219,7 +219,7 @@ class SubscriptionController {
       if (!plan) {
         return res.status(404).json({
           success: false,
-          message: 'Subscription plan not found'
+          message: 'Subscription plan not found',
         });
       }
 
@@ -228,7 +228,7 @@ class SubscriptionController {
       if (amount !== expectedAmount * 100) { // Convert to paise
         return res.status(400).json({
           success: false,
-          message: 'Invalid amount for selected plan'
+          message: 'Invalid amount for selected plan',
         });
       }
 
@@ -236,7 +236,7 @@ class SubscriptionController {
       const Razorpay = require('razorpay');
       const razorpay = new Razorpay({
         key_id: process.env.RAZORPAY_KEY_ID,
-        key_secret: process.env.RAZORPAY_KEY_SECRET
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
       });
 
       const order = await razorpay.orders.create({
@@ -246,13 +246,13 @@ class SubscriptionController {
         notes: {
           planId: planId,
           billingCycle: billingCycle,
-          firmDetails: firmDetails
-        }
+          firmDetails: firmDetails,
+        },
       });
 
       enterpriseLogger.info('SubscriptionController: Subscription order created', {
         orderId: order.id,
-        amount: order.amount
+        amount: order.amount,
       });
 
       res.json({
@@ -261,20 +261,20 @@ class SubscriptionController {
           id: order.id,
           amount: order.amount,
           currency: order.currency,
-          receipt: order.receipt
-        }
+          receipt: order.receipt,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error creating subscription order', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to create subscription order'
+        message: 'Failed to create subscription order',
       });
     }
   }
@@ -292,7 +292,8 @@ class SubscriptionController {
         razorpay_signature,
         planId,
         billingCycle,
-        firmDetails
+        firmDetails,
+        amount,
       } = req.body;
 
       const userId = req.user.id;
@@ -301,7 +302,7 @@ class SubscriptionController {
         userId,
         planId,
         paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id
+        orderId: razorpay_order_id,
       });
 
       // Verify payment signature
@@ -316,12 +317,12 @@ class SubscriptionController {
         enterpriseLogger.warn('SubscriptionController: Invalid payment signature', {
           userId,
           planId,
-          paymentId: razorpay_payment_id
+          paymentId: razorpay_payment_id,
         });
 
         return res.status(400).json({
           success: false,
-          message: 'Invalid payment signature'
+          message: 'Invalid payment signature',
         });
       }
 
@@ -339,17 +340,17 @@ class SubscriptionController {
         subscriptionBillingCycle: billingCycle,
         subscriptionStatus: 'active',
         subscriptionStartDate: new Date(),
-        subscriptionEndDate: billingCycle === 'monthly' 
+        subscriptionEndDate: billingCycle === 'monthly'
           ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
           : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         paymentId: razorpay_payment_id,
-        paymentOrderId: razorpay_order_id
+        paymentOrderId: razorpay_order_id,
       });
 
       // Update user role to CA firm admin
       await User.update(
         { role: 'ca_firm_admin' },
-        { where: { id: userId } }
+        { where: { id: userId } },
       );
 
       // Generate invoice
@@ -358,7 +359,7 @@ class SubscriptionController {
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
         amount: amount,
-        paymentMethod: 'razorpay'
+        paymentMethod: 'razorpay',
       };
 
       const subscriptionData = {
@@ -367,12 +368,12 @@ class SubscriptionController {
         planId: planId,
         planName: firmDetails.planName,
         billingCycle: billingCycle,
-        clientLimit: firmDetails.clientLimit
+        clientLimit: firmDetails.clientLimit,
       };
 
       const invoiceResult = await InvoiceService.generateSubscriptionInvoice(
         paymentData,
-        subscriptionData
+        subscriptionData,
       );
 
       enterpriseLogger.info('SubscriptionController: Subscription payment verified successfully', {
@@ -380,7 +381,7 @@ class SubscriptionController {
         planId,
         paymentId: razorpay_payment_id,
         firmId: caFirm.id,
-        invoiceId: invoiceResult.invoiceId
+        invoiceId: invoiceResult.invoiceId,
       });
 
       res.json({
@@ -392,20 +393,20 @@ class SubscriptionController {
           amount: amount,
           firmId: caFirm.id,
           invoiceId: invoiceResult.invoiceId,
-          invoiceNumber: invoiceResult.invoiceNumber
-        }
+          invoiceNumber: invoiceResult.invoiceNumber,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error verifying subscription payment', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to verify payment'
+        message: 'Failed to verify payment',
       });
     }
   }
@@ -420,19 +421,19 @@ class SubscriptionController {
       const userId = req.user.id;
 
       enterpriseLogger.info('SubscriptionController: Getting subscription status', {
-        userId
+        userId,
       });
 
       // Get CA firm subscription
       const caFirm = await CAFirm.findOne({
         where: { userId },
-        include: [{ model: User }]
+        include: [{ model: User }],
       });
 
       if (!caFirm) {
         return res.status(404).json({
           success: false,
-          message: 'No subscription found'
+          message: 'No subscription found',
         });
       }
 
@@ -447,20 +448,20 @@ class SubscriptionController {
           subscriptionStartDate: caFirm.subscriptionStartDate,
           subscriptionEndDate: caFirm.subscriptionEndDate,
           clientLimit: caFirm.clientLimit,
-          currentClients: caFirm.currentClients || 0
-        }
+          currentClients: caFirm.currentClients || 0,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error getting subscription status', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to get subscription status'
+        message: 'Failed to get subscription status',
       });
     }
   }
@@ -478,18 +479,18 @@ class SubscriptionController {
       enterpriseLogger.info('SubscriptionController: Getting subscription history', {
         userId,
         limit,
-        offset
+        offset,
       });
 
       // Get invoices for user
       const invoices = await Invoice.findAll({
-        where: { 
+        where: {
           userId,
-          type: 'ca_subscription'
+          type: 'ca_subscription',
         },
         order: [['createdAt', 'DESC']],
         limit: parseInt(limit),
-        offset: parseInt(offset)
+        offset: parseInt(offset),
       });
 
       res.json({
@@ -503,22 +504,22 @@ class SubscriptionController {
             currency: invoice.currency,
             description: invoice.description,
             paymentId: invoice.paymentId,
-            createdAt: invoice.createdAt
+            createdAt: invoice.createdAt,
           })),
-          total: invoices.length
-        }
+          total: invoices.length,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error getting subscription history', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to get subscription history'
+        message: 'Failed to get subscription history',
       });
     }
   }
@@ -533,18 +534,18 @@ class SubscriptionController {
       const userId = req.user.id;
 
       enterpriseLogger.info('SubscriptionController: Cancelling subscription', {
-        userId
+        userId,
       });
 
       // Get CA firm subscription
       const caFirm = await CAFirm.findOne({
-        where: { userId }
+        where: { userId },
       });
 
       if (!caFirm) {
         return res.status(404).json({
           success: false,
-          message: 'No subscription found'
+          message: 'No subscription found',
         });
       }
 
@@ -552,31 +553,31 @@ class SubscriptionController {
       await CAFirm.update(
         {
           subscriptionStatus: 'cancelled',
-          subscriptionCancelledAt: new Date()
+          subscriptionCancelledAt: new Date(),
         },
-        { where: { id: caFirm.id } }
+        { where: { id: caFirm.id } },
       );
 
       enterpriseLogger.info('SubscriptionController: Subscription cancelled successfully', {
         userId,
-        firmId: caFirm.id
+        firmId: caFirm.id,
       });
 
       res.json({
         success: true,
-        message: 'Subscription cancelled successfully'
+        message: 'Subscription cancelled successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error cancelling subscription', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to cancel subscription'
+        message: 'Failed to cancel subscription',
       });
     }
   }
@@ -593,18 +594,18 @@ class SubscriptionController {
 
       enterpriseLogger.info('SubscriptionController: Upgrading subscription', {
         userId,
-        planId
+        planId,
       });
 
       // Get CA firm subscription
       const caFirm = await CAFirm.findOne({
-        where: { userId }
+        where: { userId },
       });
 
       if (!caFirm) {
         return res.status(404).json({
           success: false,
-          message: 'No subscription found'
+          message: 'No subscription found',
         });
       }
 
@@ -613,7 +614,7 @@ class SubscriptionController {
       if (!plan) {
         return res.status(404).json({
           success: false,
-          message: 'Subscription plan not found'
+          message: 'Subscription plan not found',
         });
       }
 
@@ -621,32 +622,32 @@ class SubscriptionController {
       await CAFirm.update(
         {
           subscriptionPlanId: planId,
-          clientLimit: plan.clientLimit
+          clientLimit: plan.clientLimit,
         },
-        { where: { id: caFirm.id } }
+        { where: { id: caFirm.id } },
       );
 
       enterpriseLogger.info('SubscriptionController: Subscription upgraded successfully', {
         userId,
         firmId: caFirm.id,
-        newPlanId: planId
+        newPlanId: planId,
       });
 
       res.json({
         success: true,
-        message: 'Subscription upgraded successfully'
+        message: 'Subscription upgraded successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('SubscriptionController: Error upgrading subscription', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to upgrade subscription'
+        message: 'Failed to upgrade subscription',
       });
     }
   }
@@ -670,8 +671,8 @@ class SubscriptionController {
           'Basic ITR filing support',
           'Email support',
           'Standard templates',
-          'Basic analytics'
-        ]
+          'Basic analytics',
+        ],
       },
       2: {
         id: 2,
@@ -686,8 +687,8 @@ class SubscriptionController {
           'Custom templates',
           'Bulk operations',
           'Advanced analytics',
-          'Team collaboration'
-        ]
+          'Team collaboration',
+        ],
       },
       3: {
         id: 3,
@@ -703,9 +704,9 @@ class SubscriptionController {
           'White-label options',
           'Advanced analytics',
           'API access',
-          'Custom workflows'
-        ]
-      }
+          'Custom workflows',
+        ],
+      },
     };
 
     return plans[planId] || null;

@@ -22,13 +22,13 @@ class FilingService {
       const response = await apiClient.post(`${this.basePath}/draft`, {
         itrType,
         assessmentYear,
-        memberId
+        memberId,
       });
 
       enterpriseLogger.info('Filing draft created', {
         filingId: response.filing?.id,
         itrType,
-        assessmentYear
+        assessmentYear,
       });
 
       return response;
@@ -36,9 +36,9 @@ class FilingService {
       enterpriseLogger.error('Create draft error', {
         itrType,
         assessmentYear,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -54,13 +54,13 @@ class FilingService {
     try {
       const response = await apiClient.put(`${this.basePath}/draft/${filingId}`, {
         step,
-        data
+        data,
       });
 
       enterpriseLogger.info('Draft updated', {
         filingId,
         step,
-        hasValidationErrors: !!response.validationErrors
+        hasValidationErrors: !!response.validationErrors,
       });
 
       return response;
@@ -68,9 +68,9 @@ class FilingService {
       enterpriseLogger.error('Update draft error', {
         filingId,
         step,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -85,21 +85,21 @@ class FilingService {
     try {
       const response = await apiClient.post(`${this.basePath}/submit`, {
         filingId,
-        digitalSignature
+        digitalSignature,
       });
 
       enterpriseLogger.info('Filing submitted', {
         filingId,
-        ackNumber: response.ackNumber
+        ackNumber: response.ackNumber,
       });
 
       return response;
     } catch (error) {
       enterpriseLogger.error('Submit filing error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -112,16 +112,16 @@ class FilingService {
   async getFilingHistory(filters = {}) {
     try {
       const response = await apiClient.get(`${this.basePath}/history`, {
-        params: filters
+        params: filters,
       });
 
       return response;
     } catch (error) {
       enterpriseLogger.error('Get filing history error', {
         filters,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -139,9 +139,9 @@ class FilingService {
     } catch (error) {
       enterpriseLogger.error('Get filing details error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -156,16 +156,16 @@ class FilingService {
       const response = await apiClient.delete(`${this.basePath}/draft/${filingId}`);
 
       enterpriseLogger.info('Draft filing deleted', {
-        filingId
+        filingId,
       });
 
       return response;
     } catch (error) {
       enterpriseLogger.error('Delete draft error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -183,9 +183,9 @@ class FilingService {
     } catch (error) {
       enterpriseLogger.error('Get filing progress error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -199,7 +199,7 @@ class FilingService {
   async validateFiling(filingId, step = null) {
     try {
       const response = await apiClient.post(`${this.basePath}/${filingId}/validate`, {
-        step
+        step,
       });
 
       return response;
@@ -207,9 +207,9 @@ class FilingService {
       enterpriseLogger.error('Validate filing error', {
         filingId,
         step,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -227,9 +227,9 @@ class FilingService {
     } catch (error) {
       enterpriseLogger.error('Get tax computation error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -248,9 +248,9 @@ class FilingService {
     } catch (error) {
       enterpriseLogger.error('Save draft error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -268,9 +268,9 @@ class FilingService {
     } catch (error) {
       enterpriseLogger.error('Get filing status error', {
         filingId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -286,9 +286,9 @@ class FilingService {
       return response;
     } catch (error) {
       enterpriseLogger.error('Get filing stats error', {
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -304,9 +304,9 @@ class FilingService {
       return response;
     } catch (error) {
       enterpriseLogger.error('Get available ITR types error', {
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -322,9 +322,9 @@ class FilingService {
       return response;
     } catch (error) {
       enterpriseLogger.error('Get assessment years error', {
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -342,9 +342,9 @@ class FilingService {
     } catch (error) {
       enterpriseLogger.error('Get filing templates error', {
         itrType,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -359,7 +359,7 @@ class FilingService {
     try {
       const response = await apiClient.get(`${this.basePath}/${filingId}/export`, {
         params: { format },
-        responseType: 'blob'
+        responseType: 'blob',
       });
 
       return response;
@@ -367,9 +367,9 @@ class FilingService {
       enterpriseLogger.error('Export filing error', {
         filingId,
         format,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -381,7 +381,7 @@ class FilingService {
   getServiceStatus() {
     return {
       basePath: this.basePath,
-      apiClientStatus: apiClient.getServiceStatus()
+      apiClientStatus: apiClient.getServiceStatus(),
     };
   }
 }

@@ -34,9 +34,9 @@ export const useRealtimeSync = () => {
 
   useEffect(() => {
     checkConnection();
-    
+
     const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
-    
+
     return () => clearInterval(interval);
   }, [checkConnection]);
 
@@ -45,7 +45,7 @@ export const useRealtimeSync = () => {
     lastSync,
     error,
     syncData,
-    checkConnection
+    checkConnection,
   };
 };
 

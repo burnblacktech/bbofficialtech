@@ -15,7 +15,7 @@ const enterpriseLogger = require('../utils/logger');
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     // Mock draft data
     const drafts = [
       {
@@ -24,27 +24,27 @@ router.get('/', authenticateToken, async (req, res) => {
         assessmentYear: '2024-25',
         status: 'draft',
         createdAt: '2024-09-25',
-        updatedAt: '2024-09-25'
-      }
+        updatedAt: '2024-09-25',
+      },
     ];
 
     enterpriseLogger.info('User drafts retrieved', {
       userId,
-      count: drafts.length
+      count: drafts.length,
     });
 
     res.json({
       success: true,
-      data: drafts
+      data: drafts,
     });
   } catch (error) {
     enterpriseLogger.error('Error fetching drafts', {
       error: error.message,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
 
     res.status(500).json({
-      error: 'Failed to fetch drafts'
+      error: 'Failed to fetch drafts',
     });
   }
 });
@@ -65,28 +65,28 @@ router.post('/', authenticateToken, async (req, res) => {
       assessmentYear,
       status: 'draft',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     enterpriseLogger.info('Draft created', {
       userId,
       draftId: draft.id,
       type,
-      assessmentYear
+      assessmentYear,
     });
 
     res.status(201).json({
       success: true,
-      data: draft
+      data: draft,
     });
   } catch (error) {
     enterpriseLogger.error('Error creating draft', {
       error: error.message,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
 
     res.status(500).json({
-      error: 'Failed to create draft'
+      error: 'Failed to create draft',
     });
   }
 });

@@ -37,8 +37,8 @@ class DocumentService {
         headers: {
           'X-Document-Type': metadata.documentType,
           'X-Category': metadata.category,
-          'X-Filing-ID': metadata.filingId || ''
-        }
+          'X-Filing-ID': metadata.filingId || '',
+        },
       });
       return response.data;
     } catch (error) {

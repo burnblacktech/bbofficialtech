@@ -7,19 +7,19 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
-import { 
-  FileText, 
-  Search, 
-  Filter, 
-  Download, 
-  Mail, 
-  Eye, 
+import {
+  FileText,
+  Search,
+  Filter,
+  Download,
+  Mail,
+  Eye,
   Calendar,
   DollarSign,
   CheckCircle,
   Clock,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 const InvoiceManagement = () => {
@@ -35,10 +35,10 @@ const InvoiceManagement = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       setLoading(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockInvoices = [
         {
           id: 'INV-2024-001',
@@ -54,12 +54,12 @@ const InvoiceManagement = () => {
             id: 1,
             name: 'John Doe',
             email: 'john.doe@example.com',
-            pan: 'ABCDE1234F'
+            pan: 'ABCDE1234F',
           },
           description: 'ITR Filing for Assessment Year 2023-24',
           paymentMethod: 'razorpay',
           paymentId: 'pay_1234567890',
-          downloadUrl: '/invoices/INV-2024-001.pdf'
+          downloadUrl: '/invoices/INV-2024-001.pdf',
         },
         {
           id: 'INV-2024-002',
@@ -75,12 +75,12 @@ const InvoiceManagement = () => {
             id: 2,
             name: 'Jane Smith',
             email: 'jane.smith@example.com',
-            pan: 'FGHIJ5678K'
+            pan: 'FGHIJ5678K',
           },
           description: 'Expert Review Service for ITR Filing',
           paymentMethod: 'razorpay',
           paymentId: 'pay_1234567891',
-          downloadUrl: '/invoices/INV-2024-002.pdf'
+          downloadUrl: '/invoices/INV-2024-002.pdf',
         },
         {
           id: 'INV-2024-003',
@@ -96,12 +96,12 @@ const InvoiceManagement = () => {
             id: 3,
             name: 'CA Firm Alpha',
             email: 'admin@cafirmalpha.com',
-            pan: 'LMNOP9012Q'
+            pan: 'LMNOP9012Q',
           },
           description: 'Pro Plan Subscription - Monthly',
           paymentMethod: 'razorpay',
           paymentId: 'pay_1234567892',
-          downloadUrl: '/invoices/INV-2024-003.pdf'
+          downloadUrl: '/invoices/INV-2024-003.pdf',
         },
         {
           id: 'INV-2024-004',
@@ -117,12 +117,12 @@ const InvoiceManagement = () => {
             id: 4,
             name: 'Mike Johnson',
             email: 'mike.johnson@example.com',
-            pan: 'RSTUV3456W'
+            pan: 'RSTUV3456W',
           },
           description: 'ITR Filing for Assessment Year 2023-24',
           paymentMethod: null,
           paymentId: null,
-          downloadUrl: null
+          downloadUrl: null,
         },
         {
           id: 'INV-2024-005',
@@ -138,15 +138,15 @@ const InvoiceManagement = () => {
             id: 5,
             name: 'CA Firm Beta',
             email: 'contact@cafirmbeta.com',
-            pan: 'XYZAB7890C'
+            pan: 'XYZAB7890C',
           },
           description: 'Enterprise Plan Subscription - Annual',
           paymentMethod: null,
           paymentId: null,
-          downloadUrl: null
-        }
+          downloadUrl: null,
+        },
       ];
-      
+
       setInvoices(mockInvoices);
       setLoading(false);
     };
@@ -161,7 +161,7 @@ const InvoiceManagement = () => {
                          invoice.user.pan.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || invoice.status === filterStatus;
     const matchesType = filterType === 'all' || invoice.type === filterType;
-    
+
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -188,7 +188,7 @@ const InvoiceManagement = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -198,7 +198,7 @@ const InvoiceManagement = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   };
 
@@ -241,14 +241,14 @@ const InvoiceManagement = () => {
     const overdue = invoices.filter(i => i.status === 'overdue').length;
     const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
     const pendingRevenue = invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.amount, 0);
-    
+
     return {
       total,
       paid,
       pending,
       overdue,
       totalRevenue,
-      pendingRevenue
+      pendingRevenue,
     };
   };
 

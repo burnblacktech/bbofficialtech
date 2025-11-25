@@ -22,8 +22,10 @@ root.render(
   <React.StrictMode>
     <BrowserRouter
       future={{
+        // eslint-disable-next-line camelcase
         v7_startTransition: true,
-        v7_relativeSplatPath: true
+        // eslint-disable-next-line camelcase
+        v7_relativeSplatPath: true,
       }}
     >
       <QueryClientProvider client={queryClient}>
@@ -42,7 +44,7 @@ root.render(
         </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // Initialize global error handling

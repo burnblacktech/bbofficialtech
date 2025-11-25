@@ -13,19 +13,19 @@ const WelcomeModal = ({ isOpen, onClose, user }) => {
   const features = [
     {
       icon: Sparkles,
-      title: "AI-Powered Filing",
-      description: "Smart auto-fill using Form 16 OCR and bank statement analysis"
+      title: 'AI-Powered Filing',
+      description: 'Smart auto-fill using Form 16 OCR and bank statement analysis',
     },
     {
       icon: TrendingUp,
-      title: "Tax Optimization",
-      description: "Get personalized recommendations to maximize your tax savings"
+      title: 'Tax Optimization',
+      description: 'Get personalized recommendations to maximize your tax savings',
     },
     {
       icon: Shield,
-      title: "Bank-Level Security",
-      description: "Your data is encrypted and secure with enterprise-grade protection"
-    }
+      title: 'Bank-Level Security',
+      description: 'Your data is encrypted and secure with enterprise-grade protection',
+    },
   ];
 
   return (

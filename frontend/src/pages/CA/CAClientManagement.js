@@ -8,21 +8,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { 
-  ArrowLeft, 
-  Search, 
-  Filter, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Shield, 
-  User, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
+import {
+  ArrowLeft,
+  Search,
+  Filter,
+  Plus,
+  Edit,
+  Trash2,
+  Shield,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  CheckCircle,
+  AlertCircle,
+  Clock,
   MoreVertical,
   Eye,
   FileText,
@@ -34,7 +34,7 @@ import {
   UserPlus,
   FileCheck,
   TrendingUp,
-  X
+  X,
 } from 'lucide-react';
 
 const CAClientManagement = () => {
@@ -69,7 +69,7 @@ const CAClientManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['caClients']);
-    }
+    },
   });
 
   // Delete client mutation
@@ -80,7 +80,7 @@ const CAClientManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['caClients']);
-    }
+    },
   });
 
   const handleStatusChange = (clientId, newStatus) => {
@@ -153,10 +153,10 @@ const CAClientManagement = () => {
     const matchesSearch = client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          client.pan?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || client.status === filterStatus;
     const matchesType = filterType === 'all' || client.client_type === filterType;
-    
+
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -192,7 +192,7 @@ const CAClientManagement = () => {
                 <p className="text-xs text-neutral-500">{filteredClients.length} clients</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -200,7 +200,7 @@ const CAClientManagement = () => {
               >
                 <Filter className="h-5 w-5 text-burnblack-black" />
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/ca/clients/new')}
                 className="btn-burnblack p-2 rounded-lg active:scale-95 transition-transform"
               >
@@ -269,8 +269,8 @@ const CAClientManagement = () => {
               <User className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-burnblack-black mb-2">No clients found</h3>
               <p className="text-sm text-neutral-500 mb-4">
-                {searchTerm || filterStatus !== 'all' || filterType !== 'all' 
-                  ? 'No clients match your filters' 
+                {searchTerm || filterStatus !== 'all' || filterType !== 'all'
+                  ? 'No clients match your filters'
                   : 'Add your first client to get started'}
               </p>
               <button
@@ -306,7 +306,7 @@ const CAClientManagement = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => {

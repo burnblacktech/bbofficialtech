@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const GoogleOAuthSuccess = () => {
-  const { login } = useAuth();
+  const { loginWithOAuth } = useAuth();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -13,8 +13,13 @@ const GoogleOAuthSuccess = () => {
 
     if (token && userJson) {
       try {
-        const user = JSON.parse(userJson);
-        login(user, token, refreshToken);
+        const user = JSON.parse(decodeURIComponent(userJson));
+        loginWithOAuth(user, token, refreshToken).then((result) => {
+          if (!result.success) {
+            console.error('OAuth login failed:', result.message);
+            window.location.href = '/login?error=oauth_failed';
+          }
+        });
       } catch (error) {
         console.error('Failed to parse user data:', error);
         // Redirect to login with error
@@ -25,7 +30,7 @@ const GoogleOAuthSuccess = () => {
       // Redirect to login with error
       window.location.href = '/login?error=oauth_failed';
     }
-  }, [login, searchParams]);
+  }, [loginWithOAuth, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

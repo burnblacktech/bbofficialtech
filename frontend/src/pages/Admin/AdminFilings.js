@@ -7,11 +7,11 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  FileText, 
-  Users, 
-  Clock, 
-  CheckCircle, 
+import {
+  FileText,
+  Users,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Eye,
   Edit,
@@ -25,7 +25,7 @@ import {
   User,
   BarChart3,
   PieChart,
-  Activity
+  Activity,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -49,7 +49,7 @@ const AdminFilings = () => {
     },
     enabled: !!user?.user_id,
     staleTime: 1 * 60 * 1000, // 1 minute
-    refetchInterval: 30 * 1000 // 30 seconds
+    refetchInterval: 30 * 1000, // 30 seconds
   });
 
   // Fetch filing statistics
@@ -83,7 +83,7 @@ const AdminFilings = () => {
     mutationFn: async ({ filingId, status, notes }) => {
       const response = await api.put(`/api/admin/filings/${filingId}/status`, {
         status,
-        notes
+        notes,
       });
       return response.data;
     },
@@ -94,7 +94,7 @@ const AdminFilings = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update filing: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (filingId, newStatus) => {
@@ -139,7 +139,7 @@ const AdminFilings = () => {
     { id: 'overview', name: 'Overview', icon: BarChart3 },
     { id: 'filings', name: 'All Filings', icon: FileText },
     { id: 'analytics', name: 'Analytics', icon: PieChart },
-    { id: 'reports', name: 'Reports', icon: Activity }
+    { id: 'reports', name: 'Reports', icon: Activity },
   ];
 
   if (isLoading) {
@@ -165,7 +165,7 @@ const AdminFilings = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Filing Management</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/admin/reports/filings')}
@@ -217,7 +217,7 @@ const AdminFilings = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-8 w-8 text-green-600" />
@@ -227,7 +227,7 @@ const AdminFilings = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Clock className="h-8 w-8 text-orange-600" />
@@ -237,7 +237,7 @@ const AdminFilings = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <AlertCircle className="h-8 w-8 text-red-600" />
@@ -263,7 +263,7 @@ const AdminFilings = () => {
                   {stats.completed || 0} of {stats.total || 0} filings completed
                 </p>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Average Processing Time</h3>
@@ -276,7 +276,7 @@ const AdminFilings = () => {
                   Average time to process filings
                 </p>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Revenue Generated</h3>
@@ -341,7 +341,7 @@ const AdminFilings = () => {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                
+
                 {/* Status Filter */}
                 <div className="flex items-center space-x-2">
                   <Filter className="h-4 w-4 text-gray-400" />
@@ -358,7 +358,7 @@ const AdminFilings = () => {
                     <option value="rejected">Rejected</option>
                   </select>
                 </div>
-                
+
                 {/* ITR Type Filter */}
                 <select
                   value={itrTypeFilter}
@@ -371,7 +371,7 @@ const AdminFilings = () => {
                   <option value="itr3">ITR-3</option>
                   <option value="itr4">ITR-4</option>
                 </select>
-                
+
                 {/* Date Range Filter */}
                 <select
                   value={dateRange}
@@ -407,7 +407,7 @@ const AdminFilings = () => {
                     {filings.length} Filing{filings.length !== 1 ? 's' : ''}
                   </h2>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {filings.map((filing) => (
                     <div key={filing.filing_id} className="px-6 py-4 hover:bg-gray-50">
@@ -424,12 +424,12 @@ const AdminFilings = () => {
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-4">
                           <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(filing.status)}`}>
                             {filing.status.replace('_', ' ')}
                           </span>
-                          
+
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => navigate(`/admin/filings/${filing.filing_id}`)}
@@ -438,7 +438,7 @@ const AdminFilings = () => {
                             >
                               <Eye className="h-4 w-4" />
                             </button>
-                            
+
                             <button
                               onClick={() => navigate(`/admin/filings/${filing.filing_id}/edit`)}
                               className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
@@ -446,7 +446,7 @@ const AdminFilings = () => {
                             >
                               <Edit className="h-4 w-4" />
                             </button>
-                            
+
                             {filing.status === 'completed' && filing.acknowledgment_number && (
                               <button
                                 onClick={() => navigate(`/admin/filings/${filing.filing_id}/acknowledgment`)}
@@ -459,14 +459,14 @@ const AdminFilings = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Additional Info */}
                       {filing.ca_name && (
                         <div className="mt-2 text-sm text-gray-600">
                           Assigned CA: {filing.ca_name}
                         </div>
                       )}
-                      
+
                       {filing.last_updated && (
                         <div className="mt-1 text-xs text-gray-500">
                           Last updated: {new Date(filing.last_updated).toLocaleString()}
@@ -495,8 +495,8 @@ const AdminFilings = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-20 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
                             style={{ width: `${(item.count / analytics.total) * 100}%` }}
                           ></div>
                         </div>
@@ -506,7 +506,7 @@ const AdminFilings = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">ITR Type Distribution</h3>
                 <div className="space-y-3">
@@ -515,8 +515,8 @@ const AdminFilings = () => {
                       <span className="text-sm font-medium text-gray-700">{item.itr_type}</span>
                       <div className="flex items-center space-x-2">
                         <div className="w-20 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-green-600 h-2 rounded-full" 
+                          <div
+                            className="bg-green-600 h-2 rounded-full"
                             style={{ width: `${(item.count / analytics.total) * 100}%` }}
                           ></div>
                         </div>
@@ -527,7 +527,7 @@ const AdminFilings = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Filing Trends</h3>
               <div className="text-center py-8">
@@ -553,7 +553,7 @@ const AdminFilings = () => {
                     </div>
                   </div>
                 </button>
-                
+
                 <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
                     <TrendingUp className="h-6 w-6 text-green-600" />
@@ -563,7 +563,7 @@ const AdminFilings = () => {
                     </div>
                   </div>
                 </button>
-                
+
                 <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
                     <DollarSign className="h-6 w-6 text-purple-600" />
@@ -573,7 +573,7 @@ const AdminFilings = () => {
                     </div>
                   </div>
                 </button>
-                
+
                 <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
                     <Calendar className="h-6 w-6 text-orange-600" />

@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
-  ChevronDown, 
+import {
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  ChevronDown,
   ChevronUp,
   Plus,
   Edit,
   Trash2,
   Upload,
-  Eye
+  Eye,
 } from 'lucide-react';
 
-const SectionCard = ({ 
-  id, 
-  title, 
-  status, 
-  summary, 
-  isExpanded, 
-  onToggle, 
-  data, 
-  onUpdate 
+const SectionCard = ({
+  id,
+  title,
+  status,
+  summary,
+  isExpanded,
+  onToggle,
+  data,
+  onUpdate,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,20 +31,21 @@ const SectionCard = ({
       icon: CheckCircle,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
-      label: 'Complete'
+      label: 'Complete',
     },
+    // eslint-disable-next-line camelcase
     attention_needed: {
       icon: AlertCircle,
       color: 'text-orange-600',
       bgColor: 'bg-orange-100',
-      label: 'Attention Needed'
+      label: 'Attention Needed',
     },
     incomplete: {
       icon: Clock,
       color: 'text-gray-600',
       bgColor: 'bg-gray-100',
-      label: 'Incomplete'
-    }
+      label: 'Incomplete',
+    },
   };
 
   const currentStatus = statusConfig[status] || statusConfig.incomplete;
@@ -99,7 +100,7 @@ const SectionCard = ({
           <div className={`p-2 rounded-full ${currentStatus.bgColor}`}>
             <StatusIcon className={`h-4 w-4 ${currentStatus.color}`} />
           </div>
-          
+
           {/* Title and Summary */}
           <div className="text-left">
             <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -152,7 +153,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
           <input
@@ -162,7 +163,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
@@ -172,7 +173,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
           <input
@@ -183,7 +184,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
           />
         </div>
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
         <textarea
@@ -197,8 +198,8 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
                 line2: addressParts[1] || '',
                 city: addressParts[2] || '',
                 state: addressParts[3] || '',
-                pincode: addressParts[4] || ''
-              }
+                pincode: addressParts[4] || '',
+              },
             });
           }}
           rows={2}
@@ -225,7 +226,7 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
             <span>Add Salary</span>
           </button>
         </div>
-        
+
         {data?.salary?.map((salary) => (
           <div key={salary.id} className="bg-gray-50 rounded-lg p-4 mb-3">
             <div className="flex items-center justify-between">
@@ -270,7 +271,7 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
             <span>Add Source</span>
           </button>
         </div>
-        
+
         {data?.otherSources?.map((source) => (
           <div key={source.id} className="bg-gray-50 rounded-lg p-4 mb-3">
             <div className="flex items-center justify-between">
@@ -319,7 +320,7 @@ const DeductionsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
             <span>Add Investment</span>
           </button>
         </div>
-        
+
         {data?.section80C?.items?.map((item) => (
           <div key={item.id} className="bg-gray-50 rounded-lg p-4 mb-3">
             <div className="flex items-center justify-between">
@@ -380,7 +381,7 @@ const TaxesPaidContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
             <span>Add TDS</span>
           </button>
         </div>
-        
+
         {data?.tds?.map((tds) => (
           <div key={tds.id} className="bg-gray-50 rounded-lg p-4 mb-3">
             <div className="flex items-center justify-between">

@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const sseNotificationService = require('../services/SSENotificationService');
+const sseNotificationService = require('../services/utils/NotificationService');
 const authMiddleware = require('../middleware/auth');
 const enterpriseLogger = require('../utils/logger');
 
@@ -18,27 +18,27 @@ router.use(authMiddleware.authenticateToken);
 router.get('/sse', (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     enterpriseLogger.info('SSE connection attempt', { userId });
 
     const success = sseNotificationService.addClient(userId, res);
-    
+
     if (!success) {
       res.status(503).json({
         success: false,
-        message: 'SSE notifications are currently disabled'
+        message: 'SSE notifications are currently disabled',
       });
     }
 
   } catch (error) {
     enterpriseLogger.error('SSE connection error', {
       error: error.message,
-      userId: req.user?.id
+      userId: req.user?.id,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to establish SSE connection'
+      message: 'Failed to establish SSE connection',
     });
   }
 });
@@ -56,25 +56,25 @@ router.post('/test', (req, res) => {
       userId,
       'Test Notification',
       message,
-      { test: true }
+      { test: true },
     );
 
     enterpriseLogger.info('Test notification sent', { userId });
 
     res.status(200).json({
       success: true,
-      message: 'Test notification sent successfully'
+      message: 'Test notification sent successfully',
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to send test notification', {
       error: error.message,
-      userId: req.user?.id
+      userId: req.user?.id,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to send test notification'
+      message: 'Failed to send test notification',
     });
   }
 });
@@ -90,17 +90,17 @@ router.get('/status', (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Notification service status retrieved successfully',
-      data: status
+      data: status,
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to get notification status', {
-      error: error.message
+      error: error.message,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to get notification status'
+      message: 'Failed to get notification status',
     });
   }
 });
@@ -118,43 +118,43 @@ router.post('/send', (req, res) => {
     if (!['admin', 'super_admin'].includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: 'Admin access required'
+        message: 'Admin access required',
       });
     }
 
     if (!userId || !type) {
       return res.status(400).json({
         success: false,
-        message: 'userId and type are required'
+        message: 'userId and type are required',
       });
     }
 
     sseNotificationService.sendToUser(userId, type, {
       ...data,
       sentBy: senderId,
-      sentAt: new Date().toISOString()
+      sentAt: new Date().toISOString(),
     });
 
     enterpriseLogger.info('Admin notification sent', {
       senderId,
       targetUserId: userId,
-      type
+      type,
     });
 
     res.status(200).json({
       success: true,
-      message: 'Notification sent successfully'
+      message: 'Notification sent successfully',
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to send admin notification', {
       error: error.message,
-      senderId: req.user?.id
+      senderId: req.user?.id,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to send notification'
+      message: 'Failed to send notification',
     });
   }
 });
@@ -172,42 +172,42 @@ router.post('/broadcast', (req, res) => {
     if (!['admin', 'super_admin'].includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: 'Admin access required'
+        message: 'Admin access required',
       });
     }
 
     if (!type) {
       return res.status(400).json({
         success: false,
-        message: 'type is required'
+        message: 'type is required',
       });
     }
 
     sseNotificationService.sendToAll(type, {
       ...data,
       sentBy: senderId,
-      sentAt: new Date().toISOString()
+      sentAt: new Date().toISOString(),
     });
 
     enterpriseLogger.info('Admin broadcast sent', {
       senderId,
-      type
+      type,
     });
 
     res.status(200).json({
       success: true,
-      message: 'Broadcast sent successfully'
+      message: 'Broadcast sent successfully',
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to send admin broadcast', {
       error: error.message,
-      senderId: req.user?.id
+      senderId: req.user?.id,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to send broadcast'
+      message: 'Failed to send broadcast',
     });
   }
 });
@@ -225,43 +225,43 @@ router.post('/send-to-role', (req, res) => {
     if (!['admin', 'super_admin'].includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        message: 'Admin access required'
+        message: 'Admin access required',
       });
     }
 
     if (!role || !type) {
       return res.status(400).json({
         success: false,
-        message: 'role and type are required'
+        message: 'role and type are required',
       });
     }
 
     sseNotificationService.sendToRole(role, type, {
       ...data,
       sentBy: senderId,
-      sentAt: new Date().toISOString()
+      sentAt: new Date().toISOString(),
     });
 
     enterpriseLogger.info('Admin role notification sent', {
       senderId,
       targetRole: role,
-      type
+      type,
     });
 
     res.status(200).json({
       success: true,
-      message: 'Role notification sent successfully'
+      message: 'Role notification sent successfully',
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to send role notification', {
       error: error.message,
-      senderId: req.user?.id
+      senderId: req.user?.id,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to send role notification'
+      message: 'Failed to send role notification',
     });
   }
 });
@@ -273,13 +273,13 @@ router.use((error, req, res, next) => {
     stack: error.stack,
     url: req.url,
     method: req.method,
-    userId: req.user?.id
+    userId: req.user?.id,
   });
 
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
   });
 });
 

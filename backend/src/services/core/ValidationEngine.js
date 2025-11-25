@@ -4,7 +4,7 @@
 
 const fs = require('fs').promises;
 const path = require('path');
-const enterpriseLogger = require('../utils/logger');
+const enterpriseLogger = require('../../utils/logger');
 
 class ValidationEngine {
   constructor() {
@@ -19,7 +19,7 @@ class ValidationEngine {
     try {
       const rulesDir = path.join(__dirname, '../common/rules');
       const ruleFiles = ['itr1.rules.json', 'itr2.rules.json', 'itr3.rules.json', 'itr4.rules.json'];
-      
+
       for (const file of ruleFiles) {
         try {
           const filePath = path.join(rulesDir, file);
@@ -49,7 +49,7 @@ class ValidationEngine {
       if (!rules) {
         return {
           isValid: false,
-          errors: [`No validation rules found for ITR type: ${itrType}`]
+          errors: [`No validation rules found for ITR type: ${itrType}`],
         };
       }
 
@@ -69,7 +69,7 @@ class ValidationEngine {
       if (rules.fields) {
         for (const [fieldName, fieldRules] of Object.entries(rules.fields)) {
           const value = data[fieldName];
-          
+
           if (value !== undefined && value !== null && value !== '') {
             // Type validation
             if (fieldRules.type) {
@@ -116,18 +116,18 @@ class ValidationEngine {
       return {
         isValid: errors.length === 0,
         errors,
-        warnings
+        warnings,
       };
     } catch (error) {
-      enterpriseLogger.error('Validation error', { 
-        itrType, 
+      enterpriseLogger.error('Validation error', {
+        itrType,
         error: error.message,
-        stack: error.stack 
+        stack: error.stack,
       });
-      
+
       return {
         isValid: false,
-        errors: ['Validation service error']
+        errors: ['Validation service error'],
       };
     }
   }
@@ -140,24 +140,24 @@ class ValidationEngine {
    */
   validateType(value, type) {
     switch (type) {
-      case 'string':
-        return typeof value === 'string';
-      case 'number':
-        return typeof value === 'number' && !isNaN(value);
-      case 'integer':
-        return Number.isInteger(value);
-      case 'boolean':
-        return typeof value === 'boolean';
-      case 'date':
-        return value instanceof Date || !isNaN(Date.parse(value));
-      case 'email':
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      case 'pan':
-        return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value);
-      case 'aadhar':
-        return /^[0-9]{12}$/.test(value);
-      default:
-        return true;
+    case 'string':
+      return typeof value === 'string';
+    case 'number':
+      return typeof value === 'number' && !isNaN(value);
+    case 'integer':
+      return Number.isInteger(value);
+    case 'boolean':
+      return typeof value === 'boolean';
+    case 'date':
+      return value instanceof Date || !isNaN(Date.parse(value));
+    case 'email':
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    case 'pan':
+      return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value);
+    case 'aadhar':
+      return /^[0-9]{12}$/.test(value);
+    default:
+      return true;
     }
   }
 
@@ -185,9 +185,9 @@ class ValidationEngine {
       // This can be extended based on specific requirements
       return { isValid: true, message: '' };
     } catch (error) {
-      return { 
-        isValid: false, 
-        message: `Business rule validation error: ${error.message}` 
+      return {
+        isValid: false,
+        message: `Business rule validation error: ${error.message}`,
       };
     }
   }

@@ -16,7 +16,7 @@ export {
   CardBody,
   CardFooter,
   Modal,
-  Badge
+  Badge,
 };
 
 export default {
@@ -27,5 +27,5 @@ export default {
   CardBody,
   CardFooter,
   Modal,
-  Badge
+  Badge,
 };

@@ -14,7 +14,7 @@ const ITRJsonDownload = ({
   itrType,
   assessmentYear = '2024-25',
   onDownloadComplete,
-  className = ''
+  className = '',
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
@@ -40,14 +40,14 @@ const ITRJsonDownload = ({
       const exportResult = await itrJsonExportService.exportToJson(
         itrData,
         itrType,
-        assessmentYear
+        assessmentYear,
       );
 
       // Generate client-side download
       setDownloadProgress(70);
       itrJsonExportService.downloadJsonFile(
         exportResult.jsonPayload,
-        exportResult.fileName
+        exportResult.fileName,
       );
 
       setDownloadProgress(100);
@@ -81,7 +81,7 @@ const ITRJsonDownload = ({
         itrData,
         itrType,
         assessmentYear,
-        await itrJsonExportService.authService.getCurrentUser()
+        await itrJsonExportService.authService.getCurrentUser(),
       );
 
       const fileName = itrJsonExportService.generateFileName(itrType, assessmentYear);
@@ -90,7 +90,7 @@ const ITRJsonDownload = ({
       setDownloadResult({
         fileName,
         format: 'government',
-        instructions: 'Use this file for direct upload to Income Tax Department e-filing portal'
+        instructions: 'Use this file for direct upload to Income Tax Department e-filing portal',
       });
 
     } catch (err) {
@@ -114,7 +114,7 @@ const ITRJsonDownload = ({
         assessmentYear,
         generatedAt: new Date().toISOString(),
         formData: itrData,
-        purpose: 'BACKUP'
+        purpose: 'BACKUP',
       };
 
       const fileName = `ITR_${itrType}_Backup_${new Date().toISOString().split('T')[0]}.json`;
@@ -135,7 +135,7 @@ const ITRJsonDownload = ({
       setDownloadResult({
         fileName,
         format: 'simple',
-        instructions: 'This is a simplified backup format'
+        instructions: 'This is a simplified backup format',
       });
 
     } catch (err) {

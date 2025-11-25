@@ -22,7 +22,7 @@ const NotificationComponent = ({ className = '' }) => {
     getRecentNotifications,
     getUnreadNotifications,
     getConnectionStatus,
-    reconnect
+    reconnect,
   } = useNotificationContext();
 
   const [showAllNotifications, setShowAllNotifications] = useState(false);
@@ -38,7 +38,7 @@ const NotificationComponent = ({ className = '' }) => {
       'payment_notification': '💳',
       'mfa_notification': '🔐',
       'admin_notification': '👑',
-      'general_notification': '🔔'
+      'general_notification': '🔔',
     };
     return icons[type] || '🔔';
   };
@@ -52,7 +52,7 @@ const NotificationComponent = ({ className = '' }) => {
       'payment_notification': 'purple',
       'mfa_notification': 'red',
       'admin_notification': 'purple',
-      'general_notification': 'blue'
+      'general_notification': 'blue',
     };
     return colors[type] || 'blue';
   };
@@ -66,7 +66,7 @@ const NotificationComponent = ({ className = '' }) => {
       'payment_notification': 'Payment Notification',
       'mfa_notification': 'Security Alert',
       'admin_notification': 'Admin Notification',
-      'general_notification': 'Notification'
+      'general_notification': 'Notification',
     };
     return titles[type] || 'Notification';
   };
@@ -85,7 +85,7 @@ const NotificationComponent = ({ className = '' }) => {
   const handleNotificationClick = (notification) => {
     setSelectedNotification(notification);
     setShowNotificationModal(true);
-    
+
     if (!notification.isRead) {
       markAsRead(notification.id);
     }

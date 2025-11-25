@@ -13,10 +13,10 @@ const authenticateWithCookies = async (req, res, next) => {
   try {
     // Get refresh token from HttpOnly cookie
     const refreshToken = req.cookies.refreshToken;
-    
+
     if (!refreshToken) {
       return res.status(401).json({
-        error: 'No refresh token provided'
+        error: 'No refresh token provided',
       });
     }
 
@@ -25,9 +25,9 @@ const authenticateWithCookies = async (req, res, next) => {
       where: {
         revoked: false,
         expiresAt: {
-          [require('sequelize').Op.gt]: new Date()
-        }
-      }
+          [require('sequelize').Op.gt]: new Date(),
+        },
+      },
     });
 
     let validSession = null;
@@ -42,7 +42,7 @@ const authenticateWithCookies = async (req, res, next) => {
 
     if (!validSession) {
       return res.status(401).json({
-        error: 'Invalid refresh token'
+        error: 'Invalid refresh token',
       });
     }
 
@@ -50,7 +50,7 @@ const authenticateWithCookies = async (req, res, next) => {
     const user = await User.findByPk(validSession.userId);
     if (!user || user.status !== 'active') {
       return res.status(401).json({
-        error: 'User not found or inactive'
+        error: 'User not found or inactive',
       });
     }
 
@@ -60,10 +60,10 @@ const authenticateWithCookies = async (req, res, next) => {
         userId: user.id,
         email: user.email,
         role: user.role,
-        tokenVersion: user.tokenVersion
+        tokenVersion: user.tokenVersion,
       },
       process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '15m' }
+      { expiresIn: '15m' },
     );
 
     // Update session last active
@@ -74,7 +74,7 @@ const authenticateWithCookies = async (req, res, next) => {
       userId: user.id,
       email: user.email,
       role: user.role,
-      tokenVersion: user.tokenVersion
+      tokenVersion: user.tokenVersion,
     };
 
     // Set new access token in response header
@@ -84,11 +84,11 @@ const authenticateWithCookies = async (req, res, next) => {
   } catch (error) {
     enterpriseLogger.error('Cookie authentication failed', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
 
     res.status(500).json({
-      error: 'Authentication failed'
+      error: 'Authentication failed',
     });
   }
 };
@@ -99,7 +99,7 @@ const authenticateWithCookies = async (req, res, next) => {
  */
 const setRefreshTokenCookie = (res, refreshToken) => {
   const isProduction = process.env.NODE_ENV === 'production';
-  
+
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true, // Prevents XSS attacks - JavaScript cannot access
     secure: isProduction, // HTTPS only in production
@@ -107,7 +107,7 @@ const setRefreshTokenCookie = (res, refreshToken) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/',
     // Additional security headers
-    domain: process.env.COOKIE_DOMAIN || undefined
+    domain: process.env.COOKIE_DOMAIN || undefined,
   });
 };
 
@@ -119,7 +119,7 @@ const clearRefreshTokenCookie = (res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    path: '/'
+    path: '/',
   });
 };
 
@@ -130,11 +130,11 @@ const clearRefreshTokenCookie = (res) => {
 const handleTokenRefresh = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    
+
     if (!refreshToken) {
       return res.status(401).json({
         success: false,
-        error: 'No refresh token provided'
+        error: 'No refresh token provided',
       });
     }
 
@@ -143,9 +143,9 @@ const handleTokenRefresh = async (req, res) => {
       where: {
         revoked: false,
         expiresAt: {
-          [require('sequelize').Op.gt]: new Date()
-        }
-      }
+          [require('sequelize').Op.gt]: new Date(),
+        },
+      },
     });
 
     let validSession = null;
@@ -163,7 +163,7 @@ const handleTokenRefresh = async (req, res) => {
       clearRefreshTokenCookie(res);
       return res.status(401).json({
         success: false,
-        error: 'Invalid or expired refresh token'
+        error: 'Invalid or expired refresh token',
       });
     }
 
@@ -173,7 +173,7 @@ const handleTokenRefresh = async (req, res) => {
       clearRefreshTokenCookie(res);
       return res.status(401).json({
         success: false,
-        error: 'User not found or inactive'
+        error: 'User not found or inactive',
       });
     }
 
@@ -183,10 +183,10 @@ const handleTokenRefresh = async (req, res) => {
         userId: user.id,
         email: user.email,
         role: user.role,
-        tokenVersion: user.tokenVersion
+        tokenVersion: user.tokenVersion,
       },
       process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '15m' }
+      { expiresIn: '15m' },
     );
 
     // Update session last active
@@ -194,7 +194,7 @@ const handleTokenRefresh = async (req, res) => {
 
     enterpriseLogger.info('Token refreshed successfully', {
       userId: user.id,
-      email: user.email
+      email: user.email,
     });
 
     res.json({
@@ -206,19 +206,19 @@ const handleTokenRefresh = async (req, res) => {
         fullName: user.fullName,
         role: user.role,
         status: user.status,
-        onboardingCompleted: user.onboardingCompleted
-      }
+        onboardingCompleted: user.onboardingCompleted,
+      },
     });
 
   } catch (error) {
     enterpriseLogger.error('Token refresh failed', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
 
     res.status(500).json({
       success: false,
-      error: 'Token refresh failed'
+      error: 'Token refresh failed',
     });
   }
 };
@@ -227,5 +227,5 @@ module.exports = {
   authenticateWithCookies,
   setRefreshTokenCookie,
   clearRefreshTokenCookie,
-  handleTokenRefresh
+  handleTokenRefresh,
 };

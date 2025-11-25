@@ -31,7 +31,7 @@ const globalErrorHandler = (err, req, res, next) => {
     userId: req.user?.id,
     requestId: req.id,
     timestamp: appError.timestamp,
-    isOperational: appError.isOperational
+    isOperational: appError.isOperational,
   };
 
   // Add category-specific logging data
@@ -69,7 +69,7 @@ const globalErrorHandler = (err, req, res, next) => {
     method: req.method,
     url: req.originalUrl,
     requestId: req.id,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   // Add monitoring and alerting data
@@ -77,7 +77,7 @@ const globalErrorHandler = (err, req, res, next) => {
     errorResponse.alert = {
       level: 'high',
       needsAttention: true,
-      correlationId: appError.correlationId
+      correlationId: appError.correlationId,
     };
   }
 
@@ -107,7 +107,7 @@ const notFoundHandler = (req, res) => {
     ip: req.ip,
     userAgent: req.get('User-Agent'),
     requestId: req.id,
-    userId: req.user?.id
+    userId: req.user?.id,
   });
 
   res.status(404).json({
@@ -121,7 +121,7 @@ const notFoundHandler = (req, res) => {
     request: {
       method: req.method,
       url: req.originalUrl,
-      requestId: req.id
+      requestId: req.id,
     },
     availableRoutes: [
       '/api',
@@ -134,8 +134,8 @@ const notFoundHandler = (req, res) => {
       '/api/admin',
       '/api/documents',
       '/api/notifications',
-      '/api/tickets'
-    ]
+      '/api/tickets',
+    ],
   });
 };
 
@@ -150,7 +150,7 @@ const timeoutHandler = (timeout = 30000) => {
           url: req.originalUrl,
           method: req.method,
           timeout: timeout,
-          requestId: req.id
+          requestId: req.id,
         });
 
         res.status(408).json({
@@ -161,7 +161,7 @@ const timeoutHandler = (timeout = 30000) => {
           category: 'timeout',
           timestamp: new Date().toISOString(),
           correlationId: require('crypto').randomUUID(),
-          timeout: timeout
+          timeout: timeout,
         });
       }
     }, timeout);
@@ -215,7 +215,7 @@ class CircuitBreaker {
         enterpriseLogger.error('Circuit breaker opened', {
           service,
           failureCount: this.failureCount,
-          threshold: this.failureThreshold
+          threshold: this.failureThreshold,
         });
       }
 
@@ -242,5 +242,5 @@ module.exports = {
   CircuitBreaker,
   withCircuitBreaker,
   circuitBreaker,
-  AppError
+  AppError,
 };

@@ -17,12 +17,12 @@ const messageSchema = Joi.object({
     language: Joi.string().valid('en', 'hi').required(),
     currentStep: Joi.string().required(),
     collectedData: Joi.object(),
-    steps: Joi.array().items(Joi.string())
-  }).required()
+    steps: Joi.array().items(Joi.string()),
+  }).required(),
 });
 
 const userTypeSchema = Joi.object({
-  message: Joi.string().min(1).max(1000).required()
+  message: Joi.string().min(1).max(1000).required(),
 });
 
 const contextSchema = Joi.object({
@@ -31,8 +31,8 @@ const contextSchema = Joi.object({
     language: Joi.string().valid('en', 'hi').required(),
     currentStep: Joi.string().required(),
     collectedData: Joi.object(),
-    steps: Joi.array().items(Joi.string())
-  }).required()
+    steps: Joi.array().items(Joi.string()),
+  }).required(),
 });
 
 const filingDataSchema = Joi.object({
@@ -41,8 +41,8 @@ const filingDataSchema = Joi.object({
     language: Joi.string().valid('en', 'hi').required(),
     currentStep: Joi.string().required(),
     collectedData: Joi.object(),
-    steps: Joi.array().items(Joi.string())
-  }).required()
+    steps: Joi.array().items(Joi.string()),
+  }).required(),
 });
 
 // Routes
@@ -52,9 +52,9 @@ const filingDataSchema = Joi.object({
  * @desc Process user message and generate AI response
  * @access Private
  */
-router.post('/message', 
-  authenticateToken, 
-  cabotController.processMessage
+router.post('/message',
+  authenticateToken,
+  cabotController.processMessage,
 );
 
 /**
@@ -62,9 +62,9 @@ router.post('/message',
  * @desc Detect user type from message
  * @access Private
  */
-router.post('/detect-user-type', 
-  authenticateToken, 
-  cabotController.detectUserType
+router.post('/detect-user-type',
+  authenticateToken,
+  cabotController.detectUserType,
 );
 
 /**
@@ -72,9 +72,9 @@ router.post('/detect-user-type',
  * @desc Get conversation context
  * @access Private
  */
-router.get('/context', 
-  authenticateToken, 
-  cabotController.getConversationContext
+router.get('/context',
+  authenticateToken,
+  cabotController.getConversationContext,
 );
 
 /**
@@ -82,9 +82,9 @@ router.get('/context',
  * @desc Get conversation context for specific filing
  * @access Private
  */
-router.get('/context/:filingId', 
-  authenticateToken, 
-  cabotController.getConversationContext
+router.get('/context/:filingId',
+  authenticateToken,
+  cabotController.getConversationContext,
 );
 
 /**
@@ -92,9 +92,9 @@ router.get('/context/:filingId',
  * @desc Update conversation context
  * @access Private
  */
-router.put('/context', 
-  authenticateToken, 
-  cabotController.updateConversationContext
+router.put('/context',
+  authenticateToken,
+  cabotController.updateConversationContext,
 );
 
 /**
@@ -102,9 +102,9 @@ router.put('/context',
  * @desc Process filing data from conversation
  * @access Private
  */
-router.post('/process-filing-data', 
-  authenticateToken, 
-  cabotController.processFilingData
+router.post('/process-filing-data',
+  authenticateToken,
+  cabotController.processFilingData,
 );
 
 /**
@@ -112,9 +112,9 @@ router.post('/process-filing-data',
  * @desc Get CA Bot status and configuration
  * @access Private
  */
-router.get('/status', 
-  authenticateToken, 
-  cabotController.getBotStatus
+router.get('/status',
+  authenticateToken,
+  cabotController.getBotStatus,
 );
 
 /**
@@ -122,9 +122,9 @@ router.get('/status',
  * @desc Reset conversation
  * @access Private
  */
-router.post('/reset', 
-  authenticateToken, 
-  cabotController.resetConversation
+router.post('/reset',
+  authenticateToken,
+  cabotController.resetConversation,
 );
 
 /**
@@ -132,9 +132,9 @@ router.post('/reset',
  * @desc Reset conversation for specific filing
  * @access Private
  */
-router.post('/reset/:filingId', 
-  authenticateToken, 
-  cabotController.resetConversation
+router.post('/reset/:filingId',
+  authenticateToken,
+  cabotController.resetConversation,
 );
 
 /**
@@ -142,9 +142,9 @@ router.post('/reset/:filingId',
  * @desc Get conversation history
  * @access Private
  */
-router.get('/history', 
-  authenticateToken, 
-  cabotController.getConversationHistory
+router.get('/history',
+  authenticateToken,
+  cabotController.getConversationHistory,
 );
 
 /**
@@ -152,9 +152,9 @@ router.get('/history',
  * @desc Get conversation history for specific filing
  * @access Private
  */
-router.get('/history/:filingId', 
-  authenticateToken, 
-  cabotController.getConversationHistory
+router.get('/history/:filingId',
+  authenticateToken,
+  cabotController.getConversationHistory,
 );
 
 module.exports = router;

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle, 
-  AlertCircle, 
-  Info, 
-  TrendingUp, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  TrendingUp,
   Lightbulb,
   ChevronLeft,
   ChevronRight,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 
 // Smart Prompting Engine
@@ -25,31 +25,31 @@ class SmartPromptingEngine {
             message: 'We noticed you might have business income. ITR-1 is for salaried individuals only.',
             suggestion: 'Consider ITR-3 or ITR-4 for business income',
             action: 'suggest_alternative',
-            tone: 'helpful'
+            tone: 'helpful',
           },
           capital_gains: {
             type: 'educational',
             message: 'Capital gains require ITR-2 or ITR-3. ITR-1 doesn\'t support capital gains.',
             suggestion: 'Switch to ITR-2 for capital gains',
             action: 'offer_switch',
-            tone: 'informative'
-          }
-        }
-      }
+            tone: 'informative',
+          },
+        },
+      },
     };
   }
 
   detectIncorrectSelection(selectedITR, userProfile) {
     const rules = this.promptingRules[selectedITR];
     if (!rules) return [];
-    
+
     const triggers = [];
     Object.entries(rules.triggers).forEach(([trigger, condition]) => {
       if (this.evaluateCondition(condition, userProfile)) {
         triggers.push(trigger);
       }
     });
-    
+
     return triggers;
   }
 
@@ -60,7 +60,7 @@ class SmartPromptingEngine {
       message: prompt.message,
       suggestion: prompt.suggestion,
       action: prompt.action,
-      tone: prompt.tone
+      tone: prompt.tone,
     };
   }
 
@@ -73,19 +73,19 @@ class SmartPromptingEngine {
 // Smart Prompt Component
 const SmartPrompt = ({ prompt, onAccept, onDecline, onLearnMore }) => {
   const [isVisible, setIsVisible] = useState(true);
-  
+
   const handleAccept = () => {
     setIsVisible(false);
     onAccept(prompt.action);
   };
-  
+
   const handleDecline = () => {
     setIsVisible(false);
     onDecline();
   };
-  
+
   if (!isVisible) return null;
-  
+
   return (
     <div className={`smart-prompt ${prompt.type} ${prompt.tone}`}>
       <div className="prompt-content">
@@ -95,7 +95,7 @@ const SmartPrompt = ({ prompt, onAccept, onDecline, onLearnMore }) => {
           {prompt.type === 'optimization' && <TrendingUp className="text-green-500" />}
           {prompt.type === 'simplification' && <Lightbulb className="text-purple-500" />}
         </div>
-        
+
         <div className="prompt-message">
           <h4 className="prompt-title">
             {prompt.type === 'gentle_warning' && 'Heads Up!'}
@@ -107,7 +107,7 @@ const SmartPrompt = ({ prompt, onAccept, onDecline, onLearnMore }) => {
           <p className="prompt-suggestion">{prompt.suggestion}</p>
         </div>
       </div>
-      
+
       <div className="prompt-actions">
         <button className="btn-secondary" onClick={handleDecline}>
           Keep Current Choice
@@ -129,7 +129,7 @@ const SmartPrompt = ({ prompt, onAccept, onDecline, onLearnMore }) => {
 // ITR Selection Card Component
 const ITRSelectionCard = ({ itrType, title, description, features, isRecommended, isSelected, onSelect }) => {
   return (
-    <div 
+    <div
       className={`itr-selection-card ${isSelected ? 'selected' : ''} ${isRecommended ? 'recommended' : ''}`}
       onClick={() => onSelect(itrType)}
     >
@@ -158,34 +158,34 @@ const ITRSelection = () => {
       title: 'ITR-1',
       description: 'For salaried individuals with income up to ₹5 lakhs',
       features: ['Salary income', 'House property', 'Other sources', 'Simple filing'],
-      isRecommended: true
+      isRecommended: true,
     },
     {
       type: 'ITR-2',
       title: 'ITR-2',
       description: 'For individuals with capital gains and income up to ₹10 lakhs',
       features: ['Salary income', 'Capital gains', 'House property', 'Other sources'],
-      isRecommended: false
+      isRecommended: false,
     },
     {
       type: 'ITR-3',
       title: 'ITR-3',
       description: 'For individuals with business income',
       features: ['Business income', 'All income sources', 'Complex deductions', 'Audit support'],
-      isRecommended: false
+      isRecommended: false,
     },
     {
       type: 'ITR-4',
       title: 'ITR-4',
       description: 'For presumptive taxation (business/profession)',
       features: ['Presumptive taxation', 'Simplified filing', 'Business income', 'Professional income'],
-      isRecommended: false
-    }
+      isRecommended: false,
+    },
   ];
 
   const handleITRSelection = (itrType) => {
     const validation = promptingEngine.detectIncorrectSelection(itrType, userProfile);
-    
+
     if (validation.length > 0) {
       const smartPrompt = promptingEngine.generateSmartPrompt(itrType, validation[0], userProfile);
       setPrompt(smartPrompt);
@@ -254,7 +254,7 @@ const ITRSelection = () => {
         </div>
 
         <div className="card-footer">
-          <button 
+          <button
             className="btn-primary"
             onClick={() => navigate('/intake', { state: { itrType: selectedITR } })}
             disabled={!selectedITR}
@@ -286,7 +286,7 @@ const StepIndicator = ({ currentStep, totalSteps, steps }) => {
 // Dynamic Form Field Component
 const DynamicFormField = ({ fieldName, fieldConfig, value, error, onChange }) => {
   const fieldType = fieldConfig.type || 'text';
-  
+
   const renderField = () => {
     switch (fieldType) {
       case 'text':
@@ -361,7 +361,7 @@ const DynamicFormField = ({ fieldName, fieldConfig, value, error, onChange }) =>
 // Income Source Component
 const IncomeSourceCard = ({ sourceType, sourceData, onUpdate, onToggle }) => {
   const [isExpanded, setIsExpanded] = useState(sourceData.hasIncome);
-  
+
   const handleToggle = () => {
     const newValue = !sourceData.hasIncome;
     onToggle(sourceType, newValue);
@@ -395,12 +395,12 @@ const IncomeSourceCard = ({ sourceType, sourceData, onUpdate, onToggle }) => {
                 type: 'number',
                 label: 'Annual Amount',
                 required: true,
-                placeholder: 'Enter annual amount'
+                placeholder: 'Enter annual amount',
               }}
               value={sourceData.amount}
               onChange={(value) => handleFieldChange('amount', value)}
             />
-            
+
             {sourceType === 'salary' && (
               <DynamicFormField
                 fieldName="employer"
@@ -408,13 +408,13 @@ const IncomeSourceCard = ({ sourceType, sourceData, onUpdate, onToggle }) => {
                   type: 'text',
                   label: 'Employer Name',
                   required: true,
-                  placeholder: 'Enter employer name'
+                  placeholder: 'Enter employer name',
                 }}
                 value={sourceData.employer}
                 onChange={(value) => handleFieldChange('employer', value)}
               />
             )}
-            
+
             {sourceType === 'house_property' && (
               <DynamicFormField
                 fieldName="type"
@@ -425,8 +425,8 @@ const IncomeSourceCard = ({ sourceType, sourceData, onUpdate, onToggle }) => {
                   options: [
                     { value: 'self_occupied', label: 'Self Occupied' },
                     { value: 'let_out', label: 'Let Out' },
-                    { value: 'deemed_let', label: 'Deemed Let Out' }
-                  ]
+                    { value: 'deemed_let', label: 'Deemed Let Out' },
+                  ],
                 }}
                 value={sourceData.type}
                 onChange={(value) => handleFieldChange('type', value)}
@@ -454,21 +454,21 @@ const TaxSummaryCard = ({ taxData, isCalculating }) => {
   return (
     <div className="summary-card tax-summary">
       <h3 className="summary-card-title">Tax Summary</h3>
-      
+
       <div className="regime-comparison">
         <div className="regime-card new-regime">
           <h4>New Regime</h4>
           <div className="tax-amount">₹{taxData.newRegime?.taxLiability?.toLocaleString() || '0'}</div>
           <div className="effective-rate">{taxData.newRegime?.effectiveRate?.toFixed(2) || '0'}%</div>
         </div>
-        
+
         <div className="regime-card old-regime">
           <h4>Old Regime</h4>
           <div className="tax-amount">₹{taxData.oldRegime?.taxLiability?.toLocaleString() || '0'}</div>
           <div className="effective-rate">{taxData.oldRegime?.effectiveRate?.toFixed(2) || '0'}%</div>
         </div>
       </div>
-      
+
       <div className="savings-highlight">
         <span>You save ₹{taxData.savings?.toLocaleString() || '0'} with {taxData.recommendedRegime || 'New Regime'}</span>
       </div>
@@ -479,7 +479,7 @@ const TaxSummaryCard = ({ taxData, isCalculating }) => {
 // Mobile Summary Dashboard
 const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating }) => {
   const [activeCard, setActiveCard] = useState(0);
-  
+
   const cards = [
     {
       id: 'income',
@@ -505,7 +505,7 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
             </div>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'tax',
@@ -530,7 +530,7 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
             Save ₹{taxData?.savings?.toLocaleString() || '0'}
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'deductions',
@@ -556,7 +556,7 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
             <span>Maximize 80C to save more tax</span>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'compliance',
@@ -581,8 +581,8 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
             <button className="btn-primary">Continue Filing</button>
           </div>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   if (isCalculating) {
@@ -598,7 +598,7 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
       <div className="mobile-summary-cards">
         <div className="card-indicator">
           {cards.map((_, index) => (
-            <div 
+            <div
               key={index}
               className={`indicator-dot ${activeCard === index ? 'active' : ''}`}
               onClick={() => setActiveCard(index)}
@@ -607,7 +607,7 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
         </div>
 
         {cards.map((card, index) => (
-          <div 
+          <div
             key={card.id}
             className={`mobile-summary-card ${activeCard === index ? 'active' : ''}`}
           >
@@ -617,14 +617,14 @@ const MobileSummaryDashboard = ({ taxData, incomeData, deductions, isCalculating
       </div>
 
       <div className="swipe-navigation">
-        <button 
+        <button
           className="swipe-btn"
           onClick={() => setActiveCard(Math.max(0, activeCard - 1))}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <span className="card-counter">{activeCard + 1} of {cards.length}</span>
-        <button 
+        <button
           className="swipe-btn"
           onClick={() => setActiveCard(Math.min(cards.length - 1, activeCard + 1))}
         >
@@ -644,8 +644,8 @@ const MobileNavigation = ({ onPrevious, onNext, isNextDisabled, nextLabel = 'Nex
           <ArrowLeft className="w-4 h-4" />
           Previous
         </button>
-        <button 
-          className="nav-btn-primary" 
+        <button
+          className="nav-btn-primary"
           onClick={onNext}
           disabled={isNextDisabled}
         >
@@ -667,5 +667,5 @@ export {
   TaxSummaryCard,
   MobileSummaryDashboard,
   MobileNavigation,
-  SmartPromptingEngine
+  SmartPromptingEngine,
 };

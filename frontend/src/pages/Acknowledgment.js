@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  CheckCircle, 
-  Download, 
-  FileText, 
-  Calendar, 
-  User, 
+import {
+  CheckCircle,
+  Download,
+  FileText,
+  Calendar,
+  User,
   Shield,
   ArrowLeft,
   Printer,
-  Mail
+  Mail,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { apiClient } from '../../services/filingService';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const Acknowledgment = () => {
   const { filingId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // State for UI interactions - Justification: Track user actions and UI state
   const [isDownloading, setIsDownloading] = useState(false); // Justification: Show loading state during download
   const [isPrinting, setIsPrinting] = useState(false); // Justification: Show loading state during print
@@ -42,7 +42,7 @@ const Acknowledgment = () => {
       onError: (error) => {
         toast.error('Failed to load filing details');
       },
-    }
+    },
   );
 
   // Fetch submission details - Justification: Get submission timestamp and verification method
@@ -50,14 +50,14 @@ const Acknowledgment = () => {
     ['filing-submission', filingId],
     () => fetch(`/api/filing/${filingId}/submission`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
     }).then(res => res.json()),
     {
       onError: (error) => {
         console.error('Failed to load submission details:', error);
       },
-    }
+    },
   );
 
   // Handle download acknowledgment - Justification: Allow users to save acknowledgment as PDF
@@ -67,10 +67,10 @@ const Acknowledgment = () => {
       // Mock download - in real implementation, generate and download PDF
       const response = await fetch(`/api/filing/${filingId}/acknowledgment/download`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-      
+
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -112,7 +112,7 @@ const Acknowledgment = () => {
     try {
       const subject = `ITR Filing Acknowledgment - ${ackNumber}`;
       const body = `Dear Taxpayer,\n\nYour ITR filing has been successfully submitted.\n\nAcknowledgment Number: ${ackNumber}\nFiling Date: ${new Date().toLocaleDateString()}\nITR Type: ${filing?.filing?.itr_type}\nAssessment Year: ${filing?.filing?.assessment_year}\n\nThank you for using our platform.\n\nBest regards,\nBurnblack Team`;
-      
+
       const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(mailtoLink);
       toast.success('Email client opened!');
@@ -146,7 +146,7 @@ const Acknowledgment = () => {
           <p className="text-gray-600 mb-6">
             Your ITR has been successfully submitted to the Income Tax Department.
           </p>
-          
+
           {/* Acknowledgment Number - Justification: Most important information prominently displayed */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
             <h2 className="text-lg font-semibold text-green-800 mb-2">
@@ -177,7 +177,7 @@ const Acknowledgment = () => {
                   <p className="text-sm text-gray-600">{filing?.filing?.user_name || 'N/A'}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <FileText className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
@@ -185,7 +185,7 @@ const Acknowledgment = () => {
                   <p className="text-sm text-gray-600">{filing?.filing?.itr_type}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <Calendar className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
@@ -194,21 +194,21 @@ const Acknowledgment = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center">
                 <Calendar className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
                   <p className="text-sm font-medium text-gray-900">Submission Date</p>
                   <p className="text-sm text-gray-600">
-                    {submission?.submission?.submitted_at 
+                    {submission?.submission?.submitted_at
                       ? new Date(submission.submission.submitted_at).toLocaleDateString()
                       : new Date().toLocaleDateString()
                     }
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <Shield className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
@@ -218,7 +218,7 @@ const Acknowledgment = () => {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
@@ -265,7 +265,7 @@ const Acknowledgment = () => {
       {/* Action Buttons - Justification: Allow users to download, print, and share acknowledgment */}
       <div className="bg-white shadow rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">What would you like to do next?</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Download Acknowledgment */}
           <button

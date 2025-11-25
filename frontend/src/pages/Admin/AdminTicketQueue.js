@@ -4,12 +4,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Ticket, 
-  Search, 
-  Filter, 
-  Clock, 
-  AlertCircle, 
+import {
+  Ticket,
+  Search,
+  Filter,
+  Clock,
+  AlertCircle,
   CheckCircle,
   User,
   MessageSquare,
@@ -22,13 +22,13 @@ import {
   SortAsc,
   SortDesc,
   Download,
-  Upload
+  Upload,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const AdminTicketQueue = () => {
@@ -63,7 +63,7 @@ const AdminTicketQueue = () => {
       assignedTo: null,
       slaDeadline: '2024-01-15T16:30:00Z',
       tags: ['itr-1', 'form-16', 'salary'],
-      comments: 3
+      comments: 3,
     },
     {
       id: '2',
@@ -84,8 +84,8 @@ const AdminTicketQueue = () => {
       assignedTo: 'CA Smith',
       slaDeadline: '2024-01-15T15:15:00Z',
       tags: ['document', 'upload', 'technical'],
-      comments: 5
-    }
+      comments: 5,
+    },
   ];
 
   useEffect(() => {
@@ -106,10 +106,10 @@ const AdminTicketQueue = () => {
   };
 
   const handleSelectTicket = (ticketId) => {
-    setSelectedTickets(prev => 
-      prev.includes(ticketId) 
+    setSelectedTickets(prev =>
+      prev.includes(ticketId)
         ? prev.filter(id => id !== ticketId)
-        : [...prev, ticketId]
+        : [...prev, ticketId],
     );
   };
 
@@ -164,7 +164,7 @@ const AdminTicketQueue = () => {
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -214,7 +214,7 @@ const AdminTicketQueue = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">

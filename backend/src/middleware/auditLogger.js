@@ -11,7 +11,7 @@ const enterpriseLogger = require('../utils/logger');
 const auditAuthEvents = (action) => {
   return async (req, res, next) => {
     const startTime = Date.now();
-    
+
     // Store original res.json to intercept response
     const originalJson = res.json;
     let responseData = null;
@@ -41,12 +41,12 @@ const auditAuthEvents = (action) => {
             url: req.originalUrl,
             statusCode,
             duration,
-            requestBody: req.method === 'POST' || req.method === 'PUT' ? 
+            requestBody: req.method === 'POST' || req.method === 'PUT' ?
               sanitizeRequestBody(req.body) : null,
-            responseData: success ? responseData : null
+            responseData: success ? responseData : null,
           },
           success,
-          errorMessage: success ? null : responseData?.error || responseData?.message
+          errorMessage: success ? null : responseData?.error || responseData?.message,
         });
 
         enterpriseLogger.info('Audit event logged', {
@@ -54,12 +54,12 @@ const auditAuthEvents = (action) => {
           userId,
           success,
           duration,
-          statusCode
+          statusCode,
         });
       } catch (error) {
         enterpriseLogger.error('Failed to log audit event', {
           action,
-          error: error.message
+          error: error.message,
         });
       }
     });
@@ -74,7 +74,7 @@ const auditAuthEvents = (action) => {
 const auditApiEvents = (resource) => {
   return async (req, res, next) => {
     const startTime = Date.now();
-    
+
     // Store original res.json to intercept response
     const originalJson = res.json;
     let responseData = null;
@@ -105,12 +105,12 @@ const auditApiEvents = (resource) => {
             url: req.originalUrl,
             statusCode,
             duration,
-            requestBody: req.method === 'POST' || req.method === 'PUT' ? 
+            requestBody: req.method === 'POST' || req.method === 'PUT' ?
               sanitizeRequestBody(req.body) : null,
-            responseData: success ? responseData : null
+            responseData: success ? responseData : null,
           },
           success,
-          errorMessage: success ? null : responseData?.error || responseData?.message
+          errorMessage: success ? null : responseData?.error || responseData?.message,
         });
 
         enterpriseLogger.info('API audit event logged', {
@@ -118,12 +118,12 @@ const auditApiEvents = (resource) => {
           userId,
           success,
           duration,
-          statusCode
+          statusCode,
         });
       } catch (error) {
         enterpriseLogger.error('Failed to log API audit event', {
           resource,
-          error: error.message
+          error: error.message,
         });
       }
     });
@@ -178,21 +178,21 @@ const auditFailedAuth = (action) => {
               method: req.method,
               url: req.originalUrl,
               statusCode: res.statusCode,
-              requestBody: sanitizeRequestBody(req.body)
+              requestBody: sanitizeRequestBody(req.body),
             },
             success: false,
-            errorMessage: responseData?.error || responseData?.message
+            errorMessage: responseData?.error || responseData?.message,
           });
 
           enterpriseLogger.warn('Failed authentication attempt logged', {
             action: `${action}_failed`,
             ipAddress: req.ip || req.connection.remoteAddress,
-            statusCode: res.statusCode
+            statusCode: res.statusCode,
           });
         } catch (error) {
           enterpriseLogger.error('Failed to log failed auth event', {
             action: `${action}_failed`,
-            error: error.message
+            error: error.message,
           });
         }
       }
@@ -205,5 +205,5 @@ const auditFailedAuth = (action) => {
 module.exports = {
   auditAuthEvents,
   auditApiEvents,
-  auditFailedAuth
+  auditFailedAuth,
 };

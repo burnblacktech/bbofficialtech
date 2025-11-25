@@ -13,7 +13,7 @@ export { default as Progress } from './progress';
 // Table Components
 export * from './table';
 
-// Dialog Components  
+// Dialog Components
 export * from './dialog';
 
 // Tabs Components

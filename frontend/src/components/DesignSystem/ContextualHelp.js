@@ -4,15 +4,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  HelpCircle, 
-  X, 
-  ChevronDown, 
+import {
+  HelpCircle,
+  X,
+  ChevronDown,
   ChevronUp,
   Lightbulb,
   BookOpen,
   MessageCircle,
-  Bot
+  Bot,
 } from 'lucide-react';
 
 // =====================================================
@@ -20,13 +20,13 @@ import {
 // =====================================================
 
 // Smart Help Tooltip
-export const SmartHelpTooltip = ({ 
-  children, 
-  helpText, 
+export const SmartHelpTooltip = ({
+  children,
+  helpText,
   detailedHelp,
   showAIAssistant = true,
   placement = 'top',
-  ...props 
+  ...props
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showDetailed, setShowDetailed] = useState(false);
@@ -40,7 +40,7 @@ export const SmartHelpTooltip = ({
       >
         {children}
       </div>
-      
+
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -63,9 +63,9 @@ export const SmartHelpTooltip = ({
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              
+
               <p className="mb-3">{helpText}</p>
-              
+
               {detailedHelp && (
                 <div className="mb-3">
                   <button
@@ -75,7 +75,7 @@ export const SmartHelpTooltip = ({
                     {showDetailed ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
                     {showDetailed ? 'Show less' : 'Learn more'}
                   </button>
-                  
+
                   <AnimatePresence>
                     {showDetailed && (
                       <motion.div
@@ -90,7 +90,7 @@ export const SmartHelpTooltip = ({
                   </AnimatePresence>
                 </div>
               )}
-              
+
               {showAIAssistant && (
                 <div className="border-t border-gray-700 pt-2">
                   <button className="flex items-center text-xs text-blue-400 hover:text-blue-300 transition-colors">
@@ -99,7 +99,7 @@ export const SmartHelpTooltip = ({
                   </button>
                 </div>
               )}
-              
+
               {/* Arrow */}
               <div className={`
                 absolute w-2 h-2 bg-gray-900 transform rotate-45
@@ -115,12 +115,12 @@ export const SmartHelpTooltip = ({
 };
 
 // Inline Help Component
-export const InlineHelp = ({ 
-  label, 
-  helpText, 
-  children, 
+export const InlineHelp = ({
+  label,
+  helpText,
+  children,
   required = false,
-  ...props 
+  ...props
 }) => {
   return (
     <div className="space-y-2" {...props}>
@@ -139,13 +139,13 @@ export const InlineHelp = ({
 };
 
 // Progressive Disclosure Component
-export const ProgressiveDisclosure = ({ 
-  title, 
-  summary, 
-  details, 
+export const ProgressiveDisclosure = ({
+  title,
+  summary,
+  details,
   defaultExpanded = false,
   onToggle,
-  ...props 
+  ...props
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
@@ -170,7 +170,7 @@ export const ProgressiveDisclosure = ({
           <ChevronDown className="w-5 h-5 text-gray-400" />
         )}
       </button>
-      
+
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -190,11 +190,11 @@ export const ProgressiveDisclosure = ({
 };
 
 // Smart Defaults Component
-export const SmartDefaults = ({ 
-  suggestions, 
-  onApply, 
+export const SmartDefaults = ({
+  suggestions,
+  onApply,
   onDismiss,
-  ...props 
+  ...props
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -229,7 +229,7 @@ export const SmartDefaults = ({
           <X className="w-4 h-4" />
         </button>
       </div>
-      
+
       <div className="space-y-2">
         {suggestions.map((suggestion, index) => (
           <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
@@ -251,13 +251,13 @@ export const SmartDefaults = ({
 };
 
 // Contextual Help Panel
-export const ContextualHelpPanel = ({ 
-  isOpen, 
-  onClose, 
-  title, 
+export const ContextualHelpPanel = ({
+  isOpen,
+  onClose,
+  title,
   content,
   relatedTopics = [],
-  ...props 
+  ...props
 }) => {
   return (
     <AnimatePresence>
@@ -289,12 +289,12 @@ export const ContextualHelpPanel = ({
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-4 overflow-y-auto max-h-[60vh]">
               <div className="prose prose-sm max-w-none">
                 {content}
               </div>
-              
+
               {relatedTopics.length > 0 && (
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <h3 className="font-medium text-gray-900 mb-3">Related Topics</h3>
@@ -311,7 +311,7 @@ export const ContextualHelpPanel = ({
                 </div>
               )}
             </div>
-            
+
             <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50">
               <button className="flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors">
                 <MessageCircle className="w-4 h-4 mr-1" />
@@ -335,26 +335,26 @@ export const HELP_CONTENT = {
     title: 'PAN Verification',
     summary: 'Verify your PAN details before filing',
     helpText: 'Your PAN (Permanent Account Number) is required for all tax filings. We\'ll verify it with government records.',
-    detailedHelp: 'PAN verification ensures your tax return is processed correctly. We use secure government APIs to validate your details instantly.'
+    detailedHelp: 'PAN verification ensures your tax return is processed correctly. We use secure government APIs to validate your details instantly.',
   },
   'income-sources': {
     title: 'Income Sources',
     summary: 'Add all your income sources for the year',
     helpText: 'Include salary, business income, capital gains, and other earnings. We\'ll help you categorize them correctly.',
-    detailedHelp: 'Different income types have different tax treatments. Salary income is taxed at slab rates, while capital gains have special rates. We\'ll guide you through each category.'
+    detailedHelp: 'Different income types have different tax treatments. Salary income is taxed at slab rates, while capital gains have special rates. We\'ll guide you through each category.',
   },
   'deductions': {
     title: 'Tax Deductions',
     summary: 'Claim eligible deductions to reduce your tax',
     helpText: 'Deductions like 80C (LIC, PPF), 80D (health insurance), and HRA can significantly reduce your tax liability.',
-    detailedHelp: 'Section 80C allows up to ₹1.5L deduction for investments like LIC, PPF, ELSS. Section 80D provides deduction for health insurance premiums. HRA depends on your salary and rent paid.'
+    detailedHelp: 'Section 80C allows up to ₹1.5L deduction for investments like LIC, PPF, ELSS. Section 80D provides deduction for health insurance premiums. HRA depends on your salary and rent paid.',
   },
   'filing-status': {
     title: 'Filing Status',
     summary: 'Track your filing progress and status',
     helpText: 'Monitor your ITR filing from draft to submission to acknowledgment receipt.',
-    detailedHelp: 'After submission, you\'ll receive an acknowledgment number. Track refund status and any notices from the tax department through our dashboard.'
-  }
+    detailedHelp: 'After submission, you\'ll receive an acknowledgment number. Track refund status and any notices from the tax department through our dashboard.',
+  },
 };
 
 // Help Hook for Easy Access
@@ -376,7 +376,7 @@ export const useHelp = () => {
     showHelp,
     hideHelp,
     helpPanelOpen,
-    currentHelp
+    currentHelp,
   };
 };
 
@@ -387,5 +387,5 @@ export default {
   SmartDefaults,
   ContextualHelpPanel,
   HELP_CONTENT,
-  useHelp
+  useHelp,
 };

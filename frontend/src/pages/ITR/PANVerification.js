@@ -6,15 +6,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import { 
-  ArrowLeft, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  ArrowLeft,
+  CheckCircle,
+  AlertCircle,
   RefreshCw,
   Shield,
   User,
   ArrowRight,
-  Loader
+  Loader,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -41,7 +41,7 @@ const PANVerification = () => {
     onError: (error) => {
       setError(error.response?.data?.error || 'PAN verification failed');
       setIsVerifying(false);
-    }
+    },
   });
 
   const handlePANChange = (e) => {
@@ -61,11 +61,11 @@ const PANVerification = () => {
 
     setIsVerifying(true);
     setError(null);
-    
+
     verifyPANMutation.mutate({
       pan: panNumber,
       memberId: selectedMember?.type === 'self' ? null : selectedMember?.id,
-      memberType: selectedMember?.type || 'self'
+      memberType: selectedMember?.type || 'self',
     });
   };
 
@@ -77,13 +77,13 @@ const PANVerification = () => {
 
   const handleProceedToITRSelection = () => {
     if (!verificationResult?.isValid) return;
-    
+
     navigate('/itr-selection', {
       state: {
         selectedMember,
         verificationResult,
-        step: 3
-      }
+        step: 3,
+      },
     });
   };
 
@@ -110,7 +110,7 @@ const PANVerification = () => {
                 <p className="text-xs text-gray-500">Step 2: Verify PAN details</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">
                 <Shield className="h-3 w-3" />
@@ -238,7 +238,7 @@ const PANVerification = () => {
                 <div className="text-center">
                   <h3 className="font-semibold text-gray-900 mb-2">Verified Details</h3>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">PAN Number</span>
@@ -246,26 +246,26 @@ const PANVerification = () => {
                       {formatPAN(panNumber)}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Name</span>
                     <span className="text-sm font-semibold text-gray-900">
                       {verificationResult.name}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Date of Birth</span>
                     <span className="text-sm font-semibold text-gray-900">
                       {new Date(verificationResult.dateOfBirth).toLocaleDateString()}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Status</span>
                     <span className={`text-sm font-semibold px-2 py-1 rounded-full ${
-                      verificationResult.status === 'Active' 
-                        ? 'bg-green-100 text-green-700' 
+                      verificationResult.status === 'Active'
+                        ? 'bg-green-100 text-green-700'
                         : 'bg-red-100 text-red-700'
                     }`}>
                       {verificationResult.status}

@@ -10,83 +10,83 @@ const AuditLog = sequelize.define('AuditLog', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   userId: {
     type: DataTypes.UUID,
     allowNull: true,
     references: {
       model: 'users',
-      key: 'id'
+      key: 'id',
     },
-    field: 'user_id'
+    field: 'user_id',
   },
   action: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   resource: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
   },
   resourceId: {
     type: DataTypes.STRING,
     allowNull: true,
-    field: 'resource_id'
+    field: 'resource_id',
   },
   ipAddress: {
     type: DataTypes.STRING,
     allowNull: true,
-    field: 'ip_address'
+    field: 'ip_address',
   },
   userAgent: {
     type: DataTypes.TEXT,
     allowNull: true,
-    field: 'user_agent'
+    field: 'user_agent',
   },
   metadata: {
     type: DataTypes.JSONB,
-    allowNull: true
+    allowNull: true,
   },
   success: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
-    allowNull: false
+    allowNull: false,
   },
   errorMessage: {
     type: DataTypes.TEXT,
     allowNull: true,
-    field: 'error_message'
+    field: 'error_message',
   },
   timestamp: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 }, {
   tableName: 'audit_logs',
   timestamps: false,
   underscored: true,
   indexes: [
     {
-      fields: ['user_id']
+      fields: ['user_id'],
     },
     {
-      fields: ['action']
+      fields: ['action'],
     },
     {
-      fields: ['resource']
+      fields: ['resource'],
     },
     {
-      fields: ['timestamp']
+      fields: ['timestamp'],
     },
     {
-      fields: ['success']
+      fields: ['success'],
     },
     {
-      fields: ['ip_address']
-    }
-  ]
+      fields: ['ip_address'],
+    },
+  ],
 });
 
 // Class methods
@@ -100,12 +100,12 @@ AuditLog.logAuthEvent = async function(data) {
       userAgent: data.userAgent,
       metadata: data.metadata,
       success: data.success !== false,
-      errorMessage: data.errorMessage
+      errorMessage: data.errorMessage,
     });
   } catch (error) {
     enterpriseLogger.error('Audit log creation error', {
       action: data.action,
-      error: error.message
+      error: error.message,
     });
     // Don't throw error to avoid breaking the main flow
   }
@@ -116,12 +116,12 @@ AuditLog.getUserAuditTrail = async function(userId, limit = 100) {
     return await AuditLog.findAll({
       where: { userId },
       order: [['timestamp', 'DESC']],
-      limit
+      limit,
     });
   } catch (error) {
     enterpriseLogger.error('Get user audit trail error', {
       userId,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -131,11 +131,11 @@ AuditLog.getSystemAuditTrail = async function(limit = 1000) {
   try {
     return await AuditLog.findAll({
       order: [['timestamp', 'DESC']],
-      limit
+      limit,
     });
   } catch (error) {
     enterpriseLogger.error('Get system audit trail error', {
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -145,26 +145,26 @@ AuditLog.cleanupOldLogs = async function(retentionYears = 7) {
   try {
     const cutoffDate = new Date();
     cutoffDate.setFullYear(cutoffDate.getFullYear() - retentionYears);
-    
+
     const result = await AuditLog.destroy({
       where: {
         timestamp: {
-          [sequelize.Sequelize.Op.lt]: cutoffDate
-        }
-      }
+          [sequelize.Sequelize.Op.lt]: cutoffDate,
+        },
+      },
     });
-    
+
     enterpriseLogger.info('Audit log cleanup completed', {
       yearsRetained: retentionYears,
       cutoffDate: cutoffDate.toISOString(),
-      deletedCount: result
+      deletedCount: result,
     });
-    
+
     return result;
   } catch (error) {
     enterpriseLogger.error('Cleanup old audit logs error', {
       error: error.message,
-      retentionYears
+      retentionYears,
     });
     throw error;
   }
@@ -174,28 +174,28 @@ AuditLog.cleanupOldLogs = async function(retentionYears = 7) {
 AuditLog.performComplianceCleanup = async function() {
   try {
     const retentionYears = parseInt(process.env.AUDIT_LOG_RETENTION_YEARS) || 7;
-    
+
     enterpriseLogger.info('Starting compliance audit log cleanup', {
       retentionYears,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
+
     const deletedCount = await AuditLog.cleanupOldLogs(retentionYears);
-    
+
     enterpriseLogger.info('Compliance audit cleanup completed', {
       retentionYears,
-      deletedLogs: deletedCount
+      deletedLogs: deletedCount,
     });
-    
+
     return {
       success: true,
       retentionYears,
       deletedCount,
-      cleanupDate: new Date().toISOString()
+      cleanupDate: new Date().toISOString(),
     };
   } catch (error) {
     enterpriseLogger.error('Compliance audit cleanup failed', {
-      error: error.message
+      error: error.message,
     });
     throw error;
   }

@@ -124,7 +124,7 @@ export const getTheme = (themeName) => {
 export const getColor = (theme, colorPath) => {
   const keys = colorPath.split('.');
   let value = theme.colors;
-  
+
   for (const key of keys) {
     value = value[key];
     if (value === undefined) {
@@ -132,7 +132,7 @@ export const getColor = (theme, colorPath) => {
       return theme.colors.primary;
     }
   }
-  
+
   return value;
 };
 

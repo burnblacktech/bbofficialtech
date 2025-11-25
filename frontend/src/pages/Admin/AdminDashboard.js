@@ -7,19 +7,19 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
-import { 
-  Users, 
-  FileText, 
-  MessageSquare, 
-  DollarSign, 
-  TrendingUp, 
+import {
+  Users,
+  FileText,
+  MessageSquare,
+  DollarSign,
+  TrendingUp,
   AlertCircle,
   CheckCircle,
   Clock,
   Activity,
   Shield,
   Settings,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -31,32 +31,32 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockData = {
         metrics: {
           newUsers: {
             today: 45,
             last7Days: 312,
-            growth: 12.5
+            growth: 12.5,
           },
           itrFilings: {
             initiated: 189,
             completed: 156,
-            completionRate: 82.5
+            completionRate: 82.5,
           },
           serviceTickets: {
             open: 23,
             resolved: 89,
-            avgResolutionTime: '4.2 hours'
+            avgResolutionTime: '4.2 hours',
           },
           revenue: {
             today: 125000,
             last7Days: 875000,
-            growth: 8.3
-          }
+            growth: 8.3,
+          },
         },
         recentActivity: [
           {
@@ -64,59 +64,59 @@ const AdminDashboard = () => {
             type: 'user_signup',
             message: 'New user registered: john.doe@example.com',
             timestamp: new Date(Date.now() - 1000 * 60 * 15),
-            status: 'success'
+            status: 'success',
           },
           {
             id: 2,
             type: 'itr_filing',
             message: 'ITR filing completed for PAN: ABCDE1234F',
             timestamp: new Date(Date.now() - 1000 * 60 * 30),
-            status: 'success'
+            status: 'success',
           },
           {
             id: 3,
             type: 'support_ticket',
             message: 'New support ticket created: #ST-2024-001',
             timestamp: new Date(Date.now() - 1000 * 60 * 45),
-            status: 'warning'
+            status: 'warning',
           },
           {
             id: 4,
             type: 'payment',
             message: 'Payment received: ₹2,500 from user@example.com',
             timestamp: new Date(Date.now() - 1000 * 60 * 60),
-            status: 'success'
-          }
+            status: 'success',
+          },
         ],
         systemHealth: {
           status: 'healthy',
           uptime: '99.9%',
           responseTime: '245ms',
           activeUsers: 1247,
-          serverLoad: 65
+          serverLoad: 65,
         },
         topPerformers: [
           {
             name: 'CA Firm Alpha',
             filings: 45,
             revenue: 112500,
-            rating: 4.8
+            rating: 4.8,
           },
           {
             name: 'CA Firm Beta',
             filings: 38,
             revenue: 95000,
-            rating: 4.6
+            rating: 4.6,
           },
           {
             name: 'CA Firm Gamma',
             filings: 32,
             revenue: 80000,
-            rating: 4.7
-          }
-        ]
+            rating: 4.7,
+          },
+        ],
       };
-      
+
       setDashboardData(mockData);
       setLoading(false);
     };
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -352,7 +352,7 @@ const AdminDashboard = () => {
                   </Typography.Small>
                   <div className="flex items-center space-x-2">
                     <div className="w-16 h-2 bg-neutral-200 rounded-full">
-                      <div 
+                      <div
                         className="h-2 bg-primary-500 rounded-full"
                         style={{ width: `${dashboardData.systemHealth.serverLoad}%` }}
                       />

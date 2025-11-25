@@ -8,11 +8,11 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
-import { 
-  Building2, 
-  Users, 
-  CheckCircle, 
-  Star, 
+import {
+  Building2,
+  Users,
+  CheckCircle,
+  Star,
   ArrowRight,
   Shield,
   Zap,
@@ -22,7 +22,7 @@ import {
   FileText,
   BarChart3,
   Settings,
-  Code
+  Code,
 } from 'lucide-react';
 
 const SubscriptionPlans = () => {
@@ -36,12 +36,12 @@ const SubscriptionPlans = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       setLoading(true);
-      
+
       try {
         // Mock API call to get subscription plans
         const response = await fetch('/api/subscriptions/plans');
         const plansData = await response.json();
-        
+
         setPlans(plansData);
       } catch (error) {
         console.error('Error fetching plans:', error);
@@ -58,10 +58,10 @@ const SubscriptionPlans = () => {
               'Basic ITR filing support',
               'Email support',
               'Standard templates',
-              'Basic analytics'
+              'Basic analytics',
             ],
             popular: false,
-            recommended: false
+            recommended: false,
           },
           {
             id: 2,
@@ -76,10 +76,10 @@ const SubscriptionPlans = () => {
               'Custom templates',
               'Bulk operations',
               'Advanced analytics',
-              'Team collaboration'
+              'Team collaboration',
             ],
             popular: true,
-            recommended: false
+            recommended: false,
           },
           {
             id: 3,
@@ -95,14 +95,14 @@ const SubscriptionPlans = () => {
               'White-label options',
               'Advanced analytics',
               'API access',
-              'Custom workflows'
+              'Custom workflows',
             ],
             popular: false,
-            recommended: true
-          }
+            recommended: true,
+          },
         ]);
       }
-      
+
       setLoading(false);
     };
 
@@ -118,8 +118,8 @@ const SubscriptionPlans = () => {
       navigate('/ca/checkout', {
         state: {
           plan: selectedPlan,
-          billingCycle: billingCycle
-        }
+          billingCycle: billingCycle,
+        },
       });
     }
   };
@@ -128,7 +128,7 @@ const SubscriptionPlans = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -188,7 +188,7 @@ const SubscriptionPlans = () => {
         <div className="text-center mb-12">
           <Typography.H1 className="mb-4">Choose Your Subscription Plan</Typography.H1>
           <Typography.Body className="text-lg text-neutral-600 max-w-3xl mx-auto">
-            Select the perfect plan for your CA firm. All plans include secure ITR filing, 
+            Select the perfect plan for your CA firm. All plans include secure ITR filing,
             client management, and dedicated support.
           </Typography.Body>
         </div>
@@ -365,7 +365,7 @@ const SubscriptionPlans = () => {
                   Secure Subscription
                 </Typography.Small>
                 <Typography.Small className="text-neutral-600">
-                  Your subscription is processed securely. You can cancel or change your plan at any time. 
+                  Your subscription is processed securely. You can cancel or change your plan at any time.
                   All plans include a 30-day money-back guarantee.
                 </Typography.Small>
               </div>

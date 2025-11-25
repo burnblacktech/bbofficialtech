@@ -14,13 +14,13 @@ class SurePassService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           pan: panNumber,
           userId: localStorage.getItem('userId'),
-          isCAFiling: false
-        })
+          isCAFiling: false,
+        }),
       });
 
       const data = await response.json();
@@ -38,15 +38,15 @@ class SurePassService {
             aadhaarLinked: data.data.aadhaarLinked || false,
             lastUpdated: data.data.lastUpdated || new Date().toISOString(),
             verifiedBy: data.data.verifiedBy || 'SurePass',
-            verificationTimestamp: data.data.verificationTimestamp || new Date().toISOString()
+            verificationTimestamp: data.data.verificationTimestamp || new Date().toISOString(),
           },
-          message: data.message || 'PAN verified successfully'
+          message: data.message || 'PAN verified successfully',
         };
       } else {
         return {
           success: false,
           error: data.error || 'PAN verification failed',
-          code: data.code || 'VERIFICATION_FAILED'
+          code: data.code || 'VERIFICATION_FAILED',
         };
       }
     } catch (error) {
@@ -54,7 +54,7 @@ class SurePassService {
       return {
         success: false,
         error: 'Network error or API unavailable',
-        code: 'NETWORK_ERROR'
+        code: 'NETWORK_ERROR',
       };
     }
   }
@@ -70,24 +70,24 @@ class SurePassService {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const result = await this.verifyPAN(panNumber);
-        
+
         if (result.success) {
           return result;
         }
-        
+
         // If it's a network error and we have retries left, wait and retry
         if (result.code === 'NETWORK_ERROR' && attempt < maxRetries) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
           continue;
         }
-        
+
         return result;
       } catch (error) {
         if (attempt === maxRetries) {
           return {
             success: false,
             error: 'Maximum retry attempts exceeded',
-            code: 'MAX_RETRIES_EXCEEDED'
+            code: 'MAX_RETRIES_EXCEEDED',
           };
         }
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -102,11 +102,11 @@ class SurePassService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
-          pan: panNumber
-        })
+          pan: panNumber,
+        }),
       });
 
       const data = await response.json();
@@ -120,20 +120,20 @@ class SurePassService {
             state: data.data.state || '',
             pincode: data.data.pincode || '',
             country: data.data.country || 'India',
-            additionalInfo: data.data.additionalInfo || {}
-          }
+            additionalInfo: data.data.additionalInfo || {},
+          },
         };
       } else {
         return {
           success: false,
-          error: data.error || 'Failed to retrieve PAN details'
+          error: data.error || 'Failed to retrieve PAN details',
         };
       }
     } catch (error) {
       console.error('SurePass Details API Error:', error);
       return {
         success: false,
-        error: 'Failed to fetch additional details'
+        error: 'Failed to fetch additional details',
       };
     }
   }
@@ -145,11 +145,11 @@ class SurePassService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
-          panNumbers: panNumbers
-        })
+          panNumbers: panNumbers,
+        }),
       });
 
       const data = await response.json();
@@ -160,7 +160,7 @@ class SurePassService {
         return panNumbers.map(pan => ({
           pan,
           success: false,
-          error: data.error || 'Batch verification failed'
+          error: data.error || 'Batch verification failed',
         }));
       }
     } catch (error) {
@@ -168,7 +168,7 @@ class SurePassService {
       return panNumbers.map(pan => ({
         pan,
         success: false,
-        error: error.message
+        error: error.message,
       }));
     }
   }
@@ -179,8 +179,8 @@ class SurePassService {
       const response = await fetch('http://localhost:3002/api/v2/surepass/health', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
       });
 
       const data = await response.json();

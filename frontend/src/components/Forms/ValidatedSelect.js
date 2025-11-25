@@ -23,7 +23,7 @@ const ValidatedSelect = ({
     errors: [],
     warnings: [],
     suggestions: [],
-    isTouched: false
+    isTouched: false,
   });
   const [isFocused, setIsFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +42,7 @@ const ValidatedSelect = ({
           errors: result.errors,
           warnings: result.warnings,
           suggestions: [...result.suggestions, ...suggestions],
-          isTouched: true
+          isTouched: true,
         });
       } catch (error) {
         console.error('Validation error:', error);

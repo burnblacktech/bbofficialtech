@@ -50,7 +50,7 @@ export const CONTEXT_TYPES = {
   AUTH: 'auth',
   ITR: 'itr',
   APP: 'app',
-  NOTIFICATION: 'notification'
+  NOTIFICATION: 'notification',
 };
 
 /**

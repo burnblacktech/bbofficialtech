@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const documentController = require('../controllers/DocumentController');
 const authMiddleware = require('../middleware/auth');
-const fileUploadService = require('../services/fileUploadService');
+const S3Service = require('../services/integration/S3Service');
 const enterpriseLogger = require('../utils/logger');
 
 // Apply authentication middleware to all routes
@@ -37,9 +37,9 @@ router.get('/categories', documentController.getDocumentCategories);
 router.get('/status', documentController.getServiceStatus);
 
 // Local file upload (for development)
-router.post('/upload-local', 
-  fileUploadService.getMulterMiddleware().single('file'),
-  documentController.uploadLocalFile
+router.post('/upload-local',
+  S3Service.getMulterMiddleware().single('file'),
+  documentController.uploadLocalFile,
 );
 
 // Local file download (for development)
@@ -52,13 +52,13 @@ router.use((error, req, res, next) => {
     stack: error.stack,
     url: req.url,
     method: req.method,
-    userId: req.user?.id
+    userId: req.user?.id,
   });
 
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
   });
 });
 

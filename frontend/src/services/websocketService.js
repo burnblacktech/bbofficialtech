@@ -18,10 +18,10 @@ class WebSocketService {
 
     this.isConnecting = true;
     const wsUrl = `${process.env.REACT_APP_WS_URL || 'ws://localhost:3001'}/ws?userId=${userId}&token=${token}`;
-    
+
     try {
       this.ws = new WebSocket(wsUrl);
-      
+
       this.ws.onopen = () => {
         console.log('🔌 WebSocket connected');
         this.isConnecting = false;
@@ -60,7 +60,7 @@ class WebSocketService {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
       console.log(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
+
       setTimeout(() => {
         const userId = localStorage.getItem('userId');
         const token = localStorage.getItem('token');
@@ -76,7 +76,7 @@ class WebSocketService {
 
   handleMessage(data) {
     const { type, payload } = data;
-    
+
     // Notify all listeners for this event type
     if (this.listeners.has(type)) {
       this.listeners.get(type).forEach(callback => {
@@ -165,7 +165,7 @@ export const useWebSocket = (userId, token) => {
   useEffect(() => {
     if (userId && token) {
       wsService.connect(userId, token);
-      
+
       // Monitor connection status
       const statusInterval = setInterval(() => {
         setConnectionStatus(wsService.getConnectionStatus());
@@ -219,7 +219,7 @@ export const useWebSocket = (userId, token) => {
     subscribe,
     unsubscribe,
     send,
-    isConnected: connectionStatus === 'connected'
+    isConnected: connectionStatus === 'connected',
   };
 };
 

@@ -12,7 +12,7 @@ import memberService from '../../services/memberService';
 
 const AddMembers = () => {
   const { user } = useAuth();
-  
+
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -24,7 +24,7 @@ const AddMembers = () => {
     dateOfBirth: '',
     relationship: '',
     phoneNumber: '',
-    email: ''
+    email: '',
   });
 
   useEffect(() => {
@@ -48,13 +48,13 @@ const AddMembers = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       if (editingMember) {
         // Update existing member
@@ -65,7 +65,7 @@ const AddMembers = () => {
         await memberService.addMember(formData);
         toast.success('Family member added successfully');
       }
-      
+
       setShowAddForm(false);
       setEditingMember(null);
       setFormData({
@@ -75,9 +75,9 @@ const AddMembers = () => {
         dateOfBirth: '',
         relationship: '',
         phoneNumber: '',
-        email: ''
+        email: '',
       });
-      
+
       loadMembers();
     } catch (error) {
       console.error('Error saving member:', error);
@@ -94,16 +94,17 @@ const AddMembers = () => {
       dateOfBirth: member.dateOfBirth || '',
       relationship: member.relationship || '',
       phoneNumber: member.phoneNumber || '',
-      email: member.email || ''
+      email: member.email || '',
     });
     setShowAddForm(true);
   };
 
   const handleDelete = async (memberId) => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm('Are you sure you want to delete this family member?')) {
       return;
     }
-    
+
     try {
       await memberService.deleteMember(memberId);
       toast.success('Family member deleted successfully');
@@ -124,7 +125,7 @@ const AddMembers = () => {
       dateOfBirth: '',
       relationship: '',
       phoneNumber: '',
-      email: ''
+      email: '',
     });
   };
 
@@ -175,7 +176,7 @@ const AddMembers = () => {
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                 {editingMember ? 'Edit Family Member' : 'Add New Family Member'}
               </h3>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -191,7 +192,7 @@ const AddMembers = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Last Name *
@@ -205,7 +206,7 @@ const AddMembers = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       PAN Number *
@@ -220,7 +221,7 @@ const AddMembers = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Date of Birth *
@@ -234,7 +235,7 @@ const AddMembers = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Relationship *
@@ -257,7 +258,7 @@ const AddMembers = () => {
                       <option value="other">Other</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Phone Number
@@ -270,7 +271,7 @@ const AddMembers = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Email
@@ -284,7 +285,7 @@ const AddMembers = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3 pt-4">
                   <Button
                     type="submit"
@@ -345,7 +346,7 @@ const AddMembers = () => {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Button
                         variant="secondary"
@@ -367,27 +368,27 @@ const AddMembers = () => {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2 text-sm text-neutral-600">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">PAN:</span>
                       <span>{member.panNumber}</span>
                     </div>
-                    
+
                     {member.dateOfBirth && (
                       <div className="flex items-center gap-2">
                         <span className="font-medium">DOB:</span>
                         <span>{new Date(member.dateOfBirth).toLocaleDateString()}</span>
                       </div>
                     )}
-                    
+
                     {member.phoneNumber && (
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4" />
                         <span>{member.phoneNumber}</span>
                       </div>
                     )}
-                    
+
                     {member.email && (
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4" />

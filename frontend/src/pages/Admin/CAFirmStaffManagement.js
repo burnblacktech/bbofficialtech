@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Users, 
-  UserPlus, 
+import {
+  Users,
+  UserPlus,
   Search,
   Filter,
   Eye,
@@ -33,7 +33,7 @@ import {
   Crown,
   Star,
   Activity,
-  DollarSign
+  DollarSign,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -87,7 +87,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to add staff member: ${error.message}`);
-    }
+    },
   });
 
   // Update staff status mutation
@@ -103,7 +103,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update staff status: ${error.message}`);
-    }
+    },
   });
 
   // Update staff role mutation
@@ -119,7 +119,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update staff role: ${error.message}`);
-    }
+    },
   });
 
   // Delete staff mutation
@@ -135,7 +135,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to remove staff member: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (staffId, newStatus) => {
@@ -220,7 +220,7 @@ const CAFirmStaffManagement = () => {
     { id: 'staff', name: 'All Staff', count: stats.total || 0 },
     { id: 'active', name: 'Active', count: stats.active || 0 },
     { id: 'cas', name: 'CAs', count: stats.cas || 0 },
-    { id: 'pending', name: 'Pending', count: stats.pending || 0 }
+    { id: 'pending', name: 'Pending', count: stats.pending || 0 },
   ];
 
   const filteredStaff = staff.filter(member => {
@@ -252,7 +252,7 @@ const CAFirmStaffManagement = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Staff Management</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/ca-firm-admin/staff/export')}
@@ -261,7 +261,7 @@ const CAFirmStaffManagement = () => {
                 <Download className="h-4 w-4" />
                 <span>Export Staff</span>
               </button>
-              
+
               <button
                 onClick={() => setShowAddForm(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -287,7 +287,7 @@ const CAFirmStaffManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -297,7 +297,7 @@ const CAFirmStaffManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <UserCheck className="h-8 w-8 text-purple-600" />
@@ -307,7 +307,7 @@ const CAFirmStaffManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Clock className="h-8 w-8 text-orange-600" />
@@ -333,7 +333,7 @@ const CAFirmStaffManagement = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Role Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-400" />
@@ -350,7 +350,7 @@ const CAFirmStaffManagement = () => {
                 <option value="assistant">Assistant</option>
               </select>
             </div>
-            
+
             {/* Status Filter */}
             <select
               value={statusFilter}
@@ -417,7 +417,7 @@ const CAFirmStaffManagement = () => {
                 {filteredStaff.length} Staff Member{filteredStaff.length !== 1 ? 's' : ''}
               </h2>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {filteredStaff.map((member) => (
                 <div key={member.staff_id} className="px-6 py-4 hover:bg-gray-50">
@@ -441,7 +441,7 @@ const CAFirmStaffManagement = () => {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -457,7 +457,7 @@ const CAFirmStaffManagement = () => {
                               <span>Joined: {new Date(member.created_at).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
                               <FileText className="h-4 w-4" />
@@ -473,7 +473,7 @@ const CAFirmStaffManagement = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="mt-3 text-xs text-gray-500">
                           Last Login: {member.last_login ? new Date(member.last_login).toLocaleDateString() : 'Never'}
                           {member.last_activity && (
@@ -484,7 +484,7 @@ const CAFirmStaffManagement = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => navigate(`/ca-firm-admin/staff/${member.staff_id}`)}
@@ -493,7 +493,7 @@ const CAFirmStaffManagement = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      
+
                       <button
                         onClick={() => navigate(`/ca-firm-admin/staff/${member.staff_id}/edit`)}
                         className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
@@ -501,7 +501,7 @@ const CAFirmStaffManagement = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      
+
                       {member.status === 'pending' && (
                         <button
                           onClick={() => handleStatusUpdate(member.staff_id, 'active')}
@@ -511,7 +511,7 @@ const CAFirmStaffManagement = () => {
                           <CheckCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {member.role !== 'ca_firm_admin' && (
                         <button
                           onClick={() => handleRoleUpdate(member.staff_id, 'ca')}
@@ -521,7 +521,7 @@ const CAFirmStaffManagement = () => {
                           <UserCheck className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {member.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(member.staff_id, 'suspended')}
@@ -531,7 +531,7 @@ const CAFirmStaffManagement = () => {
                           <AlertCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => handleDeleteStaff(member.staff_id, member.name)}
                         className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
@@ -572,7 +572,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
     department: '',
     joining_date: '',
     salary: '',
-    is_verified: false
+    is_verified: false,
   });
 
   const handleSubmit = (e) => {
@@ -584,7 +584,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Staff Member</h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -599,7 +599,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter full name"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address *
@@ -613,7 +613,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter email address"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Mobile Number
@@ -626,7 +626,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter mobile number"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Role *
@@ -643,7 +643,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               <option value="senior_ca">Senior CA</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Designation
@@ -656,7 +656,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter designation"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Department
@@ -669,7 +669,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter department"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Joining Date
@@ -681,7 +681,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Salary
@@ -694,7 +694,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter salary"
             />
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -707,7 +707,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
               Verified Staff Member
             </label>
           </div>
-          
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

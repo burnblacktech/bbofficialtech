@@ -77,7 +77,7 @@ const Modal = ({
     baseClasses,
     sizeClass,
     variantClass,
-    className
+    className,
   ].filter(Boolean).join(' ');
 
   return (

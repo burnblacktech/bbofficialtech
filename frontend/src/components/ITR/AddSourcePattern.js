@@ -6,15 +6,15 @@
 import React, { useState } from 'react';
 import { Plus, X, Edit2, Trash2 } from 'lucide-react';
 
-const AddSourcePattern = ({ 
-  title, 
-  subtitle, 
-  sources = [], 
-  onAddSource, 
-  onEditSource, 
+const AddSourcePattern = ({
+  title,
+  subtitle,
+  sources = [],
+  onAddSource,
+  onEditSource,
   onDeleteSource,
   sourceTypes = [],
-  emptyStateMessage = "No sources added yet"
+  emptyStateMessage = 'No sources added yet',
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedType, setSelectedType] = useState('');
@@ -122,7 +122,7 @@ const AddSourcePattern = ({
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description
@@ -136,7 +136,7 @@ const AddSourcePattern = ({
                   />
                 </div>
               </div>
-              
+
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
@@ -188,7 +188,7 @@ const AddSourcePattern = ({
                     ₹{parseInt(source.amount || 0).toLocaleString()}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => onEditSource && onEditSource(index, source)}

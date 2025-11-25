@@ -7,7 +7,7 @@ const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
-const auditService = require('../services/AuditService');
+const auditService = require('../services/utils/AuditService');
 
 class AdminController {
   /**
@@ -23,7 +23,7 @@ class AdminController {
         status,
         search,
         sortBy = 'createdAt',
-        sortOrder = 'DESC'
+        sortOrder = 'DESC',
       } = req.query;
 
       const offset = (page - 1) * limit;
@@ -40,7 +40,7 @@ class AdminController {
         whereClause[Op.or] = [
           { fullName: { [Op.iLike]: `%${search}%` } },
           { email: { [Op.iLike]: `%${search}%` } },
-          { phone: { [Op.iLike]: `%${search}%` } }
+          { phone: { [Op.iLike]: `%${search}%` } },
         ];
       }
 
@@ -52,8 +52,8 @@ class AdminController {
         attributes: [
           'id', 'fullName', 'email', 'phone', 'role', 'status',
           'emailVerified', 'phoneVerified', 'createdAt', 'updatedAt',
-          'lastLoginAt', 'loginCount'
-        ]
+          'lastLoginAt', 'loginCount',
+        ],
       });
 
       const userList = users.map(user => ({
@@ -72,14 +72,14 @@ class AdminController {
         updatedAt: user.updatedAt,
         lastLoginAt: user.lastLoginAt,
         loginCount: user.loginCount,
-        isActive: user.status === 'active'
+        isActive: user.status === 'active',
       }));
 
       enterpriseLogger.info('Users retrieved via admin API', {
         adminId: req.user.id,
         count: userList.length,
         totalCount: count,
-        filters: { role, status, search }
+        filters: { role, status, search },
       });
 
       res.status(200).json({
@@ -93,16 +93,16 @@ class AdminController {
             totalItems: count,
             itemsPerPage: parseInt(limit),
             hasNext: page * limit < count,
-            hasPrev: page > 1
-          }
-        }
+            hasPrev: page > 1,
+          },
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get users via admin API', {
         error: error.message,
         adminId: req.user?.id,
-        query: req.query
+        query: req.query,
       });
       next(error);
     }
@@ -121,8 +121,8 @@ class AdminController {
         attributes: [
           'id', 'fullName', 'email', 'phone', 'role', 'status',
           'emailVerified', 'phoneVerified', 'createdAt', 'updatedAt',
-          'lastLoginAt', 'loginCount', 'metadata'
-        ]
+          'lastLoginAt', 'loginCount', 'metadata',
+        ],
       });
 
       if (!user) {
@@ -133,7 +133,7 @@ class AdminController {
       const [ticketStats, filingStats, documentStats] = await Promise.all([
         ServiceTicket.getTicketStats(user.id),
         this.getUserFilingStats(user.id),
-        Document.getUserStorageStats(user.id)
+        Document.getUserStorageStats(user.id),
       ]);
 
       const userDetails = {
@@ -156,26 +156,26 @@ class AdminController {
         statistics: {
           tickets: ticketStats,
           filings: filingStats,
-          documents: documentStats
-        }
+          documents: documentStats,
+        },
       };
 
       enterpriseLogger.info('User details retrieved via admin API', {
         adminId,
-        userId: id
+        userId: id,
       });
 
       res.status(200).json({
         success: true,
         message: 'User details retrieved successfully',
-        data: userDetails
+        data: userDetails,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get user details via admin API', {
         error: error.message,
         adminId: req.user?.id,
-        userId: req.params.id
+        userId: req.params.id,
       });
       next(error);
     }
@@ -216,9 +216,9 @@ class AdminController {
             newStatus: status,
             changedBy: adminId,
             reason: reason || 'No reason provided',
-            changedAt: new Date().toISOString()
-          }
-        ]
+            changedAt: new Date().toISOString(),
+          },
+        ],
       };
 
       await user.save();
@@ -233,9 +233,9 @@ class AdminController {
           oldStatus,
           newStatus: status,
           reason,
-          userId: id
+          userId: id,
         },
-        req.ip
+        req.ip,
       );
 
       enterpriseLogger.info('User status updated via admin API', {
@@ -243,7 +243,7 @@ class AdminController {
         userId: id,
         oldStatus,
         newStatus: status,
-        reason
+        reason,
       });
 
       res.status(200).json({
@@ -253,15 +253,15 @@ class AdminController {
           userId: id,
           oldStatus,
           newStatus: status,
-          reason
-        }
+          reason,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to update user status via admin API', {
         error: error.message,
         adminId: req.user?.id,
-        userId: req.params.id
+        userId: req.params.id,
       });
       next(error);
     }
@@ -302,9 +302,9 @@ class AdminController {
             newRole: role,
             changedBy: adminId,
             reason: reason || 'No reason provided',
-            changedAt: new Date().toISOString()
-          }
-        ]
+            changedAt: new Date().toISOString(),
+          },
+        ],
       };
 
       await user.save();
@@ -319,9 +319,9 @@ class AdminController {
           oldRole,
           newRole: role,
           reason,
-          userId: id
+          userId: id,
         },
-        req.ip
+        req.ip,
       );
 
       enterpriseLogger.info('User role updated via admin API', {
@@ -329,7 +329,7 @@ class AdminController {
         userId: id,
         oldRole,
         newRole: role,
-        reason
+        reason,
       });
 
       res.status(200).json({
@@ -339,15 +339,15 @@ class AdminController {
           userId: id,
           oldRole,
           newRole: role,
-          reason
-        }
+          reason,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to update user role via admin API', {
         error: error.message,
         adminId: req.user?.id,
-        userId: req.params.id
+        userId: req.params.id,
       });
       next(error);
     }
@@ -365,12 +365,12 @@ class AdminController {
         userStats,
         ticketStats,
         filingStats,
-        documentStats
+        documentStats,
       ] = await Promise.all([
         this.getUserStats(),
         ServiceTicket.getTicketStats(),
         this.getFilingStats(),
-        this.getDocumentStats()
+        this.getDocumentStats(),
       ]);
 
       const systemStats = {
@@ -382,24 +382,24 @@ class AdminController {
           uptime: process.uptime(),
           memoryUsage: process.memoryUsage(),
           nodeVersion: process.version,
-          platform: process.platform
-        }
+          platform: process.platform,
+        },
       };
 
       enterpriseLogger.info('System statistics retrieved via admin API', {
-        adminId
+        adminId,
       });
 
       res.status(200).json({
         success: true,
         message: 'System statistics retrieved successfully',
-        data: systemStats
+        data: systemStats,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get system statistics via admin API', {
         error: error.message,
-        adminId: req.user?.id
+        adminId: req.user?.id,
       });
       next(error);
     }
@@ -423,7 +423,7 @@ class AdminController {
           description: 'New user registered',
           userId: 'user-123',
           timestamp: new Date().toISOString(),
-          metadata: { email: 'user@example.com' }
+          metadata: { email: 'user@example.com' },
         },
         {
           id: '2',
@@ -431,13 +431,13 @@ class AdminController {
           description: 'ITR filing created',
           userId: 'user-456',
           timestamp: new Date(Date.now() - 3600000).toISOString(),
-          metadata: { itrType: 'ITR-1' }
-        }
+          metadata: { itrType: 'ITR-1' },
+        },
       ];
 
       enterpriseLogger.info('Recent activity retrieved via admin API', {
         adminId,
-        limit
+        limit,
       });
 
       res.status(200).json({
@@ -445,14 +445,14 @@ class AdminController {
         message: 'Recent activity retrieved successfully',
         data: {
           activities: recentActivity,
-          count: recentActivity.length
-        }
+          count: recentActivity.length,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get recent activity via admin API', {
         error: error.message,
-        adminId: req.user?.id
+        adminId: req.user?.id,
       });
       next(error);
     }
@@ -470,10 +470,10 @@ class AdminController {
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'suspended\' THEN 1 END')), 'suspendedUsers'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'user\' THEN 1 END')), 'regularUsers'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'ca\' THEN 1 END')), 'caUsers'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'admin\' THEN 1 END')), 'adminUsers']
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'admin\' THEN 1 END')), 'adminUsers'],
       ],
       where: { isDeleted: false },
-      raw: true
+      raw: true,
     });
 
     return {
@@ -483,7 +483,7 @@ class AdminController {
       suspendedUsers: parseInt(stats[0].suspendedUsers) || 0,
       regularUsers: parseInt(stats[0].regularUsers) || 0,
       caUsers: parseInt(stats[0].caUsers) || 0,
-      adminUsers: parseInt(stats[0].adminUsers) || 0
+      adminUsers: parseInt(stats[0].adminUsers) || 0,
     };
   }
 
@@ -497,16 +497,16 @@ class AdminController {
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalFilings'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'draft\' THEN 1 END')), 'draftFilings'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'submitted\' THEN 1 END')), 'submittedFilings'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'acknowledged\' THEN 1 END')), 'acknowledgedFilings']
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'acknowledged\' THEN 1 END')), 'acknowledgedFilings'],
       ],
-      raw: true
+      raw: true,
     });
 
     return {
       totalFilings: parseInt(stats[0]?.totalFilings) || 0,
       draftFilings: parseInt(stats[0]?.draftFilings) || 0,
       submittedFilings: parseInt(stats[0]?.submittedFilings) || 0,
-      acknowledgedFilings: parseInt(stats[0]?.acknowledgedFilings) || 0
+      acknowledgedFilings: parseInt(stats[0]?.acknowledgedFilings) || 0,
     };
   }
 
@@ -523,9 +523,9 @@ class AdminController {
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN itr_type = \'ITR-1\' THEN 1 END')), 'itr1Filings'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN itr_type = \'ITR-2\' THEN 1 END')), 'itr2Filings'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN itr_type = \'ITR-3\' THEN 1 END')), 'itr3Filings'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN itr_type = \'ITR-4\' THEN 1 END')), 'itr4Filings']
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN itr_type = \'ITR-4\' THEN 1 END')), 'itr4Filings'],
       ],
-      raw: true
+      raw: true,
     });
 
     return {
@@ -536,7 +536,7 @@ class AdminController {
       itr1Filings: parseInt(stats[0]?.itr1Filings) || 0,
       itr2Filings: parseInt(stats[0]?.itr2Filings) || 0,
       itr3Filings: parseInt(stats[0]?.itr3Filings) || 0,
-      itr4Filings: parseInt(stats[0]?.itr4Filings) || 0
+      itr4Filings: parseInt(stats[0]?.itr4Filings) || 0,
     };
   }
 
@@ -549,15 +549,15 @@ class AdminController {
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalDocuments'],
         [sequelize.fn('SUM', sequelize.col('size_bytes')), 'totalStorage'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN verification_status = \'VERIFIED\' THEN 1 END')), 'verifiedDocuments']
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN verification_status = \'VERIFIED\' THEN 1 END')), 'verifiedDocuments'],
       ],
-      raw: true
+      raw: true,
     });
 
     return {
       totalDocuments: parseInt(stats[0]?.totalDocuments) || 0,
       totalStorage: parseInt(stats[0]?.totalStorage) || 0,
-      verifiedDocuments: parseInt(stats[0]?.verifiedDocuments) || 0
+      verifiedDocuments: parseInt(stats[0]?.verifiedDocuments) || 0,
     };
   }
 
@@ -570,7 +570,7 @@ class AdminController {
       'ca': 'CA',
       'ca_firm_admin': 'CA Firm Admin',
       'admin': 'Admin',
-      'super_admin': 'Super Admin'
+      'super_admin': 'Super Admin',
     };
     return labels[role] || 'Unknown';
   }
@@ -583,7 +583,7 @@ class AdminController {
       'active': 'Active',
       'inactive': 'Inactive',
       'suspended': 'Suspended',
-      'pending': 'Pending'
+      'pending': 'Pending',
     };
     return labels[status] || 'Unknown';
   }
@@ -596,7 +596,7 @@ class AdminController {
       'active': 'green',
       'inactive': 'gray',
       'suspended': 'red',
-      'pending': 'yellow'
+      'pending': 'yellow',
     };
     return colors[status] || 'gray';
   }

@@ -6,18 +6,18 @@
 
 import React, { memo, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Shield, 
-  Users, 
-  CheckCircle, 
-  ArrowRight, 
+import {
+  Shield,
+  Users,
+  CheckCircle,
+  ArrowRight,
   Star,
   TrendingUp,
   Clock,
   FileText,
   Bot,
   Building2,
-  UserCheck
+  UserCheck,
 } from 'lucide-react';
 
 // Memoized components for better performance
@@ -60,7 +60,7 @@ const LandingPage = () => {
   useEffect(() => {
     // Set page title and meta description
     document.title = 'BurnBlack - Secure ITR Filing Made Simple | AI-Powered Tax Platform';
-    
+
     // Add meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
@@ -74,17 +74,17 @@ const LandingPage = () => {
 
     // Add structured data for better SEO
     const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "BurnBlack",
-      "description": "Secure ITR filing platform with AI-powered insights",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "INR"
-      }
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': 'BurnBlack',
+      'description': 'Secure ITR filing platform with AI-powered insights',
+      'applicationCategory': 'FinanceApplication',
+      'operatingSystem': 'Web',
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'INR',
+      },
     };
 
     const script = document.createElement('script');
@@ -102,22 +102,22 @@ const LandingPage = () => {
   const testimonials = useMemo(() => [
     {
       stars: [...Array(5)],
-      text: "BurnBlack made my tax filing so easy! The AI bot guided me through everything and I got a much higher refund than expected.",
-      name: "Rajesh Kumar",
-      title: "Software Engineer"
+      text: 'BurnBlack made my tax filing so easy! The AI bot guided me through everything and I got a much higher refund than expected.',
+      name: 'Rajesh Kumar',
+      title: 'Software Engineer',
     },
     {
       stars: [...Array(5)],
-      text: "As a CA, BurnBlack has revolutionized how I handle client filings. The bulk processing feature saves me hours every day.",
-      name: "Priya Sharma",
-      title: "Chartered Accountant"
+      text: 'As a CA, BurnBlack has revolutionized how I handle client filings. The bulk processing feature saves me hours every day.',
+      name: 'Priya Sharma',
+      title: 'Chartered Accountant',
     },
     {
       stars: [...Array(5)],
-      text: "The security and compliance features give me peace of mind. I can trust BurnBlack with all my sensitive financial data.",
-      name: "Amit Patel",
-      title: "Business Owner"
-    }
+      text: 'The security and compliance features give me peace of mind. I can trust BurnBlack with all my sensitive financial data.',
+      name: 'Amit Patel',
+      title: 'Business Owner',
+    },
   ], []);
 
   return (
@@ -136,14 +136,14 @@ const LandingPage = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="text-gray-600 hover:text-gray-900 font-medium"
               >
                 Sign In
               </Link>
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Get Started
@@ -160,11 +160,11 @@ const LandingPage = () => {
             Secure ITR Filing Made Simple
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Experience the future of tax filing with AI-powered insights, maximum refund optimization, 
+            Experience the future of tax filing with AI-powered insights, maximum refund optimization,
             and enterprise-grade security. Join thousands of users who trust BurnBlack.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+            <Link
               to="/login"
               className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
               aria-label="Start your free trial with BurnBlack"
@@ -172,7 +172,7 @@ const LandingPage = () => {
               Start Free Trial
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
-            <Link 
+            <Link
               to="#features"
               className="border border-gray-300 text-gray-700 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-50 transition-all duration-200 transform hover:scale-105"
               aria-label="Learn more about BurnBlack features"
@@ -180,7 +180,7 @@ const LandingPage = () => {
               Learn More
             </Link>
           </div>
-          
+
           {/* Trust Indicators */}
           <TrustIndicators />
         </div>
@@ -197,7 +197,7 @@ const LandingPage = () => {
               Powerful features designed for individuals, CAs, and enterprises
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
@@ -206,11 +206,11 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4">AI-Powered Filing</h3>
               <p className="text-gray-600">
-                Our intelligent CA Bot guides you through the entire filing process, 
+                Our intelligent CA Bot guides you through the entire filing process,
                 ensuring accuracy and maximizing your refunds.
               </p>
             </div>
-            
+
             {/* Feature 2 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -218,11 +218,11 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4">Maximum Refunds</h3>
               <p className="text-gray-600">
-                Advanced tax optimization algorithms ensure you claim every eligible 
+                Advanced tax optimization algorithms ensure you claim every eligible
                 deduction and credit for maximum refunds.
               </p>
             </div>
-            
+
             {/* Feature 3 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -230,11 +230,11 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4">Bank-Grade Security</h3>
               <p className="text-gray-600">
-                Enterprise-grade encryption, secure document handling, and compliance 
+                Enterprise-grade encryption, secure document handling, and compliance
                 with all regulatory requirements.
               </p>
             </div>
-            
+
             {/* Feature 4 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -242,11 +242,11 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4">Lightning Fast</h3>
               <p className="text-gray-600">
-                Complete your ITR filing in minutes, not hours. Our streamlined 
+                Complete your ITR filing in minutes, not hours. Our streamlined
                 process saves you time and effort.
               </p>
             </div>
-            
+
             {/* Feature 5 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -254,11 +254,11 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4">All ITR Forms</h3>
               <p className="text-gray-600">
-                Support for ITR-1, ITR-2, ITR-3, and ITR-4 with automatic form 
+                Support for ITR-1, ITR-2, ITR-3, and ITR-4 with automatic form
                 selection based on your income sources.
               </p>
             </div>
-            
+
             {/* Feature 6 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -266,7 +266,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-4">Family Management</h3>
               <p className="text-gray-600">
-                File returns for your entire family from one account with 
+                File returns for your entire family from one account with
                 centralized document management.
               </p>
             </div>
@@ -285,7 +285,7 @@ const LandingPage = () => {
               Whether you're an individual, CA, or enterprise, we have solutions for you
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {/* Individual Users */}
             <div className="bg-white p-8 rounded-lg shadow-sm">
@@ -313,14 +313,14 @@ const LandingPage = () => {
                   Refund tracking
                 </li>
               </ul>
-              <Link 
+              <Link
                 to="/login"
                 className="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Start Free
               </Link>
             </div>
-            
+
             {/* Chartered Accountants */}
             <div className="bg-white p-8 rounded-lg shadow-sm">
               <div className="flex items-center mb-6">
@@ -347,14 +347,14 @@ const LandingPage = () => {
                   E-signature integration
                 </li>
               </ul>
-              <Link 
+              <Link
                 to="/login"
                 className="mt-6 inline-block bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
               >
                 CA Dashboard
               </Link>
             </div>
-            
+
             {/* Enterprises */}
             <div className="bg-white p-8 rounded-lg shadow-sm">
               <div className="flex items-center mb-6">
@@ -381,7 +381,7 @@ const LandingPage = () => {
                   Dedicated support
                 </li>
               </ul>
-              <Link 
+              <Link
                 to="/login"
                 className="mt-6 inline-block bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
               >
@@ -403,7 +403,7 @@ const LandingPage = () => {
               Join thousands of satisfied customers
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <TestimonialCard
@@ -425,11 +425,11 @@ const LandingPage = () => {
             Ready to Transform Your Tax Filing?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of users who have already made the switch to BurnBlack. 
+            Join thousands of users who have already made the switch to BurnBlack.
             Start your free trial today and experience the difference.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+            <Link
               to="/login"
               className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
               aria-label="Start your free trial with BurnBlack"
@@ -437,7 +437,7 @@ const LandingPage = () => {
               Start Free Trial
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
-            <Link 
+            <Link
               to="/login"
               className="border border-blue-300 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-105"
               aria-label="Schedule a demo with BurnBlack"
@@ -463,11 +463,11 @@ const LandingPage = () => {
                 </div>
               </div>
               <p className="text-gray-400 text-sm">
-                Secure, intelligent, and user-friendly tax filing platform for individuals, 
+                Secure, intelligent, and user-friendly tax filing platform for individuals,
                 CAs, and enterprises.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -477,7 +477,7 @@ const LandingPage = () => {
                 <li><Link to="/login" className="hover:text-white">Integrations</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -487,7 +487,7 @@ const LandingPage = () => {
                 <li><Link to="/login" className="hover:text-white">Status</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -498,7 +498,7 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
             <p>&copy; 2024 BurnBlack. All rights reserved.</p>
           </div>

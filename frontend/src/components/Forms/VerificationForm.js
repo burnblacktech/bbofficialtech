@@ -7,17 +7,17 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { 
-  Shield, 
-  Smartphone, 
-  CreditCard, 
-  Globe, 
+import {
+  Shield,
+  Smartphone,
+  CreditCard,
+  Globe,
   AlertCircle,
   CheckCircle,
   Info,
   Lock,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
 
 // Comprehensive validation schema for verification details
@@ -26,14 +26,14 @@ const verificationSchema = yup.object({
   verification_method: yup.string()
     .required('Verification method is required')
     .oneOf(['AADHAAR_OTP', 'DSC', 'NETBANKING'], 'Please select a valid verification method'),
-  
+
   // Aadhaar OTP Verification
   aadhaar_otp: yup.string().when('verification_method', {
     is: 'AADHAAR_OTP',
     then: yup.string().required('Aadhaar OTP is required').length(6, 'OTP must be 6 digits'),
-    otherwise: yup.string().nullable()
+    otherwise: yup.string().nullable(),
   }),
-  
+
   // Digital Signature Certificate
   dsc_details: yup.object().when('verification_method', {
     is: 'DSC',
@@ -42,39 +42,39 @@ const verificationSchema = yup.object({
       certificate_issuer: yup.string().required('Certificate issuer is required'),
       certificate_valid_from: yup.date().required('Certificate valid from date is required'),
       certificate_valid_to: yup.date().required('Certificate valid to date is required'),
-      certificate_serial_number: yup.string().required('Certificate serial number is required')
+      certificate_serial_number: yup.string().required('Certificate serial number is required'),
     }),
-    otherwise: yup.object().nullable()
+    otherwise: yup.object().nullable(),
   }),
-  
+
   // Net Banking Verification
   netbanking_details: yup.object().when('verification_method', {
     is: 'NETBANKING',
     then: yup.object({
       bank_name: yup.string().required('Bank name is required'),
       user_id: yup.string().required('Net banking user ID is required'),
-      password: yup.string().required('Net banking password is required')
+      password: yup.string().required('Net banking password is required'),
     }),
-    otherwise: yup.object().nullable()
+    otherwise: yup.object().nullable(),
   }),
-  
+
   // Verification Status
   verification_status: yup.string()
     .oneOf(['pending', 'verified', 'failed'], 'Invalid verification status')
     .default('pending'),
-  
+
   // Verification Date
   verification_date: yup.date().when('verification_status', {
     is: 'verified',
     then: yup.date().required('Verification date is required'),
-    otherwise: yup.date().nullable()
+    otherwise: yup.date().nullable(),
   }),
-  
+
   // Additional Verification Info
   verification_notes: yup.string(),
   is_consent_given: yup.boolean()
     .oneOf([true], 'You must give consent for verification')
-    .required('Consent is required')
+    .required('Consent is required'),
 });
 
 const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) => {
@@ -82,23 +82,23 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
   const [isVerifying, setIsVerifying] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
     watch,
     setValue,
-    trigger
+    trigger,
   } = useForm({
     resolver: yupResolver(verificationSchema),
     defaultValues: {
       verification_method: 'AADHAAR_OTP',
       verification_status: 'pending',
       is_consent_given: false,
-      ...initialData
+      ...initialData,
     },
-    mode: 'onChange'
+    mode: 'onChange',
   });
 
   const verificationMethod = watch('verification_method');
@@ -185,7 +185,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6">
         <div className="space-y-8">
-          
+
           {/* Verification Method Selection */}
           <div>
             <h3 className="text-md font-medium text-gray-900 mb-4 flex items-center">
@@ -193,7 +193,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
               Verification Method
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              
+
               <div className="relative">
                 <input
                   type="radio"
@@ -220,7 +220,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
                 </label>
               </div>
-              
+
               <div className="relative">
                 <input
                   type="radio"
@@ -247,7 +247,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
                 </label>
               </div>
-              
+
               <div className="relative">
                 <input
                   type="radio"
@@ -274,7 +274,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
                 </label>
               </div>
-              
+
             </div>
             {errors.verification_method && (
               <p className="mt-2 text-sm text-red-600 flex items-center">
@@ -294,7 +294,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                 {verificationMethod === 'NETBANKING' && 'Net Banking Verification'}
               </span>
             </h3>
-            
+
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-gray-700">
                 {getVerificationMethodDescription(verificationMethod)}
@@ -625,7 +625,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   Consent for Verification *
                 </label>
                 <p className="text-gray-600">
-                  I hereby give my consent for verification of my ITR using the selected method. 
+                  I hereby give my consent for verification of my ITR using the selected method.
                   I understand that this verification is required for ITR submission and compliance.
                 </p>
                 {errors.is_consent_given && (

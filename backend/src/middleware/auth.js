@@ -18,7 +18,7 @@ const authRateLimit = rateLimit({
   message: {
     status: 'error',
     message: 'Too many authentication attempts, please try again later',
-    code: 'RATE_LIMIT_EXCEEDED'
+    code: 'RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -37,22 +37,22 @@ const authenticateToken = (req, res, next) => {
       return res.status(401).json({
         status: 'error',
         message: 'Access token required',
-        code: 'AUTH_TOKEN_MISSING'
+        code: 'AUTH_TOKEN_MISSING',
       });
     }
 
     jwt.verify(token, JWT_SECRET, { clockTolerance: 60 }, (err, user) => {
       if (err) {
-        enterpriseLogger.warn('Invalid token attempt', { 
+        enterpriseLogger.warn('Invalid token attempt', {
           error: err.message,
           ip: req.ip,
-          userAgent: req.get('User-Agent')
+          userAgent: req.get('User-Agent'),
         });
-        
+
         return res.status(401).json({
           status: 'error',
           message: 'Invalid or expired token',
-          code: 'AUTH_TOKEN_INVALID'
+          code: 'AUTH_TOKEN_INVALID',
         });
       }
 
@@ -60,15 +60,15 @@ const authenticateToken = (req, res, next) => {
       next();
     });
   } catch (error) {
-    enterpriseLogger.error('Authentication middleware error', { 
+    enterpriseLogger.error('Authentication middleware error', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
-    
+
     res.status(500).json({
       status: 'error',
       message: 'Authentication service error',
-      code: 'AUTH_SERVICE_ERROR'
+      code: 'AUTH_SERVICE_ERROR',
     });
   }
 };
@@ -89,11 +89,11 @@ const optionalAuth = (req, res, next) => {
         }
       });
     }
-    
+
     next();
   } catch (error) {
-    enterpriseLogger.error('Optional auth middleware error', { 
-      error: error.message 
+    enterpriseLogger.error('Optional auth middleware error', {
+      error: error.message,
     });
     next(); // Continue even if auth fails
   }
@@ -110,38 +110,38 @@ const authorize = (allowedRoles = []) => {
         return res.status(401).json({
           status: 'error',
           message: 'Authentication required',
-          code: 'AUTH_REQUIRED'
+          code: 'AUTH_REQUIRED',
         });
       }
 
       const userRole = req.user.role;
-      
+
       if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
         enterpriseLogger.warn('Unauthorized access attempt', {
           userId: req.user.id,
           userRole,
           allowedRoles,
           path: req.path,
-          method: req.method
+          method: req.method,
         });
-        
+
         return res.status(403).json({
           status: 'error',
           message: 'Insufficient permissions',
-          code: 'AUTH_INSUFFICIENT_PERMISSIONS'
+          code: 'AUTH_INSUFFICIENT_PERMISSIONS',
         });
       }
 
       next();
     } catch (error) {
-      enterpriseLogger.error('Authorization middleware error', { 
-        error: error.message 
+      enterpriseLogger.error('Authorization middleware error', {
+        error: error.message,
       });
-      
+
       res.status(500).json({
         status: 'error',
         message: 'Authorization service error',
-        code: 'AUTH_SERVICE_ERROR'
+        code: 'AUTH_SERVICE_ERROR',
       });
     }
   };
@@ -151,5 +151,5 @@ module.exports = {
   authenticateToken,
   optionalAuth,
   authorize,
-  authRateLimit
+  authRateLimit,
 };

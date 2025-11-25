@@ -14,7 +14,7 @@ const { sequelize } = require('../config/database');
 const ADMIN_CONFIG = {
   email: 'admin@burnblack.com',
   password: 'admin123!@#', // Change this to a secure password
-  fullName: 'Super Admin'
+  fullName: 'Super Admin',
 };
 
 // =====================================================
@@ -31,7 +31,7 @@ async function resetAndCreateAdmin() {
     console.log('🗑️  Deleting all users...');
     await User.destroy({
       truncate: true,
-      cascade: true
+      cascade: true,
     });
     console.log('✅ All users deleted successfully');
     console.log('');
@@ -45,7 +45,7 @@ async function resetAndCreateAdmin() {
       role: 'SUPER_ADMIN',
       authProvider: 'LOCAL',
       status: 'active',
-      emailVerified: true
+      emailVerified: true,
     });
 
     console.log('✅ Super admin created successfully!');
@@ -116,5 +116,5 @@ if (require.main === module) {
 // Export for potential use in other scripts
 module.exports = {
   resetAndCreateAdmin,
-  ADMIN_CONFIG
+  ADMIN_CONFIG,
 };

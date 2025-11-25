@@ -11,9 +11,9 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs-extra');
 const { v4: uuid_generate_v4 } = require('uuid');
-const { AppError } = require('../middleware/errorHandler');
-const enterpriseLogger = require('../utils/logger');
-const featureFlags = require('../common/featureFlags');
+const { AppError } = require('../../middleware/errorHandler');
+const enterpriseLogger = require('../../utils/logger');
+const featureFlags = require('../../common/featureFlags');
 
 const UPLOAD_DIR_LOCAL = path.join(__dirname, '../../uploads/local');
 fs.ensureDirSync(UPLOAD_DIR_LOCAL); // Ensure local upload directory exists
@@ -32,7 +32,7 @@ class S3Service {
       'application/msword': '.doc',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
       'application/vnd.ms-excel': '.xls',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx'
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
     };
 
     if (this.isS3Enabled) {
@@ -65,7 +65,7 @@ class S3Service {
       filename: (req, file, cb) => {
         const uniqueName = `${uuid_generate_v4()}-${Date.now()}${path.extname(file.originalname)}`;
         cb(null, uniqueName);
-      }
+      },
     });
 
     const fileFilter = (req, file, cb) => {
@@ -80,9 +80,9 @@ class S3Service {
       storage: storage,
       limits: {
         fileSize: this.maxFileSize,
-        files: 10 // Max 10 files per request
+        files: 10, // Max 10 files per request
       },
-      fileFilter: fileFilter
+      fileFilter: fileFilter,
     });
   }
 
@@ -102,7 +102,7 @@ class S3Service {
       const localPath = path.join(UPLOAD_DIR_LOCAL, uniqueFilename);
       enterpriseLogger.info('Generating local upload path', { userId, originalFilename, localPath });
       return {
-        uploadUrl: `/api/documents/local-upload`, // A dedicated endpoint for local uploads
+        uploadUrl: '/api/documents/local-upload', // A dedicated endpoint for local uploads
         key: uniqueFilename, // Use uniqueFilename as key for local storage
         localPath: localPath,
         isLocal: true,
@@ -265,7 +265,7 @@ class S3Service {
         userId: userId,
         filingId: filingId,
         uploadedAt: new Date().toISOString(),
-        status: 'uploaded'
+        status: 'uploaded',
       };
 
       enterpriseLogger.info('File processed successfully', {
@@ -273,7 +273,7 @@ class S3Service {
         userId,
         documentType,
         fileName: file.originalname,
-        fileSize: file.size
+        fileSize: file.size,
       });
 
       return fileMetadata;
@@ -282,7 +282,7 @@ class S3Service {
         error: error.message,
         userId,
         documentType,
-        fileName: file.originalname
+        fileName: file.originalname,
       });
       throw error;
     }

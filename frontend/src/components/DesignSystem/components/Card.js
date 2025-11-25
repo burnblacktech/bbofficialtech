@@ -24,7 +24,7 @@ const Card = React.forwardRef(({
     elevated: 'bg-white shadow-lg border-0',
     outlined: 'bg-white border-2 border-gray-300',
     filled: 'bg-gray-50 border-0',
-    ghost: 'bg-transparent border-0'
+    ghost: 'bg-transparent border-0',
   };
 
   const paddingClasses = {
@@ -33,7 +33,7 @@ const Card = React.forwardRef(({
     sm: 'p-3',
     md: 'p-4',
     lg: 'p-6',
-    xl: 'p-8'
+    xl: 'p-8',
   };
 
   const shadowClasses = {
@@ -41,7 +41,7 @@ const Card = React.forwardRef(({
     sm: 'shadow-sm',
     md: 'shadow-md',
     lg: 'shadow-lg',
-    xl: 'shadow-xl'
+    xl: 'shadow-xl',
   };
 
   const hoverClasses = hover ? 'hover:shadow-lg hover:scale-102 cursor-pointer' : '';
@@ -67,7 +67,7 @@ const Card = React.forwardRef(({
     return (
       <motion.div
         whileHover={hover ? { scale: 1.02, y: -2 } : {}}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         {cardContent}
       </motion.div>

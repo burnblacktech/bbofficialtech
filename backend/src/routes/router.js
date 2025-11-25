@@ -31,14 +31,14 @@ class RouteDiscovery {
         await this.registerRoute(routeFile);
       }
 
-      await this.generateAPI docs();
+      await this.generateAPIDocs();
       enterpriseLogger.info(`Successfully registered ${this.registeredRoutes.size} routes`);
 
       return this.router;
     } catch (error) {
       enterpriseLogger.error('Route discovery failed', {
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
       throw error;
     }
@@ -51,9 +51,9 @@ class RouteDiscovery {
     const files = await fs.readdir(this.routesDir);
     return files
       .filter(file => {
-        // Skip index.js and router.js (this file)
+        // Skip index.js, router.js, and api.js (this file and parent router)
         return file.endsWith('.js') &&
-               !['index.js', 'router.js'].includes(file) &&
+               !['index.js', 'router.js', 'api.js'].includes(file) &&
                !file.startsWith('.');
       })
       .map(file => path.join(this.routesDir, file));
@@ -80,12 +80,15 @@ class RouteDiscovery {
       this.addRouteMetadata(routeName, routeFile, routePath);
 
       // Apply common middleware to all routes
-      this.router.use(routePath, this.applyCommonMiddleware(routeHandler));
+      // Add leading slash for route path
+      const routePathWithSlash = '/' + routePath;
+      // Mount the route handler directly - it's already an Express router
+      this.router.use(routePathWithSlash, routeHandler);
 
       this.registeredRoutes.set(routeName, {
         path: routePath,
         file: routeFile,
-        handler: routeHandler
+        handler: routeHandler,
       });
 
       enterpriseLogger.info(`Registered route: ${routePath} from ${routeName}.js`);
@@ -93,7 +96,7 @@ class RouteDiscovery {
     } catch (error) {
       enterpriseLogger.error(`Failed to register route ${routeFile}`, {
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
       // Continue with other routes instead of failing completely
     }
@@ -104,7 +107,8 @@ class RouteDiscovery {
    */
   getRoutePath(routeName) {
     // Convert kebab-case to route path
-    return '/' + routeName.replace(/-/g, '');
+    // Return without leading slash - will be added when mounting
+    return routeName.replace(/-/g, '');
   }
 
   /**
@@ -124,7 +128,7 @@ class RouteDiscovery {
       enterpriseLogger.info(`${req.method} ${req.originalUrl}`, {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
-        requestId: req.id
+        requestId: req.id,
       });
       next();
     });
@@ -137,7 +141,7 @@ class RouteDiscovery {
       const duration = Date.now() - req.routeStartTime;
       enterpriseLogger.info(`Route completed: ${req.method} ${req.originalUrl}`, {
         duration: `${duration}ms`,
-        statusCode: res.statusCode
+        statusCode: res.statusCode,
       });
       next();
     });
@@ -154,7 +158,7 @@ class RouteDiscovery {
       path: routePath,
       file: routeFile,
       registeredAt: new Date().toISOString(),
-      endpoints: this.extractEndpointInfo(routeFile)
+      endpoints: this.extractEndpointInfo(routeFile),
     });
   }
 
@@ -173,7 +177,7 @@ class RouteDiscovery {
         while ((match = regex.exec(content)) !== null) {
           endpoints.push({
             method: method.toUpperCase(),
-            path: match[1]
+            path: match[1],
           });
         }
       });
@@ -181,7 +185,7 @@ class RouteDiscovery {
       return endpoints;
     } catch (error) {
       enterpriseLogger.warn(`Could not extract endpoints from ${routeFile}`, {
-        error: error.message
+        error: error.message,
       });
       return [];
     }
@@ -190,13 +194,13 @@ class RouteDiscovery {
   /**
    * Generate API documentation automatically
    */
-  async generateAPI docs() {
+  async generateAPIDocs() {
     const docs = {
       title: 'BurnBlack ITR Platform API Documentation',
       version: '1.0.0',
       description: 'Enterprise-grade Indian Income Tax Return filing platform',
       generated: new Date().toISOString(),
-      routes: {}
+      routes: {},
     };
 
     // Convert metadata Map to object
@@ -224,14 +228,14 @@ class RouteDiscovery {
     const health = {
       status: 'healthy',
       totalRoutes: this.registeredRoutes.size,
-      routes: {}
+      routes: {},
     };
 
     this.registeredRoutes.forEach((routeInfo, routeName) => {
       health.routes[routeName] = {
         status: 'registered',
         path: routeInfo.path,
-        file: routeInfo.file
+        file: routeInfo.file,
       };
     });
 
@@ -292,7 +296,7 @@ module.exports = {
   RouteDiscovery,
   getRouteDiscovery,
   initializeRouter,
-  routeInfoMiddleware
+  routeInfoMiddleware,
 };
 
 // Also export the initialized router directly for convenience

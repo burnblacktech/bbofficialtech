@@ -5,31 +5,31 @@ import enterpriseDebugger from '../../services/EnterpriseDebugger';
 import EnterpriseErrorBoundary from '../../components/EnterpriseErrorBoundary';
 import financialProfileService from '../../services/financialProfileService';
 import {
-  ArrowRight, ArrowLeft, TrendingUp, TrendingDown, 
+  ArrowRight, ArrowLeft, TrendingUp, TrendingDown,
   DollarSign, PieChart,
   AlertTriangle, CheckCircle, Shield,
-  RefreshCw, Info
+  RefreshCw, Info,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const FinancialProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  
+
   // Get context from navigation state
-  const { 
-    pan, 
-    verificationResult, 
-    prefillData, 
+  const {
+    pan,
+    verificationResult,
+    prefillData,
     isCAFiling,
     interactionMode,
-    fromModeSelection 
+    fromModeSelection,
   } = location.state || {};
 
   const [loading, setLoading] = useState(true);
@@ -38,11 +38,11 @@ const FinancialProfile = () => {
   useEffect(() => {
     if (!pan) {
       enterpriseDebugger.log('WARNING', 'FinancialProfile', 'No PAN provided, redirecting to PAN verification');
-      navigate('/itr/pan-verification', { 
-        state: { 
+      navigate('/itr/pan-verification', {
+        state: {
           redirectTo: '/financial-profile',
-          message: 'PAN verification required to load financial profile'
-        }
+          message: 'PAN verification required to load financial profile',
+        },
       });
     }
   }, [pan, navigate]);
@@ -59,9 +59,8 @@ const FinancialProfile = () => {
     anomalies: [],
     complianceScore: 0,
     lastFilingDate: null,
-    nextDueDate: null
+    nextDueDate: null,
   });
-
 
   // Load financial profile data
   const loadFinancialProfile = useCallback(async () => {
@@ -70,30 +69,30 @@ const FinancialProfile = () => {
       enterpriseDebugger.log('INFO', 'FinancialProfile', 'Loading financial profile', {
         pan: pan || 'N/A',
         user: user?.email,
-        interactionMode
+        interactionMode,
       });
 
       // Call the actual API service
       const response = await financialProfileService.getFinancialProfile(pan);
       const profileData = response.data;
-      
+
       // Profile data is already set via setProfileData
       setProfileData(profileData);
-      
+
       // Generate insights
       generateInsights(profileData);
-      
+
       enterpriseDebugger.log('SUCCESS', 'FinancialProfile', 'Financial profile loaded', {
         dataPoints: Object.keys(profileData).length,
-        complianceScore: profileData.complianceScore
+        complianceScore: profileData.complianceScore,
       });
-      
+
     } catch (err) {
       enterpriseDebugger.log('ERROR', 'FinancialProfile', 'Failed to load financial profile', {
         error: err.message,
-        pan: pan || 'N/A'
+        pan: pan || 'N/A',
       });
-      
+
       // Fallback to mock data if API fails
       const mockData = {
         pan: pan || 'ABCDE1234F',
@@ -101,31 +100,31 @@ const FinancialProfile = () => {
         incomeTrends: [
           { year: '2023-24', totalIncome: 850000, growth: 12.5 },
           { year: '2022-23', totalIncome: 755000, growth: 8.2 },
-          { year: '2021-22', totalIncome: 697000, growth: -2.1 }
+          { year: '2021-22', totalIncome: 697000, growth: -2.1 },
         ],
         deductionUtilization: [
           { category: 'Section 80C', utilized: 150000, available: 150000, utilization: 100 },
           { category: 'Section 80D', utilized: 25000, available: 25000, utilization: 100 },
           { category: 'Section 80G', utilized: 5000, available: 5000, utilization: 100 },
-          { category: 'HRA', utilized: 120000, available: 150000, utilization: 80 }
+          { category: 'HRA', utilized: 120000, available: 150000, utilization: 80 },
         ],
         refundHistory: [
           { year: '2023-24', refundAmount: 45000, status: 'processed' },
           { year: '2022-23', refundAmount: 32000, status: 'processed' },
-          { year: '2021-22', refundAmount: 0, status: 'no_refund' }
+          { year: '2021-22', refundAmount: 0, status: 'no_refund' },
         ],
         anomalies: [
           { type: 'warning', message: 'HRA deduction underutilized by ₹30,000', impact: 'medium' },
-          { type: 'info', message: 'Consistent filing history maintained', impact: 'positive' }
+          { type: 'info', message: 'Consistent filing history maintained', impact: 'positive' },
         ],
         complianceScore: 92,
         lastFilingDate: '2024-07-15',
-        nextDueDate: '2025-07-31'
+        nextDueDate: '2025-07-31',
       };
-      
+
       setProfileData(mockData);
       generateInsights(mockData);
-      
+
       setError('Using sample data - API connection failed');
     } finally {
       setLoading(false);
@@ -135,7 +134,7 @@ const FinancialProfile = () => {
   // Generate insights from financial data
   const generateInsights = (data) => {
     const newInsights = [];
-    
+
     // Income growth insight
     const latestGrowth = data.incomeTrends[0]?.growth;
     if (latestGrowth > 10) {
@@ -144,10 +143,10 @@ const FinancialProfile = () => {
         icon: TrendingUp,
         title: 'Strong Income Growth',
         description: `Your income grew by ${latestGrowth}% this year - excellent progress!`,
-        action: 'Keep up the momentum'
+        action: 'Keep up the momentum',
       });
     }
-    
+
     // Deduction optimization insight
     const underutilizedDeductions = data.deductionUtilization.filter(d => d.utilization < 90);
     if (underutilizedDeductions.length > 0) {
@@ -156,10 +155,10 @@ const FinancialProfile = () => {
         icon: AlertTriangle,
         title: 'Tax Optimization Opportunity',
         description: `${underutilizedDeductions.length} deduction(s) underutilized`,
-        action: 'Consider maximizing deductions'
+        action: 'Consider maximizing deductions',
       });
     }
-    
+
     // Compliance insight
     if (data.complianceScore >= 90) {
       newInsights.push({
@@ -167,10 +166,10 @@ const FinancialProfile = () => {
         icon: CheckCircle,
         title: 'Excellent Compliance Record',
         description: 'You maintain a strong compliance history',
-        action: 'Continue the good work'
+        action: 'Continue the good work',
       });
     }
-    
+
     setInsights(newInsights);
   };
 
@@ -187,7 +186,7 @@ const FinancialProfile = () => {
     enterpriseDebugger.log('INFO', 'FinancialProfile', 'Proceeding to ITR selection', {
       pan: pan || 'N/A',
       interactionMode,
-      user: user?.email
+      user: user?.email,
     });
 
     navigate('/itr-selection', {
@@ -198,8 +197,8 @@ const FinancialProfile = () => {
         isCAFiling,
         interactionMode,
         fromModeSelection,
-        financialProfile: profileData
-      }
+        financialProfile: profileData,
+      },
     });
   };
 
@@ -209,15 +208,14 @@ const FinancialProfile = () => {
         pan,
         verificationResult,
         prefillData,
-        isCAFiling
-      }
+        isCAFiling,
+      },
     });
   };
 
   const formatCurrency = (amount) => {
     return financialProfileService.formatCurrency(amount);
   };
-
 
   const getComplianceBadge = (score) => {
     if (score >= 90) return 'Excellent';
@@ -305,7 +303,7 @@ const FinancialProfile = () => {
               </div>
               <div className="flex-1">
                 <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
+                  <div
                     className={`h-3 rounded-full ${
                       profileData.complianceScore >= 90 ? 'bg-green-500' :
                       profileData.complianceScore >= 70 ? 'bg-yellow-500' :
@@ -391,7 +389,7 @@ const FinancialProfile = () => {
                       <span className="text-sm text-gray-600">{deduction.utilization}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full ${
                           deduction.utilization >= 90 ? 'bg-green-500' :
                           deduction.utilization >= 70 ? 'bg-yellow-500' :

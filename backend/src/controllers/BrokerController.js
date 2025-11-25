@@ -3,7 +3,7 @@
 // Handles broker file processing and API integration
 // =====================================================
 
-const brokerFileProcessingService = require('../services/BrokerFileProcessingService');
+const brokerFileProcessingService = require('../services/business/BrokerFileProcessingService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 const multer = require('multer');
@@ -19,13 +19,13 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['.xls', '.xlsx', '.csv'];
     const fileExtension = path.extname(file.originalname).toLowerCase();
-    
+
     if (allowedTypes.includes(fileExtension)) {
       cb(null, true);
     } else {
       cb(new AppError('Invalid file type. Only .xls, .xlsx, and .csv files are allowed.', 400), false);
     }
-  }
+  },
 });
 
 class BrokerController {
@@ -44,13 +44,13 @@ class BrokerController {
 
       if (!req.file) {
         return res.status(400).json({
-          error: 'No file uploaded'
+          error: 'No file uploaded',
         });
       }
 
       if (!broker) {
         return res.status(400).json({
-          error: 'Broker not specified'
+          error: 'Broker not specified',
         });
       }
 
@@ -58,30 +58,30 @@ class BrokerController {
         userId,
         broker,
         fileName: req.file.originalname,
-        fileSize: req.file.size
+        fileSize: req.file.size,
       });
 
       const result = await brokerFileProcessingService.processFile(
         req.file.buffer,
         broker,
-        userId
+        userId,
       );
 
       res.json({
         success: true,
         data: result,
-        message: 'Broker file processed successfully'
+        message: 'Broker file processed successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('Broker file processing failed', {
         userId: req.user.userId,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Failed to process broker file',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -98,50 +98,50 @@ class BrokerController {
           name: 'Zerodha',
           fileFormat: '.xls',
           apiAvailable: true,
-          description: 'Upload P&L statement from Zerodha Console'
+          description: 'Upload P&L statement from Zerodha Console',
         },
         {
           id: 'angelone',
           name: 'Angel One',
           fileFormat: '.xls',
           apiAvailable: true,
-          description: 'Upload capital gains report from Angel One'
+          description: 'Upload capital gains report from Angel One',
         },
         {
           id: 'groww',
           name: 'Groww',
           fileFormat: '.xls',
           apiAvailable: false,
-          description: 'Upload transaction statement from Groww'
+          description: 'Upload transaction statement from Groww',
         },
         {
           id: 'upstox',
           name: 'Upstox',
           fileFormat: '.xls',
           apiAvailable: true,
-          description: 'Upload P&L report from Upstox'
+          description: 'Upload P&L report from Upstox',
         },
         {
           id: 'icici',
           name: 'ICICI Direct',
           fileFormat: '.xls',
           apiAvailable: false,
-          description: 'Upload capital gains statement from ICICI Direct'
-        }
+          description: 'Upload capital gains statement from ICICI Direct',
+        },
       ];
 
       res.json({
         success: true,
-        data: { brokers }
+        data: { brokers },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get supported brokers', {
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
-        error: 'Failed to get supported brokers'
+        error: 'Failed to get supported brokers',
       });
     }
   }
@@ -160,28 +160,28 @@ class BrokerController {
       const mockResponse = {
         authenticated: true,
         accessToken: 'mock_access_token',
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       };
 
       enterpriseLogger.info('Broker API authenticated', {
         userId,
-        broker
+        broker,
       });
 
       res.json({
         success: true,
-        data: mockResponse
+        data: mockResponse,
       });
 
     } catch (error) {
       enterpriseLogger.error('Broker API authentication failed', {
         userId: req.user.userId,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Broker API authentication failed',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -209,36 +209,36 @@ class BrokerController {
             quantity: 10,
             profit: 3000,
             type: 'long_term',
-            exempt: true
-          }
+            exempt: true,
+          },
         ],
         shortTerm: 0,
         longTerm: 0,
-        exemptLongTerm: 3000
+        exemptLongTerm: 3000,
       };
 
       enterpriseLogger.info('Capital gains fetched from broker API', {
         userId,
         broker,
         startDate,
-        endDate
+        endDate,
       });
 
       res.json({
         success: true,
-        data: mockData
+        data: mockData,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to fetch capital gains from broker API', {
         userId: req.user.userId,
         broker: req.params.broker,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Failed to fetch capital gains from broker API',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -254,22 +254,22 @@ class BrokerController {
       const status = {
         available: true,
         lastChecked: new Date().toISOString(),
-        responseTime: Math.floor(Math.random() * 1000) + 100 // Mock response time
+        responseTime: Math.floor(Math.random() * 1000) + 100, // Mock response time
       };
 
       res.json({
         success: true,
-        data: { status }
+        data: { status },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get broker API status', {
         broker: req.params.broker,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
-        error: 'Failed to get broker API status'
+        error: 'Failed to get broker API status',
       });
     }
   }

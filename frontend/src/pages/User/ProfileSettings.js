@@ -16,7 +16,7 @@ const ProfileSettings = () => {
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'bank-accounts', label: 'Bank Accounts', icon: CreditCard },
-    { id: 'filings', label: 'My Filings', icon: FileText }
+    { id: 'filings', label: 'My Filings', icon: FileText },
   ];
 
   const handleSave = async (tabId, data) => {
@@ -98,7 +98,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
     email: user?.email || '',
     phone: user?.phone || '',
     panNumber: user?.panNumber || '',
-    dateOfBirth: user?.dateOfBirth || ''
+    dateOfBirth: user?.dateOfBirth || '',
   });
 
   const handleSubmit = (e) => {
@@ -200,12 +200,13 @@ const SecurityTab = ({ onSave, isLoading }) => {
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
+      // eslint-disable-next-line no-alert
       alert('Passwords do not match');
       return;
     }
@@ -280,7 +281,7 @@ const SecurityTab = ({ onSave, isLoading }) => {
 // Bank Accounts Tab Component
 const BankAccountsTab = ({ onSave, isLoading }) => {
   const [bankAccounts, setBankAccounts] = useState([
-    { id: 1, bankName: 'HDFC Bank', accountNumber: '****1234', ifsc: 'HDFC0001234', isPrimary: true }
+    { id: 1, bankName: 'HDFC Bank', accountNumber: '****1234', ifsc: 'HDFC0001234', isPrimary: true },
   ]);
 
   return (
@@ -318,7 +319,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
 const FilingsTab = () => {
   const filings = [
     { year: '2023-24', status: 'Completed', refund: 45000, date: '2024-08-15' },
-    { year: '2022-23', status: 'Completed', refund: 32000, date: '2023-08-20' }
+    { year: '2022-23', status: 'Completed', refund: 32000, date: '2023-08-20' },
   ];
 
   return (

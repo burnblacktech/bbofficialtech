@@ -3,9 +3,9 @@
 // Comprehensive invoice generation and email delivery system
 // =====================================================
 
-const { Invoice, User, ITRFiling, CAFirm } = require('../models');
-const emailService = require('./emailService');
-const enterpriseLogger = require('../utils/logger');
+const { Invoice, User, ITRFiling, CAFirm } = require('../../models');
+const emailService = require('../integration/EmailService');
+const enterpriseLogger = require('../../utils/logger');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -22,7 +22,7 @@ class InvoiceService {
       enterpriseLogger.info('InvoiceService: Generating ITR filing invoice', {
         filingId: filingData.id,
         paymentId: paymentData.paymentId,
-        amount: paymentData.amount
+        amount: paymentData.amount,
       });
 
       // Get user data
@@ -46,8 +46,8 @@ class InvoiceService {
         metadata: {
           assessmentYear: filingData.assessmentYear,
           pan: filingData.pan,
-          expertReview: paymentData.expertReview || false
-        }
+          expertReview: paymentData.expertReview || false,
+        },
       });
 
       // Generate PDF invoice
@@ -58,21 +58,21 @@ class InvoiceService {
 
       enterpriseLogger.info('InvoiceService: ITR filing invoice generated successfully', {
         invoiceId: invoice.id,
-        invoiceNumber: invoice.invoiceNumber
+        invoiceNumber: invoice.invoiceNumber,
       });
 
       return {
         success: true,
         invoiceId: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
-        pdfPath
+        pdfPath,
       };
 
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error generating ITR filing invoice', {
         error: error.message,
         filingId: filingData.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       throw new Error('Failed to generate ITR filing invoice');
@@ -90,7 +90,7 @@ class InvoiceService {
       enterpriseLogger.info('InvoiceService: Generating subscription invoice', {
         planId: subscriptionData.planId,
         paymentId: paymentData.paymentId,
-        amount: paymentData.amount
+        amount: paymentData.amount,
       });
 
       // Get user data
@@ -115,8 +115,8 @@ class InvoiceService {
           planId: subscriptionData.planId,
           planName: subscriptionData.planName,
           billingCycle: subscriptionData.billingCycle,
-          clientLimit: subscriptionData.clientLimit
-        }
+          clientLimit: subscriptionData.clientLimit,
+        },
       });
 
       // Generate PDF invoice
@@ -127,21 +127,21 @@ class InvoiceService {
 
       enterpriseLogger.info('InvoiceService: Subscription invoice generated successfully', {
         invoiceId: invoice.id,
-        invoiceNumber: invoice.invoiceNumber
+        invoiceNumber: invoice.invoiceNumber,
       });
 
       return {
         success: true,
         invoiceId: invoice.id,
         invoiceNumber: invoice.invoiceNumber,
-        pdfPath
+        pdfPath,
       };
 
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error generating subscription invoice', {
         error: error.message,
         planId: subscriptionData.planId,
-        stack: error.stack
+        stack: error.stack,
       });
 
       throw new Error('Failed to generate subscription invoice');
@@ -161,7 +161,7 @@ class InvoiceService {
         const doc = new PDFDocument({ margin: 50 });
         const fileName = `invoice_${invoice.invoiceNumber}.pdf`;
         const filePath = path.join(__dirname, '../../uploads/invoices', fileName);
-        
+
         // Ensure directory exists
         const dir = path.dirname(filePath);
         if (!fs.existsSync(dir)) {
@@ -198,7 +198,7 @@ class InvoiceService {
         doc.fontSize(10)
           .text(user.fullName, 50, 280)
           .text(user.email, 50, 295);
-        
+
         if (serviceData.address) {
           doc.text(serviceData.address.street, 50, 310)
             .text(`${serviceData.address.city}, ${serviceData.address.state} ${serviceData.address.pincode}`, 50, 325);
@@ -257,27 +257,27 @@ class InvoiceService {
           invoiceDate: new Date(invoice.createdAt).toLocaleDateString('en-IN'),
           amount: invoice.amount,
           description: invoice.description,
-          paymentId: invoice.paymentId
+          paymentId: invoice.paymentId,
         },
         attachments: [
           {
             filename: `invoice_${invoice.invoiceNumber}.pdf`,
-            path: pdfPath
-          }
-        ]
+            path: pdfPath,
+          },
+        ],
       };
 
       await emailService.sendEmail(emailData);
 
       enterpriseLogger.info('InvoiceService: Invoice email sent successfully', {
         invoiceId: invoice.id,
-        userEmail: user.email
+        userEmail: user.email,
       });
 
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error sending invoice email', {
         error: error.message,
-        invoiceId: invoice.id
+        invoiceId: invoice.id,
       });
     }
   }
@@ -291,15 +291,15 @@ class InvoiceService {
     try {
       const year = new Date().getFullYear();
       const month = String(new Date().getMonth() + 1).padStart(2, '0');
-      
+
       // Get last invoice number for this month
       const lastInvoice = await Invoice.findOne({
         where: {
           invoiceNumber: {
-            [require('sequelize').Op.like]: `${prefix}-${year}${month}-%`
-          }
+            [require('sequelize').Op.like]: `${prefix}-${year}${month}-%`,
+          },
         },
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']],
       });
 
       let sequence = 1;
@@ -309,12 +309,12 @@ class InvoiceService {
       }
 
       const invoiceNumber = `${prefix}-${year}${month}-${String(sequence).padStart(4, '0')}`;
-      
+
       return invoiceNumber;
 
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error generating invoice number', {
-        error: error.message
+        error: error.message,
       });
 
       throw new Error('Failed to generate invoice number');
@@ -332,9 +332,9 @@ class InvoiceService {
         include: [
           {
             model: User,
-            attributes: ['id', 'fullName', 'email', 'phone']
-          }
-        ]
+            attributes: ['id', 'fullName', 'email', 'phone'],
+          },
+        ],
       });
 
       if (!invoice) {
@@ -346,7 +346,7 @@ class InvoiceService {
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error getting invoice', {
         error: error.message,
-        invoiceId
+        invoiceId,
       });
 
       throw new Error('Failed to get invoice');
@@ -376,11 +376,11 @@ class InvoiceService {
         include: [
           {
             model: User,
-            attributes: ['id', 'fullName', 'email']
-          }
+            attributes: ['id', 'fullName', 'email'],
+          },
         ],
         order: [['createdAt', 'DESC']],
-        limit: filters.limit || 50
+        limit: filters.limit || 50,
       });
 
       return invoices;
@@ -388,7 +388,7 @@ class InvoiceService {
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error getting user invoices', {
         error: error.message,
-        userId
+        userId,
       });
 
       throw new Error('Failed to get user invoices');
@@ -407,7 +407,7 @@ class InvoiceService {
 
       // Generate PDF if not exists
       let pdfPath = path.join(__dirname, '../../uploads/invoices', `invoice_${invoice.invoiceNumber}.pdf`);
-      
+
       if (!fs.existsSync(pdfPath)) {
         pdfPath = await this.generatePDFInvoice(invoice, user, invoice.metadata);
       }
@@ -417,18 +417,18 @@ class InvoiceService {
 
       enterpriseLogger.info('InvoiceService: Invoice email resent successfully', {
         invoiceId,
-        userEmail: user.email
+        userEmail: user.email,
       });
 
       return {
         success: true,
-        message: 'Invoice email sent successfully'
+        message: 'Invoice email sent successfully',
       };
 
     } catch (error) {
       enterpriseLogger.error('InvoiceService: Error resending invoice email', {
         error: error.message,
-        invoiceId
+        invoiceId,
       });
 
       throw new Error('Failed to resend invoice email');

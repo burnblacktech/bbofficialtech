@@ -62,7 +62,7 @@ router.get('/db', async (req, res) => {
     const client = await pool.connect();
     await client.query('SELECT 1');
     client.release();
-    
+
     res.json({
       status: 'healthy',
       database: 'connected',
@@ -96,7 +96,7 @@ async function getDetailedHealthStatus() {
       environment: process.env.NODE_ENV || 'development',
       components: {},
     };
-    
+
     // Check database
     try {
       const dbHealth = await checkDatabaseHealth();
@@ -111,7 +111,7 @@ async function getDetailedHealthStatus() {
       };
       healthData.status = 'unhealthy';
     }
-    
+
     // System information
     healthData.system = {
       platform: os.platform(),
@@ -127,7 +127,7 @@ async function getDetailedHealthStatus() {
         cores: os.cpus().length,
       },
     };
-    
+
     return healthData;
   } catch (error) {
     enterpriseLogger.error('Error getting detailed health status', {
@@ -143,7 +143,7 @@ async function checkDatabaseHealth() {
     const startTime = Date.now();
     const result = await pool.query('SELECT NOW() as current_time, version() as version');
     const responseTime = Date.now() - startTime;
-    
+
     return {
       status: 'healthy',
       responseTime: responseTime,

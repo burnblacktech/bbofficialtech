@@ -7,17 +7,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  ArrowLeft, 
-  Plus, 
-  User, 
-  Edit, 
-  Trash2, 
-  Calendar, 
-  Phone, 
-  Mail, 
-  Search, 
-  Filter, 
+import {
+  ArrowLeft,
+  Plus,
+  User,
+  Edit,
+  Trash2,
+  Calendar,
+  Phone,
+  Mail,
+  Search,
+  Filter,
   ChevronRight,
   Users,
   UserPlus,
@@ -31,7 +31,7 @@ import {
   Shield,
   Star,
   MoreVertical,
-  X
+  X,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -66,7 +66,7 @@ const Members = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['members', user?.user_id]);
-    }
+    },
   });
 
   // Delete member mutation
@@ -77,7 +77,7 @@ const Members = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['members', user?.user_id]);
-    }
+    },
   });
 
   const handleStatusChange = (memberId, newStatus) => {
@@ -154,10 +154,10 @@ const Members = () => {
     const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.role?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesRole = filterRole === 'all' || member.role === filterRole;
     const matchesStatus = filterStatus === 'all' || member.status === filterStatus;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -193,7 +193,7 @@ const Members = () => {
                 <p className="text-xs text-gray-500">{filteredMembers.length} members</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -264,8 +264,8 @@ const Members = () => {
               <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No members found</h3>
               <p className="text-sm text-gray-500">
-                {searchTerm || filterRole !== 'all' || filterStatus !== 'all' 
-                  ? 'No members match your filters' 
+                {searchTerm || filterRole !== 'all' || filterStatus !== 'all'
+                  ? 'No members match your filters'
                   : 'No members available'}
               </p>
             </div>
@@ -294,7 +294,7 @@ const Members = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => setSelectedMember(member)}
@@ -402,7 +402,7 @@ const Members = () => {
       {/* Bottom Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -413,14 +413,14 @@ const Members = () => {
             <Users className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Members</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/profile')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/settings')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >

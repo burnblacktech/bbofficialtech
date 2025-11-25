@@ -26,5 +26,5 @@ export default {
   ITRValidationEngine,
   ITRComputationEngine,
   ITR1_CONFIG,
-  EnhancedITRForm
+  EnhancedITRForm,
 };

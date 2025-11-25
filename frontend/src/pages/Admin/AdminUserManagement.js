@@ -7,21 +7,21 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
-import { 
-  ArrowLeft, 
-  Search, 
-  Filter, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Shield, 
-  User, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  CheckCircle, 
-  AlertCircle, 
-  Clock, 
+import {
+  ArrowLeft,
+  Search,
+  Filter,
+  Plus,
+  Edit,
+  Trash2,
+  Shield,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  CheckCircle,
+  AlertCircle,
+  Clock,
   MoreVertical,
   Crown,
   Star,
@@ -31,7 +31,7 @@ import {
   X,
   Download,
   RefreshCw,
-  FileText
+  FileText,
 } from 'lucide-react';
 
 const AdminUserManagement = () => {
@@ -65,7 +65,7 @@ const AdminUserManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['adminUsers']);
-    }
+    },
   });
 
   // Delete user mutation
@@ -76,7 +76,7 @@ const AdminUserManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['adminUsers']);
-    }
+    },
   });
 
   const handleStatusChange = (userId, newStatus) => {
@@ -157,10 +157,10 @@ const AdminUserManagement = () => {
     const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.role?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -196,7 +196,7 @@ const AdminUserManagement = () => {
                 <p className="text-xs text-neutral-500">{filteredUsers.length} users</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -270,8 +270,8 @@ const AdminUserManagement = () => {
               <User className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-burnblack-black mb-2">No users found</h3>
               <p className="text-sm text-neutral-500">
-                {searchTerm || filterRole !== 'all' || filterStatus !== 'all' 
-                  ? 'No users match your filters' 
+                {searchTerm || filterRole !== 'all' || filterStatus !== 'all'
+                  ? 'No users match your filters'
                   : 'No users available'}
               </p>
             </div>
@@ -300,7 +300,7 @@ const AdminUserManagement = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => {

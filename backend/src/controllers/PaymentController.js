@@ -5,16 +5,26 @@
 
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
-const { ITRFiling, User, Invoice } = require('../models');
-const ExpertReviewService = require('../services/ExpertReviewService');
-const InvoiceService = require('../services/InvoiceService');
+const { ITRFiling, User, Invoice, CAFirm } = require('../models');
+const ExpertReviewService = require('../services/business/ExpertReviewService');
+const InvoiceService = require('../services/business/InvoiceService');
 const enterpriseLogger = require('../utils/logger');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// Initialize Razorpay (conditional on environment variables)
+let razorpay = null;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  try {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+    enterpriseLogger.info('Razorpay initialized successfully');
+  } catch (error) {
+    enterpriseLogger.warn('Razorpay initialization failed', { error: error.message });
+  }
+} else {
+  enterpriseLogger.warn('Razorpay not configured. Missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET. Payment features will be disabled.');
+}
 
 class PaymentController {
   /**
@@ -31,14 +41,22 @@ class PaymentController {
         userId,
         amount,
         currency,
-        receipt
+        receipt,
       });
 
       // Validate amount
       if (!amount || amount < 100) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid amount. Minimum amount is ₹1.00'
+          message: 'Invalid amount. Minimum amount is ₹1.00',
+        });
+      }
+
+      // Check if Razorpay is configured
+      if (!razorpay) {
+        return res.status(503).json({
+          success: false,
+          message: 'Payment gateway not configured. Please configure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.',
         });
       }
 
@@ -47,12 +65,12 @@ class PaymentController {
         amount: amount,
         currency: currency || 'INR',
         receipt: receipt,
-        notes: notes
+        notes: notes,
       });
 
       enterpriseLogger.info('PaymentController: Razorpay order created', {
         orderId: order.id,
-        amount: order.amount
+        amount: order.amount,
       });
 
       res.json({
@@ -61,20 +79,20 @@ class PaymentController {
           id: order.id,
           amount: order.amount,
           currency: order.currency,
-          receipt: order.receipt
-        }
+          receipt: order.receipt,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('PaymentController: Error creating ITR filing order', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to create payment order'
+        message: 'Failed to create payment order',
       });
     }
   }
@@ -92,7 +110,7 @@ class PaymentController {
         razorpay_signature,
         filingId,
         expertReview,
-        amount
+        amount,
       } = req.body;
 
       const userId = req.user.id;
@@ -101,7 +119,7 @@ class PaymentController {
         userId,
         filingId,
         paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id
+        orderId: razorpay_order_id,
       });
 
       // Verify payment signature
@@ -115,24 +133,24 @@ class PaymentController {
         enterpriseLogger.warn('PaymentController: Invalid payment signature', {
           userId,
           filingId,
-          paymentId: razorpay_payment_id
+          paymentId: razorpay_payment_id,
         });
 
         return res.status(400).json({
           success: false,
-          message: 'Invalid payment signature'
+          message: 'Invalid payment signature',
         });
       }
 
       // Get filing data
       const filing = await ITRFiling.findByPk(filingId, {
-        include: [{ model: User }]
+        include: [{ model: User }],
       });
 
       if (!filing) {
         return res.status(404).json({
           success: false,
-          message: 'ITR filing not found'
+          message: 'ITR filing not found',
         });
       }
 
@@ -143,9 +161,9 @@ class PaymentController {
           payment_id: razorpay_payment_id,
           payment_order_id: razorpay_order_id,
           payment_amount: amount,
-          payment_completed_at: new Date()
+          payment_completed_at: new Date(),
         },
-        { where: { id: filingId } }
+        { where: { id: filingId } },
       );
 
       // Prepare payment data
@@ -154,13 +172,13 @@ class PaymentController {
         orderId: razorpay_order_id,
         amount: amount,
         paymentMethod: 'razorpay',
-        expertReview: expertReview || false
+        expertReview: expertReview || false,
       };
 
       // Generate invoice
       const invoiceResult = await InvoiceService.generateITRFilingInvoice(
         paymentData,
-        filing
+        filing,
       );
 
       // Handle expert review if requested
@@ -172,7 +190,7 @@ class PaymentController {
         userId,
         filingId,
         paymentId: razorpay_payment_id,
-        invoiceId: invoiceResult.invoiceId
+        invoiceId: invoiceResult.invoiceId,
       });
 
       res.json({
@@ -184,20 +202,20 @@ class PaymentController {
           amount: amount,
           invoiceId: invoiceResult.invoiceId,
           invoiceNumber: invoiceResult.invoiceNumber,
-          expertReview: expertReview || false
-        }
+          expertReview: expertReview || false,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('PaymentController: Error verifying ITR filing payment', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to verify payment'
+        message: 'Failed to verify payment',
       });
     }
   }
@@ -216,14 +234,22 @@ class PaymentController {
         userId,
         planId,
         billingCycle,
-        amount
+        amount,
       });
 
       // Validate amount
       if (!amount || amount < 100) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid amount. Minimum amount is ₹1.00'
+          message: 'Invalid amount. Minimum amount is ₹1.00',
+        });
+      }
+
+      // Check if Razorpay is configured
+      if (!razorpay) {
+        return res.status(503).json({
+          success: false,
+          message: 'Payment gateway not configured. Please configure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.',
         });
       }
 
@@ -235,13 +261,13 @@ class PaymentController {
         notes: {
           planId: planId,
           billingCycle: billingCycle,
-          firmDetails: firmDetails
-        }
+          firmDetails: firmDetails,
+        },
       });
 
       enterpriseLogger.info('PaymentController: Subscription order created', {
         orderId: order.id,
-        amount: order.amount
+        amount: order.amount,
       });
 
       res.json({
@@ -250,20 +276,20 @@ class PaymentController {
           id: order.id,
           amount: order.amount,
           currency: order.currency,
-          receipt: order.receipt
-        }
+          receipt: order.receipt,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('PaymentController: Error creating subscription order', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to create payment order'
+        message: 'Failed to create payment order',
       });
     }
   }
@@ -281,7 +307,8 @@ class PaymentController {
         razorpay_signature,
         planId,
         billingCycle,
-        firmDetails
+        firmDetails,
+        amount,
       } = req.body;
 
       const userId = req.user.id;
@@ -290,7 +317,7 @@ class PaymentController {
         userId,
         planId,
         paymentId: razorpay_payment_id,
-        orderId: razorpay_order_id
+        orderId: razorpay_order_id,
       });
 
       // Verify payment signature
@@ -304,12 +331,12 @@ class PaymentController {
         enterpriseLogger.warn('PaymentController: Invalid payment signature', {
           userId,
           planId,
-          paymentId: razorpay_payment_id
+          paymentId: razorpay_payment_id,
         });
 
         return res.status(400).json({
           success: false,
-          message: 'Invalid payment signature'
+          message: 'Invalid payment signature',
         });
       }
 
@@ -327,17 +354,17 @@ class PaymentController {
         subscriptionBillingCycle: billingCycle,
         subscriptionStatus: 'active',
         subscriptionStartDate: new Date(),
-        subscriptionEndDate: billingCycle === 'monthly' 
+        subscriptionEndDate: billingCycle === 'monthly'
           ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
           : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         paymentId: razorpay_payment_id,
-        paymentOrderId: razorpay_order_id
+        paymentOrderId: razorpay_order_id,
       });
 
       // Update user role to CA firm admin
       await User.update(
         { role: 'ca_firm_admin' },
-        { where: { id: userId } }
+        { where: { id: userId } },
       );
 
       // Prepare payment data
@@ -345,7 +372,7 @@ class PaymentController {
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
         amount: amount,
-        paymentMethod: 'razorpay'
+        paymentMethod: 'razorpay',
       };
 
       // Prepare subscription data
@@ -355,13 +382,13 @@ class PaymentController {
         planId: planId,
         planName: firmDetails.planName,
         billingCycle: billingCycle,
-        clientLimit: firmDetails.clientLimit
+        clientLimit: firmDetails.clientLimit,
       };
 
       // Generate invoice
       const invoiceResult = await InvoiceService.generateSubscriptionInvoice(
         paymentData,
-        subscriptionData
+        subscriptionData,
       );
 
       enterpriseLogger.info('PaymentController: Subscription payment verified successfully', {
@@ -369,7 +396,7 @@ class PaymentController {
         planId,
         paymentId: razorpay_payment_id,
         firmId: caFirm.id,
-        invoiceId: invoiceResult.invoiceId
+        invoiceId: invoiceResult.invoiceId,
       });
 
       res.json({
@@ -381,20 +408,20 @@ class PaymentController {
           amount: amount,
           firmId: caFirm.id,
           invoiceId: invoiceResult.invoiceId,
-          invoiceNumber: invoiceResult.invoiceNumber
-        }
+          invoiceNumber: invoiceResult.invoiceNumber,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('PaymentController: Error verifying subscription payment', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to verify payment'
+        message: 'Failed to verify payment',
       });
     }
   }
@@ -411,7 +438,7 @@ class PaymentController {
 
       enterpriseLogger.info('PaymentController: Getting payment status', {
         userId,
-        paymentId
+        paymentId,
       });
 
       // Get payment details from Razorpay
@@ -419,7 +446,7 @@ class PaymentController {
 
       // Get invoice details
       const invoice = await Invoice.findOne({
-        where: { paymentId: paymentId }
+        where: { paymentId: paymentId },
       });
 
       res.json({
@@ -432,20 +459,20 @@ class PaymentController {
           method: payment.method,
           createdAt: payment.created_at,
           invoiceId: invoice?.id,
-          invoiceNumber: invoice?.invoiceNumber
-        }
+          invoiceNumber: invoice?.invoiceNumber,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('PaymentController: Error getting payment status', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to get payment status'
+        message: 'Failed to get payment status',
       });
     }
   }
@@ -463,7 +490,7 @@ class PaymentController {
       enterpriseLogger.info('PaymentController: Getting payment history', {
         userId,
         limit,
-        offset
+        offset,
       });
 
       // Get invoices for user
@@ -471,7 +498,7 @@ class PaymentController {
         where: { userId },
         order: [['createdAt', 'DESC']],
         limit: parseInt(limit),
-        offset: parseInt(offset)
+        offset: parseInt(offset),
       });
 
       res.json({
@@ -486,22 +513,22 @@ class PaymentController {
             currency: invoice.currency,
             description: invoice.description,
             paymentId: invoice.paymentId,
-            createdAt: invoice.createdAt
+            createdAt: invoice.createdAt,
           })),
-          total: invoices.length
-        }
+          total: invoices.length,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('PaymentController: Error getting payment history', {
         error: error.message,
         userId: req.user.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       res.status(500).json({
         success: false,
-        message: 'Failed to get payment history'
+        message: 'Failed to get payment history',
       });
     }
   }

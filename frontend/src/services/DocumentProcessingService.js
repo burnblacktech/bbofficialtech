@@ -17,7 +17,7 @@ class DocumentProcessingService {
       INTEREST_CERTIFICATE: 'interest_certificate',
       TAX_SAVING_CERTIFICATE: 'tax_saving_certificate',
       MEDICAL_BILL: 'medical_bill',
-      EDUCATION_FEE_RECEIPT: 'education_fee_receipt'
+      EDUCATION_FEE_RECEIPT: 'education_fee_receipt',
     };
 
     this.extractionPatterns = {
@@ -25,147 +25,147 @@ class DocumentProcessingService {
         employer: {
           name: [
             /(?:Company Name|Employer|Organization)[\s:]*(.+)/i,
-            /([^]*)(?:Private\s*Limited|Ltd\.?|Pvt\.?|LLP|Inc\.?|Corp\.?)/i
+            /([^]*)(?:Private\s*Limited|Ltd\.?|Pvt\.?|LLP|Inc\.?|Corp\.?)/i,
           ],
           address: [
             /(?:Address|Registered Office)[\s:]*(.+)/i,
-            /([A-Za-z\s,]+(?:Road|Street|Building|Tower)\s*[\w\s,#-]+)/i
-          ]
+            /([A-Za-z\s,]+(?:Road|Street|Building|Tower)\s*[\w\s,#-]+)/i,
+          ],
         },
         employee: {
           name: [
             /(?:Employee Name|Name)[\s:]*(.+)/i,
-            /(?:Staff Name|Person Name)[\s:]*(.+)/i
+            /(?:Staff Name|Person Name)[\s:]*(.+)/i,
           ],
           pan: [
             /(?:PAN|Permanent\s*Account\s*Number)[\s:]*([A-Z]{5}[0-9]{4}[A-Z])/i,
-            /Pan[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i
+            /Pan[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i,
           ],
           employeeId: [
             /(?:Employee\s*ID|EID|Staff\s*ID)[\s:]*(\w+)/i,
-            /Emp\.?\s*Code[:\s]*(\w+)/i
+            /Emp\.?\s*Code[:\s]*(\w+)/i,
           ],
           designation: [
             /(?:Designation|Position|Job\s*Title)[\s:]*(.+)/i,
-            /(?:Role|Grade)[\s:]*(.+)/i
-          ]
+            /(?:Role|Grade)[\s:]*(.+)/i,
+          ],
         },
         financial: {
           basicSalary: [
             /(?:Basic\s*Salary|Basic\s*Pay|Basic)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /Basic[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /Basic[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           hra: [
             /(?:HRA|House\s*Rent\s*Allowance)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /House\s*Rent[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /House\s*Rent[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           specialAllowance: [
             /(?:Special\s*Allowance|Other\s*Allowance)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /Allowance[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /Allowance[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           grossSalary: [
             /(?:Gross\s*Salary|Total\s*Earnings|Gross\s*Pay)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /Gross[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /Gross[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           netSalary: [
             /(?:Net\s*Salary|Take\s*Home|Net\s*Pay)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /Net[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /Net[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           tds: [
             /(?:TDS|Income\s*Tax|Tax\s*Deducted)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /TDS[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /TDS[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           pf: [
             /(?:PF|Provident\s*Fund|EPF)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /PF[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /PF[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           esi: [
             /(?:ESI|Employee\s*State\s*Insurance)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /ESI[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+            /ESI[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
           ],
           professionalTax: [
             /(?:Professional\s*Tax|PT)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
-            /Prof\.?\s*Tax[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
-          ]
+            /Prof\.?\s*Tax[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
+          ],
         },
         period: {
           month: [
             /(?:Month|Period)[\s:]*(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i,
-            /([A-Za-z]+)\s*\d{4}/i
+            /([A-Za-z]+)\s*\d{4}/i,
           ],
           year: [
             /(?:Year|FY|Financial\s*Year)[\s:]*(\d{4}|\d{2}-\d{2})/i,
-            /\b(20\d{2})\b/
+            /\b(20\d{2})\b/,
           ],
           payDate: [
             /(?:Pay\s*Date|Date)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i,
-            /(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/
-          ]
-        }
+            /(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/,
+          ],
+        },
       },
       rentReceipt: {
         landlord: {
           name: [
             /(?:Landlord|Owner|Lessor)[\s:]*(.+)/i,
-            /Received\s*from[:\s]*(.+)/i
+            /Received\s*from[:\s]*(.+)/i,
           ],
           pan: [
             /(?:Landlord\s*PAN|Owner\s*PAN)[\s:]*([A-Z]{5}[0-9]{4}[A-Z])/i,
-            /PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i
+            /PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i,
           ],
           address: [
             /(?:Landlord\s*Address|Owner\s*Address)[\s:]*(.+)/i,
-            /Address[:\s]*(.+)/i
-          ]
+            /Address[:\s]*(.+)/i,
+          ],
         },
         tenant: {
           name: [
             /(?:Tenant|Payer)[\s:]*(.+)/i,
-            /Paid\s*by[:\s]*(.+)/i
-          ]
+            /Paid\s*by[:\s]*(.+)/i,
+          ],
         },
         property: {
           address: [
             /(?:Property\s*Address|Premises\s*Address)[\s:]*(.+)/i,
-            /(?:House|Flat|Room)\s*No\.?\s*([^,\n]*)/i
+            /(?:House|Flat|Room)\s*No\.?\s*([^,\n]*)/i,
           ],
           type: [
             /(?:Property\s*Type|Type\s*of\s*Accommodation)[\s:]*(.+)/i,
-            /(?:Apartment|House|Flat|PG|Hostel)/i
-          ]
+            /(?:Apartment|House|Flat|PG|Hostel)/i,
+          ],
         },
         financial: {
           rentAmount: [
             /(?:Rent\s*Amount|Monthly\s*Rent|Amount)[\s:]*₹?\s*([\d,]+(?:\.\d+)?)/i,
             /Rs\.?\s*([\d,]+(?:\.\d+)?)/i,
-            /₹\s*([\d,]+(?:\.\d+)?)/i
+            /₹\s*([\d,]+(?:\.\d+)?)/i,
           ],
           period: {
             from: [
               /(?:Period|From)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i,
-              /Rent\s*for[:\s]*(.+)/i
+              /Rent\s*for[:\s]*(.+)/i,
             ],
             to: [
-              /(?:To|Until)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i
-            ]
+              /(?:To|Until)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i,
+            ],
           },
           mode: [
-            /(?:Mode\s*of\s*Payment|Payment\s*Mode)[\s:]*(Cash|Cheque|Online|Transfer|NEFT|RTGS|UPI)/i
-          ]
+            /(?:Mode\s*of\s*Payment|Payment\s*Mode)[\s:]*(Cash|Cheque|Online|Transfer|NEFT|RTGS|UPI)/i,
+          ],
         },
         verification: {
           receiptNo: [
             /(?:Receipt\s*No|Receipt\s*Number)[\s:]*(\w+)/i,
-            /Receipt[:\s]*(\w+)/i
+            /Receipt[:\s]*(\w+)/i,
           ],
           date: [
-            /(?:Date|Receipt\s*Date)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i
+            /(?:Date|Receipt\s*Date)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i,
           ],
           amount: [
-            /(?:Amount|Sum)[\s:]*(\d+)/i
-          ]
-        }
-      }
+            /(?:Amount|Sum)[\s:]*(\d+)/i,
+          ],
+        },
+      },
     };
   }
 
@@ -185,7 +185,7 @@ class DocumentProcessingService {
         return {
           success: false,
           error: validation.error,
-          processingId
+          processingId,
         };
       }
 
@@ -195,7 +195,7 @@ class DocumentProcessingService {
         return {
           success: false,
           error: `OCR extraction failed: ${ocrResult.error}`,
-          processingId
+          processingId,
         };
       }
 
@@ -203,7 +203,7 @@ class DocumentProcessingService {
       const extractedData = await this.parseDocumentText(
         ocrResult.text,
         documentType,
-        options
+        options,
       );
 
       // Step 3: Validate and sanitize extracted data
@@ -225,7 +225,7 @@ class DocumentProcessingService {
         taxImplications,
         recommendations,
         qualityScore: this.calculateQualityScore(validatedData, documentType),
-        verifiedFields: this.getVerifiedFields(validatedData)
+        verifiedFields: this.getVerifiedFields(validatedData),
       };
 
       // Save processing result
@@ -239,7 +239,7 @@ class DocumentProcessingService {
       return {
         success: false,
         error: error.message,
-        processingId: this.generateProcessingId()
+        processingId: this.generateProcessingId(),
       };
     }
   }
@@ -260,8 +260,8 @@ class DocumentProcessingService {
       // Send to backend OCR service
       const response = await apiClient.post('/ocr/extract', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response.success) {
@@ -270,7 +270,7 @@ class DocumentProcessingService {
           text: response.data.text,
           confidence: response.data.confidence,
           boundingBoxes: response.data.boundingBoxes,
-          language: response.data.language || 'en'
+          language: response.data.language || 'en',
         };
       }
 
@@ -334,8 +334,8 @@ class DocumentProcessingService {
       allowances: {},
       metadata: {
         documentType: 'salary_slip',
-        extractionDate: new Date().toISOString()
-      }
+        extractionDate: new Date().toISOString(),
+      },
     };
 
     const patterns = this.extractionPatterns.salarySlip;
@@ -411,8 +411,8 @@ class DocumentProcessingService {
       verification: {},
       metadata: {
         documentType: 'rent_receipt',
-        extractionDate: new Date().toISOString()
-      }
+        extractionDate: new Date().toISOString(),
+      },
     };
 
     const patterns = this.extractionPatterns.rentReceipt;
@@ -477,47 +477,47 @@ class DocumentProcessingService {
       employer: {
         name: this.extractWithPatterns(text, [
           /(?:Employer\s*Name|Name\s*of\s*Employer)[\s:]*(.+)/i,
-          /([^]*)(?:Pvt\.?|Ltd\.?|Private\s*Limited)/i
+          /([^]*)(?:Pvt\.?|Ltd\.?|Private\s*Limited)/i,
         ]),
         tan: this.extractWithPatterns(text, [
           /(?:TAN|Tax\s*Deduction\s*Account\s*Number)[\s:]*(\w{10})/i,
-          /TAN[:\s]*(\w{10})/i
+          /TAN[:\s]*(\w{10})/i,
         ]),
         pan: this.extractWithPatterns(text, [
-          /Employer\s*PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i
-        ])
+          /Employer\s*PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i,
+        ]),
       },
       employee: {
         name: this.extractWithPatterns(text, [
-          /(?:Employee\s*Name|Name\s*of\s*Employee)[\s:]*(.+)/i
+          /(?:Employee\s*Name|Name\s*of\s*Employee)[\s:]*(.+)/i,
         ]),
         pan: this.extractWithPatterns(text, [
-          /Employee\s*PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i
-        ])
+          /Employee\s*PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i,
+        ]),
       },
       financial: {
         grossSalary: this.parseAmount(this.extractWithPatterns(text, [
-          /Gross\s*Salary[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+          /Gross\s*Salary[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
         ])),
         otherIncome: this.parseAmount(this.extractWithPatterns(text, [
-          /Income\s*from\s*Other\s*Sources[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+          /Income\s*from\s*Other\s*Sources[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
         ])),
         deductions80C: this.parseAmount(this.extractWithPatterns(text, [
-          /Deduction\s*under\s*Section\s*80C[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+          /Deduction\s*under\s*Section\s*80C[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
         ])),
         totalIncome: this.parseAmount(this.extractWithPatterns(text, [
-          /Total\s*Income[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+          /Total\s*Income[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
         ])),
         totalTax: this.parseAmount(this.extractWithPatterns(text, [
-          /Total\s*Tax[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
+          /Total\s*Tax[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
         ])),
         tds: this.parseAmount(this.extractWithPatterns(text, [
-          /Tax\s*Deducted\s*at\s*Source[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i
-        ]))
+          /Tax\s*Deducted\s*at\s*Source[:\s]*₹?\s*([\d,]+(?:\.\d+)?)/i,
+        ])),
       },
       assessmentYear: this.extractWithPatterns(text, [
-        /Assessment\s*Year[:\s]*(\d{4}-\d{2})/i
-      ])
+        /Assessment\s*Year[:\s]*(\d{4}-\d{2})/i,
+      ]),
     };
 
     return form16Data;
@@ -531,7 +531,7 @@ class DocumentProcessingService {
       income: {},
       deductions: {},
       taxability: {},
-      recommendations: []
+      recommendations: [],
     };
 
     switch (documentType) {
@@ -574,7 +574,7 @@ class DocumentProcessingService {
             priority: 'high',
             title: 'Maximize Section 80C Deductions',
             description: `Your PF contribution is ₹${extractedData.financial.pf}. Consider additional investments to reach the ₹1,50,000 limit.`,
-            action: 'Explore ELSS, PPF, or tax-saving FDs'
+            action: 'Explore ELSS, PPF, or tax-saving FDs',
           });
         }
 
@@ -585,7 +585,7 @@ class DocumentProcessingService {
             priority: 'medium',
             title: 'Review HRA Structure',
             description: 'Consider negotiating your salary structure to optimize HRA benefits if you pay rent.',
-            action: 'Discuss with HR about HRA optimization'
+            action: 'Discuss with HR about HRA optimization',
           });
         }
         break;
@@ -598,7 +598,7 @@ class DocumentProcessingService {
             priority: 'high',
             title: 'Landlord PAN Required',
             description: 'For annual rent exceeding ₹1,00,000, landlord PAN is mandatory for HRA claim.',
-            action: 'Request landlord PAN immediately'
+            action: 'Request landlord PAN immediately',
           });
         }
 
@@ -609,7 +609,7 @@ class DocumentProcessingService {
             priority: 'medium',
             title: 'Rent Amount Analysis',
             description: `Your rent is ₹${extractedData.financial.rentAmount} while eligible HRA could be higher.`,
-            action: 'Consider HRA optimization strategies'
+            action: 'Consider HRA optimization strategies',
           });
         }
         break;
@@ -646,7 +646,7 @@ class DocumentProcessingService {
   isAllowanceLine(line) {
     const allowanceKeywords = [
       'allowance', 'allow', 'conveyance', 'travel', 'medical', 'education',
-      'special', 'dearness', 'hra', 'house rent', 'leave travel'
+      'special', 'dearness', 'hra', 'house rent', 'leave travel',
     ];
     return allowanceKeywords.some(keyword => line.includes(keyword));
   }
@@ -654,7 +654,7 @@ class DocumentProcessingService {
   isDeductionLine(line) {
     const deductionKeywords = [
       'deduction', 'deduct', 'pf', 'epf', 'esi', 'professional tax',
-      'income tax', 'tds', 'loan', 'advance'
+      'income tax', 'tds', 'loan', 'advance',
     ];
     return deductionKeywords.some(keyword => line.includes(keyword));
   }
@@ -709,14 +709,14 @@ class DocumentProcessingService {
     if (!allowedTypes.includes(file.type)) {
       return {
         isValid: false,
-        error: 'Invalid file type. Only PDF, JPEG, and PNG files are supported.'
+        error: 'Invalid file type. Only PDF, JPEG, and PNG files are supported.',
       };
     }
 
     if (file.size > maxSize) {
       return {
         isValid: false,
-        error: 'File size exceeds 10MB limit.'
+        error: 'File size exceeds 10MB limit.',
       };
     }
 
@@ -753,7 +753,7 @@ class DocumentProcessingService {
 
     // Check for critical fields
     switch (documentType) {
-      case this.documentTypes.SALARY_SLIP:
+      case this.documentTypes.SALARY_SLIP: {
         const criticalFields = ['employer.name', 'employee.name', 'financial.basicSalary'];
         criticalFields.forEach(field => {
           maxScore += 33.33;
@@ -762,6 +762,7 @@ class DocumentProcessingService {
           }
         });
         break;
+      }
     }
 
     return Math.min(100, Math.round((score / maxScore) * 100));
@@ -787,7 +788,7 @@ class DocumentProcessingService {
     try {
       await apiClient.post('/document-processing/save-result', {
         processingId,
-        result
+        result,
       });
     } catch (error) {
       console.error('Error saving processing result:', error);
@@ -808,7 +809,7 @@ class DocumentProcessingService {
       const result = await this.processDocument(file, documentType, {
         ...options,
         batchId,
-        batchIndex: i
+        batchIndex: i,
       });
       results.push(result);
     }
@@ -823,13 +824,13 @@ class DocumentProcessingService {
       averageQualityScore: results
         .filter(r => r.success && r.qualityScore)
         .reduce((sum, r) => sum + r.qualityScore, 0) /
-        results.filter(r => r.success && r.qualityScore).length || 0
+        results.filter(r => r.success && r.qualityScore).length || 0,
     };
 
     return {
       batchId,
       results,
-      summary: batchSummary
+      summary: batchSummary,
     };
   }
 }

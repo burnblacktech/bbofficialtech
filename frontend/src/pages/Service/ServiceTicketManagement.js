@@ -4,26 +4,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Ticket, 
-  MessageSquare, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  User, 
+import {
+  Ticket,
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  User,
   Calendar,
   Search,
   Filter,
   Plus,
   Eye,
   Edit,
-  Send
+  Send,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const ServiceTicketManagement = () => {
@@ -61,9 +61,9 @@ const ServiceTicketManagement = () => {
           userId: 'user-1',
           comment: 'Started ITR filing process, need help with income calculations',
           isInternal: false,
-          createdAt: '2024-01-15T10:30:00Z'
-        }
-      ]
+          createdAt: '2024-01-15T10:30:00Z',
+        },
+      ],
     },
     {
       id: '2',
@@ -88,7 +88,7 @@ const ServiceTicketManagement = () => {
           userId: 'user-2',
           comment: 'Submitted all documents, waiting for CA review',
           isInternal: false,
-          createdAt: '2024-01-14T14:20:00Z'
+          createdAt: '2024-01-14T14:20:00Z',
         },
         {
           id: '3',
@@ -96,9 +96,9 @@ const ServiceTicketManagement = () => {
           userId: 'ca-1',
           comment: 'Reviewing documents, will complete by tomorrow',
           isInternal: false,
-          createdAt: '2024-01-15T09:15:00Z'
-        }
-      ]
+          createdAt: '2024-01-15T09:15:00Z',
+        },
+      ],
     },
     {
       id: '3',
@@ -123,7 +123,7 @@ const ServiceTicketManagement = () => {
           userId: 'user-3',
           comment: 'Form-16 shows different amount than AIS',
           isInternal: false,
-          createdAt: '2024-01-13T16:45:00Z'
+          createdAt: '2024-01-13T16:45:00Z',
         },
         {
           id: '5',
@@ -131,10 +131,10 @@ const ServiceTicketManagement = () => {
           userId: 'ca-1',
           comment: 'Issue resolved, using AIS data as per ITD guidelines',
           isInternal: false,
-          createdAt: '2024-01-14T11:30:00Z'
-        }
-      ]
-    }
+          createdAt: '2024-01-14T11:30:00Z',
+        },
+      ],
+    },
   ];
 
   useEffect(() => {
@@ -192,9 +192,9 @@ const ServiceTicketManagement = () => {
     const matchesSearch = ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          ticket.ticketNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          ticket.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || ticket.status === filterStatus;
-    
+
     // Role-based filtering
     let matchesRole = true;
     if (user.role === 'user') {
@@ -203,7 +203,7 @@ const ServiceTicketManagement = () => {
       matchesRole = ticket.caId === user.user_id || ticket.tenantId === user.tenant_id;
     }
     // super_admin and ca_firm_admin can see all tickets
-    
+
     return matchesSearch && matchesStatus && matchesRole;
   });
 
@@ -221,19 +221,19 @@ const ServiceTicketManagement = () => {
       userId: user.user_id,
       comment: newComment,
       isInternal: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    setTickets(tickets.map(ticket => 
-      ticket.id === selectedTicket.id 
+    setTickets(tickets.map(ticket =>
+      ticket.id === selectedTicket.id
         ? { ...ticket, comments: [...ticket.comments, comment], updatedAt: new Date().toISOString() }
-        : ticket
+        : ticket,
     ));
 
     setSelectedTicket({
       ...selectedTicket,
       comments: [...selectedTicket.comments, comment],
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     });
 
     setNewComment('');
@@ -244,7 +244,7 @@ const ServiceTicketManagement = () => {
     { value: 'open', label: 'Open' },
     { value: 'in_progress', label: 'In Progress' },
     { value: 'resolved', label: 'Resolved' },
-    { value: 'closed', label: 'Closed' }
+    { value: 'closed', label: 'Closed' },
   ];
 
   if (loading) {

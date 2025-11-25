@@ -19,20 +19,20 @@ const useIntakeStore = create(
         set(state => ({
           currentIntakeData: {
             ...state.currentIntakeData,
-            ...updates
-          }
+            ...updates,
+          },
         }));
       },
 
       nextStep: () => {
         set(state => ({
-          currentStep: Math.min(state.currentStep + 1, state.totalSteps)
+          currentStep: Math.min(state.currentStep + 1, state.totalSteps),
         }));
       },
 
       previousStep: () => {
         set(state => ({
-          currentStep: Math.max(state.currentStep - 1, 1)
+          currentStep: Math.max(state.currentStep - 1, 1),
         }));
       },
 
@@ -43,8 +43,8 @@ const useIntakeStore = create(
             intakeHistory: [...state.intakeHistory, {
               ...currentIntakeData,
               id: Date.now(),
-              savedAt: new Date().toISOString()
-            }]
+              savedAt: new Date().toISOString(),
+            }],
           }));
         }
       },
@@ -52,14 +52,14 @@ const useIntakeStore = create(
       clearIntakeData: () => {
         set({
           currentIntakeData: null,
-          currentStep: 1
+          currentStep: 1,
         });
-      }
+      },
     }),
     {
-      name: 'intake-storage'
-    }
-  )
+      name: 'intake-storage',
+    },
+  ),
 );
 
 export default useIntakeStore;

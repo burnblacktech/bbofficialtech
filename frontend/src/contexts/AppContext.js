@@ -18,7 +18,7 @@ const initialState = {
     notifications: true,
     emailAlerts: true,
     darkMode: false,
-    compactMode: false
+    compactMode: false,
   },
 
   // Feature flags
@@ -27,7 +27,7 @@ const initialState = {
     ocr: true,
     eriIntegration: true,
     mfa: true,
-    betaFeatures: false
+    betaFeatures: false,
   },
 
   // App state
@@ -35,7 +35,7 @@ const initialState = {
   lastActivity: Date.now(),
 
   // Loading states
-  globalLoading: false
+  globalLoading: false,
 };
 
 // Action types
@@ -56,7 +56,7 @@ const ActionTypes = {
   TOGGLE_FEATURE: 'TOGGLE_FEATURE',
 
   // Activity tracking
-  UPDATE_ACTIVITY: 'UPDATE_ACTIVITY'
+  UPDATE_ACTIVITY: 'UPDATE_ACTIVITY',
 };
 
 // Reducer
@@ -68,38 +68,38 @@ const appReducer = (state, action) => {
         theme: action.payload.theme,
         preferences: {
           ...state.preferences,
-          darkMode: action.payload.theme === 'dark'
-        }
+          darkMode: action.payload.theme === 'dark',
+        },
       };
 
     case ActionTypes.TOGGLE_SIDEBAR:
       return {
         ...state,
-        sidebarOpen: !state.sidebarOpen
+        sidebarOpen: !state.sidebarOpen,
       };
 
     case ActionTypes.SET_LANGUAGE:
       return {
         ...state,
-        language: action.payload.language
+        language: action.payload.language,
       };
 
     case ActionTypes.SET_ONLINE_STATUS:
       return {
         ...state,
-        isOnline: action.payload.isOnline
+        isOnline: action.payload.isOnline,
       };
 
     case ActionTypes.SET_GLOBAL_LOADING:
       return {
         ...state,
-        globalLoading: action.payload.loading
+        globalLoading: action.payload.loading,
       };
 
     case ActionTypes.SET_PREFERENCES:
       return {
         ...state,
-        preferences: { ...state.preferences, ...action.payload.preferences }
+        preferences: { ...state.preferences, ...action.payload.preferences },
       };
 
     case ActionTypes.UPDATE_PREFERENCE:
@@ -107,14 +107,14 @@ const appReducer = (state, action) => {
         ...state,
         preferences: {
           ...state.preferences,
-          [action.payload.key]: action.payload.value
-        }
+          [action.payload.key]: action.payload.value,
+        },
       };
 
     case ActionTypes.SET_FEATURES:
       return {
         ...state,
-        features: { ...state.features, ...action.payload.features }
+        features: { ...state.features, ...action.payload.features },
       };
 
     case ActionTypes.TOGGLE_FEATURE:
@@ -122,14 +122,14 @@ const appReducer = (state, action) => {
         ...state,
         features: {
           ...state.features,
-          [action.payload.feature]: !state.features[action.payload.feature]
-        }
+          [action.payload.feature]: !state.features[action.payload.feature],
+        },
       };
 
     case ActionTypes.UPDATE_ACTIVITY:
       return {
         ...state,
-        lastActivity: action.payload.timestamp
+        lastActivity: action.payload.timestamp,
       };
 
     default:
@@ -154,7 +154,7 @@ export const AppProvider = ({ children }) => {
           const preferences = JSON.parse(savedPreferences);
           dispatch({
             type: ActionTypes.SET_PREFERENCES,
-            payload: { preferences }
+            payload: { preferences },
           });
         }
 
@@ -162,14 +162,14 @@ export const AppProvider = ({ children }) => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         dispatch({
           type: ActionTypes.SET_THEME,
-          payload: { theme: savedTheme }
+          payload: { theme: savedTheme },
         });
 
         // Load language from localStorage
         const savedLanguage = localStorage.getItem('language') || 'en';
         dispatch({
           type: ActionTypes.SET_LANGUAGE,
-          payload: { language: savedLanguage }
+          payload: { language: savedLanguage },
         });
 
         // Load feature flags from localStorage
@@ -178,7 +178,7 @@ export const AppProvider = ({ children }) => {
           const features = JSON.parse(savedFeatures);
           dispatch({
             type: ActionTypes.SET_FEATURES,
-            payload: { features }
+            payload: { features },
           });
         }
       } catch (error) {
@@ -215,14 +215,14 @@ export const AppProvider = ({ children }) => {
     const handleOnline = () => {
       dispatch({
         type: ActionTypes.SET_ONLINE_STATUS,
-        payload: { isOnline: true }
+        payload: { isOnline: true },
       });
     };
 
     const handleOffline = () => {
       dispatch({
         type: ActionTypes.SET_ONLINE_STATUS,
-        payload: { isOnline: false }
+        payload: { isOnline: false },
       });
     };
 
@@ -240,7 +240,7 @@ export const AppProvider = ({ children }) => {
     const trackActivity = () => {
       dispatch({
         type: ActionTypes.UPDATE_ACTIVITY,
-        payload: { timestamp: Date.now() }
+        payload: { timestamp: Date.now() },
       });
     };
 
@@ -266,7 +266,7 @@ export const AppProvider = ({ children }) => {
     setTheme: useCallback((theme) => {
       dispatch({
         type: ActionTypes.SET_THEME,
-        payload: { theme }
+        payload: { theme },
       });
     }, []),
 
@@ -277,14 +277,14 @@ export const AppProvider = ({ children }) => {
     setLanguage: useCallback((language) => {
       dispatch({
         type: ActionTypes.SET_LANGUAGE,
-        payload: { language }
+        payload: { language },
       });
     }, []),
 
     setGlobalLoading: useCallback((loading) => {
       dispatch({
         type: ActionTypes.SET_GLOBAL_LOADING,
-        payload: { loading }
+        payload: { loading },
       });
     }, []),
 
@@ -292,14 +292,14 @@ export const AppProvider = ({ children }) => {
     setPreferences: useCallback((preferences) => {
       dispatch({
         type: ActionTypes.SET_PREFERENCES,
-        payload: { preferences }
+        payload: { preferences },
       });
     }, []),
 
     updatePreference: useCallback((key, value) => {
       dispatch({
         type: ActionTypes.UPDATE_PREFERENCE,
-        payload: { key, value }
+        payload: { key, value },
       });
     }, []),
 
@@ -307,14 +307,14 @@ export const AppProvider = ({ children }) => {
     toggleFeature: useCallback((feature) => {
       dispatch({
         type: ActionTypes.TOGGLE_FEATURE,
-        payload: { feature }
+        payload: { feature },
       });
     }, []),
 
     setFeatures: useCallback((features) => {
       dispatch({
         type: ActionTypes.SET_FEATURES,
-        payload: { features }
+        payload: { features },
       });
     }, []),
 
@@ -325,7 +325,7 @@ export const AppProvider = ({ children }) => {
 
     getPreference: useCallback((key, defaultValue = null) => {
       return state.preferences[key] !== undefined ? state.preferences[key] : defaultValue;
-    }, [state.preferences])
+    }, [state.preferences]),
   };
 
   return (

@@ -21,7 +21,7 @@ export const useErrorRecovery = (operationType = 'api') => {
     const {
       showToast = true,
       toastMessage = 'Operation failed, retrying...',
-      context = {}
+      context = {},
     } = options;
 
     setIsRetrying(true);
@@ -31,7 +31,7 @@ export const useErrorRecovery = (operationType = 'api') => {
       const result = await frontendErrorRecoveryService.executeWithRetry(
         operation,
         operationType,
-        context
+        context,
       );
 
       if (retryCount > 0) {
@@ -43,7 +43,7 @@ export const useErrorRecovery = (operationType = 'api') => {
 
     } catch (error) {
       setLastError(error);
-      
+
       if (showToast) {
         if (error.retryExhausted) {
           toast.error(`Operation failed after ${error.maxRetries} attempts`);
@@ -67,7 +67,7 @@ export const useErrorRecovery = (operationType = 'api') => {
   const executeAPICall = useCallback(async (apiCall, options = {}) => {
     return executeWithRetry(apiCall, {
       operationType: 'api',
-      ...options
+      ...options,
     });
   }, [executeWithRetry]);
 
@@ -80,7 +80,7 @@ export const useErrorRecovery = (operationType = 'api') => {
   const executeFileUpload = useCallback(async (uploadFunction, options = {}) => {
     return executeWithRetry(uploadFunction, {
       operationType: 'fileUpload',
-      ...options
+      ...options,
     });
   }, [executeWithRetry]);
 
@@ -93,7 +93,7 @@ export const useErrorRecovery = (operationType = 'api') => {
   const executeAuthOperation = useCallback(async (authOperation, options = {}) => {
     return executeWithRetry(authOperation, {
       operationType: 'auth',
-      ...options
+      ...options,
     });
   }, [executeWithRetry]);
 
@@ -131,7 +131,7 @@ export const useErrorRecovery = (operationType = 'api') => {
     resetCircuitBreaker,
     isRetrying,
     retryCount,
-    lastError
+    lastError,
   };
 };
 
@@ -165,7 +165,7 @@ export const useCircuitBreakerMonitor = () => {
 
   const startMonitoring = useCallback(() => {
     setIsMonitoring(true);
-    
+
     const updateStatuses = () => {
       const currentStatuses = frontendErrorRecoveryService.getAllCircuitBreakerStatuses();
       setStatuses(currentStatuses);
@@ -191,7 +191,7 @@ export const useCircuitBreakerMonitor = () => {
     statuses,
     isMonitoring,
     startMonitoring,
-    stopMonitoring
+    stopMonitoring,
   };
 };
 

@@ -7,12 +7,12 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Building2, 
-  Users, 
-  FileText, 
-  TrendingUp, 
-  Shield, 
+import {
+  Building2,
+  Users,
+  FileText,
+  TrendingUp,
+  Shield,
   Search,
   Plus,
   Eye,
@@ -28,7 +28,7 @@ import {
   Star,
   MapPin,
   Phone,
-  Mail
+  Mail,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -80,7 +80,7 @@ const AdminCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to add CA firm: ${error.message}`);
-    }
+    },
   });
 
   // Update CA firm status mutation
@@ -96,7 +96,7 @@ const AdminCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update CA firm: ${error.message}`);
-    }
+    },
   });
 
   // Delete CA firm mutation
@@ -112,7 +112,7 @@ const AdminCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to delete CA firm: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (firmId, newStatus) => {
@@ -178,7 +178,7 @@ const AdminCAFirms = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">CA Firm Management</h1>
             </div>
-            
+
             <button
               onClick={() => setShowAddForm(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -203,7 +203,7 @@ const AdminCAFirms = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -213,7 +213,7 @@ const AdminCAFirms = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Clock className="h-8 w-8 text-orange-600" />
@@ -223,7 +223,7 @@ const AdminCAFirms = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Users className="h-8 w-8 text-purple-600" />
@@ -249,7 +249,7 @@ const AdminCAFirms = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Status Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-400" />
@@ -293,7 +293,7 @@ const AdminCAFirms = () => {
                 {firms.length} CA Firm{firms.length !== 1 ? 's' : ''}
               </h2>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {firms.map((firm) => (
                 <div key={firm.firm_id} className="px-6 py-4 hover:bg-gray-50">
@@ -313,7 +313,7 @@ const AdminCAFirms = () => {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -329,7 +329,7 @@ const AdminCAFirms = () => {
                               <span>{firm.email}</span>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
                               <Users className="h-4 w-4" />
@@ -345,7 +345,7 @@ const AdminCAFirms = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="mt-3 text-xs text-gray-500">
                           Registered: {new Date(firm.created_at).toLocaleDateString()}
                           {firm.last_activity && (
@@ -356,7 +356,7 @@ const AdminCAFirms = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => navigate(`/admin/ca-firms/${firm.firm_id}`)}
@@ -365,7 +365,7 @@ const AdminCAFirms = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      
+
                       <button
                         onClick={() => navigate(`/admin/ca-firms/${firm.firm_id}/edit`)}
                         className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
@@ -373,7 +373,7 @@ const AdminCAFirms = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      
+
                       {firm.status === 'pending' && (
                         <button
                           onClick={() => handleStatusUpdate(firm.firm_id, 'active')}
@@ -383,7 +383,7 @@ const AdminCAFirms = () => {
                           <CheckCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {firm.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(firm.firm_id, 'suspended')}
@@ -393,7 +393,7 @@ const AdminCAFirms = () => {
                           <AlertCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => handleDeleteFirm(firm.firm_id, firm.firm_name)}
                         className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
@@ -440,7 +440,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
     gst_number: '',
     pan_number: '',
     is_premium: false,
-    status: 'pending'
+    status: 'pending',
   });
 
   const handleSubmit = (e) => {
@@ -452,7 +452,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New CA Firm</h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -468,7 +468,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter firm name"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Registration Number *
@@ -482,7 +482,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter registration number"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email *
@@ -496,7 +496,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter email"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone *
@@ -510,7 +510,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter phone number"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Person Name *
@@ -524,7 +524,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter contact person name"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Person Email *
@@ -538,7 +538,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter contact person email"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Person Phone *
@@ -552,7 +552,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter contact person phone"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 PAN Number *
@@ -568,7 +568,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               />
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Address Line 1 *
@@ -582,7 +582,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter address line 1"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Address Line 2
@@ -595,7 +595,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter address line 2"
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -610,7 +610,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter city"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 State *
@@ -624,7 +624,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter state"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Pincode *
@@ -639,7 +639,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               />
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -652,7 +652,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               Premium Firm
             </label>
           </div>
-          
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

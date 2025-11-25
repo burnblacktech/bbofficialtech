@@ -35,7 +35,7 @@ export {
   SocialProof,
   MicroCelebration,
   SuccessCelebration,
-  EmotionalStateIndicator
+  EmotionalStateIndicator,
 } from './index';
 
 // Default export for backward compatibility

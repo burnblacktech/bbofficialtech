@@ -61,11 +61,11 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
             minLength: field.validation?.minLength,
             maxLength: field.validation?.maxLength,
             min: field.validation?.min,
-            max: field.validation?.max
+            max: field.validation?.max,
           };
         }
         return acc;
-      }, {})
+      }, {}),
     });
 
     setErrors(validation.results);
@@ -78,15 +78,15 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
       ...prev,
       [sectionId]: {
         ...prev[sectionId],
-        [fieldId]: value
-      }
+        [fieldId]: value,
+      },
     }));
 
     // Clear error for this field
     if (errors[`${sectionId}.${fieldId}`]) {
       setErrors(prev => ({
         ...prev,
-        [`${sectionId}.${fieldId}`]: { isValid: true, errors: [] }
+        [`${sectionId}.${fieldId}`]: { isValid: true, errors: [] },
       }));
     }
 
@@ -97,8 +97,8 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
           ...formData,
           [sectionId]: {
             ...formData[sectionId],
-            [fieldId]: value
-          }
+            [fieldId]: value,
+          },
         });
       }, 2000);
 
@@ -292,9 +292,9 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
         [recommendation.name]: {
           amount: recommendation.suggestedAmount,
           section: recommendation.section,
-          category: recommendation.category
-        }
-      }
+          category: recommendation.category,
+        },
+      },
     }));
   }, []);
 
@@ -360,7 +360,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
               annualIncome: formData.income?.salaryIncome || 500000,
               riskProfile: 'moderate',
               hasHomeLoan: false,
-              dependents: []
+              dependents: [],
             }}
             currentInvestments={formData.investments || {}}
             onRecommendationSelect={handleRecommendationSelect}
@@ -374,7 +374,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
           steps={config.sections.map(section => ({
             id: section.id,
             label: section.title,
-            description: section.description
+            description: section.description,
           }))}
           currentStep={currentSection}
           onStepClick={setCurrentSection}

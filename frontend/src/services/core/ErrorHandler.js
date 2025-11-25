@@ -14,7 +14,7 @@ class ErrorHandler {
       VALIDATION: 'validation',
       BUSINESS: 'business',
       SERVER: 'server',
-      UNKNOWN: 'unknown'
+      UNKNOWN: 'unknown',
     };
   }
 
@@ -76,7 +76,7 @@ class ErrorHandler {
       showMessage = true,
       logError = true,
       customMessage = null,
-      onError = null
+      onError = null,
     } = options;
 
     const category = this.categorizeError(error);
@@ -92,7 +92,7 @@ class ErrorHandler {
         status: error.response?.status,
         url: error.config?.url,
         method: error.config?.method,
-        error
+        error,
       });
     }
 
@@ -115,14 +115,14 @@ class ErrorHandler {
       category,
       message,
       severity,
-      handled: true
+      handled: true,
     };
   }
 
   showUserMessage(message, severity, category) {
     const toastOptions = {
       duration: category === this.errorCategories.NETWORK ? 5000 : 4000,
-      position: 'top-right'
+      position: 'top-right',
     };
 
     switch (severity) {
@@ -148,11 +148,15 @@ class ErrorHandler {
       window.gtag('event', 'exception', {
         description: metadata.message,
         fatal: false,
+        // eslint-disable-next-line camelcase
         custom_map: {
+          // eslint-disable-next-line camelcase
           error_category: metadata.category,
+          // eslint-disable-next-line camelcase
           error_severity: metadata.severity,
-          error_status: error.response?.status
-        }
+          // eslint-disable-next-line camelcase
+          error_status: error.response?.status,
+        },
       });
     }
 
@@ -164,28 +168,28 @@ class ErrorHandler {
   handleNetworkError(error, options = {}) {
     return this.handle(error, {
       customMessage: 'Network error. Please check your connection and try again.',
-      ...options
+      ...options,
     });
   }
 
   handleAuthError(error, options = {}) {
     return this.handle(error, {
       customMessage: 'Authentication required. Please login again.',
-      ...options
+      ...options,
     });
   }
 
   handleValidationError(error, options = {}) {
     return this.handle(error, {
       showMessage: true, // Show validation errors to user
-      ...options
+      ...options,
     });
   }
 
   handleServerError(error, options = {}) {
     return this.handle(error, {
       customMessage: 'Server error. Our team has been notified. Please try again later.',
-      ...options
+      ...options,
     });
   }
 

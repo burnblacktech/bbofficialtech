@@ -11,135 +11,135 @@ const User = sequelize.define('User', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
     validate: {
-      isEmail: true
-    }
+      isEmail: true,
+    },
   },
   passwordHash: {
     type: DataTypes.STRING,
     allowNull: true, // Allow null for OAuth users
-    field: 'password_hash'
+    field: 'password_hash',
   },
-        role: {
-          type: DataTypes.ENUM('SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'END_USER'),
-          defaultValue: 'END_USER',
-          allowNull: false
-        },
+  role: {
+    type: DataTypes.ENUM('SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'END_USER'),
+    defaultValue: 'END_USER',
+    allowNull: false,
+  },
   fullName: {
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'full_name'
+    field: 'full_name',
   },
   phone: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
-      len: [10, 15]
-    }
+      len: [10, 15],
+    },
   },
   googleId: {
     type: DataTypes.STRING,
     allowNull: true,
     unique: true,
-    field: 'google_id'
+    field: 'google_id',
   },
   authProvider: {
     type: DataTypes.ENUM('LOCAL', 'GOOGLE', 'OTHER'),
     defaultValue: 'LOCAL',
     allowNull: false,
-    field: 'auth_provider'
+    field: 'auth_provider',
   },
   providerId: {
     type: DataTypes.STRING,
     allowNull: true,
-    field: 'provider_id'
+    field: 'provider_id',
   },
-        tokenVersion: {
-          type: DataTypes.INTEGER,
-          defaultValue: 0,
-          allowNull: false,
-          field: 'token_version'
-        },
-        caFirmId: {
-          type: DataTypes.UUID,
-          allowNull: true,
-          references: {
-            model: 'ca_firms',
-            key: 'id'
-          },
-          field: 'ca_firm_id'
-        },
+  tokenVersion: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+    field: 'token_version',
+  },
+  caFirmId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'ca_firms',
+      key: 'id',
+    },
+    field: 'ca_firm_id',
+  },
   emailVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-    field: 'email_verified'
+    field: 'email_verified',
   },
   phoneVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-    field: 'phone_verified'
+    field: 'phone_verified',
   },
   lastLoginAt: {
     type: DataTypes.DATE,
     allowNull: true,
-    field: 'last_login_at'
+    field: 'last_login_at',
   },
   status: {
     type: DataTypes.ENUM('active', 'inactive', 'suspended'),
     defaultValue: 'active',
-    allowNull: false
+    allowNull: false,
   },
   onboardingCompleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     allowNull: false,
-    field: 'onboarding_completed'
+    field: 'onboarding_completed',
   },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'created_at'
+    field: 'created_at',
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updated_at'
-  }
+    field: 'updated_at',
+  },
 }, {
   tableName: 'users',
   timestamps: true,
   underscored: true,
-        indexes: [
-          {
-            unique: true,
-            fields: ['email']
-          },
-          {
-            unique: true,
-            fields: ['email', 'auth_provider']
-          },
-          {
-            fields: ['role']
-          },
-          {
-            fields: ['status']
-          },
-          {
-            fields: ['auth_provider']
-          },
-          {
-            fields: ['provider_id']
-          },
-          {
-            fields: ['ca_firm_id']
-          }
-        ]
+  indexes: [
+    {
+      unique: true,
+      fields: ['email'],
+    },
+    {
+      unique: true,
+      fields: ['email', 'auth_provider'],
+    },
+    {
+      fields: ['role'],
+    },
+    {
+      fields: ['status'],
+    },
+    {
+      fields: ['auth_provider'],
+    },
+    {
+      fields: ['provider_id'],
+    },
+    {
+      fields: ['ca_firm_id'],
+    },
+  ],
 });
 
 // Instance methods
@@ -147,9 +147,9 @@ User.prototype.validatePassword = async function(password) {
   try {
     return await bcrypt.compare(password, this.passwordHash);
   } catch (error) {
-    enterpriseLogger.error('Password validation error', { 
+    enterpriseLogger.error('Password validation error', {
       userId: this.id,
-      error: error.message 
+      error: error.message,
     });
     return false;
   }
@@ -176,9 +176,9 @@ User.findByEmail = async function(email) {
   try {
     return await User.findOne({ where: { email: email.toLowerCase() } });
   } catch (error) {
-    enterpriseLogger.error('Find user by email error', { 
+    enterpriseLogger.error('Find user by email error', {
       email,
-      error: error.message 
+      error: error.message,
     });
     throw error;
   }
@@ -186,9 +186,9 @@ User.findByEmail = async function(email) {
 
 User.findActiveUsers = async function() {
   try {
-    return await User.findAll({ 
+    return await User.findAll({
       where: { status: 'active' },
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
     });
   } catch (error) {
     enterpriseLogger.error('Find active users error', { error: error.message });

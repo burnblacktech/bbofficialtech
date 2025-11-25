@@ -28,7 +28,7 @@ const DocumentUpload = () => {
     { value: 'AADHAAR', label: 'Aadhaar', description: 'Aadhaar card copy' },
     { value: 'PAN', label: 'PAN', description: 'PAN card copy' },
     { value: 'SALARY_SLIP', label: 'Salary Slip', description: 'Monthly salary slips' },
-    { value: 'OTHER', label: 'Other', description: 'Other supporting documents' }
+    { value: 'OTHER', label: 'Other', description: 'Other supporting documents' },
   ];
 
   // File validation
@@ -39,7 +39,7 @@ const DocumentUpload = () => {
       'image/jpg',
       'image/png',
       'application/pdf',
-      'image/webp'
+      'image/webp',
     ];
 
     if (file.size > maxSize) {
@@ -81,7 +81,7 @@ const DocumentUpload = () => {
           },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
+              (progressEvent.loaded * 100) / progressEvent.total,
             );
             setUploadProgress(percentCompleted);
           },
@@ -94,15 +94,15 @@ const DocumentUpload = () => {
           category: selectedCategory,
           size: file.size,
           status: 'UPLOADED',
-          uploadedAt: new Date().toISOString()
+          uploadedAt: new Date().toISOString(),
         };
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
       setUploadedFiles(prev => [...prev, ...uploadedFiles]);
-      
+
       toast.success(`${uploadedFiles.length} file(s) uploaded successfully`);
-      
+
     } catch (error) {
       console.error('Upload failed:', error);
       toast.error('Upload failed. Please try again.');
@@ -117,10 +117,10 @@ const DocumentUpload = () => {
     onDrop,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
-      'application/pdf': ['.pdf']
+      'application/pdf': ['.pdf'],
     },
     multiple: true,
-    disabled: uploading || !selectedCategory
+    disabled: uploading || !selectedCategory,
   });
 
   // Format file size
@@ -139,7 +139,7 @@ const DocumentUpload = () => {
       'SCANNING': 'yellow',
       'VERIFIED': 'green',
       'FAILED': 'red',
-      'DELETED': 'gray'
+      'DELETED': 'gray',
     };
     return colors[status] || 'gray';
   };
@@ -186,12 +186,12 @@ const DocumentUpload = () => {
             className={`upload-area ${isDragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
           >
             <input {...getInputProps()} />
-            
+
             {uploading ? (
               <div className="upload-progress">
                 <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
+                  <div
+                    className="progress-fill"
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
                 </div>
@@ -201,8 +201,8 @@ const DocumentUpload = () => {
               <div className="upload-content">
                 <div className="upload-icon">📁</div>
                 <h3>
-                  {isDragActive 
-                    ? 'Drop files here' 
+                  {isDragActive
+                    ? 'Drop files here'
                     : 'Drag & drop files here, or click to select'
                   }
                 </h3>

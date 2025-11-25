@@ -15,11 +15,11 @@ class UserPreferencesService {
   async getUserPreferences() {
     try {
       const response = await apiClient.get('/api/v2/user/preferences');
-      
+
       if (response.data.success) {
         return {
           success: true,
-          data: response.data.data
+          data: response.data.data,
         };
       } else {
         throw new Error(response.data.error || 'Failed to fetch preferences');
@@ -28,7 +28,7 @@ class UserPreferencesService {
       console.error('Error fetching user preferences:', error);
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to fetch preferences'
+        error: error.response?.data?.error || error.message || 'Failed to fetch preferences',
       };
     }
   }
@@ -41,12 +41,12 @@ class UserPreferencesService {
   async updateUserPreferences(preferences) {
     try {
       const response = await apiClient.put('/api/v2/user/preferences', preferences);
-      
+
       if (response.data.success) {
         return {
           success: true,
           data: response.data.data,
-          message: response.data.message
+          message: response.data.message,
         };
       } else {
         throw new Error(response.data.error || 'Failed to update preferences');
@@ -55,7 +55,7 @@ class UserPreferencesService {
       console.error('Error updating user preferences:', error);
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to update preferences'
+        error: error.response?.data?.error || error.message || 'Failed to update preferences',
       };
     }
   }
@@ -68,16 +68,16 @@ class UserPreferencesService {
   async updateInteractionMode(interactionMode) {
     try {
       const response = await apiClient.post('/api/v2/user/preferences/interaction-mode', {
-        interactionMode
+        interactionMode,
       });
-      
+
       if (response.data.success) {
         // Also update localStorage for immediate UI updates
         localStorage.setItem('interactionModePreference', interactionMode);
-        
+
         return {
           success: true,
-          message: response.data.message
+          message: response.data.message,
         };
       } else {
         throw new Error(response.data.error || 'Failed to update interaction mode');
@@ -86,7 +86,7 @@ class UserPreferencesService {
       console.error('Error updating interaction mode:', error);
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to update interaction mode'
+        error: error.response?.data?.error || error.message || 'Failed to update interaction mode',
       };
     }
   }
@@ -98,11 +98,11 @@ class UserPreferencesService {
   async getRecommendedMode() {
     try {
       const response = await apiClient.get('/api/v2/user/preferences/recommended-mode');
-      
+
       if (response.data.success) {
         return {
           success: true,
-          data: response.data.data
+          data: response.data.data,
         };
       } else {
         throw new Error(response.data.error || 'Failed to get recommended mode');
@@ -111,7 +111,7 @@ class UserPreferencesService {
       console.error('Error getting recommended mode:', error);
       return {
         success: false,
-        error: error.response?.data?.error || error.message || 'Failed to get recommended mode'
+        error: error.response?.data?.error || error.message || 'Failed to get recommended mode',
       };
     }
   }
@@ -155,9 +155,9 @@ class UserPreferencesService {
       'partnership': 'source-first',
       'company': 'source-first',
       'trust': 'source-first',
-      'super_admin': 'source-first'
+      'super_admin': 'source-first',
     };
-    
+
     return roleDefaults[userRole] || 'source-first';
   }
 
@@ -184,7 +184,7 @@ class UserPreferencesService {
         description: 'Start by telling us about your salary, business, investments, and other income sources.',
         icon: 'Calculator',
         color: 'blue',
-        estimatedTime: '15-20 minutes'
+        estimatedTime: '15-20 minutes',
       },
       'doc-first': {
         title: 'Doc-First',
@@ -192,7 +192,7 @@ class UserPreferencesService {
         description: 'Upload your Form 16, bank statements, investment proofs, and other documents.',
         icon: 'Upload',
         color: 'green',
-        estimatedTime: '10-15 minutes'
+        estimatedTime: '10-15 minutes',
       },
       'prefill-first': {
         title: 'Prefill-First',
@@ -200,10 +200,10 @@ class UserPreferencesService {
         description: 'Connect your AIS and 26AS to automatically import your income and tax data.',
         icon: 'FileText',
         color: 'purple',
-        estimatedTime: '5-10 minutes'
-      }
+        estimatedTime: '5-10 minutes',
+      },
     };
-    
+
     return modeInfo[mode] || modeInfo['source-first'];
   }
 
@@ -218,18 +218,18 @@ class UserPreferencesService {
       const response = await apiClient.post('/api/v2/user/preferences/track-usage', {
         mode,
         context,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       return {
         success: true,
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       console.error('Error tracking mode usage:', error);
       return {
         success: false,
-        error: error.message || 'Failed to track usage'
+        error: error.message || 'Failed to track usage',
       };
     }
   }

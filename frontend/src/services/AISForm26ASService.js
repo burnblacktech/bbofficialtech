@@ -13,7 +13,7 @@ class AISForm26ASService {
       FORM26AS: '/integrations/income-tax/form26as',
       TDS_DETAILS: '/integrations/income-tax/tds-details',
       TAX_PAID: '/integrations/income-tax/tax-paid',
-      REFUND_STATUS: '/integrations/income-tax/refund-status'
+      REFUND_STATUS: '/integrations/income-tax/refund-status',
     };
 
     this.dataCategories = {
@@ -23,7 +23,7 @@ class AISForm26ASService {
       PROFESSIONAL_FEES: 'P',
       RENT: 'R',
       CAPITAL_GAINS: 'C',
-      OTHER_INCOME: 'O'
+      OTHER_INCOME: 'O',
     };
 
     this.tdsSections = {
@@ -38,7 +38,7 @@ class AISForm26ASService {
       SECTION_195: '195',    // TDS on payments to non-residents
       SECTION_194EE: '194EE', // TDS on National Savings Scheme
       SECTION_194A_1: '194A', // TDS on Interest
-      SECTION_194D: '194D'    // TDS on Insurance Commission
+      SECTION_194D: '194D',    // TDS on Insurance Commission
     };
   }
 
@@ -54,7 +54,7 @@ class AISForm26ASService {
         pan: credentials.pan,
         password: credentials.password,
         dob: credentials.dob,
-        assessmentYear: credentials.assessmentYear || '2024-25'
+        assessmentYear: credentials.assessmentYear || '2024-25',
       };
 
       const response = await apiClient.post(this.endpoints.AUTHENTICATE, authRequest);
@@ -66,7 +66,7 @@ class AISForm26ASService {
           authToken: response.data.authToken,
           sessionId: response.data.sessionId,
           expiresAt: response.data.expiresAt,
-          pan: credentials.pan
+          pan: credentials.pan,
         };
       }
 
@@ -88,7 +88,7 @@ class AISForm26ASService {
       const request = {
         userId,
         authToken,
-        assessmentYear
+        assessmentYear,
       };
 
       const response = await apiClient.post(this.endpoints.AIS_DATA, request);
@@ -103,7 +103,7 @@ class AISForm26ASService {
         return {
           success: true,
           data: processedData,
-          summary: this.generateAISSummary(processedData)
+          summary: this.generateAISSummary(processedData),
         };
       }
 
@@ -125,7 +125,7 @@ class AISForm26ASService {
       const request = {
         userId,
         authToken,
-        assessmentYear
+        assessmentYear,
       };
 
       const response = await apiClient.post(this.endpoints.FORM26AS, request);
@@ -140,7 +140,7 @@ class AISForm26ASService {
         return {
           success: true,
           data: processedData,
-          summary: this.generateForm26ASSummary(processedData)
+          summary: this.generateForm26ASSummary(processedData),
         };
       }
 
@@ -162,7 +162,7 @@ class AISForm26ASService {
       const request = {
         userId,
         authToken,
-        assessmentYear
+        assessmentYear,
       };
 
       const response = await apiClient.post(this.endpoints.TDS_DETAILS, request);
@@ -177,7 +177,7 @@ class AISForm26ASService {
         return {
           success: true,
           data: analyzedData,
-          insights: this.generateTDSInsights(analyzedData)
+          insights: this.generateTDSInsights(analyzedData),
         };
       }
 
@@ -199,7 +199,7 @@ class AISForm26ASService {
       const request = {
         userId,
         authToken,
-        assessmentYear
+        assessmentYear,
       };
 
       const response = await apiClient.post(this.endpoints.TAX_PAID, request);
@@ -214,7 +214,7 @@ class AISForm26ASService {
         return {
           success: true,
           data: processedData,
-          summary: this.generateTaxPaidSummary(processedData)
+          summary: this.generateTaxPaidSummary(processedData),
         };
       }
 
@@ -236,7 +236,7 @@ class AISForm26ASService {
       const request = {
         userId,
         authToken,
-        assessmentYear
+        assessmentYear,
       };
 
       const response = await apiClient.post(this.endpoints.REFUND_STATUS, request);
@@ -250,7 +250,7 @@ class AISForm26ASService {
         console.log('✅ Refund status fetched successfully');
         return {
           success: true,
-          data: processedData
+          data: processedData,
         };
       }
 
@@ -283,7 +283,7 @@ class AISForm26ASService {
         this.fetchForm26ASData(userId, authToken, assessmentYear),
         this.getTDSDetails(userId, authToken, assessmentYear),
         this.getTaxPaidDetails(userId, authToken, assessmentYear),
-        this.checkRefundStatus(userId, authToken, assessmentYear)
+        this.checkRefundStatus(userId, authToken, assessmentYear),
       ]);
 
       // Step 3: Consolidate and analyze data
@@ -292,7 +292,7 @@ class AISForm26ASService {
         form26AS: form26ASData.data,
         tds: tdsDetails.data,
         taxPaid: taxPaidDetails.data,
-        refunds: refundStatus.data
+        refunds: refundStatus.data,
       });
 
       // Step 4: Generate comprehensive analysis
@@ -307,7 +307,7 @@ class AISForm26ASService {
         syncDate: new Date().toISOString(),
         data: consolidatedData,
         analysis,
-        recommendations
+        recommendations,
       });
 
       const result = {
@@ -322,8 +322,8 @@ class AISForm26ASService {
           totalTaxPaid: analysis.totalTaxPaid,
           totalRefundDue: analysis.totalRefundDue,
           dataCompleteness: analysis.dataCompleteness,
-          potentialIssues: analysis.potentialIssues
-        }
+          potentialIssues: analysis.potentialIssues,
+        },
       };
 
       console.log('✅ Comprehensive tax data synchronization completed');
@@ -346,18 +346,18 @@ class AISForm26ASService {
         dividendIncome: [],
         professionalFees: [],
         rentalIncome: [],
-        otherIncome: []
+        otherIncome: [],
       },
       partB: {
         specifiedFinancialTransactions: [],
         specifiedHighValueTransactions: [],
-        immovablePropertyTransactions: []
+        immovablePropertyTransactions: [],
       },
       summary: {
         totalIncome: 0,
         totalTransactions: 0,
-        highValueTransactions: 0
-      }
+        highValueTransactions: 0,
+      },
     };
 
     // Process Part A - Tax Deducted at Source
@@ -373,7 +373,7 @@ class AISForm26ASService {
           dateOfPayment: item.dateOfPayment,
           section: item.section,
           challanSerialNo: item.challanSerialNo,
-          taxDeposited: item.taxDeposited
+          taxDeposited: item.taxDeposited,
         }));
 
       processed.partA.interestIncome = aisData.partA
@@ -384,7 +384,7 @@ class AISForm26ASService {
           amountDeducted: item.amountDeducted,
           dateOfDeduction: item.dateOfDeduction,
           amountPaid: item.amountPaid,
-          natureOfPayment: item.natureOfPayment
+          natureOfPayment: item.natureOfPayment,
         }));
 
       processed.partA.dividendIncome = aisData.partA
@@ -394,7 +394,7 @@ class AISForm26ASService {
           payerPAN: item.payerPAN,
           amountDeducted: item.amountDeducted,
           dateOfDeduction: item.dateOfDeduction,
-          dividendPaid: item.dividendPaid
+          dividendPaid: item.dividendPaid,
         }));
     }
 
@@ -408,7 +408,7 @@ class AISForm26ASService {
           counterPartyName: item.nameOfCounterParty,
           counterPartyPAN: item.panOfCounterParty,
           amount: item.amount,
-          partyType: item.partyType
+          partyType: item.partyType,
         }));
 
       processed.partB.immovablePropertyTransactions = aisData.partB
@@ -420,7 +420,7 @@ class AISForm26ASService {
           sellerName: item.nameOfSeller,
           sellerPAN: item.panOfSeller,
           buyerName: item.nameOfBuyer,
-          buyerPAN: item.panOfBuyer
+          buyerPAN: item.panOfBuyer,
         }));
     }
 
@@ -439,23 +439,23 @@ class AISForm26ASService {
   processForm26ASData(form26ASData) {
     const processed = {
       partA: {
-        tdsDetails: []
+        tdsDetails: [],
       },
       partB: {
-        tdsDetails: []
+        tdsDetails: [],
       },
       partC: {
-        taxPaid: []
+        taxPaid: [],
       },
       partD: {
-        refundDetails: []
+        refundDetails: [],
       },
       summary: {
         totalTDSPartA: 0,
         totalTDSPartB: 0,
         totalTaxPaid: 0,
-        totalRefund: 0
-      }
+        totalRefund: 0,
+      },
     };
 
     // Process Part A - Tax Deducted at Source (Collectible by Deductor)
@@ -472,7 +472,7 @@ class AISForm26ASService {
         taxDeposited: item.taxDeposited,
         challanSerialNumber: item.challanSerialNumber,
         dateOfDepositing: item.dateOfDepositing,
-        interestOnTDS: item.interestOnTDS
+        interestOnTDS: item.interestOnTDS,
       }));
     }
 
@@ -488,7 +488,7 @@ class AISForm26ASService {
         creditAssessmentYear: item.creditAssessmentYear,
         tdsSection: item.tdsSection,
         totalTaxDeducted: item.totalTaxDeducted,
-        totalTaxDeposited: item.totalTaxDeposited
+        totalTaxDeposited: item.totalTaxDeposited,
       }));
     }
 
@@ -502,7 +502,7 @@ class AISForm26ASService {
         minorHead: item.minorHead,
         totalAmountPaid: item.totalAmountPaid,
         description: item.description,
-        interestOnAmount: item.interestOnAmount
+        interestOnAmount: item.interestOnAmount,
       }));
     }
 
@@ -517,7 +517,7 @@ class AISForm26ASService {
         interestAmount: item.interestAmount,
         modeOfPayment: item.modeOfPayment,
         bankName: item.bankName,
-        branchName: item.branchName
+        branchName: item.branchName,
       }));
     }
 
@@ -541,7 +541,7 @@ class AISForm26ASService {
       sectionAnalysis: {},
       monthlyTDS: {},
       mismatches: [],
-      potentialIssues: []
+      potentialIssues: [],
     };
 
     if (!tdsData.tdsDetails) return analysis;
@@ -560,7 +560,7 @@ class AISForm26ASService {
         acc[key] = {
           totalTDS: 0,
           transactions: 0,
-          pan: item.deductorPAN
+          pan: item.deductorPAN,
         };
       }
       acc[key].totalTDS += item.amountDeducted || 0;
@@ -602,8 +602,8 @@ class AISForm26ASService {
         totalIncome: 0,
         totalTDS: 0,
         totalTaxPaid: 0,
-        totalRefund: 0
-      }
+        totalRefund: 0,
+      },
     };
 
     // Consolidate from all sources
@@ -648,7 +648,7 @@ class AISForm26ASService {
       tdsUtilization: this.calculateTDSUtilization(consolidatedData),
       dataCompleteness: this.assessDataCompleteness(consolidatedData),
       potentialIssues: this.identifyPotentialIssues(consolidatedData),
-      recommendations: this.generateRecommendations(consolidatedData)
+      recommendations: this.generateRecommendations(consolidatedData),
     };
   }
 
@@ -686,7 +686,7 @@ class AISForm26ASService {
           deductor: item.deductorName,
           deducted: item.amountDeducted,
           deposited: item.taxDeposited,
-          date: item.dateOnWhichTaxDeducted
+          date: item.dateOnWhichTaxDeducted,
         });
       }
     });
@@ -699,14 +699,14 @@ class AISForm26ASService {
 
     // Check for missing TDS certificates
     const missingCertificates = tdsDetails.filter(item =>
-      item.amountDeducted > 0 && !item.certificateAvailable
+      item.amountDeducted > 0 && !item.certificateAvailable,
     );
 
     if (missingCertificates.length > 0) {
       issues.push({
         type: 'MISSING_CERTIFICATES',
         count: missingCertificates.length,
-        description: `${missingCertificates.length} TDS certificates not available`
+        description: `${missingCertificates.length} TDS certificates not available`,
       });
     }
 
@@ -722,7 +722,7 @@ class AISForm26ASService {
       issues.push({
         type: 'OLD_UNCLAIMED_TDS',
         count: oldTDS.length,
-        description: `${oldTDS.length} old TDS entries not claimed`
+        description: `${oldTDS.length} old TDS entries not claimed`,
       });
     }
 
@@ -733,7 +733,7 @@ class AISForm26ASService {
     try {
       await apiClient.post('/tax-data/save-synchronized', {
         userId,
-        data
+        data,
       });
     } catch (error) {
       console.error('Error saving synchronized tax data:', error);
@@ -766,7 +766,7 @@ class AISForm26ASService {
       totalIncome: consolidated.incomeSources.total || 0,
       totalTDS: consolidated.tdsSummary.total || 0,
       totalTaxPaid: consolidated.taxPayments.reduce((sum, item) => sum + item.amount, 0),
-      totalRefund: consolidated.refunds.reduce((sum, item) => sum + item.amount, 0)
+      totalRefund: consolidated.refunds.reduce((sum, item) => sum + item.amount, 0),
     };
   }
 
@@ -787,7 +787,7 @@ class AISForm26ASService {
       ais: consolidated.aisData ? 100 : 0,
       form26AS: consolidated.form26ASData ? 100 : 0,
       tds: consolidated.tdsDetails ? 100 : 0,
-      overall: 85
+      overall: 85,
     };
   }
 
@@ -815,7 +815,7 @@ class AISForm26ASService {
       deductionClaiming: [],
       tdsMatching: [],
       taxPayment: [],
-      documentation: []
+      documentation: [],
     };
   }
 }

@@ -7,14 +7,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  ArrowLeft, 
-  Plus, 
-  Search, 
-  Filter, 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
+import {
+  ArrowLeft,
+  Plus,
+  Search,
+  Filter,
+  Calendar,
+  Clock,
+  CheckCircle,
   AlertCircle,
   X,
   Eye,
@@ -27,7 +27,7 @@ import {
   ChevronRight,
   ChevronDown,
   Star,
-  MessageCircle
+  MessageCircle,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -62,7 +62,7 @@ const Services = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userServices', user?.user_id]);
-    }
+    },
   });
 
   const handleStatusChange = (serviceId, newStatus) => {
@@ -137,10 +137,10 @@ const Services = () => {
     const matchesSearch = service.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          getServiceTypeLabel(service.service_type).toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || service.status === filterStatus;
     const matchesType = filterType === 'all' || service.service_type === filterType;
-    
+
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -150,7 +150,7 @@ const Services = () => {
     { value: 'in_progress', label: 'In Progress' },
     { value: 'completed', label: 'Completed' },
     { value: 'cancelled', label: 'Cancelled' },
-    { value: 'on_hold', label: 'On Hold' }
+    { value: 'on_hold', label: 'On Hold' },
   ];
 
   const typeOptions = [
@@ -158,7 +158,7 @@ const Services = () => {
     { value: 'itr_filing', label: 'ITR Filing' },
     { value: 'tax_consultation', label: 'Tax Consultation' },
     { value: 'audit', label: 'Audit' },
-    { value: 'other', label: 'Other' }
+    { value: 'other', label: 'Other' },
   ];
 
   if (isLoading) {
@@ -190,7 +190,7 @@ const Services = () => {
                 <p className="text-xs text-neutral-500">{filteredServices.length} services</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -257,8 +257,8 @@ const Services = () => {
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No services found</h3>
               <p className="text-sm text-gray-500 mb-4">
-                {searchTerm || filterStatus !== 'all' || filterType !== 'all' 
-                  ? 'No services match your filters' 
+                {searchTerm || filterStatus !== 'all' || filterType !== 'all'
+                  ? 'No services match your filters'
                   : 'No services available'}
               </p>
               <button
@@ -296,7 +296,7 @@ const Services = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => setSelectedService(service)}
@@ -347,7 +347,7 @@ const Services = () => {
                       <span>{service.progress}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${service.progress}%` }}
                       ></div>
@@ -432,7 +432,7 @@ const Services = () => {
       {/* Bottom Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -443,14 +443,14 @@ const Services = () => {
             <Settings className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Services</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/profile')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/settings')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >

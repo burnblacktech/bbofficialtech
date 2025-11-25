@@ -7,6 +7,9 @@ const router = express.Router();
 const memberController = require('../controllers/MemberController');
 const authMiddleware = require('../middleware/auth');
 const enterpriseLogger = require('../utils/logger');
+const { Op } = require('sequelize');
+const { AppError } = require('../middleware/errorHandler');
+const { FamilyMember } = require('../models');
 
 // Apply authentication middleware to all routes
 router.use(authMiddleware.authenticateToken);
@@ -112,8 +115,8 @@ router.get('/:id/stats', async (req, res, next) => {
     const { id: memberId } = req.params;
 
     // Verify member belongs to user
-    const member = await Member.findOne({
-      where: { id: memberId, userId }
+    const member = await FamilyMember.findOne({
+      where: { id: memberId, userId },
     });
 
     if (!member) {
@@ -122,7 +125,7 @@ router.get('/:id/stats', async (req, res, next) => {
 
     const [filingStats, documentStats] = await Promise.all([
       memberController.getMemberFilingStats(memberId),
-      memberController.getMemberDocumentStats(memberId)
+      memberController.getMemberDocumentStats(memberId),
     ]);
 
     const memberStats = {
@@ -131,7 +134,7 @@ router.get('/:id/stats', async (req, res, next) => {
         fullName: member.fullName,
         pan: member.pan,
         relationship: member.relationship,
-        status: member.status
+        status: member.status,
       },
       filings: filingStats,
       documents: documentStats,
@@ -139,8 +142,8 @@ router.get('/:id/stats', async (req, res, next) => {
         totalFilings: filingStats.totalFilings,
         totalDocuments: documentStats.totalDocuments,
         totalStorage: documentStats.totalStorage,
-        verifiedDocuments: documentStats.verifiedDocuments
-      }
+        verifiedDocuments: documentStats.verifiedDocuments,
+      },
     };
 
     enterpriseLogger.info('Member statistics retrieved', { userId, memberId });
@@ -148,14 +151,14 @@ router.get('/:id/stats', async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Member statistics retrieved successfully',
-      data: memberStats
+      data: memberStats,
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to get member statistics', {
       error: error.message,
       userId: req.user?.userId,
-      memberId: req.params.id
+      memberId: req.params.id,
     });
     next(error);
   }
@@ -189,8 +192,8 @@ router.post('/validate-pan', async (req, res, next) => {
         message: 'PAN validation result',
         data: {
           isValid: false,
-          error: 'Invalid PAN format. PAN should be in format: ABCDE1234F'
-        }
+          error: 'Invalid PAN format. PAN should be in format: ABCDE1234F',
+        },
       });
     }
 
@@ -200,7 +203,7 @@ router.post('/validate-pan', async (req, res, next) => {
       whereClause.id = { [Op.ne]: memberId };
     }
 
-    const existingMember = await Member.findOne({ where: whereClause });
+    const existingMember = await FamilyMember.findOne({ where: whereClause });
 
     res.status(200).json({
       success: true,
@@ -208,16 +211,16 @@ router.post('/validate-pan', async (req, res, next) => {
       data: {
         isValid: !existingMember,
         isDuplicate: !!existingMember,
-        message: existingMember 
+        message: existingMember
           ? `PAN already exists for member: ${existingMember.fullName}`
-          : 'PAN is available'
-      }
+          : 'PAN is available',
+      },
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to validate PAN', {
       error: error.message,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     next(error);
   }
@@ -247,7 +250,7 @@ router.post('/bulk-create', async (req, res, next) => {
     }
 
     // Check current member count
-    const currentCount = await Member.count({ where: { userId } });
+    const currentCount = await FamilyMember.count({ where: { userId } });
     if (currentCount + members.length > 5) {
       throw new AppError('Total members cannot exceed 5', 400);
     }
@@ -257,7 +260,7 @@ router.post('/bulk-create', async (req, res, next) => {
 
     for (const memberData of members) {
       try {
-        const member = await Member.create({
+        const member = await FamilyMember.create({
           userId,
           fullName: memberData.fullName,
           pan: memberData.pan.toUpperCase(),
@@ -265,19 +268,19 @@ router.post('/bulk-create', async (req, res, next) => {
           dateOfBirth: memberData.dateOfBirth,
           gender: memberData.gender,
           status: 'active',
-          metadata: memberData.metadata || {}
+          metadata: memberData.metadata || {},
         });
 
         createdMembers.push({
           id: member.id,
           fullName: member.fullName,
           pan: member.pan,
-          relationship: member.relationship
+          relationship: member.relationship,
         });
       } catch (error) {
         errors.push({
           member: memberData,
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -285,7 +288,7 @@ router.post('/bulk-create', async (req, res, next) => {
     enterpriseLogger.info('Bulk member creation completed', {
       userId,
       created: createdMembers.length,
-      errors: errors.length
+      errors: errors.length,
     });
 
     res.status(201).json({
@@ -297,15 +300,15 @@ router.post('/bulk-create', async (req, res, next) => {
         summary: {
           total: members.length,
           created: createdMembers.length,
-          failed: errors.length
-        }
-      }
+          failed: errors.length,
+        },
+      },
     });
 
   } catch (error) {
     enterpriseLogger.error('Failed to create members in bulk', {
       error: error.message,
-      userId: req.user?.userId
+      userId: req.user?.userId,
     });
     next(error);
   }
@@ -321,13 +324,13 @@ router.use((error, req, res, next) => {
     stack: error.stack,
     url: req.url,
     method: req.method,
-    userId: req.user?.userId
+    userId: req.user?.userId,
   });
 
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
   });
 });
 

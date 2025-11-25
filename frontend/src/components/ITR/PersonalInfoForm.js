@@ -9,15 +9,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Button from '../UI/Button';
 import Card from '../common/Card';
-import { 
-  User, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  User,
+  MapPin,
+  Phone,
+  Mail,
   CreditCard,
   Plus,
   Trash2,
-  Edit3
+  Edit3,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -41,7 +41,7 @@ const personalInfoSchema = yup.object({
     pincode: yup.string()
       .matches(/^[0-9]{6}$/, 'Pincode must be 6 digits')
       .required('Pincode is required'),
-    country: yup.string().default('India')
+    country: yup.string().default('India'),
   }),
   contact: yup.object({
     phone: yup.string()
@@ -50,7 +50,7 @@ const personalInfoSchema = yup.object({
     email: yup.string().email('Invalid email').required('Email is required'),
     alternatePhone: yup.string()
       .matches(/^[0-9]{10}$/, 'Alternate phone must be 10 digits')
-      .optional()
+      .optional(),
   }),
   bankAccounts: yup.array().of(
     yup.object({
@@ -60,18 +60,18 @@ const personalInfoSchema = yup.object({
         .required('IFSC code is required'),
       bankName: yup.string().required('Bank name is required'),
       accountType: yup.string().required('Account type is required'),
-      isPrimary: yup.boolean().default(false)
-    })
-  ).min(1, 'At least one bank account is required')
+      isPrimary: yup.boolean().default(false),
+    }),
+  ).min(1, 'At least one bank account is required'),
 });
 
-const PersonalInfoForm = ({ 
-  data = {}, 
-  onChange, 
-  onNext, 
-  onPrevious, 
-  isFirstStep = true, 
-  isLastStep = false 
+const PersonalInfoForm = ({
+  data = {},
+  onChange,
+  onNext,
+  onPrevious,
+  isFirstStep = true,
+  isLastStep = false,
 }) => {
   const [bankAccounts, setBankAccounts] = useState(data.bankAccounts || []);
   const [editingAccount, setEditingAccount] = useState(null);
@@ -83,7 +83,7 @@ const PersonalInfoForm = ({
     formState: { errors, isValid },
     watch,
     setValue,
-    getValues
+    getValues,
   } = useForm({
     resolver: yupResolver(personalInfoSchema),
     defaultValues: {
@@ -100,15 +100,15 @@ const PersonalInfoForm = ({
         city: data.address?.city || '',
         state: data.address?.state || '',
         pincode: data.address?.pincode || '',
-        country: data.address?.country || 'India'
+        country: data.address?.country || 'India',
       },
       contact: {
         phone: data.contact?.phone || '',
         email: data.contact?.email || '',
-        alternatePhone: data.contact?.alternatePhone || ''
+        alternatePhone: data.contact?.alternatePhone || '',
       },
-      bankAccounts: bankAccounts
-    }
+      bankAccounts: bankAccounts,
+    },
   });
 
   // Watch form values and update parent
@@ -121,7 +121,9 @@ const PersonalInfoForm = ({
   const onSubmit = (formData) => {
     const completeData = { ...formData, bankAccounts };
     onChange(completeData);
-    onNext && onNext(completeData);
+    if (onNext) {
+      onNext(completeData);
+    }
   };
 
   // Bank account management
@@ -129,9 +131,9 @@ const PersonalInfoForm = ({
     const newAccount = {
       ...accountData,
       id: Date.now().toString(),
-      isPrimary: bankAccounts.length === 0 // First account is primary
+      isPrimary: bankAccounts.length === 0, // First account is primary
     };
-    
+
     setBankAccounts([...bankAccounts, newAccount]);
     setShowBankForm(false);
     setEditingAccount(null);
@@ -139,10 +141,10 @@ const PersonalInfoForm = ({
   };
 
   const updateBankAccount = (accountData) => {
-    setBankAccounts(bankAccounts.map(account => 
-      account.id === editingAccount.id 
+    setBankAccounts(bankAccounts.map(account =>
+      account.id === editingAccount.id
         ? { ...account, ...accountData }
-        : account
+        : account,
     ));
     setShowBankForm(false);
     setEditingAccount(null);
@@ -157,7 +159,7 @@ const PersonalInfoForm = ({
   const setPrimaryAccount = (accountId) => {
     setBankAccounts(bankAccounts.map(account => ({
       ...account,
-      isPrimary: account.id === accountId
+      isPrimary: account.id === accountId,
     })));
   };
 
@@ -574,7 +576,7 @@ const BankAccountForm = ({ account, onSave, onCancel }) => {
     accountNumber: account?.accountNumber || '',
     ifscCode: account?.ifscCode || '',
     bankName: account?.bankName || '',
-    accountType: account?.accountType || ''
+    accountType: account?.accountType || '',
   });
 
   const handleSubmit = (e) => {
@@ -592,7 +594,7 @@ const BankAccountForm = ({ account, onSave, onCancel }) => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           {account ? 'Edit Bank Account' : 'Add Bank Account'}
         </h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

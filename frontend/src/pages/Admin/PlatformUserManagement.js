@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Users, 
-  UserPlus, 
+import {
+  Users,
+  UserPlus,
   Search,
   Filter,
   Eye,
@@ -30,7 +30,7 @@ import {
   UserCheck,
   UserX,
   Crown,
-  Star
+  Star,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -84,7 +84,7 @@ const PlatformUserManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to add user: ${error.message}`);
-    }
+    },
   });
 
   // Update user status mutation
@@ -100,7 +100,7 @@ const PlatformUserManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update user: ${error.message}`);
-    }
+    },
   });
 
   // Delete user mutation
@@ -116,7 +116,7 @@ const PlatformUserManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to delete user: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (userId, newStatus) => {
@@ -201,7 +201,7 @@ const PlatformUserManagement = () => {
     { id: 'users', name: 'All Users', count: stats.total || 0 },
     { id: 'active', name: 'Active', count: stats.active || 0 },
     { id: 'pending', name: 'Pending', count: stats.pending || 0 },
-    { id: 'suspended', name: 'Suspended', count: stats.suspended || 0 }
+    { id: 'suspended', name: 'Suspended', count: stats.suspended || 0 },
   ];
 
   const filteredUsers = users.filter(user => {
@@ -232,7 +232,7 @@ const PlatformUserManagement = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Platform User Management</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/platform-admin/users/export')}
@@ -241,7 +241,7 @@ const PlatformUserManagement = () => {
                 <Download className="h-4 w-4" />
                 <span>Export Users</span>
               </button>
-              
+
               <button
                 onClick={() => setShowAddForm(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -267,7 +267,7 @@ const PlatformUserManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -277,7 +277,7 @@ const PlatformUserManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Clock className="h-8 w-8 text-orange-600" />
@@ -287,7 +287,7 @@ const PlatformUserManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <AlertCircle className="h-8 w-8 text-red-600" />
@@ -313,7 +313,7 @@ const PlatformUserManagement = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Role Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-400" />
@@ -332,7 +332,7 @@ const PlatformUserManagement = () => {
                 <option value="guest">Guest</option>
               </select>
             </div>
-            
+
             {/* Status Filter */}
             <select
               value={statusFilter}
@@ -399,7 +399,7 @@ const PlatformUserManagement = () => {
                 {filteredUsers.length} User{filteredUsers.length !== 1 ? 's' : ''}
               </h2>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {filteredUsers.map((user) => (
                 <div key={user.user_id} className="px-6 py-4 hover:bg-gray-50">
@@ -422,7 +422,7 @@ const PlatformUserManagement = () => {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -438,7 +438,7 @@ const PlatformUserManagement = () => {
                               <span>Joined: {new Date(user.created_at).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
                               <Building2 className="h-4 w-4" />
@@ -456,7 +456,7 @@ const PlatformUserManagement = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => navigate(`/platform-admin/users/${user.user_id}`)}
@@ -465,7 +465,7 @@ const PlatformUserManagement = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      
+
                       <button
                         onClick={() => navigate(`/platform-admin/users/${user.user_id}/edit`)}
                         className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
@@ -473,7 +473,7 @@ const PlatformUserManagement = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      
+
                       {user.status === 'pending' && (
                         <button
                           onClick={() => handleStatusUpdate(user.user_id, 'active')}
@@ -483,7 +483,7 @@ const PlatformUserManagement = () => {
                           <CheckCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {user.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(user.user_id, 'suspended')}
@@ -493,7 +493,7 @@ const PlatformUserManagement = () => {
                           <AlertCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => handleDeleteUser(user.user_id, user.name)}
                         className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
@@ -531,7 +531,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
     role: 'user',
     organization: '',
     is_premium: false,
-    status: 'pending'
+    status: 'pending',
   });
 
   const handleSubmit = (e) => {
@@ -543,7 +543,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New User</h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -558,7 +558,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter full name"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address *
@@ -572,7 +572,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter email address"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Mobile Number
@@ -585,7 +585,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter mobile number"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Role *
@@ -604,7 +604,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
               <option value="super_admin">Super Admin</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Organization
@@ -617,7 +617,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter organization name"
             />
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -630,7 +630,7 @@ const AddUserForm = ({ onClose, onSubmit, isLoading }) => {
               Premium User
             </label>
           </div>
-          
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

@@ -7,30 +7,30 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../DesignSystem/DesignSystem';
 import { ModalTransition, FadeInUp } from '../DesignSystem/Animations';
-import { 
-  CreditCard, 
-  Shield, 
-  CheckCircle, 
-  AlertCircle, 
-  X, 
+import {
+  CreditCard,
+  Shield,
+  CheckCircle,
+  AlertCircle,
+  X,
   Lock,
   FileText,
   UserCheck,
-  Clock
+  Clock,
 } from 'lucide-react';
 
-const PaymentModal = ({ 
-  isOpen, 
-  onClose, 
-  filingData, 
+const PaymentModal = ({
+  isOpen,
+  onClose,
+  filingData,
   onPaymentSuccess,
-  onPaymentError 
+  onPaymentError,
 }) => {
   const [paymentData, setPaymentData] = useState({
     amount: 0,
     expertReview: false,
     expertReviewAmount: 0,
-    totalAmount: 0
+    totalAmount: 0,
   });
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
@@ -43,12 +43,12 @@ const PaymentModal = ({
         // Mock API call to get pricing
         const response = await fetch('/api/admin/pricing');
         const pricing = await response.json();
-        
+
         setPaymentData(prev => ({
           ...prev,
           amount: pricing.endUserFilingFee,
           expertReviewAmount: pricing.expertReviewFee,
-          totalAmount: pricing.endUserFilingFee
+          totalAmount: pricing.endUserFilingFee,
         }));
       } catch (error) {
         console.error('Error fetching pricing:', error);
@@ -64,7 +64,7 @@ const PaymentModal = ({
     setPaymentData(prev => ({
       ...prev,
       expertReview: checked,
-      totalAmount: prev.amount + (checked ? prev.expertReviewAmount : 0)
+      totalAmount: prev.amount + (checked ? prev.expertReviewAmount : 0),
     }));
   };
 
@@ -78,14 +78,14 @@ const PaymentModal = ({
 
   const handlePayment = async () => {
     setLoading(true);
-    
+
     try {
       // Create payment order
       const orderResponse = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           amount: paymentData.totalAmount * 100, // Convert to paise
@@ -94,9 +94,9 @@ const PaymentModal = ({
           notes: {
             filingId: filingData.id,
             expertReview: paymentData.expertReview,
-            service: 'ITR Filing'
-          }
-        })
+            service: 'ITR Filing',
+          },
+        }),
       });
 
       const orderData = await orderResponse.json();
@@ -116,7 +116,7 @@ const PaymentModal = ({
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
               },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
@@ -124,8 +124,8 @@ const PaymentModal = ({
                 razorpay_signature: response.razorpay_signature,
                 filingId: filingData.id,
                 expertReview: paymentData.expertReview,
-                amount: paymentData.totalAmount
-              })
+                amount: paymentData.totalAmount,
+              }),
             });
 
             const verifyData = await verifyResponse.json();
@@ -136,7 +136,7 @@ const PaymentModal = ({
                 orderId: response.razorpay_order_id,
                 amount: paymentData.totalAmount,
                 expertReview: paymentData.expertReview,
-                filingId: filingData.id
+                filingId: filingData.id,
               });
             } else {
               onPaymentError('Payment verification failed');
@@ -149,16 +149,16 @@ const PaymentModal = ({
         prefill: {
           name: filingData.userName,
           email: filingData.userEmail,
-          contact: filingData.userPhone
+          contact: filingData.userPhone,
         },
         theme: {
-          color: '#0b0b0b'
+          color: '#0b0b0b',
         },
         modal: {
           ondismiss: () => {
             setLoading(false);
-          }
-        }
+          },
+        },
       };
 
       const razorpay = new window.Razorpay(options);
@@ -176,7 +176,7 @@ const PaymentModal = ({
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -184,7 +184,7 @@ const PaymentModal = ({
     <ModalTransition isOpen={isOpen} className="z-50">
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
-        
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -268,7 +268,7 @@ const PaymentModal = ({
                             Add Expert Review Service
                           </label>
                           <Typography.Small className="text-neutral-600 mt-1">
-                            Get your ITR filing reviewed by our tax experts before submission. 
+                            Get your ITR filing reviewed by our tax experts before submission.
                             Includes detailed feedback and optimization suggestions.
                           </Typography.Small>
                           <div className="mt-2 flex items-center space-x-2">

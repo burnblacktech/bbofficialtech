@@ -5,19 +5,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Plus, 
-  Trash2, 
-  Edit, 
-  TrendingUp, 
-  Shield, 
-  DollarSign, 
+import {
+  Plus,
+  Trash2,
+  Edit,
+  TrendingUp,
+  Shield,
+  DollarSign,
   Calendar,
   Building,
   FileText,
   AlertCircle,
   CheckCircle2,
-  Target
+  Target,
 } from 'lucide-react';
 import { section80CService } from '../../services/apiService';
 import { formValidators } from '../../utils/validators';
@@ -35,61 +35,61 @@ const Section80C = ({ filingId }) => {
     policyNumber: '',
     startDate: '',
     endDate: '',
-    financialYear: '2024-25'
+    financialYear: '2024-25',
   });
   const [formErrors, setFormErrors] = useState({});
 
   // 80C Deduction Types with BurnBlack styling
   const deductionTypes = [
-    { 
-      id: 'EPF', 
-      name: 'Employee Provident Fund', 
-      icon: Building, 
+    {
+      id: 'EPF',
+      name: 'Employee Provident Fund',
+      icon: Building,
       color: 'emerald',
-      description: 'Employer matched contributions'
+      description: 'Employer matched contributions',
     },
-    { 
-      id: 'PPF', 
-      name: 'Public Provident Fund', 
-      icon: Shield, 
+    {
+      id: 'PPF',
+      name: 'Public Provident Fund',
+      icon: Shield,
       color: 'gold',
-      description: '15-year tax saving scheme'
+      description: '15-year tax saving scheme',
     },
-    { 
-      id: 'LIC', 
-      name: 'Life Insurance Premium', 
-      icon: Shield, 
+    {
+      id: 'LIC',
+      name: 'Life Insurance Premium',
+      icon: Shield,
       color: 'royal',
-      description: 'Life insurance policy premiums'
+      description: 'Life insurance policy premiums',
     },
-    { 
-      id: 'ELSS', 
-      name: 'Equity Linked Savings Scheme', 
-      icon: TrendingUp, 
+    {
+      id: 'ELSS',
+      name: 'Equity Linked Savings Scheme',
+      icon: TrendingUp,
       color: 'emerald',
-      description: 'Tax saving mutual funds'
+      description: 'Tax saving mutual funds',
     },
-    { 
-      id: 'ULIP', 
-      name: 'Unit Linked Insurance Plan', 
-      icon: DollarSign, 
+    {
+      id: 'ULIP',
+      name: 'Unit Linked Insurance Plan',
+      icon: DollarSign,
       color: 'gold',
-      description: 'Insurance + investment combo'
+      description: 'Insurance + investment combo',
     },
-    { 
-      id: 'HOME_LOAN_PRINCIPAL', 
-      name: 'Home Loan Principal', 
-      icon: Building, 
+    {
+      id: 'HOME_LOAN_PRINCIPAL',
+      name: 'Home Loan Principal',
+      icon: Building,
       color: 'royal',
-      description: 'Principal amount repayment'
-    }
+      description: 'Principal amount repayment',
+    },
   ];
 
   // Fetch 80C deductions
   const { data: deductionsData, isLoading } = useQuery({
     queryKey: ['section80C', filingId],
     queryFn: () => section80CService.getDeductions(filingId),
-    enabled: !!filingId
+    enabled: !!filingId,
   });
 
   // Add deduction mutation
@@ -99,7 +99,7 @@ const Section80C = ({ filingId }) => {
       queryClient.invalidateQueries(['section80C', filingId]);
       resetForm();
       setShowAddForm(false);
-    }
+    },
   });
 
   // Update deduction mutation
@@ -109,7 +109,7 @@ const Section80C = ({ filingId }) => {
       queryClient.invalidateQueries(['section80C', filingId]);
       resetForm();
       setEditingDeduction(null);
-    }
+    },
   });
 
   // Delete deduction mutation
@@ -117,7 +117,7 @@ const Section80C = ({ filingId }) => {
     mutationFn: (deductionId) => section80CService.deleteDeduction(deductionId),
     onSuccess: () => {
       queryClient.invalidateQueries(['section80C', filingId]);
-    }
+    },
   });
 
   const deductions = deductionsData?.data?.deductions || [];
@@ -127,7 +127,7 @@ const Section80C = ({ filingId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     const validation = formValidators.section80C(formData);
     if (!validation.isValid) {
@@ -139,7 +139,7 @@ const Section80C = ({ filingId }) => {
       if (editingDeduction) {
         await updateDeductionMutation.mutateAsync({
           deductionId: editingDeduction.id,
-          data: formData
+          data: formData,
         });
       } else {
         await addDeductionMutation.mutateAsync(formData);
@@ -160,7 +160,7 @@ const Section80C = ({ filingId }) => {
       policyNumber: deduction.policyNumber || '',
       startDate: deduction.startDate || '',
       endDate: deduction.endDate || '',
-      financialYear: deduction.financialYear || '2024-25'
+      financialYear: deduction.financialYear || '2024-25',
     });
     setShowAddForm(true);
   };
@@ -181,7 +181,7 @@ const Section80C = ({ filingId }) => {
       policyNumber: '',
       startDate: '',
       endDate: '',
-      financialYear: '2024-25'
+      financialYear: '2024-25',
     });
     setFormErrors({});
     setEditingDeduction(null);
@@ -221,7 +221,7 @@ const Section80C = ({ filingId }) => {
             <span className="text-white font-bold">₹{totalAmount.toLocaleString()} / ₹1,50,000</span>
           </div>
           <div className="w-full bg-burnblack-700 rounded-lg h-3">
-            <div 
+            <div
               className="bg-gradient-gold-emerald h-3 rounded-lg transition-all duration-500"
               style={{ width: `${Math.min(utilizationPercentage, 100)}%` }}
             />
@@ -238,7 +238,7 @@ const Section80C = ({ filingId }) => {
         {deductions.map((deduction) => {
           const typeInfo = getDeductionTypeInfo(deduction.deductionType);
           const IconComponent = typeInfo.icon;
-          
+
           return (
             <div
               key={deduction.id}
@@ -488,10 +488,10 @@ const Section80C = ({ filingId }) => {
                   disabled={addDeductionMutation.isLoading || updateDeductionMutation.isLoading}
                   className="flex-1 px-6 py-3 bg-gradient-burnblack-gold text-white rounded-xl hover:shadow-gold-glow transition-all duration-200 disabled:opacity-50"
                 >
-                  {addDeductionMutation.isLoading || updateDeductionMutation.isLoading 
-                    ? 'Saving...' 
-                    : editingDeduction 
-                      ? 'Update Deduction' 
+                  {addDeductionMutation.isLoading || updateDeductionMutation.isLoading
+                    ? 'Saving...'
+                    : editingDeduction
+                      ? 'Update Deduction'
                       : 'Add Deduction'
                   }
                 </button>

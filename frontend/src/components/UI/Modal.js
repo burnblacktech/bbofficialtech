@@ -50,7 +50,7 @@ const Modal = React.forwardRef(({
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
-    full: 'max-w-full mx-4'
+    full: 'max-w-full mx-4',
   };
 
   if (!isOpen) return null;
@@ -59,7 +59,7 @@ const Modal = React.forwardRef(({
     <div
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50',
-        overlayClassName
+        overlayClassName,
       )}
       onClick={handleBackdropClick}
     >
@@ -69,7 +69,7 @@ const Modal = React.forwardRef(({
           'relative bg-white rounded-lg shadow-xl max-h-[90vh] overflow-auto',
           sizeClasses[size],
           contentClassName,
-          className
+          className,
         )}
         onClick={(e) => e.stopPropagation()}
         {...props}

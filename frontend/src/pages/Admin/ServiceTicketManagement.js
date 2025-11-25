@@ -7,21 +7,21 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
-import { 
-  MessageSquare, 
-  Search, 
-  Filter, 
-  Plus, 
-  Eye, 
-  Edit, 
-  CheckCircle, 
-  Clock, 
+import {
+  MessageSquare,
+  Search,
+  Filter,
+  Plus,
+  Eye,
+  Edit,
+  CheckCircle,
+  Clock,
   AlertCircle,
   User,
   Calendar,
   Tag,
   Send,
-  Archive
+  Archive,
 } from 'lucide-react';
 
 const ServiceTicketManagement = () => {
@@ -38,10 +38,10 @@ const ServiceTicketManagement = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       setLoading(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockTickets = [
         {
           id: 'ST-2024-001',
@@ -56,33 +56,33 @@ const ServiceTicketManagement = () => {
             id: 1,
             name: 'John Doe',
             email: 'john.doe@example.com',
-            role: 'user'
+            role: 'user',
           },
           assignedTo: {
             id: 1,
             name: 'Support Agent 1',
-            email: 'support1@burnblack.com'
+            email: 'support1@burnblack.com',
           },
           messages: [
             {
               id: 1,
               sender: 'user',
               message: 'I am trying to upload my Form 16 PDF but it keeps showing an error message. The file size is under 10MB and it is a valid PDF.',
-              timestamp: new Date('2024-01-20T10:30:00')
+              timestamp: new Date('2024-01-20T10:30:00'),
             },
             {
               id: 2,
               sender: 'admin',
               message: 'Thank you for contacting us. I can see the issue you are facing. Let me help you resolve this. Can you please try clearing your browser cache and try uploading again?',
-              timestamp: new Date('2024-01-20T11:00:00')
+              timestamp: new Date('2024-01-20T11:00:00'),
             },
             {
               id: 3,
               sender: 'user',
               message: 'I tried clearing the cache but the issue persists. The error message says "File format not supported" but it is definitely a PDF file.',
-              timestamp: new Date('2024-01-20T14:15:00')
-            }
-          ]
+              timestamp: new Date('2024-01-20T14:15:00'),
+            },
+          ],
         },
         {
           id: 'ST-2024-002',
@@ -97,27 +97,27 @@ const ServiceTicketManagement = () => {
             id: 2,
             name: 'Jane Smith',
             email: 'jane.smith@example.com',
-            role: 'user'
+            role: 'user',
           },
           assignedTo: {
             id: 2,
             name: 'Tax Expert 1',
-            email: 'taxexpert1@burnblack.com'
+            email: 'taxexpert1@burnblack.com',
           },
           messages: [
             {
               id: 1,
               sender: 'user',
               message: 'I want to know the current limits for 80C deductions and what investments are eligible.',
-              timestamp: new Date('2024-01-19T15:45:00')
+              timestamp: new Date('2024-01-19T15:45:00'),
             },
             {
               id: 2,
               sender: 'admin',
               message: 'Hello! I would be happy to help you with 80C deduction information. The current limit for Section 80C is ₹1,50,000 per financial year. Eligible investments include PPF, ELSS, NSC, LIC premiums, and more.',
-              timestamp: new Date('2024-01-20T09:30:00')
-            }
-          ]
+              timestamp: new Date('2024-01-20T09:30:00'),
+            },
+          ],
         },
         {
           id: 'ST-2024-003',
@@ -132,27 +132,27 @@ const ServiceTicketManagement = () => {
             id: 3,
             name: 'CA Firm Alpha',
             email: 'admin@cafirmalpha.com',
-            role: 'ca_firm_admin'
+            role: 'ca_firm_admin',
           },
           assignedTo: {
             id: 3,
             name: 'Billing Support',
-            email: 'billing@burnblack.com'
+            email: 'billing@burnblack.com',
           },
           messages: [
             {
               id: 1,
               sender: 'user',
               message: 'Our CA firm subscription was charged twice this month. Please refund the duplicate charge.',
-              timestamp: new Date('2024-01-18T12:00:00')
+              timestamp: new Date('2024-01-18T12:00:00'),
             },
             {
               id: 2,
               sender: 'admin',
               message: 'I apologize for the inconvenience. I can see the duplicate charge on your account. I have processed a refund for the duplicate amount. You should see the refund in your account within 3-5 business days.',
-              timestamp: new Date('2024-01-19T16:30:00')
-            }
-          ]
+              timestamp: new Date('2024-01-19T16:30:00'),
+            },
+          ],
         },
         {
           id: 'ST-2024-004',
@@ -167,7 +167,7 @@ const ServiceTicketManagement = () => {
             id: 4,
             name: 'Mike Johnson',
             email: 'mike.johnson@example.com',
-            role: 'user'
+            role: 'user',
           },
           assignedTo: null,
           messages: [
@@ -175,12 +175,12 @@ const ServiceTicketManagement = () => {
               id: 1,
               sender: 'user',
               message: 'I paid for expert review but the service is not showing up in my dashboard.',
-              timestamp: new Date('2024-01-20T08:15:00')
-            }
-          ]
-        }
+              timestamp: new Date('2024-01-20T08:15:00'),
+            },
+          ],
+        },
       ];
-      
+
       setTickets(mockTickets);
       setLoading(false);
     };
@@ -194,7 +194,7 @@ const ServiceTicketManagement = () => {
                          ticket.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || ticket.status === filterStatus;
     const matchesPriority = filterPriority === 'all' || ticket.priority === filterPriority;
-    
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -233,7 +233,7 @@ const ServiceTicketManagement = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   };
 
@@ -274,21 +274,21 @@ const ServiceTicketManagement = () => {
 
   const handleSendReply = () => {
     if (!replyText.trim()) return;
-    
+
     // Add reply to ticket
     const newMessage = {
       id: Date.now(),
       sender: 'admin',
       message: replyText,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-    
+
     setSelectedTicket(prev => ({
       ...prev,
       messages: [...prev.messages, newMessage],
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }));
-    
+
     setReplyText('');
     // API call to send reply
     console.log('Sending reply:', replyText);

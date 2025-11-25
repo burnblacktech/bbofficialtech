@@ -25,7 +25,7 @@ const FilingLaunchpad = ({ onStartFiling }) => {
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 text-center mb-3 sm:mb-4 px-2">
             Ready to file your taxes for{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
               Assessment Year 2024-25
@@ -34,8 +34,8 @@ const FilingLaunchpad = ({ onStartFiling }) => {
           </h1>
 
           {/* Subtext */}
-          <p className="text-lg text-gray-600 text-center mb-8 max-w-2xl mx-auto leading-relaxed">
-            Our AI-powered process makes it simple, fast, and secure. 
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 text-center mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
+            Our AI-powered process makes it simple, fast, and secure.
             Let's maximize your refund.
           </p>
 

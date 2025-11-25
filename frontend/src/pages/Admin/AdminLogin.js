@@ -8,21 +8,21 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
-import { 
-  Shield, 
-  Eye, 
-  EyeOff, 
-  AlertCircle, 
+import {
+  Shield,
+  Eye,
+  EyeOff,
+  AlertCircle,
   CheckCircle,
   Lock,
-  User
+  User,
 } from 'lucide-react';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    twoFactorCode: ''
+    twoFactorCode: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ const AdminLogin = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (error) setError('');
@@ -52,7 +52,7 @@ const AdminLogin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     if (isLocked) {
       setError('Account is temporarily locked due to too many failed attempts. Please try again later.');
       return;
@@ -69,11 +69,11 @@ const AdminLogin = () => {
       const validAdmins = [
         { email: 'admin@burnblack.com', password: 'AdminPass123!', role: 'super_admin' },
         { email: 'support@burnblack.com', password: 'SupportPass123!', role: 'platform_admin' },
-        { email: 'billing@burnblack.com', password: 'BillingPass123!', role: 'platform_admin' }
+        { email: 'billing@burnblack.com', password: 'BillingPass123!', role: 'platform_admin' },
       ];
 
-      const admin = validAdmins.find(a => 
-        a.email === formData.email && a.password === formData.password
+      const admin = validAdmins.find(a =>
+        a.email === formData.email && a.password === formData.password,
       );
 
       if (!admin) {
@@ -108,7 +108,7 @@ const AdminLogin = () => {
       const adminToken = btoa(JSON.stringify({
         email: admin.email,
         role: admin.role,
-        loginTime: new Date().toISOString()
+        loginTime: new Date().toISOString(),
       }));
 
       localStorage.setItem('adminToken', adminToken);
@@ -296,7 +296,7 @@ const AdminLogin = () => {
                     Security Notice
                   </Typography.Small>
                   <Typography.Small className="text-neutral-600">
-                    This is a secure administrative portal. All login attempts are logged and monitored. 
+                    This is a secure administrative portal. All login attempts are logged and monitored.
                     Unauthorized access is strictly prohibited.
                   </Typography.Small>
                 </div>

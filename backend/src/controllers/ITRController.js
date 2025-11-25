@@ -5,10 +5,10 @@
 
 const { pool } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
-const validationEngine = require('../services/ValidationEngine');
-const taxComputationEngine = require('../services/TaxComputationEngine');
-const serviceTicketService = require('../services/ServiceTicketService');
-const sseNotificationService = require('../services/SSENotificationService');
+const validationEngine = require('../services/core/ValidationEngine');
+const taxComputationEngine = require('../services/core/TaxComputationEngine');
+const serviceTicketService = require('../services/business/ServiceTicketService');
+const sseNotificationService = require('../services/utils/NotificationService');
 
 class ITRController {
   constructor() {
@@ -81,22 +81,22 @@ class ITRController {
           id: filing.rows[0].id,
           userId,
           itrType,
-          memberId: null // Will be set if filing for family member
+          memberId: null, // Will be set if filing for family member
         };
-        
+
         await serviceTicketService.autoCreateFilingTicket(filingData);
-        
+
         enterpriseLogger.info('Auto-generated service ticket created for filing', {
           filingId: filing.rows[0].id,
           userId,
-          itrType
+          itrType,
         });
       } catch (ticketError) {
         // Don't fail the draft creation if ticket creation fails
         enterpriseLogger.error('Failed to auto-create service ticket', {
           error: ticketError.message,
           filingId: filing.rows[0].id,
-          userId
+          userId,
         });
       }
 
@@ -131,6 +131,20 @@ class ITRController {
       const userId = req.user.userId;
       const { draftId } = req.params;
       const { formData } = req.body;
+
+      // Get draft to determine ITR type
+      const getDraftQuery = `
+        SELECT itr_type
+        FROM itr_drafts
+        WHERE id = $1 AND user_id = $2
+      `;
+      const draft = await pool.query(getDraftQuery, [draftId, userId]);
+
+      if (draft.rows.length === 0) {
+        return res.status(404).json({ error: 'Draft not found' });
+      }
+
+      const itrType = draft.rows[0].itr_type;
 
       // Validate form data
       const validation = this.validationEngine.validate(itrType.replace('-', '').toLowerCase(), formData);
@@ -217,7 +231,7 @@ class ITRController {
 
       // Validate form data
       const validation = this.validationEngine.validateAll(formData);
-      
+
       // Additional ITR-specific validation
       const itrSpecificValidation = this.validationEngine.validateITRSpecific(itrType, formData);
 
@@ -390,7 +404,7 @@ class ITRController {
         itrType: filing.rows[0].itr_type,
         oldStatus: 'draft',
         newStatus: 'submitted',
-        submittedAt: filing.rows[0].submitted_at
+        submittedAt: filing.rows[0].submitted_at,
       });
 
       res.status(201).json({
@@ -431,7 +445,7 @@ class ITRController {
         JOIN itr_filings f ON d.filing_id = f.id
         WHERE f.user_id = $1
       `;
-      let params = [userId];
+      const params = [userId];
 
       if (status) {
         query += ' AND f.status = $2';
@@ -476,7 +490,7 @@ class ITRController {
         FROM itr_filings 
         WHERE user_id = $1
       `;
-      let params = [userId];
+      const params = [userId];
 
       if (status) {
         query += ' AND status = $2';

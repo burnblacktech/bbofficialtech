@@ -32,19 +32,19 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'"],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
+        defaultSrc: ['\'self\''],
+        styleSrc: ['\'self\'', '\'unsafe-inline\''],
+        scriptSrc: ['\'self\''],
+        imgSrc: ['\'self\'', 'data:', 'https:'],
+        connectSrc: ['\'self\''],
+        fontSrc: ['\'self\''],
+        objectSrc: ['\'none\''],
+        mediaSrc: ['\'self\''],
+        frameSrc: ['\'none\''],
       },
     },
     crossOriginEmbedderPolicy: false,
-  })
+  }),
 );
 
 // Cookie parser
@@ -60,8 +60,8 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 15 * 60 * 1000, // 15 minutes for OAuth state
-    sameSite: 'lax' // Allow cross-site requests for OAuth
-  }
+    sameSite: 'lax', // Allow cross-site requests for OAuth
+  },
 }));
 
 // Initialize Passport
@@ -97,9 +97,11 @@ app.use(
       'Authorization',
       'API-Version',
       'X-Requested-With',
+      'x-correlation-id',
+      'X-Correlation-ID',
     ],
     exposedHeaders: ['API-Version', 'X-Total-Count', 'X-Page-Count'],
-  })
+  }),
 );
 
 // =====================================================
@@ -113,14 +115,14 @@ app.use(
     verify: (req, res, buf) => {
       req.rawBody = buf;
     },
-  })
+  }),
 );
 
 app.use(
   express.urlencoded({
     extended: true,
     limit: '10mb',
-  })
+  }),
 );
 
 // =====================================================
@@ -138,7 +140,7 @@ app.use(
       }
       return compression.filter(req, res);
     },
-  })
+  }),
 );
 
 // =====================================================
@@ -157,7 +159,7 @@ app.use(
       // Skip logging for health checks;
       return req.url === '/api/health' || req.url === '/api/health/';
     },
-  })
+  }),
 );
 
 // =====================================================
@@ -185,7 +187,9 @@ app.use((req, res, next) => {
 // =====================================================
 
 // Register all routes;
-app.use('/api', routes);
+// Use api.js for explicit route mounting (more reliable than automatic discovery)
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
 
 // =====================================================
 // ERROR HANDLING MIDDLEWARE;
@@ -235,6 +239,18 @@ process.on('uncaughtException', error => {
     stack: error.stack,
   });
   process.exit(1);
+});
+
+// Unhandled promise rejection handler;
+process.on('unhandledRejection', (reason, promise) => {
+  enterpriseLogger.error('Unhandled Promise Rejection', {
+    reason: reason instanceof Error ? reason.message : String(reason),
+    stack: reason instanceof Error ? reason.stack : undefined,
+  });
+  // In production, you might want to exit here, but for development, log and continue
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 });
 
 // =====================================================

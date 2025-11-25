@@ -8,11 +8,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { 
-  BarChart3, 
-  PieChart, 
-  TrendingUp, 
-  Download, 
+import {
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  Download,
   Calendar,
   FileText,
   Users,
@@ -29,7 +29,7 @@ import {
   Settings,
   Database,
   Globe,
-  Shield
+  Shield,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -71,57 +71,57 @@ const AdminReports = () => {
       name: 'Platform Overview',
       description: 'Complete platform statistics and metrics',
       icon: BarChart3,
-      color: 'blue'
+      color: 'blue',
     },
     {
       id: 'users',
       name: 'User Analytics',
       description: 'User behavior, growth, and engagement metrics',
       icon: Users,
-      color: 'green'
+      color: 'green',
     },
     {
       id: 'filings',
       name: 'Filing Reports',
       description: 'ITR filing statistics and performance metrics',
       icon: FileText,
-      color: 'purple'
+      color: 'purple',
     },
     {
       id: 'revenue',
       name: 'Revenue Analysis',
       description: 'Financial performance and revenue tracking',
       icon: DollarSign,
-      color: 'yellow'
+      color: 'yellow',
     },
     {
       id: 'ca-firms',
       name: 'CA Firm Analytics',
       description: 'CA firm performance and client management',
       icon: Building2,
-      color: 'orange'
+      color: 'orange',
     },
     {
       id: 'system',
       name: 'System Performance',
       description: 'System health, performance, and usage metrics',
       icon: Activity,
-      color: 'red'
+      color: 'red',
     },
     {
       id: 'compliance',
       name: 'Compliance Report',
       description: 'Regulatory compliance and audit trail',
       icon: Shield,
-      color: 'indigo'
+      color: 'indigo',
     },
     {
       id: 'security',
       name: 'Security Audit',
       description: 'Security events, threats, and access logs',
       icon: Shield,
-      color: 'red'
-    }
+      color: 'red',
+    },
   ];
 
   const dateRanges = [
@@ -129,14 +129,14 @@ const AdminReports = () => {
     { value: '30d', label: 'Last 30 Days' },
     { value: '90d', label: 'Last 90 Days' },
     { value: '1y', label: 'Last Year' },
-    { value: 'custom', label: 'Custom Range' }
+    { value: 'custom', label: 'Custom Range' },
   ];
 
   const formats = [
     { value: 'pdf', label: 'PDF', icon: FileText },
     { value: 'excel', label: 'Excel', icon: Database },
     { value: 'csv', label: 'CSV', icon: Database },
-    { value: 'json', label: 'JSON', icon: Settings }
+    { value: 'json', label: 'JSON', icon: Settings },
   ];
 
   const handleGenerateReport = () => {
@@ -172,7 +172,7 @@ const AdminReports = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Reports & Analytics</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/admin/reports/scheduled')}
@@ -206,7 +206,7 @@ const AdminReports = () => {
                 ))}
               </select>
             </div>
-            
+
             {/* Date Range */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -222,7 +222,7 @@ const AdminReports = () => {
                 ))}
               </select>
             </div>
-            
+
             {/* Format */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -238,7 +238,7 @@ const AdminReports = () => {
                 ))}
               </select>
             </div>
-            
+
             {/* Generate Button */}
             <div className="flex items-end">
               <button
@@ -321,7 +321,7 @@ const AdminReports = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center">
                 <FileText className="h-8 w-8 text-green-600" />
@@ -331,7 +331,7 @@ const AdminReports = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center">
                 <DollarSign className="h-8 w-8 text-purple-600" />
@@ -341,7 +341,7 @@ const AdminReports = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center">
                 <Building2 className="h-8 w-8 text-orange-600" />
@@ -362,7 +362,7 @@ const AdminReports = () => {
                 <p className="text-gray-500">Trend chart visualization would be implemented here</p>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Distribution</h3>
               <div className="text-center py-8">
@@ -375,7 +375,7 @@ const AdminReports = () => {
           {/* Detailed Metrics */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Detailed Metrics</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">User Growth</h4>
@@ -390,7 +390,7 @@ const AdminReports = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">Filing Performance</h4>
                 <div className="space-y-2">
@@ -404,7 +404,7 @@ const AdminReports = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-2">Revenue Metrics</h4>
                 <div className="space-y-2">

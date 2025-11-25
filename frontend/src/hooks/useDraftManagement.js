@@ -28,7 +28,7 @@ export const useDraftManagement = (filingId, draftType = 'itr_filing') => {
     },
     enabled: !!filingId,
     staleTime: 0, // Always fetch fresh data
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
   });
 
   // Save draft mutation
@@ -38,7 +38,7 @@ export const useDraftManagement = (filingId, draftType = 'itr_filing') => {
         filing_id: filingId,
         draft_type: draftType,
         draft_data: draftData,
-        version: draft?.version ? draft.version + 1 : 1
+        version: draft?.version ? draft.version + 1 : 1,
       });
       return response.data;
     },
@@ -52,7 +52,7 @@ export const useDraftManagement = (filingId, draftType = 'itr_filing') => {
     onError: (error) => {
       setIsSaving(false);
       toast.error('Failed to save draft: ' + error.message);
-    }
+    },
   });
 
   // Auto-save functionality
@@ -99,7 +99,7 @@ export const useDraftManagement = (filingId, draftType = 'itr_filing') => {
     },
     onError: (error) => {
       toast.error('Failed to lock draft: ' + error.message);
-    }
+    },
   });
 
   // Unlock draft
@@ -115,7 +115,7 @@ export const useDraftManagement = (filingId, draftType = 'itr_filing') => {
     },
     onError: (error) => {
       toast.error('Failed to unlock draft: ' + error.message);
-    }
+    },
   });
 
   // Cleanup on unmount
@@ -141,17 +141,17 @@ export const useDraftManagement = (filingId, draftType = 'itr_filing') => {
     lockDraft: lockDraft.mutate,
     unlockDraft: unlockDraft.mutate,
     isLocking: lockDraft.isPending,
-    isUnlocking: unlockDraft.isPending
+    isUnlocking: unlockDraft.isPending,
   };
 };
 
 // Draft Status Component
-export const DraftStatus = ({ 
-  isDirty, 
-  isSaving, 
-  lastSaved, 
-  isLocked, 
-  lockedBy 
+export const DraftStatus = ({
+  isDirty,
+  isSaving,
+  lastSaved,
+  isLocked,
+  lockedBy,
 }) => {
   return (
     <div className="flex items-center space-x-4 text-sm">
@@ -161,21 +161,21 @@ export const DraftStatus = ({
           Saving...
         </div>
       )}
-      
+
       {isDirty && !isSaving && (
         <div className="flex items-center text-orange-600">
           <AlertCircle className="w-4 h-4 mr-1" />
           Unsaved changes
         </div>
       )}
-      
+
       {!isDirty && !isSaving && lastSaved && (
         <div className="flex items-center text-green-600">
           <CheckCircle className="w-4 h-4 mr-1" />
           Saved {lastSaved.toLocaleTimeString()}
         </div>
       )}
-      
+
       {isLocked && (
         <div className="flex items-center text-red-600">
           <AlertCircle className="w-4 h-4 mr-1" />
@@ -187,17 +187,17 @@ export const DraftStatus = ({
 };
 
 // Draft Actions Component
-export const DraftActions = ({ 
-  onSave, 
-  onLock, 
-  onUnlock, 
-  onRestore, 
+export const DraftActions = ({
+  onSave,
+  onLock,
+  onUnlock,
+  onRestore,
   onDelete,
   isSaving,
   isLocked,
   lockedBy,
   currentUser,
-  canEdit = true
+  canEdit = true,
 }) => {
   const canLock = !isLocked && canEdit;
   const canUnlock = isLocked && lockedBy === currentUser?.user_id;
@@ -215,7 +215,7 @@ export const DraftActions = ({
           {isSaving ? 'Saving...' : 'Save'}
         </button>
       )}
-      
+
       {canLock && (
         <button
           onClick={onLock}
@@ -225,7 +225,7 @@ export const DraftActions = ({
           Lock
         </button>
       )}
-      
+
       {canUnlock && (
         <button
           onClick={onUnlock}
@@ -235,7 +235,7 @@ export const DraftActions = ({
           Unlock
         </button>
       )}
-      
+
       <button
         onClick={onRestore}
         className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
@@ -243,7 +243,7 @@ export const DraftActions = ({
         <RotateCcw className="w-4 h-4 mr-1" />
         Restore
       </button>
-      
+
       <button
         onClick={onDelete}
         className="flex items-center px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
@@ -263,7 +263,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
       const response = await api.get(`/drafts/${filingId}/history?type=${draftType}`);
       return response.data.history;
     },
-    enabled: !!filingId
+    enabled: !!filingId,
   });
 
   const restoreVersion = useMutation({
@@ -276,7 +276,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
     },
     onError: (error) => {
       toast.error('Failed to restore version: ' + error.message);
-    }
+    },
   });
 
   if (isLoading) {
@@ -286,7 +286,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Draft History</h3>
-      
+
       <div className="space-y-3">
         {history?.map((version) => (
           <div key={version.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -301,7 +301,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
                 by {version.created_by}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => restoreVersion.mutate(version.id)}
@@ -311,7 +311,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
                 <RotateCcw className="w-3 h-3 mr-1" />
                 Restore
               </button>
-              
+
               <button
                 onClick={() => {
                   const dataStr = JSON.stringify(version.draft_data, null, 2);
@@ -383,7 +383,7 @@ export const DraftImportExport = ({ filingId, draftType, onImport }) => {
         <Download className="w-4 h-4 mr-1" />
         Export
       </button>
-      
+
       <button
         onClick={() => fileInputRef.current?.click()}
         className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -391,7 +391,7 @@ export const DraftImportExport = ({ filingId, draftType, onImport }) => {
         <Upload className="w-4 h-4 mr-1" />
         Import
       </button>
-      
+
       <input
         ref={fileInputRef}
         type="file"
@@ -408,5 +408,5 @@ export default {
   DraftStatus,
   DraftActions,
   DraftHistory,
-  DraftImportExport
+  DraftImportExport,
 };

@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Users, 
-  UserPlus, 
+import {
+  Users,
+  UserPlus,
   Search,
   Filter,
   Eye,
@@ -35,7 +35,7 @@ import {
   DollarSign,
   FileText,
   MapPin,
-  Plus
+  Plus,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -89,7 +89,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to add client: ${error.message}`);
-    }
+    },
   });
 
   // Update client status mutation
@@ -105,7 +105,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update client: ${error.message}`);
-    }
+    },
   });
 
   // Update client tier mutation
@@ -121,7 +121,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update client tier: ${error.message}`);
-    }
+    },
   });
 
   // Delete client mutation
@@ -137,7 +137,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to remove client: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (clientId, newStatus) => {
@@ -214,7 +214,7 @@ const CAFirmClientPortfolio = () => {
     { id: 'all', name: 'All Clients', count: stats.total || 0 },
     { id: 'active', name: 'Active', count: stats.active || 0 },
     { id: 'premium', name: 'Premium', count: stats.premium || 0 },
-    { id: 'pending', name: 'Pending', count: stats.pending || 0 }
+    { id: 'pending', name: 'Pending', count: stats.pending || 0 },
   ];
 
   const filteredClients = clients.filter(client => {
@@ -246,7 +246,7 @@ const CAFirmClientPortfolio = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Client Portfolio</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/ca-firm-admin/clients/export')}
@@ -255,7 +255,7 @@ const CAFirmClientPortfolio = () => {
                 <Download className="h-4 w-4" />
                 <span>Export Portfolio</span>
               </button>
-              
+
               <button
                 onClick={() => setShowAddForm(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -281,7 +281,7 @@ const CAFirmClientPortfolio = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -291,7 +291,7 @@ const CAFirmClientPortfolio = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Crown className="h-8 w-8 text-purple-600" />
@@ -301,7 +301,7 @@ const CAFirmClientPortfolio = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <DollarSign className="h-8 w-8 text-green-600" />
@@ -327,7 +327,7 @@ const CAFirmClientPortfolio = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Status Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-400" />
@@ -343,7 +343,7 @@ const CAFirmClientPortfolio = () => {
                 <option value="suspended">Suspended</option>
               </select>
             </div>
-            
+
             {/* Tier Filter */}
             <select
               value={tierFilter}
@@ -409,7 +409,7 @@ const CAFirmClientPortfolio = () => {
                 {filteredClients.length} Client{filteredClients.length !== 1 ? 's' : ''}
               </h2>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {filteredClients.map((client) => (
                 <div key={client.client_id} className="px-6 py-4 hover:bg-gray-50">
@@ -433,7 +433,7 @@ const CAFirmClientPortfolio = () => {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -449,7 +449,7 @@ const CAFirmClientPortfolio = () => {
                               <span>{client.city}, {client.state}</span>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
                               <FileText className="h-4 w-4" />
@@ -465,7 +465,7 @@ const CAFirmClientPortfolio = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="mt-3 text-xs text-gray-500">
                           Joined: {new Date(client.created_at).toLocaleDateString()}
                           {client.last_activity && (
@@ -476,7 +476,7 @@ const CAFirmClientPortfolio = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => navigate(`/ca-firm-admin/clients/${client.client_id}`)}
@@ -485,7 +485,7 @@ const CAFirmClientPortfolio = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      
+
                       <button
                         onClick={() => navigate(`/ca-firm-admin/clients/${client.client_id}/edit`)}
                         className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
@@ -493,7 +493,7 @@ const CAFirmClientPortfolio = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      
+
                       {client.status === 'pending' && (
                         <button
                           onClick={() => handleStatusUpdate(client.client_id, 'active')}
@@ -503,7 +503,7 @@ const CAFirmClientPortfolio = () => {
                           <CheckCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {client.tier !== 'premium' && (
                         <button
                           onClick={() => handleTierUpdate(client.client_id, 'premium')}
@@ -513,7 +513,7 @@ const CAFirmClientPortfolio = () => {
                           <Crown className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {client.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(client.client_id, 'suspended')}
@@ -523,7 +523,7 @@ const CAFirmClientPortfolio = () => {
                           <AlertCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => handleDeleteClient(client.client_id, client.name)}
                         className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
@@ -567,7 +567,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
     aadhaar_number: '',
     tier: 'basic',
     status: 'pending',
-    is_verified: false
+    is_verified: false,
   });
 
   const handleSubmit = (e) => {
@@ -579,7 +579,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Client</h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -594,7 +594,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter full name"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address *
@@ -608,7 +608,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter email address"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Mobile Number
@@ -621,7 +621,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter mobile number"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               PAN Number *
@@ -636,7 +636,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               maxLength={10}
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Address Line 1 *
@@ -650,7 +650,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter address line 1"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               City *
@@ -664,7 +664,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter city"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               State *
@@ -678,7 +678,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter state"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Pincode *
@@ -692,7 +692,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter pincode"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Tier
@@ -707,7 +707,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               <option value="premium">Premium</option>
             </select>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -720,7 +720,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
               Verified Client
             </label>
           </div>
-          
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

@@ -11,73 +11,73 @@ const CAFirm = sequelize.define('CAFirm', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      len: [2, 255]
-    }
+      len: [2, 255],
+    },
   },
   gstNumber: {
     type: DataTypes.STRING,
     allowNull: true,
     unique: true,
     validate: {
-      len: [15, 15] // GST number format validation
+      len: [15, 15], // GST number format validation
     },
-    field: 'gst_number'
+    field: 'gst_number',
   },
   address: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: true,
   },
   phone: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
-      len: [10, 15]
-    }
+      len: [10, 15],
+    },
   },
   email: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
-      isEmail: true
-    }
+      isEmail: true,
+    },
   },
   createdBy: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: 'users',
-      key: 'id'
+      key: 'id',
     },
-    field: 'created_by'
+    field: 'created_by',
   },
   status: {
     type: DataTypes.ENUM('active', 'inactive', 'suspended'),
     defaultValue: 'active',
-    allowNull: false
+    allowNull: false,
   },
   metadata: {
     type: DataTypes.JSONB,
     allowNull: true,
-    defaultValue: {}
+    defaultValue: {},
   },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
-    field: 'created_at'
+    field: 'created_at',
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
-    field: 'updated_at'
-  }
+    field: 'updated_at',
+  },
 }, {
   tableName: 'ca_firms',
   timestamps: true,
@@ -85,18 +85,18 @@ const CAFirm = sequelize.define('CAFirm', {
   indexes: [
     {
       unique: true,
-      fields: ['gst_number']
+      fields: ['gst_number'],
     },
     {
-      fields: ['created_by']
+      fields: ['created_by'],
     },
     {
-      fields: ['status']
+      fields: ['status'],
     },
     {
-      fields: ['name']
-    }
-  ]
+      fields: ['name'],
+    },
+  ],
 });
 
 // Instance methods
@@ -106,8 +106,8 @@ CAFirm.prototype.getStaffCount = async function() {
     where: {
       caFirmId: this.id,
       role: ['CA', 'CA_FIRM_ADMIN'],
-      status: 'active'
-    }
+      status: 'active',
+    },
   });
 };
 
@@ -117,27 +117,27 @@ CAFirm.prototype.getClientCount = async function() {
     where: {
       caFirmId: this.id,
       role: 'END_USER',
-      status: 'active'
-    }
+      status: 'active',
+    },
   });
 };
 
 CAFirm.prototype.getActiveFilingsCount = async function() {
   const { ITRFiling } = require('./index');
   const { User } = require('./index');
-  
+
   const firmUsers = await User.findAll({
     where: { caFirmId: this.id },
-    attributes: ['id']
+    attributes: ['id'],
   });
-  
+
   const userIds = firmUsers.map(user => user.id);
-  
+
   return await ITRFiling.count({
     where: {
       userId: userIds,
-      status: ['draft', 'submitted', 'under_review']
-    }
+      status: ['draft', 'submitted', 'under_review'],
+    },
   });
 };
 
@@ -146,8 +146,8 @@ CAFirm.findByAdmin = async function(adminUserId) {
   return await this.findOne({
     where: {
       createdBy: adminUserId,
-      status: 'active'
-    }
+      status: 'active',
+    },
   });
 };
 
@@ -156,20 +156,20 @@ CAFirm.getFirmStats = async function(firmId) {
   if (!firm) {
     throw new Error('CA Firm not found');
   }
-  
+
   const [staffCount, clientCount, activeFilingsCount] = await Promise.all([
     firm.getStaffCount(),
     firm.getClientCount(),
-    firm.getActiveFilingsCount()
+    firm.getActiveFilingsCount(),
   ]);
-  
+
   return {
     firm,
     stats: {
       staffCount,
       clientCount,
-      activeFilingsCount
-    }
+      activeFilingsCount,
+    },
   };
 };
 
@@ -178,7 +178,7 @@ CAFirm.beforeCreate(async (firm, options) => {
   enterpriseLogger.info('Creating CA Firm', {
     name: firm.name,
     createdBy: firm.createdBy,
-    gstNumber: firm.gstNumber
+    gstNumber: firm.gstNumber,
   });
 });
 
@@ -186,7 +186,7 @@ CAFirm.afterCreate(async (firm, options) => {
   enterpriseLogger.info('CA Firm created successfully', {
     firmId: firm.id,
     name: firm.name,
-    createdBy: firm.createdBy
+    createdBy: firm.createdBy,
   });
 });
 
@@ -194,7 +194,7 @@ CAFirm.beforeUpdate(async (firm, options) => {
   enterpriseLogger.info('Updating CA Firm', {
     firmId: firm.id,
     name: firm.name,
-    updatedFields: Object.keys(firm.changed())
+    updatedFields: Object.keys(firm.changed()),
   });
 });
 

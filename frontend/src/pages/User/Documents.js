@@ -7,19 +7,20 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  ArrowLeft, 
-  Upload, 
-  Download, 
-  Eye, 
-  Trash2, 
-  FileText, 
-  Image, 
-  File, 
-  Search, 
-  Filter, 
-  Calendar, 
-  User, 
+import toast from 'react-hot-toast';
+import {
+  ArrowLeft,
+  Upload,
+  Download,
+  Eye,
+  Trash2,
+  FileText,
+  Image,
+  File,
+  Search,
+  Filter,
+  Calendar,
+  User,
   MoreVertical,
   CheckCircle,
   AlertCircle,
@@ -33,7 +34,7 @@ import {
   List,
   SortAsc,
   SortDesc,
-  Settings
+  Settings,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -49,6 +50,7 @@ const Documents = () => {
   const [viewMode, setViewMode] = useState('list');
   const [showFilters, setShowFilters] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState(new Set());
+  const [documentToDelete, setDocumentToDelete] = useState(null);
 
   // Fetch documents
   const { data: documentsData, isLoading } = useQuery({
@@ -67,13 +69,13 @@ const Documents = () => {
   const uploadDocumentMutation = useMutation({
     mutationFn: async (formData) => {
       const response = await api.post('/documents/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['documents', user?.user_id]);
-    }
+    },
   });
 
   // Delete document mutation
@@ -84,7 +86,7 @@ const Documents = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['documents', user?.user_id]);
-    }
+    },
   });
 
   const handleFileUpload = async (event) => {
@@ -93,7 +95,7 @@ const Documents = () => {
 
     const formData = new FormData();
     files.forEach((file, index) => {
-      formData.append(`files`, file);
+      formData.append('files', file);
     });
 
     try {
@@ -105,9 +107,18 @@ const Documents = () => {
   };
 
   const handleDeleteDocument = (documentId) => {
-    if (window.confirm('Are you sure you want to delete this document?')) {
-      deleteDocumentMutation.mutate(documentId);
+    setDocumentToDelete(documentId);
+  };
+
+  const confirmDelete = () => {
+    if (documentToDelete) {
+      deleteDocumentMutation.mutate(documentToDelete);
+      setDocumentToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDocumentToDelete(null);
   };
 
   const getFileIcon = (fileType) => {
@@ -131,16 +142,16 @@ const Documents = () => {
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesType = filterType === 'all' || doc.type === filterType;
     const matchesCategory = filterCategory === 'all' || doc.category === filterCategory;
-    
+
     return matchesSearch && matchesType && matchesCategory;
   });
 
   const sortedDocuments = [...filteredDocuments].sort((a, b) => {
     let aValue, bValue;
-    
+
     switch (sortBy) {
       case 'name':
         aValue = a.name?.toLowerCase() || '';
@@ -156,7 +167,7 @@ const Documents = () => {
         bValue = new Date(b.created_at || 0);
         break;
     }
-    
+
     if (sortOrder === 'asc') {
       return aValue > bValue ? 1 : -1;
     } else {
@@ -213,7 +224,7 @@ const Documents = () => {
                 <p className="text-xs text-neutral-500">{sortedDocuments.length} files</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
@@ -261,7 +272,7 @@ const Documents = () => {
               <Filter className="h-4 w-4 text-gray-600" />
               <span className="text-sm font-medium text-gray-900">Filters</span>
             </button>
-            
+
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="flex items-center justify-center space-x-2 p-3 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 active:scale-95 transition-transform"
@@ -328,8 +339,8 @@ const Documents = () => {
               <Folder className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-burnblack-black mb-2">No documents</h3>
               <p className="text-sm text-neutral-500 mb-4">
-                {searchTerm || filterType !== 'all' || filterCategory !== 'all' 
-                  ? 'No documents match your filters' 
+                {searchTerm || filterType !== 'all' || filterCategory !== 'all'
+                  ? 'No documents match your filters'
                   : 'Upload your first document to get started'}
               </p>
               <label className="btn-burnblack px-4 py-2 rounded-lg active:scale-95 transition-transform cursor-pointer">
@@ -387,7 +398,7 @@ const Documents = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-1">
                           <button
                             onClick={() => window.open(doc.url, '_blank')}
@@ -424,7 +435,7 @@ const Documents = () => {
       {/* Bottom Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -435,14 +446,14 @@ const Documents = () => {
             <Folder className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Documents</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/profile')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/settings')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -454,6 +465,35 @@ const Documents = () => {
 
       {/* Bottom padding for mobile navigation */}
       <div className="h-20 md:hidden"></div>
+
+      {/* Delete Confirmation Modal */}
+      {documentToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center mb-4">
+              <AlertCircle className="h-6 w-6 text-red-600 mr-3" />
+              <h3 className="text-lg font-semibold text-gray-900">Delete Document</h3>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this document? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

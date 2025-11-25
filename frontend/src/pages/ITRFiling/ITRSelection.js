@@ -4,15 +4,15 @@ import { useAuth } from '../../contexts/AuthContext';
 import enterpriseDebugger from '../../services/EnterpriseDebugger';
 import EnterpriseErrorBoundary from '../../components/EnterpriseErrorBoundary';
 import {
-  CheckCircle, ArrowRight, Info, Clock, Shield, 
-  Calculator, FileText, Building2, TrendingUp, 
-  AlertTriangle, Users, Briefcase
+  CheckCircle, ArrowRight, Info, Clock, Shield,
+  Calculator, FileText, Building2, TrendingUp,
+  AlertTriangle, Users, Briefcase,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 // ITR Selection Screen - Next step after PAN verification
@@ -22,26 +22,26 @@ const ITRSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  
+
   // Get interaction mode and verification data from navigation state
   const { interactionMode, fromModeSelection, verificationResult, selectedMember } = location.state || {};
   const [selectedITR, setSelectedITR] = useState(null);
-  
+
   // Log interaction mode context
   useEffect(() => {
     if (interactionMode) {
       enterpriseDebugger.log('INFO', 'ITRSelection', 'Received interaction mode context', {
         interactionMode,
         fromModeSelection,
-        user: user?.email
+        user: user?.email,
       });
     }
-    
+
     if (verificationResult) {
       enterpriseDebugger.log('INFO', 'ITRSelection', 'Received PAN verification data', {
         pan: verificationResult.pan,
         isValid: verificationResult.isValid,
-        selectedMember: selectedMember?.name || 'Self'
+        selectedMember: selectedMember?.name || 'Self',
       });
     }
   }, [interactionMode, fromModeSelection, verificationResult, selectedMember, user?.email]);
@@ -60,12 +60,12 @@ const ITRSelection = () => {
         'One house property',
         'Bank interest (up to ₹10,000)',
         'No capital gains',
-        'No business income'
+        'No business income',
       ],
       estimatedTime: '15-20 minutes',
       caRequired: false,
       complexity: 'Simple',
-      color: 'green'
+      color: 'green',
     },
     'ITR-2': {
       name: 'ITR-2',
@@ -76,12 +76,12 @@ const ITRSelection = () => {
         'Multiple house properties',
         'Foreign income',
         'Director/partner income',
-        'Agricultural income'
+        'Agricultural income',
       ],
       estimatedTime: '30-45 minutes',
       caRequired: 'Recommended',
       complexity: 'Moderate',
-      color: 'blue'
+      color: 'blue',
     },
     'ITR-3': {
       name: 'ITR-3',
@@ -92,12 +92,12 @@ const ITRSelection = () => {
         'Professional income',
         'P&L statement required',
         'Balance sheet required',
-        'Audit reports (if applicable)'
+        'Audit reports (if applicable)',
       ],
       estimatedTime: '45-60 minutes',
       caRequired: 'Required',
       complexity: 'Complex',
-      color: 'purple'
+      color: 'purple',
     },
     'ITR-4': {
       name: 'ITR-4 (Sugam)',
@@ -107,13 +107,13 @@ const ITRSelection = () => {
         'Presumptive taxation',
         'Turnover up to ₹2 crores',
         'Simplified calculation',
-        'No detailed P&L required'
+        'No detailed P&L required',
       ],
       estimatedTime: '25-35 minutes',
       caRequired: 'Optional',
       complexity: 'Moderate',
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   };
 
   // Auto-detect ITR type based on PAN data
@@ -121,13 +121,13 @@ const ITRSelection = () => {
     const analyzePANData = async () => {
       try {
         setIsAnalyzing(true);
-        
+
         // Get PAN data from localStorage or API
         const panData = JSON.parse(localStorage.getItem('panVerificationData') || '{}');
-        
+
         // Simple auto-detection logic (can be enhanced with more sophisticated rules)
         let recommended = 'ITR-1'; // Default to simplest
-        
+
         // Check for business indicators
         if (panData.category === 'company' || panData.category === 'partnership') {
           recommended = 'ITR-3';
@@ -136,17 +136,17 @@ const ITRSelection = () => {
         else if (panData.category === 'person' && panData.aadhaarLinked === false) {
           recommended = 'ITR-2';
         }
-        
+
         setRecommendedITR(recommended);
         setSelectedITR(recommended);
         setIsAnalyzing(false);
-        
+
         enterpriseDebugger.log('INFO', 'ITRSelection', 'ITR analysis completed', {
           panData,
           recommendedITR: recommended,
-          userRole: user?.role
+          userRole: user?.role,
         });
-        
+
       } catch (error) {
         console.error('Error analyzing PAN data:', error);
         setRecommendedITR('ITR-1');
@@ -164,25 +164,25 @@ const ITRSelection = () => {
     enterpriseDebugger.log('INFO', 'ITRSelection', 'ITR type selected', {
       selectedITR: itrType,
       recommendedITR,
-      userRole: user?.role
+      userRole: user?.role,
     });
   };
 
   // Proceed to income details
   const handleProceed = () => {
     if (!selectedITR) return;
-    
+
     // Store ITR selection
     localStorage.setItem('selectedITR', selectedITR);
-    
+
     enterpriseDebugger.log('SUCCESS', 'ITRSelection', 'Proceeding to ITR filing', {
       selectedITR,
-      userRole: user?.role
+      userRole: user?.role,
     });
-    
+
     // Navigate to appropriate ITR filing page
     let navigationPath = '/itr/filing'; // Default to ITR-1
-    
+
     if (selectedITR === 'ITR-2') {
       navigationPath = '/itr2/filing';
     } else if (selectedITR === 'ITR-3') {
@@ -190,15 +190,15 @@ const ITRSelection = () => {
     } else if (selectedITR === 'ITR-4') {
       navigationPath = '/itr4/filing'; // Future implementation
     }
-    
+
     navigate(navigationPath, {
       state: {
         selectedITR,
         interactionMode,
         fromModeSelection,
         selectedMember,
-        verificationResult
-      }
+        verificationResult,
+      },
     });
   };
 
@@ -208,7 +208,7 @@ const ITRSelection = () => {
       green: 'border-green-200 bg-green-50 text-green-800',
       blue: 'border-blue-200 bg-blue-50 text-blue-800',
       purple: 'border-purple-200 bg-purple-50 text-purple-800',
-      orange: 'border-orange-200 bg-orange-50 text-orange-800'
+      orange: 'border-orange-200 bg-orange-50 text-orange-800',
     };
     return colors[color] || colors.green;
   };
@@ -217,7 +217,7 @@ const ITRSelection = () => {
     <EnterpriseErrorBoundary>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
@@ -252,7 +252,7 @@ const ITRSelection = () => {
                         <p className="text-gray-600 mb-4">
                           {itrTypes[recommendedITR].description}
                         </p>
-                        
+
                         <div className="flex items-center space-x-6 mb-4">
                           <div className="flex items-center space-x-2">
                             <Clock className="w-4 h-4 text-gray-500" />
@@ -267,7 +267,7 @@ const ITRSelection = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="flex space-x-3">
                           <button
                             onClick={() => handleITRSelection(recommendedITR)}
@@ -301,7 +301,7 @@ const ITRSelection = () => {
                       const IconComponent = itr.icon;
                       const isSelected = selectedITR === key;
                       const isRecommended = key === recommendedITR;
-                      
+
                       return (
                         <div
                           key={key}
@@ -320,7 +320,7 @@ const ITRSelection = () => {
                                 isSelected ? 'text-blue-600' : 'text-gray-600'
                               }`} />
                             </div>
-                            
+
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-2">
                                 <h4 className="font-semibold text-gray-900">{itr.name}</h4>
@@ -330,9 +330,9 @@ const ITRSelection = () => {
                                   </span>
                                 )}
                               </div>
-                              
+
                               <p className="text-sm text-gray-600 mb-3">{itr.description}</p>
-                              
+
                               <div className="space-y-2 mb-4">
                                 <div className="flex items-center space-x-2">
                                   <Clock className="w-4 h-4 text-gray-500" />
@@ -343,7 +343,7 @@ const ITRSelection = () => {
                                   <span className="text-sm text-gray-600">CA: {itr.caRequired}</span>
                                 </div>
                               </div>
-                              
+
                               <div className="text-xs text-gray-500">
                                 <p className="font-medium mb-1">Requirements:</p>
                                 <ul className="list-disc list-inside space-y-1">
@@ -375,7 +375,7 @@ const ITRSelection = () => {
                     <span>Continue with {itrTypes[selectedITR].name}</span>
                     <ArrowRight className="w-5 h-5" />
                   </button>
-                  
+
                   <p className="text-sm text-gray-500 mt-3">
                     Estimated time: {itrTypes[selectedITR].estimatedTime}
                   </p>

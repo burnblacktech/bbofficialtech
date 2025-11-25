@@ -13,7 +13,7 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowLeft,
-  HelpCircle
+  HelpCircle,
 } from 'lucide-react';
 
 const FilingHeader = ({
@@ -25,7 +25,7 @@ const FilingHeader = ({
   onBack,
   showHelp = true,
   onHelp,
-  filingStatus = 'in_progress'
+  filingStatus = 'in_progress',
 }) => {
   const getStatusIcon = () => {
     switch (filingStatus) {

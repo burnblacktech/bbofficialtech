@@ -51,13 +51,13 @@ router.use((error, req, res, next) => {
     stack: error.stack,
     url: req.url,
     method: req.method,
-    userId: req.user?.id
+    userId: req.user?.id,
   });
 
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
   });
 });
 

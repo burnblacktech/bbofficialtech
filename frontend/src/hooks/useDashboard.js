@@ -7,21 +7,21 @@ const useDashboard = () => {
       totalFilings: 0,
       completedFilings: 0,
       pendingFilings: 0,
-      totalTaxSaved: 0
+      totalTaxSaved: 0,
     },
     recentActivity: [],
     notifications: [],
     loading: false,
-    error: null
+    error: null,
   });
 
   const fetchDashboardData = useCallback(async () => {
     setDashboardData(prev => ({ ...prev, loading: true, error: null }));
-    
+
     try {
       // Call the real API endpoint
       const response = await apiClient.get('/dashboard/summary');
-      
+
       if (response.data.success) {
         const data = response.data.data;
         setDashboardData(prev => ({
@@ -30,11 +30,11 @@ const useDashboard = () => {
             totalFilings: data.stats?.totalFilings || 0,
             completedFilings: data.stats?.completedFilings || 0,
             pendingFilings: data.stats?.activeFilings || 0,
-            totalTaxSaved: 0 // Not provided by API
+            totalTaxSaved: 0, // Not provided by API
           },
           recentActivity: data.recentActivity || [],
           notifications: data.notifications || [],
-          loading: false
+          loading: false,
         }));
       } else {
         throw new Error(response.data.message || 'Failed to fetch dashboard data');
@@ -44,7 +44,7 @@ const useDashboard = () => {
       setDashboardData(prev => ({
         ...prev,
         error: error.message,
-        loading: false
+        loading: false,
       }));
     }
   }, []);
@@ -58,17 +58,17 @@ const useDashboard = () => {
       filingCounts: {
         total: dashboardData.userStats.totalFilings,
         inProgress: dashboardData.userStats.pendingFilings,
-        acknowledged: dashboardData.userStats.completedFilings
+        acknowledged: dashboardData.userStats.completedFilings,
       },
       ticketCounts: {
-        total: 0 // Will be implemented with service tickets
-      }
+        total: 0, // Will be implemented with service tickets
+      },
     },
     isLoading: dashboardData.loading,
     error: dashboardData.error,
     refresh: fetchDashboardData,
     recentActivity: dashboardData.recentActivity,
-    notifications: dashboardData.notifications
+    notifications: dashboardData.notifications,
   };
 };
 

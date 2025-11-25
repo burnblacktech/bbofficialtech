@@ -22,161 +22,161 @@ class FeatureFlagsService {
         description: 'Use live SurePass API for PAN verification',
         defaultValue: false,
         type: 'boolean',
-        category: 'verification'
+        category: 'verification',
       },
-      
+
       // ERI Integration
       'feature_eri_live': {
         name: 'ERI Integration Live Mode',
         description: 'Use live ERI API for ITR submission',
         defaultValue: false,
         type: 'boolean',
-        category: 'integration'
+        category: 'integration',
       },
-      
+
       // AI Copilot
       'feature_ai_copilot_enabled': {
         name: 'AI Copilot Enabled',
         description: 'Enable AI Copilot assistance',
         defaultValue: true,
         type: 'boolean',
-        category: 'ai'
+        category: 'ai',
       },
-      
+
       'feature_ai_copilot_llm': {
         name: 'AI Copilot LLM Mode',
         description: 'Use LLM for AI Copilot responses',
         defaultValue: false,
         type: 'boolean',
-        category: 'ai'
+        category: 'ai',
       },
-      
+
       // MFA
       'feature_mfa_enabled': {
         name: 'MFA Enabled',
         description: 'Enable Multi-Factor Authentication',
         defaultValue: true,
         type: 'boolean',
-        category: 'security'
+        category: 'security',
       },
-      
+
       'feature_mfa_submission_only': {
         name: 'MFA Submission Only',
         description: 'Require MFA only for ITR submission',
         defaultValue: true,
         type: 'boolean',
-        category: 'security'
+        category: 'security',
       },
-      
+
       // Document Processing
       'feature_document_ocr': {
         name: 'Document OCR',
         description: 'Enable OCR for document processing',
         defaultValue: false,
         type: 'boolean',
-        category: 'documents'
+        category: 'documents',
       },
-      
+
       'feature_document_ais_prefill': {
         name: 'AIS Prefill',
         description: 'Enable AIS/26AS prefill',
         defaultValue: false,
         type: 'boolean',
-        category: 'documents'
+        category: 'documents',
       },
-      
+
       // Notifications
       'feature_notifications_sse': {
         name: 'SSE Notifications',
         description: 'Enable Server-Sent Events for notifications',
         defaultValue: true,
         type: 'boolean',
-        category: 'notifications'
+        category: 'notifications',
       },
-      
+
       'feature_notifications_email': {
         name: 'Email Notifications',
         description: 'Enable email notifications',
         defaultValue: true,
         type: 'boolean',
-        category: 'notifications'
+        category: 'notifications',
       },
-      
+
       'feature_notifications_sms': {
         name: 'SMS Notifications',
         description: 'Enable SMS notifications',
         defaultValue: false,
         type: 'boolean',
-        category: 'notifications'
+        category: 'notifications',
       },
-      
+
       // Payment
       'feature_payment_online': {
         name: 'Online Payments',
         description: 'Enable online payment processing',
         defaultValue: false,
         type: 'boolean',
-        category: 'payment'
+        category: 'payment',
       },
-      
+
       'feature_payment_razorpay': {
         name: 'Razorpay Integration',
         description: 'Enable Razorpay payment gateway',
         defaultValue: false,
         type: 'boolean',
-        category: 'payment'
+        category: 'payment',
       },
-      
+
       // Admin Features
       'feature_admin_advanced': {
         name: 'Advanced Admin Panel',
         description: 'Enable advanced admin features',
         defaultValue: false,
         type: 'boolean',
-        category: 'admin'
+        category: 'admin',
       },
-      
+
       'feature_admin_analytics': {
         name: 'Admin Analytics',
         description: 'Enable admin analytics dashboard',
         defaultValue: false,
         type: 'boolean',
-        category: 'admin'
+        category: 'admin',
       },
-      
+
       // Service Tickets
       'feature_service_tickets_auto': {
         name: 'Auto Service Tickets',
         description: 'Automatically create service tickets',
         defaultValue: true,
         type: 'boolean',
-        category: 'support'
+        category: 'support',
       },
-      
+
       'feature_service_tickets_chat': {
         name: 'Service Ticket Chat',
         description: 'Enable chat in service tickets',
         defaultValue: false,
         type: 'boolean',
-        category: 'support'
+        category: 'support',
       },
-      
+
       // Performance
       'feature_caching_enabled': {
         name: 'Caching Enabled',
         description: 'Enable application caching',
         defaultValue: true,
         type: 'boolean',
-        category: 'performance'
+        category: 'performance',
       },
-      
+
       'feature_rate_limiting': {
         name: 'Rate Limiting',
         description: 'Enable API rate limiting',
         defaultValue: true,
         type: 'boolean',
-        category: 'performance'
-      }
+        category: 'performance',
+      },
     };
 
     // Initialize flags with default values
@@ -185,12 +185,12 @@ class FeatureFlagsService {
         ...config,
         value: this.getEnvironmentValue(key, config.defaultValue),
         lastUpdated: new Date(),
-        updatedBy: 'system'
+        updatedBy: 'system',
       });
     });
 
     enterpriseLogger.info('Default feature flags initialized', {
-      count: this.flags.size
+      count: this.flags.size,
     });
   }
 
@@ -202,7 +202,7 @@ class FeatureFlagsService {
    */
   getFlag(flagKey, defaultValue = null) {
     const flag = this.flags.get(flagKey);
-    
+
     if (!flag) {
       enterpriseLogger.warn('Feature flag not found', { flagKey });
       return defaultValue;
@@ -220,7 +220,7 @@ class FeatureFlagsService {
    */
   setFlag(flagKey, value, updatedBy = 'system') {
     const flag = this.flags.get(flagKey);
-    
+
     if (!flag) {
       enterpriseLogger.warn('Cannot set non-existent feature flag', { flagKey });
       return false;
@@ -228,10 +228,10 @@ class FeatureFlagsService {
 
     // Validate value type
     if (!this.validateFlagValue(flag, value)) {
-      enterpriseLogger.error('Invalid feature flag value', { 
-        flagKey, 
-        value, 
-        expectedType: flag.type 
+      enterpriseLogger.error('Invalid feature flag value', {
+        flagKey,
+        value,
+        expectedType: flag.type,
       });
       return false;
     }
@@ -243,7 +243,7 @@ class FeatureFlagsService {
     enterpriseLogger.info('Feature flag updated', {
       flagKey,
       value,
-      updatedBy
+      updatedBy,
     });
 
     return true;
@@ -257,7 +257,7 @@ class FeatureFlagsService {
   getAllFlags(category = null) {
     const flags = Array.from(this.flags.entries()).map(([key, config]) => ({
       key,
-      ...config
+      ...config,
     }));
 
     if (category) {
@@ -302,7 +302,7 @@ class FeatureFlagsService {
    */
   getEnvironmentValue(key, defaultValue) {
     const envValue = process.env[key.toUpperCase()];
-    
+
     if (envValue === undefined) {
       return defaultValue;
     }
@@ -311,7 +311,7 @@ class FeatureFlagsService {
     if (typeof defaultValue === 'boolean') {
       return envValue.toLowerCase() === 'true';
     }
-    
+
     if (typeof defaultValue === 'number') {
       return parseInt(envValue, 10);
     }
@@ -327,14 +327,14 @@ class FeatureFlagsService {
    */
   validateFlagValue(flag, value) {
     switch (flag.type) {
-      case 'boolean':
-        return typeof value === 'boolean';
-      case 'string':
-        return typeof value === 'string';
-      case 'number':
-        return typeof value === 'number' && !isNaN(value);
-      default:
-        return true;
+    case 'boolean':
+      return typeof value === 'boolean';
+    case 'string':
+      return typeof value === 'string';
+    case 'number':
+      return typeof value === 'number' && !isNaN(value);
+    default:
+      return true;
     }
   }
 
@@ -344,15 +344,15 @@ class FeatureFlagsService {
    */
   getStats() {
     const flags = Array.from(this.flags.values());
-    
+
     return {
       totalFlags: flags.length,
       enabledFlags: flags.filter(f => f.value === true).length,
       disabledFlags: flags.filter(f => f.value === false).length,
       categories: [...new Set(flags.map(f => f.category))],
-      lastUpdated: flags.reduce((latest, flag) => 
-        flag.lastUpdated > latest ? flag.lastUpdated : latest, new Date(0)
-      )
+      lastUpdated: flags.reduce((latest, flag) =>
+        flag.lastUpdated > latest ? flag.lastUpdated : latest, new Date(0),
+      ),
     };
   }
 
@@ -362,7 +362,7 @@ class FeatureFlagsService {
    */
   exportConfig() {
     const config = {};
-    
+
     this.flags.forEach((flag, key) => {
       config[key] = flag.value;
     });
@@ -388,7 +388,7 @@ class FeatureFlagsService {
     enterpriseLogger.info('Feature flags configuration imported', {
       updatedCount,
       totalFlags: Object.keys(config).length,
-      updatedBy
+      updatedBy,
     });
 
     return updatedCount;
@@ -402,7 +402,7 @@ class FeatureFlagsService {
    */
   resetFlag(flagKey, updatedBy = 'system') {
     const flag = this.flags.get(flagKey);
-    
+
     if (!flag) {
       return false;
     }
@@ -426,7 +426,7 @@ class FeatureFlagsService {
 
     enterpriseLogger.info('All feature flags reset to defaults', {
       resetCount,
-      updatedBy
+      updatedBy,
     });
 
     return resetCount;

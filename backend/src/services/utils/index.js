@@ -8,5 +8,5 @@ const NotificationService = require('./NotificationService');
 
 module.exports = {
   AuditService,
-  NotificationService
+  NotificationService,
 };

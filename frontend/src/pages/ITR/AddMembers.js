@@ -4,24 +4,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Plus, 
-  User, 
-  Edit, 
-  Trash2, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  Plus,
+  User,
+  Edit,
+  Trash2,
+  CheckCircle,
+  AlertCircle,
   Users,
   FileText,
   Calendar,
   CreditCard,
-  Eye
+  Eye,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const AddMembers = () => {
@@ -42,7 +42,7 @@ const AddMembers = () => {
       status: 'active',
       filingsCount: 3,
       lastFiling: '2023-24',
-      createdAt: '2023-01-15'
+      createdAt: '2023-01-15',
     },
     {
       id: '2',
@@ -53,8 +53,8 @@ const AddMembers = () => {
       status: 'active',
       filingsCount: 2,
       lastFiling: '2023-24',
-      createdAt: '2023-02-10'
-    }
+      createdAt: '2023-02-10',
+    },
   ];
 
   const relationshipOptions = [
@@ -66,7 +66,7 @@ const AddMembers = () => {
     'Mother',
     'Brother',
     'Sister',
-    'Other'
+    'Other',
   ];
 
   const [formData, setFormData] = useState({
@@ -75,7 +75,7 @@ const AddMembers = () => {
     relationship: 'Self',
     dateOfBirth: '',
     mobile: '',
-    email: ''
+    email: '',
   });
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const AddMembers = () => {
       relationship: 'Self',
       dateOfBirth: '',
       mobile: '',
-      email: ''
+      email: '',
     });
   };
 
@@ -111,7 +111,7 @@ const AddMembers = () => {
       relationship: member.relationship,
       dateOfBirth: member.dateOfBirth,
       mobile: member.mobile || '',
-      email: member.email || ''
+      email: member.email || '',
     });
     setShowAddForm(true);
   };
@@ -124,7 +124,7 @@ const AddMembers = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validate PAN format
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
     if (!panRegex.test(formData.pan)) {
@@ -141,10 +141,10 @@ const AddMembers = () => {
 
     if (editingMember) {
       // Update existing member
-      setMembers(members.map(m => 
-        m.id === editingMember.id 
+      setMembers(members.map(m =>
+        m.id === editingMember.id
           ? { ...m, ...formData, updatedAt: new Date().toISOString() }
-          : m
+          : m,
       ));
     } else {
       // Add new member
@@ -154,7 +154,7 @@ const AddMembers = () => {
         status: 'active',
         filingsCount: 0,
         lastFiling: null,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
       setMembers([...members, newMember]);
     }
@@ -172,7 +172,7 @@ const AddMembers = () => {
       relationship: 'Self',
       dateOfBirth: '',
       mobile: '',
-      email: ''
+      email: '',
     });
   };
 
@@ -297,7 +297,7 @@ const AddMembers = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               {editingMember ? 'Edit Member' : 'Add New Member'}
             </h3>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

@@ -12,32 +12,32 @@ import api from '../../services/api';
 
 const UserSettings = () => {
   const { user, updateUser } = useAuth();
-  
+
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // Profile settings
   const [profileData, setProfileData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
-    phone: user?.phone || ''
+    phone: user?.phone || '',
   });
-  
+
   // Password change
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
-  
+
   // Notification preferences
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,
     pushNotifications: true,
     filingReminders: true,
     documentUploads: true,
-    systemUpdates: false
+    systemUpdates: false,
   });
 
   useEffect(() => {
@@ -58,11 +58,11 @@ const UserSettings = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       const response = await api.put('/users/profile', profileData);
-      
+
       if (response.data.success) {
         updateUser(response.data.data.user);
         toast.success('Profile updated successfully');
@@ -77,30 +77,30 @@ const UserSettings = () => {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error('New passwords do not match');
       return;
     }
-    
+
     if (passwordData.newPassword.length < 8) {
       toast.error('Password must be at least 8 characters long');
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await api.put('/users/change-password', {
         currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword
+        newPassword: passwordData.newPassword,
       });
-      
+
       if (response.data.success) {
         toast.success('Password changed successfully');
         setPasswordData({
           currentPassword: '',
           newPassword: '',
-          confirmPassword: ''
+          confirmPassword: '',
         });
       }
     } catch (error) {
@@ -115,9 +115,9 @@ const UserSettings = () => {
     try {
       setLoading(true);
       const response = await api.put('/users/settings', {
-        notifications: notificationSettings
+        notifications: notificationSettings,
       });
-      
+
       if (response.data.success) {
         toast.success('Notification settings updated');
       }
@@ -132,7 +132,7 @@ const UserSettings = () => {
   const tabs = [
     { id: 'profile', name: 'Profile', icon: User },
     { id: 'security', name: 'Security', icon: Shield },
-    { id: 'notifications', name: 'Notifications', icon: Bell }
+    { id: 'notifications', name: 'Notifications', icon: Bell },
   ];
 
   return (
@@ -177,7 +177,7 @@ const UserSettings = () => {
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                 Profile Information
               </h3>
-              
+
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -192,7 +192,7 @@ const UserSettings = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Email Address *
@@ -205,7 +205,7 @@ const UserSettings = () => {
                       className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Phone Number
@@ -218,7 +218,7 @@ const UserSettings = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3 pt-4">
                   <Button
                     type="submit"
@@ -242,7 +242,7 @@ const UserSettings = () => {
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                 Change Password
               </h3>
-              
+
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
@@ -265,7 +265,7 @@ const UserSettings = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
                     New Password *
@@ -279,7 +279,7 @@ const UserSettings = () => {
                     className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Confirm New Password *
@@ -293,7 +293,7 @@ const UserSettings = () => {
                     className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
-                
+
                 <div className="flex gap-3 pt-4">
                   <Button
                     type="submit"
@@ -317,7 +317,7 @@ const UserSettings = () => {
               <h3 className="text-lg font-semibold text-neutral-900 mb-4">
                 Notification Preferences
               </h3>
-              
+
               <div className="space-y-4">
                 {Object.entries(notificationSettings).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between">
@@ -345,7 +345,7 @@ const UserSettings = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="flex gap-3 pt-6">
                 <Button
                   onClick={handleNotificationUpdate}

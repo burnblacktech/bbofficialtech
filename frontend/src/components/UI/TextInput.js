@@ -1,16 +1,16 @@
 // Text Input Component
 import React from 'react';
 
-const TextInput = ({ 
-  label, 
-  type = 'text', 
-  value, 
-  onChange, 
-  placeholder, 
-  error, 
-  disabled = false, 
+const TextInput = ({
+  label,
+  type = 'text',
+  value,
+  onChange,
+  placeholder,
+  error,
+  disabled = false,
   className = '',
-  required = false
+  required = false,
 }) => {
   return (
     <div className={`${className}`}>

@@ -7,18 +7,18 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
-import { 
-  ArrowLeft, 
-  BarChart3, 
-  PieChart, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  FileText, 
-  DollarSign, 
-  Calendar, 
-  Download, 
-  RefreshCw, 
+import {
+  ArrowLeft,
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  FileText,
+  DollarSign,
+  Calendar,
+  Download,
+  RefreshCw,
   Filter,
   Eye,
   Activity,
@@ -29,7 +29,7 @@ import {
   Award,
   CheckCircle,
   AlertCircle,
-  Clock3
+  Clock3,
 } from 'lucide-react';
 
 const CAAnalytics = () => {
@@ -47,7 +47,7 @@ const CAAnalytics = () => {
     },
     enabled: !!user?.id,
     staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000 // Refetch every minute
+    refetchInterval: 60 * 1000, // Refetch every minute
   });
 
   const overview = analyticsData?.overview || {};
@@ -122,7 +122,7 @@ const CAAnalytics = () => {
                 <p className="text-xs text-neutral-500">Performance Insights</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleRefresh}

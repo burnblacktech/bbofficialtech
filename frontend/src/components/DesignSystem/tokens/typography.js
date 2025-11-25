@@ -5,7 +5,7 @@
 export const TYPOGRAPHY = {
   fontFamily: {
     sans: ['Inter', 'system-ui', 'sans-serif'],
-    mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace']
+    mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
   },
   fontSize: {
     xs: '0.75rem',    // 12px
@@ -17,7 +17,7 @@ export const TYPOGRAPHY = {
     '3xl': '1.875rem', // 30px
     '4xl': '2.25rem', // 36px
     '5xl': '3rem',    // 48px
-    '6xl': '3.75rem'  // 60px
+    '6xl': '3.75rem',  // 60px
   },
   fontWeight: {
     light: 300,
@@ -25,15 +25,15 @@ export const TYPOGRAPHY = {
     medium: 500,
     semibold: 600,
     bold: 700,
-    extrabold: 800
+    extrabold: 800,
   },
   lineHeight: {
     tight: 1.25,
     snug: 1.375,
     normal: 1.5,
     relaxed: 1.625,
-    loose: 2
-  }
+    loose: 2,
+  },
 };
 
 export default TYPOGRAPHY;

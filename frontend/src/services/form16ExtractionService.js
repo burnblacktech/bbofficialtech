@@ -22,20 +22,20 @@ class Form16ExtractionService {
         name: [/Employer\s*Name[:\s]*([A-Za-z\s&]+(?:Pvt\.?|Ltd\.?|Private\s*Limited)?)/i],
         address: [/Employer\s*Address[:\s]*([^()\n]+?)(?=Date|PAN|TAN)/i],
         pan: [/Employer\s*PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i],
-        tan: [/TAN[:\s]*([A-Z]{4}[0-9]{5}[A-Z])/i]
+        tan: [/TAN[:\s]*([A-Z]{4}[0-9]{5}[A-Z])/i],
       },
 
       // Employee information patterns
       employee: {
         name: [/Employee\s*Name[:\s]*([A-Za-z\s]+?)(?=PAN|Date|Designation)/i],
         pan: [/Employee\s*PAN[:\s]*([A-Z]{5}[0-9]{4}[A-Z])/i],
-        designation: [/Designation[:\s]*([A-Za-z\s,.-]+?)(?=Department|Date)/i]
+        designation: [/Designation[:\s]*([A-Za-z\s,.-]+?)(?=Department|Date)/i],
       },
 
       // Financial year patterns
       financialYear: {
         assessment: [/Assessment\s*Year[:\s]*(\d{4}-\d{2})/i],
-        period: [/Financial\s*Year[:\s]*(\d{4}-\d{2})/i]
+        period: [/Financial\s*Year[:\s]*(\d{4}-\d{2})/i],
       },
 
       // Salary breakdown patterns
@@ -47,7 +47,7 @@ class Form16ExtractionService {
         conveyance: [/Conveyance[:\s]*₹?\s*([\d,]+\.\d{2})/i],
         medical: [/Medical[:\s]*₹?\s*([\d,]+\.\d{2})/i],
         other: [/Other\s*Allowance[:\s]*₹?\s*([\d,]+\.\d{2})/i],
-        perquisites: [/Perquisites[:\s]*₹?\s*([\d,]+\.\d{2})/i]
+        perquisites: [/Perquisites[:\s]*₹?\s*([\d,]+\.\d{2})/i],
       },
 
       // Tax calculation patterns
@@ -59,7 +59,7 @@ class Form16ExtractionService {
         taxOnIncome: [/Tax\s*on\s*Income[:\s]*₹?\s*([\d,]+\.\d{2})/i],
         educationCess: [/Education\s*Cess[:\s]*₹?\s*([\d,]+\.\d{2})/i],
         totalTax: [/Total\s*Tax[:\s]*₹?\s*([\d,]+\.\d{2})/i],
-        tds: [/TDS[:\s]*₹?\s*([\d,]+\.\d{2})/i]
+        tds: [/TDS[:\s]*₹?\s*([\d,]+\.\d{2})/i],
       },
 
       // Monthly salary patterns
@@ -75,8 +75,8 @@ class Form16ExtractionService {
         september: [/Sep[:\s]*₹?\s*([\d,]+\.\d{2})/i],
         october: [/Oct[:\s]*₹?\s*([\d,]+\.\d{2})/i],
         november: [/Nov[:\s]*₹?\s*([\d,]+\.\d{2})/i],
-        december: [/Dec[:\s]*₹?\s*([\d,]+\.\d{2})/i]
-      }
+        december: [/Dec[:\s]*₹?\s*([\d,]+\.\d{2})/i],
+      },
     };
   }
 
@@ -93,8 +93,8 @@ class Form16ExtractionService {
       // Call backend OCR service
       const response = await apiClient.post(this.apiEndpoint, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (!response.success) {
@@ -109,7 +109,7 @@ class Form16ExtractionService {
         data: processedData,
         confidence: response.confidence || 85,
         extractedText: response.extractedText,
-        warnings: response.warnings || []
+        warnings: response.warnings || [],
       };
 
     } catch (error) {
@@ -134,7 +134,7 @@ class Form16ExtractionService {
       financialYear: {},
       salary: {},
       tax: {},
-      monthly: {}
+      monthly: {},
     };
 
     // Extract employer information
@@ -234,7 +234,7 @@ class Form16ExtractionService {
       totalAllowances: allowances,
       totalDeductions,
       variancePercentage: salary.gross && annualFromMonthly ?
-        ((annualFromMonthly - salary.gross) / salary.gross * 100).toFixed(2) : null
+        ((annualFromMonthly - salary.gross) / salary.gross * 100).toFixed(2) : null,
     };
   }
 
@@ -245,7 +245,7 @@ class Form16ExtractionService {
     const validation = {
       isValid: true,
       errors: [],
-      warnings: []
+      warnings: [],
     };
 
     // Check for mandatory fields
@@ -302,7 +302,7 @@ class Form16ExtractionService {
         data: processedData,
         confidence: 75, // Lower confidence for client-side
         extractedText: text,
-        warnings: ['Used client-side extraction - consider server-side for better accuracy']
+        warnings: ['Used client-side extraction - consider server-side for better accuracy'],
       };
     } catch (error) {
       throw new Error(`Client-side extraction failed: ${error.message}`);
@@ -389,7 +389,7 @@ Dec: ₹71,850.00
       pan: extractedData.employee.pan || populatedData.personal?.pan || '',
       employerName: extractedData.employer.name || '',
       employerPan: extractedData.employer.pan || '',
-      designation: extractedData.employee.designation || ''
+      designation: extractedData.employee.designation || '',
     };
 
     // Populate income information
@@ -402,7 +402,7 @@ Dec: ₹71,850.00
       conveyanceAllowance: extractedData.salary.conveyance || 0,
       medicalAllowance: extractedData.salary.medical || 0,
       otherAllowance: extractedData.salary.other || 0,
-      perquisites: extractedData.salary.perquisites || 0
+      perquisites: extractedData.salary.perquisites || 0,
     };
 
     // Populate tax information
@@ -410,14 +410,14 @@ Dec: ₹71,850.00
       ...populatedData.taxes,
       totalTDS: extractedData.tax.tds || 0,
       totalTaxPayable: extractedData.tax.totalTax || 0,
-      educationCess: extractedData.tax.educationCess || 0
+      educationCess: extractedData.tax.educationCess || 0,
     };
 
     // Populate deductions
     populatedData.deductions = {
       ...populatedData.deductions,
       section80C: extractedData.tax.deduction80C || 0,
-      section80D: extractedData.tax.deduction80D || 0
+      section80D: extractedData.tax.deduction80D || 0,
     };
 
     // Add metadata about extraction
@@ -426,7 +426,7 @@ Dec: ₹71,850.00
       extractedAt: new Date().toISOString(),
       confidence: extractedData.confidence || 85,
       employerName: extractedData.employer.name,
-      financialYear: extractedData.financialYear.assessment
+      financialYear: extractedData.financialYear.assessment,
     };
 
     return populatedData;
@@ -444,7 +444,7 @@ Dec: ₹71,850.00
         'Ensure the PDF is clear and readable',
         'Upload the file below',
         'Review extracted information',
-        'Confirm to auto-fill your ITR form'
+        'Confirm to auto-fill your ITR form',
       ],
       acceptedFormats: ['.pdf'],
       maxFileSize: '10MB',
@@ -452,8 +452,8 @@ Dec: ₹71,850.00
         'Ensure the PDF contains all pages of Form 16',
         'Scanned copies should be high quality',
         'Avoid blurry or faded documents',
-        'Make sure PAN and amounts are clearly visible'
-      ]
+        'Make sure PAN and amounts are clearly visible',
+      ],
     };
   }
 
@@ -463,7 +463,7 @@ Dec: ₹71,850.00
   validateForm16File(file) {
     const validation = {
       isValid: true,
-      errors: []
+      errors: [],
     };
 
     // Check file type

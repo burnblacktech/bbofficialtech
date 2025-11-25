@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Plus, Edit3, Trash2, Upload, CheckCircle, 
-  AlertTriangle, Calculator, Briefcase
+import {
+  Plus, Edit3, Trash2, Upload, CheckCircle,
+  AlertTriangle, Calculator, Briefcase,
 } from 'lucide-react';
 import enterpriseDebugger from '../services/EnterpriseDebugger';
 
@@ -15,12 +15,12 @@ const BreakdownInput = ({
   onItemsChange,
   rules = {},
   icon: Icon = Calculator,
-  placeholder = "Enter amount",
-  inputType = "number",
+  placeholder = 'Enter amount',
+  inputType = 'number',
   showProofUpload = false,
   showBreakdown = true,
   maxItems = 10,
-  className = ""
+  className = '',
 }) => {
   const [localItems, setLocalItems] = useState(items);
   const [expandedItems, setExpandedItems] = useState(new Set());
@@ -33,20 +33,20 @@ const BreakdownInput = ({
 
   // Calculate totals and eligibility
   const calculateTotals = useCallback(() => {
-    const eligibleItems = localItems.filter(item => 
-      item.amount > 0 && (!rules.minAmount || item.amount >= rules.minAmount)
+    const eligibleItems = localItems.filter(item =>
+      item.amount > 0 && (!rules.minAmount || item.amount >= rules.minAmount),
     );
-    
+
     const totalEligible = eligibleItems.reduce((sum, item) => sum + (item.amount || 0), 0);
     const finalValue = rules.cap ? Math.min(totalEligible, rules.cap) : totalEligible;
     const isCapReached = rules.cap && totalEligible >= rules.cap;
-    
+
     return {
       totalEligible,
       finalValue,
       isCapReached,
       eligibleItems: eligibleItems.length,
-      totalItems: localItems.length
+      totalItems: localItems.length,
     };
   }, [localItems, rules]);
 
@@ -66,33 +66,33 @@ const BreakdownInput = ({
       source: '',
       proofUploaded: false,
       proofFileId: null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     const updatedItems = [...localItems, newItem];
     setLocalItems(updatedItems);
     onItemsChange(updatedItems);
     setIsAddingItem(true);
-    
-    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Item added', { 
-      title, 
-      totalItems: updatedItems.length 
+
+    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Item added', {
+      title,
+      totalItems: updatedItems.length,
     });
   };
 
   // Update item
   const handleUpdateItem = (itemId, field, value) => {
-    const updatedItems = localItems.map(item => 
-      item.id === itemId ? { ...item, [field]: value } : item
+    const updatedItems = localItems.map(item =>
+      item.id === itemId ? { ...item, [field]: value } : item,
     );
     setLocalItems(updatedItems);
     onItemsChange(updatedItems);
-    
-    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Item updated', { 
-      title, 
-      itemId, 
-      field, 
-      value 
+
+    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Item updated', {
+      title,
+      itemId,
+      field,
+      value,
     });
   };
 
@@ -101,11 +101,11 @@ const BreakdownInput = ({
     const updatedItems = localItems.filter(item => item.id !== itemId);
     setLocalItems(updatedItems);
     onItemsChange(updatedItems);
-    
-    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Item removed', { 
-      title, 
-      itemId, 
-      remainingItems: updatedItems.length 
+
+    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Item removed', {
+      title,
+      itemId,
+      remainingItems: updatedItems.length,
     });
   };
 
@@ -123,12 +123,12 @@ const BreakdownInput = ({
   // Handle proof upload
   const handleProofUpload = (itemId, file) => {
     // TODO: Implement file upload logic
-    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Proof upload initiated', { 
-      title, 
-      itemId, 
-      fileName: file.name 
+    enterpriseDebugger.log('INFO', 'BreakdownInput', 'Proof upload initiated', {
+      title,
+      itemId,
+      fileName: file.name,
     });
-    
+
     // Simulate upload success
     handleUpdateItem(itemId, 'proofUploaded', true);
     handleUpdateItem(itemId, 'proofFileId', `proof_${itemId}_${Date.now()}`);
@@ -149,7 +149,7 @@ const BreakdownInput = ({
             )}
           </div>
         </div>
-        
+
         <button
           onClick={handleAddItem}
           disabled={localItems.length >= maxItems}
@@ -163,8 +163,8 @@ const BreakdownInput = ({
       {/* Rules & Cap Information */}
       {rules.cap && (
         <div className={`p-3 rounded-lg mb-4 ${
-          totals.isCapReached 
-            ? 'bg-yellow-50 border border-yellow-200' 
+          totals.isCapReached
+            ? 'bg-yellow-50 border border-yellow-200'
             : 'bg-green-50 border border-green-200'
         }`}>
           <div className="flex items-center space-x-2">
@@ -176,7 +176,7 @@ const BreakdownInput = ({
             <span className={`text-sm font-medium ${
               totals.isCapReached ? 'text-yellow-800' : 'text-green-800'
             }`}>
-              {totals.isCapReached 
+              {totals.isCapReached
                 ? `Cap reached (₹${rules.cap.toLocaleString()})`
                 : `₹${totals.totalEligible.toLocaleString()} / ₹${rules.cap.toLocaleString()}`
               }
@@ -203,7 +203,7 @@ const BreakdownInput = ({
                   />
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => toggleItemExpansion(item.id)}
@@ -295,7 +295,7 @@ const BreakdownInput = ({
                       rows={2}
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">
                       Date
@@ -336,7 +336,7 @@ const BreakdownInput = ({
                 <span className="ml-1 font-medium">{totals.eligibleItems}</span>
               </div>
             </div>
-            
+
             <div className="text-right">
               <div className="text-lg font-semibold text-gray-900">
                 ₹{totals.finalValue.toLocaleString()}

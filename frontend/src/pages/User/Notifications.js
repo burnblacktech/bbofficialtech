@@ -7,13 +7,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Bell, 
-  ArrowLeft, 
-  Check, 
-  X, 
-  Trash2, 
-  Settings, 
+import {
+  Bell,
+  ArrowLeft,
+  Check,
+  X,
+  Trash2,
+  Settings,
   Filter,
   Search,
   Calendar,
@@ -26,7 +26,7 @@ import {
   MarkAsUnread,
   ChevronRight,
   FileText,
-  User
+  User,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -48,7 +48,7 @@ const Notifications = () => {
     },
     enabled: !!user?.user_id,
     staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000 // Refetch every minute
+    refetchInterval: 60 * 1000, // Refetch every minute
   });
 
   const notifications = notificationsData?.notifications || [];
@@ -61,7 +61,7 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['notifications', user?.user_id]);
-    }
+    },
   });
 
   // Mark all as read mutation
@@ -72,7 +72,7 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['notifications', user?.user_id]);
-    }
+    },
   });
 
   // Delete notification mutation
@@ -83,7 +83,7 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['notifications', user?.user_id]);
-    }
+    },
   });
 
   const handleMarkAsRead = (notificationId) => {
@@ -133,12 +133,12 @@ const Notifications = () => {
   const filteredNotifications = notifications.filter(notification => {
     const matchesSearch = notification.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          notification.message?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesType = filterType === 'all' || notification.type === filterType;
-    const matchesStatus = filterStatus === 'all' || 
+    const matchesStatus = filterStatus === 'all' ||
                          (filterStatus === 'read' && notification.is_read) ||
                          (filterStatus === 'unread' && !notification.is_read);
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -175,7 +175,7 @@ const Notifications = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               {unreadCount > 0 && (
                 <button
@@ -272,8 +272,8 @@ const Notifications = () => {
               <Bell className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-burnblack-black mb-2">No notifications</h3>
               <p className="text-sm text-neutral-500">
-                {searchTerm || filterType !== 'all' || filterStatus !== 'all' 
-                  ? 'No notifications match your filters' 
+                {searchTerm || filterType !== 'all' || filterStatus !== 'all'
+                  ? 'No notifications match your filters'
                   : 'You\'re all caught up!'}
               </p>
             </div>
@@ -308,16 +308,16 @@ const Notifications = () => {
                           <div className="flex items-center space-x-1">
                             <Clock className="h-3 w-3" />
                             <span>
-                              {new Date(notification.created_at).toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
+                              {new Date(notification.created_at).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
                               })}
                             </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-1 ml-2">
                       {!notification.is_read && (
                         <button
@@ -347,7 +347,7 @@ const Notifications = () => {
       {/* Bottom Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -363,14 +363,14 @@ const Notifications = () => {
               </span>
             )}
           </button>
-          <button 
+          <button
             onClick={() => navigate('/profile')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/settings')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >

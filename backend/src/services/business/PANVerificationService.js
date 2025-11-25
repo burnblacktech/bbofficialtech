@@ -11,7 +11,7 @@ class PANVerificationService {
     this.surepassApiBaseUrl = process.env.SUREPASS_API_BASE_URL || 'https://api.surepass.io/api/v1';
     this.surepassApiKey = process.env.SUREPASS_API_KEY;
     this.isLiveMode = process.env.FEATURE_PAN_VERIFICATION_LIVE === 'true';
-    
+
     this.axiosInstance = axios.create({
       baseURL: this.surepassApiBaseUrl,
       headers: {
@@ -21,9 +21,9 @@ class PANVerificationService {
       timeout: 30000,
     });
 
-    enterpriseLogger.info('PANVerificationService initialized', { 
+    enterpriseLogger.info('PANVerificationService initialized', {
       mode: this.isLiveMode ? 'LIVE' : 'MOCK',
-      baseUrl: this.surepassApiBaseUrl 
+      baseUrl: this.surepassApiBaseUrl,
     });
   }
 
@@ -45,11 +45,11 @@ class PANVerificationService {
       }
 
       enterpriseLogger.info('Verifying PAN via SurePass', { pan, userId });
-      
+
       const response = await this.axiosInstance.post('/pan/verify', {
-        pan: pan.toUpperCase()
+        pan: pan.toUpperCase(),
       });
-      
+
       const verificationResult = {
         pan: pan.toUpperCase(),
         isValid: response.data.status === 'success',
@@ -58,31 +58,31 @@ class PANVerificationService {
         lastUpdated: response.data.data?.last_updated || new Date().toISOString(),
         source: 'SUREPASS_LIVE',
         verifiedAt: new Date().toISOString(),
-        userId: userId
+        userId: userId,
       };
 
-      enterpriseLogger.info('PAN verification successful', { 
-        pan, 
+      enterpriseLogger.info('PAN verification successful', {
+        pan,
         isValid: verificationResult.isValid,
         name: verificationResult.name,
-        userId 
+        userId,
       });
 
       return verificationResult;
 
     } catch (error) {
-      enterpriseLogger.error('PAN verification failed', { 
-        pan, 
+      enterpriseLogger.error('PAN verification failed', {
+        pan,
         error: error.message,
-        userId 
+        userId,
       });
-      
+
       // Fallback to mock if live API fails
       if (this.isLiveMode) {
         enterpriseLogger.warn('Falling back to mock PAN verification', { pan, userId });
         return this.mockPANVerification(pan, userId);
       }
-      
+
       throw new AppError(`PAN verification failed: ${error.message}`, 500);
     }
   }
@@ -96,7 +96,7 @@ class PANVerificationService {
   async bulkVerifyPANs(pans, userId = null) {
     try {
       const results = [];
-      
+
       for (const pan of pans) {
         try {
           const result = await this.verifyPAN(pan, userId);
@@ -108,7 +108,7 @@ class PANVerificationService {
             error: error.message,
             source: 'ERROR',
             verifiedAt: new Date().toISOString(),
-            userId: userId
+            userId: userId,
           });
         }
       }
@@ -117,7 +117,7 @@ class PANVerificationService {
         totalPans: pans.length,
         successful: results.filter(r => r.isValid).length,
         failed: results.filter(r => !r.isValid).length,
-        userId
+        userId,
       });
 
       return results;
@@ -126,7 +126,7 @@ class PANVerificationService {
       enterpriseLogger.error('Bulk PAN verification failed', {
         error: error.message,
         pansCount: pans.length,
-        userId
+        userId,
       });
       throw new AppError(`Bulk PAN verification failed: ${error.message}`, 500);
     }
@@ -148,14 +148,14 @@ class PANVerificationService {
           status: 'Active',
           verifiedAt: new Date().toISOString(),
           source: 'MOCK',
-          userId: userId
-        }
+          userId: userId,
+        },
       ];
 
       enterpriseLogger.info('Retrieved PAN verification history', {
         userId,
         count: mockHistory.length,
-        filters
+        filters,
       });
 
       return mockHistory;
@@ -164,7 +164,7 @@ class PANVerificationService {
       enterpriseLogger.error('Failed to retrieve PAN verification history', {
         error: error.message,
         userId,
-        filters
+        filters,
       });
       throw error;
     }
@@ -198,15 +198,15 @@ class PANVerificationService {
       lastUpdated: new Date().toISOString(),
       source: 'SUREPASS_MOCK',
       verifiedAt: new Date().toISOString(),
-      userId: userId
+      userId: userId,
     };
-    
-    enterpriseLogger.info('Mock PAN verification', { 
-      pan, 
+
+    enterpriseLogger.info('Mock PAN verification', {
+      pan,
       result: mockResponse,
-      userId 
+      userId,
     });
-    
+
     return mockResponse;
   }
 
@@ -226,13 +226,13 @@ class PANVerificationService {
       'Suresh Kumar',
       'Meera Joshi',
       'Ravi Verma',
-      'Kavita Agarwal'
+      'Kavita Agarwal',
     ];
-    
+
     // Use PAN as seed for consistent mock data
     const seed = pan.charCodeAt(0) + pan.charCodeAt(1);
     const index = seed % mockNames.length;
-    
+
     return mockNames[index];
   }
 
@@ -249,13 +249,13 @@ class PANVerificationService {
         failedVerifications: 0,
         successRate: 0,
         averageResponseTime: 0,
-        mode: this.isLiveMode ? 'LIVE' : 'MOCK'
+        mode: this.isLiveMode ? 'LIVE' : 'MOCK',
       };
 
       // In production, this would query database
       enterpriseLogger.info('Retrieved PAN verification statistics', {
         stats,
-        filters
+        filters,
       });
 
       return stats;
@@ -263,7 +263,7 @@ class PANVerificationService {
     } catch (error) {
       enterpriseLogger.error('Failed to retrieve PAN verification statistics', {
         error: error.message,
-        filters
+        filters,
       });
       throw error;
     }
@@ -282,13 +282,13 @@ class PANVerificationService {
           return {
             status: 'available',
             mode: 'LIVE',
-            message: 'SurePass API is available'
+            message: 'SurePass API is available',
           };
         } catch (error) {
           return {
             status: 'degraded',
             mode: 'FALLBACK',
-            message: 'SurePass API unavailable, using mock responses'
+            message: 'SurePass API unavailable, using mock responses',
           };
         }
       }
@@ -296,17 +296,17 @@ class PANVerificationService {
       return {
         status: 'available',
         mode: 'MOCK',
-        message: 'Mock PAN verification is available'
+        message: 'Mock PAN verification is available',
       };
 
     } catch (error) {
       enterpriseLogger.error('Failed to check PAN verification service status', {
-        error: error.message
+        error: error.message,
       });
       return {
         status: 'unavailable',
         mode: 'ERROR',
-        message: 'PAN verification service is unavailable'
+        message: 'PAN verification service is unavailable',
       };
     }
   }
@@ -318,7 +318,7 @@ class PANVerificationService {
   updateFeatureFlag(isLive) {
     this.isLiveMode = isLive;
     enterpriseLogger.info('PAN verification feature flag updated', {
-      mode: isLive ? 'LIVE' : 'MOCK'
+      mode: isLive ? 'LIVE' : 'MOCK',
     });
   }
 }

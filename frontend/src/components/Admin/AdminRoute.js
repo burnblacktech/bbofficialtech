@@ -22,9 +22,9 @@ const AdminRoute = ({ children }) => {
   if (!allowedRoles.includes(user.role)) {
     enterpriseLogger.warn('Non-admin user attempted to access admin route', {
       userRole: user.role,
-      userId: user.id
+      userId: user.id,
     });
-    
+
     return (
       <div className="admin-access-denied">
         <Card className="access-denied-card">
@@ -34,13 +34,13 @@ const AdminRoute = ({ children }) => {
             <p>You don't have permission to access the admin panel.</p>
             <p>Only administrators can view this page.</p>
             <div className="access-denied-actions">
-              <button 
+              <button
                 onClick={() => window.history.back()}
                 className="btn btn-outline"
               >
                 Go Back
               </button>
-              <button 
+              <button
                 onClick={() => window.location.href = '/dashboard'}
                 className="btn btn-primary"
               >
@@ -54,9 +54,9 @@ const AdminRoute = ({ children }) => {
   }
 
   // User has admin access
-  enterpriseLogger.info('Admin user accessed admin route', { 
+  enterpriseLogger.info('Admin user accessed admin route', {
     userRole: user.role,
-    userId: user.id 
+    userId: user.id,
   });
   return children;
 };

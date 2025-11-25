@@ -30,7 +30,7 @@ import {
   UserCheck,
   UserX,
   Bell,
-  Info
+  Info,
 } from 'lucide-react';
 import { Button, Card, Alert } from '../UI';
 import { ROLES, PERMISSION_MODULES, PERMISSION_ACTIONS, TIME_BASED_ACCESS, ACCESS_DURATIONS } from '../../constants/roles';
@@ -49,7 +49,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
     baseRole: staffMember?.role || ROLES.CA,
     modulePermissions: {},
     temporaryAccess: [],
-    customPermissions: []
+    customPermissions: [],
   });
 
   // Temporary access form state
@@ -60,7 +60,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
     customExpiryDate: '',
     reason: '',
     startTime: '',
-    recurring: false
+    recurring: false,
   });
 
   // Form visibility states
@@ -81,10 +81,10 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
           ...prev,
           modulePermissions: data.modulePermissions || {},
           temporaryAccess: data.temporaryAccess || [],
-          customPermissions: data.customPermissions || []
+          customPermissions: data.customPermissions || [],
         }));
       }
-    }
+    },
   });
 
   // Fetch available roles
@@ -93,7 +93,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
     queryFn: async () => {
       const response = await api.get('/api/roles/available');
       return response.data;
-    }
+    },
   });
 
   // Update permissions mutation
@@ -110,7 +110,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || 'Failed to update permissions');
-    }
+    },
   });
 
   // Grant temporary access mutation
@@ -130,12 +130,12 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
         customExpiryDate: '',
         reason: '',
         startTime: '',
-        recurring: false
+        recurring: false,
       });
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || 'Failed to grant temporary access');
-    }
+    },
   });
 
   // Revoke temporary access mutation
@@ -150,7 +150,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || 'Failed to revoke access');
-    }
+    },
   });
 
   // Module definitions for UI
@@ -160,50 +160,50 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
       icon: FileText,
       description: 'Income Tax Return filing operations',
       actions: ['create', 'read', 'update', 'delete', 'submit'],
-      color: 'blue'
+      color: 'blue',
     },
     [PERMISSION_MODULES.USER_MANAGEMENT]: {
       name: 'User Management',
       icon: Users,
       description: 'Manage client and user accounts',
       actions: ['create', 'read', 'update', 'delete'],
-      color: 'green'
+      color: 'green',
     },
     [PERMISSION_MODULES.STAFF_MANAGEMENT]: {
       name: 'Staff Management',
       icon: Users,
       description: 'Manage firm staff and permissions',
       actions: ['create', 'read', 'update', 'delete'],
-      color: 'purple'
+      color: 'purple',
     },
     [PERMISSION_MODULES.BILLING_INVOICING]: {
       name: 'Billing & Invoicing',
       icon: TrendingUp,
       description: 'Manage billing and invoicing',
       actions: ['create', 'read', 'update', 'view_billing'],
-      color: 'yellow'
+      color: 'yellow',
     },
     [PERMISSION_MODULES.REPORTS_ANALYTICS]: {
       name: 'Reports & Analytics',
       icon: TrendingUp,
       description: 'View reports and analytics',
       actions: ['read', 'export'],
-      color: 'indigo'
+      color: 'indigo',
     },
     [PERMISSION_MODULES.DOCUMENT_MANAGEMENT]: {
       name: 'Document Management',
       icon: FileText,
       description: 'Manage client documents',
       actions: ['create', 'read', 'update', 'delete'],
-      color: 'orange'
+      color: 'orange',
     },
     [PERMISSION_MODULES.CLIENT_MANAGEMENT]: {
       name: 'Client Management',
       icon: Users,
       description: 'Manage client relationships',
       actions: ['create', 'read', 'update', 'assign'],
-      color: 'pink'
-    }
+      color: 'pink',
+    },
   };
 
   // Handle module permission toggle
@@ -214,9 +214,9 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
         ...prev.modulePermissions,
         [module]: {
           ...prev.modulePermissions[module],
-          [action]: !prev.modulePermissions[module]?.[action]
-        }
-      }
+          [action]: !prev.modulePermissions[module]?.[action],
+        },
+      },
     }));
   };
 
@@ -224,7 +224,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
   const handleRoleChange = (newRole) => {
     setPermissions(prev => ({
       ...prev,
-      baseRole: newRole
+      baseRole: newRole,
     }));
   };
 
@@ -242,7 +242,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
       reason: temporaryAccessForm.reason,
       startTime: temporaryAccessForm.startTime || null,
       recurring: temporaryAccessForm.recurring,
-      grantedBy: user.user_id
+      grantedBy: user.user_id,
     };
 
     if (temporaryAccessForm.duration === ACCESS_DURATIONS.CUSTOM && temporaryAccessForm.customExpiryDate) {
@@ -272,7 +272,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
   // Filter modules based on search
   const filteredModules = Object.entries(moduleDefinitions).filter(([module, definition]) =>
     definition.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    definition.description.toLowerCase().includes(searchTerm.toLowerCase())
+    definition.description.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -335,7 +335,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
             {[
               { id: 'permissions', label: 'Module Permissions', icon: Shield },
               { id: 'temporary', label: 'Temporary Access', icon: Clock },
-              { id: 'custom', label: 'Custom Rules', icon: Settings }
+              { id: 'custom', label: 'Custom Rules', icon: Settings },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -508,7 +508,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                           ...prev,
                                           modules: e.target.checked
                                             ? [...prev.modules, module]
-                                            : prev.modules.filter(m => m !== module)
+                                            : prev.modules.filter(m => m !== module),
                                         }));
                                       }}
                                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
@@ -535,7 +535,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                           ...prev,
                                           actions: e.target.checked
                                             ? [...prev.actions, action]
-                                            : prev.actions.filter(a => a !== action)
+                                            : prev.actions.filter(a => a !== action),
                                         }));
                                       }}
                                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
@@ -553,7 +553,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                   value={temporaryAccessForm.duration}
                                   onChange={(e) => setTemporaryAccessForm(prev => ({
                                     ...prev,
-                                    duration: e.target.value
+                                    duration: e.target.value,
                                   }))}
                                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
@@ -575,7 +575,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                     value={temporaryAccessForm.customExpiryDate}
                                     onChange={(e) => setTemporaryAccessForm(prev => ({
                                       ...prev,
-                                      customExpiryDate: e.target.value
+                                      customExpiryDate: e.target.value,
                                     }))}
                                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                   />
@@ -590,7 +590,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                 value={temporaryAccessForm.reason}
                                 onChange={(e) => setTemporaryAccessForm(prev => ({
                                   ...prev,
-                                  reason: e.target.value
+                                  reason: e.target.value,
                                 }))}
                                 placeholder="Reason for temporary access"
                                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

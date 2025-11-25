@@ -33,7 +33,7 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
     { value: 'Bank of Baroda', label: 'Bank of Baroda' },
     { value: 'Union Bank', label: 'Union Bank of India' },
     { value: 'Indian Bank', label: 'Indian Bank' },
-    { value: 'Other', label: 'Other' }
+    { value: 'Other', label: 'Other' },
   ];
 
   const instructions = bankStatementService.getUploadInstructions();
@@ -184,7 +184,7 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
       investment: '📈',
       rent: '🏠',
       professional: '💻',
-      other: '💰'
+      other: '💰',
     };
     return icons[category] || '💰';
   };

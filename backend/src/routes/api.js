@@ -17,10 +17,10 @@ const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000, // limit each IP to 1000 requests per windowMs
   message: {
-    error: 'Too many requests from this IP, please try again later.'
+    error: 'Too many requests from this IP, please try again later.',
   },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 // Strict rate limiting for sensitive endpoints
@@ -28,10 +28,10 @@ const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: {
-    error: 'Too many requests from this IP, please try again later.'
+    error: 'Too many requests from this IP, please try again later.',
   },
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 // =====================================================
@@ -44,7 +44,7 @@ router.get('/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    version: '1.0.0'
+    version: '1.0.0',
   });
 });
 
@@ -59,8 +59,8 @@ router.get('/status', (req, res) => {
       '/api/auth',
       '/api/itr',
       '/api/user',
-      '/api/admin'
-    ]
+      '/api/admin',
+    ],
   });
 });
 
@@ -117,13 +117,13 @@ router.use((err, req, res, next) => {
     stack: err.stack,
     path: req.originalUrl,
     method: req.method,
-    ip: req.ip
+    ip: req.ip,
   });
 
   res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'development' 
-      ? err.message 
-      : 'Internal server error'
+    error: process.env.NODE_ENV === 'development'
+      ? err.message
+      : 'Internal server error',
   });
 });
 
@@ -131,7 +131,7 @@ router.use((err, req, res, next) => {
 router.use('*', (req, res) => {
   res.status(404).json({
     error: 'API endpoint not found',
-    path: req.originalUrl
+    path: req.originalUrl,
   });
 });
 

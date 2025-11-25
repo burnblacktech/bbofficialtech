@@ -5,9 +5,9 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
   Crown, Building2, Users, Shield, CheckCircle, ArrowRight,
-  Star, Zap, Target, TrendingUp, DollarSign, Clock
+  Star, Zap, Target, TrendingUp, DollarSign, Clock,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -26,7 +26,7 @@ const UpgradeToProfessional = () => {
     pincode: '',
     phone: '',
     website: '',
-    description: ''
+    description: '',
   });
 
   const benefits = [
@@ -34,45 +34,45 @@ const UpgradeToProfessional = () => {
       icon: Users,
       title: 'Client Management',
       description: 'Manage multiple clients and their tax filings from one dashboard',
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
     {
       icon: Building2,
       title: 'Firm Setup',
       description: 'Create and manage your professional CA firm profile',
-      color: 'text-purple-600'
+      color: 'text-purple-600',
     },
     {
       icon: Shield,
       title: 'Team Collaboration',
       description: 'Invite team members and collaborate on client work',
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
     {
       icon: TrendingUp,
       title: 'Advanced Reporting',
       description: 'Get detailed analytics and reports for your practice',
-      color: 'text-orange-600'
+      color: 'text-orange-600',
     },
     {
       icon: DollarSign,
       title: 'Billing Management',
       description: 'Track invoices, payments, and client billing',
-      color: 'text-red-600'
+      color: 'text-red-600',
     },
     {
       icon: Zap,
       title: 'Priority Support',
       description: 'Get priority customer support for professional users',
-      color: 'text-yellow-600'
-    }
+      color: 'text-yellow-600',
+    },
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -85,16 +85,16 @@ const UpgradeToProfessional = () => {
 
       if (response.success) {
         toast.success('Congratulations! You are now a Professional CA! 🎉');
-        
+
         // Update user context
         if (updateUser) {
-          updateUser({ 
-            ...user, 
+          updateUser({
+            ...user,
             role: 'CA_FIRM_ADMIN',
-            firmId: response.firmId 
+            firmId: response.firmId,
           });
         }
-        
+
         // Redirect to CA dashboard
         navigate('/firm/dashboard');
       } else {
@@ -126,7 +126,7 @@ const UpgradeToProfessional = () => {
             Upgrade to Professional
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Transform your BurnBlack account into a professional CA firm platform. 
+            Transform your BurnBlack account into a professional CA firm platform.
             Manage clients, collaborate with your team, and grow your practice.
           </p>
         </div>
@@ -139,7 +139,7 @@ const UpgradeToProfessional = () => {
                 <Star className="h-6 w-6 text-yellow-500 mr-2" />
                 Professional Features
               </h2>
-              
+
               <div className="grid gap-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-gray-50">
@@ -171,7 +171,7 @@ const UpgradeToProfessional = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Create Your CA Firm
             </h2>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -301,7 +301,7 @@ const UpgradeToProfessional = () => {
                 >
                   Skip for now
                 </button>
-                
+
                 <button
                   type="submit"
                   disabled={isLoading}
@@ -327,7 +327,7 @@ const UpgradeToProfessional = () => {
         {/* Footer */}
         <div className="text-center mt-12 text-sm text-gray-500">
           <p>
-            By upgrading, you agree to our Terms of Service and Privacy Policy. 
+            By upgrading, you agree to our Terms of Service and Privacy Policy.
             You can always downgrade back to personal use if needed.
           </p>
         </div>

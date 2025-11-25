@@ -14,7 +14,7 @@ class StorageService {
     const item = {
       value,
       timestamp: Date.now(),
-      expiry: expiryMs ? Date.now() + expiryMs : null
+      expiry: expiryMs ? Date.now() + expiryMs : null,
     };
 
     try {

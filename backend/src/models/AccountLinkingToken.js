@@ -7,49 +7,49 @@ const AccountLinkingToken = sequelize.define('AccountLinkingToken', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   userId: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: User,
-      key: 'id'
+      key: 'id',
     },
-    field: 'user_id'
+    field: 'user_id',
   },
   googleId: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-    field: 'google_id'
+    field: 'google_id',
   },
   otp: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   expiresAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'expires_at'
+    field: 'expires_at',
   },
   used: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-    allowNull: false
+    allowNull: false,
   },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
-    field: 'created_at'
+    field: 'created_at',
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
-    field: 'updated_at'
-  }
+    field: 'updated_at',
+  },
 }, {
   tableName: 'account_linking_tokens',
   timestamps: true,
@@ -59,8 +59,8 @@ const AccountLinkingToken = sequelize.define('AccountLinkingToken', {
     { fields: ['google_id'] },
     { fields: ['otp'] },
     { fields: ['expires_at'] },
-    { fields: ['used'] }
-  ]
+    { fields: ['used'] },
+  ],
 });
 
 AccountLinkingToken.createLinkingToken = async function(userId, googleId, otp, expiresInMinutes = 10) {
@@ -70,15 +70,15 @@ AccountLinkingToken.createLinkingToken = async function(userId, googleId, otp, e
     defaults: {
       otp,
       expiresAt,
-      used: false
-    }
+      used: false,
+    },
   });
 
   if (!created) {
     await token.update({
       otp,
       expiresAt,
-      used: false
+      used: false,
     });
   }
   enterpriseLogger.info('Account linking token created/updated', { userId, googleId, otp });
@@ -94,14 +94,14 @@ AccountLinkingToken.validateToken = async function(userId, googleId, otp) {
       otp,
       used: false,
       expiresAt: {
-        [Op.gt]: new Date()
-      }
-    }
+        [Op.gt]: new Date(),
+      },
+    },
   });
 
   return {
     valid: !!token,
-    token: token
+    token: token,
   };
 };
 

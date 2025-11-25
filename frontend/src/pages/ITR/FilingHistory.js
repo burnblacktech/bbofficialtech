@@ -16,7 +16,7 @@ const FilingHistory = () => {
   const { user } = useAuth();
   const { getUserFilings } = useITR();
   const navigate = useNavigate();
-  
+
   const [filings, setFilings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -112,7 +112,7 @@ const FilingHistory = () => {
                   className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
-              
+
               {/* Filter */}
               <div className="flex gap-2">
                 {['all', 'draft', 'submitted', 'processing', 'rejected'].map((status) => (
@@ -139,7 +139,7 @@ const FilingHistory = () => {
                 No filings found
               </h3>
               <p className="text-neutral-600 mb-6">
-                {searchTerm || filter !== 'all' 
+                {searchTerm || filter !== 'all'
                   ? 'No filings match your current filters'
                   : 'You haven\'t filed any ITR yet'
                 }
@@ -164,25 +164,25 @@ const FilingHistory = () => {
                         <h3 className="text-lg font-semibold text-neutral-900">
                           {filing.itrType} - AY {filing.assessmentYear}
                         </h3>
-                        <StatusBadge 
-                          status={filing.status} 
+                        <StatusBadge
+                          status={filing.status}
                           variant={getStatusColor(filing.status)}
                         />
                       </div>
-                      
+
                       <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-600">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>Filed: {new Date(filing.createdAt).toLocaleDateString()}</span>
                         </div>
-                        
+
                         {filing.familyMember && (
                           <div className="flex items-center gap-1">
                             <User className="w-4 h-4" />
                             <span>For: {filing.familyMember.firstName} {filing.familyMember.lastName}</span>
                           </div>
                         )}
-                        
+
                         {filing.acknowledgmentNumber && (
                           <div className="flex items-center gap-1">
                             <FileText className="w-4 h-4" />
@@ -202,7 +202,7 @@ const FilingHistory = () => {
                         <Eye className="w-4 h-4" />
                         View
                       </Button>
-                      
+
                       {filing.status === 'submitted' && filing.acknowledgmentNumber && (
                         <Button
                           variant="secondary"

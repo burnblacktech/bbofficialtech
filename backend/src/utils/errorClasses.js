@@ -30,7 +30,7 @@ class AppError extends Error {
       statusCode: this.statusCode,
       code: this.code,
       correlationId: this.correlationId,
-      stack: this.stack
+      stack: this.stack,
     });
   }
 
@@ -45,7 +45,7 @@ class AppError extends Error {
       statusCode: this.statusCode,
       correlationId: this.correlationId,
       timestamp: this.timestamp,
-      ...(process.env.NODE_ENV === 'development' && { stack: this.stack })
+      ...(process.env.NODE_ENV === 'development' && { stack: this.stack }),
     };
   }
 }
@@ -67,7 +67,7 @@ class ValidationError extends AppError {
       ...base,
       field: this.field,
       value: this.value,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -87,7 +87,7 @@ class AuthenticationError extends AppError {
     return {
       ...base,
       reason: this.reason,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -107,7 +107,7 @@ class AuthorizationError extends AppError {
     return {
       ...base,
       requiredRole: this.requiredRole,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -129,7 +129,7 @@ class NotFoundError extends AppError {
       ...base,
       resource: this.resource,
       identifier: this.identifier,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -149,7 +149,7 @@ class ConflictError extends AppError {
     return {
       ...base,
       conflictingField: this.conflictingField,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -169,7 +169,7 @@ class BusinessLogicError extends AppError {
     return {
       ...base,
       businessRule: this.businessRule,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -191,7 +191,7 @@ class RateLimitError extends AppError {
       ...base,
       limit: this.limit,
       windowMs: this.windowMs,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -215,7 +215,7 @@ class ExternalServiceError extends AppError {
       service: this.service,
       operation: this.operation,
       category: this.category,
-      ...(process.env.NODE_ENV === 'development' && { originalError: this.originalError })
+      ...(process.env.NODE_ENV === 'development' && { originalError: this.originalError }),
     };
   }
 }
@@ -237,7 +237,7 @@ class DatabaseError extends AppError {
       ...base,
       operation: this.operation,
       category: this.category,
-      ...(process.env.NODE_ENV === 'development' && { originalError: this.originalError })
+      ...(process.env.NODE_ENV === 'development' && { originalError: this.originalError }),
     };
   }
 }
@@ -259,7 +259,7 @@ class FileError extends AppError {
       ...base,
       operation: this.operation,
       filename: this.filename,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -281,7 +281,7 @@ class TaxComputationError extends AppError {
       ...base,
       computationType: this.computationType,
       category: this.category,
-      ...(process.env.NODE_ENV === 'development' && { inputData: this.inputData })
+      ...(process.env.NODE_ENV === 'development' && { inputData: this.inputData }),
     };
   }
 }
@@ -303,7 +303,7 @@ class PaymentError extends AppError {
       ...base,
       paymentMethod: this.paymentMethod,
       transactionId: this.transactionId,
-      category: this.category
+      category: this.category,
     };
   }
 }
@@ -380,5 +380,5 @@ module.exports = {
   FileError,
   TaxComputationError,
   PaymentError,
-  ErrorFactory
+  ErrorFactory,
 };

@@ -38,7 +38,7 @@ const TestITRComponent = () => {
     filings,
     createFiling,
     updateFilingSection,
-    getFilingProgress
+    getFilingProgress,
   } = useITR();
 
   return (
@@ -131,7 +131,7 @@ describe('Context Management Integration Tests', () => {
     render(
       <AuthProvider>
         <TestAuthComponent />
-      </AuthProvider>
+      </AuthProvider>,
     );
 
     expect(screen.getByTestId('auth-status')).toHaveTextContent('Not authenticated');
@@ -153,7 +153,7 @@ describe('Context Management Integration Tests', () => {
     render(
       <ITRProvider>
         <TestITRComponent />
-      </ITRProvider>
+      </ITRProvider>,
     );
 
     expect(screen.getByTestId('filing-count')).toHaveTextContent('0 filings');
@@ -171,7 +171,7 @@ describe('Context Management Integration Tests', () => {
     render(
       <AppProvider>
         <TestAppComponent />
-      </AppProvider>
+      </AppProvider>,
     );
 
     expect(screen.getByTestId('theme')).toHaveTextContent('Theme: light');
@@ -194,7 +194,7 @@ describe('Context Management Integration Tests', () => {
     render(
       <NotificationProvider>
         <TestNotificationComponent />
-      </NotificationProvider>
+      </NotificationProvider>,
     );
 
     expect(screen.getByTestId('notification-count')).toHaveTextContent('0 notifications');
@@ -221,7 +221,7 @@ describe('Context Management Integration Tests', () => {
           <TestAppComponent />
           <TestNotificationComponent />
         </div>
-      </AllContextsProvider>
+      </AllContextsProvider>,
     );
 
     // Initial state

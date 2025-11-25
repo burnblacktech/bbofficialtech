@@ -52,6 +52,6 @@ export const useOnboarding = () => {
     isLoading,
     completeOnboarding,
     resetOnboarding,
-    updateProfile
+    updateProfile,
   };
 };

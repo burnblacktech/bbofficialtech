@@ -25,41 +25,41 @@ class TaxSavingsService {
         categories: {
           equityLinked: {
             elss: { max: 150000, lockIn: 3, risk: 'high', returns: 12, description: 'ELSS Mutual Funds' },
-            nps: { max: 50000, lockIn: 60, risk: 'medium', returns: 9, description: 'National Pension System (Tier-1)' }
+            nps: { max: 50000, lockIn: 60, risk: 'medium', returns: 9, description: 'National Pension System (Tier-1)' },
           },
           traditional: {
             ppf: { max: 150000, lockIn: 15, risk: 'low', returns: 7.1, description: 'Public Provident Fund' },
             epf: { max: 150000, lockIn: 58, risk: 'low', returns: 8.5, description: 'Employees Provident Fund' },
             fixedDeposit: { max: 150000, lockIn: 5, risk: 'low', returns: 6.5, description: 'Tax Saving Fixed Deposit' },
-            nsf: { max: 150000, lockIn: 5, risk: 'low', returns: 7, description: 'National Savings Certificate' }
+            nsf: { max: 150000, lockIn: 5, risk: 'low', returns: 7, description: 'National Savings Certificate' },
           },
           insurance: {
             lifeInsurance: { max: 150000, lockIn: 2, risk: 'low', returns: 5, description: 'Life Insurance Premium' },
-            ulip: { max: 150000, lockIn: 5, risk: 'medium', returns: 8, description: 'ULIP Plans' }
+            ulip: { max: 150000, lockIn: 5, risk: 'medium', returns: 8, description: 'ULIP Plans' },
           },
           housing: {
             homeLoanPrincipal: { max: 150000, lockIn: 0, risk: 'low', returns: 8.5, description: 'Home Loan Principal Repayment' },
-            stampDuty: { max: 150000, lockIn: 0, risk: 'low', returns: 100, description: 'Stamp Duty & Registration' }
+            stampDuty: { max: 150000, lockIn: 0, risk: 'low', returns: 100, description: 'Stamp Duty & Registration' },
           },
           education: {
             tuitionFees: { max: 150000, lockIn: 0, risk: 'low', returns: 100, description: 'Children Tuition Fees' },
-            educationLoan: { max: 150000, lockIn: 8, risk: 'low', returns: 9, description: 'Education Loan Interest (80E)' }
-          }
-        }
+            educationLoan: { max: 150000, lockIn: 8, risk: 'low', returns: 9, description: 'Education Loan Interest (80E)' },
+          },
+        },
       },
 
       section80D: {
         limit: {
           self: 25000,
           parents: 50000,
-          total: 75000
+          total: 75000,
         },
         description: 'Section 80D - Health Insurance',
         categories: {
           healthInsurance: { max: 25000, lockIn: 1, risk: 'low', returns: 100, description: 'Health Insurance Premium' },
           seniorCitizenHealthInsurance: { max: 50000, lockIn: 1, risk: 'low', returns: 100, description: 'Senior Citizen Health Insurance' },
-          preventiveHealth: { max: 5000, lockIn: 0, risk: 'low', returns: 100, description: 'Preventive Health Check-up' }
-        }
+          preventiveHealth: { max: 5000, lockIn: 0, risk: 'low', returns: 100, description: 'Preventive Health Check-up' },
+        },
       },
 
       section80E: {
@@ -67,8 +67,8 @@ class TaxSavingsService {
         description: 'Section 80E - Education Loan Interest',
         duration: 8, // 8 years max
         categories: {
-          educationLoanInterest: { max: 150000, lockIn: 0, risk: 'low', returns: 9, description: 'Education Loan Interest' }
-        }
+          educationLoanInterest: { max: 150000, lockIn: 0, risk: 'low', returns: 9, description: 'Education Loan Interest' },
+        },
       },
 
       section80EE: {
@@ -77,32 +77,32 @@ class TaxSavingsService {
         conditions: {
           loanAmount: '≤ 35 Lakhs',
           propertyValue: '≤ 50 Lakhs',
-          firstHome: true
+          firstHome: true,
         },
         categories: {
-          homeLoanInterest: { max: 50000, lockIn: 0, risk: 'low', returns: 8.5, description: 'Home Loan Interest (Additional)' }
-        }
+          homeLoanInterest: { max: 50000, lockIn: 0, risk: 'low', returns: 8.5, description: 'Home Loan Interest (Additional)' },
+        },
       },
 
       section80TTA: {
         limit: 10000,
         description: 'Section 80TTA - Savings Account Interest',
         categories: {
-          savingsInterest: { max: 10000, lockIn: 0, risk: 'low', returns: 100, description: 'Savings Account Interest' }
-        }
+          savingsInterest: { max: 10000, lockIn: 0, risk: 'low', returns: 100, description: 'Savings Account Interest' },
+        },
       },
 
       section24: {
         limit: {
           selfOccupied: 200000,
-          letOut: 'Actual Interest'
+          letOut: 'Actual Interest',
         },
         description: 'Section 24 - Home Loan Interest',
         categories: {
           homeLoanInterestSelfOccupied: { max: 200000, lockIn: 0, risk: 'low', returns: 8.5, description: 'Home Loan Interest (Self-Occupied)' },
-          homeLoanInterestLetOut: { max: Infinity, lockIn: 0, risk: 'low', returns: 8.5, description: 'Home Loan Interest (Let Out)' }
-        }
-      }
+          homeLoanInterestLetOut: { max: Infinity, lockIn: 0, risk: 'low', returns: 8.5, description: 'Home Loan Interest (Let Out)' },
+        },
+      },
     };
   }
 
@@ -123,7 +123,7 @@ class TaxSavingsService {
           riskLevel: 'high',
           liquidity: 'Medium',
           taxBenefit: 'Full 150K under 80C',
-          description: 'Equity-linked saving scheme with potential for high returns'
+          description: 'Equity-linked saving scheme with potential for high returns',
         },
         {
           name: 'ULIP Plans',
@@ -136,8 +136,8 @@ class TaxSavingsService {
           riskLevel: 'medium',
           liquidity: 'Low',
           taxBenefit: 'Full 150K under 80C',
-          description: 'Unit Linked Insurance Plan with insurance + investment'
-        }
+          description: 'Unit Linked Insurance Plan with insurance + investment',
+        },
       ],
       balanced: [
         {
@@ -151,7 +151,7 @@ class TaxSavingsService {
           riskLevel: 'medium',
           liquidity: 'Very Low',
           taxBenefit: 'Additional 50K over 80C',
-          description: 'Retirement-focused investment with government backing'
+          description: 'Retirement-focused investment with government backing',
         },
         {
           name: 'Public Provident Fund (PPF)',
@@ -164,8 +164,8 @@ class TaxSavingsService {
           riskLevel: 'low',
           liquidity: 'Very Low',
           taxBenefit: 'Full 150K under 80C',
-          description: 'Government-backed savings scheme'
-        }
+          description: 'Government-backed savings scheme',
+        },
       ],
       conservative: [
         {
@@ -179,7 +179,7 @@ class TaxSavingsService {
           riskLevel: 'low',
           liquidity: 'Low',
           taxBenefit: 'Full 150K under 80C',
-          description: 'Bank fixed deposit with tax benefits'
+          description: 'Bank fixed deposit with tax benefits',
         },
         {
           name: 'National Savings Certificate (NSC)',
@@ -192,9 +192,9 @@ class TaxSavingsService {
           riskLevel: 'low',
           liquidity: 'Low',
           taxBenefit: 'Full 150K under 80C',
-          description: 'Post office savings scheme'
-        }
-      ]
+          description: 'Post office savings scheme',
+        },
+      ],
     };
   }
 
@@ -206,7 +206,7 @@ class TaxSavingsService {
       const requestData = {
         userProfile,
         currentInvestments,
-        financialYear: '2024-25'
+        financialYear: '2024-25',
       };
 
       const response = await apiClient.post(this.apiEndpoint, requestData);
@@ -219,7 +219,7 @@ class TaxSavingsService {
       const enhancedRecommendations = this.enhanceRecommendations(
         response.recommendations,
         userProfile,
-        currentInvestments
+        currentInvestments,
       );
 
       return {
@@ -227,7 +227,7 @@ class TaxSavingsService {
         recommendations: enhancedRecommendations,
         summary: this.generateRecommendationSummary(enhancedRecommendations),
         taxSavings: this.calculatePotentialTaxSavings(enhancedRecommendations),
-        deadline: this.calculateInvestmentDeadline()
+        deadline: this.calculateInvestmentDeadline(),
       };
 
     } catch (error) {
@@ -243,7 +243,7 @@ class TaxSavingsService {
   async generateClientSideRecommendations(userProfile, currentInvestments = {}) {
     const recommendations = this.recommendationEngine.generateRecommendations(
       userProfile,
-      currentInvestments
+      currentInvestments,
     );
 
     return {
@@ -252,7 +252,7 @@ class TaxSavingsService {
       summary: this.generateRecommendationSummary(recommendations),
       taxSavings: this.calculatePotentialTaxSavings(recommendations),
       deadline: this.calculateInvestmentDeadline(),
-      disclaimer: 'Using AI-powered recommendations engine'
+      disclaimer: 'Using AI-powered recommendations engine',
     };
   }
 
@@ -267,7 +267,7 @@ class TaxSavingsService {
       alternatives: this.findAlternatives(rec),
       implementation: this.generateImplementationSteps(rec),
       risk: this.assessRisk(rec, userProfile),
-      expectedSavings: this.calculateExpectedSavings(rec)
+      expectedSavings: this.calculateExpectedSavings(rec),
     }));
   }
 
@@ -279,7 +279,7 @@ class TaxSavingsService {
       timeLeft: this.getTimeUntilYearEnd(),
       age: userProfile.age || 30,
       riskProfile: userProfile.riskProfile || 'moderate',
-      currentDeductions: this.getCurrentDeductions(userProfile.currentInvestments || {})
+      currentDeductions: this.getCurrentDeductions(userProfile.currentInvestments || {}),
     };
 
     let urgencyScore = 0;
@@ -312,7 +312,7 @@ class TaxSavingsService {
       riskProfile: userProfile.riskProfile || 'moderate',
       income: userProfile.annualIncome || 500000,
       financialGoals: userProfile.financialGoals || [],
-      existingInvestments: userProfile.currentInvestments || {}
+      existingInvestments: userProfile.currentInvestments || {},
     };
 
     let suitabilityScore = 50; // Base score
@@ -368,7 +368,7 @@ class TaxSavingsService {
             name: option.name,
             returns: option.expectedReturn,
             risk: option.riskLevel,
-            lockIn: option.lockInPeriod
+            lockIn: option.lockInPeriod,
           });
         }
       });
@@ -384,7 +384,7 @@ class TaxSavingsService {
     const commonSteps = [
       'Complete KYC verification if required',
       'Set up investment account',
-      'Arrange funds for investment'
+      'Arrange funds for investment',
     ];
 
     const specificSteps = {
@@ -392,26 +392,26 @@ class TaxSavingsService {
         'Choose a mutual fund house (HDFC, ICICI, SBI, etc.)',
         'Select ELSS fund based on performance',
         'Complete online investment process',
-        'Set up SIP or lumpsum investment'
+        'Set up SIP or lumpsum investment',
       ],
       'National Pension System': [
         'Open NPS account with CRA',
         'Choose asset allocation (Equity/Corporate/Govt)',
         'Select pension fund manager',
-        'Make contribution online'
+        'Make contribution online',
       ],
       'Public Provident Fund': [
         'Visit bank or post office branch',
         'Fill PPF account opening form',
         'Submit KYC documents',
-        'Make initial deposit'
+        'Make initial deposit',
       ],
       'Health Insurance': [
         'Compare insurance providers',
         'Check coverage and premiums',
         'Complete health check-up if required',
-        'Pay first-year premium'
-      ]
+        'Pay first-year premium',
+      ],
     };
 
     return commonSteps.concat(specificSteps[recommendation.name] || ['Complete investment process']);
@@ -426,7 +426,7 @@ class TaxSavingsService {
       marketRisk: recommendation.category === 'equityLinked' ? 'high' : 'low',
       liquidityRisk: recommendation.lockInPeriod > 5 ? 'high' : 'medium',
       inflationRisk: recommendation.expectedReturn < 7 ? 'high' : 'low',
-      concentrationRisk: 'low'
+      concentrationRisk: 'low',
     };
 
     const userRiskProfile = userProfile.riskProfile || 'moderate';
@@ -435,7 +435,7 @@ class TaxSavingsService {
       overallRisk: this.calculateOverallRisk(riskFactors),
       factors: riskFactors,
       userAlignment: this.assessRiskAlignment(riskFactors, userRiskProfile),
-      recommendations: this.generateRiskRecommendations(riskFactors, userRiskProfile)
+      recommendations: this.generateRiskRecommendations(riskFactors, userRiskProfile),
     };
 
     return riskAssessment;
@@ -463,7 +463,7 @@ class TaxSavingsService {
       taxSaved: taxSaving,
       effectiveRate: (taxSaving / investmentAmount) * 100,
       postTaxReturn: recommendation.expectedReturn - ((taxSaving / investmentAmount) * 100),
-      timeToBreakEven: recommendation.lockInPeriod || 0
+      timeToBreakEven: recommendation.lockInPeriod || 0,
     };
   }
 
@@ -477,7 +477,7 @@ class TaxSavingsService {
       totalInvestmentSuggested: 0,
       riskDistribution: { high: 0, medium: 0, low: 0 },
       urgencyDistribution: { high: 0, medium: 0, low: 0 },
-      sectionBreakdown: {}
+      sectionBreakdown: {},
     };
 
     recommendations.forEach(rec => {
@@ -515,7 +515,7 @@ class TaxSavingsService {
       section80D: 0,
       section80E: 0,
       other: 0,
-      total: 0
+      total: 0,
     };
 
     recommendations.forEach(rec => {
@@ -558,7 +558,7 @@ class TaxSavingsService {
       deadline: yearEnd.toISOString().split('T')[0],
       daysLeft,
       urgent: daysLeft < 90,
-      message: this.generateDeadlineMessage(daysLeft)
+      message: this.generateDeadlineMessage(daysLeft),
     };
   }
 
@@ -600,7 +600,7 @@ class TaxSavingsService {
     return {
       marginalRate: 0.3, // 30% for high income
       higherRate: 0.3,
-      max80CBracket: 500000
+      max80CBracket: 500000,
     };
   }
 
@@ -608,7 +608,7 @@ class TaxSavingsService {
     const riskScores = {
       high: 3,
       medium: 2,
-      low: 1
+      low: 1,
     };
 
     let totalScore = 0;
@@ -724,7 +724,7 @@ class TaxRecommendationEngine {
         priority: 9,
         description: 'High-return investment with 3-year lock-in',
         pros: ['High returns', 'Tax-free dividends', '3-year lock-in only'],
-        cons: ['Market risk', 'NAV fluctuation']
+        cons: ['Market risk', 'NAV fluctuation'],
       });
     }
 
@@ -741,7 +741,7 @@ class TaxRecommendationEngine {
         priority: 8,
         description: 'Government-backed guaranteed returns',
         pros: ['Guaranteed returns', 'Tax-free', 'Government backing'],
-        cons: ['15-year lock-in', 'Lower returns than equity']
+        cons: ['15-year lock-in', 'Lower returns than equity'],
       });
     }
 
@@ -758,7 +758,7 @@ class TaxRecommendationEngine {
         priority: 7,
         description: 'Retirement planning with additional tax benefits',
         pros: ['Additional 50K over 80C', 'Retirement benefits', 'Flexible allocation'],
-        cons: ['60-year lock-in', 'Partial withdrawal restrictions']
+        cons: ['60-year lock-in', 'Partial withdrawal restrictions'],
       });
     }
 
@@ -780,7 +780,7 @@ class TaxRecommendationEngine {
       priority: 8,
       description: 'Health insurance premium deduction',
       pros: ['Health coverage', 'Tax deduction', 'Family protection'],
-      cons: ['Annual premium payment', 'Coverage limitations']
+      cons: ['Annual premium payment', 'Coverage limitations'],
     };
   }
 
@@ -796,7 +796,7 @@ class TaxRecommendationEngine {
       priority: 6,
       description: 'Interest deduction on home loan',
       pros: ['Large deduction', 'Asset creation', 'Tax benefits'],
-      cons: ['Requires home loan', 'Interest payment']
+      cons: ['Requires home loan', 'Interest payment'],
     };
   }
 
@@ -812,7 +812,7 @@ class TaxRecommendationEngine {
       priority: 7,
       description: 'Additional tax-saving over 80C limit',
       pros: ['Additional 50K deduction', 'Retirement corpus', 'Tax benefits'],
-      cons: ['Long lock-in', 'Market exposure']
+      cons: ['Long lock-in', 'Market exposure'],
     };
   }
 

@@ -20,7 +20,7 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
     ppf: data.ppf || '',
     homeLoanPrincipal: data.homeLoanPrincipal || '',
     tuitionFees: data.tuitionFees || '',
-    other: data.other || ''
+    other: data.other || '',
   });
 
   const [deductionTypes, setDeductionTypes] = useState({
@@ -31,7 +31,7 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
     sukanyaSamriddhi: { type: 'SUKANYA_SAMRIDDHI', proof: null, verified: false, confidence: 0 },
     ppf: { type: 'PPF_INVESTMENT', proof: null, verified: false, confidence: 0 },
     homeLoanPrincipal: { type: 'HOME_LOAN_PRINCIPAL', proof: null, verified: false, confidence: 0 },
-    tuitionFees: { type: 'TUITION_FEES', proof: null, verified: false, confidence: 0 }
+    tuitionFees: { type: 'TUITION_FEES', proof: null, verified: false, confidence: 0 },
   });
 
   const [errors, setErrors] = useState({});
@@ -44,57 +44,57 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
       label: 'Life Insurance Premium',
       maxAmount: 150000,
       description: 'LIC or other life insurance premium payments',
-      icon: '🛡️'
+      icon: '🛡️',
     },
     {
       key: 'providentFund',
       label: 'Employee Provident Fund',
       maxAmount: 150000,
       description: 'EPF contributions from salary',
-      icon: '🏦'
+      icon: '🏦',
     },
     {
       key: 'elss',
       label: 'ELSS Mutual Funds',
       maxAmount: 150000,
       description: 'Equity Linked Savings Scheme investments',
-      icon: '📈'
+      icon: '📈',
     },
     {
       key: 'nsc',
       label: 'National Savings Certificate',
       maxAmount: 150000,
       description: 'NSC investments',
-      icon: '📜'
+      icon: '📜',
     },
     {
       key: 'sukanyaSamriddhi',
       label: 'Sukanya Samriddhi',
       maxAmount: 150000,
       description: 'Girl child savings scheme',
-      icon: '👧'
+      icon: '👧',
     },
     {
       key: 'ppf',
       label: 'Public Provident Fund',
       maxAmount: 150000,
       description: 'PPF account contributions',
-      icon: '💰'
+      icon: '💰',
     },
     {
       key: 'homeLoanPrincipal',
       label: 'Home Loan Principal',
       maxAmount: 150000,
       description: 'Principal repayment of home loan',
-      icon: '🏠'
+      icon: '🏠',
     },
     {
       key: 'tuitionFees',
       label: 'Tuition Fees',
       maxAmount: 150000,
       description: 'Children\'s education fees',
-      icon: '🎓'
-    }
+      icon: '🎓',
+    },
   ];
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -116,9 +116,9 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
       // Import the deduction OCR service
       const { DeductionOCRService } = await import('../../services/DeductionOCRService');
       const ocrService = new DeductionOCRService();
-      
+
       const result = await ocrService.detectDeductionType(file);
-      
+
       setDeductionTypes(prev => ({
         ...prev,
         [field]: {
@@ -127,8 +127,8 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
           proof: file,
           verified: result.confidence > 0.7,
           confidence: result.confidence,
-          extractedData: result.extractedData
-        }
+          extractedData: result.extractedData,
+        },
       }));
 
       // Auto-fill amount if extracted
@@ -142,18 +142,18 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
       enterpriseLogger.info('Deduction type detected', {
         field,
         type: result.type,
-        confidence: result.confidence
+        confidence: result.confidence,
       });
 
     } catch (error) {
       enterpriseLogger.error('Deduction type detection failed', {
         field,
-        error: error.message
+        error: error.message,
       });
 
       setErrors(prev => ({
         ...prev,
-        [field]: `Failed to process document: ${error.message}`
+        [field]: `Failed to process document: ${error.message}`,
       }));
     } finally {
       setIsProcessing(prev => ({ ...prev, [field]: false }));
@@ -168,8 +168,8 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
         proof: null,
         verified: false,
         confidence: 0,
-        extractedData: null
-      }
+        extractedData: null,
+      },
     }));
   };
 
@@ -177,7 +177,7 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
     const total = Object.values(formData).reduce((sum, value) => {
       return sum + (parseFloat(value) || 0);
     }, 0);
-    
+
     return Math.min(total, 150000); // 80C limit
   };
 
@@ -229,7 +229,7 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
                     <p>{category.description}</p>
                   </div>
                 </div>
-                
+
                 <div className="deduction-status">
                   {deductionTypes[category.key].verified && (
                     <CheckCircle className="w-5 h-5 text-green-500" />
@@ -393,7 +393,7 @@ const Section80CForm = ({ data = {}, onChange, onNext, onPrevious }) => {
             border: '1px solid #bbf7d0',
             borderRadius: '8px',
             color: '#166534',
-            marginBottom: '20px'
+            marginBottom: '20px',
           }}>
             {successMessage}
           </div>

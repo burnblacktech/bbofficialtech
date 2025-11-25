@@ -14,7 +14,7 @@ import {
   useThrottle,
   useVirtualScroll,
   LazyImage,
-  memoizedComponent
+  memoizedComponent,
 } from '../utils/performance';
 
 // Mock component for testing
@@ -43,7 +43,7 @@ const TestComponent = () => {
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([
     { id: 1, name: 'Item 1', value: 10 },
-    { id: 2, name: 'Item 2', value: 20 }
+    { id: 2, name: 'Item 2', value: 20 },
   ]);
 
   const handleClick = () => setCount(prev => prev + 1);
@@ -83,7 +83,7 @@ describe('Performance Optimizations Integration Tests', () => {
       const OptimizedTrackedComponent = withPerformanceOptimization(TrackedComponent, 'TrackedComponent');
 
       const { rerender } = render(
-        <OptimizedTrackedComponent data={{ value: 1 }} />
+        <OptimizedTrackedComponent data={{ value: 1 }} />,
       );
 
       expect(renderCount).toBe(1);
@@ -183,14 +183,14 @@ describe('Performance Optimizations Integration Tests', () => {
       const largeItemList = Array.from({ length: 1000 }, (_, i) => ({
         id: i,
         name: `Item ${i}`,
-        value: i * 10
+        value: i * 10,
       }));
 
       const TestVirtualScrollComponent = () => {
         const { visibleItems, containerProps, innerStyle } = useVirtualScroll(
           largeItemList,
           50, // item height
-          500 // container height
+          500, // container height
         );
 
         return (
@@ -265,7 +265,7 @@ describe('Performance Optimizations Integration Tests', () => {
       const MemoizedComponent = memoizedComponent(BaseComponent, 'MemoizedComponent');
 
       const { rerender } = render(
-        <MemoizedComponent name="Test" value={1} />
+        <MemoizedComponent name="Test" value={1} />,
       );
 
       expect(screen.getByTestId('base-component')).toHaveTextContent('Test: 1');
@@ -285,7 +285,7 @@ describe('Performance Optimizations Integration Tests', () => {
       const largeDataSet = Array.from({ length: 10000 }, (_, i) => ({
         id: i,
         name: `Item ${i}`,
-        value: Math.random() * 1000
+        value: Math.random() * 1000,
       }));
 
       const TestPerformanceComponent = ({ items, useOptimization }) => {
@@ -320,8 +320,8 @@ describe('Performance Optimizations Integration Tests', () => {
     test('should support code splitting with dynamic imports', async () => {
       const LazyComponent = React.lazy(() =>
         Promise.resolve({
-          default: () => <div data-testid="lazy-loaded">Lazy Loaded Content</div>
-        })
+          default: () => <div data-testid="lazy-loaded">Lazy Loaded Content</div>,
+        }),
       );
 
       const TestCodeSplittingComponent = () => {

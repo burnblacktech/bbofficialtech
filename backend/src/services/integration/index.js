@@ -10,5 +10,5 @@ const AIService = require('./AIService');
 module.exports = {
   S3Service,
   EmailService,
-  AIService
+  AIService,
 };

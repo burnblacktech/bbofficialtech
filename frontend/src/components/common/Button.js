@@ -25,7 +25,7 @@ const Button = ({
       e.preventDefault();
       return;
     }
-    
+
     if (onClick) {
       onClick(e);
     }
@@ -33,7 +33,7 @@ const Button = ({
 
   // Base classes
   const baseClasses = 'btn';
-  
+
   // Variant classes
   const variantClasses = {
     primary: 'btn-primary',
@@ -46,22 +46,22 @@ const Button = ({
     dark: 'btn-dark',
     outline: 'btn-outline-primary',
     ghost: 'btn-ghost',
-    link: 'btn-link'
+    link: 'btn-link',
   };
-  
+
   // Size classes
   const sizeClasses = {
     small: 'btn-sm',
     medium: 'btn-md',
     large: 'btn-lg',
-    xlarge: 'btn-xl'
+    xlarge: 'btn-xl',
   };
-  
+
   // State classes
   const stateClasses = {
     disabled: disabled ? 'btn-disabled' : '',
     loading: loading ? 'btn-loading' : '',
-    fullWidth: fullWidth ? 'btn-full-width' : ''
+    fullWidth: fullWidth ? 'btn-full-width' : '',
   };
 
   // Combine all classes
@@ -72,18 +72,18 @@ const Button = ({
     stateClasses.disabled,
     stateClasses.loading,
     stateClasses.fullWidth,
-    className
+    className,
   ].filter(Boolean).join(' ');
 
   // Render icon
   const renderIcon = () => {
     if (!icon) return null;
-    
+
     const iconElement = React.cloneElement(icon, {
       className: `btn-icon ${icon.props.className || ''}`,
-      size: size === 'small' ? 16 : size === 'large' ? 24 : 20
+      size: size === 'small' ? 16 : size === 'large' ? 24 : 20,
     });
-    
+
     return (
       <span className={`btn-icon-wrapper ${iconPosition === 'right' ? 'btn-icon-right' : 'btn-icon-left'}`}>
         {iconElement}
@@ -94,7 +94,7 @@ const Button = ({
   // Render loading spinner
   const renderLoadingSpinner = () => {
     if (!loading) return null;
-    
+
     return (
       <span className="btn-spinner">
         <svg

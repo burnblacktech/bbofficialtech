@@ -18,7 +18,7 @@ import {
   Globe,
   AlertCircle,
   CheckCircle,
-  Info
+  Info,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { personalInfoService } from '../../services/personalInfoService';
@@ -29,41 +29,41 @@ const personalInfoSchema = yup.object({
   gender: yup.string()
     .required('Gender is required')
     .oneOf(['MALE', 'FEMALE', 'OTHER'], 'Invalid gender selection'),
-  
+
   aadhaar: yup.string()
     .matches(/^\d{12}$/, 'Aadhaar number must be 12 digits')
     .nullable(),
-  
+
   filing_for: yup.string()
     .required('Filing for is required')
     .oneOf(['SELF', 'SPOUSE', 'MINOR', 'HUF'], 'Invalid filing for selection'),
-  
+
   residential_status: yup.string()
     .required('Residential status is required')
     .oneOf(['RESIDENT', 'NON_RESIDENT', 'RESIDENT_NOT_ORDINARILY_RESIDENT'], 'Invalid residential status'),
-  
+
   country_of_residence: yup.string()
     .when('residential_status', {
       is: 'NON_RESIDENT',
       then: yup.string().required('Country of residence is required for non-residents'),
       otherwise: yup.string().nullable(),
     }),
-  
+
   // Family Information
   father_name: yup.string()
     .required('Father\'s name is required')
     .min(2, 'Father\'s name must be at least 2 characters'),
-  
+
   mother_name: yup.string()
     .nullable(),
-  
+
   spouse_name: yup.string()
     .when('filing_for', {
       is: 'SPOUSE',
       then: yup.string().required('Spouse name is required for spouse filing'),
       otherwise: yup.string().nullable(),
     }),
-  
+
   spouse_pan: yup.string()
     .when('filing_for', {
       is: 'SPOUSE',
@@ -72,7 +72,7 @@ const personalInfoSchema = yup.object({
         .nullable(),
       otherwise: yup.string().nullable(),
     }),
-  
+
   spouse_aadhaar: yup.string()
     .when('filing_for', {
       is: 'SPOUSE',
@@ -81,7 +81,7 @@ const personalInfoSchema = yup.object({
         .nullable(),
       otherwise: yup.string().nullable(),
     }),
-  
+
   // Address Information
   address: yup.object({
     line1: yup.string().required('Address line 1 is required'),
@@ -91,8 +91,8 @@ const personalInfoSchema = yup.object({
     pin_code: yup.string()
       .required('PIN code is required')
       .matches(/^\d{6}$/, 'PIN code must be 6 digits'),
-    country: yup.string().default('India')
-  })
+    country: yup.string().default('India'),
+  }),
 });
 
 const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
@@ -118,9 +118,9 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
         city: defaultValues?.address?.city || '',
         state: defaultValues?.address?.state || '',
         pin_code: defaultValues?.address?.pin_code || '',
-        country: defaultValues?.address?.country || 'India'
-      }
-    }
+        country: defaultValues?.address?.country || 'India',
+      },
+    },
   });
 
   const filingFor = watch('filing_for');
@@ -162,7 +162,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
     try {
       setLoading(true);
       const response = await personalInfoService.updatePersonalInfo(intakeId, data);
-      
+
       if (response.success) {
         toast.success('Personal information saved successfully!');
         await validatePersonalInfo();
@@ -205,7 +205,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               <Shield className="h-5 w-5 mr-2" />
               Basic Information
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Gender */}
               <div>
@@ -326,7 +326,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               <Users className="h-5 w-5 mr-2" />
               Family Information
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Father's Name */}
               <div>
@@ -440,7 +440,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               <MapPin className="h-5 w-5 mr-2" />
               Address Information
             </h3>
-            
+
             <div className="space-y-4">
               {/* Address Line 1 */}
               <div>
@@ -589,7 +589,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
             >
               Validate
             </button>
-            
+
             <div className="flex space-x-3">
               <button
                 type="submit"
@@ -598,7 +598,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               >
                 {loading ? 'Saving...' : 'Save Information'}
               </button>
-              
+
               {onNext && (
                 <button
                   type="button"

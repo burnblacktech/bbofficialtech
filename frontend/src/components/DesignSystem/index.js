@@ -15,7 +15,7 @@ export {
   CardBody,
   CardFooter,
   Modal,
-  Badge
+  Badge,
 } from './components';
 
 // Legacy exports for backward compatibility
@@ -24,5 +24,5 @@ import Components from './components';
 
 export default {
   DESIGN_TOKENS,
-  ...Components
+  ...Components,
 };

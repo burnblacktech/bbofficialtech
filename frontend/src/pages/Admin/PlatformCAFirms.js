@@ -7,12 +7,12 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Building2, 
-  Users, 
-  FileText, 
-  TrendingUp, 
-  Shield, 
+import {
+  Building2,
+  Users,
+  FileText,
+  TrendingUp,
+  Shield,
   Search,
   Plus,
   Eye,
@@ -31,7 +31,7 @@ import {
   Crown,
   UserCheck,
   Activity,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -85,7 +85,7 @@ const PlatformCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to register CA firm: ${error.message}`);
-    }
+    },
   });
 
   // Update CA firm status mutation
@@ -101,7 +101,7 @@ const PlatformCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update CA firm: ${error.message}`);
-    }
+    },
   });
 
   // Update CA firm tier mutation
@@ -117,7 +117,7 @@ const PlatformCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update CA firm tier: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (firmId, newStatus) => {
@@ -192,7 +192,7 @@ const PlatformCAFirms = () => {
     { id: 'all', name: 'All Firms', count: stats.total || 0 },
     { id: 'active', name: 'Active', count: stats.active || 0 },
     { id: 'pending', name: 'Pending', count: stats.pending || 0 },
-    { id: 'premium', name: 'Premium', count: stats.premium || 0 }
+    { id: 'premium', name: 'Premium', count: stats.premium || 0 },
   ];
 
   const filteredFirms = firms.filter(firm => {
@@ -224,7 +224,7 @@ const PlatformCAFirms = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">CA Firm Registry</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/platform-admin/ca-firms/export')}
@@ -233,7 +233,7 @@ const PlatformCAFirms = () => {
                 <Download className="h-4 w-4" />
                 <span>Export Registry</span>
               </button>
-              
+
               <button
                 onClick={() => setShowAddForm(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -259,7 +259,7 @@ const PlatformCAFirms = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -269,7 +269,7 @@ const PlatformCAFirms = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Crown className="h-8 w-8 text-purple-600" />
@@ -279,7 +279,7 @@ const PlatformCAFirms = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Users className="h-8 w-8 text-orange-600" />
@@ -305,7 +305,7 @@ const PlatformCAFirms = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Status Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-400" />
@@ -322,7 +322,7 @@ const PlatformCAFirms = () => {
                 <option value="under_review">Under Review</option>
               </select>
             </div>
-            
+
             {/* Tier Filter */}
             <select
               value={tierFilter}
@@ -388,7 +388,7 @@ const PlatformCAFirms = () => {
                 {filteredFirms.length} CA Firm{filteredFirms.length !== 1 ? 's' : ''}
               </h2>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {filteredFirms.map((firm) => (
                 <div key={firm.firm_id} className="px-6 py-4 hover:bg-gray-50">
@@ -412,7 +412,7 @@ const PlatformCAFirms = () => {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
@@ -428,7 +428,7 @@ const PlatformCAFirms = () => {
                               <span>{firm.email}</span>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-1">
                             <div className="flex items-center space-x-2">
                               <Users className="h-4 w-4" />
@@ -444,7 +444,7 @@ const PlatformCAFirms = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="mt-3 text-xs text-gray-500">
                           Registered: {new Date(firm.created_at).toLocaleDateString()}
                           {firm.last_activity && (
@@ -455,7 +455,7 @@ const PlatformCAFirms = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => navigate(`/platform-admin/ca-firms/${firm.firm_id}`)}
@@ -464,7 +464,7 @@ const PlatformCAFirms = () => {
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      
+
                       <button
                         onClick={() => navigate(`/platform-admin/ca-firms/${firm.firm_id}/edit`)}
                         className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
@@ -472,7 +472,7 @@ const PlatformCAFirms = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      
+
                       {firm.status === 'pending' && (
                         <button
                           onClick={() => handleStatusUpdate(firm.firm_id, 'active')}
@@ -482,7 +482,7 @@ const PlatformCAFirms = () => {
                           <CheckCircle className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {firm.tier !== 'premium' && (
                         <button
                           onClick={() => handleTierUpdate(firm.firm_id, 'premium')}
@@ -492,7 +492,7 @@ const PlatformCAFirms = () => {
                           <Crown className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {firm.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(firm.firm_id, 'suspended')}
@@ -542,7 +542,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
     pan_number: '',
     tier: 'basic',
     status: 'pending',
-    is_verified: false
+    is_verified: false,
   });
 
   const handleSubmit = (e) => {
@@ -554,7 +554,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Register New CA Firm</h3>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -570,7 +570,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter firm name"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Registration Number *
@@ -584,7 +584,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter registration number"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email *
@@ -598,7 +598,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter email"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone *
@@ -612,7 +612,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter phone number"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Person Name *
@@ -626,7 +626,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter contact person name"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Person Email *
@@ -640,7 +640,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter contact person email"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Person Phone *
@@ -654,7 +654,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter contact person phone"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 PAN Number *
@@ -670,7 +670,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               />
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Address Line 1 *
@@ -684,7 +684,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter address line 1"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Address Line 2
@@ -697,7 +697,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               placeholder="Enter address line 2"
             />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -712,7 +712,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter city"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 State *
@@ -726,7 +726,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 placeholder="Enter state"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Pincode *
@@ -741,7 +741,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               />
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -757,7 +757,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
                 <option value="premium">Premium</option>
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -771,7 +771,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
               </label>
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

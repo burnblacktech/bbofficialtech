@@ -1,6 +1,6 @@
 /**
  * Certificate Utilities for ERI
- * 
+ *
  * Utilities for working with ERI certificates and public keys
  */
 
@@ -18,43 +18,43 @@ const enterpriseLogger = require('./logger');
 const extractPublicKeyFromP12 = (p12Path, password) => {
   try {
     const certPath = path.resolve(__dirname, '../../', p12Path);
-    
+
     if (!fs.existsSync(certPath)) {
       throw new Error(`Certificate file not found: ${certPath}`);
     }
-    
+
     // Read the PKCS#12 file
     const p12Asn1 = forge.asn1.fromDer(
-      fs.readFileSync(certPath, 'binary')
+      fs.readFileSync(certPath, 'binary'),
     );
-    
+
     // Parse the PKCS#12 file with password
     const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
-    
+
     // Extract the certificate
     const certBags = p12.getBags({ bagType: forge.pki.oids.certBag });
     const certBag = certBags[forge.pki.oids.certBag];
-    
+
     if (!certBag || certBag.length === 0) {
       throw new Error('No certificate found in certificate file');
     }
-    
+
     const certificate = certBag[0].cert;
     const publicKey = certificate.publicKey;
-    
+
     enterpriseLogger.info('Public key extracted from PKCS#12', {
       subject: certificate.subject.getField('CN')?.value || 'Unknown',
       issuer: certificate.issuer.getField('CN')?.value || 'Unknown',
       validFrom: certificate.validity.notBefore,
-      validTo: certificate.validity.notAfter
+      validTo: certificate.validity.notAfter,
     });
-    
+
     return { publicKey, certificate };
-    
+
   } catch (error) {
-    enterpriseLogger.error('Failed to extract public key from PKCS#12', { 
+    enterpriseLogger.error('Failed to extract public key from PKCS#12', {
       error: error.message,
-      p12Path 
+      p12Path,
     });
     return null;
   }
@@ -71,8 +71,8 @@ const certificateToPEM = (certificate) => {
     enterpriseLogger.info('Certificate converted to PEM format');
     return pem;
   } catch (error) {
-    enterpriseLogger.error('Failed to convert certificate to PEM', { 
-      error: error.message 
+    enterpriseLogger.error('Failed to convert certificate to PEM', {
+      error: error.message,
     });
     throw new Error('Failed to convert certificate to PEM format');
   }
@@ -89,8 +89,8 @@ const publicKeyToPEM = (publicKey) => {
     enterpriseLogger.info('Public key converted to PEM format');
     return pem;
   } catch (error) {
-    enterpriseLogger.error('Failed to convert public key to PEM', { 
-      error: error.message 
+    enterpriseLogger.error('Failed to convert public key to PEM', {
+      error: error.message,
     });
     throw new Error('Failed to convert public key to PEM format');
   }
@@ -106,35 +106,35 @@ const publicKeyToPEM = (publicKey) => {
 const savePublicKeyCertificate = (p12Path, password, outputPath = './certs/public_key_eri.pem') => {
   try {
     const keyData = extractPublicKeyFromP12(p12Path, password);
-    
+
     if (!keyData) {
       throw new Error('Failed to extract public key from certificate');
     }
-    
+
     const { certificate } = keyData;
     const pemCertificate = certificateToPEM(certificate);
-    
+
     // Ensure output directory exists
     const outputDir = path.dirname(outputPath);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
-    
+
     // Write PEM certificate to file
     fs.writeFileSync(outputPath, pemCertificate);
-    
+
     enterpriseLogger.info('Public key certificate saved', {
       outputPath,
-      subject: certificate.subject.getField('CN')?.value || 'Unknown'
+      subject: certificate.subject.getField('CN')?.value || 'Unknown',
     });
-    
+
     return true;
-    
+
   } catch (error) {
-    enterpriseLogger.error('Failed to save public key certificate', { 
+    enterpriseLogger.error('Failed to save public key certificate', {
       error: error.message,
       p12Path,
-      outputPath
+      outputPath,
     });
     return false;
   }
@@ -149,49 +149,49 @@ const savePublicKeyCertificate = (p12Path, password, outputPath = './certs/publi
 const getCertificateInfo = (p12Path, password) => {
   try {
     const keyData = extractPublicKeyFromP12(p12Path, password);
-    
+
     if (!keyData) {
       throw new Error('Failed to extract certificate information');
     }
-    
+
     const { certificate } = keyData;
-    
+
     const info = {
       subject: {
         commonName: certificate.subject.getField('CN')?.value || 'Unknown',
         organization: certificate.subject.getField('O')?.value || 'Unknown',
         organizationalUnit: certificate.subject.getField('OU')?.value || 'Unknown',
-        country: certificate.subject.getField('C')?.value || 'Unknown'
+        country: certificate.subject.getField('C')?.value || 'Unknown',
       },
       issuer: {
         commonName: certificate.issuer.getField('CN')?.value || 'Unknown',
-        organization: certificate.issuer.getField('O')?.value || 'Unknown'
+        organization: certificate.issuer.getField('O')?.value || 'Unknown',
       },
       validity: {
         notBefore: certificate.validity.notBefore,
         notAfter: certificate.validity.notAfter,
-        isValid: new Date() >= certificate.validity.notBefore && new Date() <= certificate.validity.notAfter
+        isValid: new Date() >= certificate.validity.notBefore && new Date() <= certificate.validity.notAfter,
       },
       serialNumber: certificate.serialNumber,
       fingerprint: {
         md5: forge.md.md5.create().update(certificate.der).digest().toHex(),
         sha1: forge.md.sha1.create().update(certificate.der).digest().toHex(),
-        sha256: forge.md.sha256.create().update(certificate.der).digest().toHex()
-      }
+        sha256: forge.md.sha256.create().update(certificate.der).digest().toHex(),
+      },
     };
-    
+
     enterpriseLogger.info('Certificate information extracted', {
       subject: info.subject.commonName,
       issuer: info.issuer.commonName,
-      isValid: info.validity.isValid
+      isValid: info.validity.isValid,
     });
-    
+
     return info;
-    
+
   } catch (error) {
-    enterpriseLogger.error('Failed to get certificate information', { 
+    enterpriseLogger.error('Failed to get certificate information', {
       error: error.message,
-      p12Path
+      p12Path,
     });
     return null;
   }
@@ -205,42 +205,42 @@ const getCertificateInfo = (p12Path, password) => {
 const validatePEMCertificate = (pemPath) => {
   try {
     const certPath = path.resolve(__dirname, '../../', pemPath);
-    
+
     if (!fs.existsSync(certPath)) {
       throw new Error(`PEM certificate file not found: ${certPath}`);
     }
-    
+
     const pemData = fs.readFileSync(certPath, 'utf8');
     const certificate = forge.pki.certificateFromPem(pemData);
-    
+
     const info = {
       subject: {
         commonName: certificate.subject.getField('CN')?.value || 'Unknown',
-        organization: certificate.subject.getField('O')?.value || 'Unknown'
+        organization: certificate.subject.getField('O')?.value || 'Unknown',
       },
       issuer: {
         commonName: certificate.issuer.getField('CN')?.value || 'Unknown',
-        organization: certificate.issuer.getField('O')?.value || 'Unknown'
+        organization: certificate.issuer.getField('O')?.value || 'Unknown',
       },
       validity: {
         notBefore: certificate.validity.notBefore,
         notAfter: certificate.validity.notAfter,
-        isValid: new Date() >= certificate.validity.notBefore && new Date() <= certificate.validity.notAfter
+        isValid: new Date() >= certificate.validity.notBefore && new Date() <= certificate.validity.notAfter,
       },
-      serialNumber: certificate.serialNumber
+      serialNumber: certificate.serialNumber,
     };
-    
+
     enterpriseLogger.info('PEM certificate validated', {
       subject: info.subject.commonName,
-      isValid: info.validity.isValid
+      isValid: info.validity.isValid,
     });
-    
+
     return info;
-    
+
   } catch (error) {
-    enterpriseLogger.error('Failed to validate PEM certificate', { 
+    enterpriseLogger.error('Failed to validate PEM certificate', {
       error: error.message,
-      pemPath
+      pemPath,
     });
     return null;
   }
@@ -252,5 +252,5 @@ module.exports = {
   publicKeyToPEM,
   savePublicKeyCertificate,
   getCertificateInfo,
-  validatePEMCertificate
+  validatePEMCertificate,
 };

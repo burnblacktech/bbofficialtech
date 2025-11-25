@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  // Login function
+  // Login function (for email/password)
   const login = useCallback(async (credentials) => {
     setIsLoading(true);
     try {
@@ -74,6 +74,37 @@ export const AuthProvider = ({ children }) => {
       return { success: false, message: response.message };
     } catch (error) {
       console.error('Login error:', error);
+      return { success: false, message: error.message };
+    } finally {
+      setIsLoading(false);
+    }
+  }, [navigate]);
+
+  // OAuth login function (for Google OAuth, etc.)
+  const loginWithOAuth = useCallback(async (user, token, refreshToken) => {
+    setIsLoading(true);
+    try {
+      // Handle OAuth login (sets tokens directly)
+      const response = authService.handleOAuthLogin(user, token, refreshToken);
+
+      if (response.success) {
+        setUser(response.user);
+        setIsAuthenticated(true);
+
+        // Load profile after successful login
+        try {
+          const profileData = await authService.getProfile();
+          setProfile(profileData);
+        } catch (error) {
+          console.warn('Failed to load user profile after OAuth login:', error);
+        }
+
+        navigate('/home');
+        return { success: true };
+      }
+      return { success: false, message: 'OAuth login failed' };
+    } catch (error) {
+      console.error('OAuth login error:', error);
       return { success: false, message: error.message };
     } finally {
       setIsLoading(false);
@@ -128,12 +159,13 @@ export const AuthProvider = ({ children }) => {
 
     // Actions
     login,
+    loginWithOAuth,
     logout,
     updateProfile,
 
     // Utilities
     hasRole,
-    hasPermission
+    hasPermission,
   };
 
   return (

@@ -7,11 +7,9 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
-    "prettier", // disables eslint rules that conflict with prettier
   ],
-  plugins: ["prettier"],
+  plugins: [],
   rules: {
-    "prettier/prettier": "error",
     "no-unused-vars": ["warn", { "argsIgnorePattern": "next" }],
     "no-console": "warn",
     "no-debugger": "error",
@@ -37,4 +35,7 @@ module.exports = {
     "*.min.js",
     "coverage/",
   ],
+  globals: {
+    "enterpriseLogger": "readonly",
+  },
 };

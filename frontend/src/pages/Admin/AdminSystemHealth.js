@@ -7,12 +7,12 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Server, 
-  Database, 
-  Cpu, 
-  HardDrive, 
-  Wifi, 
+import {
+  Server,
+  Database,
+  Cpu,
+  HardDrive,
+  Wifi,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -29,7 +29,7 @@ import {
   DollarSign,
   BarChart3,
   PieChart,
-  LineChart
+  LineChart,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -154,7 +154,7 @@ const AdminSystemHealth = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">System Health</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <label className="text-sm text-gray-600">Auto Refresh</label>
@@ -171,7 +171,7 @@ const AdminSystemHealth = () => {
                   />
                 </button>
               </div>
-              
+
               <select
                 value={selectedTimeRange}
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
@@ -182,7 +182,7 @@ const AdminSystemHealth = () => {
                 <option value="7d">Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>
               </select>
-              
+
               <button
                 onClick={() => refetch()}
                 className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -215,7 +215,7 @@ const AdminSystemHealth = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Database className="h-8 w-8 text-green-600" />
@@ -232,7 +232,7 @@ const AdminSystemHealth = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Wifi className="h-8 w-8 text-purple-600" />
@@ -249,7 +249,7 @@ const AdminSystemHealth = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Shield className="h-8 w-8 text-red-600" />
@@ -279,13 +279,13 @@ const AdminSystemHealth = () => {
               {metrics.cpu?.usage || 0}%
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full" 
+              <div
+                className="bg-blue-600 h-2 rounded-full"
                 style={{ width: `${metrics.cpu?.usage || 0}%` }}
               ></div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-600">Memory Usage</h3>
@@ -295,13 +295,13 @@ const AdminSystemHealth = () => {
               {metrics.memory?.usage || 0}%
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-green-600 h-2 rounded-full" 
+              <div
+                className="bg-green-600 h-2 rounded-full"
                 style={{ width: `${metrics.memory?.usage || 0}%` }}
               ></div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-600">Disk Usage</h3>
@@ -311,13 +311,13 @@ const AdminSystemHealth = () => {
               {metrics.disk?.usage || 0}%
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-purple-600 h-2 rounded-full" 
+              <div
+                className="bg-purple-600 h-2 rounded-full"
                 style={{ width: `${metrics.disk?.usage || 0}%` }}
               ></div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-600">Network I/O</h3>
@@ -349,7 +349,7 @@ const AdminSystemHealth = () => {
               </button>
             </div>
           </div>
-          
+
           {alerts.length === 0 ? (
             <div className="text-center py-8">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
@@ -392,7 +392,7 @@ const AdminSystemHealth = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <FileText className="h-8 w-8 text-green-600" />
@@ -402,7 +402,7 @@ const AdminSystemHealth = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <DollarSign className="h-8 w-8 text-purple-600" />
@@ -412,7 +412,7 @@ const AdminSystemHealth = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
               <Activity className="h-8 w-8 text-orange-600" />
@@ -433,7 +433,7 @@ const AdminSystemHealth = () => {
               <p className="text-gray-500">Performance chart visualization would be implemented here</p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Resource Usage</h3>
             <div className="text-center py-8">
@@ -456,7 +456,7 @@ const AdminSystemHealth = () => {
                 </div>
               </div>
             </button>
-            
+
             <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
               <div className="flex items-center space-x-3">
                 <Database className="h-6 w-6 text-green-600" />
@@ -466,7 +466,7 @@ const AdminSystemHealth = () => {
                 </div>
               </div>
             </button>
-            
+
             <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
               <div className="flex items-center space-x-3">
                 <Settings className="h-6 w-6 text-purple-600" />

@@ -15,7 +15,7 @@ import {
   FileText,
   Phone,
   Calendar,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 import { Button, Card } from '../../components/UI';
 
@@ -26,7 +26,7 @@ const RegistrationSuccess = () => {
 
   const { applicationId, estimatedReviewTime } = location.state || {
     applicationId: 'APP-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-    estimatedReviewTime: '24-48 hours'
+    estimatedReviewTime: '24-48 hours',
   };
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const RegistrationSuccess = () => {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            transition={{ duration: 0.5, type: 'spring' }}
             className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4"
           >
             <CheckCircle className="w-10 h-10 text-green-600" />
@@ -108,7 +108,7 @@ const RegistrationSuccess = () => {
                   {new Date().toLocaleDateString('en-IN', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                   })}
                 </p>
               </div>

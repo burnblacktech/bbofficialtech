@@ -3,7 +3,7 @@
 // Handles CA Bot API requests and responses
 // =====================================================
 
-const cabotService = require('../services/CABotService');
+const cabotService = require('../services/integration/AIService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 
@@ -28,18 +28,18 @@ class CABotController {
         messageLength: message.length,
         userType: context.userType,
         language: context.language,
-        currentStep: context.currentStep
+        currentStep: context.currentStep,
       });
 
       // Detect user type from message
       const detectedUserType = cabotService.detectUserType(message);
-      
+
       // Update context with detected user type
       const updatedContext = {
         ...context,
         userType: detectedUserType,
         userId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       // Generate AI response
@@ -50,7 +50,7 @@ class CABotController {
         userId,
         userType: detectedUserType,
         responseLength: response.content.length,
-        isAI: response.metadata.isAI
+        isAI: response.metadata.isAI,
       });
 
       res.status(200).json({
@@ -58,17 +58,17 @@ class CABotController {
         data: {
           response: response.content,
           metadata: response.metadata,
-          context: updatedContext
-        }
+          context: updatedContext,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('CA Bot message processing error', {
         error: error.message,
         userId: req.user?.id,
-        message: req.body.message
+        message: req.body.message,
       });
-      
+
       next(error);
     }
   }
@@ -93,7 +93,7 @@ class CABotController {
       enterpriseLogger.info('User type detected', {
         userId,
         userType,
-        messageLength: message.length
+        messageLength: message.length,
       });
 
       res.status(200).json({
@@ -101,16 +101,16 @@ class CABotController {
         data: {
           userType,
           confidence: 'high', // Could be enhanced with confidence scoring
-          detectedAt: new Date().toISOString()
-        }
+          detectedAt: new Date().toISOString(),
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('User type detection error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }
@@ -135,26 +135,26 @@ class CABotController {
         language: 'en',
         collectedData: {},
         steps: [],
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
 
       enterpriseLogger.info('Conversation context retrieved', {
         userId,
         filingId,
-        currentStep: context.currentStep
+        currentStep: context.currentStep,
       });
 
       res.status(200).json({
         success: true,
-        data: { context }
+        data: { context },
       });
 
     } catch (error) {
       enterpriseLogger.error('Conversation context error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }
@@ -184,7 +184,7 @@ class CABotController {
       const updatedContext = {
         ...context,
         userId,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       enterpriseLogger.info('Conversation context updated', {
@@ -192,21 +192,21 @@ class CABotController {
         userType: updatedContext.userType,
         language: updatedContext.language,
         currentStep: updatedContext.currentStep,
-        warnings: validation.warnings
+        warnings: validation.warnings,
       });
 
       res.status(200).json({
         success: true,
         data: { context: updatedContext },
-        warnings: validation.warnings
+        warnings: validation.warnings,
       });
 
     } catch (error) {
       enterpriseLogger.error('Conversation context update error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }
@@ -236,20 +236,20 @@ class CABotController {
         steps: conversationData.steps?.length || 0,
         hasPersonalInfo: !!filingData.personalInfo,
         hasIncomeDetails: !!filingData.incomeDetails,
-        hasDeductions: !!filingData.deductions
+        hasDeductions: !!filingData.deductions,
       });
 
       res.status(200).json({
         success: true,
-        data: { filingData }
+        data: { filingData },
       });
 
     } catch (error) {
       enterpriseLogger.error('Filing data processing error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }
@@ -273,7 +273,7 @@ class CABotController {
           voiceInput: true,
           voiceOutput: true,
           realTimeComputation: true,
-          aiIntegration: process.env.FEATURE_OPENAI_LIVE === 'true'
+          aiIntegration: process.env.FEATURE_OPENAI_LIVE === 'true',
         },
         supportedUserTypes: ['non_educated', 'educated', 'ultra_educated'],
         supportedLanguages: ['en', 'hi'],
@@ -285,27 +285,27 @@ class CABotController {
           'deductions',
           'tax_computation',
           'review',
-          'submission'
-        ]
+          'submission',
+        ],
       };
 
       enterpriseLogger.info('CA Bot status retrieved', {
         userId,
         isActive: status.isActive,
-        aiIntegration: status.features.aiIntegration
+        aiIntegration: status.features.aiIntegration,
       });
 
       res.status(200).json({
         success: true,
-        data: { status }
+        data: { status },
       });
 
     } catch (error) {
       enterpriseLogger.error('CA Bot status error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }
@@ -329,27 +329,27 @@ class CABotController {
         language: 'en',
         collectedData: {},
         steps: [],
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
 
       enterpriseLogger.info('Conversation reset', {
         userId,
         filingId,
-        newStep: newContext.currentStep
+        newStep: newContext.currentStep,
       });
 
       res.status(200).json({
         success: true,
         data: { context: newContext },
-        message: 'Conversation reset successfully'
+        message: 'Conversation reset successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('Conversation reset error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }
@@ -371,7 +371,7 @@ class CABotController {
       const history = {
         messages: [],
         totalCount: 0,
-        hasMore: false
+        hasMore: false,
       };
 
       enterpriseLogger.info('Conversation history retrieved', {
@@ -379,20 +379,20 @@ class CABotController {
         filingId,
         limit,
         offset,
-        totalCount: history.totalCount
+        totalCount: history.totalCount,
       });
 
       res.status(200).json({
         success: true,
-        data: { history }
+        data: { history },
       });
 
     } catch (error) {
       enterpriseLogger.error('Conversation history error', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
-      
+
       next(error);
     }
   }

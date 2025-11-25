@@ -17,44 +17,44 @@ const AdminNavigation = ({ className = '' }) => {
       path: '/admin',
       label: 'Dashboard',
       icon: '📊',
-      description: 'System overview and statistics'
+      description: 'System overview and statistics',
     },
     {
       path: '/admin/users',
       label: 'User Management',
       icon: '👥',
-      description: 'Manage users and permissions'
+      description: 'Manage users and permissions',
     },
     {
       path: '/admin/tickets',
       label: 'Service Tickets',
       icon: '🎫',
-      description: 'Monitor and manage support tickets'
+      description: 'Monitor and manage support tickets',
     },
     {
       path: '/admin/filings',
       label: 'ITR Filings',
       icon: '📄',
-      description: 'Oversee ITR filing process'
+      description: 'Oversee ITR filing process',
     },
     {
       path: '/admin/documents',
       label: 'Documents',
       icon: '📁',
-      description: 'Manage uploaded documents'
+      description: 'Manage uploaded documents',
     },
     {
       path: '/admin/audit',
       label: 'Audit Logs',
       icon: '📋',
-      description: 'View system audit trails'
+      description: 'View system audit trails',
     },
     {
       path: '/admin/settings',
       label: 'Settings',
       icon: '⚙️',
-      description: 'System configuration'
-    }
+      description: 'System configuration',
+    },
   ];
 
   const handleLogout = () => {
@@ -62,7 +62,7 @@ const AdminNavigation = ({ className = '' }) => {
     localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
     window.location.href = '/login';
-    
+
     enterpriseLogger.info('Admin user logged out');
   };
 
@@ -125,7 +125,7 @@ const AdminNavigation = ({ className = '' }) => {
             </div>
           )}
         </div>
-        
+
         <div className="nav-actions">
           <Button
             variant="outline"
@@ -137,7 +137,7 @@ const AdminNavigation = ({ className = '' }) => {
             {!isCollapsed && 'Dashboard'}
             <span className="icon">🏠</span>
           </Button>
-          
+
           <Button
             variant="danger"
             size="small"

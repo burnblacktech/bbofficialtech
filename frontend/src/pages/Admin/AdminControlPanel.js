@@ -4,25 +4,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Settings, 
-  Users, 
-  DollarSign, 
-  Shield, 
-  BarChart3, 
-  Save, 
+import {
+  Settings,
+  Users,
+  DollarSign,
+  Shield,
+  BarChart3,
+  Save,
   RefreshCw,
   AlertCircle,
   CheckCircle,
   Edit,
   Eye,
-  Trash2
+  Trash2,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const AdminControlPanel = () => {
@@ -40,13 +40,13 @@ const AdminControlPanel = () => {
       itr_1: 500,
       itr_2: 800,
       itr_3: 1200,
-      itr_4: 1000
+      itr_4: 1000,
     },
     maxFilingsPerUserMonth: 10,
     maxFilingsPerUserYear: 50,
     serviceTicketAutoCreate: true,
     caAssistedFilingVisible: true,
-    platformCommission: 5.0
+    platformCommission: 5.0,
   };
 
   const mockCaFirms = [
@@ -60,13 +60,13 @@ const AdminControlPanel = () => {
         itr_1: 600,
         itr_2: 900,
         itr_3: 1400,
-        itr_4: 1200
+        itr_4: 1200,
       },
       maxFilingsPerMonth: 100,
       maxFilingsPerYear: 1000,
       commissionPercentage: 3.0,
       createdAt: '2023-01-15',
-      lastActivity: '2024-01-15'
+      lastActivity: '2024-01-15',
     },
     {
       id: '2',
@@ -79,8 +79,8 @@ const AdminControlPanel = () => {
       maxFilingsPerYear: 2000,
       commissionPercentage: 2.5,
       createdAt: '2023-03-20',
-      lastActivity: '2024-01-14'
-    }
+      lastActivity: '2024-01-14',
+    },
   ];
 
   const mockUserLimits = [
@@ -94,7 +94,7 @@ const AdminControlPanel = () => {
       maxFilingsPerYear: 75,
       currentMonthFilings: 3,
       currentYearFilings: 12,
-      resetDate: '2024-02-01'
+      resetDate: '2024-02-01',
     },
     {
       id: '2',
@@ -106,8 +106,8 @@ const AdminControlPanel = () => {
       maxFilingsPerYear: 50,
       currentMonthFilings: 8,
       currentYearFilings: 35,
-      resetDate: '2024-02-01'
-    }
+      resetDate: '2024-02-01',
+    },
   ];
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const AdminControlPanel = () => {
     { id: 'billing', name: 'Billing & Rates', icon: DollarSign },
     { id: 'limits', name: 'User Limits', icon: Users },
     { id: 'ca-firms', name: 'CA Firms', icon: Shield },
-    { id: 'platform', name: 'Platform Settings', icon: Settings }
+    { id: 'platform', name: 'Platform Settings', icon: Settings },
   ];
 
   const handleSaveSettings = async () => {
@@ -143,14 +143,14 @@ const AdminControlPanel = () => {
   };
 
   const handleUpdateCaFirm = (firmId, updates) => {
-    setCaFirms(caFirms.map(firm => 
-      firm.id === firmId ? { ...firm, ...updates } : firm
+    setCaFirms(caFirms.map(firm =>
+      firm.id === firmId ? { ...firm, ...updates } : firm,
     ));
   };
 
   const handleUpdateUserLimit = (limitId, updates) => {
-    setUserLimits(userLimits.map(limit => 
-      limit.id === limitId ? { ...limit, ...updates } : limit
+    setUserLimits(userLimits.map(limit =>
+      limit.id === limitId ? { ...limit, ...updates } : limit,
     ));
   };
 
@@ -166,7 +166,7 @@ const AdminControlPanel = () => {
               value={settings.defaultItrRates?.itr_1 || 0}
               onChange={(e) => setSettings({
                 ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_1: parseInt(e.target.value) }
+                defaultItrRates: { ...settings.defaultItrRates, itr_1: parseInt(e.target.value) },
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -178,7 +178,7 @@ const AdminControlPanel = () => {
               value={settings.defaultItrRates?.itr_2 || 0}
               onChange={(e) => setSettings({
                 ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_2: parseInt(e.target.value) }
+                defaultItrRates: { ...settings.defaultItrRates, itr_2: parseInt(e.target.value) },
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -190,7 +190,7 @@ const AdminControlPanel = () => {
               value={settings.defaultItrRates?.itr_3 || 0}
               onChange={(e) => setSettings({
                 ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_3: parseInt(e.target.value) }
+                defaultItrRates: { ...settings.defaultItrRates, itr_3: parseInt(e.target.value) },
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -202,7 +202,7 @@ const AdminControlPanel = () => {
               value={settings.defaultItrRates?.itr_4 || 0}
               onChange={(e) => setSettings({
                 ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_4: parseInt(e.target.value) }
+                defaultItrRates: { ...settings.defaultItrRates, itr_4: parseInt(e.target.value) },
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />

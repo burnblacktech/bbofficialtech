@@ -11,7 +11,7 @@ const useFilingList = () => {
     context: '',
     year: '',
     page: 1,
-    limit: 10
+    limit: 10,
   });
   const [selectedFiling, setSelectedFiling] = useState(null);
 
@@ -19,11 +19,11 @@ const useFilingList = () => {
   const fetchFilings = useCallback(async (currentFilters) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Mock API call - replace with actual API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockFilings = [
         {
           id: 1,
@@ -38,7 +38,7 @@ const useFilingList = () => {
           year: '2023-24',
           submittedAt: new Date(),
           taxComputed: 15000,
-          taxSaved: 2500
+          taxSaved: 2500,
         },
         {
           id: 2,
@@ -53,7 +53,7 @@ const useFilingList = () => {
           year: '2023-24',
           submittedAt: new Date(),
           taxComputed: 25000,
-          taxSaved: 0
+          taxSaved: 0,
         },
         {
           id: 3,
@@ -68,46 +68,46 @@ const useFilingList = () => {
           year: '2023-24',
           submittedAt: new Date(),
           taxComputed: 0,
-          taxSaved: 0
-        }
+          taxSaved: 0,
+        },
       ];
-      
+
       // Apply filters
       let filteredFilings = mockFilings;
-      
+
       if (currentFilters.search) {
         const searchLower = currentFilters.search.toLowerCase();
-        filteredFilings = filteredFilings.filter(filing => 
+        filteredFilings = filteredFilings.filter(filing =>
           filing.taxpayerName.toLowerCase().includes(searchLower) ||
           filing.pan.toLowerCase().includes(searchLower) ||
-          filing.ticketNumber.toLowerCase().includes(searchLower)
+          filing.ticketNumber.toLowerCase().includes(searchLower),
         );
       }
-      
+
       if (currentFilters.status) {
-        filteredFilings = filteredFilings.filter(filing => 
-          filing.status === currentFilters.status
+        filteredFilings = filteredFilings.filter(filing =>
+          filing.status === currentFilters.status,
         );
       }
-      
+
       if (currentFilters.itrType) {
-        filteredFilings = filteredFilings.filter(filing => 
-          filing.itrType === currentFilters.itrType
+        filteredFilings = filteredFilings.filter(filing =>
+          filing.itrType === currentFilters.itrType,
         );
       }
-      
+
       if (currentFilters.context) {
-        filteredFilings = filteredFilings.filter(filing => 
-          filing.filingContext === currentFilters.context
+        filteredFilings = filteredFilings.filter(filing =>
+          filing.filingContext === currentFilters.context,
         );
       }
-      
+
       if (currentFilters.year) {
-        filteredFilings = filteredFilings.filter(filing => 
-          filing.assessmentYear === currentFilters.year
+        filteredFilings = filteredFilings.filter(filing =>
+          filing.assessmentYear === currentFilters.year,
         );
       }
-      
+
       setFilings(filteredFilings);
     } catch (err) {
       setError(err.message);
@@ -147,7 +147,7 @@ const useFilingList = () => {
     selectedFiling,
     setFilters: stableSetFilters,
     setSelectedFiling: stableSetSelectedFiling,
-    refetch: fetchFilings
+    refetch: fetchFilings,
   };
 };
 

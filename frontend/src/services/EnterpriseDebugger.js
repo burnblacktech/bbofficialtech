@@ -16,11 +16,11 @@ class EnterpriseDebugger {
       level,
       message,
       data,
-      stack: new Error().stack
+      stack: new Error().stack,
     };
 
     this.logs.push(logEntry);
-    
+
     // Only log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`[${level.toUpperCase()}] ${message}`, data);
@@ -99,19 +99,19 @@ class EnterpriseDebugger {
 
   // Auth state tracking
   trackAuthState(user, isAuthenticated) {
-    this.info(`Auth state changed`, { 
-      isAuthenticated, 
-      userId: user?.id, 
-      userEmail: user?.email 
+    this.info('Auth state changed', {
+      isAuthenticated,
+      userId: user?.id,
+      userEmail: user?.email,
     });
   }
 
   trackLoginAttempt(email, success) {
-    this.info(`Login attempt`, { email, success });
+    this.info('Login attempt', { email, success });
   }
 
   trackLogout(userId) {
-    this.info(`User logged out`, { userId });
+    this.info('User logged out', { userId });
   }
 }
 

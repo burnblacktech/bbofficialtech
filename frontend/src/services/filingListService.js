@@ -18,7 +18,7 @@ class ApiClient {
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const token = localStorage.getItem('authToken');
-    
+
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -30,12 +30,12 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('API request failed:', error);
@@ -81,11 +81,11 @@ export const filingListService = {
       const params = {
         ...filters,
         userId,
-        role: userRole
+        role: userRole,
       };
-      
+
       const response = await apiClient.get('/filings', params);
-      
+
       if (response.success) {
         return response.data;
       } else {
@@ -101,7 +101,7 @@ export const filingListService = {
   async getFilingById(filingId, userId, userRole) {
     try {
       const response = await apiClient.get(`/filings/${filingId}`);
-      
+
       if (response.success) {
         return response.data.filing;
       } else {
@@ -117,7 +117,7 @@ export const filingListService = {
   async createFiling(filingData) {
     try {
       const response = await apiClient.post('/filings', filingData);
-      
+
       if (response.success) {
         return response.data.filing;
       } else {
@@ -133,7 +133,7 @@ export const filingListService = {
   async updateFiling(filingId, updateData) {
     try {
       const response = await apiClient.put(`/filings/${filingId}`, updateData);
-      
+
       if (response.success) {
         return response.data.filing;
       } else {
@@ -149,7 +149,7 @@ export const filingListService = {
   async deleteFiling(filingId) {
     try {
       const response = await apiClient.delete(`/filings/${filingId}`);
-      
+
       if (response.success) {
         return true;
       } else {
@@ -159,7 +159,7 @@ export const filingListService = {
       console.error('Error deleting filing:', error);
       throw error;
     }
-  }
+  },
 };
 
 // =====================================================
@@ -172,11 +172,11 @@ export const serviceTicketService = {
     try {
       const params = {
         userId,
-        role: userRole
+        role: userRole,
       };
-      
+
       const response = await apiClient.get('/tickets', params);
-      
+
       if (response.success) {
         return response.data.tickets;
       } else {
@@ -192,7 +192,7 @@ export const serviceTicketService = {
   async getServiceTicketById(ticketId, userId, userRole) {
     try {
       const response = await apiClient.get(`/tickets/${ticketId}`);
-      
+
       if (response.success) {
         return response.data.ticket;
       } else {
@@ -208,7 +208,7 @@ export const serviceTicketService = {
   async updateTicketStatus(ticketId, status) {
     try {
       const response = await apiClient.put(`/tickets/${ticketId}/status`, { status });
-      
+
       if (response.success) {
         return response.data.ticket;
       } else {
@@ -218,7 +218,7 @@ export const serviceTicketService = {
       console.error('Error updating ticket status:', error);
       throw error;
     }
-  }
+  },
 };
 
 // =====================================================
@@ -231,9 +231,9 @@ export const panValidationService = {
     try {
       const response = await apiClient.post('/pan/validate', {
         pan: pan.toUpperCase(),
-        context
+        context,
       });
-      
+
       if (response.success) {
         return response.data;
       } else {
@@ -243,7 +243,7 @@ export const panValidationService = {
       console.error('Error validating PAN:', error);
       throw error;
     }
-  }
+  },
 };
 
 // =====================================================
@@ -256,9 +256,9 @@ export const billingService = {
     try {
       const response = await apiClient.post('/billing/tickets', {
         filingId,
-        context
+        context,
       });
-      
+
       if (response.success) {
         return response.data.ticket;
       } else {
@@ -275,9 +275,9 @@ export const billingService = {
     try {
       const response = await apiClient.post('/billing/payment', {
         serviceTicketId,
-        paymentData
+        paymentData,
       });
-      
+
       if (response.success) {
         return response.data;
       } else {
@@ -294,11 +294,11 @@ export const billingService = {
     try {
       const params = {
         userId,
-        role: userRole
+        role: userRole,
       };
-      
+
       const response = await apiClient.get('/billing/summary', params);
-      
+
       if (response.success) {
         return response.data.summary;
       } else {
@@ -308,7 +308,7 @@ export const billingService = {
       console.error('Error fetching billing summary:', error);
       throw error;
     }
-  }
+  },
 };
 
 // =====================================================
@@ -321,9 +321,9 @@ export const authService = {
     try {
       const response = await apiClient.post('/api/auth/login', {
         email,
-        password
+        password,
       });
-      
+
       if (response.success) {
         const { token, user } = response.data;
         localStorage.setItem('authToken', token);
@@ -342,7 +342,7 @@ export const authService = {
   async register(userData) {
     try {
       const response = await apiClient.post('/api/auth/register', userData);
-      
+
       if (response.success) {
         const { token, user } = response.data;
         localStorage.setItem('authToken', token);
@@ -373,7 +373,7 @@ export const authService = {
   isAuthenticated() {
     const token = localStorage.getItem('authToken');
     return !!token;
-  }
+  },
 };
 
 // =====================================================

@@ -14,7 +14,7 @@ export class BrokerFileProcessor {
       angelone: this.processAngelOneFile.bind(this),
       groww: this.processGrowwFile.bind(this),
       upstox: this.processUpstoxFile.bind(this),
-      icici: this.processICICIFile.bind(this)
+      icici: this.processICICIFile.bind(this),
     };
   }
 
@@ -31,7 +31,7 @@ export class BrokerFileProcessor {
       enterpriseLogger.info('Broker file processed', {
         broker: this.brokerId,
         fileName: file.name,
-        transactions: result.transactions.length
+        transactions: result.transactions.length,
       });
 
       return result;
@@ -39,7 +39,7 @@ export class BrokerFileProcessor {
       enterpriseLogger.error('Broker file processing failed', {
         broker: this.brokerId,
         fileName: file.name,
-        error: error.message
+        error: error.message,
       });
       throw error;
     }
@@ -48,7 +48,7 @@ export class BrokerFileProcessor {
   async readExcelFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      
+
       reader.onload = (e) => {
         try {
           const data = new Uint8Array(e.target.result);
@@ -60,7 +60,7 @@ export class BrokerFileProcessor {
           reject(error);
         }
       };
-      
+
       reader.onerror = (error) => reject(error);
       reader.readAsArrayBuffer(file);
     });
@@ -82,7 +82,7 @@ export class BrokerFileProcessor {
         quantity: parseFloat(row['Quantity'] || row['quantity'] || 0),
         profit: parseFloat(row['P&L'] || row['profit'] || 0),
         type: this.determineTransactionType(row['Buy Date'], row['Sell Date']),
-        exempt: this.isExempt(row)
+        exempt: this.isExempt(row),
       };
 
       transactions.push(transaction);
@@ -100,7 +100,7 @@ export class BrokerFileProcessor {
       transactions,
       shortTerm: shortTermTotal,
       longTerm: longTermTotal,
-      exemptLongTerm: exemptLongTermTotal
+      exemptLongTerm: exemptLongTermTotal,
     };
   }
 
@@ -121,7 +121,7 @@ export class BrokerFileProcessor {
         quantity: parseFloat(row['Qty'] || 0),
         profit: parseFloat(row['Profit/Loss'] || 0),
         type: this.determineTransactionType(row['Purchase Date'], row['Sale Date']),
-        exempt: this.isExempt(row)
+        exempt: this.isExempt(row),
       };
 
       transactions.push(transaction);
@@ -139,7 +139,7 @@ export class BrokerFileProcessor {
       transactions,
       shortTerm: shortTermTotal,
       longTerm: longTermTotal,
-      exemptLongTerm: exemptLongTermTotal
+      exemptLongTerm: exemptLongTermTotal,
     };
   }
 
@@ -160,7 +160,7 @@ export class BrokerFileProcessor {
         quantity: parseFloat(row['Quantity'] || 0),
         profit: parseFloat(row['Gain/Loss'] || 0),
         type: this.determineTransactionType(row['Buy Date'], row['Sell Date']),
-        exempt: this.isExempt(row)
+        exempt: this.isExempt(row),
       };
 
       transactions.push(transaction);
@@ -178,7 +178,7 @@ export class BrokerFileProcessor {
       transactions,
       shortTerm: shortTermTotal,
       longTerm: longTermTotal,
-      exemptLongTerm: exemptLongTermTotal
+      exemptLongTerm: exemptLongTermTotal,
     };
   }
 
@@ -196,7 +196,7 @@ export class BrokerFileProcessor {
     const buy = new Date(buyDate);
     const sell = new Date(sellDate);
     const daysDiff = Math.floor((sell - buy) / (1000 * 60 * 60 * 24));
-    
+
     // Less than 365 days = short term, otherwise long term
     return daysDiff < 365 ? 'short_term' : 'long_term';
   }

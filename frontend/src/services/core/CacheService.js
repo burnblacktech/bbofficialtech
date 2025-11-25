@@ -21,7 +21,7 @@ class CacheService {
       data,
       timestamp: Date.now(),
       ttl,
-      expires: Date.now() + ttl
+      expires: Date.now() + ttl,
     });
   }
 
@@ -87,7 +87,7 @@ class CacheService {
       size: this.cache.size,
       maxSize: this.maxSize,
       expired,
-      valid: this.cache.size - expired
+      valid: this.cache.size - expired,
     };
   }
 

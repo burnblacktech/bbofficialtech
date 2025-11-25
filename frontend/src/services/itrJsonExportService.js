@@ -34,7 +34,7 @@ class ITRJsonExportService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authService.getToken()}`
+          'Authorization': `Bearer ${authService.getToken()}`,
         },
         body: JSON.stringify({
           itrData: jsonPayload,
@@ -42,8 +42,8 @@ class ITRJsonExportService {
           assessmentYear,
           userId: user.id,
           exportFormat: 'JSON',
-          purpose: 'FILING'
-        })
+          purpose: 'FILING',
+        }),
       });
 
       if (!response.ok) {
@@ -65,8 +65,8 @@ class ITRJsonExportService {
           assessmentYear,
           generatedAt: new Date().toISOString(),
           fileSize: JSON.stringify(clientJson).length,
-          checksum: this.generateChecksum(clientJson)
-        }
+          checksum: this.generateChecksum(clientJson),
+        },
       };
 
     } catch (error) {
@@ -97,7 +97,7 @@ class ITRJsonExportService {
         'Name': {
           'First_Name': itrData.personal?.firstName || user.firstName || '',
           'Middle_Name': itrData.personal?.middleName || '',
-          'Last_Name': itrData.personal?.lastName || user.lastName || ''
+          'Last_Name': itrData.personal?.lastName || user.lastName || '',
         },
         'Date_of_Birth': itrData.personal?.dateOfBirth || user.dateOfBirth || '',
         'Gender': itrData.personal?.gender || user.gender || '',
@@ -113,9 +113,9 @@ class ITRJsonExportService {
             'City_Town': itrData.personal?.address?.city || '',
             'State': itrData.personal?.address?.state || '',
             'PIN_Code': itrData.personal?.address?.pincode || '',
-            'Country': itrData.personal?.address?.country || 'INDIA'
-          }
-        }
+            'Country': itrData.personal?.address?.country || 'INDIA',
+          },
+        },
       },
 
       // Bank account details
@@ -125,7 +125,7 @@ class ITRJsonExportService {
         'Bank_Name': itrData.bank?.bankName || '',
         'Branch_Name': itrData.bank?.branchName || '',
         'IFSC_Code': itrData.bank?.ifscCode || '',
-        'MICR_Code': itrData.bank?.micrCode || ''
+        'MICR_Code': itrData.bank?.micrCode || '',
       },
 
       // Income details
@@ -135,7 +135,7 @@ class ITRJsonExportService {
         'Income_from_Other_Sources': this.formatAmount(itrData.income?.otherIncome || 0),
         'Business_Income': this.formatAmount(itrData.income?.businessIncome || 0),
         'Capital_Gains': this.formatAmount(itrData.income?.capitalGains || 0),
-        'Total_Gross_Income': 0 // Will be calculated
+        'Total_Gross_Income': 0, // Will be calculated
       },
 
       // Deductions
@@ -145,7 +145,7 @@ class ITRJsonExportService {
         'Section_80E': this.formatAmount(itrData.deductions?.section80E || 0),
         'Section_80G': this.formatAmount(itrData.deductions?.section80G || 0),
         'Section_80TTA': this.formatAmount(itrData.deductions?.section80TTA || 0),
-        'Total_Deductions': 0 // Will be calculated
+        'Total_Deductions': 0, // Will be calculated
       },
 
       // Tax calculation
@@ -157,7 +157,7 @@ class ITRJsonExportService {
         'TDS_TCS': this.formatAmount(itrData.tds?.totalTDS || 0),
         'Advance_Tax': this.formatAmount(itrData.taxes?.advanceTax || 0),
         'Self_Assessment_Tax': this.formatAmount(itrData.taxes?.selfAssessmentTax || 0),
-        'Total_Tax_Paid': 0 // Will be calculated
+        'Total_Tax_Paid': 0, // Will be calculated
       },
 
       // Verification
@@ -165,8 +165,8 @@ class ITRJsonExportService {
         'Declaration': 'I declare that the information furnished above is true to the best of my knowledge and belief.',
         'Place': itrData.verification?.place || user.address?.city || '',
         'Date': currentDate.split('T')[0],
-        'Signature_Type': itrData.verification?.signatureType || 'ELECTRONIC'
-      }
+        'Signature_Type': itrData.verification?.signatureType || 'ELECTRONIC',
+      },
     };
 
     // Calculate derived values
@@ -193,7 +193,7 @@ class ITRJsonExportService {
         'generatedBy': 'BurnBlack ITR Platform',
         'version': '1.0',
         'purpose': 'TAX_FILING',
-        'format': 'GOVT_COMPLIANT'
+        'format': 'GOVT_COMPLIANT',
       },
 
       // Taxpayer information
@@ -202,7 +202,7 @@ class ITRJsonExportService {
         'name': `${itrData.personal?.firstName || user.firstName || ''} ${itrData.personal?.lastName || user.lastName || ''}`,
         'email': itrData.personal?.email || user.email || '',
         'phone': itrData.personal?.phone || user.phone || '',
-        'address': itrData.personal?.address || user.address || {}
+        'address': itrData.personal?.address || user.address || {},
       },
 
       // Complete form data
@@ -213,7 +213,7 @@ class ITRJsonExportService {
         'grossIncome': this.calculateGrossIncome(itrData),
         'totalDeductions': this.calculateTotalDeductions(itrData),
         'taxableIncome': this.calculateTaxableIncome(itrData),
-        'totalTax': this.calculateTotalTax(itrData)
+        'totalTax': this.calculateTotalTax(itrData),
       },
 
       // Download information
@@ -226,9 +226,9 @@ class ITRJsonExportService {
           '4. Select "Upload JSON" option',
           '5. Upload this JSON file',
           '6. Verify the data and submit',
-          '7. Download acknowledgement'
-        ]
-      }
+          '7. Download acknowledgement',
+        ],
+      },
     };
   }
 
@@ -240,21 +240,23 @@ class ITRJsonExportService {
     const deductions = jsonData.Deductions;
 
     // Calculate total gross income
+    // eslint-disable-next-line camelcase
     incomeDetails.Total_Gross_Income = this.formatAmount(
       parseFloat(incomeDetails.Income_from_Salary || 0) +
       parseFloat(incomeDetails.Income_from_House_Property || 0) +
       parseFloat(incomeDetails.Income_from_Other_Sources || 0) +
       parseFloat(incomeDetails.Business_Income || 0) +
-      parseFloat(incomeDetails.Capital_Gains || 0)
+      parseFloat(incomeDetails.Capital_Gains || 0),
     );
 
     // Calculate total deductions
+    // eslint-disable-next-line camelcase
     deductions.Total_Deductions = this.formatAmount(
       parseFloat(deductions.Section_80C || 0) +
       parseFloat(deductions.Section_80D || 0) +
       parseFloat(deductions.Section_80E || 0) +
       parseFloat(deductions.Section_80G || 0) +
-      parseFloat(deductions.Section_80TTA || 0)
+      parseFloat(deductions.Section_80TTA || 0),
     );
 
     // Calculate taxable income
@@ -274,19 +276,24 @@ class ITRJsonExportService {
       }
     }
 
+    // eslint-disable-next-line camelcase
     jsonData.Tax_Calculation.Total_Income = this.formatAmount(taxableIncome);
+    // eslint-disable-next-line camelcase
     jsonData.Tax_Calculation.Total_Tax_Liability = this.formatAmount(taxLiability);
+    // eslint-disable-next-line camelcase
     jsonData.Tax_Calculation.Education_Cess = this.formatAmount(taxLiability * 0.04); // 4% education cess
+    // eslint-disable-next-line camelcase
     jsonData.Tax_Calculation.Total_Tax_Payable = this.formatAmount(
       parseFloat(jsonData.Tax_Calculation.Total_Tax_Liability) +
-      parseFloat(jsonData.Tax_Calculation.Education_Cess)
+      parseFloat(jsonData.Tax_Calculation.Education_Cess),
     );
 
     // Calculate total tax paid
+    // eslint-disable-next-line camelcase
     jsonData.Tax_Calculation.Total_Tax_Paid = this.formatAmount(
       parseFloat(jsonData.Tax_Calculation.TDS_TCS) +
       parseFloat(jsonData.Tax_Calculation.Advance_Tax) +
-      parseFloat(jsonData.Tax_Calculation.Self_Assessment_Tax)
+      parseFloat(jsonData.Tax_Calculation.Self_Assessment_Tax),
     );
   }
 
@@ -297,35 +304,39 @@ class ITRJsonExportService {
     switch (itrType) {
       case 'ITR-1':
         // ITR-1 specific fields
+        // eslint-disable-next-line camelcase
         jsonData.ITR1_Specific = {
           'Income_from_Salary_Detailed': itrData.salaryDetails || {},
           'Income_from_House_Property_Detailed': itrData.housePropertyDetails || {},
           'Business_Income_Already_Covered': 'NO',
-          'Capital_Gains_Already_Covered': 'NO'
+          'Capital_Gains_Already_Covered': 'NO',
         };
         break;
 
       case 'ITR-2':
         // ITR-2 specific fields (for capital gains)
+        // eslint-disable-next-line camelcase
         jsonData.ITR2_Specific = {
           'Capital_Gains_Detailed': itrData.capitalGainsDetails || {},
-          'Foreign_Income_Details': itrData.foreignIncomeDetails || {}
+          'Foreign_Income_Details': itrData.foreignIncomeDetails || {},
         };
         break;
 
       case 'ITR-3':
         // ITR-3 specific fields (for business income)
+        // eslint-disable-next-line camelcase
         jsonData.ITR3_Specific = {
           'Business_Profit_Loss': itrData.businessDetails || {},
-          'Balance_Sheet_Details': itrData.balanceSheet || {}
+          'Balance_Sheet_Details': itrData.balanceSheet || {},
         };
         break;
 
       case 'ITR-4':
         // ITR-4 specific fields (presumptive income)
+        // eslint-disable-next-line camelcase
         jsonData.ITR4_Specific = {
           'Presumptive_Income_Details': itrData.presumptiveIncome || {},
-          'Business_Turnover': itrData.businessTurnover || {}
+          'Business_Turnover': itrData.businessTurnover || {},
         };
         break;
     }
@@ -340,7 +351,7 @@ class ITRJsonExportService {
       parseFloat(itrData.income?.housePropertyIncome || 0) +
       parseFloat(itrData.income?.otherIncome || 0) +
       parseFloat(itrData.income?.businessIncome || 0) +
-      parseFloat(itrData.income?.capitalGains || 0)
+      parseFloat(itrData.income?.capitalGains || 0),
     );
   }
 
@@ -349,7 +360,7 @@ class ITRJsonExportService {
       parseFloat(itrData.deductions?.section80C || 0) +
       parseFloat(itrData.deductions?.section80D || 0) +
       parseFloat(itrData.deductions?.section80E || 0) +
-      parseFloat(itrData.deductions?.section80G || 0)
+      parseFloat(itrData.deductions?.section80G || 0),
     );
   }
 
@@ -433,7 +444,7 @@ class ITRJsonExportService {
     const requiredFields = {
       personal: ['firstName', 'lastName', 'pan', 'email'],
       income: ['salaryIncome'],
-      verification: ['place']
+      verification: ['place'],
     };
 
     for (const [section, fields] of Object.entries(requiredFields)) {

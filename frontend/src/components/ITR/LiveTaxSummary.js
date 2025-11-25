@@ -14,7 +14,7 @@ const LiveTaxSummary = ({ filingData, onSaveDraft }) => {
     taxDue: 0,
     taxesPaid: 0,
     refundAmount: 0,
-    isRefund: true
+    isRefund: true,
   });
 
   const [isAnimating, setIsAnimating] = useState(false);
@@ -27,7 +27,7 @@ const LiveTaxSummary = ({ filingData, onSaveDraft }) => {
     const totalIncome = filingData.income?.reduce((sum, source) => sum + (source.amount || 0), 0) || 0;
     const totalDeductions = filingData.deductions?.reduce((sum, deduction) => sum + (deduction.amount || 0), 0) || 0;
     const taxableIncome = Math.max(0, totalIncome - totalDeductions);
-    
+
     // Simple tax calculation (replace with actual tax computation engine)
     let taxDue = 0;
     if (taxableIncome > 500000) {
@@ -47,7 +47,7 @@ const LiveTaxSummary = ({ filingData, onSaveDraft }) => {
       taxDue,
       taxesPaid,
       refundAmount,
-      isRefund
+      isRefund,
     };
 
     // Trigger animation if values changed
@@ -63,7 +63,7 @@ const LiveTaxSummary = ({ filingData, onSaveDraft }) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -136,8 +136,8 @@ const LiveTaxSummary = ({ filingData, onSaveDraft }) => {
       {/* Final Result */}
       <div className="p-6 border-t border-gray-100">
         <div className={`rounded-lg p-4 ${
-          taxSummary.isRefund 
-            ? 'bg-green-50 border border-green-200' 
+          taxSummary.isRefund
+            ? 'bg-green-50 border border-green-200'
             : 'bg-red-50 border border-red-200'
         }`}>
           <div className="flex items-center justify-between">

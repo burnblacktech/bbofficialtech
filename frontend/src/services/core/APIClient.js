@@ -20,7 +20,7 @@ class APIClient {
       retryDelay: 1000,
       retryCondition: (error) => {
         return !error.response || (error.response.status >= 500 && error.response.status <= 599);
-      }
+      },
     };
 
     this.client = axios.create({
@@ -28,8 +28,8 @@ class APIClient {
       timeout: this.defaultTimeout,
       headers: {
         'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      }
+        'X-Requested-With': 'XMLHttpRequest',
+      },
     });
 
     this.setupInterceptors();
@@ -52,7 +52,7 @@ class APIClient {
         if (process.env.NODE_ENV === 'development') {
           console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`, {
             data: config.data,
-            params: config.params
+            params: config.params,
           });
         }
 
@@ -61,7 +61,7 @@ class APIClient {
       (error) => {
         console.error('❌ Request interceptor error:', error);
         return Promise.reject(error);
-      }
+      },
     );
 
     // Response interceptor
@@ -71,7 +71,7 @@ class APIClient {
         if (process.env.NODE_ENV === 'development') {
           console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`, {
             status: response.status,
-            data: response.data
+            data: response.data,
           });
         }
 
@@ -85,7 +85,7 @@ class APIClient {
           console.error(`❌ API Error: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url}`, {
             status: error.response?.status,
             message: error.message,
-            data: error.response?.data
+            data: error.response?.data,
           });
         }
 
@@ -98,7 +98,7 @@ class APIClient {
         this.handleHttpError(error);
 
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -196,7 +196,7 @@ class APIClient {
     if (!config._skipCache && response.status === 200) {
       this.cache.set(cacheKey, {
         data: response,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
 
@@ -228,16 +228,16 @@ class APIClient {
       ...config,
       headers: {
         'Content-Type': 'multipart/form-data',
-        ...config.headers
+        ...config.headers,
       },
       onUploadProgress: (progressEvent) => {
         if (onProgress) {
           const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
+            (progressEvent.loaded * 100) / progressEvent.total,
           );
           onProgress(percentCompleted);
         }
-      }
+      },
     };
 
     return this.withRetry(() => this.client.post(url, formData, uploadConfig));

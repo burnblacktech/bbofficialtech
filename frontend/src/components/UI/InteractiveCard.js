@@ -5,16 +5,16 @@
 
 import React, { useState } from 'react';
 import { motion, useDragControls } from 'framer-motion';
-import { 
+import {
   GripVertical, Star, Heart, Share2, MoreVertical,
-  CheckCircle, Clock, AlertCircle, Info
+  CheckCircle, Clock, AlertCircle, Info,
 } from 'lucide-react';
 
-const InteractiveCard = ({ 
-  id, 
-  title, 
-  description, 
-  status = 'pending', 
+const InteractiveCard = ({
+  id,
+  title,
+  description,
+  status = 'pending',
   priority = 'medium',
   onSelect,
   onFavorite,
@@ -24,7 +24,7 @@ const InteractiveCard = ({
   isFavorite = false,
   isDraggable = true,
   className = '',
-  children
+  children,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
@@ -70,39 +70,39 @@ const InteractiveCard = ({
   };
 
   const cardVariants = {
-    initial: { 
-      opacity: 0, 
-      y: 20, 
-      scale: 0.95 
+    initial: {
+      opacity: 0,
+      y: 20,
+      scale: 0.95,
     },
-    animate: { 
-      opacity: 1, 
-      y: 0, 
+    animate: {
+      opacity: 1,
+      y: 0,
       scale: 1,
       transition: {
         duration: 0.3,
-        ease: "easeOut"
-      }
+        ease: 'easeOut',
+      },
     },
     hover: {
       y: -2,
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
+        ease: 'easeInOut',
+      },
     },
     tap: {
       scale: 0.98,
       transition: {
-        duration: 0.1
-      }
+        duration: 0.1,
+      },
     },
     drag: {
       rotate: 2,
       transition: {
-        duration: 0.1
-      }
-    }
+        duration: 0.1,
+      },
+    },
   };
 
   const handleCardClick = () => {
@@ -157,7 +157,7 @@ const InteractiveCard = ({
       `}
       onClick={handleCardClick}
       style={{
-        borderLeftWidth: '4px'
+        borderLeftWidth: '4px',
       }}
     >
       {/* Drag Handle */}
@@ -186,7 +186,7 @@ const InteractiveCard = ({
               </p>
             )}
           </div>
-          
+
           {/* Action Buttons */}
           <motion.div
             className="flex items-center space-x-1"
@@ -199,13 +199,13 @@ const InteractiveCard = ({
               onClick={handleFavoriteClick}
               className="p-1 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <Heart 
+              <Heart
                 className={`h-4 w-4 ${
                   isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'
-                }`} 
+                }`}
               />
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -214,7 +214,7 @@ const InteractiveCard = ({
             >
               <Share2 className="h-4 w-4 text-gray-400" />
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -232,7 +232,7 @@ const InteractiveCard = ({
             {getStatusIcon(status)}
             <span className="ml-1 capitalize">{status}</span>
           </span>
-          
+
           {priority === 'high' && (
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}

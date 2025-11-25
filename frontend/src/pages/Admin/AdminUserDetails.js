@@ -7,11 +7,11 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
   Calendar,
   Edit,
   Save,
@@ -31,7 +31,7 @@ import {
   UserCheck,
   UserX,
   Crown,
-  Star
+  Star,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -98,7 +98,7 @@ const AdminUserDetails = () => {
         state: userDetails.state || '',
         pincode: userDetails.pincode || '',
         is_premium: userDetails.is_premium || false,
-        notes: userDetails.notes || ''
+        notes: userDetails.notes || '',
       });
     }
   }, [userDetails]);
@@ -116,7 +116,7 @@ const AdminUserDetails = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update user: ${error.message}`);
-    }
+    },
   });
 
   // Update user status mutation
@@ -131,7 +131,7 @@ const AdminUserDetails = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update user status: ${error.message}`);
-    }
+    },
   });
 
   // Delete user mutation
@@ -147,7 +147,7 @@ const AdminUserDetails = () => {
     },
     onError: (error) => {
       toast.error(`Failed to delete user: ${error.message}`);
-    }
+    },
   });
 
   const handleUpdateUser = async (e) => {
@@ -237,7 +237,7 @@ const AdminUserDetails = () => {
     { id: 'overview', name: 'Overview', icon: User },
     { id: 'filings', name: 'Filings', icon: FileText },
     { id: 'activity', name: 'Activity', icon: Activity },
-    { id: 'settings', name: 'Settings', icon: Shield }
+    { id: 'settings', name: 'Settings', icon: Shield },
   ];
 
   if (isLoading) {
@@ -287,7 +287,7 @@ const AdminUserDetails = () => {
                 <p className="text-sm text-gray-500">User ID: {userDetails.user_id}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {!isEditing ? (
                 <>
@@ -360,7 +360,7 @@ const AdminUserDetails = () => {
             {/* User Information */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">User Information</h2>
-              
+
               {isEditing ? (
                 <form onSubmit={handleUpdateUser} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -435,14 +435,14 @@ const AdminUserDetails = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <MapPin className="h-5 w-5 text-gray-400" />
                       <div>
                         <p className="text-sm font-medium text-gray-900">Address</p>
                         <p className="text-sm text-gray-500">
-                          {userDetails.address_line_1 && userDetails.city && userDetails.state 
+                          {userDetails.address_line_1 && userDetails.city && userDetails.state
                             ? `${userDetails.address_line_1}, ${userDetails.city}, ${userDetails.state} - ${userDetails.pincode}`
                             : 'Not provided'
                           }
@@ -506,7 +506,7 @@ const AdminUserDetails = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-8 w-8 text-green-600" />
@@ -518,7 +518,7 @@ const AdminUserDetails = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Activity className="h-8 w-8 text-purple-600" />
@@ -528,7 +528,7 @@ const AdminUserDetails = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <DollarSign className="h-8 w-8 text-green-600" />
@@ -554,7 +554,7 @@ const AdminUserDetails = () => {
                 View All Filings
               </button>
             </div>
-            
+
             {filings.length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                 <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -568,7 +568,7 @@ const AdminUserDetails = () => {
                     {filings.length} Filing{filings.length !== 1 ? 's' : ''}
                   </h3>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {filings.slice(0, 10).map((filing) => (
                     <div key={filing.filing_id} className="px-6 py-4 hover:bg-gray-50">
@@ -585,7 +585,7 @@ const AdminUserDetails = () => {
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-4">
                           <span className={`px-2 py-1 text-xs rounded-full ${
                             filing.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -595,7 +595,7 @@ const AdminUserDetails = () => {
                           }`}>
                             {filing.status.replace('_', ' ')}
                           </span>
-                          
+
                           <button
                             onClick={() => navigate(`/admin/filings/${filing.filing_id}`)}
                             className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
@@ -617,7 +617,7 @@ const AdminUserDetails = () => {
         {activeTab === 'activity' && (
           <div className="space-y-6">
             <h2 className="text-lg font-semibold text-gray-900">User Activity</h2>
-            
+
             {activities.length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                 <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -631,7 +631,7 @@ const AdminUserDetails = () => {
                     {activities.length} Activity{activities.length !== 1 ? 'ies' : ''}
                   </h3>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {activities.map((activity) => (
                     <div key={activity.id} className="px-6 py-4 hover:bg-gray-50">
@@ -661,7 +661,7 @@ const AdminUserDetails = () => {
         {activeTab === 'settings' && (
           <div className="space-y-6">
             <h2 className="text-lg font-semibold text-gray-900">User Settings</h2>
-            
+
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Status Management</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -673,7 +673,7 @@ const AdminUserDetails = () => {
                   <CheckCircle className="h-6 w-6 text-green-600 mx-auto mb-2" />
                   <span className="text-sm font-medium text-green-900">Activate</span>
                 </button>
-                
+
                 <button
                   onClick={() => handleStatusUpdate('suspended')}
                   disabled={userDetails.status === 'suspended'}
@@ -682,7 +682,7 @@ const AdminUserDetails = () => {
                   <AlertCircle className="h-6 w-6 text-orange-600 mx-auto mb-2" />
                   <span className="text-sm font-medium text-orange-900">Suspend</span>
                 </button>
-                
+
                 <button
                   onClick={() => handleStatusUpdate('inactive')}
                   disabled={userDetails.status === 'inactive'}
@@ -691,7 +691,7 @@ const AdminUserDetails = () => {
                   <UserX className="h-6 w-6 text-red-600 mx-auto mb-2" />
                   <span className="text-sm font-medium text-red-900">Deactivate</span>
                 </button>
-                
+
                 <button
                   onClick={() => handleStatusUpdate('pending')}
                   disabled={userDetails.status === 'pending'}

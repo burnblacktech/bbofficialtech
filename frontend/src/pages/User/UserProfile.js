@@ -8,14 +8,14 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  MapPin, 
-  Edit3, 
-  Save, 
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
+  Edit3,
+  Save,
   X,
   ArrowLeft,
   Camera,
@@ -25,7 +25,7 @@ import {
   LogOut,
   CheckCircle,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 
 const UserProfile = () => {
@@ -43,7 +43,7 @@ const UserProfile = () => {
     dateOfBirth: '',
     address: '',
     pan: '',
-    aadhar: ''
+    aadhar: '',
   });
 
   // Fetch user profile data
@@ -70,7 +70,7 @@ const UserProfile = () => {
     },
     onError: (error) => {
       setErrors(error.response?.data?.errors || { general: 'Failed to update profile' });
-    }
+    },
   });
 
   const handleInputChange = (field, value) => {
@@ -78,30 +78,30 @@ const UserProfile = () => {
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [field]: ''
+        [field]: '',
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!profileData?.firstName?.trim()) newErrors.firstName = 'First name is required';
     if (!profileData?.lastName?.trim()) newErrors.lastName = 'Last name is required';
     if (!profileData?.phone?.trim()) newErrors.phone = 'Phone is required';
-    
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (profileData?.email && !emailRegex.test(profileData.email)) {
       newErrors.email = 'Invalid email format';
     }
-    
+
     // Phone validation (Indian format)
     const phoneRegex = /^[6-9]\d{9}$/;
     if (profileData?.phone && !phoneRegex.test(profileData.phone.replace(/\D/g, ''))) {
       newErrors.phone = 'Invalid phone number';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -121,7 +121,7 @@ const UserProfile = () => {
       dateOfBirth: '',
       address: '',
       pan: '',
-      aadhar: ''
+      aadhar: '',
     });
     setErrors({});
     setIsEditing(false);
@@ -186,7 +186,7 @@ const UserProfile = () => {
                 <p className="text-xs text-neutral-500">Manage your account</p>
               </div>
             </div>
-            
+
             {isEditing ? (
               <div className="flex items-center space-x-2">
                 <button
@@ -234,7 +234,7 @@ const UserProfile = () => {
             <AlertCircle className="h-12 w-12 text-error-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-burnblack-black mb-2">Error Loading Profile</h3>
             <p className="text-neutral-600 mb-4">Unable to load your profile information.</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="btn-burnblack"
             >
@@ -354,7 +354,7 @@ const UserProfile = () => {
               </div>
               <ChevronRight className="h-4 w-4 text-gray-400" />
             </button>
-            
+
             <button
               onClick={() => navigate('/settings')}
               className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform"
@@ -365,7 +365,7 @@ const UserProfile = () => {
               </div>
               <ChevronRight className="h-4 w-4 text-gray-400" />
             </button>
-            
+
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-between p-3 bg-red-50 rounded-lg hover:bg-red-100 active:scale-95 transition-transform"
@@ -384,7 +384,7 @@ const UserProfile = () => {
       {/* Bottom Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -395,14 +395,14 @@ const UserProfile = () => {
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Profile</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/filing/start')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
             <Settings className="h-5 w-5 mb-1" />
             <span className="text-xs">Settings</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/notifications')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >

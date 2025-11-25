@@ -4,25 +4,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  BarChart3, 
-  Users, 
-  TrendingUp, 
-  DollarSign, 
-  Activity, 
+import {
+  BarChart3,
+  Users,
+  TrendingUp,
+  DollarSign,
+  Activity,
   Calendar,
   RefreshCw,
   Download,
   Filter,
   Eye,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 
 const AdminPlatformOverview = () => {
@@ -37,27 +37,27 @@ const AdminPlatformOverview = () => {
       total: 12567,
       active: 8934,
       newThisMonth: 456,
-      growth: 12.5
+      growth: 12.5,
     },
     revenue: {
       total: 2456789,
       thisMonth: 123456,
       growth: 8.3,
-      pending: 45678
+      pending: 45678,
     },
     filings: {
       total: 34567,
       completed: 32123,
       pending: 2444,
-      growth: 15.2
+      growth: 15.2,
     },
     system: {
       uptime: 99.98,
       responseTime: 245,
       cpuUsage: 68,
       memoryUsage: 72,
-      diskUsage: 45
-    }
+      diskUsage: 45,
+    },
   };
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const AdminPlatformOverview = () => {
     { value: '7d', label: 'Last 7 days' },
     { value: '30d', label: 'Last 30 days' },
     { value: '90d', label: 'Last 90 days' },
-    { value: '1y', label: 'Last year' }
+    { value: '1y', label: 'Last year' },
   ];
 
   if (loading) {

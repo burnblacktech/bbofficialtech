@@ -13,7 +13,7 @@ export const ITR1_CONFIG = {
     maxAge: null,
     incomeSources: ['salary', 'house_property', 'other_sources'],
     maxTotalIncome: 5000000,
-    applicableFor: ['individual', 'huf']
+    applicableFor: ['individual', 'huf'],
   },
 
   sections: [
@@ -31,8 +31,8 @@ export const ITR1_CONFIG = {
           validation: {
             minLength: 3,
             pattern: '^[a-zA-Z\\s]+$',
-            message: 'Please enter a valid name (letters only, min 3 characters)'
-          }
+            message: 'Please enter a valid name (letters only, min 3 characters)',
+          },
         },
         {
           id: 'pan',
@@ -41,8 +41,8 @@ export const ITR1_CONFIG = {
           required: true,
           validation: {
             pattern: '[A-Z]{5}[0-9]{4}[A-Z]{1}',
-            message: 'Please enter a valid PAN number'
-          }
+            message: 'Please enter a valid PAN number',
+          },
         },
         {
           id: 'aadhaar',
@@ -51,8 +51,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             pattern: '^\\d{12}$',
-            message: 'Please enter a valid 12-digit Aadhaar number'
-          }
+            message: 'Please enter a valid 12-digit Aadhaar number',
+          },
         },
         {
           id: 'dob',
@@ -61,8 +61,8 @@ export const ITR1_CONFIG = {
           required: true,
           validation: {
             maxAge: 120,
-            minAge: 18
-          }
+            minAge: 18,
+          },
         },
         {
           id: 'email',
@@ -71,8 +71,8 @@ export const ITR1_CONFIG = {
           required: true,
           validation: {
             pattern: '[^@]+@[^@]+\\.[^@]+',
-            message: 'Please enter a valid email address'
-          }
+            message: 'Please enter a valid email address',
+          },
         },
         {
           id: 'phone',
@@ -81,8 +81,8 @@ export const ITR1_CONFIG = {
           required: true,
           validation: {
             pattern: '[6-9]\\d{9}',
-            message: 'Please enter a valid 10-digit mobile number'
-          }
+            message: 'Please enter a valid 10-digit mobile number',
+          },
         },
         {
           id: 'address',
@@ -91,8 +91,8 @@ export const ITR1_CONFIG = {
           required: true,
           validation: {
             minLength: 10,
-            message: 'Please enter complete address (min 10 characters)'
-          }
+            message: 'Please enter complete address (min 10 characters)',
+          },
         },
         {
           id: 'residential_status',
@@ -102,10 +102,10 @@ export const ITR1_CONFIG = {
           options: [
             { value: 'resident', label: 'Resident' },
             { value: 'non_resident', label: 'Non-Resident' },
-            { value: 'not_ordinarily_resident', label: 'Not Ordinarily Resident' }
-          ]
-        }
-      ]
+            { value: 'not_ordinarily_resident', label: 'Not Ordinarily Resident' },
+          ],
+        },
+      ],
     },
 
     {
@@ -121,8 +121,8 @@ export const ITR1_CONFIG = {
           required: true,
           options: [
             { value: true, label: 'Yes' },
-            { value: false, label: 'No' }
-          ]
+            { value: false, label: 'No' },
+          ],
         },
         {
           id: 'employer_name',
@@ -132,8 +132,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_salary_income', value: true },
           validation: {
             minLength: 2,
-            message: 'Please enter employer name'
-          }
+            message: 'Please enter employer name',
+          },
         },
         {
           id: 'employer_pan',
@@ -143,8 +143,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_salary_income', value: true },
           validation: {
             pattern: '[A-Z]{5}[0-9]{4}[A-Z]{1}',
-            message: 'Please enter valid TAN'
-          }
+            message: 'Please enter valid TAN',
+          },
         },
         {
           id: 'gross_salary',
@@ -154,8 +154,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_salary_income', value: true },
           validation: {
             min: 0,
-            message: 'Gross salary must be positive'
-          }
+            message: 'Gross salary must be positive',
+          },
         },
         {
           id: 'perquisites',
@@ -165,8 +165,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_salary_income', value: true },
           validation: {
             min: 0,
-            message: 'Perquisites value must be positive'
-          }
+            message: 'Perquisites value must be positive',
+          },
         },
         {
           id: 'profits_in_lieu_of_salary',
@@ -176,10 +176,10 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_salary_income', value: true },
           validation: {
             min: 0,
-            message: 'Profits must be positive'
-          }
-        }
-      ]
+            message: 'Profits must be positive',
+          },
+        },
+      ],
     },
 
     {
@@ -195,8 +195,8 @@ export const ITR1_CONFIG = {
           required: true,
           options: [
             { value: true, label: 'Yes' },
-            { value: false, label: 'No' }
-          ]
+            { value: false, label: 'No' },
+          ],
         },
         {
           id: 'property_type',
@@ -207,8 +207,8 @@ export const ITR1_CONFIG = {
           options: [
             { value: 'self_occupied', label: 'Self Occupied' },
             { value: 'let_out', label: 'Let Out' },
-            { value: 'deemed_let_out', label: 'Deemed Let Out' }
-          ]
+            { value: 'deemed_let_out', label: 'Deemed Let Out' },
+          ],
         },
         {
           id: 'annual_rental_income',
@@ -218,8 +218,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_house_property', value: true },
           validation: {
             min: 0,
-            message: 'Rental income must be positive'
-          }
+            message: 'Rental income must be positive',
+          },
         },
         {
           id: 'municipal_taxes',
@@ -229,8 +229,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_house_property', value: true },
           validation: {
             min: 0,
-            message: 'Taxes must be positive'
-          }
+            message: 'Taxes must be positive',
+          },
         },
         {
           id: 'interest_on_loan',
@@ -240,8 +240,8 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_house_property', value: true },
           validation: {
             min: 0,
-            message: 'Interest must be positive'
-          }
+            message: 'Interest must be positive',
+          },
         },
         {
           id: 'pre_construction_interest',
@@ -251,10 +251,10 @@ export const ITR1_CONFIG = {
           conditional: { field: 'has_house_property', value: true },
           validation: {
             min: 0,
-            message: 'Pre-construction interest must be positive'
-          }
-        }
-      ]
+            message: 'Pre-construction interest must be positive',
+          },
+        },
+      ],
     },
 
     {
@@ -270,8 +270,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Interest income must be positive'
-          }
+            message: 'Interest income must be positive',
+          },
         },
         {
           id: 'dividend_income',
@@ -280,8 +280,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Dividend income must be positive'
-          }
+            message: 'Dividend income must be positive',
+          },
         },
         {
           id: 'capital_gains',
@@ -290,8 +290,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Capital gains must be positive'
-          }
+            message: 'Capital gains must be positive',
+          },
         },
         {
           id: 'other_sources',
@@ -300,10 +300,10 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Other income must be positive'
-          }
-        }
-      ]
+            message: 'Other income must be positive',
+          },
+        },
+      ],
     },
 
     {
@@ -321,8 +321,8 @@ export const ITR1_CONFIG = {
           validation: {
             min: 0,
             max: 150000,
-            message: '80C deduction must be between 0 and ₹1.5 lakh'
-          }
+            message: '80C deduction must be between 0 and ₹1.5 lakh',
+          },
         },
         {
           id: 'section_80d',
@@ -331,8 +331,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: '80D deduction must be positive'
-          }
+            message: '80D deduction must be positive',
+          },
         },
         {
           id: 'section_80e',
@@ -341,8 +341,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: '80E deduction must be positive'
-          }
+            message: '80E deduction must be positive',
+          },
         },
         {
           id: 'section_80g',
@@ -351,8 +351,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: '80G deduction must be positive'
-          }
+            message: '80G deduction must be positive',
+          },
         },
         {
           id: 'other_deductions',
@@ -361,10 +361,10 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Other deductions must be positive'
-          }
-        }
-      ]
+            message: 'Other deductions must be positive',
+          },
+        },
+      ],
     },
 
     {
@@ -380,8 +380,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Advance tax must be positive'
-          }
+            message: 'Advance tax must be positive',
+          },
         },
         {
           id: 'tds_tcs',
@@ -390,8 +390,8 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'TDS/TCS must be positive'
-          }
+            message: 'TDS/TCS must be positive',
+          },
         },
         {
           id: 'self_assessment_tax',
@@ -400,11 +400,11 @@ export const ITR1_CONFIG = {
           required: false,
           validation: {
             min: 0,
-            message: 'Self assessment tax must be positive'
-          }
-        }
-      ]
-    }
+            message: 'Self assessment tax must be positive',
+          },
+        },
+      ],
+    },
   ],
 
   validation: {
@@ -412,14 +412,14 @@ export const ITR1_CONFIG = {
     conditional_rules: [
       {
         condition: 'salary_income.has_salary_income === true',
-        required_fields: ['salary_income.employer_name', 'salary_income.gross_salary']
+        required_fields: ['salary_income.employer_name', 'salary_income.gross_salary'],
       },
       {
         condition: 'house_property.has_house_property === true',
-        required_fields: ['house_property.property_type']
-      }
-    ]
-  }
+        required_fields: ['house_property.property_type'],
+      },
+    ],
+  },
 };
 
 export default ITR1_CONFIG;

@@ -12,12 +12,12 @@ const useChatbot = () => {
     try {
       // Mock chatbot response - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const botResponse = {
         role: 'assistant',
-        content: `I received your message: "${message}". How can I help you with your ITR filing?`
+        content: `I received your message: "${message}". How can I help you with your ITR filing?`,
       };
-      
+
       setMessages(prev => [...prev, botResponse]);
     } catch (error) {
       console.error('Chatbot error:', error);
@@ -34,7 +34,7 @@ const useChatbot = () => {
     messages,
     loading,
     sendMessage,
-    clearMessages
+    clearMessages,
   };
 };
 

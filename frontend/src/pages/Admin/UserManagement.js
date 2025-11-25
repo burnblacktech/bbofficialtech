@@ -7,13 +7,13 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Mail, 
-  Phone, 
+import {
+  Users,
+  Search,
+  Filter,
+  MoreVertical,
+  Mail,
+  Phone,
   Calendar,
   Shield,
   AlertTriangle,
@@ -21,7 +21,7 @@ import {
   XCircle,
   Edit,
   Trash2,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 const UserManagement = () => {
@@ -37,10 +37,10 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockUsers = [
         {
           id: 1,
@@ -54,7 +54,7 @@ const UserManagement = () => {
           lastLogin: new Date('2024-01-20'),
           filingsCount: 3,
           totalRevenue: 7500,
-          isVerified: true
+          isVerified: true,
         },
         {
           id: 2,
@@ -68,7 +68,7 @@ const UserManagement = () => {
           lastLogin: new Date('2024-01-19'),
           filingsCount: 1,
           totalRevenue: 2500,
-          isVerified: true
+          isVerified: true,
         },
         {
           id: 3,
@@ -84,7 +84,7 @@ const UserManagement = () => {
           totalRevenue: 112500,
           isVerified: true,
           firmName: 'CA Firm Alpha',
-          subscriptionPlan: 'Pro Plan'
+          subscriptionPlan: 'Pro Plan',
         },
         {
           id: 4,
@@ -99,7 +99,7 @@ const UserManagement = () => {
           filingsCount: 0,
           totalRevenue: 0,
           isVerified: false,
-          suspensionReason: 'Violation of terms of service'
+          suspensionReason: 'Violation of terms of service',
         },
         {
           id: 5,
@@ -115,10 +115,10 @@ const UserManagement = () => {
           totalRevenue: 0,
           isVerified: false,
           firmName: 'CA Firm Beta',
-          subscriptionPlan: null
-        }
+          subscriptionPlan: null,
+        },
       ];
-      
+
       setUsers(mockUsers);
       setLoading(false);
     };
@@ -132,7 +132,7 @@ const UserManagement = () => {
                          user.pan.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -158,7 +158,7 @@ const UserManagement = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -166,7 +166,7 @@ const UserManagement = () => {
     return new Intl.DateTimeFormat('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   };
 

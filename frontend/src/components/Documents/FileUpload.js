@@ -10,9 +10,9 @@ import documentService from '../../services/documentService';
 import { enterpriseLogger } from '../../utils/logger';
 import toast from 'react-hot-toast';
 
-const FileUpload = ({ 
-  onFileSelect, 
-  onUploadComplete, 
+const FileUpload = ({
+  onFileSelect,
+  onUploadComplete,
   onUploadError,
   category = 'OTHER',
   filingId = null,
@@ -20,7 +20,7 @@ const FileUpload = ({
   maxFiles = 5,
   allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'],
   maxSize = 10 * 1024 * 1024, // 10MB
-  className = ''
+  className = '',
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -42,7 +42,7 @@ const FileUpload = ({
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     handleFiles(files);
   }, []);
@@ -96,7 +96,7 @@ const FileUpload = ({
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   };
 
@@ -129,7 +129,7 @@ const FileUpload = ({
 
     try {
       const results = [];
-      
+
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
         const progress = ((i + 1) / selectedFiles.length) * 100;
@@ -145,7 +145,7 @@ const FileUpload = ({
 
       setUploadResults(results);
       setSelectedFiles([]);
-      
+
       const successfulUploads = results.filter(r => r.success);
       const failedUploads = results.filter(r => !r.success);
 
@@ -160,7 +160,7 @@ const FileUpload = ({
       enterpriseLogger.info('File upload completed', {
         totalFiles: selectedFiles.length,
         successful: successfulUploads.length,
-        failed: failedUploads.length
+        failed: failedUploads.length,
       });
 
     } catch (error) {
@@ -178,9 +178,9 @@ const FileUpload = ({
         file,
         category,
         filingId,
-        memberId
+        memberId,
       );
-      
+
       toast.success(`${file.name} uploaded successfully`);
       return result;
     } catch (error) {
@@ -196,7 +196,7 @@ const FileUpload = ({
   return (
     <div className={`file-upload ${className}`}>
       {/* Upload Area */}
-      <Card 
+      <Card
         className={`upload-area ${isDragOver ? 'drag-over' : ''} ${uploading ? 'uploading' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -206,13 +206,13 @@ const FileUpload = ({
           <div className="upload-icon">
             {uploading ? '⏳' : '📁'}
           </div>
-          
+
           <h3>Upload Documents</h3>
-          
+
           <p className="upload-description">
             Drag and drop files here, or click to browse
           </p>
-          
+
           <div className="upload-constraints">
             <p>• Maximum file size: {formatFileSize(maxSize)}</p>
             <p>• Allowed types: {allowedTypes.map(type => type.split('/')[1]).join(', ')}</p>
@@ -242,7 +242,7 @@ const FileUpload = ({
         {uploading && (
           <div className="upload-progress">
             <div className="progress-bar">
-              <div 
+              <div
                 className="progress-fill"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
@@ -277,7 +277,7 @@ const FileUpload = ({
               </div>
             ))}
           </div>
-          
+
           <div className="upload-actions">
             <Button
               variant="primary"
@@ -304,7 +304,7 @@ const FileUpload = ({
               Clear
             </Button>
           </div>
-          
+
           <div className="results-list">
             {uploadResults.map((result, index) => (
               <div key={index} className="result-item">

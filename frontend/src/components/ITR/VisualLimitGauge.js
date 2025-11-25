@@ -6,13 +6,13 @@
 import React from 'react';
 import { AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 
-const VisualLimitGauge = ({ 
-  title, 
-  claimed, 
-  limit, 
+const VisualLimitGauge = ({
+  title,
+  claimed,
+  limit,
   unit = '₹',
   showPercentage = true,
-  color = 'blue'
+  color = 'blue',
 }) => {
   const percentage = Math.min((claimed / limit) * 100, 100);
   const remaining = Math.max(0, limit - claimed);
@@ -24,26 +24,26 @@ const VisualLimitGauge = ({
       bg: 'bg-blue-500',
       text: 'text-blue-600',
       light: 'bg-blue-50',
-      border: 'border-blue-200'
+      border: 'border-blue-200',
     },
     green: {
       bg: 'bg-green-500',
       text: 'text-green-600',
       light: 'bg-green-50',
-      border: 'border-green-200'
+      border: 'border-green-200',
     },
     purple: {
       bg: 'bg-purple-500',
       text: 'text-purple-600',
       light: 'bg-purple-50',
-      border: 'border-purple-200'
+      border: 'border-purple-200',
     },
     orange: {
       bg: 'bg-orange-500',
       text: 'text-orange-600',
       light: 'bg-orange-50',
-      border: 'border-orange-200'
-    }
+      border: 'border-orange-200',
+    },
   };
 
   const colors = colorClasses[color];
@@ -52,7 +52,7 @@ const VisualLimitGauge = ({
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -80,7 +80,7 @@ const VisualLimitGauge = ({
       {/* Progress Bar */}
       <div className="mb-3">
         <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-          <div 
+          <div
             className={`h-full transition-all duration-500 ease-out ${
               isOverLimit ? 'bg-red-500' : isNearLimit ? 'bg-orange-500' : colors.bg
             }`}

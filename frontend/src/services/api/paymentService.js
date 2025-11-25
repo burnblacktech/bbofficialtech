@@ -67,7 +67,7 @@ class PaymentService {
     try {
       const response = await apiClient.post('/payments/subscribe', {
         planId,
-        paymentMethod
+        paymentMethod,
       });
       return response.data;
     } catch (error) {
@@ -123,7 +123,7 @@ class PaymentService {
   // Generate invoice for ITR filing
   async generateInvoice(filingId) {
     try {
-      const response = await apiClient.post(`/payments/invoice/generate`, { filingId });
+      const response = await apiClient.post('/payments/invoice/generate', { filingId });
       return response.data;
     } catch (error) {
       errorHandler.handleBusinessError(error);
@@ -136,7 +136,7 @@ class PaymentService {
     try {
       const response = await apiClient.post(`/payments/refund/${paymentId}`, {
         reason,
-        amount
+        amount,
       });
       return response.data;
     } catch (error) {

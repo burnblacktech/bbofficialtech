@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FileText, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  FileText,
+  CheckCircle,
+  AlertCircle,
   Clock,
   Save,
   Download,
   Eye,
-  Plus
+  Plus,
 } from 'lucide-react';
 
 // Import mock data
@@ -25,7 +25,7 @@ import AISuggestionChip from '../../components/ITR/AISuggestionChip';
 const DynamicFilingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // State management
   const [filingData, setFilingData] = useState(null);
   const [taxCalculation, setTaxCalculation] = useState(null);
@@ -40,16 +40,16 @@ const DynamicFilingPage = () => {
     const loadFilingData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         // Load mock data
         setFilingData(mockPrefillData);
         setTaxCalculation(mockTaxCalculation);
         setAISuggestions(mockAISuggestions);
         setLastSaved(new Date(mockPrefillData.lastSaved));
-        
+
       } catch (error) {
         console.error('Failed to load filing data:', error);
         // Handle error state
@@ -68,13 +68,13 @@ const DynamicFilingPage = () => {
     const autoSaveTimer = setTimeout(async () => {
       try {
         setIsSaving(true);
-        
+
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Update last saved timestamp
         setLastSaved(new Date());
-        
+
         console.log('Auto-saved filing data');
       } catch (error) {
         console.error('Auto-save failed:', error);
@@ -103,8 +103,8 @@ const DynamicFilingPage = () => {
       ...prev,
       [section]: {
         ...prev[section],
-        ...data
-      }
+        ...data,
+      },
     }));
   };
 
@@ -112,10 +112,10 @@ const DynamicFilingPage = () => {
   const handleManualSave = async () => {
     try {
       setIsSaving(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setLastSaved(new Date());
       console.log('Manual save completed');
     } catch (error) {
@@ -128,16 +128,16 @@ const DynamicFilingPage = () => {
   // Calculate completion percentage
   const calculateCompletion = () => {
     if (!filingData) return 0;
-    
+
     const sections = ['personalInfo', 'incomeDetails', 'deductions', 'taxesPaid'];
     let completedSections = 0;
-    
+
     sections.forEach(section => {
       if (filingData[section] && Object.keys(filingData[section]).length > 0) {
         completedSections++;
       }
     });
-    
+
     return Math.round((completedSections / sections.length) * 100);
   };
 
@@ -168,7 +168,7 @@ const DynamicFilingPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <FilingHeader 
+      <FilingHeader
         filingData={filingData}
         completionPercentage={calculateCompletion()}
         lastSaved={lastSaved}
@@ -179,13 +179,13 @@ const DynamicFilingPage = () => {
       {/* Main Content */}
       <div className="p-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Left Column: Filing Sections */}
           <div className="lg:col-span-2 space-y-6">
-            
+
             {/* AI Suggestions Banner */}
             {aiSuggestions.length > 0 && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-blue-50 border border-blue-200 rounded-lg p-4"
@@ -196,7 +196,7 @@ const DynamicFilingPage = () => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {aiSuggestions.slice(0, 3).map((suggestion) => (
-                    <AISuggestionChip 
+                    <AISuggestionChip
                       key={suggestion.id}
                       suggestion={suggestion}
                       onClick={() => {

@@ -33,5 +33,5 @@ module.exports = {
   CAFirm,
   Invite,
   AccountLinkingToken,
-  UserProfile
+  UserProfile,
 };

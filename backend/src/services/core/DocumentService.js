@@ -5,7 +5,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const multer = require('multer');
-const enterpriseLogger = require('../utils/logger');
+const enterpriseLogger = require('../../utils/logger');
 
 class DocumentService {
   constructor() {
@@ -21,7 +21,7 @@ class DocumentService {
   setupUpload() {
     // Ensure upload directory exists
     this.ensureUploadDir();
-    
+
     // Configure storage
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -30,7 +30,7 @@ class DocumentService {
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-      }
+      },
     });
 
     // Configure file filter
@@ -47,8 +47,8 @@ class DocumentService {
       storage,
       fileFilter,
       limits: {
-        fileSize: this.maxFileSize
-      }
+        fileSize: this.maxFileSize,
+      },
     });
   }
 
@@ -84,7 +84,7 @@ class DocumentService {
 
       // Generate document ID
       const documentId = this.generateDocumentId();
-      
+
       // Create document record
       const document = {
         id: documentId,
@@ -97,8 +97,8 @@ class DocumentService {
         metadata: {
           ...metadata,
           uploadedBy: metadata.userId,
-          category: metadata.category || 'general'
-        }
+          category: metadata.category || 'general',
+        },
       };
 
       // Save document metadata (in a real app, this would be saved to database)
@@ -108,7 +108,7 @@ class DocumentService {
         documentId,
         filename: file.filename,
         size: file.size,
-        mimetype: file.mimetype
+        mimetype: file.mimetype,
       });
 
       return {
@@ -117,14 +117,14 @@ class DocumentService {
         filename: file.filename,
         size: file.size,
         mimetype: file.mimetype,
-        uploadedAt: document.uploadedAt
+        uploadedAt: document.uploadedAt,
       };
     } catch (error) {
       enterpriseLogger.error('Document upload error', {
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
-      
+
       throw error;
     }
   }
@@ -151,14 +151,14 @@ class DocumentService {
 
       return {
         ...document,
-        filePath
+        filePath,
       };
     } catch (error) {
       enterpriseLogger.error('Get document error', {
         documentId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -183,7 +183,7 @@ class DocumentService {
         enterpriseLogger.warn('File deletion failed', {
           documentId,
           filePath,
-          error: error.message
+          error: error.message,
         });
       }
 
@@ -195,14 +195,14 @@ class DocumentService {
       return {
         success: true,
         documentId,
-        deletedAt: new Date().toISOString()
+        deletedAt: new Date().toISOString(),
       };
     } catch (error) {
       enterpriseLogger.error('Document deletion error', {
         documentId,
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -219,9 +219,9 @@ class DocumentService {
       return [];
     } catch (error) {
       enterpriseLogger.error('List documents error', {
-        error: error.message
+        error: error.message,
       });
-      
+
       throw error;
     }
   }
@@ -237,7 +237,7 @@ class DocumentService {
       if (!this.allowedTypes.includes(file.mimetype)) {
         return {
           isValid: false,
-          error: 'Invalid file type. Allowed types: ' + this.allowedTypes.join(', ')
+          error: 'Invalid file type. Allowed types: ' + this.allowedTypes.join(', '),
         };
       }
 
@@ -245,7 +245,7 @@ class DocumentService {
       if (file.size > this.maxFileSize) {
         return {
           isValid: false,
-          error: `File size exceeds limit of ${this.maxFileSize / (1024 * 1024)}MB`
+          error: `File size exceeds limit of ${this.maxFileSize / (1024 * 1024)}MB`,
         };
       }
 
@@ -253,7 +253,7 @@ class DocumentService {
       if (!file.originalname || file.originalname.trim() === '') {
         return {
           isValid: false,
-          error: 'Invalid file name'
+          error: 'Invalid file name',
         };
       }
 
@@ -261,7 +261,7 @@ class DocumentService {
     } catch (error) {
       return {
         isValid: false,
-        error: 'File validation error: ' + error.message
+        error: 'File validation error: ' + error.message,
       };
     }
   }
@@ -284,11 +284,11 @@ class DocumentService {
       // For now, just log the action
       enterpriseLogger.info('Document metadata saved', {
         documentId: document.id,
-        filename: document.filename
+        filename: document.filename,
       });
     } catch (error) {
       enterpriseLogger.error('Save document metadata error', {
-        error: error.message
+        error: error.message,
       });
       throw error;
     }
@@ -307,7 +307,7 @@ class DocumentService {
     } catch (error) {
       enterpriseLogger.error('Get document metadata error', {
         documentId,
-        error: error.message
+        error: error.message,
       });
       throw error;
     }
@@ -325,7 +325,7 @@ class DocumentService {
     } catch (error) {
       enterpriseLogger.error('Delete document metadata error', {
         documentId,
-        error: error.message
+        error: error.message,
       });
       throw error;
     }

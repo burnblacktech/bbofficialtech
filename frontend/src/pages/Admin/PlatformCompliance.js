@@ -7,14 +7,14 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  FileText, 
-  Users, 
-  Building2, 
+import {
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  FileText,
+  Users,
+  Building2,
   Search,
   Filter,
   Eye,
@@ -30,7 +30,7 @@ import {
   DollarSign,
   Globe,
   Lock,
-  Unlock
+  Unlock,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -86,7 +86,7 @@ const PlatformCompliance = () => {
     mutationFn: async ({ complianceId, status, notes }) => {
       const response = await api.put(`/api/platform-admin/compliance/${complianceId}/status`, {
         status,
-        notes
+        notes,
       });
       return response.data;
     },
@@ -97,7 +97,7 @@ const PlatformCompliance = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update compliance: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (complianceId, newStatus, notes = '') => {
@@ -168,7 +168,7 @@ const PlatformCompliance = () => {
     { id: 'overview', name: 'Overview', icon: BarChart3 },
     { id: 'compliance', name: 'Compliance Issues', icon: Shield },
     { id: 'alerts', name: 'Alerts', icon: AlertTriangle },
-    { id: 'audit', name: 'Audit Trail', icon: FileText }
+    { id: 'audit', name: 'Audit Trail', icon: FileText },
   ];
 
   if (isLoading) {
@@ -194,7 +194,7 @@ const PlatformCompliance = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Platform Compliance</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/platform-admin/compliance/export')}
@@ -203,7 +203,7 @@ const PlatformCompliance = () => {
                 <Download className="h-4 w-4" />
                 <span>Export Report</span>
               </button>
-              
+
               <button
                 onClick={() => navigate('/platform-admin/compliance/settings')}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -254,7 +254,7 @@ const PlatformCompliance = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <AlertTriangle className="h-8 w-8 text-red-600" />
@@ -264,7 +264,7 @@ const PlatformCompliance = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Clock className="h-8 w-8 text-orange-600" />
@@ -274,7 +274,7 @@ const PlatformCompliance = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Shield className="h-8 w-8 text-blue-600" />
@@ -299,8 +299,8 @@ const PlatformCompliance = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-20 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
                             style={{ width: `${category.compliance_rate}%` }}
                           ></div>
                         </div>
@@ -310,7 +310,7 @@ const PlatformCompliance = () => {
                   ))}
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Compliance Activity</h3>
                 <div className="space-y-3">
@@ -383,7 +383,7 @@ const PlatformCompliance = () => {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                
+
                 {/* Status Filter */}
                 <div className="flex items-center space-x-2">
                   <Filter className="h-4 w-4 text-gray-400" />
@@ -399,7 +399,7 @@ const PlatformCompliance = () => {
                     <option value="pending">Pending</option>
                   </select>
                 </div>
-                
+
                 {/* Severity Filter */}
                 <select
                   value={severityFilter}
@@ -434,7 +434,7 @@ const PlatformCompliance = () => {
                     {compliance.length} Compliance Issue{compliance.length !== 1 ? 's' : ''}
                   </h2>
                 </div>
-                
+
                 <div className="divide-y divide-gray-200">
                   {compliance.map((issue) => (
                     <div key={issue.id} className="px-6 py-4 hover:bg-gray-50">
@@ -451,9 +451,9 @@ const PlatformCompliance = () => {
                                 {issue.status.replace('_', ' ')}
                               </span>
                             </div>
-                            
+
                             <p className="text-sm text-gray-600 mb-2">{issue.description}</p>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                               <div className="space-y-1">
                                 <div className="flex items-center space-x-2">
@@ -465,7 +465,7 @@ const PlatformCompliance = () => {
                                   <span>Due: {new Date(issue.due_date).toLocaleDateString()}</span>
                                 </div>
                               </div>
-                              
+
                               <div className="space-y-1">
                                 <div className="flex items-center space-x-2">
                                   <Users className="h-4 w-4" />
@@ -479,7 +479,7 @@ const PlatformCompliance = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => navigate(`/platform-admin/compliance/${issue.id}`)}
@@ -488,7 +488,7 @@ const PlatformCompliance = () => {
                           >
                             <Eye className="h-4 w-4" />
                           </button>
-                          
+
                           {issue.status === 'non_compliant' && (
                             <button
                               onClick={() => handleStatusUpdate(issue.id, 'under_review')}
@@ -498,7 +498,7 @@ const PlatformCompliance = () => {
                               <Clock className="h-4 w-4" />
                             </button>
                           )}
-                          
+
                           {issue.status === 'under_review' && (
                             <button
                               onClick={() => handleStatusUpdate(issue.id, 'compliant')}
@@ -523,7 +523,7 @@ const PlatformCompliance = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Compliance Alerts</h3>
-              
+
               {alerts.length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />

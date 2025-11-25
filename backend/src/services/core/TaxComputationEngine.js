@@ -2,8 +2,8 @@
 // TAX COMPUTATION ENGINE
 // =====================================================
 
-const enterpriseLogger = require('../utils/logger');
-const { AppError } = require('../middleware/errorHandler');
+const enterpriseLogger = require('../../utils/logger');
+const { AppError } = require('../../middleware/errorHandler');
 
 class TaxComputationEngine {
   constructor() {
@@ -16,7 +16,7 @@ class TaxComputationEngine {
           { min: 750001, max: 1000000, rate: 15, cess: 4 },
           { min: 1000001, max: 1250000, rate: 20, cess: 4 },
           { min: 1250001, max: 1500000, rate: 25, cess: 4 },
-          { min: 1500001, max: Infinity, rate: 30, cess: 4 }
+          { min: 1500001, max: Infinity, rate: 30, cess: 4 },
         ],
         seniorCitizen: [
           { min: 0, max: 300000, rate: 0, cess: 0 },
@@ -25,7 +25,7 @@ class TaxComputationEngine {
           { min: 750001, max: 1000000, rate: 15, cess: 4 },
           { min: 1000001, max: 1250000, rate: 20, cess: 4 },
           { min: 1250001, max: 1500000, rate: 25, cess: 4 },
-          { min: 1500001, max: Infinity, rate: 30, cess: 4 }
+          { min: 1500001, max: Infinity, rate: 30, cess: 4 },
         ],
         superSeniorCitizen: [
           { min: 0, max: 500000, rate: 0, cess: 0 },
@@ -33,9 +33,9 @@ class TaxComputationEngine {
           { min: 750001, max: 1000000, rate: 15, cess: 4 },
           { min: 1000001, max: 1250000, rate: 20, cess: 4 },
           { min: 1250001, max: 1500000, rate: 25, cess: 4 },
-          { min: 1500001, max: Infinity, rate: 30, cess: 4 }
-        ]
-      }
+          { min: 1500001, max: Infinity, rate: 30, cess: 4 },
+        ],
+      },
     };
 
     this.deductionLimits = {
@@ -47,8 +47,8 @@ class TaxComputationEngine {
         section80TTA: 10000,
         section80TTB: 50000,
         section24: 200000,
-        standardDeduction: 50000
-      }
+        standardDeduction: 50000,
+      },
     };
 
     enterpriseLogger.info('TaxComputationEngine initialized');
@@ -62,9 +62,9 @@ class TaxComputationEngine {
    */
   async computeTax(filingData, assessmentYear = '2024-25') {
     try {
-      enterpriseLogger.info('Starting tax computation', { 
+      enterpriseLogger.info('Starting tax computation', {
         itrType: filingData.itrType,
-        assessmentYear 
+        assessmentYear,
       });
 
       const computation = {
@@ -79,29 +79,29 @@ class TaxComputationEngine {
         finalTax: 0,
         refundAmount: 0,
         taxPaid: 0,
-        computedAt: new Date().toISOString()
+        computedAt: new Date().toISOString(),
       };
 
       // Calculate gross total income
       computation.grossTotalIncome = this.calculateGrossTotalIncome(filingData);
-      
+
       // Calculate total deductions
       computation.totalDeductions = this.calculateTotalDeductions(filingData, assessmentYear);
-      
+
       // Calculate taxable income
       computation.taxableIncome = Math.max(0, computation.grossTotalIncome - computation.totalDeductions);
-      
+
       // Calculate tax based on ITR type
       computation.taxComputation = this.calculateTaxByType(
-        computation.taxableIncome, 
+        computation.taxableIncome,
         filingData.personalInfo,
-        assessmentYear
+        assessmentYear,
       );
-      
+
       computation.totalTax = computation.taxComputation.totalTax;
       computation.cess = computation.taxComputation.cess;
       computation.finalTax = computation.totalTax + computation.cess;
-      
+
       // Calculate refund/payable
       computation.taxPaid = filingData.taxPaid || 0;
       computation.refundAmount = Math.max(0, computation.taxPaid - computation.finalTax);
@@ -111,14 +111,14 @@ class TaxComputationEngine {
         totalDeductions: computation.totalDeductions,
         taxableIncome: computation.taxableIncome,
         totalTax: computation.totalTax,
-        finalTax: computation.finalTax
+        finalTax: computation.finalTax,
       });
 
       return computation;
     } catch (error) {
-      enterpriseLogger.error('Tax computation failed', { 
+      enterpriseLogger.error('Tax computation failed', {
         error: error.message,
-        filingData: filingData.itrType 
+        filingData: filingData.itrType,
       });
       throw new AppError(`Tax computation failed: ${error.message}`, 500);
     }
@@ -259,14 +259,14 @@ class TaxComputationEngine {
       if (taxableIncome > slab.min) {
         const taxableInThisSlab = Math.min(taxableIncome - slab.min, slab.max - slab.min);
         const taxInThisSlab = (taxableInThisSlab * slab.rate) / 100;
-        
+
         if (taxInThisSlab > 0) {
           totalTax += taxInThisSlab;
           taxBreakdown.push({
             slab: `${slab.min.toLocaleString()} - ${slab.max === Infinity ? 'Above' : slab.max.toLocaleString()}`,
             rate: `${slab.rate}%`,
             taxableAmount: taxableInThisSlab,
-            tax: taxInThisSlab
+            tax: taxInThisSlab,
           });
         }
       }
@@ -279,7 +279,7 @@ class TaxComputationEngine {
       cess,
       taxBreakdown,
       applicableSlabs: applicableSlabs,
-      taxpayerType: age >= 80 ? 'superSeniorCitizen' : age >= 60 ? 'seniorCitizen' : 'individual'
+      taxpayerType: age >= 80 ? 'superSeniorCitizen' : age >= 60 ? 'seniorCitizen' : 'individual',
     };
   }
 
@@ -289,16 +289,16 @@ class TaxComputationEngine {
    * @returns {number} - Age
    */
   calculateAge(dateOfBirth) {
-    if (!dateOfBirth) return 0;
+    if (!dateOfBirth) {return 0;}
     const today = new Date();
     const birthDate = new Date(dateOfBirth);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   }
 
@@ -340,7 +340,7 @@ class TaxComputationEngine {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 }

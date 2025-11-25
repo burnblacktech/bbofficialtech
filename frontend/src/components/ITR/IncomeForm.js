@@ -14,30 +14,30 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
       basicSalary: data.salary?.basicSalary || '',
       allowances: data.salary?.allowances || '',
       perquisites: data.salary?.perquisites || '',
-      totalSalary: data.salary?.totalSalary || ''
+      totalSalary: data.salary?.totalSalary || '',
     },
     houseProperty: {
       rentalIncome: data.houseProperty?.rentalIncome || '',
       municipalTaxes: data.houseProperty?.municipalTaxes || '',
       interestOnLoan: data.houseProperty?.interestOnLoan || '',
-      netRentalIncome: data.houseProperty?.netRentalIncome || ''
+      netRentalIncome: data.houseProperty?.netRentalIncome || '',
     },
     capitalGains: {
       shortTerm: data.capitalGains?.shortTerm || '',
       longTerm: data.capitalGains?.longTerm || '',
-      exemptLongTerm: data.capitalGains?.exemptLongTerm || ''
+      exemptLongTerm: data.capitalGains?.exemptLongTerm || '',
     },
     businessIncome: {
       grossReceipts: data.businessIncome?.grossReceipts || '',
       expenses: data.businessIncome?.expenses || '',
-      netProfit: data.businessIncome?.netProfit || ''
+      netProfit: data.businessIncome?.netProfit || '',
     },
     otherIncome: {
       interest: data.otherIncome?.interest || '',
       dividend: data.otherIncome?.dividend || '',
       winnings: data.otherIncome?.winnings || '',
-      other: data.otherIncome?.other || ''
-    }
+      other: data.otherIncome?.other || '',
+    },
   });
 
   const [errors, setErrors] = useState({});
@@ -49,17 +49,17 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
 
   const calculateTotalIncome = () => {
     let total = 0;
-    
+
     // Salary income
     if (formData.salary.totalSalary) {
       total += parseFloat(formData.salary.totalSalary) || 0;
     }
-    
+
     // House property income
     if (formData.houseProperty.netRentalIncome) {
       total += parseFloat(formData.houseProperty.netRentalIncome) || 0;
     }
-    
+
     // Capital gains
     if (formData.capitalGains.shortTerm) {
       total += parseFloat(formData.capitalGains.shortTerm) || 0;
@@ -67,25 +67,25 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
     if (formData.capitalGains.longTerm) {
       total += parseFloat(formData.capitalGains.longTerm) || 0;
     }
-    
+
     // Business income
     if (formData.businessIncome.netProfit) {
       total += parseFloat(formData.businessIncome.netProfit) || 0;
     }
-    
+
     // Other income
     Object.values(formData.otherIncome).forEach(amount => {
       if (amount) {
         total += parseFloat(amount) || 0;
       }
     });
-    
+
     return total;
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     // ITR-specific validations
     if (itrType === 'ITR1') {
       // ITR1: Only salary and house property allowed
@@ -96,19 +96,19 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
         newErrors.businessIncome = 'Business income not allowed in ITR-1. Please use ITR-3.';
       }
     }
-    
+
     if (itrType === 'ITR4') {
       // ITR4: Presumptive taxation - no detailed business income
       if (formData.businessIncome.grossReceipts || formData.businessIncome.expenses) {
         newErrors.businessIncome = 'Detailed business income not required for ITR-4. Use presumptive income section.';
       }
     }
-    
+
     // Required field validations based on ITR type
     if (itrType === 'ITR1' && !formData.salary.totalSalary && !formData.houseProperty.netRentalIncome) {
       newErrors.general = 'Please provide at least salary or house property income for ITR-1.';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -118,15 +118,15 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
       ...prev,
       [category]: {
         ...prev[category],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleNext = async () => {
     setIsValidating(true);
     const isValid = validateForm();
-    
+
     if (isValid) {
       enterpriseLogger.info('Income form validated successfully', { itrType, totalIncome: calculateTotalIncome() });
       onNext && onNext();
@@ -143,7 +143,7 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
   const renderSalarySection = () => (
     <div className="form-section">
       <h3>Salary Income</h3>
-      
+
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="basicSalary">
@@ -216,7 +216,7 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
   const renderHousePropertySection = () => (
     <div className="form-section">
       <h3>House Property Income</h3>
-      
+
       <div className="form-group">
         <label htmlFor="rentalIncome">
           Rental Income
@@ -288,7 +288,7 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
   const renderCapitalGainsSection = () => (
     <div className="form-section">
       <h3>Capital Gains</h3>
-      
+
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="shortTermCapitalGains">
@@ -344,7 +344,7 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
   const renderBusinessIncomeSection = () => (
     <div className="form-section">
       <h3>Business Income</h3>
-      
+
       <div className="form-group">
         <label htmlFor="grossReceipts">
           Gross Receipts
@@ -398,7 +398,7 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
   const renderOtherIncomeSection = () => (
     <div className="form-section">
       <h3>Other Income</h3>
-      
+
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="interestIncome">
@@ -480,10 +480,10 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
         <div className="form-content">
           {renderSalarySection()}
           {renderHousePropertySection()}
-          
+
           {(itrType === 'ITR2' || itrType === 'ITR3') && renderCapitalGainsSection()}
           {(itrType === 'ITR3') && renderBusinessIncomeSection()}
-          
+
           {renderOtherIncomeSection()}
         </div>
 
@@ -507,7 +507,7 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
           >
             Previous
           </Button>
-          
+
           <Button
             variant="primary"
             onClick={handleNext}

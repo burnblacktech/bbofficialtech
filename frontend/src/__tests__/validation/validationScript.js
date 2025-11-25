@@ -10,7 +10,7 @@ const path = require('path');
 const validationResults = {
   passed: [],
   failed: [],
-  warnings: []
+  warnings: [],
 };
 
 function validateFileExists(filePath, description) {
@@ -201,7 +201,7 @@ function validateArchitectureImplementation() {
     passed: totalPassed,
     failed: totalFailed,
     warnings: totalWarnings,
-    successRate: (totalPassed / totalChecks) * 100
+    successRate: (totalPassed / totalChecks) * 100,
   };
 }
 

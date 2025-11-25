@@ -15,10 +15,10 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const { user, accessToken, refreshToken } = await authService.login(email, password);
+      const { user, accessToken, refreshToken } = await authService.login({ email, password });
       login(user, accessToken, refreshToken);
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error('Login failed:', error);
       setError(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);

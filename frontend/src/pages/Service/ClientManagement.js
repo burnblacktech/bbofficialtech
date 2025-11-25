@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  UserPlus, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
+import {
+  Users,
+  UserPlus,
+  Search,
+  Filter,
+  MoreVertical,
+  Edit,
+  Trash2,
   Eye,
   UserCheck,
   Calendar,
   FileText,
   MessageSquare,
   TrendingUp,
-  Building2
+  Building2,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 import api from '../../services/api';
 
@@ -34,7 +34,7 @@ const ClientManagement = () => {
     page: 1,
     limit: 20,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
 
   // Fetch clients data
@@ -45,11 +45,11 @@ const ClientManagement = () => {
         page: page.toString(),
         limit: pagination.limit.toString(),
         ...(searchTerm && { search: searchTerm }),
-        ...(statusFilter && { status: statusFilter })
+        ...(statusFilter && { status: statusFilter }),
       });
 
       const response = await api.get(`/client-management/clients?${params}`);
-      
+
       if (response.data.success) {
         setClients(response.data.clients);
         setPagination(response.data.pagination);
@@ -460,7 +460,7 @@ const AddClientModal = ({ onClose, onAdd }) => {
     clientName: '',
     clientEmail: '',
     clientMobile: '',
-    relationshipType: 'client'
+    relationshipType: 'client',
   });
 
   const handleSubmit = (e) => {
@@ -471,7 +471,7 @@ const AddClientModal = ({ onClose, onAdd }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -491,7 +491,7 @@ const AddClientModal = ({ onClose, onAdd }) => {
               </svg>
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

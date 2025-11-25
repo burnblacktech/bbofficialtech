@@ -5,10 +5,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FileText, Users, TrendingUp, Clock, CheckCircle, 
+import {
+  FileText, Users, TrendingUp, Clock, CheckCircle,
   AlertCircle, Plus, ArrowRight, Sparkles, Target,
-  Zap, Shield, Calendar, BarChart3, Settings
+  Zap, Shield, Calendar, BarChart3, Settings,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -27,20 +27,20 @@ const EnhancedDashboard = () => {
       setRecentActivity([
         { id: 1, type: 'itr', title: 'ITR-1 2024-25', status: 'completed', date: '2024-01-15' },
         { id: 2, type: 'document', title: 'Form 16 Upload', status: 'pending', date: '2024-01-14' },
-        { id: 3, type: 'member', title: 'Added Family Member', status: 'completed', date: '2024-01-13' }
+        { id: 3, type: 'member', title: 'Added Family Member', status: 'completed', date: '2024-01-13' },
       ]);
 
       setQuickActions([
         { id: 1, title: 'New ITR Filing', description: 'Start filing for AY 2024-25', icon: FileText, color: 'blue', route: '/itr/start' },
         { id: 2, title: 'CA Bot Assistant', description: 'Get AI-powered help', icon: Sparkles, color: 'purple', route: '/ca-bot' },
         { id: 3, title: 'Add Family Member', description: 'Manage family members', icon: Users, color: 'green', route: '/add-members' },
-        { id: 4, title: 'Upload Documents', description: 'Upload tax documents', icon: FileText, color: 'orange', route: '/documents' }
+        { id: 4, title: 'Upload Documents', description: 'Upload tax documents', icon: FileText, color: 'orange', route: '/documents' },
       ]);
 
       setInsights([
         { id: 1, title: 'Tax Saved', value: '₹1,25,000', description: 'Through deductions', icon: TrendingUp, color: 'green' },
         { id: 2, title: 'Documents Uploaded', value: '12', description: 'This month', icon: FileText, color: 'blue' },
-        { id: 3, title: 'Family Members', value: '3', description: 'Active profiles', icon: Users, color: 'purple' }
+        { id: 3, title: 'Family Members', value: '3', description: 'Active profiles', icon: Users, color: 'purple' },
       ]);
 
       setIsLoading(false);
@@ -78,9 +78,9 @@ const EnhancedDashboard = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -90,9 +90,9 @@ const EnhancedDashboard = () => {
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
-    }
+        ease: 'easeOut',
+      },
+    },
   };
 
   const cardHoverVariants = {
@@ -100,9 +100,9 @@ const EnhancedDashboard = () => {
       scale: 1.02,
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
-    }
+        ease: 'easeInOut',
+      },
+    },
   };
 
   if (isLoading) {
@@ -110,7 +110,7 @@ const EnhancedDashboard = () => {
       <div className="flex items-center justify-center h-64">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"
         />
       </div>
@@ -233,7 +233,7 @@ const EnhancedDashboard = () => {
       </motion.div>
 
       {/* AI Assistant Card */}
-      <motion.div 
+      <motion.div
         variants={itemVariants}
         variants={cardHoverVariants}
         whileHover="hover"

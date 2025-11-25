@@ -11,12 +11,12 @@ import documentService from '../../services/documentService';
 import { enterpriseLogger } from '../../utils/logger';
 import toast from 'react-hot-toast';
 
-const DocumentUpload = ({ 
+const DocumentUpload = ({
   filingId = null,
   memberId = null,
   onDocumentUpload,
   onDocumentDelete,
-  className = ''
+  className = '',
 }) => {
   const [activeTab, setActiveTab] = useState('upload');
   const [documents, setDocuments] = useState([]);
@@ -28,7 +28,7 @@ const DocumentUpload = ({
     { key: 'BANK_STATEMENT', label: 'Bank Statement', icon: '🏦', description: 'Bank account statements' },
     { key: 'INVESTMENT_PROOF', label: 'Investment Proof', icon: '📈', description: 'Investment certificates and proofs' },
     { key: 'RENT_RECEIPTS', label: 'Rent Receipts', icon: '🏠', description: 'House rent receipts' },
-    { key: 'OTHER', label: 'Other', icon: '📎', description: 'Other supporting documents' }
+    { key: 'OTHER', label: 'Other', icon: '📎', description: 'Other supporting documents' },
   ];
 
   useEffect(() => {
@@ -61,11 +61,11 @@ const DocumentUpload = ({
   const handleUploadComplete = (uploadResults) => {
     enterpriseLogger.info('Documents uploaded successfully', { count: uploadResults.length });
     toast.success(`${uploadResults.length} document(s) uploaded successfully`);
-    
+
     // Reload documents and stats
     loadDocuments();
     loadStats();
-    
+
     if (onDocumentUpload) {
       onDocumentUpload(uploadResults);
     }
@@ -79,11 +79,11 @@ const DocumentUpload = ({
   const handleDocumentDelete = (document) => {
     enterpriseLogger.info('Document deleted', { documentId: document.id });
     toast.success('Document deleted successfully');
-    
+
     // Reload documents and stats
     loadDocuments();
     loadStats();
-    
+
     if (onDocumentDelete) {
       onDocumentDelete(document);
     }
@@ -91,7 +91,7 @@ const DocumentUpload = ({
 
   const getCategoryStats = () => {
     if (!stats) return {};
-    
+
     return categories.reduce((acc, category) => {
       acc[category.key] = stats.categoryCounts?.[category.key] || 0;
       return acc;

@@ -7,17 +7,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiClient } from '../../services';
 import { toast } from 'react-hot-toast';
-import { 
-  Building2, 
-  Users, 
-  FileText, 
-  DollarSign, 
-  Plus, 
+import {
+  Building2,
+  Users,
+  FileText,
+  DollarSign,
+  Plus,
   Settings,
   TrendingUp,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 const CAFirmAdminDashboard = () => {
@@ -36,7 +36,7 @@ const CAFirmAdminDashboard = () => {
   const loadFirmData = async () => {
     try {
       setLoading(true);
-      
+
       // Load firm overview
       const firmResponse = await apiClient.get(`/ca-firms/${user.caFirmId}`);
       if (firmResponse.data.success) {
@@ -139,7 +139,7 @@ const CAFirmAdminDashboard = () => {
               { id: 'staff', label: 'Staff', icon: Users },
               { id: 'clients', label: 'Clients', icon: Building2 },
               { id: 'filings', label: 'Filings', icon: FileText },
-              { id: 'billing', label: 'Billing', icon: DollarSign }
+              { id: 'billing', label: 'Billing', icon: DollarSign },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -173,7 +173,7 @@ const CAFirmAdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <Building2 className="h-8 w-8 text-green-600" />
@@ -183,7 +183,7 @@ const CAFirmAdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <FileText className="h-8 w-8 text-purple-600" />
@@ -193,7 +193,7 @@ const CAFirmAdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <DollarSign className="h-8 w-8 text-yellow-600" />

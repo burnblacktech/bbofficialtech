@@ -100,7 +100,7 @@ class AuthService {
     try {
       const response = await apiClient.post('/auth/reset-password', {
         token,
-        newPassword
+        newPassword,
       });
       return response.data;
     } catch (error) {
@@ -114,7 +114,7 @@ class AuthService {
     try {
       const response = await apiClient.post('/auth/change-password', {
         currentPassword,
-        newPassword
+        newPassword,
       });
       return response.data;
     } catch (error) {
@@ -146,6 +146,38 @@ class AuthService {
       return userStr ? JSON.parse(userStr) : null;
     } catch (error) {
       return null;
+    }
+  }
+
+  // Google OAuth login redirect
+  googleLoginRedirect() {
+    // Get the base URL - use same logic as APIClient
+    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+    // Redirect to backend Google OAuth endpoint
+    window.location.href = `${baseURL}/auth/google`;
+  }
+
+  // Handle OAuth login (sets tokens directly without calling login endpoint)
+  handleOAuthLogin(user, token, refreshToken) {
+    try {
+      // Store tokens
+      apiClient.setAuthToken(token);
+      if (refreshToken) {
+        apiClient.setRefreshToken(refreshToken);
+      }
+
+      // Store user data
+      localStorage.setItem('user', JSON.stringify(user));
+
+      return {
+        success: true,
+        user,
+        token,
+        refreshToken,
+      };
+    } catch (error) {
+      console.error('OAuth login handling error:', error);
+      throw error;
     }
   }
 }

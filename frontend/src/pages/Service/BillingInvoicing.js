@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  DollarSign, 
-  FileText, 
-  Plus, 
-  Search, 
-  Filter, 
-  Download, 
+import {
+  DollarSign,
+  FileText,
+  Plus,
+  Search,
+  Filter,
+  Download,
   Eye,
   Edit,
   Trash2,
@@ -16,13 +16,13 @@ import {
   Settings,
   CheckCircle,
   Clock,
-  XCircle
+  XCircle,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard
+  EnterpriseStatCard,
 } from '../../components/DesignSystem/EnterpriseComponents';
 import api from '../../services/api';
 
@@ -38,7 +38,7 @@ const BillingInvoicing = () => {
     page: 1,
     limit: 20,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
 
   // Fetch invoices data
@@ -49,11 +49,11 @@ const BillingInvoicing = () => {
         page: page.toString(),
         limit: pagination.limit.toString(),
         ...(searchTerm && { search: searchTerm }),
-        ...(statusFilter && { status: statusFilter })
+        ...(statusFilter && { status: statusFilter }),
       });
 
       const response = await api.get(`/billing/invoices?${params}`);
-      
+
       if (response.data.success) {
         setInvoices(response.data.invoices);
         setPagination(response.data.pagination);
@@ -147,9 +147,9 @@ const BillingInvoicing = () => {
   const handleDownloadInvoice = async (invoiceId) => {
     try {
       const response = await api.get(`/billing/invoices/${invoiceId}/download`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
-      
+
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -188,7 +188,7 @@ const BillingInvoicing = () => {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -196,7 +196,7 @@ const BillingInvoicing = () => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -446,7 +446,7 @@ const BillingInvoicing = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center gap-2">
-                        <button 
+                        <button
                           onClick={() => handleDownloadInvoice(invoice.id)}
                           className="text-blue-600 hover:text-blue-900"
                           title="Download Invoice"
@@ -457,7 +457,7 @@ const BillingInvoicing = () => {
                           <Eye className="h-4 w-4" />
                         </button>
                         {invoice.status === 'pending' && (
-                          <button 
+                          <button
                             onClick={() => handleMarkPaid(invoice.id)}
                             className="text-green-600 hover:text-green-900"
                             title="Mark as Paid"
@@ -568,7 +568,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
     amount: '',
     taxAmount: '0',
     description: '',
-    dueDate: ''
+    dueDate: '',
   });
 
   const handleSubmit = (e) => {
@@ -579,7 +579,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -599,7 +599,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
               </svg>
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

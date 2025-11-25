@@ -16,7 +16,7 @@ class DataIntegrationService {
       BROKER_API: 'broker_api',
       SALARY_SLIP: 'salary_slip',
       RENT_RECEIPT: 'rent_receipt',
-      FORM_16: 'form_16'
+      FORM_16: 'form_16',
     };
 
     this.dataCategories = {
@@ -29,7 +29,7 @@ class DataIntegrationService {
       DEDUCTIONS_80E: 'deductions_80e',
       DEDUCTIONS_HOUSING: 'deductions_housing',
       TDS_DEDUCTED: 'tds_deducted',
-      TAX_PAID: 'tax_paid'
+      TAX_PAID: 'tax_paid',
     };
 
     this.brokerIntegrations = {
@@ -37,7 +37,7 @@ class DataIntegrationService {
       ANGEL_ONE: 'angel_one',
       UPSTOX: 'upstox',
       ICICI_DIRECT: 'icici_direct',
-      HDFC_SECURITIES: 'hdfc_securities'
+      HDFC_SECURITIES: 'hdfc_securities',
     };
 
     this.bankIntegrations = {
@@ -45,7 +45,7 @@ class DataIntegrationService {
       ICICI: 'icici',
       SBI: 'sbi',
       PNB: 'pnb',
-      AXIS: 'axis'
+      AXIS: 'axis',
     };
   }
 
@@ -66,8 +66,8 @@ class DataIntegrationService {
           totalDeductions: 0,
           totalTDS: 0,
           categoriesFound: new Set(),
-          dataSourcesConnected: new Set()
-        }
+          dataSourcesConnected: new Set(),
+        },
       };
 
       // 1. Bank Statement Integration
@@ -129,7 +129,7 @@ class DataIntegrationService {
         success: false,
         extractedData: {},
         transactions: [],
-        insights: {}
+        insights: {},
       };
 
       // Get connected bank accounts
@@ -148,7 +148,7 @@ class DataIntegrationService {
           const bankService = new BankAPIService(account.bankCode);
           const statementData = await bankService.fetchBankStatement(
             account.accountNumber,
-            assessmentYear
+            assessmentYear,
           );
 
           if (statementData.success) {
@@ -157,7 +157,7 @@ class DataIntegrationService {
             // Extract tax-relevant data
             const accountData = this.extractTaxRelevantDataFromTransactions(
               statementData.transactions,
-              this.integrationSources.BANK_STATEMENT
+              this.integrationSources.BANK_STATEMENT,
             );
 
             extractedData = this.mergeExtractedData(extractedData, accountData);
@@ -181,7 +181,7 @@ class DataIntegrationService {
       return {
         source: this.integrationSources.BANK_STATEMENT,
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -197,7 +197,7 @@ class DataIntegrationService {
         source: this.integrationSources.AIS_FORM26AS,
         success: false,
         extractedData: {},
-        taxDetails: {}
+        taxDetails: {},
       };
 
       // Authenticate with Income Tax Portal
@@ -211,7 +211,7 @@ class DataIntegrationService {
       const aisResponse = await apiClient.post('/integrations/ais/form26as', {
         userId,
         assessmentYear,
-        authToken: authResult.authToken
+        authToken: authResult.authToken,
       });
 
       if (aisResponse.success) {
@@ -222,7 +222,7 @@ class DataIntegrationService {
           [this.dataCategories.TDS_DEDUCTED]: this.processTDSEntries(aisData.tdsDetails || []),
           [this.dataCategories.TAX_PAID]: this.processTaxPaidEntries(aisData.taxPaid || []),
           [this.dataCategories.INCOME_INTEREST]: this.processInterestIncome(aisData.interestIncome || []),
-          [this.dataCategories.INCOME_OTHER]: this.processOtherIncome(aisData.otherIncome || [])
+          [this.dataCategories.INCOME_OTHER]: this.processOtherIncome(aisData.otherIncome || []),
         };
 
         result.extractedData = extractedData;
@@ -230,7 +230,7 @@ class DataIntegrationService {
           pan: aisData.pan,
           totalTDS: aisData.totalTDS,
           totalTaxPaid: aisData.totalTaxPaid,
-          totalRefund: aisData.totalRefund
+          totalRefund: aisData.totalRefund,
         };
         result.success = true;
 
@@ -244,7 +244,7 @@ class DataIntegrationService {
       return {
         source: this.integrationSources.AIS_FORM26AS,
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -261,7 +261,7 @@ class DataIntegrationService {
         success: false,
         extractedData: {},
         brokerData: {},
-        capitalGains: {}
+        capitalGains: {},
       };
 
       // Get connected broker accounts
@@ -280,7 +280,7 @@ class DataIntegrationService {
           const brokerService = new BrokerAPIService(account.brokerCode);
           const brokerData = await brokerService.fetchTransactionHistory(
             account.clientId,
-            assessmentYear
+            assessmentYear,
           );
 
           if (brokerData.success) {
@@ -290,7 +290,7 @@ class DataIntegrationService {
 
             // Extract relevant data
             const accountData = {
-              [this.dataCategories.INCOME_CAPITAL_GAINS]: capitalGains
+              [this.dataCategories.INCOME_CAPITAL_GAINS]: capitalGains,
             };
 
             extractedData = this.mergeExtractedData(extractedData, accountData);
@@ -314,7 +314,7 @@ class DataIntegrationService {
       return {
         source: this.integrationSources.BROKER_API,
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -330,7 +330,7 @@ class DataIntegrationService {
         source: this.integrationSources.FORM_16,
         success: false,
         extractedData: {},
-        employers: []
+        employers: [],
       };
 
       // Get uploaded Form 16 documents
@@ -367,7 +367,7 @@ class DataIntegrationService {
       return {
         source: this.integrationSources.FORM_16,
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -381,7 +381,7 @@ class DataIntegrationService {
       [this.dataCategories.INCOME_OTHER]: [],
       [this.dataCategories.DEDUCTIONS_HOUSING]: [],
       [this.dataCategories.DEDUCTIONS_80C]: [],
-      [this.dataCategories.TAX_PAID]: []
+      [this.dataCategories.TAX_PAID]: [],
     };
 
     for (const transaction of transactions) {
@@ -395,7 +395,7 @@ class DataIntegrationService {
             description: transaction.description,
             source: source,
             confidence: 0.9,
-            transactionId: transaction.id
+            transactionId: transaction.id,
           });
           break;
 
@@ -406,7 +406,7 @@ class DataIntegrationService {
             description: transaction.description,
             source: source,
             confidence: 0.85,
-            transactionId: transaction.id
+            transactionId: transaction.id,
           });
           break;
 
@@ -418,7 +418,7 @@ class DataIntegrationService {
             source: source,
             confidence: 0.8,
             transactionId: transaction.id,
-            subCategory: 'life_insurance'
+            subCategory: 'life_insurance',
           });
           break;
 
@@ -429,7 +429,7 @@ class DataIntegrationService {
             description: transaction.description,
             source: source,
             confidence: 0.95,
-            transactionId: transaction.id
+            transactionId: transaction.id,
           });
           break;
       }
@@ -511,7 +511,7 @@ class DataIntegrationService {
           quantity,
           price,
           date,
-          brokerCode
+          brokerCode,
         });
       } else if (type === 'SELL') {
         let remainingQuantity = quantity;
@@ -543,7 +543,7 @@ class DataIntegrationService {
             costBasis: totalCost,
             capitalGain,
             date,
-            brokerCode
+            brokerCode,
           });
         }
       }
@@ -580,16 +580,16 @@ class DataIntegrationService {
             label: 'Salary Income',
             suggestedValue: extractedData[this.dataCategories.INCOME_SALARY]?.reduce((sum, item) => sum + item.amount, 0) || 0,
             confidence: 0.95,
-            source: 'FORM_16'
+            source: 'FORM_16',
           },
           {
             field: 'income.otherInterest',
             label: 'Interest Income',
             suggestedValue: summary.totalIncome.interest || 0,
             confidence: 0.9,
-            source: 'BANK_STATEMENT'
-          }
-        ]
+            source: 'BANK_STATEMENT',
+          },
+        ],
       });
     }
 
@@ -604,16 +604,16 @@ class DataIntegrationService {
             label: 'Life Insurance Premium',
             suggestedValue: summary.totalDeductions.lifeInsurance || 0,
             confidence: 0.8,
-            source: 'BANK_STATEMENT'
+            source: 'BANK_STATEMENT',
           },
           {
             field: 'deductions.housing.rentPaid',
             label: 'Rent Paid',
             suggestedValue: summary.totalDeductions.rent || 0,
             confidence: 0.85,
-            source: 'BANK_STATEMENT'
-          }
-        ]
+            source: 'BANK_STATEMENT',
+          },
+        ],
       });
     }
 
@@ -628,16 +628,16 @@ class DataIntegrationService {
             label: 'TDS Deducted (Salary)',
             suggestedValue: summary.totalTDS.salary || 0,
             confidence: 0.95,
-            source: 'FORM_16'
+            source: 'FORM_16',
           },
           {
             field: 'taxDetails.tdsOther',
             label: 'TDS Deducted (Other)',
             suggestedValue: summary.totalTDS.other || 0,
             confidence: 0.9,
-            source: 'AIS_FORM26AS'
-          }
-        ]
+            source: 'AIS_FORM26AS',
+          },
+        ],
       });
     }
 
@@ -682,7 +682,7 @@ class DataIntegrationService {
     try {
       await apiClient.post('/data-integration/save-sync-results', {
         userId,
-        syncResults
+        syncResults,
       });
     } catch (error) {
       console.error('Error saving sync results:', error);
@@ -715,7 +715,7 @@ class DataIntegrationService {
   async getUserForm16Documents(userId, assessmentYear) {
     try {
       const response = await apiClient.get(`/users/${userId}/form16-documents`, {
-        params: { assessmentYear }
+        params: { assessmentYear },
       });
       return response.success ? response.data : [];
     } catch (error) {
@@ -732,14 +732,14 @@ class DataIntegrationService {
       deductorPAN: tds.deductorPAN,
       section: tds.section,
       source: this.integrationSources.AIS_FORM26AS,
-      confidence: 1.0
+      confidence: 1.0,
     }));
   }
 
   async authenticateIncomeTaxPortal(userId) {
     try {
       const response = await apiClient.post('/integrations/income-tax/authenticate', {
-        userId
+        userId,
       });
       return response.success ? response.data : { success: false };
     } catch (error) {

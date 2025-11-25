@@ -7,12 +7,12 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Server, 
-  Database, 
-  Cpu, 
-  HardDrive, 
-  Wifi, 
+import {
+  Server,
+  Database,
+  Cpu,
+  HardDrive,
+  Wifi,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -32,7 +32,7 @@ import {
   LineChart,
   Building2,
   Eye,
-  Download
+  Download,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -157,7 +157,7 @@ const PlatformSystemHealth = () => {
     { id: 'overview', name: 'Overview', icon: BarChart3 },
     { id: 'services', name: 'Services', icon: Server },
     { id: 'metrics', name: 'Metrics', icon: Activity },
-    { id: 'alerts', name: 'Alerts', icon: AlertTriangle }
+    { id: 'alerts', name: 'Alerts', icon: AlertTriangle },
   ];
 
   if (isLoading) {
@@ -183,7 +183,7 @@ const PlatformSystemHealth = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Platform System Health</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <label className="text-sm text-gray-600">Auto Refresh</label>
@@ -200,7 +200,7 @@ const PlatformSystemHealth = () => {
                   />
                 </button>
               </div>
-              
+
               <select
                 value={selectedTimeRange}
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
@@ -211,7 +211,7 @@ const PlatformSystemHealth = () => {
                 <option value="7d">Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>
               </select>
-              
+
               <button
                 onClick={() => refetch()}
                 className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -219,7 +219,7 @@ const PlatformSystemHealth = () => {
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
-              
+
               <button
                 onClick={() => navigate('/platform-admin/system/settings')}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -277,7 +277,7 @@ const PlatformSystemHealth = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Database className="h-8 w-8 text-green-600" />
@@ -294,7 +294,7 @@ const PlatformSystemHealth = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Wifi className="h-8 w-8 text-purple-600" />
@@ -311,7 +311,7 @@ const PlatformSystemHealth = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Shield className="h-8 w-8 text-red-600" />
@@ -341,13 +341,13 @@ const PlatformSystemHealth = () => {
                   {metrics.cpu?.usage || 0}%
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full" 
+                  <div
+                    className="bg-blue-600 h-2 rounded-full"
                     style={{ width: `${metrics.cpu?.usage || 0}%` }}
                   ></div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-medium text-gray-600">Memory Usage</h3>
@@ -357,13 +357,13 @@ const PlatformSystemHealth = () => {
                   {metrics.memory?.usage || 0}%
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-green-600 h-2 rounded-full" 
+                  <div
+                    className="bg-green-600 h-2 rounded-full"
                     style={{ width: `${metrics.memory?.usage || 0}%` }}
                   ></div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-medium text-gray-600">Disk Usage</h3>
@@ -373,13 +373,13 @@ const PlatformSystemHealth = () => {
                   {metrics.disk?.usage || 0}%
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-purple-600 h-2 rounded-full" 
+                  <div
+                    className="bg-purple-600 h-2 rounded-full"
                     style={{ width: `${metrics.disk?.usage || 0}%` }}
                   ></div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-medium text-gray-600">Network I/O</h3>
@@ -406,7 +406,7 @@ const PlatformSystemHealth = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <FileText className="h-8 w-8 text-green-600" />
@@ -416,7 +416,7 @@ const PlatformSystemHealth = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <DollarSign className="h-8 w-8 text-purple-600" />
@@ -426,7 +426,7 @@ const PlatformSystemHealth = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center">
                   <Activity className="h-8 w-8 text-orange-600" />
@@ -454,7 +454,7 @@ const PlatformSystemHealth = () => {
                   </button>
                 </div>
               </div>
-              
+
               {alerts.length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
@@ -497,7 +497,7 @@ const PlatformSystemHealth = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Services</h3>
-              
+
               {services.length === 0 ? (
                 <div className="text-center py-8">
                   <Server className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -523,7 +523,7 @@ const PlatformSystemHealth = () => {
                           <p className="text-sm text-gray-500">{service.type}</p>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Status</span>
@@ -535,17 +535,17 @@ const PlatformSystemHealth = () => {
                             {service.status}
                           </span>
                         </div>
-                        
+
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Uptime</span>
                           <span className="font-medium">{service.uptime || 'N/A'}</span>
                         </div>
-                        
+
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Version</span>
                           <span className="font-medium">{service.version || 'N/A'}</span>
                         </div>
-                        
+
                         {service.last_restart && (
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Last Restart</span>
@@ -574,7 +574,7 @@ const PlatformSystemHealth = () => {
                   <p className="text-gray-500">Performance chart visualization would be implemented here</p>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Resource Usage</h3>
                 <div className="text-center py-8">
@@ -583,7 +583,7 @@ const PlatformSystemHealth = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Platform Activity</h3>
               <div className="text-center py-8">
@@ -599,7 +599,7 @@ const PlatformSystemHealth = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">System Alerts</h3>
-              
+
               {alerts.length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />

@@ -8,18 +8,18 @@ const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
-const auditService = require('../services/AuditService');
+const auditService = require('../services/utils/AuditService');
 
 class MemberController {
   constructor() {
     this.maxMembersPerUser = 5; // Maximum family members per user
     enterpriseLogger.info('MemberController initialized');
-    
+
     // Bind methods to preserve 'this' context
-    if (this.getMembers) this.getMembers = this.getMembers.bind(this);
-    if (this.createMember) this.createMember = this.createMember.bind(this);
-    if (this.updateMember) this.updateMember = this.updateMember.bind(this);
-    if (this.deleteMember) this.deleteMember = this.deleteMember.bind(this);
+    if (this.getMembers) {this.getMembers = this.getMembers.bind(this);}
+    if (this.createMember) {this.createMember = this.createMember.bind(this);}
+    if (this.updateMember) {this.updateMember = this.updateMember.bind(this);}
+    if (this.deleteMember) {this.deleteMember = this.deleteMember.bind(this);}
   }
 
   // =====================================================
@@ -44,7 +44,7 @@ class MemberController {
           { firstName: { [Op.iLike]: `%${search}%` } },
           { lastName: { [Op.iLike]: `%${search}%` } },
           { panNumber: { [Op.iLike]: `%${search}%` } },
-          { relationship: { [Op.iLike]: `%${search}%` } }
+          { relationship: { [Op.iLike]: `%${search}%` } },
         ];
       }
 
@@ -53,8 +53,8 @@ class MemberController {
         order: [['createdAt', 'DESC']],
         attributes: [
           'id', 'userId', 'firstName', 'lastName', 'panNumber', 'relationship', 'dateOfBirth',
-          'gender', 'maritalStatus', 'phone', 'email', 'address', 'isActive', 'panVerified', 'createdAt', 'updatedAt'
-        ]
+          'gender', 'maritalStatus', 'phone', 'email', 'address', 'isActive', 'panVerified', 'createdAt', 'updatedAt',
+        ],
       });
 
       const memberList = members.map(member => ({
@@ -76,7 +76,7 @@ class MemberController {
         isActive: member.isActive,
         panVerified: member.panVerified,
         createdAt: member.createdAt,
-        updatedAt: member.updatedAt
+        updatedAt: member.updatedAt,
       }));
 
       enterpriseLogger.info('Members retrieved for user', { userId, count: memberList.length });
@@ -87,14 +87,14 @@ class MemberController {
         data: {
           members: memberList,
           count: memberList.length,
-          maxMembers: this.maxMembersPerUser
-        }
+          maxMembers: this.maxMembersPerUser,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get members', {
         error: error.message,
-        userId: req.user?.userId
+        userId: req.user?.userId,
       });
       next(error);
     }
@@ -109,12 +109,12 @@ class MemberController {
       const userId = req.user.userId;
       const { id } = req.params;
 
-      const member = await Member.findOne({
+      const member = await FamilyMember.findOne({
         where: { id, userId },
         attributes: [
           'id', 'userId', 'fullName', 'pan', 'relationship', 'dateOfBirth',
-          'gender', 'status', 'createdAt', 'updatedAt', 'metadata'
-        ]
+          'gender', 'status', 'createdAt', 'updatedAt', 'metadata',
+        ],
       });
 
       if (!member) {
@@ -124,7 +124,7 @@ class MemberController {
       // Get member statistics
       const [filingStats, documentStats] = await Promise.all([
         this.getMemberFilingStats(member.id),
-        this.getMemberDocumentStats(member.id)
+        this.getMemberDocumentStats(member.id),
       ]);
 
       const memberDetails = {
@@ -145,8 +145,8 @@ class MemberController {
         metadata: member.metadata,
         statistics: {
           filings: filingStats,
-          documents: documentStats
-        }
+          documents: documentStats,
+        },
       };
 
       enterpriseLogger.info('Member details retrieved', { userId, memberId: id });
@@ -154,14 +154,14 @@ class MemberController {
       res.status(200).json({
         success: true,
         message: 'Member details retrieved successfully',
-        data: memberDetails
+        data: memberDetails,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get member details', {
         error: error.message,
         userId: req.user?.userId,
-        memberId: req.params.id
+        memberId: req.params.id,
       });
       next(error);
     }
@@ -180,7 +180,7 @@ class MemberController {
         relationship,
         dateOfBirth,
         gender,
-        metadata = {}
+        metadata = {},
       } = req.body;
 
       // Validate required fields
@@ -189,14 +189,14 @@ class MemberController {
       }
 
       // Check member limit
-      const existingMembersCount = await Member.count({ where: { userId } });
+      const existingMembersCount = await FamilyMember.count({ where: { userId } });
       if (existingMembersCount >= this.maxMembersPerUser) {
         throw new AppError(`Maximum ${this.maxMembersPerUser} members allowed per user`, 400);
       }
 
       // Check if PAN already exists for this user
-      const existingMember = await Member.findOne({
-        where: { userId, pan }
+      const existingMember = await FamilyMember.findOne({
+        where: { userId, pan },
       });
       if (existingMember) {
         throw new AppError('Member with this PAN already exists', 400);
@@ -214,7 +214,7 @@ class MemberController {
       }
 
       // Create member
-      const member = await Member.create({
+      const member = await FamilyMember.create({
         userId,
         fullName,
         pan: pan.toUpperCase(),
@@ -222,7 +222,7 @@ class MemberController {
         dateOfBirth,
         gender,
         status: 'active',
-        metadata
+        metadata,
       });
 
       // Log audit event
@@ -234,16 +234,16 @@ class MemberController {
         {
           memberName: member.fullName,
           pan: member.pan,
-          relationship: member.relationship
+          relationship: member.relationship,
         },
-        req.ip
+        req.ip,
       );
 
       enterpriseLogger.info('Member created successfully', {
         userId,
         memberId: member.id,
         memberName: member.fullName,
-        pan: member.pan
+        pan: member.pan,
       });
 
       res.status(201).json({
@@ -263,15 +263,15 @@ class MemberController {
             status: member.status,
             statusLabel: this.getStatusLabel(member.status),
             createdAt: member.createdAt,
-            metadata: member.metadata
-          }
-        }
+            metadata: member.metadata,
+          },
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to create member', {
         error: error.message,
-        userId: req.user?.userId
+        userId: req.user?.userId,
       });
       next(error);
     }
@@ -292,11 +292,11 @@ class MemberController {
         dateOfBirth,
         gender,
         status,
-        metadata
+        metadata,
       } = req.body;
 
-      const member = await Member.findOne({
-        where: { id, userId }
+      const member = await FamilyMember.findOne({
+        where: { id, userId },
       });
 
       if (!member) {
@@ -361,15 +361,15 @@ class MemberController {
           memberName: member.fullName,
           updatedFields: Object.keys(updateData),
           oldValues,
-          newValues: updateData
+          newValues: updateData,
         },
-        req.ip
+        req.ip,
       );
 
       enterpriseLogger.info('Member updated successfully', {
         userId,
         memberId: member.id,
-        updatedFields: Object.keys(updateData)
+        updatedFields: Object.keys(updateData),
       });
 
       res.status(200).json({
@@ -389,16 +389,16 @@ class MemberController {
             status: member.status,
             statusLabel: this.getStatusLabel(member.status),
             updatedAt: member.updatedAt,
-            metadata: member.metadata
-          }
-        }
+            metadata: member.metadata,
+          },
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to update member', {
         error: error.message,
         userId: req.user?.userId,
-        memberId: req.params.id
+        memberId: req.params.id,
       });
       next(error);
     }
@@ -413,8 +413,8 @@ class MemberController {
       const userId = req.user.userId;
       const { id } = req.params;
 
-      const member = await Member.findOne({
-        where: { id, userId }
+      const member = await FamilyMember.findOne({
+        where: { id, userId },
       });
 
       if (!member) {
@@ -423,7 +423,7 @@ class MemberController {
 
       // Check if member has any active filings
       const activeFilings = await ITRFiling.count({
-        where: { userId, memberId: member.id, status: { [Op.in]: ['draft', 'submitted'] } }
+        where: { userId, memberId: member.id, status: { [Op.in]: ['draft', 'submitted'] } },
       });
 
       if (activeFilings > 0) {
@@ -442,27 +442,27 @@ class MemberController {
         {
           memberName: member.fullName,
           pan: member.pan,
-          relationship: member.relationship
+          relationship: member.relationship,
         },
-        req.ip
+        req.ip,
       );
 
       enterpriseLogger.info('Member deleted successfully', {
         userId,
         memberId: member.id,
-        memberName: member.fullName
+        memberName: member.fullName,
       });
 
       res.status(200).json({
         success: true,
-        message: 'Member deleted successfully'
+        message: 'Member deleted successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to delete member', {
         error: error.message,
         userId: req.user?.userId,
-        memberId: req.params.id
+        memberId: req.params.id,
       });
       next(error);
     }
@@ -483,8 +483,8 @@ class MemberController {
       const { status, itrType, page = 1, limit = 20 } = req.query;
 
       // Verify member belongs to user
-      const member = await Member.findOne({
-        where: { id: memberId, userId }
+      const member = await FamilyMember.findOne({
+        where: { id: memberId, userId },
       });
 
       if (!member) {
@@ -508,8 +508,8 @@ class MemberController {
         offset: parseInt(offset),
         attributes: [
           'id', 'itrType', 'assessmentYear', 'status', 'taxLiability',
-          'submittedAt', 'acknowledgedAt', 'createdAt', 'updatedAt'
-        ]
+          'submittedAt', 'acknowledgedAt', 'createdAt', 'updatedAt',
+        ],
       });
 
       const filingList = filings.map(filing => ({
@@ -523,13 +523,13 @@ class MemberController {
         submittedAt: filing.submittedAt,
         acknowledgedAt: filing.acknowledgedAt,
         createdAt: filing.createdAt,
-        updatedAt: filing.updatedAt
+        updatedAt: filing.updatedAt,
       }));
 
       enterpriseLogger.info('Member filings retrieved', {
         userId,
         memberId,
-        count: filingList.length
+        count: filingList.length,
       });
 
       res.status(200).json({
@@ -541,16 +541,16 @@ class MemberController {
             currentPage: parseInt(page),
             totalPages: Math.ceil(count / limit),
             totalItems: count,
-            itemsPerPage: parseInt(limit)
-          }
-        }
+            itemsPerPage: parseInt(limit),
+          },
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get member filings', {
         error: error.message,
         userId: req.user?.userId,
-        memberId: req.params.id
+        memberId: req.params.id,
       });
       next(error);
     }
@@ -567,8 +567,8 @@ class MemberController {
       const { category, status, page = 1, limit = 20 } = req.query;
 
       // Verify member belongs to user
-      const member = await Member.findOne({
-        where: { id: memberId, userId }
+      const member = await FamilyMember.findOne({
+        where: { id: memberId, userId },
       });
 
       if (!member) {
@@ -592,8 +592,8 @@ class MemberController {
         offset: parseInt(offset),
         attributes: [
           'id', 'category', 'filename', 'originalFilename', 'mimeType',
-          'sizeBytes', 'status', 'verified', 'createdAt', 'updatedAt'
-        ]
+          'sizeBytes', 'status', 'verified', 'createdAt', 'updatedAt',
+        ],
       });
 
       const documentList = documents.map(doc => ({
@@ -610,13 +610,13 @@ class MemberController {
         statusColor: this.getDocumentStatusColor(doc.status),
         verified: doc.verified,
         createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt
+        updatedAt: doc.updatedAt,
       }));
 
       enterpriseLogger.info('Member documents retrieved', {
         userId,
         memberId,
-        count: documentList.length
+        count: documentList.length,
       });
 
       res.status(200).json({
@@ -628,16 +628,16 @@ class MemberController {
             currentPage: parseInt(page),
             totalPages: Math.ceil(count / limit),
             totalItems: count,
-            itemsPerPage: parseInt(limit)
-          }
-        }
+            itemsPerPage: parseInt(limit),
+          },
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get member documents', {
         error: error.message,
         userId: req.user?.userId,
-        memberId: req.params.id
+        memberId: req.params.id,
       });
       next(error);
     }
@@ -657,16 +657,16 @@ class MemberController {
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalFilings'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'draft\' THEN 1 END')), 'draftFilings'],
         [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'submitted\' THEN 1 END')), 'submittedFilings'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'acknowledged\' THEN 1 END')), 'acknowledgedFilings']
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'acknowledged\' THEN 1 END')), 'acknowledgedFilings'],
       ],
-      raw: true
+      raw: true,
     });
 
     return {
       totalFilings: parseInt(stats[0]?.totalFilings) || 0,
       draftFilings: parseInt(stats[0]?.draftFilings) || 0,
       submittedFilings: parseInt(stats[0]?.submittedFilings) || 0,
-      acknowledgedFilings: parseInt(stats[0]?.acknowledgedFilings) || 0
+      acknowledgedFilings: parseInt(stats[0]?.acknowledgedFilings) || 0,
     };
   }
 
@@ -679,15 +679,15 @@ class MemberController {
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalDocuments'],
         [sequelize.fn('SUM', sequelize.col('size_bytes')), 'totalStorage'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'VERIFIED\' THEN 1 END')), 'verifiedDocuments']
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'VERIFIED\' THEN 1 END')), 'verifiedDocuments'],
       ],
-      raw: true
+      raw: true,
     });
 
     return {
       totalDocuments: parseInt(stats[0]?.totalDocuments) || 0,
       totalStorage: parseInt(stats[0]?.totalStorage) || 0,
-      verifiedDocuments: parseInt(stats[0]?.verifiedDocuments) || 0
+      verifiedDocuments: parseInt(stats[0]?.verifiedDocuments) || 0,
     };
   }
 
@@ -703,7 +703,7 @@ class MemberController {
    * Format file size
    */
   formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) {return '0 Bytes';}
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -719,7 +719,7 @@ class MemberController {
       'child': 'Child',
       'parent': 'Parent',
       'sibling': 'Sibling',
-      'other': 'Other'
+      'other': 'Other',
     };
     return labels[relationship] || 'Unknown';
   }
@@ -731,7 +731,7 @@ class MemberController {
     const labels = {
       'male': 'Male',
       'female': 'Female',
-      'other': 'Other'
+      'other': 'Other',
     };
     return labels[gender] || 'Unknown';
   }
@@ -742,7 +742,7 @@ class MemberController {
   getStatusLabel(status) {
     const labels = {
       'active': 'Active',
-      'inactive': 'Inactive'
+      'inactive': 'Inactive',
     };
     return labels[status] || 'Unknown';
   }
@@ -753,7 +753,7 @@ class MemberController {
   getStatusColor(status) {
     const colors = {
       'active': 'green',
-      'inactive': 'gray'
+      'inactive': 'gray',
     };
     return colors[status] || 'gray';
   }
@@ -767,7 +767,7 @@ class MemberController {
       'submitted': 'Submitted',
       'acknowledged': 'Acknowledged',
       'processed': 'Processed',
-      'rejected': 'Rejected'
+      'rejected': 'Rejected',
     };
     return labels[status] || 'Unknown';
   }
@@ -781,7 +781,7 @@ class MemberController {
       'submitted': 'blue',
       'acknowledged': 'green',
       'processed': 'green',
-      'rejected': 'red'
+      'rejected': 'red',
     };
     return colors[status] || 'gray';
   }
@@ -798,7 +798,7 @@ class MemberController {
       'OTHER': 'Other',
       'AADHAAR': 'Aadhaar',
       'PAN': 'PAN',
-      'SALARY_SLIP': 'Salary Slip'
+      'SALARY_SLIP': 'Salary Slip',
     };
     return labels[category] || 'Unknown';
   }
@@ -812,7 +812,7 @@ class MemberController {
       'SCANNING': 'Scanning',
       'VERIFIED': 'Verified',
       'FAILED': 'Failed',
-      'DELETED': 'Deleted'
+      'DELETED': 'Deleted',
     };
     return labels[status] || 'Unknown';
   }
@@ -826,7 +826,7 @@ class MemberController {
       'SCANNING': 'yellow',
       'VERIFIED': 'green',
       'FAILED': 'red',
-      'DELETED': 'gray'
+      'DELETED': 'gray',
     };
     return colors[status] || 'gray';
   }

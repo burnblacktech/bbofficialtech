@@ -31,7 +31,7 @@ const Button = React.forwardRef(({
     error: 'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500 shadow-md hover:shadow-lg',
     outline: 'border-2 border-primary-500 text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
     ghost: 'text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
-    link: 'text-primary-600 hover:text-primary-700 hover:underline focus:ring-primary-500 p-0'
+    link: 'text-primary-600 hover:text-primary-700 hover:underline focus:ring-primary-500 p-0',
   };
 
   const sizeClasses = {
@@ -39,7 +39,7 @@ const Button = React.forwardRef(({
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-4 py-2 text-base',
     lg: 'px-6 py-3 text-lg',
-    xl: 'px-8 py-4 text-xl'
+    xl: 'px-8 py-4 text-xl',
   };
 
   const disabledClasses = disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
@@ -72,7 +72,7 @@ const Button = React.forwardRef(({
         className={classes}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         onClick={onClick}
         disabled={disabled || loading}
         {...props}

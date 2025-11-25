@@ -14,7 +14,7 @@ export const DESIGN_TOKENS = {
   shadows: ANIMATIONS.shadows,
   borderRadius: ANIMATIONS.borderRadius,
   transitions: ANIMATIONS.transitions,
-  easings: ANIMATIONS.easings
+  easings: ANIMATIONS.easings,
 };
 
 export { COLORS, TYPOGRAPHY, SPACING, ANIMATIONS };

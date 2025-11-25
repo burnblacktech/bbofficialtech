@@ -12,7 +12,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
     turnover: data.turnover || '',
     presumptiveRate: data.presumptiveRate || '',
     presumptiveIncome: data.presumptiveIncome || '',
-    ...data
+    ...data,
   });
 
   const handleChange = (field, value) => {
@@ -36,7 +36,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Presumptive Income Details
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

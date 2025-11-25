@@ -6,11 +6,11 @@
 import React from 'react';
 import { CheckCircle, Circle, ArrowRight } from 'lucide-react';
 
-const ITRFilingStepper = ({ 
-  currentStep, 
-  steps, 
+const ITRFilingStepper = ({
+  currentStep,
+  steps,
   onStepClick,
-  progress = 0 
+  progress = 0,
 }) => {
   const getStepStatus = (stepIndex) => {
     if (stepIndex < currentStep) return 'completed';
@@ -29,8 +29,8 @@ const ITRFilingStepper = ({
   };
 
   const getStepClasses = (status) => {
-    const baseClasses = "flex items-center px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer";
-    
+    const baseClasses = 'flex items-center px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer';
+
     switch (status) {
       case 'completed':
         return `${baseClasses} bg-green-50 border border-green-200 hover:bg-green-100`;
@@ -61,7 +61,7 @@ const ITRFilingStepper = ({
           <span className="text-sm text-gray-600">{Math.round(progress)}% Complete</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
+          <div
             className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           ></div>
@@ -74,7 +74,7 @@ const ITRFilingStepper = ({
           const status = getStepStatus(index);
           const icon = getStepIcon(index, status);
           const isClickable = index <= currentStep || status === 'completed';
-          
+
           return (
             <div
               key={step.id}
@@ -85,7 +85,7 @@ const ITRFilingStepper = ({
               <div className="mr-4">
                 {icon}
               </div>
-              
+
               {/* Content */}
               <div className="flex-1">
                 <div className={getTextClasses(status)}>
@@ -97,7 +97,7 @@ const ITRFilingStepper = ({
                   </div>
                 )}
               </div>
-              
+
               {/* Arrow */}
               {index < steps.length - 1 && (
                 <ArrowRight className="w-4 h-4 text-gray-400" />
@@ -112,7 +112,7 @@ const ITRFilingStepper = ({
         <div className="mt-6 pt-6 border-t border-gray-200">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-              {steps[currentStep].icon && React.createElement(steps[currentStep].icon, { className: "w-4 h-4 text-blue-600" })}
+              {steps[currentStep].icon && React.createElement(steps[currentStep].icon, { className: 'w-4 h-4 text-blue-600' })}
             </div>
             <div>
               <p className="font-medium text-gray-900">

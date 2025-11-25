@@ -4,12 +4,12 @@
 
 import React from 'react';
 
-const StatusBadge = ({ 
-  status, 
-  color = 'gray', 
+const StatusBadge = ({
+  status,
+  color = 'gray',
   size = 'medium',
   className = '',
-  children 
+  children,
 }) => {
   const getStatusConfig = (status, color) => {
     const statusConfigs = {
@@ -19,39 +19,40 @@ const StatusBadge = ({
       processed: { label: 'Processed', color: 'green', icon: '✅' },
       rejected: { label: 'Rejected', color: 'red', icon: '❌' },
       pending: { label: 'Pending', color: 'yellow', icon: '⏳' },
+      // eslint-disable-next-line camelcase
       in_progress: { label: 'In Progress', color: 'blue', icon: '🔄' },
-      
+
       // Payment statuses
       paid: { label: 'Paid', color: 'green', icon: '💰' },
       unpaid: { label: 'Unpaid', color: 'red', icon: '💳' },
       partial: { label: 'Partial', color: 'yellow', icon: '💰' },
       failed: { label: 'Failed', color: 'red', icon: '❌' },
       refunded: { label: 'Refunded', color: 'purple', icon: '↩️' },
-      
+
       // User statuses
       active: { label: 'Active', color: 'green', icon: '✓' },
       inactive: { label: 'Inactive', color: 'gray', icon: '⏸️' },
       suspended: { label: 'Suspended', color: 'red', icon: '🚫' },
       verified: { label: 'Verified', color: 'green', icon: '✓' },
       unverified: { label: 'Unverified', color: 'yellow', icon: '⚠️' },
-      
+
       // Ticket statuses
       open: { label: 'Open', color: 'blue', icon: '📋' },
       closed: { label: 'Closed', color: 'gray', icon: '📋' },
       cancelled: { label: 'Cancelled', color: 'red', icon: '❌' },
-      
+
       // Priority levels
       low: { label: 'Low', color: 'gray', icon: '🔽' },
       medium: { label: 'Medium', color: 'yellow', icon: '🔼' },
       high: { label: 'High', color: 'orange', icon: '🔺' },
-      urgent: { label: 'Urgent', color: 'red', icon: '🚨' }
+      urgent: { label: 'Urgent', color: 'red', icon: '🚨' },
     };
 
     const config = statusConfigs[status];
     if (config) {
       return {
         ...config,
-        color: color || config.color
+        color: color || config.color,
       };
     }
 
@@ -59,16 +60,16 @@ const StatusBadge = ({
     return {
       label: status || 'Unknown',
       color: color || 'gray',
-      icon: '❓'
+      icon: '❓',
     };
   };
 
   const config = getStatusConfig(status, color);
-  
+
   const sizeClasses = {
     small: 'status-badge-small',
     medium: 'status-badge-medium',
-    large: 'status-badge-large'
+    large: 'status-badge-large',
   };
 
   const colorClasses = {
@@ -78,14 +79,14 @@ const StatusBadge = ({
     orange: 'status-badge-orange',
     red: 'status-badge-red',
     purple: 'status-badge-purple',
-    gray: 'status-badge-gray'
+    gray: 'status-badge-gray',
   };
 
   const badgeClasses = [
     'status-badge',
     sizeClasses[size],
     colorClasses[config.color],
-    className
+    className,
   ].filter(Boolean).join(' ');
 
   return (

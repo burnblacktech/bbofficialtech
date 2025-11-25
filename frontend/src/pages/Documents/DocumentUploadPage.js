@@ -12,11 +12,11 @@ import FileManager from '../Documents/FileManager';
 import { useDocumentContext } from '../../contexts/DocumentContext';
 import { enterpriseLogger } from '../../utils/logger';
 
-const DocumentUploadPage = ({ 
+const DocumentUploadPage = ({
   filingId = null,
   memberId = null,
   onDocumentsUploaded,
-  className = ''
+  className = '',
 }) => {
   const {
     documents,
@@ -41,7 +41,7 @@ const DocumentUploadPage = ({
     getStorageUsagePercentage,
     isStorageQuotaExceeded,
     getSuccessfulUploads,
-    getFailedUploads
+    getFailedUploads,
   } = useDocumentContext();
 
   const [activeTab, setActiveTab] = useState('upload');
@@ -62,7 +62,7 @@ const DocumentUploadPage = ({
   const handleUploadComplete = async (files) => {
     try {
       const results = await uploadFiles(files, selectedCategory, filingId, memberId);
-      
+
       // Call parent callback if provided
       if (onDocumentsUploaded) {
         const successfulUploads = results.filter(r => r.success);
@@ -71,12 +71,12 @@ const DocumentUploadPage = ({
 
       // Switch to manager tab to show results
       setActiveTab('manager');
-      
+
       enterpriseLogger.info('Files uploaded successfully', {
         count: files.length,
         category: selectedCategory,
         filingId,
-        memberId
+        memberId,
       });
 
     } catch (error) {
@@ -91,10 +91,10 @@ const DocumentUploadPage = ({
   const handleFileDelete = async (document) => {
     try {
       await deleteDocument(document.id);
-      
+
       enterpriseLogger.info('Document deleted', {
         documentId: document.id,
-        filename: document.originalFilename
+        filename: document.originalFilename,
       });
 
     } catch (error) {
@@ -139,9 +139,9 @@ const DocumentUploadPage = ({
     return 'Good';
   };
 
-  const relevantDocuments = filingId 
+  const relevantDocuments = filingId
     ? getDocumentsByFiling(filingId)
-    : memberId 
+    : memberId
     ? getDocumentsByMember(memberId)
     : getFilteredDocuments();
 
@@ -154,16 +154,16 @@ const DocumentUploadPage = ({
             <h2>Document Management</h2>
             <p>Upload and manage your tax documents</p>
           </div>
-          
+
           {stats && (
             <div className="storage-info">
               <div className="storage-bar">
-                <div 
+                <div
                   className="storage-fill"
-                  style={{ 
+                  style={{
                     width: `${getStorageUsagePercentage()}%`,
-                    backgroundColor: getStorageColor() === 'red' ? '#ef4444' : 
-                                   getStorageColor() === 'orange' ? '#f97316' : '#10b981'
+                    backgroundColor: getStorageColor() === 'red' ? '#ef4444' :
+                                   getStorageColor() === 'orange' ? '#f97316' : '#10b981',
                   }}
                 ></div>
               </div>
@@ -257,7 +257,7 @@ const DocumentUploadPage = ({
                 <span className="progress-percentage">{Math.round(uploadProgress)}%</span>
               </div>
               <div className="progress-bar">
-                <div 
+                <div
                   className="progress-fill"
                   style={{ width: `${uploadProgress}%` }}
                 ></div>
@@ -278,7 +278,7 @@ const DocumentUploadPage = ({
                   Clear
                 </Button>
               </div>
-              
+
               <div className="results-summary">
                 <div className="result-stat">
                   <span className="stat-icon">✅</span>

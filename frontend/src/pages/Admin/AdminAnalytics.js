@@ -7,24 +7,24 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
-import { 
-  ArrowLeft, 
-  BarChart3, 
-  PieChart, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  FileText, 
-  DollarSign, 
-  Calendar, 
-  Download, 
-  RefreshCw, 
+import {
+  ArrowLeft,
+  BarChart3,
+  PieChart,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  FileText,
+  DollarSign,
+  Calendar,
+  Download,
+  RefreshCw,
   Filter,
   Eye,
   Activity,
   Target,
   Zap,
-  Clock
+  Clock,
 } from 'lucide-react';
 
 const AdminAnalytics = () => {
@@ -42,7 +42,7 @@ const AdminAnalytics = () => {
     },
     enabled: !!user?.id,
     staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000 // Refetch every minute
+    refetchInterval: 60 * 1000, // Refetch every minute
   });
 
   const overview = analyticsData?.overview || {};
@@ -116,7 +116,7 @@ const AdminAnalytics = () => {
                 <p className="text-xs text-neutral-500">Platform Insights</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleRefresh}
@@ -261,7 +261,7 @@ const AdminAnalytics = () => {
                   <span className="text-xs text-neutral-500">Last {timeRange}</span>
                 </div>
               </div>
-              
+
               <div className="h-48 bg-neutral-50 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <BarChart3 className="h-12 w-12 text-neutral-300 mx-auto mb-2" />

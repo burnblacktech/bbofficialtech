@@ -8,15 +8,15 @@ import Card from '../common/Card';
 import Tooltip from '../common/Tooltip';
 import { enterpriseLogger } from '../../utils/logger';
 
-const TaxSummaryPanel = ({ 
-  incomeData = {}, 
-  deductionData = {}, 
+const TaxSummaryPanel = ({
+  incomeData = {},
+  deductionData = {},
   personalInfo = {},
-  onCompute, 
-  onNext, 
+  onCompute,
+  onNext,
   onPrevious,
   computation = null,
-  loading = false 
+  loading = false,
 }) => {
   const [taxComputation, setTaxComputation] = useState(computation);
   const [isComputing, setIsComputing] = useState(false);
@@ -29,17 +29,17 @@ const TaxSummaryPanel = ({
 
   const calculateGrossTotalIncome = () => {
     let total = 0;
-    
+
     // Salary income
     if (incomeData.salary?.totalSalary) {
       total += parseFloat(incomeData.salary.totalSalary) || 0;
     }
-    
+
     // House property income
     if (incomeData.houseProperty?.netRentalIncome) {
       total += parseFloat(incomeData.houseProperty.netRentalIncome) || 0;
     }
-    
+
     // Capital gains
     if (incomeData.capitalGains?.shortTerm) {
       total += parseFloat(incomeData.capitalGains.shortTerm) || 0;
@@ -47,58 +47,58 @@ const TaxSummaryPanel = ({
     if (incomeData.capitalGains?.longTerm) {
       total += parseFloat(incomeData.capitalGains.longTerm) || 0;
     }
-    
+
     // Business income
     if (incomeData.businessIncome?.netProfit) {
       total += parseFloat(incomeData.businessIncome.netProfit) || 0;
     }
-    
+
     // Other income
     Object.values(incomeData.otherIncome || {}).forEach(amount => {
       if (amount) {
         total += parseFloat(amount) || 0;
       }
     });
-    
+
     return total;
   };
 
   const calculateTotalDeductions = () => {
     let total = 0;
-    
+
     // Section 80C (max ₹1,50,000)
     const total80C = Math.min(
       Object.values(deductionData.section80C || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0),
-      150000
+      150000,
     );
     total += total80C;
-    
+
     // Section 80D (max ₹25,000)
     const total80D = Math.min(
       Object.values(deductionData.section80D || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0),
-      25000
+      25000,
     );
     total += total80D;
-    
+
     // Other deductions
     total += parseFloat(deductionData.section80E?.educationLoanInterest) || 0;
     total += parseFloat(deductionData.section80G?.donations) || 0;
     total += Math.min(parseFloat(deductionData.section80TTA?.savingsInterest) || 0, 10000);
     total += Math.min(parseFloat(deductionData.section80TTB?.bankInterest) || 0, 50000);
     total += Math.min(parseFloat(deductionData.section24?.homeLoanInterest) || 0, 200000);
-    
+
     // Other deductions
     total += parseFloat(deductionData.otherDeductions?.standardDeduction) || 0;
     total += parseFloat(deductionData.otherDeductions?.hra) || 0;
     total += parseFloat(deductionData.otherDeductions?.lta) || 0;
     total += parseFloat(deductionData.otherDeductions?.medicalReimbursement) || 0;
-    
+
     return total;
   };
 
   const calculateTax = (taxableIncome) => {
     let tax = 0;
-    
+
     if (taxableIncome <= 250000) {
       tax = 0;
     } else if (taxableIncome <= 500000) {
@@ -114,7 +114,7 @@ const TaxSummaryPanel = ({
     } else {
       tax = 187500 + (taxableIncome - 1500000) * 0.30;
     }
-    
+
     return tax;
   };
 
@@ -125,15 +125,15 @@ const TaxSummaryPanel = ({
   const computeTax = async () => {
     try {
       setIsComputing(true);
-      
+
       const grossTotalIncome = calculateGrossTotalIncome();
       const totalDeductions = calculateTotalDeductions();
       const taxableIncome = Math.max(0, grossTotalIncome - totalDeductions);
-      
+
       const tax = calculateTax(taxableIncome);
       const cess = calculateCess(tax);
       const totalTax = tax + cess;
-      
+
       const computation = {
         grossTotalIncome,
         totalDeductions,
@@ -149,23 +149,23 @@ const TaxSummaryPanel = ({
           { slab: '7,50,001 - 10,00,000', rate: '15%', amount: Math.min(taxableIncome - 750000, 250000) * 0.15 },
           { slab: '10,00,001 - 12,50,000', rate: '20%', amount: Math.min(taxableIncome - 1000000, 250000) * 0.20 },
           { slab: '12,50,001 - 15,00,000', rate: '25%', amount: Math.min(taxableIncome - 1250000, 250000) * 0.25 },
-          { slab: 'Above 15,00,000', rate: '30%', amount: Math.max(0, taxableIncome - 1500000) * 0.30 }
-        ].filter(slab => slab.amount > 0)
+          { slab: 'Above 15,00,000', rate: '30%', amount: Math.max(0, taxableIncome - 1500000) * 0.30 },
+        ].filter(slab => slab.amount > 0),
       };
-      
+
       setTaxComputation(computation);
-      
+
       if (onCompute) {
         onCompute(computation);
       }
-      
-      enterpriseLogger.info('Tax computation completed', { 
-        grossTotalIncome, 
-        totalDeductions, 
-        taxableIncome, 
-        totalTax 
+
+      enterpriseLogger.info('Tax computation completed', {
+        grossTotalIncome,
+        totalDeductions,
+        taxableIncome,
+        totalTax,
       });
-      
+
     } catch (error) {
       enterpriseLogger.error('Tax computation failed', { error: error.message });
     } finally {
@@ -255,7 +255,7 @@ const TaxSummaryPanel = ({
     return (
       <div className="tax-computation">
         <h3>Tax Computation</h3>
-        
+
         <div className="computation-summary">
           <div className="computation-item">
             <span>Gross Total Income:</span>
@@ -344,7 +344,7 @@ const TaxSummaryPanel = ({
           >
             Previous
           </Button>
-          
+
           <Button
             variant="primary"
             onClick={handleNext}

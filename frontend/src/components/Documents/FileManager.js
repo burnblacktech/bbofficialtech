@@ -11,11 +11,11 @@ import documentService from '../../services/documentService';
 import { enterpriseLogger } from '../../utils/logger';
 import toast from 'react-hot-toast';
 
-const FileManager = ({ 
+const FileManager = ({
   filingId = null,
   onFileSelect,
   onFileDelete,
-  className = ''
+  className = '',
 }) => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ const FileManager = ({
     { key: 'CAPITAL_GAINS', label: 'Capital Gains', icon: '💰' },
     { key: 'BUSINESS_INCOME', label: 'Business Income', icon: '🏢' },
     { key: 'HOUSE_PROPERTY', label: 'House Property', icon: '🏘️' },
-    { key: 'OTHER', label: 'Other', icon: '📎' }
+    { key: 'OTHER', label: 'Other', icon: '📎' },
   ];
 
   useEffect(() => {
@@ -44,19 +44,19 @@ const FileManager = ({
   const loadDocuments = async () => {
     try {
       setLoading(true);
-      
+
       const params = {
         filingId,
-        category: selectedCategory !== 'ALL' ? selectedCategory : undefined
+        category: selectedCategory !== 'ALL' ? selectedCategory : undefined,
       };
-      
+
       const response = await documentService.getUserDocuments(params);
       setDocuments(response.data || []);
-      
+
       enterpriseLogger.info('Documents loaded', {
         count: response.data?.length || 0,
         filingId,
-        category: selectedCategory
+        category: selectedCategory,
       });
     } catch (error) {
       enterpriseLogger.error('Failed to load documents', { error: error.message });
@@ -81,19 +81,19 @@ const FileManager = ({
     try {
       const response = await documentService.getDownloadUrl(document.id);
       const downloadUrl = response.data.downloadUrl;
-      
+
       // Open download URL in new tab
       window.open(downloadUrl, '_blank');
-      
+
       toast.success('Download started');
       enterpriseLogger.info('Document download initiated', {
         documentId: document.id,
-        filename: document.originalFilename
+        filename: document.originalFilename,
       });
     } catch (error) {
       enterpriseLogger.error('Failed to download document', {
         error: error.message,
-        documentId: document.id
+        documentId: document.id,
       });
       toast.error('Failed to download document');
     }
@@ -109,22 +109,22 @@ const FileManager = ({
 
     try {
       await documentService.deleteDocument(fileToDelete.id);
-      
+
       // Remove from local state
       setDocuments(prev => prev.filter(doc => doc.id !== fileToDelete.id));
-      
+
       // Call parent callback
       onFileDelete?.(fileToDelete);
 
       toast.success('Document deleted successfully');
       enterpriseLogger.info('Document deleted', {
         documentId: fileToDelete.id,
-        filename: fileToDelete.originalFilename
+        filename: fileToDelete.originalFilename,
       });
     } catch (error) {
       enterpriseLogger.error('Failed to delete document', {
         error: error.message,
-        documentId: fileToDelete.id
+        documentId: fileToDelete.id,
       });
       toast.error('Failed to delete document');
     } finally {
@@ -147,7 +147,7 @@ const FileManager = ({
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -157,7 +157,7 @@ const FileManager = ({
       'SCANNING': 'blue',
       'VERIFIED': 'green',
       'FAILED': 'red',
-      'QUARANTINED': 'red'
+      'QUARANTINED': 'red',
     };
     return statusColors[status] || 'gray';
   };
@@ -168,13 +168,13 @@ const FileManager = ({
       'SCANNING': 'Scanning',
       'VERIFIED': 'Verified',
       'FAILED': 'Failed',
-      'QUARANTINED': 'Quarantined'
+      'QUARANTINED': 'Quarantined',
     };
     return statusLabels[status] || 'Unknown';
   };
 
-  const filteredDocuments = documents.filter(doc => 
-    selectedCategory === 'ALL' || doc.category === selectedCategory
+  const filteredDocuments = documents.filter(doc =>
+    selectedCategory === 'ALL' || doc.category === selectedCategory,
   );
 
   if (loading) {
@@ -264,7 +264,7 @@ const FileManager = ({
             <div className="empty-icon">📁</div>
             <h3>No Documents Found</h3>
             <p>
-              {selectedCategory === 'ALL' 
+              {selectedCategory === 'ALL'
                 ? 'Upload your first document to get started'
                 : `No ${categories.find(c => c.key === selectedCategory)?.label.toLowerCase()} documents found`
               }

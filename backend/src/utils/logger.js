@@ -15,7 +15,7 @@ const logFormat = winston.format.combine(
   winston.format.json(),
   winston.format.printf(({ timestamp, level, message, service, ...meta }) => {
     return `${timestamp} [${level}] ${message} ${Object.keys(meta).length ? JSON.stringify(meta) : ''}`;
-  })
+  }),
 );
 
 // Create logger instance
@@ -28,38 +28,38 @@ const enterpriseLogger = winston.createLogger({
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.simple()
-      )
+        winston.format.simple(),
+      ),
     }),
-    
+
     // File transports
     new winston.transports.File({
       filename: path.join(logsDir, 'error.log'),
       level: 'error',
       maxsize: 5242880, // 5MB
-      maxFiles: 5
+      maxFiles: 5,
     }),
-    
+
     new winston.transports.File({
       filename: path.join(logsDir, 'combined.log'),
       maxsize: 5242880, // 5MB
-      maxFiles: 5
-    })
+      maxFiles: 5,
+    }),
   ],
-  
+
   // Handle uncaught exceptions
   exceptionHandlers: [
     new winston.transports.File({
-      filename: path.join(logsDir, 'exceptions.log')
-    })
+      filename: path.join(logsDir, 'exceptions.log'),
+    }),
   ],
-  
+
   // Handle unhandled rejections
   rejectionHandlers: [
     new winston.transports.File({
-      filename: path.join(logsDir, 'rejections.log')
-    })
-  ]
+      filename: path.join(logsDir, 'rejections.log'),
+    }),
+  ],
 });
 
 // Add request logging method
@@ -71,9 +71,9 @@ enterpriseLogger.logRequest = (req, res, responseTime) => {
     responseTime: `${responseTime}ms`,
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    userId: req.user?.id
+    userId: req.user?.id,
   };
-  
+
   if (res.statusCode >= 400) {
     enterpriseLogger.warn('HTTP Request', logData);
   } else {
@@ -86,7 +86,7 @@ enterpriseLogger.logSecurityEvent = (event, details) => {
   enterpriseLogger.warn('Security Event', {
     event,
     ...details,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 };
 
@@ -95,7 +95,7 @@ enterpriseLogger.logAudit = (action, details) => {
   enterpriseLogger.info('Audit Event', {
     action,
     ...details,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 };
 

@@ -2,16 +2,16 @@
 // SSE NOTIFICATION SERVICE
 // =====================================================
 
-const enterpriseLogger = require('../utils/logger');
-const featureFlags = require('../common/featureFlags');
+const enterpriseLogger = require('../../utils/logger');
+const featureFlags = require('../../common/featureFlags');
 
 class SSENotificationService {
   constructor() {
     this.clients = new Map(); // userId -> Set of response objects
     this.isEnabled = featureFlags.isEnabled('feature_sse_notifications_enabled');
-    
+
     enterpriseLogger.info('SSENotificationService initialized', {
-      enabled: this.isEnabled
+      enabled: this.isEnabled,
     });
   }
 
@@ -33,14 +33,14 @@ class SSENotificationService {
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Cache-Control'
+        'Access-Control-Allow-Headers': 'Cache-Control',
       });
 
       // Send initial connection message
       this.sendToClient(res, 'connected', {
         message: 'SSE connection established',
         timestamp: new Date().toISOString(),
-        userId
+        userId,
       });
 
       // Store client connection
@@ -77,7 +77,7 @@ class SSENotificationService {
     try {
       if (this.clients.has(userId)) {
         this.clients.get(userId).delete(res);
-        
+
         // Clean up empty user sets
         if (this.clients.get(userId).size === 0) {
           this.clients.delete(userId);
@@ -115,7 +115,7 @@ class SSENotificationService {
         type,
         data,
         timestamp: new Date().toISOString(),
-        userId
+        userId,
       };
 
       let sentCount = 0;
@@ -133,14 +133,14 @@ class SSENotificationService {
         userId,
         type,
         sentCount,
-        totalClients: userClients.size
+        totalClients: userClients.size,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to send SSE notification to user', {
         userId,
         type,
-        error: error.message
+        error: error.message,
       });
     }
   }
@@ -174,7 +174,7 @@ class SSENotificationService {
         type,
         data,
         timestamp: new Date().toISOString(),
-        broadcast: true
+        broadcast: true,
       };
 
       let sentCount = 0;
@@ -217,12 +217,8 @@ class SSENotificationService {
    * @param {object} data - Data to send
    */
   sendToClient(res, event, data) {
-    try {
-      const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
-      res.write(message);
-    } catch (error) {
-      throw error;
-    }
+    const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+    res.write(message);
   }
 
   /**
@@ -262,7 +258,7 @@ class SSENotificationService {
       enabled: this.isEnabled,
       connectedUsers: this.getConnectedUsersCount(),
       totalClients: this.getTotalClients(),
-      clients: Array.from(this.clients.keys())
+      clients: Array.from(this.clients.keys()),
     };
   }
 
@@ -278,7 +274,7 @@ class SSENotificationService {
       oldStatus: filingData.oldStatus,
       newStatus: filingData.newStatus,
       message: `Your ${filingData.itrType} filing status has been updated to ${filingData.newStatus}`,
-      filingData
+      filingData,
     });
   }
 
@@ -294,7 +290,7 @@ class SSENotificationService {
       oldStatus: ticketData.oldStatus,
       newStatus: ticketData.newStatus,
       message: `Your ticket ${ticketData.ticketNumber} has been updated`,
-      ticketData
+      ticketData,
     });
   }
 
@@ -309,7 +305,7 @@ class SSENotificationService {
       filename: documentData.filename,
       verificationStatus: documentData.verificationStatus,
       message: `Your document ${documentData.filename} verification status: ${documentData.verificationStatus}`,
-      documentData
+      documentData,
     });
   }
 
@@ -323,7 +319,7 @@ class SSENotificationService {
       startTime: maintenanceData.startTime,
       endTime: maintenanceData.endTime,
       description: maintenanceData.description,
-      maintenanceData
+      maintenanceData,
     });
   }
 
@@ -338,7 +334,7 @@ class SSENotificationService {
       amount: paymentData.amount,
       status: paymentData.status,
       message: `Payment ${paymentData.status}: ₹${paymentData.amount}`,
-      paymentData
+      paymentData,
     });
   }
 
@@ -351,7 +347,7 @@ class SSENotificationService {
     this.sendToUser(userId, 'mfa_notification', {
       action: mfaData.action,
       message: `MFA ${mfaData.action}: ${mfaData.message}`,
-      mfaData
+      mfaData,
     });
   }
 
@@ -364,7 +360,7 @@ class SSENotificationService {
     this.sendToUser(userId, 'admin_notification', {
       action: adminData.action,
       message: `Admin action: ${adminData.message}`,
-      adminData
+      adminData,
     });
   }
 
@@ -379,7 +375,7 @@ class SSENotificationService {
     this.sendToUser(userId, 'general_notification', {
       title,
       message,
-      data
+      data,
     });
   }
 
@@ -402,7 +398,7 @@ class SSENotificationService {
 
       enterpriseLogger.info('SSE cleanup completed', {
         connectedUsers: this.getConnectedUsersCount(),
-        totalClients: this.getTotalClients()
+        totalClients: this.getTotalClients(),
       });
 
     } catch (error) {

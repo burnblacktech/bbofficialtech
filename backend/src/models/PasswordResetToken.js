@@ -10,62 +10,62 @@ const PasswordResetToken = sequelize.define('PasswordResetToken', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
   userId: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: 'users',
-      key: 'id'
+      key: 'id',
     },
-    field: 'user_id'
+    field: 'user_id',
   },
   token: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: true,
   },
   tokenHash: {
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'token_hash'
+    field: 'token_hash',
   },
   expiresAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'expires_at'
+    field: 'expires_at',
   },
   used: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-    allowNull: false
+    allowNull: false,
   },
   usedAt: {
     type: DataTypes.DATE,
     allowNull: true,
-    field: 'used_at'
+    field: 'used_at',
   },
   ipAddress: {
     type: DataTypes.STRING,
     allowNull: true,
-    field: 'ip_address'
+    field: 'ip_address',
   },
   userAgent: {
     type: DataTypes.TEXT,
     allowNull: true,
-    field: 'user_agent'
+    field: 'user_agent',
   },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'created_at'
+    field: 'created_at',
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updated_at'
-  }
+    field: 'updated_at',
+  },
 }, {
   tableName: 'password_reset_tokens',
   timestamps: true,
@@ -73,18 +73,18 @@ const PasswordResetToken = sequelize.define('PasswordResetToken', {
   indexes: [
     {
       unique: true,
-      fields: ['token']
+      fields: ['token'],
     },
     {
-      fields: ['user_id']
+      fields: ['user_id'],
     },
     {
-      fields: ['expires_at']
+      fields: ['expires_at'],
     },
     {
-      fields: ['used']
-    }
-  ]
+      fields: ['used'],
+    },
+  ],
 });
 
 // Class methods
@@ -92,19 +92,19 @@ PasswordResetToken.createResetToken = async function(userId, token, expiresAt, i
   try {
     const bcrypt = require('bcryptjs');
     const tokenHash = await bcrypt.hash(token, 12);
-    
+
     return await PasswordResetToken.create({
       userId,
       token,
       tokenHash,
       expiresAt,
       ipAddress,
-      userAgent
+      userAgent,
     });
   } catch (error) {
     enterpriseLogger.error('Create reset token error', {
       userId,
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -117,9 +117,9 @@ PasswordResetToken.validateToken = async function(token) {
         token,
         used: false,
         expiresAt: {
-          [sequelize.Sequelize.Op.gt]: new Date()
-        }
-      }
+          [sequelize.Sequelize.Op.gt]: new Date(),
+        },
+      },
     });
 
     if (!resetToken) {
@@ -129,7 +129,7 @@ PasswordResetToken.validateToken = async function(token) {
     return { valid: true, token: resetToken };
   } catch (error) {
     enterpriseLogger.error('Validate reset token error', {
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -138,17 +138,17 @@ PasswordResetToken.validateToken = async function(token) {
 PasswordResetToken.markAsUsed = async function(token) {
   try {
     return await PasswordResetToken.update(
-      { 
-        used: true, 
-        usedAt: new Date() 
+      {
+        used: true,
+        usedAt: new Date(),
       },
       {
-        where: { token }
-      }
+        where: { token },
+      },
     );
   } catch (error) {
     enterpriseLogger.error('Mark reset token as used error', {
-      error: error.message
+      error: error.message,
     });
     throw error;
   }
@@ -159,13 +159,13 @@ PasswordResetToken.cleanupExpiredTokens = async function() {
     return await PasswordResetToken.destroy({
       where: {
         expiresAt: {
-          [sequelize.Sequelize.Op.lt]: new Date()
-        }
-      }
+          [sequelize.Sequelize.Op.lt]: new Date(),
+        },
+      },
     });
   } catch (error) {
     enterpriseLogger.error('Cleanup expired reset tokens error', {
-      error: error.message
+      error: error.message,
     });
     throw error;
   }

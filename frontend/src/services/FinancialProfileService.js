@@ -17,7 +17,7 @@ class FinancialProfileService {
       DEDUCTION_PROFILE: 'deduction_profile',
       TAX_HISTORY: 'tax_history',
       FINANCIAL_GOALS: 'financial_goals',
-      RISK_PROFILE: 'risk_profile'
+      RISK_PROFILE: 'risk_profile',
     };
 
     this.incomeTypes = {
@@ -28,7 +28,7 @@ class FinancialProfileService {
       INTEREST: 'interest',
       DIVIDEND: 'dividend',
       RENTAL: 'rental',
-      OTHER: 'other'
+      OTHER: 'other',
     };
 
     this.investmentTypes = {
@@ -40,7 +40,7 @@ class FinancialProfileService {
       FIXED_DEPOSITS: 'fixed_deposits',
       PPF: 'ppf',
       EPF: 'epf',
-      NPS: 'nps'
+      NPS: 'nps',
     };
   }
 
@@ -69,8 +69,8 @@ class FinancialProfileService {
           address: profileData.address,
           contact: {
             email: profileData.email,
-            phone: profileData.phone
-          }
+            phone: profileData.phone,
+          },
         },
 
         // Employment Information
@@ -80,7 +80,7 @@ class FinancialProfileService {
           employmentStatus: profileData.employmentStatus,
           workLocation: profileData.workLocation,
           hasForm16: profileData.hasForm16,
-          additionalEmployers: profileData.additionalEmployers || []
+          additionalEmployers: profileData.additionalEmployers || [],
         },
 
         // Income Profile
@@ -88,7 +88,7 @@ class FinancialProfileService {
           currentYearEstimate: profileData.incomeEstimate || {},
           previousYearsIncome: profileData.previousYearsIncome || [],
           incomeStreams: this.analyzeIncomeStreams(profileData),
-          projectedIncome: this.projectIncomeGrowth(profileData)
+          projectedIncome: this.projectIncomeGrowth(profileData),
         },
 
         // Investment Profile
@@ -97,14 +97,14 @@ class FinancialProfileService {
           investmentGoals: profileData.investmentGoals || [],
           riskTolerance: profileData.riskTolerance || 'moderate',
           investmentHorizon: profileData.investmentHorizon || 'medium',
-          monthlyInvestmentCapacity: profileData.monthlyInvestmentCapacity || 0
+          monthlyInvestmentCapacity: profileData.monthlyInvestmentCapacity || 0,
         },
 
         // Deduction Profile
         deductionProfile: {
           availableDeductions: await this.analyzeAvailableDeductions(profileData),
           claimedDeductions: profileData.claimedDeductions || {},
-          optimizationOpportunities: []
+          optimizationOpportunities: [],
         },
 
         // Tax History
@@ -113,7 +113,7 @@ class FinancialProfileService {
           filingHistory: this.analyzeFilingHistory(profileData.previousReturns || []),
           complianceStatus: 'compliant',
           outstandingTaxes: 0,
-          refundsPending: 0
+          refundsPending: 0,
         },
 
         // Financial Goals
@@ -121,7 +121,7 @@ class FinancialProfileService {
           shortTerm: profileData.shortTermGoals || [],
           mediumTerm: profileData.mediumTermGoals || [],
           longTerm: profileData.longTermGoals || [],
-          taxOptimizationGoals: this.generateTaxOptimizationGoals(profileData)
+          taxOptimizationGoals: this.generateTaxOptimizationGoals(profileData),
         },
 
         // Risk Profile
@@ -129,8 +129,8 @@ class FinancialProfileService {
           investmentRisk: profileData.investmentRisk || 'moderate',
           taxRisk: profileData.taxRisk || 'conservative',
           liquidityNeeds: profileData.liquidityNeeds || 'medium',
-          insuranceCoverage: profileData.insuranceCoverage || {}
-        }
+          insuranceCoverage: profileData.insuranceCoverage || {},
+        },
       };
 
       // Save profile to backend
@@ -165,7 +165,7 @@ class FinancialProfileService {
       const updatedProfile = {
         ...currentProfile.profile,
         lastUpdated: new Date().toISOString(),
-        ...updates
+        ...updates,
       };
 
       // Re-analyze affected sections
@@ -245,20 +245,20 @@ class FinancialProfileService {
       // Generate optimization opportunities
       const optimizationOpportunities = await this.identifyOptimizationOpportunities(
         profile.profile,
-        projectedTax
+        projectedTax,
       );
 
       // Create monthly action plan
       const monthlyActionPlan = this.createMonthlyActionPlan(
         optimizationOpportunities,
-        planningHorizon
+        planningHorizon,
       );
 
       // Generate tax-saving recommendations
       const taxSavingRecommendations = await taxSavingsService.generateRecommendations(
         currentIncome,
         currentDeductions,
-        profile.profile.riskProfile
+        profile.profile.riskProfile,
       );
 
       const taxPlan = {
@@ -278,8 +278,8 @@ class FinancialProfileService {
         keyMetrics: {
           effectiveTaxRate: (projectedTax.total / currentIncome.total) * 100,
           deductionUtilization: this.calculateDeductionUtilization(currentDeductions),
-          optimizationPotential: this.calculateOptimizationPotential(optimizationOpportunities)
-        }
+          optimizationPotential: this.calculateOptimizationPotential(optimizationOpportunities),
+        },
       };
 
       // Save tax plan
@@ -316,20 +316,20 @@ class FinancialProfileService {
       const optimizationOpportunities = this.identifyPortfolioOptimizations(
         portfolioAnalysis,
         riskTolerance,
-        constraints
+        constraints,
       );
 
       // Generate rebalancing recommendations
       const rebalancingRecommendations = this.generateRebalancingRecommendations(
         currentPortfolio,
         optimizationOpportunities,
-        riskTolerance
+        riskTolerance,
       );
 
       // Calculate tax implications of rebalancing
       const taxImplications = await this.calculateRebalancingTaxImplications(
         currentPortfolio,
-        rebalancingRecommendations
+        rebalancingRecommendations,
       );
 
       const optimizationPlan = {
@@ -341,9 +341,9 @@ class FinancialProfileService {
         taxImplications,
         expectedBenefits: this.calculateOptimizationBenefits(
           portfolioAnalysis,
-          rebalancingRecommendations
+          rebalancingRecommendations,
         ),
-        implementationTimeline: this.createImplementationTimeline(rebalancingRecommendations)
+        implementationTimeline: this.createImplementationTimeline(rebalancingRecommendations),
       };
 
       console.log('✅ Portfolio optimization completed');
@@ -379,27 +379,27 @@ class FinancialProfileService {
         section80C: await this.generateSection80CRecommendations(
           remainingCapacity.section80C,
           riskProfile,
-          investmentProfile
+          investmentProfile,
         ),
         section80D: await this.generateSection80DRecommendations(
           remainingCapacity.section80D,
-          profile.profile.personalInfo
+          profile.profile.personalInfo,
         ),
         section80E: await this.generateSection80ERecommendations(
           remainingCapacity.section80E,
-          profile.profile.educationLoans || []
+          profile.profile.educationLoans || [],
         ),
         housingDeductions: await this.generateHousingDeductions(
           remainingCapacity.housing,
-          profile.profile.personalInfo.residentialStatus
-        )
+          profile.profile.personalInfo.residentialStatus,
+        ),
       };
 
       // Prioritize recommendations based on user profile
       const prioritizedRecommendations = this.prioritizeInvestmentRecommendations(
         recommendations,
         profile.profile,
-        availableAmount
+        availableAmount,
       );
 
       // Calculate expected tax savings
@@ -409,12 +409,12 @@ class FinancialProfileService {
         userId,
         generatedAt: new Date().toISOString(),
         recommendations: prioritizedRecommendations,
-        expectedTaxSavings,
+        expectedTaxSavings: expectedSavings,
         totalInvestmentRequired: prioritizedRecommendations.reduce(
-          (sum, rec) => sum + rec.investmentAmount, 0
+          (sum, rec) => sum + rec.investmentAmount, 0,
         ),
         implementationSchedule: this.createInvestmentSchedule(prioritizedRecommendations),
-        riskAnalysis: this.analyzeInvestmentRisks(prioritizedRecommendations, riskProfile)
+        riskAnalysis: this.analyzeInvestmentRisks(prioritizedRecommendations, riskProfile),
       };
 
       console.log('✅ Tax-saving investment recommendations generated');
@@ -446,19 +446,19 @@ class FinancialProfileService {
 
       // Compare current vs target allocation
       const allocationAnalysis = this.analyzeAssetAllocation(
-        profile.profile.investmentProfile.currentPortfolio
+        profile.profile.investmentProfile.currentPortfolio,
       );
 
       // Performance review
       const performanceReview = await this.reviewInvestmentPerformance(
         profile.profile.investmentProfile.currentPortfolio,
-        lastReview
+        lastReview,
       );
 
       // Tax optimization review
       const taxOptimizationReview = await this.reviewTaxOptimization(
         profile.profile,
-        syncResults
+        syncResults,
       );
 
       // Generate action items
@@ -466,7 +466,7 @@ class FinancialProfileService {
         allocationAnalysis,
         performanceReview,
         taxOptimizationReview,
-        syncResults
+        syncResults,
       });
 
       const reviewResults = {
@@ -478,13 +478,13 @@ class FinancialProfileService {
         performanceReview,
         taxOptimizationReview,
         actionItems,
-        nextReviewDate: this.calculateNextReviewDate()
+        nextReviewDate: this.calculateNextReviewDate(),
       };
 
       // Update profile with review results
       await this.updateFinancialProfile(userId, {
         lastReview: reviewDate,
-        lastReviewResults: reviewResults
+        lastReviewResults: reviewResults,
       });
 
       console.log('✅ Periodic review completed');
@@ -509,7 +509,7 @@ class FinancialProfileService {
         frequency: 'monthly',
         stability: 'high',
         growth: 'moderate',
-        taxable: true
+        taxable: true,
       });
     }
 
@@ -531,7 +531,7 @@ class FinancialProfileService {
       nextYear: currentIncome.total * (1 + avgGrowthRate),
       threeYears: currentIncome.total * Math.pow(1 + avgGrowthRate, 3),
       fiveYears: currentIncome.total * Math.pow(1 + avgGrowthRate, 5),
-      assumptions: 'Based on historical growth rate of ' + (avgGrowthRate * 100).toFixed(1) + '%'
+      assumptions: 'Based on historical growth rate of ' + (avgGrowthRate * 100).toFixed(1) + '%',
     };
   }
 
@@ -540,13 +540,13 @@ class FinancialProfileService {
       section80C: {
         limit: 150000,
         claimed: profile.deductionProfile?.claimedDeductions?.section80C || 0,
-        available: 150000 - (profile.deductionProfile?.claimedDeductions?.section80C || 0)
+        available: 150000 - (profile.deductionProfile?.claimedDeductions?.section80C || 0),
       },
       section80D: {
         limit: 25000, // Standard limit for self
         claimed: profile.deductionProfile?.claimedDeductions?.section80D || 0,
-        available: 25000 - (profile.deductionProfile?.claimedDeductions?.section80D || 0)
-      }
+        available: 25000 - (profile.deductionProfile?.claimedDeductions?.section80D || 0),
+      },
     };
 
     return deductions;
@@ -558,20 +558,20 @@ class FinancialProfileService {
         goal: 'Minimize tax liability through legal deductions',
         priority: 'high',
         target: 'Utilize all available deduction limits',
-        timeframe: 'current fiscal year'
+        timeframe: 'current fiscal year',
       },
       {
         goal: 'Optimize investment portfolio for tax efficiency',
         priority: 'medium',
         target: 'Maximize post-tax returns',
-        timeframe: 'ongoing'
+        timeframe: 'ongoing',
       },
       {
         goal: 'Maintain tax compliance',
         priority: 'high',
         target: '100% timely filing and payment',
-        timeframe: 'ongoing'
-      }
+        timeframe: 'ongoing',
+      },
     ];
   }
 
@@ -581,7 +581,7 @@ class FinancialProfileService {
         filingFrequency: 'first-time',
         onTimePercentage: 100,
         averageRefundTime: 0,
-        complianceScore: 100
+        complianceScore: 100,
       };
     }
 
@@ -595,7 +595,7 @@ class FinancialProfileService {
       filingFrequency: previousReturns.length,
       onTimePercentage: (onTimeFilings / previousReturns.length) * 100,
       averageRefundTime,
-      complianceScore: Math.min(100, (onTimeFilings / previousReturns.length) * 100)
+      complianceScore: Math.min(100, (onTimeFilings / previousReturns.length) * 100),
     };
   }
 
@@ -607,8 +607,8 @@ class FinancialProfileService {
       economicIndicators: {
         inflation: 'moderate',
         interestRates: 'rising',
-        marketGrowth: 'positive'
-      }
+        marketGrowth: 'positive',
+      },
     };
   }
 
@@ -622,7 +622,7 @@ class FinancialProfileService {
         priority: 'high',
         title: 'Start Systematic Investment Plan (SIP)',
         description: 'Begin with small monthly investments for long-term wealth creation',
-        action: 'Start SIP with ₹1000-5000 monthly'
+        action: 'Start SIP with ₹1000-5000 monthly',
       });
     }
 
@@ -632,7 +632,7 @@ class FinancialProfileService {
         priority: 'high',
         title: 'Maximize Section 80C Deductions',
         description: `You have ₹${profile.deductionProfile.availableDeductions.section80C.available.toLocaleString()} remaining in 80C limit`,
-        action: 'Consider ELSS, PPF, or tax-saving fixed deposits'
+        action: 'Consider ELSS, PPF, or tax-saving fixed deposits',
       });
     }
 
@@ -661,7 +661,7 @@ class FinancialProfileService {
       section80C: Math.max(0, 150000 - (claimedDeductions?.section80C || 0)),
       section80D: Math.max(0, 25000 - (claimedDeductions?.section80D || 0)),
       section80E: Math.max(0, 150000 - (claimedDeductions?.section80E || 0)),
-      housing: Math.max(0, 200000 - (claimedDeductions?.housing || 0))
+      housing: Math.max(0, 200000 - (claimedDeductions?.housing || 0)),
     };
   }
 

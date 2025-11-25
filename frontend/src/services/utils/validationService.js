@@ -60,8 +60,8 @@ class ValidationService {
         hasUpperCase ? null : 'Password must contain at least one uppercase letter',
         hasLowerCase ? null : 'Password must contain at least one lowercase letter',
         hasNumbers ? null : 'Password must contain at least one number',
-        hasSpecialChar ? null : 'Password must contain at least one special character'
-      ].filter(error => error !== null)
+        hasSpecialChar ? null : 'Password must contain at least one special character',
+      ].filter(error => error !== null),
     };
   }
 
@@ -106,12 +106,13 @@ class ValidationService {
         }
         break;
 
-      case 'password':
+      case 'password': {
         const passwordResult = this.validatePassword(value);
         if (!passwordResult.isValid) {
           errors.push(...passwordResult.errors);
         }
         break;
+      }
 
       case 'numeric':
         if (!this.validateNumeric(value, rules.allowDecimal)) {
@@ -146,7 +147,7 @@ class ValidationService {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -170,7 +171,7 @@ class ValidationService {
       results,
       errors: Object.entries(results)
         .filter(([, result]) => !result.isValid)
-        .flatMap(([field, result]) => result.errors)
+        .flatMap(([field, result]) => result.errors),
     };
   }
 
@@ -182,7 +183,7 @@ class ValidationService {
       'personalInfo.phone': { required: true, type: 'phone' },
       'personalInfo.pan': { required: true, type: 'pan' },
       'personalInfo.aadhaar': { required: false, type: 'aadhaar' },
-      'personalInfo.dateOfBirth': { required: true, type: 'date' }
+      'personalInfo.dateOfBirth': { required: true, type: 'date' },
     };
 
     return this.validateForm(itrData, schema);

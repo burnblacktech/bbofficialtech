@@ -7,11 +7,11 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  UserPlus, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  UserPlus,
+  Mail,
+  Phone,
+  MapPin,
   Calendar,
   Shield,
   Building2,
@@ -22,7 +22,7 @@ import {
   Crown,
   Star,
   UserCheck,
-  User
+  User,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -39,7 +39,7 @@ const AdminAddUser = () => {
     mobile: '',
     date_of_birth: '',
     gender: '',
-    
+
     // Address Information
     address_line_1: '',
     address_line_2: '',
@@ -47,25 +47,25 @@ const AdminAddUser = () => {
     state: '',
     pincode: '',
     country: 'India',
-    
+
     // Professional Information
     occupation: '',
     organization: '',
     designation: '',
-    
+
     // Account Information
     role: 'user',
     status: 'pending',
     is_premium: false,
-    
+
     // Additional Information
     pan_number: '',
     aadhaar_number: '',
     notes: '',
-    
+
     // Security
     send_welcome_email: true,
-    require_password_change: true
+    require_password_change: true,
   });
 
   const [errors, setErrors] = useState({});
@@ -88,7 +88,7 @@ const AdminAddUser = () => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       }
-    }
+    },
   });
 
   const handleInputChange = (field, value) => {
@@ -143,7 +143,7 @@ const AdminAddUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors before submitting');
       return;
@@ -185,7 +185,7 @@ const AdminAddUser = () => {
     { value: 'senior_ca', label: 'Senior CA', description: 'Senior Chartered Accountant' },
     { value: 'ca_firm_admin', label: 'CA Firm Admin', description: 'CA Firm Administrator' },
     { value: 'platform_admin', label: 'Platform Admin', description: 'Platform Administrator' },
-    { value: 'super_admin', label: 'Super Admin', description: 'Super Administrator' }
+    { value: 'super_admin', label: 'Super Admin', description: 'Super Administrator' },
   ];
 
   return (
@@ -204,7 +204,7 @@ const AdminAddUser = () => {
               </button>
               <h1 className="text-xl font-semibold text-gray-900">Add New User</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-500">
                 Admin: {user?.name}
@@ -223,7 +223,7 @@ const AdminAddUser = () => {
               <UserPlus className="h-6 w-6 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -243,7 +243,7 @@ const AdminAddUser = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email Address *
@@ -265,7 +265,7 @@ const AdminAddUser = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mobile Number
@@ -286,7 +286,7 @@ const AdminAddUser = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.mobile}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Date of Birth
@@ -301,7 +301,7 @@ const AdminAddUser = () => {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Gender
@@ -326,7 +326,7 @@ const AdminAddUser = () => {
               <MapPin className="h-6 w-6 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900">Address Information</h2>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -340,7 +340,7 @@ const AdminAddUser = () => {
                   placeholder="Enter address line 1"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Address Line 2
@@ -353,7 +353,7 @@ const AdminAddUser = () => {
                   placeholder="Enter address line 2"
                 />
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -367,7 +367,7 @@ const AdminAddUser = () => {
                     placeholder="Enter city"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     State
@@ -380,7 +380,7 @@ const AdminAddUser = () => {
                     placeholder="Enter state"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Pincode
@@ -403,7 +403,7 @@ const AdminAddUser = () => {
               <Building2 className="h-6 w-6 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900">Professional Information</h2>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -417,7 +417,7 @@ const AdminAddUser = () => {
                   placeholder="Enter occupation"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Organization
@@ -430,7 +430,7 @@ const AdminAddUser = () => {
                   placeholder="Enter organization"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Designation
@@ -452,7 +452,7 @@ const AdminAddUser = () => {
               <Shield className="h-6 w-6 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900">Account Information</h2>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -494,7 +494,7 @@ const AdminAddUser = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.role}</p>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -510,7 +510,7 @@ const AdminAddUser = () => {
                     <option value="inactive">Inactive</option>
                   </select>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -534,7 +534,7 @@ const AdminAddUser = () => {
               <Shield className="h-6 w-6 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900">Tax Information</h2>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -554,7 +554,7 @@ const AdminAddUser = () => {
                   <p className="text-red-500 text-sm mt-1">{errors.pan_number}</p>
                 )}
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Aadhaar Number
@@ -582,7 +582,7 @@ const AdminAddUser = () => {
               <UserPlus className="h-6 w-6 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900">Additional Information</h2>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -596,7 +596,7 @@ const AdminAddUser = () => {
                   placeholder="Add any additional notes about the user..."
                 />
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
                   <input
@@ -610,7 +610,7 @@ const AdminAddUser = () => {
                     Send Welcome Email
                   </label>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -636,7 +636,7 @@ const AdminAddUser = () => {
             >
               Cancel
             </button>
-            
+
             <button
               type="submit"
               disabled={isSubmitting}

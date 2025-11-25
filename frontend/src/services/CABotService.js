@@ -28,7 +28,7 @@ class CABotService {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // Add response interceptor for error handling
@@ -44,7 +44,7 @@ class CABotService {
           window.location.href = '/login';
         }
         return Promise.reject(error);
-      }
+      },
     );
 
     enterpriseLogger.info('CABotService initialized', { baseURL: this.baseURL });
@@ -58,27 +58,27 @@ class CABotService {
    */
   async processMessage(message, context) {
     try {
-      enterpriseLogger.info('Processing CA Bot message', { 
+      enterpriseLogger.info('Processing CA Bot message', {
         messageLength: message.length,
         userType: context.userType,
-        language: context.language
+        language: context.language,
       });
 
       const response = await this.axiosInstance.post('/cabot/message', {
         message,
-        context
+        context,
       });
 
       enterpriseLogger.info('CA Bot response received', {
         responseLength: response.data.data.response.length,
-        userType: response.data.data.metadata.userType
+        userType: response.data.data.metadata.userType,
       });
 
       return response.data.data;
     } catch (error) {
       enterpriseLogger.error('CA Bot message processing error', {
         error: error.message,
-        message: message
+        message: message,
       });
       throw error;
     }
@@ -94,19 +94,19 @@ class CABotService {
       enterpriseLogger.info('Detecting user type', { messageLength: message.length });
 
       const response = await this.axiosInstance.post('/cabot/detect-user-type', {
-        message
+        message,
       });
 
       enterpriseLogger.info('User type detected', {
         userType: response.data.data.userType,
-        confidence: response.data.data.confidence
+        confidence: response.data.data.confidence,
       });
 
       return response.data.data;
     } catch (error) {
       enterpriseLogger.error('User type detection error', {
         error: error.message,
-        message: message
+        message: message,
       });
       throw error;
     }
@@ -120,21 +120,21 @@ class CABotService {
   async getConversationContext(filingId = null) {
     try {
       const url = filingId ? `/cabot/context/${filingId}` : '/cabot/context';
-      
+
       enterpriseLogger.info('Getting conversation context', { filingId });
 
       const response = await this.axiosInstance.get(url);
 
       enterpriseLogger.info('Conversation context retrieved', {
         currentStep: response.data.data.context.currentStep,
-        userType: response.data.data.context.userType
+        userType: response.data.data.context.userType,
       });
 
       return response.data.data.context;
     } catch (error) {
       enterpriseLogger.error('Conversation context error', {
         error: error.message,
-        filingId
+        filingId,
       });
       throw error;
     }
@@ -150,23 +150,23 @@ class CABotService {
       enterpriseLogger.info('Updating conversation context', {
         userType: context.userType,
         language: context.language,
-        currentStep: context.currentStep
+        currentStep: context.currentStep,
       });
 
       const response = await this.axiosInstance.put('/cabot/context', {
-        context
+        context,
       });
 
       enterpriseLogger.info('Conversation context updated', {
         userType: response.data.data.context.userType,
-        currentStep: response.data.data.context.currentStep
+        currentStep: response.data.data.context.currentStep,
       });
 
       return response.data.data.context;
     } catch (error) {
       enterpriseLogger.error('Conversation context update error', {
         error: error.message,
-        context: context
+        context: context,
       });
       throw error;
     }
@@ -182,24 +182,24 @@ class CABotService {
       enterpriseLogger.info('Processing filing data from conversation', {
         userType: conversationData.userType,
         language: conversationData.language,
-        steps: conversationData.steps?.length || 0
+        steps: conversationData.steps?.length || 0,
       });
 
       const response = await this.axiosInstance.post('/cabot/process-filing-data', {
-        conversationData
+        conversationData,
       });
 
       enterpriseLogger.info('Filing data processed', {
         hasPersonalInfo: !!response.data.data.filingData.personalInfo,
         hasIncomeDetails: !!response.data.data.filingData.incomeDetails,
-        hasDeductions: !!response.data.data.filingData.deductions
+        hasDeductions: !!response.data.data.filingData.deductions,
       });
 
       return response.data.data.filingData;
     } catch (error) {
       enterpriseLogger.error('Filing data processing error', {
         error: error.message,
-        conversationData: conversationData
+        conversationData: conversationData,
       });
       throw error;
     }
@@ -217,13 +217,13 @@ class CABotService {
 
       enterpriseLogger.info('CA Bot status retrieved', {
         isActive: response.data.data.status.isActive,
-        aiIntegration: response.data.data.status.features.aiIntegration
+        aiIntegration: response.data.data.status.features.aiIntegration,
       });
 
       return response.data.data.status;
     } catch (error) {
       enterpriseLogger.error('CA Bot status error', {
-        error: error.message
+        error: error.message,
       });
       throw error;
     }
@@ -237,21 +237,21 @@ class CABotService {
   async resetConversation(filingId = null) {
     try {
       const url = filingId ? `/cabot/reset/${filingId}` : '/cabot/reset';
-      
+
       enterpriseLogger.info('Resetting conversation', { filingId });
 
       const response = await this.axiosInstance.post(url);
 
       enterpriseLogger.info('Conversation reset', {
         newStep: response.data.data.context.currentStep,
-        userType: response.data.data.context.userType
+        userType: response.data.data.context.userType,
       });
 
       return response.data.data.context;
     } catch (error) {
       enterpriseLogger.error('Conversation reset error', {
         error: error.message,
-        filingId
+        filingId,
       });
       throw error;
     }
@@ -268,20 +268,20 @@ class CABotService {
       const url = filingId ? `/cabot/history/${filingId}` : '/cabot/history';
       const params = {
         limit: options.limit || 50,
-        offset: options.offset || 0
+        offset: options.offset || 0,
       };
-      
-      enterpriseLogger.info('Getting conversation history', { 
-        filingId, 
+
+      enterpriseLogger.info('Getting conversation history', {
+        filingId,
         limit: params.limit,
-        offset: params.offset
+        offset: params.offset,
       });
 
       const response = await this.axiosInstance.get(url, { params });
 
       enterpriseLogger.info('Conversation history retrieved', {
         totalCount: response.data.data.history.totalCount,
-        hasMore: response.data.data.history.hasMore
+        hasMore: response.data.data.history.hasMore,
       });
 
       return response.data.data.history;
@@ -289,7 +289,7 @@ class CABotService {
       enterpriseLogger.error('Conversation history error', {
         error: error.message,
         filingId,
-        options
+        options,
       });
       throw error;
     }
@@ -310,20 +310,20 @@ class CABotService {
         collectedData: {},
         steps: [],
         createdAt: new Date().toISOString(),
-        ...options
+        ...options,
       };
 
       enterpriseLogger.info('Creating new CA Bot session', {
         sessionId: session.id,
         userType: session.userType,
-        language: session.language
+        language: session.language,
       });
 
       return session;
     } catch (error) {
       enterpriseLogger.error('Session creation error', {
         error: error.message,
-        options
+        options,
       });
       throw error;
     }
@@ -338,16 +338,16 @@ class CABotService {
     try {
       const key = `cabot_conversation_${sessionId}`;
       localStorage.setItem(key, JSON.stringify(conversationData));
-      
+
       enterpriseLogger.info('Conversation saved to storage', {
         sessionId,
         key,
-        dataSize: JSON.stringify(conversationData).length
+        dataSize: JSON.stringify(conversationData).length,
       });
     } catch (error) {
       enterpriseLogger.error('Conversation storage error', {
         error: error.message,
-        sessionId
+        sessionId,
       });
     }
   }
@@ -361,24 +361,24 @@ class CABotService {
     try {
       const key = `cabot_conversation_${sessionId}`;
       const data = localStorage.getItem(key);
-      
+
       if (data) {
         const conversationData = JSON.parse(data);
-        
+
         enterpriseLogger.info('Conversation loaded from storage', {
           sessionId,
           key,
-          dataSize: data.length
+          dataSize: data.length,
         });
-        
+
         return conversationData;
       }
-      
+
       return null;
     } catch (error) {
       enterpriseLogger.error('Conversation load error', {
         error: error.message,
-        sessionId
+        sessionId,
       });
       return null;
     }
@@ -392,15 +392,15 @@ class CABotService {
     try {
       const key = `cabot_conversation_${sessionId}`;
       localStorage.removeItem(key);
-      
+
       enterpriseLogger.info('Conversation cleared from storage', {
         sessionId,
-        key
+        key,
       });
     } catch (error) {
       enterpriseLogger.error('Conversation clear error', {
         error: error.message,
-        sessionId
+        sessionId,
       });
     }
   }

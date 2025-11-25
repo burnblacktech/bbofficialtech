@@ -7,37 +7,37 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 
-const ProgressBar = ({ 
-  currentStep = 1, 
-  totalSteps = 3, 
-  steps = [], 
+const ProgressBar = ({
+  currentStep = 1,
+  totalSteps = 3,
+  steps = [],
   showLabels = true,
   showIcons = true,
-  className = ''
+  className = '',
 }) => {
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   const progressVariants = {
     initial: { width: 0 },
-    animate: { 
+    animate: {
       width: `${progressPercentage}%`,
       transition: {
         duration: 0.5,
-        ease: "easeInOut"
-      }
-    }
+        ease: 'easeInOut',
+      },
+    },
   };
 
   const stepVariants = {
     initial: { scale: 0.8, opacity: 0 },
-    animate: { 
-      scale: 1, 
+    animate: {
+      scale: 1,
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: "easeOut"
-      }
-    }
+        ease: 'easeOut',
+      },
+    },
   };
 
   const getStepStatus = (stepIndex) => {
@@ -89,7 +89,7 @@ const ProgressBar = ({
             className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
           />
         </div>
-        
+
         {/* Progress Percentage */}
         <div className="text-right mt-1">
           <span className="text-xs text-gray-600">
@@ -105,7 +105,7 @@ const ProgressBar = ({
             const status = getStepStatus(index);
             const isCompleted = status === 'completed';
             const isCurrent = status === 'current';
-            
+
             return (
               <motion.div
                 key={index}
@@ -117,7 +117,7 @@ const ProgressBar = ({
                 {/* Step Circle */}
                 <div className={`relative w-8 h-8 rounded-full border-2 flex items-center justify-center ${getStepColor(status)}`}>
                   {showIcons && getStepIcon(index, status)}
-                  
+
                   {/* Current Step Pulse */}
                   {isCurrent && (
                     <motion.div
@@ -127,12 +127,12 @@ const ProgressBar = ({
                     />
                   )}
                 </div>
-                
+
                 {/* Step Label */}
                 {showLabels && (
                   <div className="text-center">
                     <p className={`text-xs font-medium ${
-                      isCompleted ? 'text-green-600' : 
+                      isCompleted ? 'text-green-600' :
                       isCurrent ? 'text-blue-600' : 'text-gray-500'
                     }`}>
                       {step.title || `Step ${index + 1}`}
@@ -157,7 +157,7 @@ const ProgressBar = ({
             const status = getStepStatus(index);
             const isCompleted = status === 'completed';
             const isCurrent = status === 'current';
-            
+
             return (
               <motion.div
                 key={index}
@@ -169,7 +169,7 @@ const ProgressBar = ({
                 {/* Step Circle */}
                 <div className={`relative w-8 h-8 rounded-full border-2 flex items-center justify-center ${getStepColor(status)}`}>
                   {showIcons && getStepIcon(index, status)}
-                  
+
                   {/* Step Number */}
                   {!showIcons && (
                     <span className={`text-xs font-bold ${
@@ -178,7 +178,7 @@ const ProgressBar = ({
                       {index + 1}
                     </span>
                   )}
-                  
+
                   {/* Current Step Pulse */}
                   {isCurrent && (
                     <motion.div
@@ -188,11 +188,11 @@ const ProgressBar = ({
                     />
                   )}
                 </div>
-                
+
                 {/* Step Label */}
                 {showLabels && (
                   <p className={`text-xs font-medium ${
-                    isCompleted ? 'text-green-600' : 
+                    isCompleted ? 'text-green-600' :
                     isCurrent ? 'text-blue-600' : 'text-gray-500'
                   }`}>
                     Step {index + 1}

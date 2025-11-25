@@ -4,13 +4,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import enterpriseDebugger from '../../services/EnterpriseDebugger';
 import EnterpriseErrorBoundary from '../../components/EnterpriseErrorBoundary';
 import {
-  FileText, Calculator, Upload, CheckCircle, ArrowRight, 
-  Info, Clock, Shield
+  FileText, Calculator, Upload, CheckCircle, ArrowRight,
+  Info, Clock, Shield,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
-  EnterpriseBadge
+  EnterpriseBadge,
 } from '../../components/DesignSystem/EnterpriseComponents';
 import { getEnterpriseClasses } from '../../components/DesignSystem/EnterpriseDesignSystem';
 
@@ -25,11 +25,11 @@ const InteractionModeSelection = () => {
   const [selectedMode, setSelectedMode] = useState(null);
 
   // Get context from navigation state
-  const { 
-    pan, 
-    verificationResult, 
-    prefillData, 
-    isCAFiling 
+  const {
+    pan,
+    verificationResult,
+    prefillData,
+    isCAFiling,
   } = location.state || {};
 
   // Load user's last used preference
@@ -39,7 +39,7 @@ const InteractionModeSelection = () => {
       setSelectedMode(savedPreference);
       enterpriseDebugger.log('INFO', 'InteractionModeSelection', 'Loaded user preference', {
         preference: savedPreference,
-        user: user?.email
+        user: user?.email,
       });
     }
   }, [user?.email]);
@@ -58,10 +58,10 @@ const InteractionModeSelection = () => {
         'Step-by-step income breakdown',
         'Real-time tax calculation',
         'Smart suggestions',
-        'Mobile-friendly forms'
+        'Mobile-friendly forms',
       ],
       estimatedTime: '15-20 minutes',
-      bestFor: 'Most users, especially first-time filers'
+      bestFor: 'Most users, especially first-time filers',
     },
     {
       id: 'doc-first',
@@ -75,10 +75,10 @@ const InteractionModeSelection = () => {
         'Smart document parsing',
         'Automatic data extraction',
         'Document verification',
-        'CA review workflow'
+        'CA review workflow',
       ],
       estimatedTime: '10-15 minutes',
-      bestFor: 'CA professionals, users with organized documents'
+      bestFor: 'CA professionals, users with organized documents',
     },
     {
       id: 'prefill-first',
@@ -92,35 +92,35 @@ const InteractionModeSelection = () => {
         'AIS data import',
         '26AS integration',
         'Bank interest auto-fill',
-        'TDS verification'
+        'TDS verification',
       ],
       estimatedTime: '5-10 minutes',
-      bestFor: 'Salaried employees, users with simple tax situations'
-    }
+      bestFor: 'Salaried employees, users with simple tax situations',
+    },
   ];
 
   const handleModeSelection = (modeId) => {
     setSelectedMode(modeId);
-    
+
     // Save user preference
     localStorage.setItem('interactionModePreference', modeId);
-    
+
     enterpriseDebugger.log('INFO', 'InteractionModeSelection', 'User selected interaction mode', {
       mode: modeId,
       user: user?.email,
-      role: user?.role
+      role: user?.role,
     });
 
     // Navigate to Financial Profile first, then ITR selection
-    navigate('/financial-profile', { 
-      state: { 
+    navigate('/financial-profile', {
+      state: {
         pan,
         verificationResult,
         prefillData,
         isCAFiling,
         interactionMode: modeId,
-        fromModeSelection: true 
-      } 
+        fromModeSelection: true,
+      },
     });
   };
 
@@ -131,22 +131,22 @@ const InteractionModeSelection = () => {
         border: 'border-blue-200',
         text: 'text-blue-700',
         button: 'bg-blue-600 hover:bg-blue-700',
-        icon: 'text-blue-600'
+        icon: 'text-blue-600',
       },
       green: {
         bg: 'bg-green-50',
         border: 'border-green-200',
         text: 'text-green-700',
         button: 'bg-green-600 hover:bg-green-700',
-        icon: 'text-green-600'
+        icon: 'text-green-600',
       },
       purple: {
         bg: 'bg-purple-50',
         border: 'border-purple-200',
         text: 'text-purple-700',
         button: 'bg-purple-600 hover:bg-purple-700',
-        icon: 'text-purple-600'
-      }
+        icon: 'text-purple-600',
+      },
     };
     return colors[color] || colors.blue;
   };
@@ -155,7 +155,7 @@ const InteractionModeSelection = () => {
     <EnterpriseErrorBoundary>
       <div className="min-h-screen bg-neutral-50 py-6">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          
+
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-neutral-900 mb-4">
@@ -192,7 +192,7 @@ const InteractionModeSelection = () => {
               const IconComponent = mode.icon;
               const isRecommended = mode.recommended;
               const isUserPreference = mode.id === selectedMode;
-              
+
               return (
                 <div
                   key={mode.id}
@@ -207,7 +207,7 @@ const InteractionModeSelection = () => {
                       Recommended
                     </div>
                   )}
-                  
+
                   {/* User Preference Badge */}
                   {isUserPreference && !isRecommended && (
                     <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">

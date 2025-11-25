@@ -4,7 +4,7 @@
 // =====================================================
 
 const nodemailer = require('nodemailer');
-const enterpriseLogger = require('../utils/logger');
+const enterpriseLogger = require('../../utils/logger');
 
 class EmailService {
   constructor() {

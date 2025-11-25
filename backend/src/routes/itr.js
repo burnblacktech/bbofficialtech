@@ -230,7 +230,7 @@ router.post('/eligibility', authenticateToken, async (req, res) => {
     const enterpriseLogger = require('../utils/logger');
 
     // Simple eligibility logic
-    let eligibleTypes = [];
+    const eligibleTypes = [];
 
     // ITR-1: Salary income only, no business/professional income
     if (incomeSources.salary && !incomeSources.business && !incomeSources.professional) {
@@ -238,7 +238,7 @@ router.post('/eligibility', authenticateToken, async (req, res) => {
     }
 
     // ITR-2: Multiple income sources but no business/professional income
-    if ((incomeSources.salary || incomeSources.houseProperty || incomeSources.capitalGains || incomeSources.otherIncome) 
+    if ((incomeSources.salary || incomeSources.houseProperty || incomeSources.capitalGains || incomeSources.otherIncome)
         && !incomeSources.business && !incomeSources.professional) {
       eligibleTypes.push('ITR2');
     }

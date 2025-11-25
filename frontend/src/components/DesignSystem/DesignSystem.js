@@ -26,7 +26,7 @@ export const DesignTokens = {
       800: '#030303',
       900: '#000000',
     },
-    
+
     // Secondary Brand Colors
     secondary: {
       50: '#fffdf7',
@@ -40,7 +40,7 @@ export const DesignTokens = {
       800: '#80600f',
       900: '#644607',
     },
-    
+
     // Semantic Colors
     success: {
       50: '#e8f8f5',
@@ -54,7 +54,7 @@ export const DesignTokens = {
       800: '#1d7e45',
       900: '#176336',
     },
-    
+
     warning: {
       50: '#fef5e7',
       100: '#fdebd0',
@@ -67,7 +67,7 @@ export const DesignTokens = {
       800: '#b86f0c',
       900: '#a9620a',
     },
-    
+
     error: {
       50: '#fdf2f2',
       100: '#fce7e7',
@@ -80,7 +80,7 @@ export const DesignTokens = {
       800: '#7b241c',
       900: '#641d17',
     },
-    
+
     // Neutral Colors
     neutral: {
       50: '#ffffff',
@@ -95,7 +95,7 @@ export const DesignTokens = {
       900: '#171717',
     },
   },
-  
+
   // Typography Scale
   typography: {
     fontFamily: {
@@ -121,7 +121,7 @@ export const DesignTokens = {
       bold: '700',
     },
   },
-  
+
   // Spacing Scale
   spacing: {
     0: '0px',
@@ -139,7 +139,7 @@ export const DesignTokens = {
     24: '6rem',     // 96px
     32: '8rem',     // 128px
   },
-  
+
   // Border Radius
   borderRadius: {
     none: '0px',
@@ -152,7 +152,7 @@ export const DesignTokens = {
     '3xl': '1.5rem',   // 24px
     full: '9999px',
   },
-  
+
   // Shadows
   shadows: {
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -163,7 +163,7 @@ export const DesignTokens = {
     '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
     inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
   },
-  
+
   // Animation Durations
   animation: {
     duration: {
@@ -183,18 +183,18 @@ export const DesignTokens = {
 // ENHANCED BUTTON COMPONENT
 // =====================================================
 
-export const Button = React.forwardRef(({ 
-  children, 
-  variant = 'primary', 
-  size = 'md', 
+export const Button = React.forwardRef(({
+  children,
+  variant = 'primary',
+  size = 'md',
   loading = false,
   disabled = false,
-  className = '', 
+  className = '',
   onClick,
-  ...props 
+  ...props
 }, ref) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
-  
+
   const variants = {
     primary: 'bg-primary-500 text-white hover:bg-primary-600 focus-visible:ring-primary-500 shadow-sm hover:shadow-md',
     secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-500 shadow-sm hover:shadow-md',
@@ -204,7 +204,7 @@ export const Button = React.forwardRef(({
     warning: 'bg-warning-500 text-white hover:bg-warning-600 focus-visible:ring-warning-500 shadow-sm hover:shadow-md',
     error: 'bg-error-500 text-white hover:bg-error-600 focus-visible:ring-error-500 shadow-sm hover:shadow-md',
   };
-  
+
   const sizes = {
     xs: 'h-8 px-2 text-xs rounded-md',
     sm: 'h-9 px-3 text-sm rounded-md',
@@ -212,9 +212,9 @@ export const Button = React.forwardRef(({
     lg: 'h-11 px-6 text-base rounded-lg',
     xl: 'h-12 px-8 text-lg rounded-xl',
   };
-  
+
   const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`;
-  
+
   return (
     <motion.button
       ref={ref}
@@ -244,24 +244,24 @@ Button.displayName = 'Button';
 // ENHANCED INPUT COMPONENT
 // =====================================================
 
-export const Input = React.forwardRef(({ 
-  className = '', 
-  type = 'text', 
+export const Input = React.forwardRef(({
+  className = '',
+  type = 'text',
   error = false,
   success = false,
   disabled = false,
-  ...props 
+  ...props
 }, ref) => {
   const baseClasses = 'flex h-10 w-full rounded-lg border bg-white px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
-  
-  const stateClasses = error 
-    ? 'border-error-300 focus-visible:ring-error-500' 
-    : success 
+
+  const stateClasses = error
+    ? 'border-error-300 focus-visible:ring-error-500'
+    : success
     ? 'border-success-300 focus-visible:ring-success-500'
     : 'border-neutral-300 focus-visible:ring-primary-500';
-  
+
   const classes = `${baseClasses} ${stateClasses} ${className}`;
-  
+
   return (
     <motion.input
       ref={ref}
@@ -281,16 +281,16 @@ Input.displayName = 'Input';
 // ENHANCED CARD COMPONENT
 // =====================================================
 
-export const Card = React.forwardRef(({ 
-  children, 
-  className = '', 
+export const Card = React.forwardRef(({
+  children,
+  className = '',
   hover = false,
-  ...props 
+  ...props
 }, ref) => {
   const baseClasses = 'rounded-xl border bg-white text-neutral-900 shadow-sm transition-all duration-200';
   const hoverClasses = hover ? 'hover:shadow-md hover:scale-[1.01] cursor-pointer' : '';
   const classes = `${baseClasses} ${hoverClasses} ${className}`;
-  
+
   return (
     <motion.div
       ref={ref}
@@ -310,7 +310,7 @@ Card.displayName = 'Card';
 const CardHeader = React.forwardRef(({ children, className = '', ...props }, ref) => {
   const baseClasses = 'flex flex-col space-y-1.5 p-6';
   const classes = `${baseClasses} ${className}`;
-  
+
   return (
     <div ref={ref} className={classes} {...props}>
       {children}
@@ -323,7 +323,7 @@ CardHeader.displayName = 'CardHeader';
 const CardTitle = React.forwardRef(({ children, className = '', ...props }, ref) => {
   const baseClasses = 'text-xl font-semibold leading-none tracking-tight';
   const classes = `${baseClasses} ${className}`;
-  
+
   return (
     <h3 ref={ref} className={classes} {...props}>
       {children}
@@ -336,7 +336,7 @@ CardTitle.displayName = 'CardTitle';
 const CardDescription = React.forwardRef(({ children, className = '', ...props }, ref) => {
   const baseClasses = 'text-sm text-neutral-600';
   const classes = `${baseClasses} ${className}`;
-  
+
   return (
     <p ref={ref} className={classes} {...props}>
       {children}
@@ -349,7 +349,7 @@ CardDescription.displayName = 'CardDescription';
 const CardContent = React.forwardRef(({ children, className = '', ...props }, ref) => {
   const baseClasses = 'p-6 pt-0';
   const classes = `${baseClasses} ${className}`;
-  
+
   return (
     <div ref={ref} className={classes} {...props}>
       {children}
@@ -362,7 +362,7 @@ CardContent.displayName = 'CardContent';
 const CardFooter = React.forwardRef(({ children, className = '', ...props }, ref) => {
   const baseClasses = 'flex items-center p-6 pt-0';
   const classes = `${baseClasses} ${className}`;
-  
+
   return (
     <div ref={ref} className={classes} {...props}>
       {children}
@@ -382,37 +382,37 @@ export const Typography = {
       {children}
     </h1>
   )),
-  
+
   H2: React.forwardRef(({ children, className = '', ...props }, ref) => (
     <h2 ref={ref} className={`text-3xl font-semibold text-neutral-900 ${className}`} {...props}>
       {children}
     </h2>
   )),
-  
+
   H3: React.forwardRef(({ children, className = '', ...props }, ref) => (
     <h3 ref={ref} className={`text-2xl font-semibold text-neutral-900 ${className}`} {...props}>
       {children}
     </h3>
   )),
-  
+
   H4: React.forwardRef(({ children, className = '', ...props }, ref) => (
     <h4 ref={ref} className={`text-xl font-semibold text-neutral-900 ${className}`} {...props}>
       {children}
     </h4>
   )),
-  
+
   Body: React.forwardRef(({ children, className = '', ...props }, ref) => (
     <p ref={ref} className={`text-base text-neutral-700 ${className}`} {...props}>
       {children}
     </p>
   )),
-  
+
   Small: React.forwardRef(({ children, className = '', ...props }, ref) => (
     <p ref={ref} className={`text-sm text-neutral-600 ${className}`} {...props}>
       {children}
     </p>
   )),
-  
+
   Label: React.forwardRef(({ children, className = '', ...props }, ref) => (
     <label ref={ref} className={`text-sm font-medium text-neutral-700 ${className}`} {...props}>
       {children}
@@ -430,7 +430,7 @@ export const LoadingSpinner = ({ size = 'md', className = '' }) => {
     md: 'w-6 h-6',
     lg: 'w-8 h-8',
   };
-  
+
   return (
     <div className={`${sizes[size]} ${className}`}>
       <div className="w-full h-full border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
@@ -440,9 +440,9 @@ export const LoadingSpinner = ({ size = 'md', className = '' }) => {
 
 export const Skeleton = ({ className = '', ...props }) => {
   return (
-    <div 
-      className={`animate-pulse bg-neutral-200 rounded ${className}`} 
-      {...props} 
+    <div
+      className={`animate-pulse bg-neutral-200 rounded ${className}`}
+      {...props}
     />
   );
 };
@@ -458,21 +458,21 @@ export const A11y = {
       {children}
     </span>
   ),
-  
+
   // Focus trap for modals
   FocusTrap: ({ children, isActive = false }) => {
     const trapRef = React.useRef(null);
-    
+
     React.useEffect(() => {
       if (!isActive || !trapRef.current) return;
-      
+
       const focusableElements = trapRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
-      
+
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
-      
+
       const handleTabKey = (e) => {
         if (e.key === 'Tab') {
           if (e.shiftKey) {
@@ -488,15 +488,15 @@ export const A11y = {
           }
         }
       };
-      
+
       document.addEventListener('keydown', handleTabKey);
       firstElement?.focus();
-      
+
       return () => {
         document.removeEventListener('keydown', handleTabKey);
       };
     }, [isActive]);
-    
+
     return <div ref={trapRef}>{children}</div>;
   },
 };

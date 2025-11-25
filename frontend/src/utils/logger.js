@@ -11,7 +11,7 @@ class Logger {
     if (!this.isEnabled) return;
 
     const timestamp = new Date().toISOString();
-    
+
     // Only log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`, data);

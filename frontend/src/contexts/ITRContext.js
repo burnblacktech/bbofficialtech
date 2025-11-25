@@ -92,7 +92,7 @@ export const ITRProvider = ({ children }) => {
         const updatedFiling = response.filing;
         setCurrentFiling(updatedFiling);
         setFilingHistory(prev =>
-          prev.map(f => f.id === updatedFiling.id ? updatedFiling : f)
+          prev.map(f => f.id === updatedFiling.id ? updatedFiling : f),
         );
         setAutoSaveStatus('saved');
         return { success: true, filing: updatedFiling };
@@ -124,7 +124,7 @@ export const ITRProvider = ({ children }) => {
         setValidationErrors(response.errors || {});
         return {
           isValid: Object.keys(response.errors || {}).length === 0,
-          errors: response.errors || []
+          errors: response.errors || [],
         };
       }
       return { isValid: false, errors: [], message: response.message };
@@ -145,7 +145,7 @@ export const ITRProvider = ({ children }) => {
         const submittedFiling = { ...currentFiling, status: 'submitted', ...response.data };
         setCurrentFiling(submittedFiling);
         setFilingHistory(prev =>
-          prev.map(f => f.id === submittedFiling.id ? submittedFiling : f)
+          prev.map(f => f.id === submittedFiling.id ? submittedFiling : f),
         );
         return { success: true, filing: submittedFiling };
       }
@@ -241,7 +241,7 @@ export const ITRProvider = ({ children }) => {
     clearCurrentFiling,
 
     // Computed
-    progress: getProgress()
+    progress: getProgress(),
   };
 
   return (

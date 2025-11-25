@@ -5,15 +5,15 @@ import enterpriseDebugger from '../../services/EnterpriseDebugger';
 import EnterpriseErrorBoundary from '../../components/EnterpriseErrorBoundary';
 import surepassService from '../../services/surepassService';
 import {
-  Shield, CheckCircle, AlertTriangle, Building2, 
-  ArrowRight, Clock, RefreshCw
+  Shield, CheckCircle, AlertTriangle, Building2,
+  ArrowRight, Clock, RefreshCw,
 } from 'lucide-react';
-import { 
+import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
   EnterpriseInput,
-  EnterpriseProgress
+  EnterpriseProgress,
 } from '../../components/DesignSystem/EnterpriseComponents';
 import { getEnterpriseClasses } from '../../components/DesignSystem/EnterpriseDesignSystem';
 
@@ -23,7 +23,7 @@ import { getEnterpriseClasses } from '../../components/DesignSystem/EnterpriseDe
 const PANVerification = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   // State management
   const [panNumber, setPanNumber] = useState('');
   const [verificationStatus, setVerificationStatus] = useState('idle'); // idle, verifying, success, error
@@ -39,7 +39,7 @@ const PANVerification = () => {
     enterpriseDebugger.trackLifecycle('PANVerification', 'MOUNT', {
       user: user?.email,
       role: user?.role,
-      flowStep: 'PAN_VERIFICATION'
+      flowStep: 'PAN_VERIFICATION',
     });
 
     return () => {
@@ -62,30 +62,30 @@ const PANVerification = () => {
     }
 
     setVerificationStatus('verifying');
-    enterpriseDebugger.log('INFO', 'PANVerification', 'Starting PAN verification with SurePass', { 
+    enterpriseDebugger.log('INFO', 'PANVerification', 'Starting PAN verification with SurePass', {
       pan: panNumber,
       isCAFiling,
-      userRole: user?.role 
+      userRole: user?.role,
     });
 
     try {
       // Use SurePass service for verification
       const result = await surepassService.verifyPANWithRetry(panNumber);
-      
+
       if (result.success) {
         setVerificationResult(result.data);
-        
+
         // Check for name mismatch conflict (if user provided name)
         if (result.data.name && user?.name && result.data.name.toLowerCase() !== user.name.toLowerCase()) {
           setConflictData({
             itdName: result.data.name,
             providedName: user.name,
-            pan: panNumber
+            pan: panNumber,
           });
         }
 
         setVerificationStatus('success');
-        
+
         // Fetch additional details if available
         const detailsResult = await surepassService.getPANDetails(panNumber);
         if (detailsResult.success) {
@@ -93,13 +93,13 @@ const PANVerification = () => {
             ...result.data,
             ...detailsResult.data,
             verifiedBy: 'SurePass',
-            verificationTimestamp: new Date().toISOString()
+            verificationTimestamp: new Date().toISOString(),
           });
         } else {
           setPrefillData({
             ...result.data,
             verifiedBy: 'SurePass',
-            verificationTimestamp: new Date().toISOString()
+            verificationTimestamp: new Date().toISOString(),
           });
         }
 
@@ -108,21 +108,21 @@ const PANVerification = () => {
           name: result.data.name,
           status: result.data.status,
           category: result.data.category,
-          aadhaarLinked: result.data.aadhaarLinked
+          aadhaarLinked: result.data.aadhaarLinked,
         });
       } else {
         setVerificationStatus('error');
         enterpriseDebugger.log('ERROR', 'PANVerification', 'PAN verification failed via SurePass', {
           pan: panNumber,
           error: result.error,
-          code: result.code
+          code: result.code,
         });
       }
     } catch (error) {
       setVerificationStatus('error');
       enterpriseDebugger.log('ERROR', 'PANVerification', 'PAN verification API error', {
         pan: panNumber,
-        error: error.message
+        error: error.message,
       });
     }
   };
@@ -132,8 +132,8 @@ const PANVerification = () => {
     try {
       const response = await fetch(`/api/prefill?pan=${panNumber}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
       });
 
       const result = await response.json();
@@ -142,13 +142,13 @@ const PANVerification = () => {
         enterpriseDebugger.log('SUCCESS', 'PANVerification', 'Prefill data fetched', {
           pan: panNumber,
           hasAISData: !!result.data.ais,
-          has26ASData: !!result.data.form26AS
+          has26ASData: !!result.data.form26AS,
         });
       }
     } catch (error) {
       enterpriseDebugger.log('ERROR', 'PANVerification', 'Prefill data fetch failed', {
         pan: panNumber,
-        error: error.message
+        error: error.message,
       });
     }
   };
@@ -160,22 +160,22 @@ const PANVerification = () => {
     }
 
     setVerificationStatus('verifying');
-    
+
     try {
       const response = await fetch('/api/pan/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           pan: panNumber,
-          otp: otpCode
-        })
+          otp: otpCode,
+        }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setVerificationStatus('success');
         setOtpRequired(false);
@@ -194,16 +194,16 @@ const PANVerification = () => {
       setConflictData(null);
       enterpriseDebugger.log('INFO', 'PANVerification', 'User accepted ITD name', {
         pan: panNumber,
-        itdName: conflictData.itdName
+        itdName: conflictData.itdName,
       });
     } else {
       // Navigate to CA assistance
-      navigate('/ca-assistance', { 
-        state: { 
+      navigate('/ca-assistance', {
+        state: {
           reason: 'name_mismatch',
           pan: panNumber,
-          conflictData 
-        }
+          conflictData,
+        },
       });
     }
   };
@@ -213,7 +213,7 @@ const PANVerification = () => {
     enterpriseDebugger.log('INFO', 'PANVerification', 'Proceeding to ITR selection', {
       pan: panNumber,
       hasPrefillData: !!prefillData,
-      isCAFiling
+      isCAFiling,
     });
 
     navigate('/interaction-mode-selection', {
@@ -221,8 +221,8 @@ const PANVerification = () => {
         pan: panNumber,
         verificationResult,
         prefillData,
-        isCAFiling
-      }
+        isCAFiling,
+      },
     });
   };
 
@@ -252,7 +252,7 @@ const PANVerification = () => {
         {/* Main Content */}
         <div className="px-4 md:px-6 lg:px-8 py-6 md:py-8">
           <div className="max-w-4xl mx-auto">
-            
+
             {/* Progress Indicator */}
             <div className="mb-8">
               <div className="flex items-center justify-center space-x-4">
@@ -281,7 +281,7 @@ const PANVerification = () => {
 
             {/* Main Card - ENTERPRISE STANDARD */}
             <EnterpriseCard className="p-6 md:p-8">
-              
+
               {/* Title */}
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center mb-4">
@@ -451,7 +451,7 @@ const PANVerification = () => {
                     <p className="text-green-700 mb-4">
                       Your PAN has been verified via SurePass and pre-filled data has been fetched.
                     </p>
-                    
+
                     {/* Prefill Summary */}
                     {prefillData && (
                       <div className="bg-white p-4 rounded-lg mb-4 text-left">
@@ -526,7 +526,7 @@ const PANVerification = () => {
                   <div>
                     <h4 className="font-medium text-neutral-900 mb-1">Secure & Compliant</h4>
                     <p className="text-sm text-neutral-600">
-                      Your PAN verification is done through secure SurePass API integration. 
+                      Your PAN verification is done through secure SurePass API integration.
                       All data is encrypted and handled according to government security standards.
                     </p>
                   </div>

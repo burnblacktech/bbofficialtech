@@ -12,7 +12,7 @@ class ITRAutoDetector {
         reason: 'Business or professional income detected',
         additionalFields: ['businessIncome', 'professionalIncome', 'businessExpenses', 'depreciation'],
         caReviewRequired: true,
-        estimatedTime: '45-60 minutes'
+        estimatedTime: '45-60 minutes',
       },
       {
         id: 'capital_gains',
@@ -21,7 +21,7 @@ class ITRAutoDetector {
         reason: 'Capital gains from investments or property',
         additionalFields: ['capitalGains', 'capitalGainsDetails', 'indexationDetails'],
         caReviewRequired: false,
-        estimatedTime: '30-45 minutes'
+        estimatedTime: '30-45 minutes',
       },
       {
         id: 'multiple_properties',
@@ -30,7 +30,7 @@ class ITRAutoDetector {
         reason: 'More than one house property',
         additionalFields: ['houseProperties'],
         caReviewRequired: false,
-        estimatedTime: '25-35 minutes'
+        estimatedTime: '25-35 minutes',
       },
       {
         id: 'foreign_income',
@@ -39,7 +39,7 @@ class ITRAutoDetector {
         reason: 'Foreign income or NRI status or DTAA claim',
         additionalFields: ['foreignIncome', 'dtaaClaim', 'nriStatus'],
         caReviewRequired: true,
-        estimatedTime: '60-90 minutes'
+        estimatedTime: '60-90 minutes',
       },
       {
         id: 'agricultural_income',
@@ -48,7 +48,7 @@ class ITRAutoDetector {
         reason: 'Agricultural income above threshold',
         additionalFields: ['agriculturalIncome'],
         caReviewRequired: false,
-        estimatedTime: '20-30 minutes'
+        estimatedTime: '20-30 minutes',
       },
       {
         id: 'director_partner',
@@ -57,7 +57,7 @@ class ITRAutoDetector {
         reason: 'Director or partner status',
         additionalFields: ['directorDetails', 'partnerDetails'],
         caReviewRequired: true,
-        estimatedTime: '45-60 minutes'
+        estimatedTime: '45-60 minutes',
       },
       {
         id: 'itr1_eligible',
@@ -80,22 +80,22 @@ class ITRAutoDetector {
         reason: 'Simple salaried individual with basic income sources',
         additionalFields: [],
         caReviewRequired: false,
-        estimatedTime: '15-20 minutes'
-      }
+        estimatedTime: '15-20 minutes',
+      },
     ];
   }
 
   // Main detection method
   detectITR(userData) {
     const results = [];
-    
+
     // Check each rule
     for (const rule of this.rules) {
       if (rule.condition(userData)) {
         results.push({
           ...rule,
           triggered: true,
-          confidence: this.calculateConfidence(rule, userData)
+          confidence: this.calculateConfidence(rule, userData),
         });
       }
     }
@@ -116,7 +116,7 @@ class ITRAutoDetector {
       reason: results[0]?.reason || 'Default recommendation',
       triggeredRules: results,
       allEligibleITRs: this.getAllEligibleITRs(userData),
-      switchRequired: this.isSwitchRequired(userData, results[0]?.recommendedITR)
+      switchRequired: this.isSwitchRequired(userData, results[0]?.recommendedITR),
     };
   }
 
@@ -126,10 +126,10 @@ class ITRAutoDetector {
 
     // Adjust based on data completeness
     const requiredFields = rule.additionalFields;
-    const availableFields = requiredFields.filter(field => 
-      userData[field] !== undefined && userData[field] !== null
+    const availableFields = requiredFields.filter(field =>
+      userData[field] !== undefined && userData[field] !== null,
     );
-    
+
     if (requiredFields.length > 0) {
       confidence = Math.min(confidence, 0.7 + (availableFields.length / requiredFields.length) * 0.3);
     }
@@ -150,7 +150,7 @@ class ITRAutoDetector {
   // Get all eligible ITR types
   getAllEligibleITRs(userData) {
     const eligible = [];
-    
+
     for (const rule of this.rules) {
       if (rule.condition(userData)) {
         if (!eligible.includes(rule.recommendedITR)) {
@@ -181,16 +181,16 @@ class ITRAutoDetector {
   getSwitchImpact(currentITR, newITR, userData) {
     const currentFields = this.getITRFields(currentITR);
     const newFields = this.getITRFields(newITR);
-    
+
     const additionalFields = newFields.filter(field => !currentFields.includes(field));
     const removedFields = currentFields.filter(field => !newFields.includes(field));
-    
+
     return {
       additionalFields,
       removedFields,
       estimatedTimeIncrease: this.estimateTimeIncrease(additionalFields),
       caReviewRequired: this.requiresCAReview(newITR),
-      taxImpact: this.estimateTaxImpact(currentITR, newITR, userData)
+      taxImpact: this.estimateTaxImpact(currentITR, newITR, userData),
     };
   }
 
@@ -198,24 +198,24 @@ class ITRAutoDetector {
   getITRFields(itrType) {
     const fieldMap = {
       'ITR-1': [
-        'personalInfo', 'salary', 'interestIncome', 'houseProperty', 
-        'deductions', 'taxesPaid'
+        'personalInfo', 'salary', 'interestIncome', 'houseProperty',
+        'deductions', 'taxesPaid',
       ],
       'ITR-2': [
         'personalInfo', 'salary', 'interestIncome', 'capitalGains',
-        'houseProperties', 'deductions', 'taxesPaid', 'foreignIncome'
+        'houseProperties', 'deductions', 'taxesPaid', 'foreignIncome',
       ],
       'ITR-3': [
         'personalInfo', 'salary', 'businessIncome', 'professionalIncome',
-        'businessExpenses', 'depreciation', 'houseProperties', 
-        'deductions', 'taxesPaid'
+        'businessExpenses', 'depreciation', 'houseProperties',
+        'deductions', 'taxesPaid',
       ],
       'ITR-4': [
         'personalInfo', 'salary', 'businessIncome', 'presumptiveTax',
-        'houseProperties', 'deductions', 'taxesPaid'
-      ]
+        'houseProperties', 'deductions', 'taxesPaid',
+      ],
     };
-    
+
     return fieldMap[itrType] || [];
   }
 
@@ -228,9 +228,9 @@ class ITRAutoDetector {
       'foreignIncome': 25,
       'houseProperties': 10,
       'businessExpenses': 15,
-      'depreciation': 10
+      'depreciation': 10,
     };
-    
+
     return additionalFields.reduce((total, field) => {
       return total + (timeMap[field] || 5);
     }, 0);
@@ -249,7 +249,7 @@ class ITRAutoDetector {
     return {
       estimatedChange: 0,
       reason: 'Tax impact calculation requires detailed computation',
-      requiresDetailedAnalysis: true
+      requiresDetailedAnalysis: true,
     };
   }
 
@@ -258,7 +258,7 @@ class ITRAutoDetector {
     const requiredFields = this.getITRFields(itrType);
     const missingFields = [];
     const incompleteFields = [];
-    
+
     for (const field of requiredFields) {
       if (userData[field] === undefined || userData[field] === null) {
         missingFields.push(field);
@@ -266,12 +266,12 @@ class ITRAutoDetector {
         incompleteFields.push(field);
       }
     }
-    
+
     return {
       missingFields,
       incompleteFields,
       completenessScore: (requiredFields.length - missingFields.length - incompleteFields.length) / requiredFields.length,
-      isComplete: missingFields.length === 0 && incompleteFields.length === 0
+      isComplete: missingFields.length === 0 && incompleteFields.length === 0,
     };
   }
 
@@ -286,17 +286,17 @@ class ITRAutoDetector {
           'Pensioners',
           'One house property (self-occupied or let out)',
           'Interest income from savings accounts',
-          'Other income up to ₹50 lakh'
+          'Other income up to ₹50 lakh',
         ],
         notEligibleFor: [
           'Business income',
           'Professional income',
           'Capital gains',
           'More than one house property',
-          'Foreign income'
+          'Foreign income',
         ],
         estimatedTime: '15-20 minutes',
-        caRequired: false
+        caRequired: false,
       },
       'ITR-2': {
         name: 'ITR-2',
@@ -306,14 +306,14 @@ class ITRAutoDetector {
           'More than one house property',
           'Foreign income',
           'NRI taxpayers',
-          'Director or partner income'
+          'Director or partner income',
         ],
         notEligibleFor: [
           'Business income',
-          'Professional income'
+          'Professional income',
         ],
         estimatedTime: '30-45 minutes',
-        caRequired: false
+        caRequired: false,
       },
       'ITR-3': {
         name: 'ITR-3',
@@ -322,13 +322,13 @@ class ITRAutoDetector {
           'Business income',
           'Professional income',
           'Income from proprietary business',
-          'Income from profession'
+          'Income from profession',
         ],
         notEligibleFor: [
-          'Presumptive taxation (use ITR-4 instead)'
+          'Presumptive taxation (use ITR-4 instead)',
         ],
         estimatedTime: '45-60 minutes',
-        caRequired: true
+        caRequired: true,
       },
       'ITR-4': {
         name: 'ITR-4 (Sugam)',
@@ -336,15 +336,15 @@ class ITRAutoDetector {
         eligibleFor: [
           'Presumptive business income',
           'Income from profession (presumptive)',
-          'Small businesses'
+          'Small businesses',
         ],
         notEligibleFor: [
           'Regular business accounting',
-          'Complex business structures'
+          'Complex business structures',
         ],
         estimatedTime: '30-40 minutes',
-        caRequired: true
-      }
+        caRequired: true,
+      },
     };
   }
 }

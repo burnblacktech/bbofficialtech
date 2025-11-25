@@ -2,7 +2,7 @@
 // SERVICE TICKET CONTROLLER (API ENDPOINTS)
 // =====================================================
 
-const serviceTicketService = require('../services/ServiceTicketService');
+const serviceTicketService = require('../services/business/ServiceTicketService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 
@@ -21,9 +21,9 @@ class ServiceTicketController {
         subject,
         description,
         tags,
-        attachments
+        attachments,
       } = req.body;
-      
+
       const userId = req.user.id;
       const createdBy = req.user.id;
       const ipAddress = req.ip;
@@ -42,33 +42,33 @@ class ServiceTicketController {
         subject,
         description,
         tags: tags || [],
-        attachments: attachments || []
+        attachments: attachments || [],
       };
 
       const result = await serviceTicketService.createTicket(
         ticketData,
         createdBy,
-        ipAddress
+        ipAddress,
       );
 
       enterpriseLogger.info('Service ticket created via API', {
         userId,
         ticketId: result.ticket.id,
         ticketNumber: result.ticket.ticketNumber,
-        ticketType
+        ticketType,
       });
 
       res.status(201).json({
         success: true,
         message: 'Service ticket created successfully',
-        data: result.ticket
+        data: result.ticket,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to create service ticket via API', {
         error: error.message,
         userId: req.user?.id,
-        body: req.body
+        body: req.body,
       });
       next(error);
     }
@@ -87,7 +87,7 @@ class ServiceTicketController {
         priority: req.query.priority,
         filingId: req.query.filingId,
         limit: parseInt(req.query.limit) || 50,
-        offset: parseInt(req.query.offset) || 0
+        offset: parseInt(req.query.offset) || 0,
       };
 
       // Remove undefined filters
@@ -102,7 +102,7 @@ class ServiceTicketController {
       enterpriseLogger.info('User tickets retrieved via API', {
         userId,
         count: tickets.length,
-        filters
+        filters,
       });
 
       res.status(200).json({
@@ -111,15 +111,15 @@ class ServiceTicketController {
         data: {
           tickets,
           count: tickets.length,
-          filters
-        }
+          filters,
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get user tickets via API', {
         error: error.message,
         userId: req.user?.id,
-        query: req.query
+        query: req.query,
       });
       next(error);
     }
@@ -138,20 +138,20 @@ class ServiceTicketController {
 
       enterpriseLogger.info('Ticket details retrieved via API', {
         ticketId: id,
-        userId
+        userId,
       });
 
       res.status(200).json({
         success: true,
         message: 'Ticket details retrieved successfully',
-        data: ticketDetails
+        data: ticketDetails,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get ticket details via API', {
         error: error.message,
         ticketId: req.params.id,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -166,8 +166,8 @@ class ServiceTicketController {
       const { id } = req.params;
       const { message, attachments } = req.body;
       const senderId = req.user.id;
-      const senderType = req.user.role === 'admin' ? 'ADMIN' : 
-                       req.user.role === 'ca' ? 'CA' : 'USER';
+      const senderType = req.user.role === 'admin' ? 'ADMIN' :
+        req.user.role === 'ca' ? 'CA' : 'USER';
 
       if (!message || message.length === 0) {
         throw new AppError('Message content is required', 400);
@@ -178,27 +178,27 @@ class ServiceTicketController {
         senderId,
         message,
         senderType,
-        attachments || []
+        attachments || [],
       );
 
       enterpriseLogger.info('Message added to ticket via API', {
         ticketId: id,
         senderId,
         senderType,
-        messageLength: message.length
+        messageLength: message.length,
       });
 
       res.status(201).json({
         success: true,
         message: 'Message added successfully',
-        data: result.message
+        data: result.message,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to add message via API', {
         error: error.message,
         ticketId: req.params.id,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -219,8 +219,8 @@ class ServiceTicketController {
       }
 
       const validStatuses = [
-        'OPEN', 'IN_PROGRESS', 'PENDING_USER', 'PENDING_CA', 
-        'RESOLVED', 'CLOSED', 'ESCALATED'
+        'OPEN', 'IN_PROGRESS', 'PENDING_USER', 'PENDING_CA',
+        'RESOLVED', 'CLOSED', 'ESCALATED',
       ];
 
       if (!validStatuses.includes(status)) {
@@ -232,19 +232,19 @@ class ServiceTicketController {
       enterpriseLogger.info('Ticket status updated via API', {
         ticketId: id,
         newStatus: status,
-        updatedBy
+        updatedBy,
       });
 
       res.status(200).json({
         success: true,
-        message: 'Ticket status updated successfully'
+        message: 'Ticket status updated successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to update ticket status via API', {
         error: error.message,
         ticketId: req.params.id,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -269,19 +269,19 @@ class ServiceTicketController {
       enterpriseLogger.info('Ticket assigned via API', {
         ticketId: id,
         assignedTo,
-        assignedBy
+        assignedBy,
       });
 
       res.status(200).json({
         success: true,
-        message: 'Ticket assigned successfully'
+        message: 'Ticket assigned successfully',
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to assign ticket via API', {
         error: error.message,
         ticketId: req.params.id,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -299,19 +299,19 @@ class ServiceTicketController {
 
       enterpriseLogger.info('Ticket statistics retrieved via API', {
         userId: req.user.id,
-        userRole: req.user.role
+        userRole: req.user.role,
       });
 
       res.status(200).json({
         success: true,
         message: 'Ticket statistics retrieved successfully',
-        data: stats
+        data: stats,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get ticket statistics via API', {
         error: error.message,
-        userId: req.user?.id
+        userId: req.user?.id,
       });
       next(error);
     }
@@ -330,7 +330,7 @@ class ServiceTicketController {
           description: 'Help with ITR filing process',
           icon: '📄',
           slaHours: 24,
-          priority: 'MEDIUM'
+          priority: 'MEDIUM',
         },
         {
           key: 'DOCUMENT_REVIEW',
@@ -338,7 +338,7 @@ class ServiceTicketController {
           description: 'Review uploaded documents',
           icon: '📋',
           slaHours: 12,
-          priority: 'HIGH'
+          priority: 'HIGH',
         },
         {
           key: 'TAX_QUERY',
@@ -346,7 +346,7 @@ class ServiceTicketController {
           description: 'Tax-related questions',
           icon: '❓',
           slaHours: 48,
-          priority: 'MEDIUM'
+          priority: 'MEDIUM',
         },
         {
           key: 'TECHNICAL_ISSUE',
@@ -354,7 +354,7 @@ class ServiceTicketController {
           description: 'Platform technical problems',
           icon: '🔧',
           slaHours: 6,
-          priority: 'HIGH'
+          priority: 'HIGH',
         },
         {
           key: 'PAYMENT_ISSUE',
@@ -362,7 +362,7 @@ class ServiceTicketController {
           description: 'Payment-related problems',
           icon: '💳',
           slaHours: 4,
-          priority: 'URGENT'
+          priority: 'URGENT',
         },
         {
           key: 'REFUND_REQUEST',
@@ -370,7 +370,7 @@ class ServiceTicketController {
           description: 'Request for refund',
           icon: '💰',
           slaHours: 72,
-          priority: 'MEDIUM'
+          priority: 'MEDIUM',
         },
         {
           key: 'GENERAL_INQUIRY',
@@ -378,19 +378,19 @@ class ServiceTicketController {
           description: 'General questions',
           icon: '💬',
           slaHours: 48,
-          priority: 'LOW'
-        }
+          priority: 'LOW',
+        },
       ];
 
       res.status(200).json({
         success: true,
         message: 'Ticket types retrieved successfully',
-        data: ticketTypes
+        data: ticketTypes,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get ticket types via API', {
-        error: error.message
+        error: error.message,
       });
       next(error);
     }
@@ -408,47 +408,47 @@ class ServiceTicketController {
           label: 'Low',
           description: 'Low priority issue',
           color: 'green',
-          slaHours: 72
+          slaHours: 72,
         },
         {
           key: 'MEDIUM',
           label: 'Medium',
           description: 'Normal priority issue',
           color: 'blue',
-          slaHours: 24
+          slaHours: 24,
         },
         {
           key: 'HIGH',
           label: 'High',
           description: 'High priority issue',
           color: 'orange',
-          slaHours: 12
+          slaHours: 12,
         },
         {
           key: 'URGENT',
           label: 'Urgent',
           description: 'Urgent issue requiring immediate attention',
           color: 'red',
-          slaHours: 6
+          slaHours: 6,
         },
         {
           key: 'CRITICAL',
           label: 'Critical',
           description: 'Critical issue affecting system',
           color: 'purple',
-          slaHours: 2
-        }
+          slaHours: 2,
+        },
       ];
 
       res.status(200).json({
         success: true,
         message: 'Ticket priorities retrieved successfully',
-        data: priorities
+        data: priorities,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get ticket priorities via API', {
-        error: error.message
+        error: error.message,
       });
       next(error);
     }
@@ -465,12 +465,12 @@ class ServiceTicketController {
       res.status(200).json({
         success: true,
         message: 'Service status retrieved successfully',
-        data: status
+        data: status,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get service status via API', {
-        error: error.message
+        error: error.message,
       });
       next(error);
     }
@@ -493,19 +493,19 @@ class ServiceTicketController {
       enterpriseLogger.info('Auto-generated filing ticket created via API', {
         filingId: filingData.id,
         ticketId: result.ticket.id,
-        ticketNumber: result.ticket.ticketNumber
+        ticketNumber: result.ticket.ticketNumber,
       });
 
       res.status(201).json({
         success: true,
         message: 'Auto-generated ticket created successfully',
-        data: result.ticket
+        data: result.ticket,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to auto-create filing ticket via API', {
         error: error.message,
-        filingData: req.body.filingData
+        filingData: req.body.filingData,
       });
       next(error);
     }

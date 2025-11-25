@@ -72,7 +72,7 @@ const Tooltip = ({
   // Show tooltip
   const showTooltip = () => {
     if (disabled) return;
-    
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -134,7 +134,7 @@ const Tooltip = ({
   // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (trigger === 'click' && isVisible && 
+      if (trigger === 'click' && isVisible &&
           triggerRef.current && !triggerRef.current.contains(event.target) &&
           tooltipRef.current && !tooltipRef.current.contains(event.target)) {
         hideTooltip();
@@ -179,7 +179,7 @@ const Tooltip = ({
     positionClass,
     triggerClass,
     visibilityClass,
-    className
+    className,
   ].filter(Boolean).join(' ');
 
   return (
@@ -196,7 +196,7 @@ const Tooltip = ({
       >
         {children}
       </div>
-      
+
       {isVisible && (
         <div
           ref={tooltipRef}
@@ -204,7 +204,7 @@ const Tooltip = ({
           style={{
             top: `${tooltipPosition.top}px`,
             left: `${tooltipPosition.left}px`,
-            maxWidth: `${maxWidth}px`
+            maxWidth: `${maxWidth}px`,
           }}
           role="tooltip"
         >

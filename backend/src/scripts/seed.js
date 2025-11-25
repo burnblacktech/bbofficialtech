@@ -37,12 +37,12 @@ class DatabaseSeeder {
 
   async seedUsers(client) {
     enterpriseLogger.info('Seeding users...');
-    
+
     // Hash passwords
     const adminPassword = await bcrypt.hash('admin123', 12);
     const userPassword = await bcrypt.hash('user123', 12);
     const caPassword = await bcrypt.hash('ca123', 12);
-    
+
     const users = [
       {
         email: 'admin@burnblack.com',
@@ -52,7 +52,7 @@ class DatabaseSeeder {
         phone: '9999999999',
         status: 'active',
         email_verified: true,
-        phone_verified: true
+        phone_verified: true,
       },
       {
         email: 'user@burnblack.com',
@@ -62,7 +62,7 @@ class DatabaseSeeder {
         phone: '8888888888',
         status: 'active',
         email_verified: true,
-        phone_verified: false
+        phone_verified: false,
       },
       {
         email: 'ca@burnblack.com',
@@ -72,8 +72,8 @@ class DatabaseSeeder {
         phone: '7777777777',
         status: 'active',
         email_verified: true,
-        phone_verified: true
-      }
+        phone_verified: true,
+      },
     ];
 
     for (const user of users) {
@@ -90,9 +90,9 @@ class DatabaseSeeder {
           user.phone,
           user.status,
           user.email_verified,
-          user.phone_verified
+          user.phone_verified,
         ]);
-        
+
         enterpriseLogger.info(`User seeded: ${user.email}`);
       } catch (error) {
         enterpriseLogger.error(`Failed to seed user: ${user.email}`, { error: error.message });
@@ -102,7 +102,7 @@ class DatabaseSeeder {
 
   async seedTaxSlabs(client) {
     enterpriseLogger.info('Seeding tax slabs...');
-    
+
     const taxSlabs = [
       {
         assessment_year: '2024-25',
@@ -112,9 +112,9 @@ class DatabaseSeeder {
           { min_income: 600001, max_income: 900000, tax_rate: 10, cess_rate: 4 },
           { min_income: 900001, max_income: 1200000, tax_rate: 15, cess_rate: 4 },
           { min_income: 1200001, max_income: 1500000, tax_rate: 20, cess_rate: 4 },
-          { min_income: 1500001, max_income: null, tax_rate: 30, cess_rate: 4 }
-        ]
-      }
+          { min_income: 1500001, max_income: null, tax_rate: 30, cess_rate: 4 },
+        ],
+      },
     ];
 
     // Create tax_slabs table if it doesn't exist
@@ -137,7 +137,7 @@ class DatabaseSeeder {
             slabs = EXCLUDED.slabs,
             updated_at = CURRENT_TIMESTAMP
         `, [taxSlab.assessment_year, JSON.stringify(taxSlab.slabs)]);
-        
+
         enterpriseLogger.info(`Tax slabs seeded for: ${taxSlab.assessment_year}`);
       } catch (error) {
         enterpriseLogger.error(`Failed to seed tax slabs: ${taxSlab.assessment_year}`, { error: error.message });
@@ -147,7 +147,7 @@ class DatabaseSeeder {
 
   async seedValidationRules(client) {
     enterpriseLogger.info('Seeding validation rules...');
-    
+
     const validationRules = [
       {
         itr_type: 'ITR-1',
@@ -156,9 +156,9 @@ class DatabaseSeeder {
           field_validations: {
             pan: { pattern: '^[A-Z]{5}[0-9]{4}[A-Z]{1}$', message: 'Invalid PAN format' },
             email: { pattern: '^[^@]+@[^@]+\\.[^@]+$', message: 'Invalid email format' },
-            phone: { pattern: '^[0-9]{10}$', message: 'Phone must be 10 digits' }
-          }
-        }
+            phone: { pattern: '^[0-9]{10}$', message: 'Phone must be 10 digits' },
+          },
+        },
       },
       {
         itr_type: 'ITR-2',
@@ -167,10 +167,10 @@ class DatabaseSeeder {
           field_validations: {
             pan: { pattern: '^[A-Z]{5}[0-9]{4}[A-Z]{1}$', message: 'Invalid PAN format' },
             email: { pattern: '^[^@]+@[^@]+\\.[^@]+$', message: 'Invalid email format' },
-            phone: { pattern: '^[0-9]{10}$', message: 'Phone must be 10 digits' }
-          }
-        }
-      }
+            phone: { pattern: '^[0-9]{10}$', message: 'Phone must be 10 digits' },
+          },
+        },
+      },
     ];
 
     // Create validation_rules table if it doesn't exist
@@ -193,7 +193,7 @@ class DatabaseSeeder {
             rules = EXCLUDED.rules,
             updated_at = CURRENT_TIMESTAMP
         `, [rule.itr_type, JSON.stringify(rule.rules)]);
-        
+
         enterpriseLogger.info(`Validation rules seeded for: ${rule.itr_type}`);
       } catch (error) {
         enterpriseLogger.error(`Failed to seed validation rules: ${rule.itr_type}`, { error: error.message });
@@ -203,22 +203,22 @@ class DatabaseSeeder {
 
   async seedSampleData(client) {
     enterpriseLogger.info('Seeding sample data...');
-    
+
     // Get a test user
     const userResult = await client.query('SELECT id FROM users WHERE email = $1', ['user@burnblack.com']);
-    
+
     if (userResult.rows.length > 0) {
       const userId = userResult.rows[0].id;
-      
+
       // Create a sample ITR filing
       const filingResult = await client.query(`
         INSERT INTO itr_filings (user_id, itr_type, assessment_year, status)
         VALUES ($1, $2, $3, $4)
         RETURNING id
       `, [userId, 'ITR-1', '2024-25', 'draft']);
-      
+
       const filingId = filingResult.rows[0].id;
-      
+
       // Create sample draft
       await client.query(`
         INSERT INTO itr_drafts (filing_id, step, data, is_completed)
@@ -230,32 +230,32 @@ class DatabaseSeeder {
           pan: 'ABCDE1234F',
           full_name: 'Test User',
           email: 'user@burnblack.com',
-          phone: '8888888888'
+          phone: '8888888888',
         }),
-        true
+        true,
       ]);
-      
+
       enterpriseLogger.info('Sample ITR filing and draft created');
     }
   }
 
   async runSeeding() {
     let client;
-    
+
     try {
       client = await this.connect();
-      
+
       await client.query('BEGIN');
-      
+
       await this.seedUsers(client);
       await this.seedTaxSlabs(client);
       await this.seedValidationRules(client);
       await this.seedSampleData(client);
-      
+
       await client.query('COMMIT');
-      
+
       enterpriseLogger.info('Database seeding completed successfully');
-      
+
     } catch (error) {
       if (client) {
         await client.query('ROLLBACK');
@@ -275,13 +275,13 @@ class DatabaseSeeder {
 async function main() {
   try {
     enterpriseLogger.info('Starting database seeding process');
-    
+
     const seeder = new DatabaseSeeder();
     await seeder.runSeeding();
-    
+
     enterpriseLogger.info('Database seeding completed successfully');
     process.exit(0);
-    
+
   } catch (error) {
     enterpriseLogger.error('Database seeding failed', { error: error.message });
     process.exit(1);

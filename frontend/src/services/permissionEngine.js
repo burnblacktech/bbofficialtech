@@ -75,8 +75,8 @@ class PermissionEngine {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId,
-          ...accessConfig
-        })
+          ...accessConfig,
+        }),
       });
 
       if (!response.ok) {
@@ -101,7 +101,7 @@ class PermissionEngine {
       const response = await fetch('/api/permissions/revoke-temporary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, accessId })
+        body: JSON.stringify({ userId, accessId }),
       });
 
       if (!response.ok) {
@@ -128,7 +128,7 @@ class PermissionEngine {
     startTime,
     reason,
     grantedBy,
-    customExpiryDate = null
+    customExpiryDate = null,
   }) {
     const now = new Date();
     const expiryDate = customExpiryDate || this.calculateExpiryDate(now, duration);
@@ -143,7 +143,7 @@ class PermissionEngine {
       reason: reason || 'Temporary access granted',
       grantedBy: grantedBy,
       createdAt: now.toISOString(),
-      isActive: true
+      isActive: true,
     };
   }
 
@@ -208,7 +208,7 @@ class PermissionEngine {
     duration,
     reason,
     grantedBy,
-    recurring = false
+    recurring = false,
   }) {
     return {
       id: this.generateAccessId(),
@@ -221,7 +221,7 @@ class PermissionEngine {
       grantedBy: grantedBy,
       recurring,
       createdAt: new Date().toISOString(),
-      isActive: true
+      isActive: true,
     };
   }
 
@@ -234,7 +234,7 @@ class PermissionEngine {
     season,
     year,
     reason,
-    grantedBy
+    grantedBy,
   }) {
     const seasonDates = this.getSeasonDates(season, year);
 
@@ -250,7 +250,7 @@ class PermissionEngine {
       reason: reason || `Seasonal access for ${season}`,
       grantedBy: grantedBy,
       createdAt: new Date().toISOString(),
-      isActive: true
+      isActive: true,
     };
   }
 
@@ -265,7 +265,7 @@ class PermissionEngine {
         // July to March (tax season)
         return {
           start: new Date(currentYear, 6, 1), // July 1
-          end: new Date(currentYear + 1, 2, 31) // March 31
+          end: new Date(currentYear + 1, 2, 31), // March 31
         };
       case 'QUARTER_END':
         // 15 days before quarter end to 15 days after
@@ -274,7 +274,7 @@ class PermissionEngine {
         const quarterEnd = new Date(currentYear, quarter * 3, 0);
         return {
           start: new Date(quarterEnd.getTime() - 15 * 24 * 60 * 60 * 1000),
-          end: new Date(quarterEnd.getTime() + 15 * 24 * 60 * 60 * 1000)
+          end: new Date(quarterEnd.getTime() + 15 * 24 * 60 * 60 * 1000),
         };
       default:
         throw new Error(`Unknown season: ${season}`);
@@ -289,7 +289,7 @@ class PermissionEngine {
       ROLES.SUPER_ADMIN,
       ROLES.PLATFORM_ADMIN,
       ROLES.CA_FIRM_ADMIN,
-      ROLES.INDEPENDENT_CA_ADMIN
+      ROLES.INDEPENDENT_CA_ADMIN,
     ].includes(user.role);
   }
 
@@ -301,7 +301,7 @@ class PermissionEngine {
       ROLES.SUPER_ADMIN,
       ROLES.PLATFORM_ADMIN,
       ROLES.CA_FIRM_ADMIN,
-      ROLES.INDEPENDENT_CA_ADMIN
+      ROLES.INDEPENDENT_CA_ADMIN,
     ];
 
     if (!managerRoles.includes(user.role)) {
@@ -330,20 +330,20 @@ class PermissionEngine {
       [ROLES.SUPER_ADMIN]: ['*'],
       [ROLES.PLATFORM_ADMIN]: [
         'users.*', 'ca_firms.*', 'filings.*', 'documents.*',
-        'admin.*', 'grant_temporary_access'
+        'admin.*', 'grant_temporary_access',
       ],
       [ROLES.CA_FIRM_ADMIN]: [
         'staff_management.*', 'user_management.read', 'user_management.update',
         'client_management.*', 'filings.*', 'documents.*',
         'billing_invoicing.*', 'reports_analytics.read',
-        'firm.grant_temporary_access'
+        'firm.grant_temporary_access',
       ],
       [ROLES.INDEPENDENT_CA_ADMIN]: [
         'staff_management.*', 'user_management.read', 'user_management.update',
         'client_management.*', 'filings.*', 'documents.*',
         'billing_invoicing.*', 'reports_analytics.read',
-        'independent.grant_temporary_access'
-      ]
+        'independent.grant_temporary_access',
+      ],
     };
 
     return permissions[role] || [];
@@ -394,7 +394,7 @@ class PermissionEngine {
   async getAccessSummary(user) {
     try {
       const [temporaryAccess] = await Promise.all([
-        this.getTemporaryAccess(user.user_id)
+        this.getTemporaryAccess(user.user_id),
       ]);
 
       const summary = {
@@ -405,7 +405,7 @@ class PermissionEngine {
           return expiryTime > new Date();
         }),
         activeModules: [],
-        expiringSoon: []
+        expiringSoon: [],
       };
 
       // Check active modules and expiring soon
@@ -424,7 +424,7 @@ class PermissionEngine {
         if (timeUntilExpiry > 0 && timeUntilExpiry <= twoDaysInMs) {
           summary.expiringSoon.push({
             ...access,
-            timeUntilExpiry: this.formatExpiryDate(access.expiresAt)
+            timeUntilExpiry: this.formatExpiryDate(access.expiresAt),
           });
         }
       });
@@ -437,7 +437,7 @@ class PermissionEngine {
         basePermissions: this.getRolePermissions(user.role),
         temporaryAccess: [],
         activeModules: [],
-        expiringSoon: []
+        expiringSoon: [],
       };
     }
   }

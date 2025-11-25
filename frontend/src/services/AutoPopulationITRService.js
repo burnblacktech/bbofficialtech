@@ -19,7 +19,7 @@ class AutoPopulationITRService {
       ITR_4: 'ITR-4',
       ITR_5: 'ITR-5',
       ITR_6: 'ITR-6',
-      ITR_7: 'ITR-7'
+      ITR_7: 'ITR-7',
     };
 
     this.incomeSources = {
@@ -30,7 +30,7 @@ class AutoPopulationITRService {
       INTEREST_INCOME: 'interest_income',
       DIVIDEND_INCOME: 'dividend_income',
       RENTAL_INCOME: 'rental_income',
-      OTHER_INCOME: 'other_income'
+      OTHER_INCOME: 'other_income',
     };
 
     this.deductionSections = {
@@ -42,7 +42,7 @@ class AutoPopulationITRService {
       SECTION_80TTA: 'section_80tta',
       SECTION_80U: 'section_80u',
       HOUSING_LOAN: 'housing_loan',
-      HRA: 'hra'
+      HRA: 'hra',
     };
 
     this.autoPopulationSources = {
@@ -53,7 +53,7 @@ class AutoPopulationITRService {
       SALARY_SLIPS: 'salary_slips',
       RENT_RECEIPTS: 'rent_receipts',
       INTEREST_CERTIFICATES: 'interest_certificates',
-      PREVIOUS_RETURNS: 'previous_returns'
+      PREVIOUS_RETURNS: 'previous_returns',
     };
   }
 
@@ -79,7 +79,7 @@ class AutoPopulationITRService {
       console.log('🔍 Determining ITR applicability...');
       const itrApplicability = await this.determineITRApplicability(
         dataSyncResult.consolidatedData,
-        assessmentYear
+        assessmentYear,
       );
 
       // Step 3: Structure ITR data based on type
@@ -87,7 +87,7 @@ class AutoPopulationITRService {
       const structuredData = await this.structureITRData(
         itrType,
         dataSyncResult.consolidatedData,
-        itrApplicability
+        itrApplicability,
       );
 
       // Step 4: Perform validation and consistency checks
@@ -99,7 +99,7 @@ class AutoPopulationITRService {
       const optimizationRecommendations = await this.generateOptimizationRecommendations(
         structuredData,
         validationResult,
-        assessmentYear
+        assessmentYear,
       );
 
       // Step 6: Calculate tax liability
@@ -111,7 +111,7 @@ class AutoPopulationITRService {
       const filingStrategy = await this.generateFilingStrategy(
         structuredData,
         taxCalculation,
-        optimizationRecommendations
+        optimizationRecommendations,
       );
 
       const autoPopulationResult = {
@@ -132,8 +132,8 @@ class AutoPopulationITRService {
         summary: this.generateAutoPopulationSummary(
           dataSyncResult,
           structuredData,
-          taxCalculation
-        )
+          taxCalculation,
+        ),
       };
 
       // Save auto-population result
@@ -147,7 +147,7 @@ class AutoPopulationITRService {
       return {
         success: false,
         error: error.message,
-        autoPopulationId: this.generateAutoPopulationId()
+        autoPopulationId: this.generateAutoPopulationId(),
       };
     }
   }
@@ -173,7 +173,7 @@ class AutoPopulationITRService {
         taxData,
         brokerData,
         form16Data,
-        documentData
+        documentData,
       ] = await Promise.allSettled([
         dataSources.includes(this.autoPopulationSources.BANK_STATEMENTS) ?
           dataIntegrationService.syncBankStatementData(userId, assessmentYear) :
@@ -191,7 +191,7 @@ class AutoPopulationITRService {
           dataIntegrationService.syncForm16Data(userId, assessmentYear) :
           Promise.resolve({ success: false, message: 'Form 16 not enabled' }),
 
-        this.syncDocumentData(userId, assessmentYear)
+        this.syncDocumentData(userId, assessmentYear),
       ]);
 
       // Consolidate all data
@@ -200,7 +200,7 @@ class AutoPopulationITRService {
         taxData: taxData.value,
         brokerData: brokerData.value,
         form16Data: form16Data.value,
-        documentData: documentData.value
+        documentData: documentData.value,
       });
 
       return {
@@ -211,8 +211,8 @@ class AutoPopulationITRService {
           taxData: taxData.status === 'fulfilled',
           brokerData: brokerData.status === 'fulfilled',
           form16Data: form16Data.status === 'fulfilled',
-          documentData: documentData.status === 'fulfilled'
-        }
+          documentData: documentData.status === 'fulfilled',
+        },
       };
 
     } catch (error) {
@@ -251,11 +251,11 @@ class AutoPopulationITRService {
         filingInfo: {
           assessmentYear: consolidatedData.assessmentYear,
           itrType: itrType,
-          filingStatus: itrApplicability.filingStatus
+          filingStatus: itrApplicability.filingStatus,
         },
         bankAccounts: consolidatedData.bankAccounts,
         taxPaid: consolidatedData.taxPaid,
-        tdsDetails: consolidatedData.tdsDetails
+        tdsDetails: consolidatedData.tdsDetails,
       };
 
       return structuredData;
@@ -278,19 +278,19 @@ class AutoPopulationITRService {
           incomeFromSalary: consolidatedData.salaryIncome?.total || 0,
           deductions: {
             professionalTax: consolidatedData.salaryIncome?.professionalTax || 0,
-            entertainmentAllowance: consolidatedData.salaryIncome?.entertainmentAllowance || 0
-          }
+            entertainmentAllowance: consolidatedData.salaryIncome?.entertainmentAllowance || 0,
+          },
         },
         incomeFromOtherSources: {
           interest: {
             savingsBank: consolidatedData.interestIncome?.savingsBank || 0,
             fixedDeposits: consolidatedData.interestIncome?.fixedDeposits || 0,
             postOffice: consolidatedData.interestIncome?.postOffice || 0,
-            other: consolidatedData.interestIncome?.other || 0
+            other: consolidatedData.interestIncome?.other || 0,
           },
           commission: consolidatedData.otherIncome?.commission || 0,
-          other: consolidatedData.otherIncome?.other || 0
-        }
+          other: consolidatedData.otherIncome?.other || 0,
+        },
       },
       deductions: {
         section80C: {
@@ -301,20 +301,20 @@ class AutoPopulationITRService {
           elss: consolidatedData.deductions?.section80C?.elss || 0,
           tuitionFees: consolidatedData.deductions?.section80C?.tuitionFees || 0,
           homeLoanPrincipal: consolidatedData.deductions?.section80C?.homeLoanPrincipal || 0,
-          other: consolidatedData.deductions?.section80C?.other || 0
+          other: consolidatedData.deductions?.section80C?.other || 0,
         },
         section80D: {
           total: consolidatedData.deductions?.section80D?.total || 0,
           self: consolidatedData.deductions?.section80D?.self || 0,
-          parents: consolidatedData.deductions?.section80D?.parents || 0
+          parents: consolidatedData.deductions?.section80D?.parents || 0,
         },
         section80EE: consolidatedData.deductions?.section80EE || 0,
         hra: {
           total: consolidatedData.deductions?.hra?.total || 0,
           hraReceived: consolidatedData.deductions?.hra?.hraReceived || 0,
           rentPaid: consolidatedData.deductions?.hra?.rentPaid || 0,
-          basicSalary: consolidatedData.deductions?.hra?.basicSalary || 0
-        }
+          basicSalary: consolidatedData.deductions?.hra?.basicSalary || 0,
+        },
       },
       taxComputation: {
         grossTotalIncome: this.calculateGrossTotalIncome(consolidatedData),
@@ -324,13 +324,13 @@ class AutoPopulationITRService {
         educationCess: 0,
         totalTaxLiability: 0,
         rebates: {
-          section87A: 0
+          section87A: 0,
         },
         taxPayable: 0,
         tdsCredits: consolidatedData.tdsDetails?.total || 0,
         taxPaid: consolidatedData.taxPaid?.total || 0,
-        refundDue: 0
-      }
+        refundDue: 0,
+      },
     };
   }
 
@@ -349,40 +349,40 @@ class AutoPopulationITRService {
             equityShares: consolidatedData.capitalGains?.shortTerm?.equity || 0,
             equityMF: consolidatedData.capitalGains?.shortTerm?.mutualFunds || 0,
             debtMF: consolidatedData.capitalGains?.shortTerm?.debtFunds || 0,
-            other: consolidatedData.capitalGains?.shortTerm?.other || 0
+            other: consolidatedData.capitalGains?.shortTerm?.other || 0,
           },
           longTerm: {
             equityShares: consolidatedData.capitalGains?.longTerm?.equity || 0,
             equityMF: consolidatedData.capitalGains?.longTerm?.mutualFunds || 0,
             debtMF: consolidatedData.capitalGains?.longTerm?.debtFunds || 0,
             other: consolidatedData.capitalGains?.longTerm?.other || 0,
-            exempt: consolidatedData.capitalGains?.longTerm?.exempt || 0
-          }
+            exempt: consolidatedData.capitalGains?.longTerm?.exempt || 0,
+          },
         },
         incomeFromHouseProperty: {
           selfOccupied: {
-            interestOnHousingLoan: consolidatedData.housingLoan?.interest || 0
+            interestOnHousingLoan: consolidatedData.housingLoan?.interest || 0,
           },
           letOut: {
             annualRent: consolidatedData.rentalIncome?.annual || 0,
             municipalTaxes: consolidatedData.rentalIncome?.municipalTaxes || 0,
             standardDeduction: consolidatedData.rentalIncome?.standardDeduction || 0,
-            interestOnHousingLoan: consolidatedData.rentalIncome?.housingLoanInterest || 0
-          }
+            interestOnHousingLoan: consolidatedData.rentalIncome?.housingLoanInterest || 0,
+          },
         },
         foreignIncome: {
           addressOutsideIndia: [],
           foreignBankAccounts: [],
           foreignAssets: [],
-          foreignIncome: []
-        }
+          foreignIncome: [],
+        },
       },
       scheduleAL: applicability.hasUnexplainedIncome ? {
         cashDeposits: [],
         unexplainedInvestments: [],
         unexplainedExpenditure: [],
-        unexplainedCredits: []
-      } : null
+        unexplainedCredits: [],
+      } : null,
     };
   }
 
@@ -426,7 +426,7 @@ class AutoPopulationITRService {
         recommendedITR: applicableITRTypes[0] || null,
         filingStatus: 'regular',
         hasUnexplainedIncome: false,
-        needsAudit: totalIncome > 5000000 && (hasBusinessIncome || hasForeignIncome)
+        needsAudit: totalIncome > 5000000 && (hasBusinessIncome || hasForeignIncome),
       };
 
       return applicability;
@@ -451,9 +451,9 @@ class AutoPopulationITRService {
         dataQuality: {
           completeness: 0,
           consistency: 0,
-          accuracy: 0
+          accuracy: 0,
         },
-        fieldValidation: {}
+        fieldValidation: {},
       };
 
       // Check required fields
@@ -479,7 +479,7 @@ class AutoPopulationITRService {
       validationResults.dataQuality = {
         completeness: this.calculateCompleteness(structuredData, requiredFields),
         consistency: consistencyChecks.score,
-        accuracy: this.calculateAccuracy(structuredData)
+        accuracy: this.calculateAccuracy(structuredData),
       };
 
       return validationResults;
@@ -502,7 +502,7 @@ class AutoPopulationITRService {
         deductions: [],
         taxPlanning: [],
         filingStrategy: [],
-        compliance: []
+        compliance: [],
       };
 
       // Income optimization
@@ -513,7 +513,7 @@ class AutoPopulationITRService {
           title: 'Optimize Interest Income',
           description: 'Consider tax-efficient investment options to reduce interest income',
           potentialSavings: structuredData.income.incomeFromOtherSources.interest.total * 0.30,
-          action: 'Invest in tax-free bonds or tax-saving FDs'
+          action: 'Invest in tax-free bonds or tax-saving FDs',
         });
       }
 
@@ -526,7 +526,7 @@ class AutoPopulationITRService {
           title: 'Maximize Section 80C Deductions',
           description: `You can save additional ₹${150000 - current80C} in taxes by maximizing 80C deductions`,
           potentialSavings: (150000 - current80C) * 0.30,
-          action: 'Invest in ELSS, PPF, or tax-saving FDs'
+          action: 'Invest in ELSS, PPF, or tax-saving FDs',
         });
       }
 
@@ -538,7 +538,7 @@ class AutoPopulationITRService {
           title: 'Capital Gains Tax Planning',
           description: 'Consider tax-loss harvesting to offset short-term gains',
           potentialSavings: structuredData.income.capitalGains.shortTerm.total * 0.15,
-          action: 'Review portfolio for loss-making investments'
+          action: 'Review portfolio for loss-making investments',
         });
       }
 
@@ -549,7 +549,7 @@ class AutoPopulationITRService {
           priority: 'high',
           title: 'Improve Data Quality',
           description: 'Some data points need verification for accurate filing',
-          action: 'Review and verify financial data before filing'
+          action: 'Review and verify financial data before filing',
         });
       }
 
@@ -610,7 +610,7 @@ class AutoPopulationITRService {
         totalCredits,
         taxPayable,
         refundDue,
-        effectiveTaxRate: taxableIncome > 0 ? (taxAfterRebates / taxableIncome) * 100 : 0
+        effectiveTaxRate: taxableIncome > 0 ? (taxAfterRebates / taxableIncome) * 100 : 0,
       };
 
     } catch (error) {
@@ -632,7 +632,7 @@ class AutoPopulationITRService {
         documentation: [],
         auditRequirement: false,
         advanceTaxPlanning: [],
-        postFilingActions: []
+        postFilingActions: [],
       };
 
       // Determine filing timing
@@ -642,7 +642,7 @@ class AutoPopulationITRService {
           type: 'advance_tax',
           description: 'Pay advance tax to avoid interest penalties',
           amount: taxCalculation.taxPayable * 0.25,
-          dueDate: '2024-06-15'
+          dueDate: '2024-06-15',
         });
       }
 
@@ -668,7 +668,7 @@ class AutoPopulationITRService {
         strategy.postFilingActions.push({
           action: 'track_refund',
           description: `Track refund of ₹${taxCalculation.refundDue.toLocaleString()}`,
-          timeline: '7-30 days after filing'
+          timeline: '7-30 days after filing',
         });
       }
 
@@ -676,7 +676,7 @@ class AutoPopulationITRService {
         strategy.postFilingActions.push({
           action: 'implement_tax_savings',
           description: 'Implement tax-saving recommendations for next year',
-          timeline: 'immediately after filing'
+          timeline: 'immediately after filing',
         });
       }
 
@@ -734,7 +734,7 @@ class AutoPopulationITRService {
       'common.personalInfo.pan',
       'common.personalInfo.fullName',
       'common.personalInfo.dateOfBirth',
-      'common.filingInfo.assessmentYear'
+      'common.filingInfo.assessmentYear',
     ];
 
     switch (itrType) {
@@ -742,7 +742,7 @@ class AutoPopulationITRService {
         return [
           ...commonFields,
           'income.salary.totalSalary',
-          'income.incomeFromOtherSources.interest.savingsBank'
+          'income.incomeFromOtherSources.interest.savingsBank',
         ];
       default:
         return commonFields;
@@ -768,7 +768,7 @@ class AutoPopulationITRService {
     return {
       warnings: [],
       errors: [],
-      score: 80
+      score: 80,
     };
   }
 
@@ -781,7 +781,7 @@ class AutoPopulationITRService {
       redFlags.push({
         type: 'red_flag',
         message: 'High interest income detected. Please verify bank account details.',
-        severity: 'medium'
+        severity: 'medium',
       });
     }
 
@@ -815,7 +815,7 @@ class AutoPopulationITRService {
       totalIncome: taxCalculation.grossTotalIncome,
       totalDeductions: taxCalculation.totalDeductions,
       taxLiability: taxCalculation.taxPayable,
-      refundDue: taxCalculation.refundDue
+      refundDue: taxCalculation.refundDue,
     };
   }
 
@@ -827,7 +827,7 @@ class AutoPopulationITRService {
         type: 'income_proof',
         document: 'Form 16',
         required: true,
-        source: 'employer'
+        source: 'employer',
       });
     }
 
@@ -836,7 +836,7 @@ class AutoPopulationITRService {
         type: 'income_proof',
         document: 'Interest Certificates',
         required: true,
-        source: 'banks'
+        source: 'banks',
       });
     }
 
@@ -851,7 +851,7 @@ class AutoPopulationITRService {
     try {
       await apiClient.post('/auto-population/save-result', {
         autoPopulationId,
-        result
+        result,
       });
     } catch (error) {
       console.error('Error saving auto-population result:', error);

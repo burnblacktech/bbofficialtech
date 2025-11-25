@@ -11,10 +11,10 @@ class MFAService {
     this.otpExpiry = 5 * 60 * 1000; // 5 minutes
     this.maxAttempts = 3;
     this.otpLength = 6;
-    
+
     // In production, this would be a database table
     this.mfaSessions = new Map();
-    
+
     enterpriseLogger.info('MFAService initialized');
   }
 
@@ -31,7 +31,7 @@ class MFAService {
       // Generate 6-digit OTP
       const otp = this.generateRandomOTP();
       const sessionId = crypto.randomUUID();
-      
+
       // Create MFA session
       const mfaSession = {
         sessionId,
@@ -44,7 +44,7 @@ class MFAService {
         maxAttempts: this.maxAttempts,
         expiresAt: new Date(Date.now() + this.otpExpiry),
         createdAt: new Date(),
-        status: 'pending'
+        status: 'pending',
       };
 
       // Store session
@@ -58,21 +58,21 @@ class MFAService {
         filingId,
         sessionId,
         phone: phone ? 'provided' : 'not provided',
-        email: email ? 'provided' : 'not provided'
+        email: email ? 'provided' : 'not provided',
       });
 
       return {
         sessionId,
         message: 'OTP sent successfully',
         expiresIn: this.otpExpiry / 1000, // seconds
-        deliveryMethods: this.getDeliveryMethods(mfaSession)
+        deliveryMethods: this.getDeliveryMethods(mfaSession),
       };
 
     } catch (error) {
       enterpriseLogger.error('Failed to generate MFA OTP', {
         error: error.message,
         userId,
-        filingId
+        filingId,
       });
       throw new AppError(`Failed to generate OTP: ${error.message}`, 500);
     }
@@ -87,7 +87,7 @@ class MFAService {
   async verifyOTP(sessionId, otp) {
     try {
       const mfaSession = this.mfaSessions.get(sessionId);
-      
+
       if (!mfaSession) {
         throw new AppError('Invalid or expired MFA session', 400);
       }
@@ -113,7 +113,7 @@ class MFAService {
           sessionId,
           userId: mfaSession.userId,
           attempts: mfaSession.attempts,
-          remainingAttempts: mfaSession.maxAttempts - mfaSession.attempts
+          remainingAttempts: mfaSession.maxAttempts - mfaSession.attempts,
         });
 
         if (mfaSession.attempts >= mfaSession.maxAttempts) {
@@ -132,7 +132,7 @@ class MFAService {
         sessionId,
         userId: mfaSession.userId,
         filingId: mfaSession.filingId,
-        attempts: mfaSession.attempts
+        attempts: mfaSession.attempts,
       });
 
       return {
@@ -140,13 +140,13 @@ class MFAService {
         message: 'OTP verified successfully',
         sessionId,
         userId: mfaSession.userId,
-        filingId: mfaSession.filingId
+        filingId: mfaSession.filingId,
       };
 
     } catch (error) {
       enterpriseLogger.error('MFA OTP verification failed', {
         error: error.message,
-        sessionId
+        sessionId,
       });
       throw error;
     }
@@ -160,7 +160,7 @@ class MFAService {
   async resendOTP(sessionId) {
     try {
       const mfaSession = this.mfaSessions.get(sessionId);
-      
+
       if (!mfaSession) {
         throw new AppError('Invalid or expired MFA session', 400);
       }
@@ -183,19 +183,19 @@ class MFAService {
       enterpriseLogger.info('MFA OTP resent', {
         sessionId,
         userId: mfaSession.userId,
-        filingId: mfaSession.filingId
+        filingId: mfaSession.filingId,
       });
 
       return {
         success: true,
         message: 'OTP resent successfully',
-        expiresIn: this.otpExpiry / 1000
+        expiresIn: this.otpExpiry / 1000,
       };
 
     } catch (error) {
       enterpriseLogger.error('Failed to resend MFA OTP', {
         error: error.message,
-        sessionId
+        sessionId,
       });
       throw error;
     }
@@ -209,7 +209,7 @@ class MFAService {
   async getSessionStatus(sessionId) {
     try {
       const mfaSession = this.mfaSessions.get(sessionId);
-      
+
       if (!mfaSession) {
         return { status: 'not_found' };
       }
@@ -224,13 +224,13 @@ class MFAService {
         attempts: mfaSession.attempts,
         maxAttempts: mfaSession.maxAttempts,
         expiresAt: mfaSession.expiresAt,
-        remainingTime: Math.max(0, mfaSession.expiresAt - new Date())
+        remainingTime: Math.max(0, mfaSession.expiresAt - new Date()),
       };
 
     } catch (error) {
       enterpriseLogger.error('Failed to get MFA session status', {
         error: error.message,
-        sessionId
+        sessionId,
       });
       throw error;
     }
@@ -274,9 +274,9 @@ class MFAService {
         enterpriseLogger.info('SMS OTP sent', {
           phone: mfaSession.phone,
           otp: mfaSession.otp,
-          sessionId: mfaSession.sessionId
+          sessionId: mfaSession.sessionId,
         });
-        
+
         // In production, integrate with SMS service (Twilio, etc.)
         // await smsService.sendOTP(mfaSession.phone, mfaSession.otp);
       }
@@ -286,9 +286,9 @@ class MFAService {
         enterpriseLogger.info('Email OTP sent', {
           email: mfaSession.email,
           otp: mfaSession.otp,
-          sessionId: mfaSession.sessionId
+          sessionId: mfaSession.sessionId,
         });
-        
+
         // In production, integrate with email service (Resend, etc.)
         // await emailService.sendOTP(mfaSession.email, mfaSession.otp);
       }
@@ -296,7 +296,7 @@ class MFAService {
     } catch (error) {
       enterpriseLogger.error('Failed to send OTP', {
         error: error.message,
-        sessionId: mfaSession.sessionId
+        sessionId: mfaSession.sessionId,
       });
       throw error;
     }
@@ -309,15 +309,15 @@ class MFAService {
    */
   getDeliveryMethods(mfaSession) {
     const methods = [];
-    
+
     if (mfaSession.phone) {
       methods.push('SMS');
     }
-    
+
     if (mfaSession.email) {
       methods.push('Email');
     }
-    
+
     return methods;
   }
 
@@ -329,7 +329,7 @@ class MFAService {
   async validateSessionForSubmission(sessionId) {
     try {
       const mfaSession = this.mfaSessions.get(sessionId);
-      
+
       if (!mfaSession) {
         return false;
       }
@@ -348,7 +348,7 @@ class MFAService {
     } catch (error) {
       enterpriseLogger.error('Failed to validate MFA session', {
         error: error.message,
-        sessionId
+        sessionId,
       });
       return false;
     }

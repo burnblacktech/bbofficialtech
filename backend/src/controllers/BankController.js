@@ -13,32 +13,32 @@ class BankController {
         id: 'hdfc',
         name: 'HDFC Bank',
         apiAvailable: true,
-        description: 'HDFC Bank API integration'
+        description: 'HDFC Bank API integration',
       },
       {
         id: 'icici',
         name: 'ICICI Bank',
         apiAvailable: true,
-        description: 'ICICI Bank API integration'
+        description: 'ICICI Bank API integration',
       },
       {
         id: 'sbi',
         name: 'State Bank of India',
         apiAvailable: false,
-        description: 'SBI API integration (coming soon)'
+        description: 'SBI API integration (coming soon)',
       },
       {
         id: 'axis',
         name: 'Axis Bank',
         apiAvailable: true,
-        description: 'Axis Bank API integration'
+        description: 'Axis Bank API integration',
       },
       {
         id: 'kotak',
         name: 'Kotak Mahindra Bank',
         apiAvailable: false,
-        description: 'Kotak Bank API integration (coming soon)'
-      }
+        description: 'Kotak Bank API integration (coming soon)',
+      },
     ];
   }
 
@@ -50,16 +50,16 @@ class BankController {
     try {
       res.json({
         success: true,
-        data: { banks: this.supportedBanks }
+        data: { banks: this.supportedBanks },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get supported banks', {
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
-        error: 'Failed to get supported banks'
+        error: 'Failed to get supported banks',
       });
     }
   }
@@ -77,13 +77,13 @@ class BankController {
       const bankInfo = this.supportedBanks.find(b => b.id === bank);
       if (!bankInfo) {
         return res.status(400).json({
-          error: 'Unsupported bank'
+          error: 'Unsupported bank',
         });
       }
 
       if (!bankInfo.apiAvailable) {
         return res.status(400).json({
-          error: 'API not available for this bank'
+          error: 'API not available for this bank',
         });
       }
 
@@ -95,29 +95,29 @@ class BankController {
         accountInfo: {
           accountNumber: '****1234',
           accountType: 'Savings',
-          balance: 50000
-        }
+          balance: 50000,
+        },
       };
 
       enterpriseLogger.info('Bank API authenticated', {
         userId,
-        bank
+        bank,
       });
 
       res.json({
         success: true,
-        data: mockResponse
+        data: mockResponse,
       });
 
     } catch (error) {
       enterpriseLogger.error('Bank API authentication failed', {
         userId: req.user.userId,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Bank API authentication failed',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -136,7 +136,7 @@ class BankController {
       const bankInfo = this.supportedBanks.find(b => b.id === bank);
       if (!bankInfo || !bankInfo.apiAvailable) {
         return res.status(400).json({
-          error: 'Bank API not available'
+          error: 'Bank API not available',
         });
       }
 
@@ -149,7 +149,7 @@ class BankController {
           amount: -25000,
           type: 'debit',
           category: 'insurance',
-          reference: 'LIC123456789'
+          reference: 'LIC123456789',
         },
         {
           id: 'TXN002',
@@ -158,7 +158,7 @@ class BankController {
           amount: -50000,
           type: 'debit',
           category: 'investment',
-          reference: 'PPF987654321'
+          reference: 'PPF987654321',
         },
         {
           id: 'TXN003',
@@ -167,7 +167,7 @@ class BankController {
           amount: -15000,
           type: 'debit',
           category: 'education',
-          reference: 'SCH456789123'
+          reference: 'SCH456789123',
         },
         {
           id: 'TXN004',
@@ -176,8 +176,8 @@ class BankController {
           amount: -35000,
           type: 'debit',
           category: 'loan',
-          reference: 'HL789123456'
-        }
+          reference: 'HL789123456',
+        },
       ];
 
       enterpriseLogger.info('Bank transactions fetched', {
@@ -185,7 +185,7 @@ class BankController {
         bank,
         startDate,
         endDate,
-        transactionCount: mockTransactions.length
+        transactionCount: mockTransactions.length,
       });
 
       res.json({
@@ -196,21 +196,21 @@ class BankController {
           dateRange: { startDate, endDate },
           accountInfo: {
             accountNumber: accountNumber || '****1234',
-            accountType: 'Savings'
-          }
-        }
+            accountType: 'Savings',
+          },
+        },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to fetch bank transactions', {
         userId: req.user.userId,
         bank: req.params.bank,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Failed to fetch bank transactions',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -226,7 +226,7 @@ class BankController {
 
       if (!transactions || !Array.isArray(transactions)) {
         return res.status(400).json({
-          error: 'Invalid transactions data'
+          error: 'Invalid transactions data',
         });
       }
 
@@ -235,7 +235,7 @@ class BankController {
         licPayments: [],
         tuitionFees: [],
         homeLoanPayments: [],
-        other: []
+        other: [],
       };
 
       transactions.forEach(transaction => {
@@ -247,7 +247,7 @@ class BankController {
           deductions.ppfDeposits.push({
             ...transaction,
             type: 'PPF_INVESTMENT',
-            amount: amount
+            amount: amount,
           });
         }
         // LIC payments
@@ -255,7 +255,7 @@ class BankController {
           deductions.licPayments.push({
             ...transaction,
             type: 'LIC_PREMIUM',
-            amount: amount
+            amount: amount,
           });
         }
         // Tuition fees
@@ -263,7 +263,7 @@ class BankController {
           deductions.tuitionFees.push({
             ...transaction,
             type: 'TUITION_FEES',
-            amount: amount
+            amount: amount,
           });
         }
         // Home loan payments
@@ -271,7 +271,7 @@ class BankController {
           deductions.homeLoanPayments.push({
             ...transaction,
             type: 'HOME_LOAN_PRINCIPAL',
-            amount: amount
+            amount: amount,
           });
         }
         // Other potential deductions
@@ -279,7 +279,7 @@ class BankController {
           deductions.other.push({
             ...transaction,
             type: 'OTHER_80C',
-            amount: amount
+            amount: amount,
           });
         }
       });
@@ -287,23 +287,23 @@ class BankController {
       enterpriseLogger.info('Deductions detected from transactions', {
         userId,
         totalTransactions: transactions.length,
-        detectedDeductions: Object.values(deductions).flat().length
+        detectedDeductions: Object.values(deductions).flat().length,
       });
 
       res.json({
         success: true,
-        data: { deductions }
+        data: { deductions },
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to detect deductions', {
         userId: req.user.userId,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Failed to detect deductions',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -322,23 +322,23 @@ class BankController {
         accountNumber: '****1234',
         accountType: 'Savings',
         balance: 50000,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
       res.json({
         success: true,
-        data: mockSummary
+        data: mockSummary,
       });
 
     } catch (error) {
       enterpriseLogger.error('Failed to get account summary', {
         userId: req.user.userId,
         bank: req.params.bank,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
-        error: 'Failed to get account summary'
+        error: 'Failed to get account summary',
       });
     }
   }
@@ -357,29 +357,29 @@ class BankController {
         connected: true,
         consentId,
         bankId,
-        connectedAt: new Date().toISOString()
+        connectedAt: new Date().toISOString(),
       };
 
       enterpriseLogger.info('Account Aggregator connected', {
         userId,
         consentId,
-        bankId
+        bankId,
       });
 
       res.json({
         success: true,
-        data: mockResponse
+        data: mockResponse,
       });
 
     } catch (error) {
       enterpriseLogger.error('Account Aggregator connection failed', {
         userId: req.user.userId,
-        error: error.message
+        error: error.message,
       });
 
       res.status(500).json({
         error: 'Account Aggregator connection failed',
-        details: error.message
+        details: error.message,
       });
     }
   }
@@ -392,11 +392,11 @@ class BankController {
     // Check if transaction might be a deduction
     const deductionKeywords = [
       'investment', 'deposit', 'premium', 'contribution',
-      'mutual fund', 'nsc', 'sukanya', 'elss'
+      'mutual fund', 'nsc', 'sukanya', 'elss',
     ];
 
-    return deductionKeywords.some(keyword => 
-      description.includes(keyword)
+    return deductionKeywords.some(keyword =>
+      description.includes(keyword),
     ) && amount >= 1000; // Minimum amount threshold
   }
 }

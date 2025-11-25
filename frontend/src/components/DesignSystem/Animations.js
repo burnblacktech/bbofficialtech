@@ -46,9 +46,9 @@ export const StaggerContainer = ({ children, staggerDelay = 0.1, className = '' 
         visible: {
           opacity: 1,
           transition: {
-            staggerChildren: staggerDelay
-          }
-        }
+            staggerChildren: staggerDelay,
+          },
+        },
       }}
       className={className}
     >
@@ -63,7 +63,7 @@ export const StaggerItem = ({ children, className = '' }) => {
     <motion.div
       variants={{
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 }
+        visible: { opacity: 1, y: 0 },
       }}
       transition={{ duration: 0.3 }}
       className={className}

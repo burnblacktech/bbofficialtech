@@ -7,22 +7,22 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Shield, 
-  Users, 
-  FileText, 
-  MessageSquare, 
-  DollarSign, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import {
+  Shield,
+  Users,
+  FileText,
+  MessageSquare,
+  DollarSign,
+  Settings,
+  LogOut,
+  Menu,
   X,
   BarChart3,
   Building2,
   AlertCircle,
   CheckCircle,
   Clock,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 const AdminLayout = ({ children }) => {
@@ -40,44 +40,44 @@ const AdminLayout = ({ children }) => {
       name: 'Dashboard',
       href: '/admin/dashboard',
       icon: BarChart3,
-      current: location.pathname === '/admin/dashboard'
+      current: location.pathname === '/admin/dashboard',
     },
     {
       name: 'User Management',
       href: '/admin/users',
       icon: Users,
-      current: location.pathname === '/admin/users'
+      current: location.pathname === '/admin/users',
     },
     {
       name: 'CA Firm Management',
       href: '/admin/ca-firms',
       icon: Building2,
-      current: location.pathname === '/admin/ca-firms'
+      current: location.pathname === '/admin/ca-firms',
     },
     {
       name: 'Service Tickets',
       href: '/admin/tickets',
       icon: MessageSquare,
-      current: location.pathname === '/admin/tickets'
+      current: location.pathname === '/admin/tickets',
     },
     {
       name: 'Invoice Management',
       href: '/admin/invoices',
       icon: FileText,
-      current: location.pathname === '/admin/invoices'
+      current: location.pathname === '/admin/invoices',
     },
     {
       name: 'Pricing Control',
       href: '/admin/pricing',
       icon: DollarSign,
-      current: location.pathname === '/admin/pricing'
+      current: location.pathname === '/admin/pricing',
     },
     {
       name: 'System Settings',
       href: '/admin/settings',
       icon: Settings,
-      current: location.pathname === '/admin/settings'
-    }
+      current: location.pathname === '/admin/settings',
+    },
   ];
 
   if (isLoading) {
@@ -135,7 +135,7 @@ const AdminLayout = ({ children }) => {
               </a>
             ))}
           </nav>
-          
+
           {/* Mobile logout button */}
           <div className="p-4 border-t border-neutral-200 mt-auto">
             <button
@@ -173,7 +173,7 @@ const AdminLayout = ({ children }) => {
             </a>
           ))}
         </nav>
-        
+
         {/* Desktop logout button */}
         <div className="p-4 border-t border-neutral-200 mt-auto">
           <button

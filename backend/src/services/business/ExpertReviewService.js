@@ -3,10 +3,10 @@
 // Automated expert review flagging and service ticket creation
 // =====================================================
 
-const { ITRFiling, ServiceTicket, ServiceTicketMessage, User } = require('../models');
+const { ITRFiling, ServiceTicket, ServiceTicketMessage, User } = require('../../models');
 const ServiceTicketService = require('./ServiceTicketService');
-const emailService = require('./emailService');
-const enterpriseLogger = require('../utils/logger');
+const emailService = require('../integration/EmailService');
+const enterpriseLogger = require('../../utils/logger');
 
 class ExpertReviewService {
   /**
@@ -20,7 +20,7 @@ class ExpertReviewService {
       enterpriseLogger.info('ExpertReviewService: Flagging filing for expert review', {
         filingId: filingData.id,
         userId: filingData.userId,
-        paymentId: paymentData.paymentId
+        paymentId: paymentData.paymentId,
       });
 
       // Update ITR filing with expert review flag
@@ -29,12 +29,12 @@ class ExpertReviewService {
           expert_review_requested: true,
           expert_review_payment_id: paymentData.paymentId,
           expert_review_status: 'pending',
-          expert_review_requested_at: new Date()
+          expert_review_requested_at: new Date(),
         },
         {
           where: { id: filingData.id },
-          returning: true
-        }
+          returning: true,
+        },
       );
 
       // Create service ticket for expert review
@@ -52,8 +52,8 @@ class ExpertReviewService {
           paymentId: paymentData.paymentId,
           assessmentYear: filingData.assessmentYear,
           pan: filingData.pan,
-          expertReviewRequested: true
-        }
+          expertReviewRequested: true,
+        },
       };
 
       const serviceTicket = await ServiceTicketService.createTicket(ticketData);
@@ -63,7 +63,7 @@ class ExpertReviewService {
         ticketId: serviceTicket.id,
         senderId: 'system',
         message: `Expert review requested for ITR filing #${filingData.id}. The filing has been flagged for manual review by our tax experts.`,
-        messageType: 'system'
+        messageType: 'system',
       };
 
       await ServiceTicketService.addMessage(serviceTicket.id, initialMessage);
@@ -76,7 +76,7 @@ class ExpertReviewService {
 
       enterpriseLogger.info('ExpertReviewService: Expert review flagged successfully', {
         filingId: filingData.id,
-        ticketId: serviceTicket.id
+        ticketId: serviceTicket.id,
       });
 
       return {
@@ -84,14 +84,14 @@ class ExpertReviewService {
         filingId: filingData.id,
         ticketId: serviceTicket.id,
         status: 'pending',
-        message: 'Expert review request created successfully'
+        message: 'Expert review request created successfully',
       };
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error flagging for expert review', {
         error: error.message,
         filingId: filingData.id,
-        stack: error.stack
+        stack: error.stack,
       });
 
       throw new Error('Failed to flag filing for expert review');
@@ -108,7 +108,7 @@ class ExpertReviewService {
     try {
       enterpriseLogger.info('ExpertReviewService: Completing expert review', {
         filingId,
-        reviewerId: reviewData.reviewerId
+        reviewerId: reviewData.reviewerId,
       });
 
       // Update ITR filing with review results
@@ -119,17 +119,17 @@ class ExpertReviewService {
           expert_reviewer_id: reviewData.reviewerId,
           expert_review_notes: reviewData.notes,
           expert_review_recommendations: reviewData.recommendations,
-          expert_review_approved: reviewData.approved
+          expert_review_approved: reviewData.approved,
         },
         {
           where: { id: filingId },
-          returning: true
-        }
+          returning: true,
+        },
       );
 
       // Update service ticket status
       const ticket = await ServiceTicket.findOne({
-        where: { filingId, category: 'expert_review' }
+        where: { filingId, category: 'expert_review' },
       });
 
       if (ticket) {
@@ -137,9 +137,9 @@ class ExpertReviewService {
           {
             status: 'resolved',
             resolvedAt: new Date(),
-            resolvedBy: reviewData.reviewerId
+            resolvedBy: reviewData.reviewerId,
           },
-          { where: { id: ticket.id } }
+          { where: { id: ticket.id } },
         );
 
         // Add resolution message
@@ -147,7 +147,7 @@ class ExpertReviewService {
           ticketId: ticket.id,
           senderId: reviewData.reviewerId,
           message: `Expert review completed. ${reviewData.approved ? 'Approved' : 'Requires changes'}. ${reviewData.notes}`,
-          messageType: 'admin'
+          messageType: 'admin',
         };
 
         await ServiceTicketService.addMessage(ticket.id, resolutionMessage);
@@ -158,21 +158,21 @@ class ExpertReviewService {
 
       enterpriseLogger.info('ExpertReviewService: Expert review completed successfully', {
         filingId,
-        approved: reviewData.approved
+        approved: reviewData.approved,
       });
 
       return {
         success: true,
         filingId,
         approved: reviewData.approved,
-        message: 'Expert review completed successfully'
+        message: 'Expert review completed successfully',
       };
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error completing expert review', {
         error: error.message,
         filingId,
-        stack: error.stack
+        stack: error.stack,
       });
 
       throw new Error('Failed to complete expert review');
@@ -191,9 +191,9 @@ class ExpertReviewService {
           {
             model: ServiceTicket,
             where: { category: 'expert_review' },
-            required: false
-          }
-        ]
+            required: false,
+          },
+        ],
       });
 
       if (!filing) {
@@ -211,14 +211,14 @@ class ExpertReviewService {
         expertReviewRecommendations: filing.expert_review_recommendations,
         expertReviewApproved: filing.expert_review_approved,
         ticketId: filing.ServiceTickets?.[0]?.id,
-        ticketStatus: filing.ServiceTickets?.[0]?.status
+        ticketStatus: filing.ServiceTickets?.[0]?.status,
       };
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error getting expert review status', {
         error: error.message,
         filingId,
-        stack: error.stack
+        stack: error.stack,
       });
 
       throw new Error('Failed to get expert review status');
@@ -245,21 +245,21 @@ class ExpertReviewService {
           pan: filingData.pan,
           paymentId: paymentData.paymentId,
           amount: paymentData.amount,
-          expectedCompletionTime: '24 hours'
-        }
+          expectedCompletionTime: '24 hours',
+        },
       };
 
       await emailService.sendEmail(emailData);
 
       enterpriseLogger.info('ExpertReviewService: Expert review confirmation email sent', {
         filingId: filingData.id,
-        userEmail: user.email
+        userEmail: user.email,
       });
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error sending confirmation email', {
         error: error.message,
-        filingId: filingData.id
+        filingId: filingData.id,
       });
     }
   }
@@ -272,7 +272,7 @@ class ExpertReviewService {
   async sendExpertReviewCompletionEmail(filingId, reviewData) {
     try {
       const filing = await ITRFiling.findByPk(filingId, {
-        include: [{ model: User }]
+        include: [{ model: User }],
       });
 
       if (!filing || !filing.User) {
@@ -290,21 +290,21 @@ class ExpertReviewService {
           pan: filing.pan,
           approved: reviewData.approved,
           notes: reviewData.notes,
-          recommendations: reviewData.recommendations
-        }
+          recommendations: reviewData.recommendations,
+        },
       };
 
       await emailService.sendEmail(emailData);
 
       enterpriseLogger.info('ExpertReviewService: Expert review completion email sent', {
         filingId,
-        userEmail: filing.User.email
+        userEmail: filing.User.email,
       });
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error sending completion email', {
         error: error.message,
-        filingId
+        filingId,
       });
     }
   }
@@ -319,8 +319,8 @@ class ExpertReviewService {
       // Get admin users
       const adminUsers = await User.findAll({
         where: {
-          role: ['admin', 'super_admin', 'platform_admin']
-        }
+          role: ['admin', 'super_admin', 'platform_admin'],
+        },
       });
 
       // Send notification to each admin
@@ -336,8 +336,8 @@ class ExpertReviewService {
             userName: filingData.userName,
             assessmentYear: filingData.assessmentYear,
             pan: filingData.pan,
-            priority: 'high'
-          }
+            priority: 'high',
+          },
         };
 
         await emailService.sendEmail(emailData);
@@ -346,13 +346,13 @@ class ExpertReviewService {
       enterpriseLogger.info('ExpertReviewService: Admin team notified', {
         filingId: filingData.id,
         ticketId: serviceTicket.id,
-        adminCount: adminUsers.length
+        adminCount: adminUsers.length,
       });
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error notifying admin team', {
         error: error.message,
-        filingId: filingData.id
+        filingId: filingData.id,
       });
     }
   }
@@ -366,7 +366,7 @@ class ExpertReviewService {
     try {
       const whereClause = {
         expert_review_requested: true,
-        expert_review_status: 'pending'
+        expert_review_status: 'pending',
       };
 
       if (filters.priority) {
@@ -378,16 +378,16 @@ class ExpertReviewService {
         include: [
           {
             model: User,
-            attributes: ['id', 'fullName', 'email', 'phone']
+            attributes: ['id', 'fullName', 'email', 'phone'],
           },
           {
             model: ServiceTicket,
             where: { category: 'expert_review' },
-            required: false
-          }
+            required: false,
+          },
         ],
         order: [['expert_review_requested_at', 'ASC']],
-        limit: filters.limit || 50
+        limit: filters.limit || 50,
       });
 
       return filings.map(filing => ({
@@ -400,13 +400,13 @@ class ExpertReviewService {
         expertReviewRequestedAt: filing.expert_review_requested_at,
         ticketId: filing.ServiceTickets?.[0]?.id,
         ticketStatus: filing.ServiceTickets?.[0]?.status,
-        priority: filing.ServiceTickets?.[0]?.priority
+        priority: filing.ServiceTickets?.[0]?.priority,
       }));
 
     } catch (error) {
       enterpriseLogger.error('ExpertReviewService: Error getting expert review queue', {
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
 
       throw new Error('Failed to get expert review queue');

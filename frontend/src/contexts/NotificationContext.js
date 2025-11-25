@@ -16,7 +16,7 @@ const NOTIFICATION_ACTIONS = {
   REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
   MARK_AS_READ: 'MARK_AS_READ',
   CLEAR_ALL: 'CLEAR_ALL',
-  SET_ERROR: 'SET_ERROR'
+  SET_ERROR: 'SET_ERROR',
 };
 
 // Initial state
@@ -25,7 +25,7 @@ const initialState = {
   notifications: [],
   unreadCount: 0,
   error: null,
-  lastNotification: null
+  lastNotification: null,
 };
 
 // Reducer
@@ -35,7 +35,7 @@ const notificationReducer = (state, action) => {
       return {
         ...state,
         isConnected: action.payload,
-        error: null
+        error: null,
       };
 
     case NOTIFICATION_ACTIONS.ADD_NOTIFICATION:
@@ -43,47 +43,47 @@ const notificationReducer = (state, action) => {
         ...action.payload,
         id: action.payload.id || `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         timestamp: action.payload.timestamp || new Date().toISOString(),
-        isRead: false
+        isRead: false,
       };
-      
+
       return {
         ...state,
         notifications: [newNotification, ...state.notifications].slice(0, 100), // Keep last 100
         unreadCount: state.unreadCount + 1,
-        lastNotification: newNotification
+        lastNotification: newNotification,
       };
 
     case NOTIFICATION_ACTIONS.REMOVE_NOTIFICATION:
       const notificationToRemove = state.notifications.find(n => n.id === action.payload);
       const wasUnread = notificationToRemove && !notificationToRemove.isRead;
-      
+
       return {
         ...state,
         notifications: state.notifications.filter(n => n.id !== action.payload),
-        unreadCount: wasUnread ? state.unreadCount - 1 : state.unreadCount
+        unreadCount: wasUnread ? state.unreadCount - 1 : state.unreadCount,
       };
 
     case NOTIFICATION_ACTIONS.MARK_AS_READ:
       return {
         ...state,
-        notifications: state.notifications.map(n => 
-          n.id === action.payload ? { ...n, isRead: true } : n
+        notifications: state.notifications.map(n =>
+          n.id === action.payload ? { ...n, isRead: true } : n,
         ),
-        unreadCount: Math.max(0, state.unreadCount - 1)
+        unreadCount: Math.max(0, state.unreadCount - 1),
       };
 
     case NOTIFICATION_ACTIONS.CLEAR_ALL:
       return {
         ...state,
         notifications: [],
-        unreadCount: 0
+        unreadCount: 0,
       };
 
     case NOTIFICATION_ACTIONS.SET_ERROR:
       return {
         ...state,
         error: action.payload,
-        isConnected: false
+        isConnected: false,
       };
 
     default:
@@ -130,7 +130,7 @@ export const NotificationProvider = ({ children }) => {
 
       sseClient.on('notification', (notification) => {
         dispatch({ type: NOTIFICATION_ACTIONS.ADD_NOTIFICATION, payload: notification });
-        
+
         // Show browser notification if permission granted
         showBrowserNotification(notification);
       });
@@ -150,7 +150,7 @@ export const NotificationProvider = ({ children }) => {
         const browserNotification = new Notification(notification.data.title || 'BurnBlack Notification', {
           body: notification.data.message || 'You have a new notification',
           icon: '/favicon.ico',
-          tag: notification.id
+          tag: notification.id,
         });
 
         browserNotification.onclick = () => {
@@ -218,7 +218,7 @@ export const NotificationProvider = ({ children }) => {
   const reconnect = () => {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
-    
+
     if (token && userId) {
       sseClient.disconnect();
       initializeSSEConnection(userId, token);
@@ -260,7 +260,7 @@ export const NotificationProvider = ({ children }) => {
   const value = {
     // State
     ...state,
-    
+
     // Actions
     addNotification,
     removeNotification,
@@ -270,7 +270,7 @@ export const NotificationProvider = ({ children }) => {
     sendTestNotification,
     reconnect,
     requestNotificationPermission,
-    
+
     // Getters
     getNotificationsByType,
     getUnreadNotifications,
@@ -279,7 +279,7 @@ export const NotificationProvider = ({ children }) => {
     getUnreadCount,
     isConnected,
     getLastNotification,
-    getConnectionStatus
+    getConnectionStatus,
   };
 
   return (
@@ -292,11 +292,11 @@ export const NotificationProvider = ({ children }) => {
 // Hook to use notification context
 export const useNotificationContext = () => {
   const context = useContext(NotificationContext);
-  
+
   if (!context) {
     throw new Error('useNotificationContext must be used within a NotificationProvider');
   }
-  
+
   return context;
 };
 

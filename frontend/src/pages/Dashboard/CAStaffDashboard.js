@@ -7,16 +7,16 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiClient } from '../../services';
 import { toast } from 'react-hot-toast';
-import { 
-  Users, 
-  FileText, 
-  MessageSquare, 
+import {
+  Users,
+  FileText,
+  MessageSquare,
   Clock,
   CheckCircle,
   AlertCircle,
   Plus,
   Search,
-  Filter
+  Filter,
 } from 'lucide-react';
 
 const CAStaffDashboard = () => {
@@ -35,7 +35,7 @@ const CAStaffDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Load assigned clients
       const clientsResponse = await apiClient.get(`/users?assignedTo=${user.id}&role=END_USER`);
       if (clientsResponse.data.success) {
@@ -88,15 +88,15 @@ const CAStaffDashboard = () => {
 
   const filteredClients = assignedClients.filter(client =>
     client.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+    client.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const pendingFilings = filings.filter(filing => 
-    ['draft', 'in_progress', 'under_review'].includes(filing.status)
+  const pendingFilings = filings.filter(filing =>
+    ['draft', 'in_progress', 'under_review'].includes(filing.status),
   );
 
-  const completedFilings = filings.filter(filing => 
-    filing.status === 'completed'
+  const completedFilings = filings.filter(filing =>
+    filing.status === 'completed',
   );
 
   if (loading) {
@@ -138,7 +138,7 @@ const CAStaffDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <Clock className="h-8 w-8 text-yellow-600" />
@@ -148,7 +148,7 @@ const CAStaffDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -158,7 +158,7 @@ const CAStaffDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <MessageSquare className="h-8 w-8 text-purple-600" />
@@ -178,7 +178,7 @@ const CAStaffDashboard = () => {
             {[
               { id: 'clients', label: 'Assigned Clients', icon: Users },
               { id: 'filings', label: 'Filings', icon: FileText },
-              { id: 'tickets', label: 'Support Tickets', icon: MessageSquare }
+              { id: 'tickets', label: 'Support Tickets', icon: MessageSquare },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -242,10 +242,10 @@ const CAStaffDashboard = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredClients.map((client) => {
                     const clientFilings = filings.filter(f => f.userId === client.id);
-                    const activeFilings = clientFilings.filter(f => 
-                      ['draft', 'in_progress', 'under_review'].includes(f.status)
+                    const activeFilings = clientFilings.filter(f =>
+                      ['draft', 'in_progress', 'under_review'].includes(f.status),
                     );
-                    
+
                     return (
                       <tr key={client.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -340,7 +340,7 @@ const CAStaffDashboard = () => {
                           <button className="text-blue-600 hover:text-blue-900 mr-4">
                             Review
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleUpdateFilingStatus(filing.id, 'completed')}
                             className="text-green-600 hover:text-green-900"
                           >

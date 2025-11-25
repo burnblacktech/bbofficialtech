@@ -151,7 +151,7 @@ class DocumentService {
         sizeBytes: file.size,
         category,
         filingId,
-        memberId
+        memberId,
       };
 
       // Generate presigned URL
@@ -179,7 +179,7 @@ class DocumentService {
         sizeBytes: file.size,
         category,
         filingId,
-        memberId
+        memberId,
       };
 
       return await this.completeUpload(completeData);

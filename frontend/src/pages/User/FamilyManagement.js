@@ -7,17 +7,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  ArrowLeft, 
-  Plus, 
-  User, 
-  Edit, 
-  Trash2, 
-  Calendar, 
-  Phone, 
-  Mail, 
-  Search, 
-  Filter, 
+import {
+  ArrowLeft,
+  Plus,
+  User,
+  Edit,
+  Trash2,
+  Calendar,
+  Phone,
+  Mail,
+  Search,
+  Filter,
   ChevronRight,
   Users,
   UserPlus,
@@ -27,7 +27,7 @@ import {
   Clock,
   FileText,
   Settings,
-  X
+  X,
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -51,7 +51,7 @@ const FamilyManagement = () => {
     panNumber: '',
     aadharNumber: '',
     isDependent: true,
-    income: 0
+    income: 0,
   });
 
   // Fetch family members
@@ -77,7 +77,7 @@ const FamilyManagement = () => {
       queryClient.invalidateQueries(['familyMembers', user?.user_id]);
       setShowAddForm(false);
       resetForm();
-    }
+    },
   });
 
   // Update family member mutation
@@ -90,7 +90,7 @@ const FamilyManagement = () => {
       queryClient.invalidateQueries(['familyMembers', user?.user_id]);
       setEditingMember(null);
       resetForm();
-    }
+    },
   });
 
   // Delete family member mutation
@@ -101,7 +101,7 @@ const FamilyManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['familyMembers', user?.user_id]);
-    }
+    },
   });
 
   const resetForm = () => {
@@ -115,7 +115,7 @@ const FamilyManagement = () => {
       panNumber: '',
       aadharNumber: '',
       isDependent: true,
-      income: 0
+      income: 0,
     });
   };
 
@@ -123,7 +123,7 @@ const FamilyManagement = () => {
     const { name, value, type, checked } = e.target;
     setMemberData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -135,7 +135,7 @@ const FamilyManagement = () => {
       if (editingMember) {
         await updateMemberMutation.mutateAsync({
           memberId: editingMember.id,
-          memberData
+          memberData,
         });
       } else {
         await addMemberMutation.mutateAsync(memberData);
@@ -159,7 +159,7 @@ const FamilyManagement = () => {
       panNumber: member.panNumber || '',
       aadharNumber: member.aadharNumber || '',
       isDependent: member.isDependent || true,
-      income: member.income || 0
+      income: member.income || 0,
     });
     setShowAddForm(true);
   };
@@ -201,8 +201,8 @@ const FamilyManagement = () => {
     const fullName = `${member.first_name || ''} ${member.last_name || ''}`.toLowerCase();
     const relationship = member.relationship?.toLowerCase() || '';
     const searchLower = searchTerm.toLowerCase();
-    
-    return fullName.includes(searchLower) || 
+
+    return fullName.includes(searchLower) ||
            relationship.includes(searchLower) ||
            member.email?.toLowerCase().includes(searchLower);
   });
@@ -212,7 +212,7 @@ const FamilyManagement = () => {
     'Child',
     'Parent',
     'Sibling',
-    'Other'
+    'Other',
   ];
 
   if (isLoading) {
@@ -244,7 +244,7 @@ const FamilyManagement = () => {
                 <p className="text-xs text-neutral-500">{filteredMembers.length} members</p>
               </div>
             </div>
-            
+
             <button
               onClick={() => {
                 setShowAddForm(true);
@@ -320,7 +320,7 @@ const FamilyManagement = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => handleEdit(member)}
@@ -560,7 +560,7 @@ const FamilyManagement = () => {
       {/* Bottom Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
@@ -571,14 +571,14 @@ const FamilyManagement = () => {
             <Users className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Family</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/profile')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/settings')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
           >

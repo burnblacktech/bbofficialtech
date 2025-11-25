@@ -14,7 +14,7 @@ const FilingStatusTracker = ({ filing }) => {
     assessmentYear: '2024-25',
     status: 'processing', // 'filed', 'processing', 'completed'
     refundAmount: 45000,
-    ...filing
+    ...filing,
   };
 
   const steps = [
@@ -24,7 +24,7 @@ const FilingStatusTracker = ({ filing }) => {
       description: 'Your return has been successfully filed and e-verified',
       icon: CheckCircle,
       completed: true,
-      date: 'Aug 15, 2024'
+      date: 'Aug 15, 2024',
     },
     {
       id: 'processing',
@@ -33,7 +33,7 @@ const FilingStatusTracker = ({ filing }) => {
       icon: Clock,
       completed: mockFiling.status === 'completed',
       current: mockFiling.status === 'processing',
-      date: mockFiling.status === 'processing' ? 'In Progress' : 'Aug 20, 2024'
+      date: mockFiling.status === 'processing' ? 'In Progress' : 'Aug 20, 2024',
     },
     {
       id: 'completed',
@@ -41,8 +41,8 @@ const FilingStatusTracker = ({ filing }) => {
       description: 'Your refund has been processed and credited',
       icon: CheckCircle,
       completed: mockFiling.status === 'completed',
-      date: mockFiling.status === 'completed' ? 'Aug 25, 2024' : 'Expected Aug 25, 2024'
-    }
+      date: mockFiling.status === 'completed' ? 'Aug 25, 2024' : 'Expected Aug 25, 2024',
+    },
   ];
 
   return (
@@ -81,7 +81,7 @@ const FilingStatusTracker = ({ filing }) => {
                 {new Date(mockFiling.filingDate).toLocaleDateString('en-IN', {
                   day: 'numeric',
                   month: 'long',
-                  year: 'numeric'
+                  year: 'numeric',
                 })}
               </p>
             </div>
@@ -95,16 +95,16 @@ const FilingStatusTracker = ({ filing }) => {
           {steps.map((step, index) => {
             const Icon = step.icon;
             const isLast = index === steps.length - 1;
-            
+
             return (
               <div key={step.id} className="flex items-start">
                 {/* Icon and Line */}
                 <div className="flex flex-col items-center mr-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    step.completed 
-                      ? 'bg-green-100 text-green-600' 
-                      : step.current 
-                        ? 'bg-blue-100 text-blue-600' 
+                    step.completed
+                      ? 'bg-green-100 text-green-600'
+                      : step.current
+                        ? 'bg-blue-100 text-blue-600'
                         : 'bg-gray-100 text-gray-400'
                   }`}>
                     <Icon className="w-5 h-5" />

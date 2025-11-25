@@ -47,7 +47,7 @@ import CABotService from './CABotService';
 export {
   apiClient,
   cacheService,
-  errorHandler
+  errorHandler,
 };
 
 // API services
@@ -55,7 +55,7 @@ export {
   authService,
   itrService,
   documentService,
-  paymentService
+  paymentService,
 };
 
 // Utility services
@@ -65,7 +65,7 @@ export {
   itrJsonExportService,
   form16ExtractionService,
   bankStatementService,
-  taxSavingsService
+  taxSavingsService,
 };
 
 // Data integration services
@@ -74,34 +74,34 @@ export {
   financialProfileService,
   aisForm26ASService,
   documentProcessingService,
-  autoPopulationITRService
+  autoPopulationITRService,
 };
 
 // Broker integration
 export {
   BrokerAPIService,
-  createBrokerService
+  createBrokerService,
 };
 
 // Specialized services
 export {
   BankAPIService,
   DeductionOCRService,
-  CABotService
+  CABotService,
 };
 
 // Service categories
 export const core = {
   apiClient,
   cacheService,
-  errorHandler
+  errorHandler,
 };
 
 export const api = {
   authService,
   itrService,
   documentService,
-  paymentService
+  paymentService,
 };
 
 export const utils = {
@@ -110,7 +110,7 @@ export const utils = {
   itrJsonExportService,
   form16ExtractionService,
   bankStatementService,
-  taxSavingsService
+  taxSavingsService,
 };
 
 export const dataIntegration = {
@@ -118,18 +118,18 @@ export const dataIntegration = {
   financialProfileService,
   aisForm26ASService,
   documentProcessingService,
-  autoPopulationITRService
+  autoPopulationITRService,
 };
 
 export const brokerIntegration = {
   BrokerAPIService,
-  createBrokerService
+  createBrokerService,
 };
 
 export const specialized = {
   BankAPIService,
   DeductionOCRService,
-  CABotService
+  CABotService,
 };
 
 // Default export
@@ -139,5 +139,5 @@ export default {
   ...utils,
   ...dataIntegration,
   ...brokerIntegration,
-  ...specialized
+  ...specialized,
 };

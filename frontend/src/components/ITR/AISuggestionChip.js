@@ -1,12 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Brain, 
-  TrendingUp, 
-  AlertTriangle, 
+import {
+  Brain,
+  TrendingUp,
+  AlertTriangle,
   Info,
   ArrowRight,
-  X
+  X,
 } from 'lucide-react';
 
 const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
@@ -31,7 +31,7 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
           border: 'border-orange-200',
           text: 'text-orange-800',
           icon: 'text-orange-600',
-          button: 'bg-orange-600 hover:bg-orange-700'
+          button: 'bg-orange-600 hover:bg-orange-700',
         };
       case 'medium':
         return {
@@ -39,7 +39,7 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
           border: 'border-blue-200',
           text: 'text-blue-800',
           icon: 'text-blue-600',
-          button: 'bg-blue-600 hover:bg-blue-700'
+          button: 'bg-blue-600 hover:bg-blue-700',
         };
       case 'low':
         return {
@@ -47,7 +47,7 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
           border: 'border-gray-200',
           text: 'text-gray-800',
           icon: 'text-gray-600',
-          button: 'bg-gray-600 hover:bg-gray-700'
+          button: 'bg-gray-600 hover:bg-gray-700',
         };
       default:
         return {
@@ -55,7 +55,7 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
           border: 'border-blue-200',
           text: 'text-blue-800',
           icon: 'text-blue-600',
-          button: 'bg-blue-600 hover:bg-blue-700'
+          button: 'bg-blue-600 hover:bg-blue-700',
         };
     }
   };
@@ -72,7 +72,7 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
     >
       {/* Icon */}
       <Icon className={`h-4 w-4 ${colors.icon} flex-shrink-0`} />
-      
+
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{suggestion.title}</p>

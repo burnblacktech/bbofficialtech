@@ -15,7 +15,7 @@ export const ANIMATIONS = {
     glow: '0 0 20px rgba(59, 130, 246, 0.3)',
     'glow-success': '0 0 20px rgba(34, 197, 94, 0.3)',
     'glow-warning': '0 0 20px rgba(245, 158, 11, 0.3)',
-    'glow-error': '0 0 20px rgba(239, 68, 68, 0.3)'
+    'glow-error': '0 0 20px rgba(239, 68, 68, 0.3)',
   },
   borderRadius: {
     none: '0',
@@ -27,19 +27,19 @@ export const ANIMATIONS = {
     '3xl': '1.5rem', // 24px
     '4xl': '2rem',   // 32px
     '5xl': '2.5rem', // 40px
-    full: '9999px'
+    full: '9999px',
   },
   transitions: {
     fast: '150ms ease-in-out',
     normal: '300ms ease-in-out',
-    slow: '500ms ease-in-out'
+    slow: '500ms ease-in-out',
   },
   easings: {
     easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
     easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
     easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    spring: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
-  }
+    spring: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  },
 };
 
 export default ANIMATIONS;

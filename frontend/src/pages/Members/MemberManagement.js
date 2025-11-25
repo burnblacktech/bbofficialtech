@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 const MemberManagement = () => {
   const navigate = useNavigate();
-  
+
   // State management
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +31,7 @@ const MemberManagement = () => {
     relationship: '',
     dateOfBirth: '',
     gender: '',
-    metadata: {}
+    metadata: {},
   });
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const MemberManagement = () => {
       relationship: '',
       dateOfBirth: '',
       gender: '',
-      metadata: {}
+      metadata: {},
     });
     setShowAddModal(true);
   };
@@ -71,7 +71,7 @@ const MemberManagement = () => {
       relationship: member.relationship,
       dateOfBirth: member.dateOfBirth || '',
       gender: member.gender || '',
-      metadata: member.metadata || {}
+      metadata: member.metadata || {},
     });
     setShowEditModal(true);
   };
@@ -91,7 +91,7 @@ const MemberManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       if (showAddModal) {
         await apiClient.post('/members', formData);
@@ -100,7 +100,7 @@ const MemberManagement = () => {
         await apiClient.put(`/members/${selectedMember.id}`, formData);
         toast.success('Member updated successfully');
       }
-      
+
       setShowAddModal(false);
       setShowEditModal(false);
       loadMembers();
@@ -118,16 +118,16 @@ const MemberManagement = () => {
     const matchesSearch = member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.pan.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.relationship.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status) => {
     const colors = {
       'active': 'green',
-      'inactive': 'gray'
+      'inactive': 'gray',
     };
     return colors[status] || 'gray';
   };
@@ -138,7 +138,7 @@ const MemberManagement = () => {
       'child': 'Child',
       'parent': 'Parent',
       'sibling': 'Sibling',
-      'other': 'Other'
+      'other': 'Other',
     };
     return labels[relationship] || 'Unknown';
   };
@@ -213,7 +213,7 @@ const MemberManagement = () => {
                   color={getStatusColor(member.status)}
                 />
               </div>
-              
+
               <div className="member-details">
                 <div className="detail-row">
                   <span className="label">PAN:</span>
@@ -263,7 +263,7 @@ const MemberManagement = () => {
           <div className="empty-state">
             <h3>No Members Found</h3>
             <p>
-              {searchTerm || statusFilter !== 'all' 
+              {searchTerm || statusFilter !== 'all'
                 ? 'No members match your search criteria'
                 : 'Add your first family member to get started'
               }

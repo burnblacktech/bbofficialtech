@@ -2,7 +2,7 @@
 // AUDIT SERVICE
 // =====================================================
 
-const enterpriseLogger = require('../utils/logger');
+const enterpriseLogger = require('../../utils/logger');
 const { v4: uuidv4 } = require('uuid');
 
 class AuditService {
@@ -32,7 +32,7 @@ class AuditService {
         ipAddress,
         userAgent,
         timestamp: new Date().toISOString(),
-        severity: this.getSeverity(action)
+        severity: this.getSeverity(action),
       };
 
       // In production, save to database
@@ -43,7 +43,7 @@ class AuditService {
         userId,
         action,
         resource,
-        severity: auditEvent.severity
+        severity: auditEvent.severity,
       });
 
       // Log to enterprise logger with structured data
@@ -53,7 +53,7 @@ class AuditService {
         details,
         ipAddress,
         userAgent,
-        auditId: auditEvent.id
+        auditId: auditEvent.id,
       });
 
     } catch (error) {
@@ -61,7 +61,7 @@ class AuditService {
         error: error.message,
         userId,
         action,
-        resource
+        resource,
       });
     }
   }
@@ -89,7 +89,7 @@ class AuditService {
   async logFilingEvent(userId, action, filingId, details = {}, ipAddress = null) {
     await this.logEvent(userId, action, 'itr_filing', {
       filingId,
-      ...details
+      ...details,
     }, ipAddress);
   }
 
@@ -104,7 +104,7 @@ class AuditService {
   async logAdminAction(adminId, action, targetResource, details = {}, ipAddress = null) {
     await this.logEvent(adminId, action, `admin_${targetResource}`, {
       targetResource,
-      ...details
+      ...details,
     }, ipAddress);
   }
 
@@ -120,7 +120,7 @@ class AuditService {
   async logDataAccess(userId, action, dataType, dataId, details = {}, ipAddress = null) {
     await this.logEvent(userId, action, `data_${dataType}`, {
       dataId,
-      ...details
+      ...details,
     }, ipAddress);
   }
 
@@ -172,7 +172,7 @@ class AuditService {
       enterpriseLogger.info('Retrieved user audit logs', {
         userId,
         count: logs.length,
-        filters
+        filters,
       });
 
       return logs;
@@ -180,7 +180,7 @@ class AuditService {
       enterpriseLogger.error('Failed to retrieve user audit logs', {
         error: error.message,
         userId,
-        filters
+        filters,
       });
       throw error;
     }
@@ -225,14 +225,14 @@ class AuditService {
 
       enterpriseLogger.info('Retrieved admin audit logs', {
         count: logs.length,
-        filters
+        filters,
       });
 
       return logs;
     } catch (error) {
       enterpriseLogger.error('Failed to retrieve admin audit logs', {
         error: error.message,
-        filters
+        filters,
       });
       throw error;
     }
@@ -261,22 +261,22 @@ class AuditService {
         eventsByResource: {},
         eventsBySeverity: {},
         eventsByUser: {},
-        eventsByDay: {}
+        eventsByDay: {},
       };
 
       logs.forEach(log => {
         // Count by action
         stats.eventsByAction[log.action] = (stats.eventsByAction[log.action] || 0) + 1;
-        
+
         // Count by resource
         stats.eventsByResource[log.resource] = (stats.eventsByResource[log.resource] || 0) + 1;
-        
+
         // Count by severity
         stats.eventsBySeverity[log.severity] = (stats.eventsBySeverity[log.severity] || 0) + 1;
-        
+
         // Count by user
         stats.eventsByUser[log.userId] = (stats.eventsByUser[log.userId] || 0) + 1;
-        
+
         // Count by day
         const day = log.timestamp.split('T')[0];
         stats.eventsByDay[day] = (stats.eventsByDay[day] || 0) + 1;
@@ -284,14 +284,14 @@ class AuditService {
 
       enterpriseLogger.info('Generated audit statistics', {
         totalEvents: stats.totalEvents,
-        filters
+        filters,
       });
 
       return stats;
     } catch (error) {
       enterpriseLogger.error('Failed to generate audit statistics', {
         error: error.message,
-        filters
+        filters,
       });
       throw error;
     }
@@ -304,21 +304,21 @@ class AuditService {
    */
   getSeverity(action) {
     const highSeverityActions = [
-      'delete', 'remove', 'suspend', 'terminate', 'submit', 'approve', 'reject'
+      'delete', 'remove', 'suspend', 'terminate', 'submit', 'approve', 'reject',
     ];
-    
+
     const mediumSeverityActions = [
-      'update', 'modify', 'create', 'login', 'logout', 'upload', 'download'
+      'update', 'modify', 'create', 'login', 'logout', 'upload', 'download',
     ];
 
     if (highSeverityActions.some(highAction => action.toLowerCase().includes(highAction))) {
       return 'HIGH';
     }
-    
+
     if (mediumSeverityActions.some(mediumAction => action.toLowerCase().includes(mediumAction))) {
       return 'MEDIUM';
     }
-    
+
     return 'LOW';
   }
 
@@ -331,18 +331,18 @@ class AuditService {
   async exportAuditLogs(filters = {}, format = 'json') {
     try {
       const logs = await this.getAdminAuditLogs(filters);
-      
+
       if (format === 'csv') {
         const csv = this.convertToCSV(logs);
         return csv;
       }
-      
+
       return JSON.stringify(logs, null, 2);
     } catch (error) {
       enterpriseLogger.error('Failed to export audit logs', {
         error: error.message,
         filters,
-        format
+        format,
       });
       throw error;
     }
@@ -354,11 +354,11 @@ class AuditService {
    * @returns {string} - CSV data
    */
   convertToCSV(logs) {
-    if (logs.length === 0) return '';
-    
+    if (logs.length === 0) {return '';}
+
     const headers = ['id', 'userId', 'action', 'resource', 'details', 'ipAddress', 'userAgent', 'timestamp', 'severity'];
     const csvRows = [headers.join(',')];
-    
+
     logs.forEach(log => {
       const row = headers.map(header => {
         const value = log[header] || '';
@@ -366,7 +366,7 @@ class AuditService {
       });
       csvRows.push(row.join(','));
     });
-    
+
     return csvRows.join('\n');
   }
 }
