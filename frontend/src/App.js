@@ -1,126 +1,123 @@
 // =====================================================
 // MAIN APP COMPONENT - CLEAN ROUTE STRUCTURE
 // Clear separation of public and protected routes
+// Code splitting with React.lazy() for optimal performance
 // =====================================================
 
-import React from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-// Core components
+// Core components (keep synchronous - needed immediately)
 import Layout from './components/Layout.js';
-import LandingPage from './pages/Landing/LandingPage';
-import HomeRedirect from './pages/HomeRedirect';
-
-// Auth components
-import LoginPage from './pages/Auth/LoginPage';
-import SignupPage from './pages/Auth/SignupPage';
-import MobileOTPSignup from './pages/Auth/MobileOTPSignup';
-import EmailVerification from './pages/Auth/EmailVerification';
-import MobileVerification from './pages/Auth/MobileVerification';
-import ForgotPassword from './pages/Auth/ForgotPassword';
-import ResetPassword from './pages/Auth/ResetPassword';
-import GoogleOAuthSuccess from './pages/Auth/GoogleOAuthSuccess';
-
-// CA Registration components
-import RegisterCAFirm from './pages/CA/RegisterCAFirm';
-import RegistrationSuccess from './pages/CA/RegistrationSuccess';
-import CAMarketplace from './pages/CA/Marketplace';
-import CAProfile from './pages/CA/CAProfile';
-
-// Admin components
-import AdminLogin from './pages/Admin/AdminLogin';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import AdminUserManagement from './pages/Admin/AdminUserManagement';
-import AdminUserDetails from './pages/Admin/AdminUserDetails';
-import AdminFilings from './pages/Admin/AdminFilings';
-import AdminFilingDetails from './pages/Admin/AdminFilingDetails';
-import AdminDocuments from './pages/Admin/AdminDocuments';
-import AdminLayout from './components/Admin/AdminLayout';
-// Additional Admin pages
-import AdminCAFirms from './pages/Admin/AdminCAFirms';
-import AdminTicketQueue from './pages/Admin/AdminTicketQueue';
-import AdminTransactionManagement from './pages/Admin/AdminTransactionManagement';
-import AdminRefundManagement from './pages/Admin/AdminRefundManagement';
-import AdminCouponManagement from './pages/Admin/AdminCouponManagement';
-import AdminPricingPlans from './pages/Admin/AdminPricingPlans';
-import AdminCAPayouts from './pages/Admin/AdminCAPayouts';
-import AdminCAPerformance from './pages/Admin/AdminCAPerformance';
-import AdminCAVerificationQueue from './pages/Admin/AdminCAVerificationQueue';
-import AdminUserSegments from './pages/Admin/AdminUserSegments';
-import AdminAnalytics from './pages/Admin/AdminAnalytics';
-import AdminReports from './pages/Admin/AdminReports';
-import AdminSystemHealth from './pages/Admin/AdminSystemHealth';
-import AdminKnowledgeBase from './pages/Admin/AdminKnowledgeBase';
-import AdminControlPanel from './pages/Admin/AdminControlPanel';
-import PlatformCompliance from './pages/Admin/PlatformCompliance';
-import InvoiceManagement from './pages/Admin/InvoiceManagement';
-import AdminSettings from './pages/Admin/AdminSettings';
-
-// CA Firm components
-import CAFirmAdminDashboard from './pages/Dashboard/CAFirmAdminDashboard';
-import CAStaffDashboard from './pages/Dashboard/CAStaffDashboard';
-import FirmDashboard from './pages/Firm/FirmDashboard';
-import ClientList from './pages/Firm/ClientList';
-import ClientOnboardingForm from './pages/Firm/ClientOnboardingForm';
-import CAReviewQueue from './pages/Firm/CAReviewQueue';
-
-// User pages
-import UserDashboard from './pages/Dashboard/UserDashboard';
-import StartFiling from './pages/ITR/StartFiling';
-import FilingHistory from './pages/ITR/FilingHistory';
-import FilingPersonSelector from './components/ITR/FilingPersonSelector';
-import ITRComputation from './pages/ITR/ITRComputation';
-import RefundTracking from './pages/ITR/RefundTracking';
-import EVerification from './pages/ITR/EVerification';
-import ITRFormSelection from './pages/ITR/ITRFormSelection';
-import ITRModeSelection from './pages/ITR/ITRModeSelection';
-import ITRDirectSelection from './pages/ITR/ITRDirectSelection';
-import IncomeSourceSelector from './pages/ITR/IncomeSourceSelector';
-import DocumentUploadHub from './pages/ITR/DocumentUploadHub';
-import DataSourceSelector from './components/ITR/DataSourceSelector';
-import PreviousYearSelector from './features/itr/components/previous-year-selector';
-import PreviousYearPreview from './features/itr/components/previous-year-preview';
-import PreviousYearReview from './features/itr/components/previous-year-review';
-import AddMembers from './pages/Members/AddMembers';
-import UserSettings from './pages/User/UserSettings';
-import ProfileSettings from './pages/User/ProfileSettings';
-import Preferences from './pages/Settings/Preferences';
-import NotificationsCenter from './pages/Notifications/NotificationsCenter';
-import Documents from './pages/User/Documents';
-import SessionManagement from './pages/User/SessionManagement';
-
-// Help pages
-import HelpCenter from './pages/Help/HelpCenter';
-import FAQs from './pages/Help/FAQs';
-import TaxGlossary from './pages/Help/TaxGlossary';
-import ContactSupport from './pages/Help/ContactSupport';
-import ArticleView from './pages/Help/ArticleView';
-import ReportBug from './pages/Help/ReportBug';
-import FeatureRequest from './pages/Help/FeatureRequest';
-import FinancialProfilePage from './pages/FinancialProfile/FinancialProfilePage';
-import ServiceTicketManagement from './pages/Service/ServiceTicketManagement';
-import ToolsPage from './pages/Tools/ToolsPage';
-
-// Legal pages
-import TermsPage from './pages/Legal/TermsPage';
-import PrivacyPage from './pages/Legal/PrivacyPage';
-// Design System Components (Development only)
-// import StyleGuide from './components/DesignSystem/StyleGuide'; // Temporarily disabled
-
-// CABot Page (Development/Testing)
-// import CABotPage from './pages/CABot/CABotPage'; // Temporarily disabled
-
-// Auth components
-import ProtectedRoute from './components/auth/ProtectedRoute';
-
-// Error boundaries
 import ErrorBoundary from './components/ErrorBoundary';
-
-// Context providers
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import RouteLoader from './components/UI/RouteLoader';
 import { ITRProvider } from './contexts/ITRContext';
 
-// Styles
+// Performance monitoring
+import { initWebVitals } from './utils/webVitals';
+import { reportPerformance } from './utils/performanceMonitor';
+
+// Styles (keep synchronous)
 import './styles/GlobalStyles.css';
+
+// Lazy load all route components for code splitting
+// Public routes
+const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
+const HomeRedirect = lazy(() => import('./pages/HomeRedirect'));
+
+// Auth components
+const LoginPage = lazy(() => import('./pages/Auth/LoginPage'));
+const SignupPage = lazy(() => import('./pages/Auth/SignupPage'));
+const MobileOTPSignup = lazy(() => import('./pages/Auth/MobileOTPSignup'));
+const EmailVerification = lazy(() => import('./pages/Auth/EmailVerification'));
+const MobileVerification = lazy(() => import('./pages/Auth/MobileVerification'));
+const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/Auth/ResetPassword'));
+const GoogleOAuthSuccess = lazy(() => import('./pages/Auth/GoogleOAuthSuccess'));
+
+// CA Registration components
+const RegisterCAFirm = lazy(() => import('./pages/CA/RegisterCAFirm'));
+const RegistrationSuccess = lazy(() => import('./pages/CA/RegistrationSuccess'));
+const CAMarketplace = lazy(() => import('./pages/CA/Marketplace'));
+const CAProfile = lazy(() => import('./pages/CA/CAProfile'));
+
+// Admin components
+const AdminLogin = lazy(() => import('./pages/Admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./components/Admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
+const AdminUserManagement = lazy(() => import('./pages/Admin/AdminUserManagement'));
+const AdminUserDetails = lazy(() => import('./pages/Admin/AdminUserDetails'));
+const AdminFilings = lazy(() => import('./pages/Admin/AdminFilings'));
+const AdminFilingDetails = lazy(() => import('./pages/Admin/AdminFilingDetails'));
+const AdminDocuments = lazy(() => import('./pages/Admin/AdminDocuments'));
+const AdminCAFirms = lazy(() => import('./pages/Admin/AdminCAFirms'));
+const AdminTicketQueue = lazy(() => import('./pages/Admin/AdminTicketQueue'));
+const AdminTransactionManagement = lazy(() => import('./pages/Admin/AdminTransactionManagement'));
+const AdminRefundManagement = lazy(() => import('./pages/Admin/AdminRefundManagement'));
+const AdminCouponManagement = lazy(() => import('./pages/Admin/AdminCouponManagement'));
+const AdminPricingPlans = lazy(() => import('./pages/Admin/AdminPricingPlans'));
+const AdminCAPayouts = lazy(() => import('./pages/Admin/AdminCAPayouts'));
+const AdminCAPerformance = lazy(() => import('./pages/Admin/AdminCAPerformance'));
+const AdminCAVerificationQueue = lazy(() => import('./pages/Admin/AdminCAVerificationQueue'));
+const AdminUserSegments = lazy(() => import('./pages/Admin/AdminUserSegments'));
+const AdminAnalytics = lazy(() => import('./pages/Admin/AdminAnalytics'));
+const AdminReports = lazy(() => import('./pages/Admin/AdminReports'));
+const AdminSystemHealth = lazy(() => import('./pages/Admin/AdminSystemHealth'));
+const AdminKnowledgeBase = lazy(() => import('./pages/Admin/AdminKnowledgeBase'));
+const AdminControlPanel = lazy(() => import('./pages/Admin/AdminControlPanel'));
+const PlatformCompliance = lazy(() => import('./pages/Admin/PlatformCompliance'));
+const InvoiceManagement = lazy(() => import('./pages/Admin/InvoiceManagement'));
+const AdminSettings = lazy(() => import('./pages/Admin/AdminSettings'));
+
+// CA Firm components
+const CAFirmAdminDashboard = lazy(() => import('./pages/Dashboard/CAFirmAdminDashboard'));
+const CAStaffDashboard = lazy(() => import('./pages/Dashboard/CAStaffDashboard'));
+const FirmDashboard = lazy(() => import('./pages/Firm/FirmDashboard'));
+const ClientList = lazy(() => import('./pages/Firm/ClientList'));
+const ClientOnboardingForm = lazy(() => import('./pages/Firm/ClientOnboardingForm'));
+const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
+
+// User pages
+const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
+const StartFiling = lazy(() => import('./pages/ITR/StartFiling'));
+const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
+const FilingPersonSelector = lazy(() => import('./components/ITR/FilingPersonSelector'));
+const ITRComputation = lazy(() => import('./pages/ITR/ITRComputation'));
+const RefundTracking = lazy(() => import('./pages/ITR/RefundTracking'));
+const EVerification = lazy(() => import('./pages/ITR/EVerification'));
+const ITRFormSelection = lazy(() => import('./pages/ITR/ITRFormSelection'));
+const ITRModeSelection = lazy(() => import('./pages/ITR/ITRModeSelection'));
+const ITRDirectSelection = lazy(() => import('./pages/ITR/ITRDirectSelection'));
+const IncomeSourceSelector = lazy(() => import('./pages/ITR/IncomeSourceSelector'));
+const DocumentUploadHub = lazy(() => import('./pages/ITR/DocumentUploadHub'));
+const DataSourceSelector = lazy(() => import('./components/ITR/DataSourceSelector'));
+const PreviousYearSelector = lazy(() => import('./features/itr/components/previous-year-selector'));
+const PreviousYearPreview = lazy(() => import('./features/itr/components/previous-year-preview'));
+const PreviousYearReview = lazy(() => import('./features/itr/components/previous-year-review'));
+const AddMembers = lazy(() => import('./pages/Members/AddMembers'));
+const UserSettings = lazy(() => import('./pages/User/UserSettings'));
+const ProfileSettings = lazy(() => import('./pages/User/ProfileSettings'));
+const Preferences = lazy(() => import('./pages/Settings/Preferences'));
+const NotificationsCenter = lazy(() => import('./pages/Notifications/NotificationsCenter'));
+const Documents = lazy(() => import('./pages/User/Documents'));
+const SessionManagement = lazy(() => import('./pages/User/SessionManagement'));
+
+// Help pages
+const HelpCenter = lazy(() => import('./pages/Help/HelpCenter'));
+const FAQs = lazy(() => import('./pages/Help/FAQs'));
+const TaxGlossary = lazy(() => import('./pages/Help/TaxGlossary'));
+const ContactSupport = lazy(() => import('./pages/Help/ContactSupport'));
+const ArticleView = lazy(() => import('./pages/Help/ArticleView'));
+const ReportBug = lazy(() => import('./pages/Help/ReportBug'));
+const FeatureRequest = lazy(() => import('./pages/Help/FeatureRequest'));
+const FinancialProfilePage = lazy(() => import('./pages/FinancialProfile/FinancialProfilePage'));
+const ServiceTicketManagement = lazy(() => import('./pages/Service/ServiceTicketManagement'));
+const ToolsPage = lazy(() => import('./pages/Tools/ToolsPage'));
+
+// Legal pages
+const TermsPage = lazy(() => import('./pages/Legal/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/Legal/PrivacyPage'));
 
 // Main App Component
 const AppContent = () => {
@@ -128,29 +125,129 @@ const AppContent = () => {
     <div className="app">
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/signup/mobile" element={<MobileOTPSignup />} />
-        <Route path="/email-verification" element={<EmailVerification />} />
-        <Route path="/mobile-verification" element={<MobileVerification />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/auth/google/success" element={<GoogleOAuthSuccess />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route
+          path="/"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading landing page..." />}>
+              <LandingPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading login..." />}>
+              <LoginPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading signup..." />}>
+              <SignupPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/signup/mobile"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading mobile signup..." />}>
+              <MobileOTPSignup />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/email-verification"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading email verification..." />}>
+              <EmailVerification />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/mobile-verification"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading mobile verification..." />}>
+              <MobileVerification />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading forgot password..." />}>
+              <ForgotPassword />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading reset password..." />}>
+              <ResetPassword />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/auth/google/success"
+          element={
+            <Suspense fallback={<RouteLoader message="Processing authentication..." />}>
+              <GoogleOAuthSuccess />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/admin/login"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading admin login..." />}>
+              <AdminLogin />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading terms..." />}>
+              <TermsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/privacy"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading privacy policy..." />}>
+              <PrivacyPage />
+            </Suspense>
+          }
+        />
 
         {/* CA Registration Routes */}
-        <Route path="/ca/register" element={<RegisterCAFirm />} />
-        <Route path="/ca/registration-success" element={<RegistrationSuccess />} />
+        <Route
+          path="/ca/register"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading CA registration..." />}>
+              <RegisterCAFirm />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/ca/registration-success"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading..." />}>
+              <RegistrationSuccess />
+            </Suspense>
+          }
+        />
 
         {/* CA Marketplace Routes (Public) */}
         <Route
           path="/ca/marketplace"
           element={
             <Layout>
-              <CAMarketplace />
+              <Suspense fallback={<RouteLoader message="Loading marketplace..." />}>
+                <CAMarketplace />
+              </Suspense>
             </Layout>
           }
         />
@@ -158,7 +255,9 @@ const AppContent = () => {
           path="/ca/:firmId"
           element={
             <Layout>
-              <CAProfile />
+              <Suspense fallback={<RouteLoader message="Loading CA profile..." />}>
+                <CAProfile />
+              </Suspense>
             </Layout>
           }
         />
@@ -166,14 +265,23 @@ const AppContent = () => {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           {/* Smart redirector - determines correct dashboard based on role */}
-          <Route path="/home" element={<HomeRedirect />} />
+          <Route
+            path="/home"
+            element={
+              <Suspense fallback={<RouteLoader message="Redirecting..." />}>
+                <HomeRedirect />
+              </Suspense>
+            }
+          />
 
           {/* User Routes */}
           <Route
             path="/dashboard"
             element={
               <Layout>
-                <UserDashboard />
+                <Suspense fallback={<RouteLoader message="Loading dashboard..." />}>
+                  <UserDashboard />
+                </Suspense>
               </Layout>
             }
           />
@@ -182,210 +290,312 @@ const AppContent = () => {
           <Route
             path="/admin/dashboard"
             element={
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin dashboard..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading dashboard..." />}>
+                    <AdminDashboard />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/users"
             element={
-              <AdminLayout>
-                <AdminUserManagement />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading user management..." />}>
+                    <AdminUserManagement />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/users/:userId"
             element={
-              <AdminLayout>
-                <AdminUserDetails />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading user details..." />}>
+                    <AdminUserDetails />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/filings"
             element={
-              <AdminLayout>
-                <AdminFilings />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading filings..." />}>
+                    <AdminFilings />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/filings/:filingId"
             element={
-              <AdminLayout>
-                <AdminFilingDetails />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading filing details..." />}>
+                    <AdminFilingDetails />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/documents"
             element={
-              <AdminLayout>
-                <AdminDocuments />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading documents..." />}>
+                    <AdminDocuments />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           {/* Fix broken sidebar routes */}
           <Route
             path="/admin/ca-firms"
             element={
-              <AdminLayout>
-                <AdminCAFirms />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading CA firms..." />}>
+                    <AdminCAFirms />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/tickets"
             element={
-              <AdminLayout>
-                <AdminTicketQueue />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading tickets..." />}>
+                    <AdminTicketQueue />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/pricing"
             element={
-              <AdminLayout>
-                <AdminPricingPlans />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading pricing plans..." />}>
+                    <AdminPricingPlans />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           {/* Add routes for existing pages */}
           <Route
             path="/admin/analytics"
             element={
-              <AdminLayout>
-                <AdminAnalytics />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading analytics..." />}>
+                    <AdminAnalytics />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/reports"
             element={
-              <AdminLayout>
-                <AdminReports />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading reports..." />}>
+                    <AdminReports />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/users/segments"
             element={
-              <AdminLayout>
-                <AdminUserSegments />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading user segments..." />}>
+                    <AdminUserSegments />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/cas/verification"
             element={
-              <AdminLayout>
-                <AdminCAVerificationQueue />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading CA verification..." />}>
+                    <AdminCAVerificationQueue />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/cas/performance"
             element={
-              <AdminLayout>
-                <AdminCAPerformance />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading CA performance..." />}>
+                    <AdminCAPerformance />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/cas/payouts"
             element={
-              <AdminLayout>
-                <AdminCAPayouts />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading CA payouts..." />}>
+                    <AdminCAPayouts />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/transactions"
             element={
-              <AdminLayout>
-                <AdminTransactionManagement />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading transactions..." />}>
+                    <AdminTransactionManagement />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/refunds"
             element={
-              <AdminLayout>
-                <AdminRefundManagement />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading refunds..." />}>
+                    <AdminRefundManagement />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/coupons"
             element={
-              <AdminLayout>
-                <AdminCouponManagement />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading coupons..." />}>
+                    <AdminCouponManagement />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/invoices"
             element={
-              <AdminLayout>
-                <InvoiceManagement />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading invoices..." />}>
+                    <InvoiceManagement />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/system/health"
             element={
-              <AdminLayout>
-                <AdminSystemHealth />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading system health..." />}>
+                    <AdminSystemHealth />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/compliance"
             element={
-              <AdminLayout>
-                <PlatformCompliance />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading compliance..." />}>
+                    <PlatformCompliance />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/knowledge-base"
             element={
-              <AdminLayout>
-                <AdminKnowledgeBase />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading knowledge base..." />}>
+                    <AdminKnowledgeBase />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/control-panel"
             element={
-              <AdminLayout>
-                <AdminControlPanel />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading control panel..." />}>
+                    <AdminControlPanel />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/admin/settings"
             element={
-              <AdminLayout>
-                <AdminSettings />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading settings..." />}>
+                    <AdminSettings />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/firm/dashboard"
             element={
-              <AdminLayout>
-                <CAFirmAdminDashboard />
-              </AdminLayout>
+              <Suspense fallback={<RouteLoader message="Loading admin panel..." />}>
+                <AdminLayout>
+                  <Suspense fallback={<RouteLoader message="Loading firm dashboard..." />}>
+                    <CAFirmAdminDashboard />
+                  </Suspense>
+                </AdminLayout>
+              </Suspense>
             }
           />
           <Route
             path="/ca/clients"
             element={
               <Layout>
-                <CAStaffDashboard />
+                <Suspense fallback={<RouteLoader message="Loading clients..." />}>
+                  <CAStaffDashboard />
+                </Suspense>
               </Layout>
             }
           />
@@ -395,7 +605,9 @@ const AppContent = () => {
             path="/itr/select-person"
             element={
               <Layout>
-                <FilingPersonSelector />
+                <Suspense fallback={<RouteLoader message="Loading person selector..." />}>
+                  <FilingPersonSelector />
+                </Suspense>
               </Layout>
             }
           />
@@ -403,7 +615,9 @@ const AppContent = () => {
             path="/itr/data-source"
             element={
               <Layout>
-                <DataSourceSelector />
+                <Suspense fallback={<RouteLoader message="Loading data source..." />}>
+                  <DataSourceSelector />
+                </Suspense>
               </Layout>
             }
           />
@@ -411,7 +625,9 @@ const AppContent = () => {
             path="/itr/select-form"
             element={
               <Layout>
-                <ITRFormSelection />
+                <Suspense fallback={<RouteLoader message="Loading ITR form selection..." />}>
+                  <ITRFormSelection />
+                </Suspense>
               </Layout>
             }
           />
@@ -419,7 +635,9 @@ const AppContent = () => {
             path="/itr/mode-selection"
             element={
               <Layout>
-                <ITRModeSelection />
+                <Suspense fallback={<RouteLoader message="Loading mode selection..." />}>
+                  <ITRModeSelection />
+                </Suspense>
               </Layout>
             }
           />
@@ -427,7 +645,9 @@ const AppContent = () => {
             path="/itr/direct-selection"
             element={
               <Layout>
-                <ITRDirectSelection />
+                <Suspense fallback={<RouteLoader message="Loading direct selection..." />}>
+                  <ITRDirectSelection />
+                </Suspense>
               </Layout>
             }
           />
@@ -435,7 +655,9 @@ const AppContent = () => {
             path="/itr/income-sources"
             element={
               <Layout>
-                <IncomeSourceSelector />
+                <Suspense fallback={<RouteLoader message="Loading income sources..." />}>
+                  <IncomeSourceSelector />
+                </Suspense>
               </Layout>
             }
           />
@@ -443,7 +665,9 @@ const AppContent = () => {
             path="/itr/document-upload"
             element={
               <Layout>
-                <DocumentUploadHub />
+                <Suspense fallback={<RouteLoader message="Loading document upload..." />}>
+                  <DocumentUploadHub />
+                </Suspense>
               </Layout>
             }
           />
@@ -451,7 +675,9 @@ const AppContent = () => {
             path="/itr/computation"
             element={
               <Layout>
-                <ITRComputation />
+                <Suspense fallback={<RouteLoader message="Loading ITR computation..." />}>
+                  <ITRComputation />
+                </Suspense>
               </Layout>
             }
           />
@@ -459,7 +685,9 @@ const AppContent = () => {
             path="/itr/filing/:filingId/*"
             element={
               <Layout>
-                <ITRComputation />
+                <Suspense fallback={<RouteLoader message="Loading ITR filing..." />}>
+                  <ITRComputation />
+                </Suspense>
               </Layout>
             }
           />
@@ -467,7 +695,9 @@ const AppContent = () => {
             path="/itr/previous-year-selector"
             element={
               <Layout>
-                <PreviousYearSelector />
+                <Suspense fallback={<RouteLoader message="Loading previous year selector..." />}>
+                  <PreviousYearSelector />
+                </Suspense>
               </Layout>
             }
           />
@@ -475,7 +705,9 @@ const AppContent = () => {
             path="/itr/previous-year-preview"
             element={
               <Layout>
-                <PreviousYearPreview />
+                <Suspense fallback={<RouteLoader message="Loading previous year preview..." />}>
+                  <PreviousYearPreview />
+                </Suspense>
               </Layout>
             }
           />
@@ -483,7 +715,9 @@ const AppContent = () => {
             path="/itr/previous-year-review"
             element={
               <Layout>
-                <PreviousYearReview />
+                <Suspense fallback={<RouteLoader message="Loading previous year review..." />}>
+                  <PreviousYearReview />
+                </Suspense>
               </Layout>
             }
           />
@@ -492,7 +726,9 @@ const AppContent = () => {
             path="/itr/start"
             element={
               <Layout>
-                <StartFiling />
+                <Suspense fallback={<RouteLoader message="Loading filing start..." />}>
+                  <StartFiling />
+                </Suspense>
               </Layout>
             }
           />
@@ -501,7 +737,9 @@ const AppContent = () => {
             element={
               <Layout>
                 <ITRProvider>
-                  <FilingHistory />
+                  <Suspense fallback={<RouteLoader message="Loading filing history..." />}>
+                    <FilingHistory />
+                  </Suspense>
                 </ITRProvider>
               </Layout>
             }
@@ -510,7 +748,9 @@ const AppContent = () => {
             path="/itr/refund-tracking"
             element={
               <Layout>
-                <RefundTracking />
+                <Suspense fallback={<RouteLoader message="Loading refund tracking..." />}>
+                  <RefundTracking />
+                </Suspense>
               </Layout>
             }
           />
@@ -518,7 +758,9 @@ const AppContent = () => {
             path="/itr/e-verify"
             element={
               <Layout>
-                <EVerification />
+                <Suspense fallback={<RouteLoader message="Loading e-verification..." />}>
+                  <EVerification />
+                </Suspense>
               </Layout>
             }
           />
@@ -528,7 +770,9 @@ const AppContent = () => {
             path="/documents"
             element={
               <Layout>
-                <Documents />
+                <Suspense fallback={<RouteLoader message="Loading documents..." />}>
+                  <Documents />
+                </Suspense>
               </Layout>
             }
           />
@@ -536,7 +780,9 @@ const AppContent = () => {
             path="/add-members"
             element={
               <Layout>
-                <AddMembers />
+                <Suspense fallback={<RouteLoader message="Loading members..." />}>
+                  <AddMembers />
+                </Suspense>
               </Layout>
             }
           />
@@ -544,7 +790,9 @@ const AppContent = () => {
             path="/profile"
             element={
               <Layout>
-                <ProfileSettings />
+                <Suspense fallback={<RouteLoader message="Loading profile..." />}>
+                  <ProfileSettings />
+                </Suspense>
               </Layout>
             }
           />
@@ -552,7 +800,9 @@ const AppContent = () => {
             path="/preferences"
             element={
               <Layout>
-                <Preferences />
+                <Suspense fallback={<RouteLoader message="Loading preferences..." />}>
+                  <Preferences />
+                </Suspense>
               </Layout>
             }
           />
@@ -560,7 +810,9 @@ const AppContent = () => {
             path="/notifications"
             element={
               <Layout>
-                <NotificationsCenter />
+                <Suspense fallback={<RouteLoader message="Loading notifications..." />}>
+                  <NotificationsCenter />
+                </Suspense>
               </Layout>
             }
           />
@@ -568,7 +820,9 @@ const AppContent = () => {
             path="/sessions"
             element={
               <Layout>
-                <SessionManagement />
+                <Suspense fallback={<RouteLoader message="Loading sessions..." />}>
+                  <SessionManagement />
+                </Suspense>
               </Layout>
             }
           />
@@ -576,7 +830,9 @@ const AppContent = () => {
             path="/financial-profile"
             element={
               <Layout>
-                <FinancialProfilePage />
+                <Suspense fallback={<RouteLoader message="Loading financial profile..." />}>
+                  <FinancialProfilePage />
+                </Suspense>
               </Layout>
             }
           />
@@ -584,7 +840,9 @@ const AppContent = () => {
             path="/tools"
             element={
               <Layout>
-                <ToolsPage />
+                <Suspense fallback={<RouteLoader message="Loading tools..." />}>
+                  <ToolsPage />
+                </Suspense>
               </Layout>
             }
           />
@@ -594,7 +852,9 @@ const AppContent = () => {
             path="/firm/:firmId/dashboard"
             element={
               <Layout>
-                <FirmDashboard />
+                <Suspense fallback={<RouteLoader message="Loading firm dashboard..." />}>
+                  <FirmDashboard />
+                </Suspense>
               </Layout>
             }
           />
@@ -602,7 +862,9 @@ const AppContent = () => {
             path="/firm/:firmId/clients"
             element={
               <Layout>
-                <ClientList />
+                <Suspense fallback={<RouteLoader message="Loading clients..." />}>
+                  <ClientList />
+                </Suspense>
               </Layout>
             }
           />
@@ -610,7 +872,9 @@ const AppContent = () => {
             path="/firm/:firmId/clients/new"
             element={
               <Layout>
-                <ClientOnboardingForm />
+                <Suspense fallback={<RouteLoader message="Loading client onboarding..." />}>
+                  <ClientOnboardingForm />
+                </Suspense>
               </Layout>
             }
           />
@@ -618,7 +882,9 @@ const AppContent = () => {
             path="/firm/:firmId/review-queue"
             element={
               <Layout>
-                <CAReviewQueue />
+                <Suspense fallback={<RouteLoader message="Loading review queue..." />}>
+                  <CAReviewQueue />
+                </Suspense>
               </Layout>
             }
           />
@@ -640,7 +906,9 @@ const AppContent = () => {
             path="/help"
             element={
               <Layout>
-                <HelpCenter />
+                <Suspense fallback={<RouteLoader message="Loading help center..." />}>
+                  <HelpCenter />
+                </Suspense>
               </Layout>
             }
           />
@@ -648,7 +916,9 @@ const AppContent = () => {
             path="/help/faqs"
             element={
               <Layout>
-                <FAQs />
+                <Suspense fallback={<RouteLoader message="Loading FAQs..." />}>
+                  <FAQs />
+                </Suspense>
               </Layout>
             }
           />
@@ -656,43 +926,63 @@ const AppContent = () => {
             path="/help/glossary"
             element={
               <Layout>
-                <TaxGlossary />
+                <Suspense fallback={<RouteLoader message="Loading glossary..." />}>
+                  <TaxGlossary />
+                </Suspense>
               </Layout>
             }
           />
-              <Route
-                path="/help/contact"
-                element={
-                  <Layout>
-                    <ContactSupport />
-                  </Layout>
-                }
-              />
-              <Route
-                path="/help/articles/:articleId"
-                element={
-                  <Layout>
-                    <ArticleView />
-                  </Layout>
-                }
-              />
-              <Route
-                path="/help/report-bug"
-                element={
-                  <Layout>
-                    <ReportBug />
-                  </Layout>
-                }
-              />
-              <Route
-                path="/help/feature-request"
-                element={
-                  <Layout>
-                    <FeatureRequest />
-                  </Layout>
-                }
-              />
-          </Route>
+          <Route
+            path="/help/contact"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading contact support..." />}>
+                  <ContactSupport />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/help/articles/:articleId"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading article..." />}>
+                  <ArticleView />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/help/report-bug"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading bug report..." />}>
+                  <ReportBug />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/help/feature-request"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading feature request..." />}>
+                  <FeatureRequest />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/service/tickets"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading service tickets..." />}>
+                  <ServiceTicketManagement />
+                </Suspense>
+              </Layout>
+            }
+          />
+        </Route>
 
         {/* Catch all - redirect to landing page */}
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -705,6 +995,18 @@ const AppContent = () => {
 
 // Root App Component
 const App = () => {
+  useEffect(() => {
+    // Initialize Web Vitals tracking
+    initWebVitals();
+
+    // Report performance metrics on page load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        reportPerformance();
+      }, 2000); // Wait 2 seconds after load for all metrics to be collected
+    });
+  }, []);
+
   return (
     <ErrorBoundary>
       <AppContent />

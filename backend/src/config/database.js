@@ -45,8 +45,18 @@ if (connectionString) {
   // Use Supabase connection string
   sequelize = new Sequelize(cleanConnectionString, {
     dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ?
-      (msg) => enterpriseLogger.debug('Sequelize Query', { query: msg }) : false,
+    logging: (msg, timing) => {
+      // Log all queries in development, slow queries (> 100ms) in production
+      if (process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
+        enterpriseLogger.debug('Sequelize Query', { query: msg, timing: timing ? `${timing}ms` : undefined });
+      } else if (timing && timing > 100) {
+        enterpriseLogger.warn('Slow Sequelize query detected', {
+          query: msg.substring(0, 200),
+          duration: `${timing}ms`,
+        });
+      }
+    },
+    benchmark: true, // Enable query timing
     dialectOptions: {
       ssl: {
         require: true,
@@ -80,8 +90,18 @@ if (connectionString) {
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || '123456',
     dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ?
-      (msg) => enterpriseLogger.debug('Sequelize Query', { query: msg }) : false,
+    logging: (msg, timing) => {
+      // Log all queries in development, slow queries (> 100ms) in production
+      if (process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
+        enterpriseLogger.debug('Sequelize Query', { query: msg, timing: timing ? `${timing}ms` : undefined });
+      } else if (timing && timing > 100) {
+        enterpriseLogger.warn('Slow Sequelize query detected', {
+          query: msg.substring(0, 200),
+          duration: `${timing}ms`,
+        });
+      }
+    },
+    benchmark: true, // Enable query timing
 
     // Connection pool settings
     pool: {

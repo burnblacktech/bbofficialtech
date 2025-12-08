@@ -33,20 +33,17 @@ class ITRController {
       const { itrType, formData } = req.body;
 
       // Validate ITR type
-      const validTypes = ['ITR-1', 'ITR-2', 'ITR-3', 'ITR-4'];
-      if (!validTypes.includes(itrType)) {
-        return res.status(400).json({
-          error: 'Invalid ITR type. Must be ITR-1, ITR-2, ITR-3, or ITR-4',
+      const itrTypeValidation = validateITRType(itrType);
+      if (!itrTypeValidation.isValid) {
+        return validationErrorResponse(res, {
+          itrType: itrTypeValidation.error.message,
         });
       }
 
       // Validate form data
       const validation = this.validationEngine.validate(itrType.replace('-', '').toLowerCase(), formData);
       if (!validation.isValid) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: validation.errors,
-        });
+        return validationErrorResponse(res, validation.errors);
       }
 
       // Create filing first
@@ -107,25 +104,16 @@ class ITRController {
         });
       }
 
-      res.status(201).json({
-        message: 'Draft created successfully',
-        draft: {
-          id: draft.rows[0].id,
-          filingId: filing.rows[0].id,
-          step: draft.rows[0].step,
-          itrType: itrType,
-          status: 'draft',
-          createdAt: draft.rows[0].created_at,
-        },
-      });
+      return successResponse(res, {
+        id: draft.rows[0].id,
+        filingId: filing.rows[0].id,
+        step: draft.rows[0].step,
+        itrType: itrType,
+        status: 'draft',
+        createdAt: draft.rows[0].created_at,
+      }, 'Draft created successfully', 201);
     } catch (error) {
-      enterpriseLogger.error('Draft creation failed', {
-        error: error.message,
-        userId: req.user?.userId,
-      });
-      res.status(500).json({
-        error: 'Internal server error',
-      });
+      return errorResponse(res, error, 500);
     }
   }
 
@@ -141,8 +129,8 @@ class ITRController {
 
       // Validate formData is provided
       if (!formData || typeof formData !== 'object') {
-        return res.status(400).json({
-          error: 'formData is required and must be an object',
+        return validationErrorResponse(res, {
+          formData: 'formData is required and must be an object',
         });
       }
 
@@ -156,7 +144,7 @@ class ITRController {
       const draft = await dbQuery(getDraftQuery, [draftId, userId]);
 
       if (draft.rows.length === 0) {
-        return res.status(404).json({ error: 'Draft not found' });
+        return notFoundResponse(res, 'Draft');
       }
 
       const itrType = draft.rows[0].itr_type;
@@ -164,10 +152,7 @@ class ITRController {
       // Validate form data
       const validation = this.validationEngine.validate(itrType.replace('-', '').toLowerCase(), formData);
       if (!validation.isValid) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: validation.errors,
-        });
+        return validationErrorResponse(res, validation.errors);
       }
 
       // Update draft (join with itr_filings to verify user_id)
@@ -188,9 +173,7 @@ class ITRController {
       ]);
 
       if (result.rows.length === 0) {
-        return res.status(404).json({
-          error: 'Draft not found or not editable',
-        });
+        return notFoundResponse(res, 'Draft', 'Draft not found or not editable');
       }
 
       enterpriseLogger.info('ITR draft updated', {
@@ -199,24 +182,13 @@ class ITRController {
         itrType: result.rows[0].itr_type,
       });
 
-      res.json({
-        success: true,
-        message: 'Draft updated successfully',
-        draft: {
-          id: result.rows[0].id,
-          itrType: result.rows[0].itr_type,
-          updatedAt: result.rows[0].updated_at,
-        },
-      });
+      return successResponse(res, {
+        id: result.rows[0].id,
+        itrType: result.rows[0].itr_type,
+        updatedAt: result.rows[0].updated_at,
+      }, 'Draft updated successfully');
     } catch (error) {
-      enterpriseLogger.error('Draft update failed', {
-        error: error.message,
-        userId: req.user?.userId,
-        draftId: req.params.draftId,
-      });
-      res.status(500).json({
-        error: 'Internal server error',
-      });
+      return errorResponse(res, error, 500);
     }
   }
 
@@ -240,9 +212,7 @@ class ITRController {
       const draft = await dbQuery(getDraftQuery, [draftId, userId]);
 
       if (draft.rows.length === 0) {
-        return res.status(404).json({
-          error: 'Draft not found',
-        });
+        return notFoundResponse(res, 'Draft');
       }
 
       const draftRow = draft.rows[0];
@@ -255,9 +225,7 @@ class ITRController {
           draftId,
           userId,
         });
-        return res.status(500).json({
-          error: 'Invalid draft data format',
-        });
+        return errorResponse(res, parseError, 500);
       }
       const itrType = draftRow.itr_type;
       const normalizedItrType = itrType.replace('-', '').toLowerCase();
@@ -281,7 +249,7 @@ class ITRController {
         warningCount: allWarnings.length,
       });
 
-      res.json({
+      return successResponse(res, {
         isValid: allValid,
         errors: allErrors,
         warnings: allWarnings,
@@ -291,14 +259,7 @@ class ITRController {
         },
       });
     } catch (error) {
-      enterpriseLogger.error('Draft validation failed', {
-        error: error.message,
-        userId: req.user?.userId,
-        draftId: req.params.draftId,
-      });
-      res.status(500).json({
-        error: 'Internal server error',
-      });
+      return errorResponse(res, error, 500);
     }
   }
 
@@ -322,9 +283,7 @@ class ITRController {
       const draft = await dbQuery(getDraftQuery, [draftId, userId]);
 
       if (draft.rows.length === 0) {
-        return res.status(404).json({
-          error: 'Draft not found',
-        });
+        return notFoundResponse(res, 'Draft');
       }
 
       const draftRow = draft.rows[0];
@@ -337,9 +296,7 @@ class ITRController {
           draftId,
           userId,
         });
-        return res.status(500).json({
-          error: 'Invalid draft data format',
-        });
+        return errorResponse(res, parseError, 500);
       }
       const itrType = draftRow.itr_type;
       const assessmentYear = draftRow.assessment_year || '2024-25';
@@ -357,19 +314,9 @@ class ITRController {
         refund: taxComputation.refund,
       });
 
-      res.json({
-        message: 'Tax computation completed',
-        computation: taxComputation,
-      });
+      return successResponse(res, taxComputation, 'Tax computation completed');
     } catch (error) {
-      enterpriseLogger.error('Tax computation failed', {
-        error: error.message,
-        userId: req.user?.userId,
-        draftId: req.params.draftId,
-      });
-      res.status(500).json({
-        error: 'Internal server error',
-      });
+      return errorResponse(res, error, 500);
     }
   }
 
@@ -393,14 +340,12 @@ class ITRController {
       const draft = await dbQuery(getDraftQuery, [draftId, userId]);
 
       if (draft.rows.length === 0) {
-        return res.status(404).json({
-          error: 'Draft not found',
-        });
+        return notFoundResponse(res, 'Draft');
       }
 
       if (draft.rows[0].status !== 'draft') {
-        return res.status(400).json({
-          error: 'Draft is not in draft status',
+        return validationErrorResponse(res, {
+          status: 'Draft is not in draft status',
         });
       }
 
@@ -412,20 +357,13 @@ class ITRController {
       const normalizedItrType = itrType.replace('-', '').toLowerCase();
       const validation = this.validationEngine.validateAll(formData, normalizedItrType);
       if (!validation.isValid) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: validation.errors,
-        });
+        return validationErrorResponse(res, validation.errors);
       }
 
       // ITR-specific validations
       const itrSpecificValidation = this.validationEngine.validateITRSpecific(itrType, formData);
       if (!itrSpecificValidation.isValid) {
-        return res.status(400).json({
-          error: 'ITR-specific validation failed',
-          details: itrSpecificValidation.errors,
-          warnings: itrSpecificValidation.warnings,
-        });
+        return validationErrorResponse(res, itrSpecificValidation.errors, 'ITR-specific validation failed');
       }
 
       // ITR-3 specific validations
@@ -436,11 +374,10 @@ class ITRController {
           // Validate audit report if applicable
           const auditValidation = taxAuditChecker.validateAuditReport(formData.auditInfo);
           if (!auditValidation.isValid) {
-            return res.status(400).json({
-              error: 'Audit information validation failed',
-              details: auditValidation.errors,
+            return validationErrorResponse(res, {
+              ...auditValidation.errors,
               auditReasons: auditCheck.reasons,
-            });
+            }, 'Audit information validation failed');
           }
         }
 
@@ -449,13 +386,11 @@ class ITRController {
           const assetsTotal = formData.balanceSheet.assets?.total || 0;
           const liabilitiesTotal = formData.balanceSheet.liabilities?.total || 0;
           if (Math.abs(assetsTotal - liabilitiesTotal) > 0.01) {
-            return res.status(400).json({
-              error: 'Balance sheet is not balanced',
-              details: {
-                assetsTotal,
-                liabilitiesTotal,
-                difference: Math.abs(assetsTotal - liabilitiesTotal),
-              },
+            return validationErrorResponse(res, {
+              balanceSheet: 'Balance sheet is not balanced',
+              assetsTotal,
+              liabilitiesTotal,
+              difference: Math.abs(assetsTotal - liabilitiesTotal),
             });
           }
         }
@@ -468,14 +403,14 @@ class ITRController {
         
         // Validate presumptive limits
         if (businessIncome > 2000000) {
-          return res.status(400).json({
-            error: 'ITR-4 business income cannot exceed ₹20 lakh. Please use ITR-3 for higher business income.',
+          return validationErrorResponse(res, {
+            businessIncome: 'ITR-4 business income cannot exceed ₹20 lakh. Please use ITR-3 for higher business income.',
           });
         }
         
         if (professionalIncome > 500000) {
-          return res.status(400).json({
-            error: 'ITR-4 professional income cannot exceed ₹5 lakh. Please use ITR-3 for higher professional income.',
+          return validationErrorResponse(res, {
+            professionalIncome: 'ITR-4 professional income cannot exceed ₹5 lakh. Please use ITR-3 for higher professional income.',
           });
         }
       }
@@ -1170,7 +1105,10 @@ class ITRController {
   async getUserDrafts(req, res) {
     try {
       const userId = req.user.userId;
-      const { status } = req.query;
+      const { status, page = 1, limit = 20 } = req.query;
+      const pageNum = parseInt(page, 10);
+      const limitNum = parseInt(limit, 10);
+      const offset = (pageNum - 1) * limitNum;
 
       let query = `
         SELECT d.id, d.step, d.is_completed, d.last_saved_at, d.created_at, d.updated_at,
@@ -1186,27 +1124,37 @@ class ITRController {
         params.push(status);
       }
 
+      // Get total count for pagination
+      const countQuery = query.replace(
+        'SELECT d.id, d.step, d.is_completed, d.last_saved_at, d.created_at, d.updated_at,\n               f.itr_type, f.status, f.assessment_year, f.id as filing_id',
+        'SELECT COUNT(*) as total'
+      );
+      const countResult = await dbQuery(countQuery, params);
+      const total = parseInt(countResult.rows[0].total, 10);
+
       query += ' ORDER BY d.created_at DESC';
+      query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+      params.push(limitNum, offset);
 
       const drafts = await dbQuery(query, params);
 
-      res.json({
-        drafts: drafts.rows.map(draft => ({
+      return paginatedResponse(res,
+        drafts.rows.map(draft => ({
           id: draft.id,
           itrType: draft.itr_type,
           status: draft.status,
           createdAt: draft.created_at,
           updatedAt: draft.updated_at,
         })),
-      });
+        {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        }
+      );
     } catch (error) {
-      enterpriseLogger.error('Get drafts failed', {
-        error: error.message,
-        userId: req.user?.userId,
-      });
-      res.status(500).json({
-        error: 'Internal server error',
-      });
+      return errorResponse(res, error, 500);
     }
   }
 
@@ -1218,11 +1166,24 @@ class ITRController {
     try {
       const userId = req.user.userId;
       const userRole = req.user.role || 'END_USER';
-      const { status } = req.query;
+      const { status, page = 1, limit = 20 } = req.query;
+      const pageNum = parseInt(page, 10);
+      const limitNum = parseInt(limit, 10);
+      const offset = (pageNum - 1) * limitNum;
 
-      // Get user details for role-based filtering
+      // Get user details for role-based filtering - with eager loading
       const User = require('../models/User');
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId, {
+        attributes: ['id', 'role', 'caFirmId'], // Only fetch needed fields
+        logging: (msg, timing) => {
+          if (timing > 100 || process.env.NODE_ENV === 'development') {
+            enterpriseLogger.info('User query executed', {
+              duration: `${timing}ms`,
+              userId,
+            });
+          }
+        },
+      });
 
       let query = '';
       let params = [];
@@ -1382,18 +1343,14 @@ class ITRController {
         return baseFiling;
       });
 
-      res.json({
-        filings: formattedFilings,
+      return paginatedResponse(res, formattedFilings, {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
       });
     } catch (error) {
-      enterpriseLogger.error('Get filings failed', {
-        error: error.message,
-        userId: req.user?.userId,
-        stack: error.stack,
-      });
-      res.status(500).json({
-        error: 'Internal server error',
-      });
+      return errorResponse(res, error, 500);
     }
   }
 

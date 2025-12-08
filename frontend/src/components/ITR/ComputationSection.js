@@ -4,7 +4,7 @@
 // Enhanced with better visual hierarchy and animations
 // =====================================================
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, CheckCircle, AlertCircle, IndianRupee, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -763,4 +763,4 @@ const ITR3IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, formData, o
   );
 };
 
-export default ComputationSection;
+export default memo(ComputationSection);

@@ -157,25 +157,35 @@ class ITRDataPrefetchService {
    */
   async fetchUserProfileData(userId) {
     try {
+      const UserProfile = require('../../models/UserProfile');
+      
+      // Fetch user data
       const user = await User.findByPk(userId, {
-        attributes: ['id', 'firstName', 'lastName', 'email', 'phoneNumber', 'dateOfBirth', 'panNumber', 'address', 'city', 'state', 'pincode'],
+        attributes: ['id', 'fullName', 'email', 'phone', 'dateOfBirth', 'panNumber'],
       });
 
       if (!user) {
         return null;
       }
 
+      // Fetch user profile separately (since association might not be defined)
+      const userProfile = await UserProfile.findOne({
+        where: { userId: user.id },
+        attributes: ['addressLine1', 'addressLine2', 'city', 'state', 'pincode'],
+      });
+
       return {
         personalInfo: {
-          full_name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+          full_name: user.fullName || '',
           pan: user.panNumber,
           email: user.email,
-          phone: user.phoneNumber,
+          phone: user.phone,
           dob: user.dateOfBirth,
-          address: user.address,
-          city: user.city,
-          state: user.state,
-          pincode: user.pincode,
+          address: userProfile?.addressLine1 || '',
+          addressLine2: userProfile?.addressLine2 || '',
+          city: userProfile?.city || '',
+          state: userProfile?.state || '',
+          pincode: userProfile?.pincode || '',
         },
       };
     } catch (error) {

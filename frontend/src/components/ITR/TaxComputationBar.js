@@ -5,7 +5,7 @@
 // Mobile: Fixed bottom with swipe to expand
 // =====================================================
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, CheckCircle, ArrowRight, Sparkles, TrendingUp, TrendingDown } from 'lucide-react';
 import AnimatedNumber from '../UI/AnimatedNumber';
@@ -647,4 +647,4 @@ const TaxComputationBar = ({
   );
 };
 
-export default TaxComputationBar;
+export default memo(TaxComputationBar);

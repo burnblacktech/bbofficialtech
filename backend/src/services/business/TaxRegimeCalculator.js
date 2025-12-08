@@ -293,8 +293,8 @@ class TaxRegimeCalculator {
     }
 
     // ITR-4: Handle goods carriage income (Section 44AE)
-    if (income.goodsCarriage || formData.goodsCarriage) {
-      const goodsCarriage = income.goodsCarriage || formData.goodsCarriage;
+    if (income.goodsCarriage) {
+      const goodsCarriage = income.goodsCarriage;
       if (goodsCarriage.totalPresumptiveIncome) {
         // Use pre-calculated total if available
         total += parseFloat(goodsCarriage.totalPresumptiveIncome) || 0;

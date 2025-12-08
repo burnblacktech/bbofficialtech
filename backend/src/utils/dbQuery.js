@@ -58,19 +58,71 @@ function convertPostgresToSequelize(query, params = []) {
  * @returns {Promise<{rows: Array}>} Result object with rows array
  */
 async function query(query, params = []) {
+  const startTime = Date.now();
+  const queryId = `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
   try {
     // Convert PostgreSQL $1, $2 syntax to Sequelize ? syntax
     const { query: convertedQuery, params: convertedParams } = convertPostgresToSequelize(query, params);
+
+    // Log query start (only in development or if DB_QUERY_LOGGING is enabled)
+    if (process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
+      enterpriseLogger.debug('Database query started', {
+        queryId,
+        query: convertedQuery.substring(0, 200),
+        paramCount: convertedParams.length,
+      });
+    }
 
     // Use replacements with ? placeholders - Sequelize will convert to PostgreSQL $1, $2 automatically
     const results = await sequelize.query(convertedQuery, {
       replacements: convertedParams,
       type: QueryTypes.SELECT,
+      benchmark: true, // Enable Sequelize query timing
+      logging: (msg, timing) => {
+        // Log slow queries (> 100ms) or all queries in development
+        if (timing > 100 || process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
+          enterpriseLogger.info('Database query executed', {
+            queryId,
+            duration: `${timing}ms`,
+            slow: timing > 100,
+            query: convertedQuery.substring(0, 200),
+            rowCount: results?.length || 0,
+          });
+        }
+      },
     });
+
+    const duration = Date.now() - startTime;
+    
+    // Log slow queries (> 100ms) or all queries in development
+    if (duration > 100 || process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
+      enterpriseLogger.info('Database query completed', {
+        queryId,
+        duration: `${duration}ms`,
+        slow: duration > 100,
+        rowCount: results?.length || 0,
+        query: convertedQuery.substring(0, 200),
+      });
+    }
+
+    // Warn about very slow queries (> 500ms)
+    if (duration > 500) {
+      enterpriseLogger.warn('Slow database query detected', {
+        queryId,
+        duration: `${duration}ms`,
+        query: convertedQuery.substring(0, 300),
+        paramCount: convertedParams.length,
+        rowCount: results?.length || 0,
+      });
+    }
 
     return { rows: results };
   } catch (error) {
+    const duration = Date.now() - startTime;
     enterpriseLogger.error('Database query failed', {
+      queryId,
+      duration: `${duration}ms`,
       error: error.message,
       query: query.substring(0, 200),
       paramCount: params.length,

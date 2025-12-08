@@ -3,23 +3,10 @@
 // Single page with expandable sections for ITR filing
 // =====================================================
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useLocation, useSearchParams, useParams } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Save,
-  Download,
-  FileText,
-  User,
-  IndianRupee,
-  Calculator,
-  CreditCard,
-  Building2,
-  CheckCircle,
-  Globe,
-  Shield,
-  Wheat,
-} from 'lucide-react';
+// Lazy load icons to reduce initial bundle size
+import { ArrowLeft, Save, Download, FileText, User, IndianRupee, Calculator, CreditCard, Building2, CheckCircle, Globe, Shield, Wheat } from 'lucide-react';
 import ComputationSection from '../../components/ITR/ComputationSection';
 import ComputationSheet from '../../components/ITR/ComputationSheet';
 import TaxRegimeToggle from '../../components/ITR/TaxRegimeToggle';
@@ -66,6 +53,8 @@ import useAutoSave, { AutoSaveIndicator } from '../../hooks/useAutoSave';
 import formDataService from '../../services/FormDataService';
 import verificationStatusService from '../../services/VerificationStatusService';
 import { motion, AnimatePresence } from 'framer-motion';
+import ITRComputationHeader from '../../components/ITR/ITRComputationHeader';
+import ITRComputationContent from '../../components/ITR/ITRComputationContent';
 
 const ITRComputation = () => {
   const navigate = useNavigate();
@@ -2304,9 +2293,9 @@ const ITRComputation = () => {
     return true;
   }, []);
 
-  // Combine all sections and filter based on ITR type
-  const allSections = [...baseSections, ...itr3Sections, ...itr4Sections, ...scheduleFASection, ...commonSections];
-  const sections = allSections.filter(section => shouldShowSection(section.id, selectedITR));
+  // Combine all sections and filter based on ITR type - Memoized
+  const allSections = useMemo(() => [...baseSections, ...itr3Sections, ...itr4Sections, ...scheduleFASection, ...commonSections], [baseSections, itr3Sections, itr4Sections, scheduleFASection, commonSections]);
+  const sections = useMemo(() => allSections.filter(section => shouldShowSection(section.id, selectedITR)), [allSections, selectedITR, shouldShowSection]);
 
   // Initialize activeSectionId to first section if not set
   useEffect(() => {
@@ -2315,16 +2304,16 @@ const ITRComputation = () => {
     }
   }, [sections, activeSectionId]);
 
-  // Helper function to convert Assessment Year to Financial Year format
-  const getFinancialYear = (ay) => {
+  // Helper function to convert Assessment Year to Financial Year format - Memoized
+  const getFinancialYear = useCallback((ay) => {
     if (!ay) return '';
     const [startYear] = ay.split('-').map(Number);
     const fyStart = startYear - 1;
     return `FY ${fyStart}-${startYear.toString().slice(-2)}`;
-  };
+  }, []);
 
-  // Get ITR display name with full form name
-  const getITRDisplayName = (itr) => {
+  // Get ITR display name with full form name - Memoized
+  const getITRDisplayName = useCallback((itr) => {
     const itrNames = {
       'ITR-1': 'ITR-1 (SAHAJ)',
       'ITR1': 'ITR-1 (SAHAJ)',
@@ -2336,16 +2325,113 @@ const ITRComputation = () => {
       'ITR4': 'ITR-4 (SUGAM)',
     };
     return itrNames[itr] || itr;
-  };
+  }, []);
 
-  // Get user name for display
-  const getUserDisplayName = () => {
+  // Get user name for display - Memoized
+  const userDisplayName = useMemo(() => {
     if (selectedPerson?.name) return selectedPerson.name;
     if (user?.firstName || user?.lastName) {
       return `${user.firstName || ''} ${user.lastName || ''}`.trim();
     }
     return user?.email?.split('@')[0] || 'User';
-  };
+  }, [selectedPerson?.name, user?.firstName, user?.lastName, user?.email]);
+
+  // Memoized gross income calculation - expensive operation
+  const grossIncome = useMemo(() => {
+    const income = formData?.income || {};
+    let total = 0;
+
+    // Salary income
+    total += parseFloat(income.salary) || 0;
+
+    // Business income
+    if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
+      total += (income.businessIncome.businesses || []).reduce((sum, b) =>
+        sum + (parseFloat(b.pnl?.netProfit || b.netProfit || 0)), 0);
+    } else {
+      total += parseFloat(income.businessIncome) || 0;
+    }
+
+    // Professional income
+    if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
+      total += (income.professionalIncome.professions || []).reduce((sum, p) =>
+        sum + (parseFloat(p.pnl?.netIncome || p.netIncome || p.netProfit || 0)), 0);
+    } else {
+      total += parseFloat(income.professionalIncome) || 0;
+    }
+
+    // Other income
+    total += parseFloat(income.otherIncome) || 0;
+
+    // Capital gains
+    if (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails) {
+      total += (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
+        (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0);
+    } else {
+      total += parseFloat(income.capitalGains) || 0;
+    }
+
+    // House property
+    if (typeof income.houseProperty === 'object' && income.houseProperty?.properties) {
+      total += income.houseProperty.properties.reduce((sum, p) => {
+        const rental = parseFloat(p.annualRentalIncome) || 0;
+        const taxes = parseFloat(p.municipalTaxes) || 0;
+        const interest = parseFloat(p.interestOnLoan) || 0;
+        return sum + Math.max(0, rental - taxes - interest);
+      }, 0);
+    } else {
+      total += parseFloat(income.houseProperty) || 0;
+    }
+
+    // Foreign income
+    total += (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
+      sum + (parseFloat(e.amountInr) || 0), 0);
+
+    // Director/Partner income
+    total += parseFloat(income.directorPartner?.directorIncome) || 0;
+    total += parseFloat(income.directorPartner?.partnerIncome) || 0;
+
+    return total;
+  }, [formData?.income]);
+
+  // Memoized deductions calculation
+  const deductions = useMemo(() => {
+    const deductionsData = formData?.deductions || {};
+    const oldRegimeDeductions =
+      (parseFloat(deductionsData.section80C) || 0) +
+      (parseFloat(deductionsData.section80D) || 0) +
+      (parseFloat(deductionsData.section80G) || 0) +
+      (parseFloat(deductionsData.section80TTA) || 0) +
+      (parseFloat(deductionsData.section80TTB) || 0) +
+      Object.values(deductionsData.otherDeductions || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+
+    return {
+      old: oldRegimeDeductions,
+      new: 50000, // Standard deduction for new regime
+    };
+  }, [formData?.deductions]);
+
+  // Memoized taxable income calculation
+  const taxableIncome = useMemo(() => {
+    return {
+      old: Math.max(0, grossIncome - deductions.old),
+      new: Math.max(0, grossIncome - deductions.new),
+    };
+  }, [grossIncome, deductions]);
+
+  // Memoized TDS paid calculation
+  const tdsPaid = useMemo(() => {
+    const taxesPaid = formData?.taxesPaid || {};
+    return (parseFloat(taxesPaid.tds) || 0) +
+      (parseFloat(taxesPaid.advanceTax) || 0) +
+      (parseFloat(taxesPaid.selfAssessmentTax) || 0);
+  }, [formData?.taxesPaid]);
+
+  // Memoized tax payable
+  const taxPayable = useMemo(() => ({
+    old: regimeComparison?.oldRegime?.totalTax || taxComputation?.totalTax || 0,
+    new: regimeComparison?.newRegime?.totalTax || 0,
+  }), [regimeComparison, taxComputation]);
 
   return (
     <div className="bg-neutral-50 flex flex-col" style={{ height: '100vh', overflow: 'hidden' }}>
@@ -2367,10 +2453,10 @@ const ITRComputation = () => {
                 <h1 className="text-base font-bold font-display text-neutral-900">
                   Income Tax Computation
                 </h1>
-                {getUserDisplayName() && (
+                {userDisplayName && (
                   <>
                     <span className="text-neutral-300 text-xs">•</span>
-                    <span className="text-xs font-medium text-neutral-700">{getUserDisplayName()}</span>
+                    <span className="text-xs font-medium text-neutral-700">{userDisplayName}</span>
                   </>
                 )}
                 <span className="text-neutral-300 text-xs">•</span>
@@ -2496,196 +2582,11 @@ const ITRComputation = () => {
       <div className="bg-white border-b border-neutral-200 z-40 flex-shrink-0" style={{ height: '56px' }}>
         <div className="max-w-[1920px] mx-auto px-3 h-full flex items-center">
           <TaxComputationBar
-        // New props format (preferred)
-        grossIncome={(() => {
-          // Safely calculate gross income, handling both number and object types
-          const income = formData?.income || {};
-
-          // Salary income
-          const salary = parseFloat(income.salary) || 0;
-
-          // Business income - can be number or object with businesses array
-          let businessIncome = 0;
-          if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
-            businessIncome = (income.businessIncome.businesses || []).reduce((sum, b) =>
-              sum + (parseFloat(b.pnl?.netProfit || b.netProfit || 0)), 0);
-          } else {
-            businessIncome = parseFloat(income.businessIncome) || 0;
-          }
-
-          // Professional income - can be number or object with professions array
-          let professionalIncome = 0;
-          if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
-            professionalIncome = (income.professionalIncome.professions || []).reduce((sum, p) =>
-              sum + (parseFloat(p.pnl?.netIncome || p.netIncome || p.netProfit || 0)), 0);
-          } else {
-            professionalIncome = parseFloat(income.professionalIncome) || 0;
-          }
-
-          // Other income
-          const otherIncome = parseFloat(income.otherIncome) || 0;
-
-          // Capital gains
-          let capitalGains = 0;
-          if (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails) {
-            capitalGains = (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
-              (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0);
-          } else {
-            capitalGains = parseFloat(income.capitalGains) || 0;
-          }
-
-          // House property
-          let houseProperty = 0;
-          if (typeof income.houseProperty === 'object' && income.houseProperty?.properties) {
-            houseProperty = income.houseProperty.properties.reduce((sum, p) => {
-              const rental = parseFloat(p.annualRentalIncome) || 0;
-              const taxes = parseFloat(p.municipalTaxes) || 0;
-              const interest = parseFloat(p.interestOnLoan) || 0;
-              return sum + Math.max(0, rental - taxes - interest);
-            }, 0);
-          } else {
-            houseProperty = parseFloat(income.houseProperty) || 0;
-          }
-
-          // Foreign income
-          const foreignIncome = (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
-            sum + (parseFloat(e.amountInr) || 0), 0);
-
-          // Director/Partner income
-          const directorIncome = parseFloat(income.directorPartner?.directorIncome) || 0;
-          const partnerIncome = parseFloat(income.directorPartner?.partnerIncome) || 0;
-
-          return salary + businessIncome + professionalIncome + otherIncome + capitalGains +
-                 houseProperty + foreignIncome + directorIncome + partnerIncome;
-        })()}
-        deductions={{
-          old:
-            (parseFloat(formData.deductions?.section80C) || 0) +
-            (parseFloat(formData.deductions?.section80D) || 0) +
-            (parseFloat(formData.deductions?.section80G) || 0) +
-            (parseFloat(formData.deductions?.section80TTA) || 0) +
-            (parseFloat(formData.deductions?.section80TTB) || 0) +
-            Object.values(formData.deductions?.otherDeductions || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0),
-          new: 50000, // Standard deduction for new regime
-        }}
-        taxableIncome={{
-          old: (() => {
-            const income = formData?.income || {};
-            const deductions = formData?.deductions || {};
-
-            // Calculate gross income (reuse same logic as grossIncome prop)
-            let grossIncome = 0;
-
-            grossIncome += parseFloat(income.salary) || 0;
-
-            if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
-              grossIncome += (income.businessIncome.businesses || []).reduce((sum, b) =>
-                sum + (parseFloat(b.pnl?.netProfit || b.netProfit || 0)), 0);
-            } else {
-              grossIncome += parseFloat(income.businessIncome) || 0;
-            }
-
-            if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
-              grossIncome += (income.professionalIncome.professions || []).reduce((sum, p) =>
-                sum + (parseFloat(p.pnl?.netIncome || p.netIncome || p.netProfit || 0)), 0);
-            } else {
-              grossIncome += parseFloat(income.professionalIncome) || 0;
-            }
-
-            grossIncome += parseFloat(income.otherIncome) || 0;
-
-            if (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails) {
-              grossIncome += (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
-                (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0);
-            } else {
-              grossIncome += parseFloat(income.capitalGains) || 0;
-            }
-
-            if (typeof income.houseProperty === 'object' && income.houseProperty?.properties) {
-              grossIncome += income.houseProperty.properties.reduce((sum, p) => {
-                const rental = parseFloat(p.annualRentalIncome) || 0;
-                const taxes = parseFloat(p.municipalTaxes) || 0;
-                const interest = parseFloat(p.interestOnLoan) || 0;
-                return sum + Math.max(0, rental - taxes - interest);
-              }, 0);
-            } else {
-              grossIncome += parseFloat(income.houseProperty) || 0;
-            }
-
-            grossIncome += (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
-              sum + (parseFloat(e.amountInr) || 0), 0);
-            grossIncome += parseFloat(income.directorPartner?.directorIncome) || 0;
-            grossIncome += parseFloat(income.directorPartner?.partnerIncome) || 0;
-
-            const totalDeductions =
-              (parseFloat(deductions.section80C) || 0) +
-              (parseFloat(deductions.section80D) || 0) +
-              (parseFloat(deductions.section80G) || 0) +
-              (parseFloat(deductions.section80TTA) || 0) +
-              (parseFloat(deductions.section80TTB) || 0) +
-              Object.values(deductions.otherDeductions || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-
-            return Math.max(0, grossIncome - totalDeductions);
-          })(),
-          new: (() => {
-            const income = formData?.income || {};
-
-            // Calculate gross income (same as old)
-            let grossIncome = 0;
-
-            grossIncome += parseFloat(income.salary) || 0;
-
-            if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
-              grossIncome += (income.businessIncome.businesses || []).reduce((sum, b) =>
-                sum + (parseFloat(b.pnl?.netProfit || b.netProfit || 0)), 0);
-            } else {
-              grossIncome += parseFloat(income.businessIncome) || 0;
-            }
-
-            if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
-              grossIncome += (income.professionalIncome.professions || []).reduce((sum, p) =>
-                sum + (parseFloat(p.pnl?.netIncome || p.netIncome || p.netProfit || 0)), 0);
-            } else {
-              grossIncome += parseFloat(income.professionalIncome) || 0;
-            }
-
-            grossIncome += parseFloat(income.otherIncome) || 0;
-
-            if (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails) {
-              grossIncome += (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
-                (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0);
-            } else {
-              grossIncome += parseFloat(income.capitalGains) || 0;
-            }
-
-            if (typeof income.houseProperty === 'object' && income.houseProperty?.properties) {
-              grossIncome += income.houseProperty.properties.reduce((sum, p) => {
-                const rental = parseFloat(p.annualRentalIncome) || 0;
-                const taxes = parseFloat(p.municipalTaxes) || 0;
-                const interest = parseFloat(p.interestOnLoan) || 0;
-                return sum + Math.max(0, rental - taxes - interest);
-              }, 0);
-            } else {
-              grossIncome += parseFloat(income.houseProperty) || 0;
-            }
-
-            grossIncome += (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
-              sum + (parseFloat(e.amountInr) || 0), 0);
-            grossIncome += parseFloat(income.directorPartner?.directorIncome) || 0;
-            grossIncome += parseFloat(income.directorPartner?.partnerIncome) || 0;
-
-            return Math.max(0, grossIncome - 50000);
-          })(),
-        }}
-        taxPayable={{
-          old: regimeComparison?.oldRegime?.totalTax || taxComputation?.totalTax || 0,
-          new: regimeComparison?.newRegime?.totalTax || 0,
-        }}
-        tdsPaid={
-          (parseFloat(formData.taxesPaid?.tds) || 0) +
-          (parseFloat(formData.taxesPaid?.advanceTax) || 0) +
-          (parseFloat(formData.taxesPaid?.selfAssessmentTax) || 0)
-        }
+            grossIncome={grossIncome}
+            deductions={deductions}
+            taxableIncome={taxableIncome}
+            taxPayable={taxPayable}
+            tdsPaid={tdsPaid}
         aiTip={recommendations?.[0]?.description || recommendations?.[0]?.title || null}
         onDismissTip={() => {
           // Remove the first recommendation from the list

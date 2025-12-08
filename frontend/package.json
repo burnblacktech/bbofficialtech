@@ -37,6 +37,7 @@
     "start": "set PORT=3000 && react-scripts start",
     "build": "react-scripts build",
     "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
+    "analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src/",
