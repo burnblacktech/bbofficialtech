@@ -13,70 +13,25 @@
   "categories": ["finance", "productivity", "business"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "src": "/bb-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
+      "src": "/bb-logo.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "maskable any"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
+      "src": "/bb-logo.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "maskable any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-dashboard.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard view on desktop"
-    },
-    {
-      "src": "/screenshots/mobile-filing.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "ITR filing on mobile"
-    }
-  ],
+  "screenshots": [],
   "shortcuts": [
     {
       "name": "Start New Filing",
@@ -85,8 +40,9 @@
       "url": "/itr/filing",
       "icons": [
         {
-          "src": "/icons/shortcut-filing.png",
-          "sizes": "96x96"
+          "src": "/bb-logo.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
         }
       ]
     },
@@ -97,8 +53,9 @@
       "url": "/dashboard",
       "icons": [
         {
-          "src": "/icons/shortcut-dashboard.png",
-          "sizes": "96x96"
+          "src": "/bb-logo.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
         }
       ]
     },
@@ -109,8 +66,9 @@
       "url": "/documents/upload",
       "icons": [
         {
-          "src": "/icons/shortcut-upload.png",
-          "sizes": "96x96"
+          "src": "/bb-logo.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
         }
       ]
     }

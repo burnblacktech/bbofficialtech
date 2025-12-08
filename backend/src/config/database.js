@@ -66,6 +66,8 @@ if (connectionString) {
       underscored: true,
       freezeTableName: true,
     },
+    // Set default schema search path to public
+    schema: 'public',
   });
   
   enterpriseLogger.info(`Using Supabase ${process.env.DIRECT_URI ? 'direct' : 'pooler'} connection`);

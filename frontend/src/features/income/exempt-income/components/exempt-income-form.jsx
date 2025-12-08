@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Trash2, Info } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../../components/common/Button';
 
 const EXEMPT_INCOME_TYPES = [
   { id: 'agricultural', label: 'Agricultural Income (for rate purposes)', maxAmount: null },

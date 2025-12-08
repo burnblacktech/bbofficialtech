@@ -14,85 +14,130 @@
      BRAND COLORS - PROFESSIONAL & TRUSTWORTHY
      ===================================================== */
   
-  /* Primary Brand - Black System */
-  --color-primary-50: #f8f9fa;
-  --color-primary-100: #f1f3f4;
-  --color-primary-200: #e8eaed;
-  --color-primary-300: #dadce0;
-  --color-primary-400: #bdc1c6;
-  --color-primary-500: #9aa0a6;
-  --color-primary-600: #80868b;
-  --color-primary-700: #5f6368;
-  --color-primary-800: #3c4043;
-  --color-primary-900: #202124; /* Main Brand Black */
+  /* Primary Brand - Gold System - newUI.md Section 5.1 */
+  --color-primary-50: #FFF8E7;
+  --color-primary-100: #FFF8E7;
+  --color-primary-300: #FFE4A0;
+  --color-primary-400: #E5C158; /* For dark mode */
+  --color-primary-500: #D4AF37; /* Main primary - newUI.md */
+  --color-primary-600: #B8960C;
+  --color-primary-700: #B8960C;
+  --color-primary-800: #7A6508;
+  --color-primary-900: #7A6508;
 
-  /* Secondary - Gold System */
-  --color-secondary-50: #fffdf7;
-  --color-secondary-100: #fff9e6;
-  --color-secondary-200: #fff2cc;
-  --color-secondary-300: #ffe699;
-  --color-secondary-400: #ffd966;
-  --color-secondary-500: #ffcc33; /* Main Gold */
-  --color-secondary-600: #e6b800;
-  --color-secondary-700: #cc9900;
-  --color-secondary-800: #b38600;
-  --color-secondary-900: #997300;
+  /* Gold - Explicit - newUI.md Section 5.1 */
+  --color-gold-100: #FFF8E7;
+  --color-gold-300: #FFE4A0;
+  --color-gold-400: #E5C158;
+  --color-gold-500: #D4AF37;
+  --color-gold-700: #B8960C;
+  --color-gold-900: #7A6508;
 
-  /* Success - Gold Variant */
-  --color-success-50: #fffdf7;
-  --color-success-100: #fff9e6;
-  --color-success-200: #fff2cc;
-  --color-success-300: #ffe699;
-  --color-success-400: #ffd966;
-  --color-success-500: #ffcc33;
-  --color-success-600: #e6b800;
-  --color-success-700: #cc9900;
-  --color-success-800: #b38600;
-  --color-success-900: #997300;
+  /* Yellow - Accent/Warning - newUI.md Section 5.1 */
+  --color-yellow-100: #FFFDE7;
+  --color-yellow-300: #FFF59D;
+  --color-yellow-500: #FFEB3B;
+  --color-yellow-700: #FBC02D;
+  --color-yellow-900: #F57F17;
 
-  /* Warning - Gold Variant */
-  --color-warning-50: #fffdf7;
-  --color-warning-100: #fff9e6;
-  --color-warning-200: #fff2cc;
-  --color-warning-300: #ffe699;
-  --color-warning-400: #ffd966;
-  --color-warning-500: #ffcc33;
-  --color-warning-600: #e6b800;
-  --color-warning-700: #cc9900;
-  --color-warning-800: #b38600;
-  --color-warning-900: #997300;
+  /* Secondary - Yellow System (backward compatibility) */
+  --color-secondary-50: #FFFDE7;
+  --color-secondary-100: #FFFDE7;
+  --color-secondary-300: #FFF59D;
+  --color-secondary-500: #FFEB3B;
+  --color-secondary-700: #FBC02D;
+  --color-secondary-900: #F57F17;
 
-  /* Error - Black Variant */
-  --color-error-50: #f8f9fa;
-  --color-error-100: #f1f3f4;
-  --color-error-200: #e8eaed;
-  --color-error-300: #dadce0;
-  --color-error-400: #bdc1c6;
-  --color-error-500: #9aa0a6;
-  --color-error-600: #80868b;
-  --color-error-700: #5f6368;
-  --color-error-800: #3c4043;
-  --color-error-900: #202124;
+  /* Success - newUI.md Section 5.2 */
+  --color-success-light: #ECFDF5;
+  --color-success-base: #10B981;
+  --color-success-dark: #065F46;
+  --color-success-50: #ECFDF5;
+  --color-success-500: #10B981;
+  --color-success-900: #065F46;
 
-  /* Neutral - Black & White System */
-  --color-neutral-50: #ffffff; /* Pure White */
-  --color-neutral-100: #f8f9fa;
-  --color-neutral-200: #f1f3f4;
-  --color-neutral-300: #e8eaed;
-  --color-neutral-400: #dadce0;
-  --color-neutral-500: #bdc1c6;
-  --color-neutral-600: #9aa0a6;
-  --color-neutral-700: #80868b;
-  --color-neutral-800: #5f6368;
-  --color-neutral-900: #202124; /* Pure Black */
+  /* Warning - Uses Gold - newUI.md Section 5.2 */
+  --color-warning-light: #FFF8E7;
+  --color-warning-base: #D4AF37; /* Gold-500 */
+  --color-warning-dark: #92750C;
+  --color-warning-50: #FFF8E7;
+  --color-warning-500: #D4AF37;
+  --color-warning-900: #92750C;
+
+  /* Error - newUI.md Section 5.2 */
+  --color-error-light: #FEF2F2;
+  --color-error-base: #EF4444;
+  --color-error-dark: #991B1B;
+  --color-error-50: #FEF2F2;
+  --color-error-500: #EF4444;
+  --color-error-900: #991B1B;
+
+  /* Info - newUI.md Section 5.2 */
+  --color-info-light: #EFF6FF;
+  --color-info-base: #3B82F6;
+  --color-info-dark: #1E40AF;
+  --color-info-50: #EFF6FF;
+  --color-info-500: #3B82F6;
+  --color-info-900: #1E40AF;
+
+  /* Neutral - Black & White System - newUI.md Section 5.1 */
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #E5E5E5;
+  --color-neutral-300: #A6A6A6;
+  --color-neutral-500: #737373;
+  --color-neutral-700: #404040;
+  --color-neutral-900: #0D0D0D;
+
+  /* Dark Mode Background Hierarchy - newUI.md Section 5.4 */
+  --color-dark-base: #0D0D0D;    /* Page background */
+  --color-dark-level1: #171717;   /* Card background */
+  --color-dark-level2: #262626;   /* Hover state */
+  --color-dark-level3: #363636;   /* Modal background */
 
   /* =====================================================
-     TYPOGRAPHY SCALE
+     TYPOGRAPHY SCALE - newUI.md Section 6.0
      ===================================================== */
   
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   
+  /* Display sizes - Plus Jakarta Sans 600 */
+  --font-size-display-1: 48px;
+  --font-line-height-display-1: 56px;
+  --font-size-display-2: 36px;
+  --font-line-height-display-2: 44px;
+  
+  /* Headings - Inter 600 */
+  --font-size-heading-1: 28px;
+  --font-line-height-heading-1: 36px;
+  --font-letter-spacing-heading-1: -0.02em;
+  --font-size-heading-2: 24px;
+  --font-line-height-heading-2: 32px;
+  --font-letter-spacing-heading-2: -0.01em;
+  --font-size-heading-3: 20px;
+  --font-line-height-heading-3: 28px;
+  --font-size-heading-4: 16px;
+  --font-line-height-heading-4: 24px;
+  
+  /* Body text - Inter 400 */
+  --font-size-body-large: 16px;
+  --font-line-height-body-large: 26px;
+  --font-size-body-regular: 14px;
+  --font-line-height-body-regular: 22px;
+  --font-size-body-small: 12px;
+  --font-line-height-body-small: 18px;
+  
+  /* Special - newUI.md Section 6.2 */
+  --font-size-label: 12px;
+  --font-line-height-label: 16px;
+  --font-letter-spacing-label: 0.05em;
+  --font-size-amount: 20px;
+  --font-line-height-amount: 28px;
+  --font-size-code: 14px;
+  --font-line-height-code: 20px;
+  
+  /* Legacy sizes (backward compatibility) */
   --font-size-xs: 0.75rem;    /* 12px */
   --font-size-sm: 0.875rem;   /* 14px */
   --font-size-base: 1rem;     /* 16px */
@@ -116,23 +161,22 @@
   --line-height-relaxed: 1.75;
 
   /* =====================================================
-     SPACING SCALE
+     SPACING SCALE - newUI.md Section 7.1 (4px base unit)
      ===================================================== */
   
-  --space-0: 0;
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  --space-16: 4rem;     /* 64px */
-  --space-20: 5rem;     /* 80px */
-  --space-24: 6rem;     /* 96px */
-  --space-32: 8rem;     /* 128px */
+  --space-0: 0px;
+  --space-1: 4px;    /* 0.25 - base unit */
+  --space-2: 8px;    /* 0.5 */
+  --space-3: 12px;   /* 0.75 */
+  --space-4: 16px;   /* 1 */
+  --space-5: 20px;   /* 1.25 */
+  --space-6: 24px;   /* 1.5 */
+  --space-8: 32px;   /* 2 */
+  --space-10: 40px;  /* 2.5 */
+  --space-12: 48px;  /* 3 */
+  --space-16: 64px;  /* 4 */
+  --space-20: 80px;  /* 5 */
+  --space-24: 96px;  /* 6 */
 
   /* =====================================================
      BORDER RADIUS
@@ -149,26 +193,48 @@
   --radius-full: 9999px;
 
   /* =====================================================
-     SHADOWS
+     SHADOWS - newUI.md Section 8.0 (5-level Elevation System)
      ===================================================== */
   
+  --shadow-elevation-0: none;
+  --shadow-elevation-1: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06); /* Cards at rest */
+  --shadow-elevation-2: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06); /* Cards hover/expanded */
+  --shadow-elevation-3: 0 10px 15px rgba(0,0,0,0.10), 0 4px 6px rgba(0,0,0,0.08); /* Dropdowns, popovers */
+  --shadow-elevation-4: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.10); /* Modals, dialogs */
+  --shadow-gold-accent: 0 4px 14px rgba(212, 175, 55, 0.4); /* Primary CTAs, selected states */
+  
+  /* Legacy aliases (backward compatibility) */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-base: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-sm: var(--shadow-elevation-1);
+  --shadow-base: var(--shadow-elevation-2);
+  --shadow-md: var(--shadow-elevation-3);
+  --shadow-lg: var(--shadow-elevation-4);
   --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 
   /* =====================================================
-     ANIMATIONS
+     ANIMATIONS - newUI.md Section 9.0
      ===================================================== */
   
-  --transition-fast: 150ms ease-in-out;
-  --transition-base: 250ms ease-in-out;
-  --transition-slow: 350ms ease-in-out;
-  --transition-bounce: 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  /* Easing Curves - newUI.md Section 9.2 */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);        /* Most UI transitions */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);   /* Success states, celebrations */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Modals, popups */
+  
+  /* Animation Durations - newUI.md Section 9.1 */
+  --duration-small: 150ms;        /* Button state changes */
+  --duration-medium: 250ms;       /* Card expand */
+  --duration-large: 350ms;        /* Page transitions */
+  --duration-card-expand: 300ms;  /* Card expand/collapse */
+  --duration-value-update: 400ms; /* Value update animations */
+  --duration-regime-switch: 500ms; /* Regime toggle */
+  
+  /* Transition presets */
+  --transition-fast: var(--duration-small) var(--ease-smooth);
+  --transition-base: var(--duration-medium) var(--ease-smooth);
+  --transition-slow: var(--duration-large) var(--ease-smooth);
+  --transition-bounce: 300ms var(--ease-bounce);
 
   /* =====================================================
      Z-INDEX SCALE
@@ -188,17 +254,33 @@
    DARK MODE VARIABLES
    ===================================================== */
 
-[data-theme="dark"] {
-  --color-neutral-50: #111827;
-  --color-neutral-100: #1f2937;
-  --color-neutral-200: #374151;
-  --color-neutral-300: #4b5563;
-  --color-neutral-400: #6b7280;
-  --color-neutral-500: #9ca3af;
-  --color-neutral-600: #d1d5db;
-  --color-neutral-700: #e5e7eb;
-  --color-neutral-800: #f3f4f6;
-  --color-neutral-900: #f9fafb;
+/* =====================================================
+   DARK MODE VARIABLES - newUI.md Section 5.4
+   ===================================================== */
+
+[data-theme="dark"],
+.dark {
+  /* Background Hierarchy - newUI.md Section 5.4 */
+  --color-dark-base: #0D0D0D;    /* Page background */
+  --color-dark-level1: #171717;   /* Card background */
+  --color-dark-level2: #262626;   /* Hover state */
+  --color-dark-level3: #363636;   /* Modal background */
+  
+  /* Gold on Dark - Enhanced Luminance - newUI.md Section 5.4 */
+  --color-gold-400: #E5C158; /* Brighter for dark mode */
+  
+  /* Text on Dark - newUI.md Section 5.4 */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A6A6A6;
+  --color-text-tertiary: #737373;
+  
+  /* Neutral colors inverted for dark mode */
+  --color-neutral-50: #0D0D0D;
+  --color-neutral-100: #171717;
+  --color-neutral-300: #262626;
+  --color-neutral-500: #737373;
+  --color-neutral-700: #A6A6A6;
+  --color-neutral-900: #FFFFFF;
 }
 
 /* =====================================================

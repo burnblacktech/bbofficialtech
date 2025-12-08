@@ -99,13 +99,37 @@ class PANVerificationService {
       });
 
       // Parse response according to actual SurePass format:
-      // { success: true, status_code: 200, data: { pan_number, full_name, client_id, category } }
+      // { success: true, status_code: 200, data: { pan_number, full_name, client_id, category, date_of_birth/dob } }
+      // Extract DOB from response (could be date_of_birth, dob, or dateOfBirth)
+      const rawDOB = response.data.data?.date_of_birth || response.data.data?.dob || response.data.data?.dateOfBirth;
+      let dateOfBirth = null;
+      
+      // Format DOB to YYYY-MM-DD if available
+      if (rawDOB) {
+        try {
+          const dobDate = new Date(rawDOB);
+          if (!isNaN(dobDate.getTime())) {
+            // Format as YYYY-MM-DD for date input
+            const year = dobDate.getFullYear();
+            const month = String(dobDate.getMonth() + 1).padStart(2, '0');
+            const day = String(dobDate.getDate()).padStart(2, '0');
+            dateOfBirth = `${year}-${month}-${day}`;
+          }
+        } catch (error) {
+          enterpriseLogger.warn('Failed to parse DOB from PAN verification', {
+            rawDOB,
+            error: error.message,
+          });
+        }
+      }
+      
       const verificationResult = {
         pan: response.data.data?.pan_number || pan.toUpperCase(),
         isValid: response.data.success === true && response.data.status_code === 200,
         name: response.data.data?.full_name || null,
         category: response.data.data?.category || null,
         clientId: response.data.data?.client_id || null,
+        dateOfBirth: dateOfBirth,
         source: this.comprehensiveEnabled ? 'SUREPASS_LIVE_COMPREHENSIVE' : 'SUREPASS_LIVE',
         verifiedAt: new Date().toISOString(),
         userId: userId,
@@ -219,12 +243,36 @@ class PANVerificationService {
       });
 
       // Parse comprehensive response
+      // Extract DOB from comprehensive response
+      const rawDOB = response.data.data?.date_of_birth || response.data.data?.dob || response.data.data?.dateOfBirth;
+      let dateOfBirth = null;
+      
+      // Format DOB to YYYY-MM-DD if available
+      if (rawDOB) {
+        try {
+          const dobDate = new Date(rawDOB);
+          if (!isNaN(dobDate.getTime())) {
+            // Format as YYYY-MM-DD for date input
+            const year = dobDate.getFullYear();
+            const month = String(dobDate.getMonth() + 1).padStart(2, '0');
+            const day = String(dobDate.getDate()).padStart(2, '0');
+            dateOfBirth = `${year}-${month}-${day}`;
+          }
+        } catch (error) {
+          enterpriseLogger.warn('Failed to parse DOB from PAN comprehensive verification', {
+            rawDOB,
+            error: error.message,
+          });
+        }
+      }
+      
       const verificationResult = {
         pan: response.data.data?.pan_number || pan.toUpperCase(),
         isValid: response.data.success === true && response.data.status_code === 200,
         name: response.data.data?.full_name || null,
         category: response.data.data?.category || null,
         clientId: response.data.data?.client_id || null,
+        dateOfBirth: dateOfBirth,
         source: 'SUREPASS_LIVE_COMPREHENSIVE',
         verifiedAt: new Date().toISOString(),
         userId: userId,
@@ -386,6 +434,7 @@ class PANVerificationService {
       isValid: true,
       name: this.generateMockName(pan),
       status: 'Active',
+      dateOfBirth: null, // Mock doesn't include DOB - would need to be provided separately
       lastUpdated: new Date().toISOString(),
       source: 'SUREPASS_MOCK',
       verifiedAt: new Date().toISOString(),

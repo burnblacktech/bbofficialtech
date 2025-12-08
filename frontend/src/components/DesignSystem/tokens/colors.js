@@ -1,80 +1,86 @@
 // =====================================================
 // DESIGN TOKENS - COLORS
-// Trust-first color palette with enhanced psychology
+// Ultra-Grade Modern UI Design System - newUI.md aligned
 // =====================================================
 
 export const COLORS = {
-  primary: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6', // Main blue - trust & reliability
-    600: '#2563eb',
-    700: '#1d4ed8',
-    800: '#1e40af',
-    900: '#1e3a8a',
+  // Gold (Primary Brand) - newUI.md Section 5.1
+  gold: {
+    100: '#FFF8E7',
+    300: '#FFE4A0',
+    400: '#E5C158', // For dark mode
+    500: '#D4AF37', // Main primary color
+    700: '#B8960C',
+    900: '#7A6508',
   },
-  secondary: {
-    50: '#fefce8',
-    100: '#fef3c7',
-    200: '#fde68a',
-    300: '#fcd34d',
-    400: '#fbbf24',
-    500: '#f59e0b', // Gold for premium & value
-    600: '#d97706',
-    700: '#b45309',
-    800: '#92400e',
-    900: '#78350f',
+  // Yellow (Accent/Warning) - newUI.md Section 5.1
+  yellow: {
+    100: '#FFFDE7',
+    300: '#FFF59D',
+    500: '#FFEB3B',
+    700: '#FBC02D',
+    900: '#F57F17',
   },
+  // Neutral (Black to White) - newUI.md Section 5.1
+  neutral: {
+    50: '#FAFAFA',
+    100: '#E5E5E5',
+    300: '#A6A6A6',
+    500: '#737373',
+    700: '#404040',
+    900: '#0D0D0D',
+  },
+  // Semantic Colors - newUI.md Section 5.2
   success: {
-    50: '#f0fdf4',
-    100: '#dcfce7',
-    200: '#bbf7d0',
-    300: '#86efac',
-    400: '#4ade80',
-    500: '#22c55e', // Green for success & compliance
-    600: '#16a34a',
-    700: '#15803d',
-    800: '#166534',
-    900: '#14532d',
+    light: '#ECFDF5',
+    base: '#10B981',
+    dark: '#065F46',
   },
   warning: {
-    50: '#fffbeb',
-    100: '#fef3c7',
-    200: '#fde68a',
-    300: '#fcd34d',
-    400: '#fbbf24',
-    500: '#f59e0b', // Amber for deadlines & urgency
-    600: '#d97706',
-    700: '#b45309',
-    800: '#92400e',
-    900: '#78350f',
+    light: '#FFF8E7',
+    base: '#D4AF37', // Uses Gold - brand-aligned
+    dark: '#92750C',
   },
   error: {
-    50: '#fef2f2',
-    100: '#fee2e2',
-    200: '#fecaca',
-    300: '#fca5a5',
-    400: '#f87171',
-    500: '#ef4444', // Red for errors & critical actions
-    600: '#dc2626',
-    700: '#b91c1c',
-    800: '#991b1b',
-    900: '#7f1d1d',
+    light: '#FEF2F2',
+    base: '#EF4444',
+    dark: '#991B1B',
   },
-  neutral: {
-    50: '#f9fafb',
-    100: '#f3f4f6',
-    200: '#e5e7eb',
-    300: '#d1d5db',
-    400: '#9ca3af',
-    500: '#6b7280',
-    600: '#4b5563',
-    700: '#374151',
-    800: '#1f2937',
-    900: '#111827',
+  info: {
+    light: '#EFF6FF',
+    base: '#3B82F6',
+    dark: '#1E40AF',
+  },
+  // Dark Mode Background Hierarchy - newUI.md Section 5.4
+  dark: {
+    base: '#0D0D0D',    // Page background
+    level1: '#171717',   // Card background
+    level2: '#262626',   // Hover state
+    level3: '#363636',   // Modal background
+  },
+  // Primary alias (for backward compatibility - maps to Gold)
+  primary: {
+    50: '#FFF8E7',
+    100: '#FFF8E7',
+    300: '#FFE4A0',
+    400: '#E5C158',
+    500: '#D4AF37', // Main primary
+    600: '#B8960C',
+    700: '#B8960C',
+    800: '#7A6508',
+    900: '#7A6508',
+  },
+  // Secondary alias (for backward compatibility - maps to Yellow)
+  secondary: {
+    50: '#FFFDE7',
+    100: '#FFFDE7',
+    300: '#FFF59D',
+    400: '#FFEB3B',
+    500: '#FFEB3B',
+    600: '#FBC02D',
+    700: '#FBC02D',
+    800: '#F57F17',
+    900: '#F57F17',
   },
 };
 

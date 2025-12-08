@@ -67,6 +67,7 @@ const AdminDocuments = () => {
   };
 
   const handleDeleteDocument = (documentId) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
       deleteDocumentMutation.mutate({ documentId, reason: 'Admin deletion' });
     }

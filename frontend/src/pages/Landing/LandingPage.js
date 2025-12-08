@@ -6,6 +6,7 @@
 
 import React, { memo, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Shield,
   Users,
@@ -18,29 +19,54 @@ import {
   Bot,
   Building2,
   UserCheck,
+  Loader2,
 } from 'lucide-react';
+import landingService from '../../services/api/landingService';
 
 // Memoized components for better performance
-const TrustIndicators = memo(() => (
-  <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
-    <div className="text-center">
-      <div className="text-number-lg text-orange-500">10K+</div>
-      <div className="text-body-sm text-gray-600">Users Trust Us</div>
+const TrustIndicators = memo(({ stats, isLoading }) => {
+  if (isLoading) {
+    return (
+      <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="text-center">
+            <div className="text-number-lg text-orange-500 animate-pulse">---</div>
+            <div className="text-body-sm text-gray-600 animate-pulse">---</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const statsData = stats?.data || {
+    totalUsersFormatted: '10K+',
+    totalRefundsFormatted: '₹50Cr+',
+    successRateFormatted: '99.9%',
+    supportAvailability: '24/7',
+  };
+
+  return (
+    <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+      <div className="text-center">
+        <div className="text-number-lg text-orange-500">{statsData.totalUsersFormatted}</div>
+        <div className="text-body-sm text-gray-600">Users Trust Us</div>
+      </div>
+      <div className="text-center">
+        <div className="text-number-lg text-orange-500">{statsData.totalRefundsFormatted}</div>
+        <div className="text-body-sm text-gray-600">Refunds Generated</div>
+      </div>
+      <div className="text-center">
+        <div className="text-number-lg text-orange-500">{statsData.successRateFormatted}</div>
+        <div className="text-body-sm text-gray-600">Success Rate</div>
+      </div>
+      <div className="text-center">
+        <div className="text-number-lg text-orange-500">{statsData.supportAvailability}</div>
+        <div className="text-body-sm text-gray-600">Support</div>
+      </div>
     </div>
-    <div className="text-center">
-      <div className="text-number-lg text-orange-500">₹50Cr+</div>
-      <div className="text-body-sm text-gray-600">Refunds Generated</div>
-    </div>
-    <div className="text-center">
-      <div className="text-number-lg text-orange-500">99.9%</div>
-      <div className="text-body-sm text-gray-600">Success Rate</div>
-    </div>
-    <div className="text-center">
-      <div className="text-number-lg text-orange-500">24/7</div>
-      <div className="text-body-sm text-gray-600">Support</div>
-    </div>
-  </div>
-));
+  );
+});
+TrustIndicators.displayName = 'TrustIndicators';
 
 const TestimonialCard = memo(({ stars, text, name, title }) => (
   <div className="bg-gray-50 p-6 rounded-lg">
@@ -56,6 +82,29 @@ const TestimonialCard = memo(({ stars, text, name, title }) => (
 ));
 
 const LandingPage = () => {
+  // Fetch stats and testimonials using React Query
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ['landing-stats'],
+    queryFn: async () => {
+      const response = await landingService.getStats();
+      return response;
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes - stats don't change frequently
+    cacheTime: 30 * 60 * 1000, // 30 minutes cache
+    retry: 2,
+  });
+
+  const { data: testimonialsData, isLoading: testimonialsLoading } = useQuery({
+    queryKey: ['landing-testimonials'],
+    queryFn: async () => {
+      const response = await landingService.getTestimonials();
+      return response;
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes - testimonials change rarely
+    cacheTime: 60 * 60 * 1000, // 1 hour cache
+    retry: 2,
+  });
+
   // SEO and performance optimizations
   useEffect(() => {
     // Set page title and meta description
@@ -94,31 +143,47 @@ const LandingPage = () => {
 
     // Cleanup function
     return () => {
-      document.head.removeChild(script);
+      const scriptElement = document.querySelector('script[type="application/ld+json"]');
+      if (scriptElement && scriptElement.textContent.includes('BurnBlack')) {
+        document.head.removeChild(scriptElement);
+      }
     };
   }, []);
 
   // Memoize testimonials data to prevent re-renders
-  const testimonials = useMemo(() => [
-    {
-      stars: [...Array(5)],
-      text: 'BurnBlack made my tax filing so easy! The AI bot guided me through everything and I got a much higher refund than expected.',
-      name: 'Rajesh Kumar',
-      title: 'Software Engineer',
-    },
-    {
-      stars: [...Array(5)],
-      text: 'As a CA, BurnBlack has revolutionized how I handle client filings. The bulk processing feature saves me hours every day.',
-      name: 'Priya Sharma',
-      title: 'Chartered Accountant',
-    },
-    {
-      stars: [...Array(5)],
-      text: 'The security and compliance features give me peace of mind. I can trust BurnBlack with all my sensitive financial data.',
-      name: 'Amit Patel',
-      title: 'Business Owner',
-    },
-  ], []);
+  const testimonials = useMemo(() => {
+    if (testimonialsLoading || !testimonialsData?.data) {
+      // Fallback testimonials while loading
+      return [
+        {
+          stars: [...Array(5)],
+          text: 'BurnBlack made my tax filing so easy! The AI bot guided me through everything and I got a much higher refund than expected.',
+          name: 'Rajesh Kumar',
+          title: 'Software Engineer',
+        },
+        {
+          stars: [...Array(5)],
+          text: 'As a CA, BurnBlack has revolutionized how I handle client filings. The bulk processing feature saves me hours every day.',
+          name: 'Priya Sharma',
+          title: 'Chartered Accountant',
+        },
+        {
+          stars: [...Array(5)],
+          text: 'The security and compliance features give me peace of mind. I can trust BurnBlack with all my sensitive financial data.',
+          name: 'Amit Patel',
+          title: 'Business Owner',
+        },
+      ];
+    }
+
+    // Map API testimonials to component format
+    return testimonialsData.data.map((testimonial) => ({
+      stars: [...Array(testimonial.stars || 5)],
+      text: testimonial.text,
+      name: testimonial.name,
+      title: testimonial.title,
+    }));
+  }, [testimonialsData, testimonialsLoading]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -182,7 +247,7 @@ const LandingPage = () => {
           </div>
 
           {/* Trust Indicators */}
-          <TrustIndicators />
+          <TrustIndicators stats={stats} isLoading={statsLoading} />
         </div>
       </section>
 
@@ -472,29 +537,29 @@ const LandingPage = () => {
               <h4 className="text-heading-sm text-white mb-4">Product</h4>
               <ul className="space-y-2 text-body-sm text-gray-400">
                 <li><Link to="#features" className="text-gray-400 hover:text-orange-500 transition-colors">Features</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Pricing</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">API</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Integrations</Link></li>
+                <li><Link to="/help" className="text-gray-400 hover:text-orange-500 transition-colors">Help Center</Link></li>
+                <li><Link to="/help/faqs" className="text-gray-400 hover:text-orange-500 transition-colors">FAQs</Link></li>
+                <li><Link to="/tools" className="text-gray-400 hover:text-orange-500 transition-colors">Tools</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Support</h4>
               <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Documentation</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Contact Us</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Status</Link></li>
+                <li><Link to="/help" className="text-gray-400 hover:text-orange-500 transition-colors">Help Center</Link></li>
+                <li><Link to="/help/contact" className="text-gray-400 hover:text-orange-500 transition-colors">Contact Us</Link></li>
+                <li><Link to="/help/faqs" className="text-gray-400 hover:text-orange-500 transition-colors">FAQs</Link></li>
+                <li><Link to="/notifications" className="text-gray-400 hover:text-orange-500 transition-colors">Notifications</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Company</h4>
               <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">About</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Careers</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Privacy</Link></li>
-                <li><Link to="/login" className="text-gray-400 hover:text-orange-500 transition-colors">Terms</Link></li>
+                <li><Link to="/dashboard" className="text-gray-400 hover:text-orange-500 transition-colors">Dashboard</Link></li>
+                <li><Link to="/profile" className="text-gray-400 hover:text-orange-500 transition-colors">Profile</Link></li>
+                <li><Link to="/preferences" className="text-gray-400 hover:text-orange-500 transition-colors">Preferences</Link></li>
+                <li><Link to="/help" className="text-gray-400 hover:text-orange-500 transition-colors">Help</Link></li>
               </ul>
             </div>
           </div>

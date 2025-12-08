@@ -271,7 +271,6 @@ class AIRecommendationService {
       (income.otherIncome || 0)
     );
   }
-}
 
   /**
    * Generate optimization suggestions for tax optimizer

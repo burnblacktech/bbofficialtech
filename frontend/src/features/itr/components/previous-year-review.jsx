@@ -31,8 +31,40 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
   const [reviewData, setReviewData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
 
+  const [compatibilityWarnings, setCompatibilityWarnings] = useState([]);
+
+  const renderCompatibilityWarnings = () => {
+    if (!compatibilityWarnings || compatibilityWarnings.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mb-6 space-y-2">
+        {compatibilityWarnings.map((warning, index) => (
+          <div
+            key={index}
+            className="bg-warning-50 border border-warning-200 rounded-lg p-4"
+          >
+            <div className="flex items-start">
+              <AlertCircle className="h-5 w-5 text-warning-600 flex-shrink-0 mt-0.5 mr-3" />
+              <p className="text-sm text-warning-700">{warning}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (previousData?.data) {
+      // Check for compatibility warnings from backend
+      if (previousData._compatibilityWarnings) {
+        setCompatibilityWarnings(previousData._compatibilityWarnings);
+        // Show warnings as info toasts
+        previousData._compatibilityWarnings.forEach(warning => {
+          toast(warning, { icon: '⚠️', duration: 5000 });
+        });
+      }
       // Normalize snake_case keys to camelCase
       const normalizedData = { ...previousData.data };
       if (normalizedData['personal_info']) {
@@ -251,6 +283,9 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Compatibility Warnings */}
+        {renderCompatibilityWarnings()}
+
         {/* Header */}
         <div className="mb-8">
           <button

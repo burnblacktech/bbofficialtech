@@ -35,6 +35,7 @@ const PaymentModal = ({
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentBypassed, setPaymentBypassed] = useState(false);
 
   // Fetch pricing from admin panel
   useEffect(() => {
@@ -77,6 +78,10 @@ const PaymentModal = ({
   };
 
   const handlePayment = async () => {
+    // Prevent duplicate payment attempts
+    if (loading) {
+      return;
+    }
     setLoading(true);
 
     try {
@@ -101,14 +106,65 @@ const PaymentModal = ({
 
       const orderData = await orderResponse.json();
 
+      // Check if payment is bypassed (development mode)
+      if (orderData.bypassed) {
+        // Bypass mode: Skip Razorpay and directly verify payment
+        try {
+          const verifyResponse = await fetch('/api/payments/verify-signature', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+            body: JSON.stringify({
+              razorpay_order_id: orderData.order.id,
+              razorpay_payment_id: `bypass_${Date.now()}`,
+              razorpay_signature: 'bypassed',
+              filingId: filingData.id,
+              expertReview: paymentData.expertReview,
+              amount: paymentData.totalAmount,
+            }),
+          });
+
+          const verifyData = await verifyResponse.json();
+
+          if (verifyData.success) {
+            onPaymentSuccess({
+              paymentId: `bypass_${Date.now()}`,
+              orderId: orderData.order.id,
+              amount: paymentData.totalAmount,
+              expertReview: paymentData.expertReview,
+              filingId: filingData.id,
+              bypassed: true,
+            });
+          } else {
+            onPaymentError('Payment verification failed');
+          }
+        } catch (error) {
+          console.error('Payment verification error:', error);
+          onPaymentError('Payment verification failed');
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
+      // Check if Razorpay key is available
+      if (!process.env.REACT_APP_RAZORPAY_KEY_ID) {
+        // No Razorpay key - show error or allow bypass
+        onPaymentError('Payment gateway not configured. Please contact support.');
+        setLoading(false);
+        return;
+      }
+
       // Initialize Razorpay
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID,
-        amount: orderData.amount,
-        currency: orderData.currency,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
         name: 'BurnBlack',
         description: 'ITR Filing Service',
-        order_id: orderData.id,
+        order_id: orderData.order.id,
         handler: async (response) => {
           try {
             // Verify payment
@@ -157,8 +213,39 @@ const PaymentModal = ({
         modal: {
           ondismiss: () => {
             setLoading(false);
+            // Handle payment cancellation
+            if (onPaymentError) {
+              onPaymentError('Payment was cancelled');
+            }
           },
         },
+      };
+
+      // Check if Razorpay SDK is available
+      if (!window.Razorpay) {
+        onPaymentError('Payment gateway SDK not loaded. Please refresh the page.');
+        setLoading(false);
+        return;
+      }
+
+      // Set payment timeout (5 minutes)
+      const paymentTimeout = setTimeout(() => {
+        setLoading(false);
+        onPaymentError('Payment timeout. Please try again.');
+      }, 5 * 60 * 1000); // 5 minutes
+
+      // Wrap handler to clear timeout
+      const originalHandler = options.handler;
+      options.handler = async (response) => {
+        clearTimeout(paymentTimeout);
+        await originalHandler(response);
+      };
+      
+      // Wrap modal dismiss to clear timeout
+      const originalOndismiss = options.modal.ondismiss;
+      options.modal.ondismiss = () => {
+        clearTimeout(paymentTimeout);
+        if (originalOndismiss) originalOndismiss();
       };
 
       const razorpay = new window.Razorpay(options);
@@ -166,9 +253,14 @@ const PaymentModal = ({
 
     } catch (error) {
       console.error('Payment error:', error);
-      onPaymentError('Payment initialization failed');
+      const errorMessage = error.response?.data?.message || error.message || 'Payment initialization failed';
+      onPaymentError(errorMessage);
     } finally {
-      setLoading(false);
+      // Loading state managed by modal dismiss handler for Razorpay flow
+      // Only set to false if we're not opening Razorpay modal
+      if (!orderData?.order?.id || orderData.bypassed) {
+        // Already handled above
+      }
     }
   };
 

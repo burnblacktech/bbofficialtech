@@ -472,6 +472,11 @@ apps/web/
 
 ---
 
+### Design Tokens & Theming
+- Solar Gold / Ember Amber palette values (see [`docs/UI.md`](docs/UI.md)) live in `packages/ui/theme/tokens.ts` and are mirrored into each app via `apps/<app>/src/styles/tokens.ts`.
+- Tailwind must extend `colors.primary`, `colors.ember`, `colors.slate`, etc. with those same tokens; do **not** inline hex values in UI components.
+- When adjusting the palette, update the token file, Tailwind config, and run `pnpm lint --filter=web` before touching feature code so shared components stay consistent.
+
 ## BACKEND API STRUCTURE (services/api)
 
 ```

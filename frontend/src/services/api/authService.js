@@ -152,11 +152,22 @@ class AuthService {
     return !!apiClient.getAuthToken();
   }
 
-  // Get current user from localStorage
+  // Get current user from localStorage (checks both regular user and admin user)
   getCurrentUser() {
     try {
+      // Check for regular user first
       const userStr = localStorage.getItem('user');
-      return userStr ? JSON.parse(userStr) : null;
+      if (userStr) {
+        return JSON.parse(userStr);
+      }
+
+      // Check for admin user
+      const adminUserStr = localStorage.getItem('adminUser');
+      if (adminUserStr) {
+        return JSON.parse(adminUserStr);
+      }
+
+      return null;
     } catch (error) {
       return null;
     }

@@ -23,6 +23,7 @@ const PasswordResetToken = require('../models/PasswordResetToken');
 const AccountLinkingToken = require('../models/AccountLinkingToken');
 const Invite = require('../models/Invite');
 const UserProfile = require('../models/UserProfile');
+const RefundTracking = require('../models/RefundTracking');
 
 const migrationResults = {
   success: [],
@@ -55,7 +56,12 @@ const safeSync = async (model, modelName, options = {}) => {
                              errorMsg.includes('unique') ||
                              errorMsg.includes('primary key');
     
-    if (isSchemaMismatch || isEnumError || isConstraintError) {
+    const isSqlSyntaxError = errorMsg.includes('unterminated quoted string') ||
+                            errorMsg.includes('syntax error') ||
+                            errorMsg.includes('unexpected token') ||
+                            (errorMsg.includes('comment') && errorMsg.includes('quote'));
+    
+    if (isSchemaMismatch || isEnumError || isConstraintError || isSqlSyntaxError) {
       migrationResults.warnings.push(`${modelName}: ${error.message.substring(0, 100)}`);
       enterpriseLogger.warn(`${modelName} sync warning:`, error.message.substring(0, 200));
       
@@ -261,6 +267,7 @@ const runRobustMigrations = async () => {
     await safeSync(FamilyMember, 'FamilyMember');
     await safeSync(ITRFiling, 'ITRFiling');
     await safeSync(ITRDraft, 'ITRDraft');
+    await safeSync(RefundTracking, 'RefundTracking');
     
     // Document and service tables
     await safeSync(Document, 'Document');

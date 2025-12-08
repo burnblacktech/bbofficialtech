@@ -822,12 +822,15 @@ class ITRJsonExportService {
   }
 
   /**
-   * Validate JSON before export
+   * Validate JSON before export against ITD schema requirements
    */
   validateJsonForExport(itrData, itrType) {
     // Transform data first to validate against expected structure
     const transformedData = this.transformFormDataToExportFormat(itrData, itrType);
 
+    const errors = [];
+
+    // Required fields validation
     const requiredFields = {
       personal: ['pan'],
       income: ['salaryIncome'],
@@ -835,12 +838,40 @@ class ITRJsonExportService {
 
     for (const [section, fields] of Object.entries(requiredFields)) {
       if (!transformedData[section]) {
-        throw new Error(`Missing required section: ${section}`);
+        errors.push(`Missing required section: ${section}`);
+        continue;
       }
 
       for (const field of fields) {
         if (!transformedData[section][field] && transformedData[section][field] !== 0) {
-          throw new Error(`Missing required field: ${section}.${field}`);
+          errors.push(`Missing required field: ${section}.${field}`);
+        }
+      }
+    }
+
+    // PAN format validation (ITD requirement)
+    if (transformedData.personal?.pan) {
+      const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+      if (!panPattern.test(transformedData.personal.pan)) {
+        errors.push('Invalid PAN format. PAN must be in format: ABCDE1234F');
+      }
+    }
+
+    // Date format validation (ITD requires DD/MM/YYYY)
+    if (transformedData.personal?.dateOfBirth) {
+      const datePattern = /^\d{2}\/\d{2}\/\d{4}$/;
+      if (!datePattern.test(transformedData.personal.dateOfBirth)) {
+        errors.push('Date of birth must be in DD/MM/YYYY format');
+      }
+    }
+
+    // Number format validation (should be numbers, not strings)
+    const numericFields = ['salaryIncome', 'housePropertyIncome', 'otherIncome', 'totalIncome'];
+    for (const field of numericFields) {
+      if (transformedData.income?.[field] !== undefined) {
+        const value = transformedData.income[field];
+        if (typeof value === 'string' && isNaN(parseFloat(value))) {
+          errors.push(`Invalid number format for income.${field}: ${value}`);
         }
       }
     }
@@ -852,11 +883,43 @@ class ITRJsonExportService {
                          parseFloat(transformedData.income?.housePropertyIncome || 0) +
                          parseFloat(transformedData.income?.otherIncome || 0);
       if (totalIncome > 5000000) {
-        throw new Error('Total income exceeds ₹50 lakh limit for ITR-1. Please use ITR-2.');
+        errors.push('Total income exceeds ₹50 lakh limit for ITR-1. Please use ITR-2.');
       }
     }
 
+    // Character encoding validation (check for special characters that might cause issues)
+    const textFields = ['firstName', 'lastName', 'address'];
+    for (const field of textFields) {
+      if (transformedData.personal?.[field]) {
+        const value = transformedData.personal[field];
+        // Check for problematic characters (non-ASCII characters excluding null)
+        if (/[^\u0020-\u007F]/.test(value) && !this.isValidUnicode(value)) {
+          errors.push(`Special characters in ${field} may cause encoding issues`);
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new Error('JSON validation failed:\n' + errors.join('\n'));
+    }
+
     return true;
+  }
+
+  /**
+   * Check if Unicode string is valid for ITD submission
+   */
+  isValidUnicode(str) {
+    // ITD accepts basic Unicode characters (Devanagari script, etc.)
+    // but some special characters may cause issues
+    try {
+      // Try to encode/decode to check validity
+      const encoded = encodeURIComponent(str);
+      decodeURIComponent(encoded);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 

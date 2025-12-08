@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
 import { useSearchParams, Link } from 'react-router-dom';
-import { AlertCircle, Clock } from 'lucide-react';
+import { AlertCircle, Clock, Eye, EyeOff } from 'lucide-react';
+import { sanitizeEmail, sanitizePassword } from '../../lib/utils/sanitize';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-const [searchParams] = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
 
   // Check for error messages from URL params (e.g., OAuth errors)
@@ -26,12 +31,93 @@ const [searchParams] = useSearchParams();
     }
   }, [searchParams]);
 
+  // Load remember me preference from localStorage
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  // Validate email format
+  const validateEmail = (emailValue) => {
+    if (!emailValue) {
+      setEmailError('Email is required');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailValue)) {
+      setEmailError('Please enter a valid email address');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  // Validate password
+  const validatePassword = (passwordValue) => {
+    if (!passwordValue) {
+      setPasswordError('Password is required');
+      return false;
+    }
+    if (passwordValue.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
+
+  // Handle email change with sanitization and validation
+  const handleEmailChange = (e) => {
+    const sanitized = sanitizeEmail(e.target.value);
+    setEmail(sanitized);
+    setError(''); // Clear general error when user types
+    if (sanitized) {
+      validateEmail(sanitized);
+    } else {
+      setEmailError('');
+    }
+  };
+
+  // Handle password change with sanitization and validation
+  const handlePasswordChange = (e) => {
+    const sanitized = sanitizePassword(e.target.value);
+    setPassword(sanitized);
+    setError(''); // Clear general error when user types
+    if (sanitized) {
+      validatePassword(sanitized);
+    } else {
+      setPasswordError('');
+    }
+  };
+
   const handleManualLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    // Clear previous errors
     setError('');
+    setEmailError('');
+    setPasswordError('');
+
+    // Validate inputs
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isEmailValid || !isPasswordValid) {
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
+      // Save email to localStorage if remember me is checked
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
       const result = await login({ email, password });
       if (!result.success) {
         setError(result.message || 'Login failed. Please try again.');
@@ -90,28 +176,66 @@ const [searchParams] = useSearchParams();
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
+                  emailError ? 'border-red-300' : 'border-gray-300'
+                } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
+                onBlur={() => validateEmail(email)}
               />
+              {emailError && (
+                <p className="mt-1 text-sm text-red-600">{emailError}</p>
+              )}
             </div>
-            <div>
+            <div className="relative">
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border ${
+                  passwordError ? 'border-red-300' : 'border-gray-300'
+                } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
+                onBlur={() => validatePassword(password)}
               />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+              {passwordError && (
+                <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+              )}
             </div>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              Remember me
+            </label>
           </div>
 
           <div>

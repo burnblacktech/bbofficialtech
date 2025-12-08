@@ -86,6 +86,13 @@ router.use('/itr', generalLimiter, require('./itr'));
 router.use('/users', generalLimiter, require('./user'));
 
 // =====================================================
+// MEMBER ROUTES
+// =====================================================
+
+// Member (family member) routes with general rate limiting
+router.use('/members', generalLimiter, require('./members'));
+
+// =====================================================
 // ADMIN ROUTES
 // =====================================================
 
@@ -105,6 +112,13 @@ router.use('/documents', generalLimiter, require('./documents'));
 
 // OCR routes for document processing
 router.use('/ocr', generalLimiter, require('./ocr'));
+
+// =====================================================
+// PUBLIC ROUTES
+// =====================================================
+
+// Public routes (stats, testimonials) - no rate limiting for landing page
+router.use('/public', require('./public'));
 
 // =====================================================
 // HELP ROUTES

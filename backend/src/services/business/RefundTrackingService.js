@@ -202,6 +202,7 @@ class RefundTrackingService {
         error.message.includes('relation') ||
         error.message.includes('refund_tracking')
       )) {
+        // Only log as warning, not error - this is expected if table hasn't been created yet
         enterpriseLogger.warn('Refund tracking table does not exist yet, returning empty array', {
           userId,
           assessmentYear,
@@ -210,6 +211,7 @@ class RefundTrackingService {
         return [];
       }
 
+      // For other errors, log and throw
       enterpriseLogger.error('Failed to get refund history', {
         userId,
         assessmentYear,

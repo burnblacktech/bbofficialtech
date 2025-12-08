@@ -7,7 +7,7 @@ import api from '../../../../services/api';
 
 export const adminAnalyticsService = {
   getDashboardStats: async () => {
-    const response = await api.get('/api/admin/dashboard/stats');
+    const response = await api.get('/admin/dashboard/stats');
     return response.data?.data?.stats || response.data?.stats || response.data;
   },
 
@@ -19,12 +19,12 @@ export const adminAnalyticsService = {
       }
     });
 
-    const response = await api.get(`/api/admin/dashboard/charts/${type}?${queryParams.toString()}`);
+    const response = await api.get(`/admin/dashboard/charts/${type}?${queryParams.toString()}`);
     return response.data?.data?.chartData || response.data?.chartData || response.data;
   },
 
   getSystemAlerts: async () => {
-    const response = await api.get('/api/admin/dashboard/alerts');
+    const response = await api.get('/admin/dashboard/alerts');
     return response.data?.data || response.data;
   },
 
@@ -36,7 +36,7 @@ export const adminAnalyticsService = {
       }
     });
 
-    const response = await api.get(`/api/admin/activity?${queryParams.toString()}`);
+    const response = await api.get(`/admin/activity?${queryParams.toString()}`);
     return response.data?.data || response.data;
   },
 
@@ -48,7 +48,7 @@ export const adminAnalyticsService = {
       }
     });
 
-    const response = await api.get(`/api/admin/analytics/users?${queryParams.toString()}`);
+    const response = await api.get(`/admin/analytics/users?${queryParams.toString()}`);
     return response.data;
   },
 
@@ -60,8 +60,32 @@ export const adminAnalyticsService = {
       }
     });
 
-    const response = await api.get(`/api/admin/analytics/revenue?${queryParams.toString()}`);
+    const response = await api.get(`/admin/analytics/revenue?${queryParams.toString()}`);
     return response.data;
+  },
+
+  getAnalytics: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null) {
+        queryParams.append(key, params[key]);
+      }
+    });
+
+    const response = await api.get(`/admin/analytics?${queryParams.toString()}`);
+    return response.data?.data || response.data;
+  },
+
+  getCAAnalytics: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null) {
+        queryParams.append(key, params[key]);
+      }
+    });
+
+    const response = await api.get(`/admin/analytics/ca?${queryParams.toString()}`);
+    return response.data?.data || response.data;
   },
 };
 

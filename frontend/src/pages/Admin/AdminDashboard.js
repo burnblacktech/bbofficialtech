@@ -3,7 +3,7 @@
 // Comprehensive administrative interface for platform management
 // =====================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
@@ -20,6 +20,9 @@ import {
   Shield,
   Settings,
   BarChart3,
+  Wifi,
+  WifiOff,
+  RefreshCw,
 } from 'lucide-react';
 import {
   useAdminDashboardStats,
@@ -27,9 +30,17 @@ import {
   useAdminSystemAlerts,
   useAdminRecentActivity,
 } from '../../features/admin/analytics/hooks/use-analytics';
+import adminService from '../../services/api/adminService';
+import useAdminDashboardRealtime from '../../hooks/useAdminDashboardRealtime';
 
 const AdminDashboard = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
+  const [systemHealth, setSystemHealth] = useState(null);
+  const [topPerformers, setTopPerformers] = useState([]);
+  const [loadingHealth, setLoadingHealth] = useState(false);
+
+  // Real-time dashboard updates
+  const { connectionStatus, isConnected, lastUpdate, platformUpdates, refreshDashboard } = useAdminDashboardRealtime();
 
   // Fetch dashboard data from backend
   const { data: statsData, isLoading: statsLoading } = useAdminDashboardStats();
@@ -42,30 +53,53 @@ const AdminDashboard = () => {
   const { data: filingChartData } = useAdminChartData('filings', { timeRange: selectedTimeRange });
   const { data: revenueChartData } = useAdminChartData('revenue', { timeRange: selectedTimeRange });
 
-  const loading = statsLoading || alertsLoading || activityLoading;
+  // Fetch system health and top performers
+  useEffect(() => {
+    const loadAdditionalData = async () => {
+      setLoadingHealth(true);
+      try {
+        const [healthData, performersData] = await Promise.all([
+          adminService.getSystemHealth(),
+          adminService.getTopPerformers(),
+        ]);
+        setSystemHealth(healthData);
+        setTopPerformers(performersData);
+      } catch (error) {
+        console.error('Failed to load system health or top performers:', error);
+      } finally {
+        setLoadingHealth(false);
+      }
+    };
+
+    loadAdditionalData();
+  }, []);
+
+  const loading = statsLoading || alertsLoading || activityLoading || loadingHealth;
 
   // Transform backend data to match component expectations
-  const dashboardData = statsData ? {
+  // statsData comes from useAdminDashboardStats which returns response.data.data.stats
+  const stats = statsData?.stats || statsData;
+  const dashboardData = stats ? {
     metrics: {
       newUsers: {
-        today: statsData.users?.newToday || 0,
-        last7Days: (statsData.users?.total || 0) - (statsData.users?.total || 0) * 0.9, // Estimate
-        growth: 0, // Would need to calculate from trends
+        today: stats.users?.newToday || 0,
+        last7Days: stats.users?.total || 0,
+        growth: stats.users?.growth || 0,
       },
       itrFilings: {
-        initiated: statsData.filings?.total || 0,
-        completed: statsData.filings?.total || 0,
-        completionRate: 100, // Would need to calculate
+        initiated: stats.filings?.total || 0,
+        completed: stats.filings?.completed || 0,
+        completionRate: stats.filings?.completionRate || 0,
       },
       serviceTickets: {
-        open: statsData.tickets?.openTickets || 0,
-        resolved: (statsData.tickets?.totalTickets || 0) - (statsData.tickets?.openTickets || 0),
+        open: stats.tickets?.openTickets || 0,
+        resolved: (stats.tickets?.totalTickets || 0) - (stats.tickets?.openTickets || 0),
         avgResolutionTime: '4.2 hours', // Would need to calculate
       },
       revenue: {
-        today: statsData.revenue?.today || 0,
-        last7Days: statsData.revenue?.total || 0,
-        growth: 0, // Would need to calculate from trends
+        today: stats.revenue?.today || 0,
+        last7Days: stats.revenue?.total || 0,
+        growth: stats.revenue?.growth || 0,
       },
     },
     recentActivity: (activityData?.activities || activityData?.recentActivity || []).map(activity => ({
@@ -75,14 +109,20 @@ const AdminDashboard = () => {
       timestamp: activity.timestamp ? new Date(activity.timestamp) : new Date(),
       status: activity.success !== false ? 'success' : 'error',
     })),
-    systemHealth: {
-      status: 'healthy', // Would need system health endpoint
+    systemHealth: systemHealth ? {
+      status: systemHealth.status || 'healthy',
+      uptime: `${systemHealth.uptime || 99.9}%`,
+      responseTime: `${systemHealth.responseTime || 245}ms`,
+      activeUsers: stats?.users?.active || 0,
+      serverLoad: systemHealth.cpuUsage || 65,
+    } : {
+      status: 'healthy',
       uptime: '99.9%',
       responseTime: '245ms',
-      activeUsers: statsData.users?.active || 0,
-      serverLoad: 65, // Would need system metrics
+      activeUsers: stats?.users?.active || 0,
+      serverLoad: 65,
     },
-    topPerformers: [], // Would need CA performance data
+    topPerformers: topPerformers || [],
     alerts: alertsData?.alerts || [],
   } : null;
 
@@ -125,6 +165,15 @@ const AdminDashboard = () => {
     return `${days}d ago`;
   };
 
+  const formatLastUpdate = () => {
+    if (!lastUpdate) return null;
+    const secondsAgo = Math.floor((Date.now() - lastUpdate) / 1000);
+    if (secondsAgo < 60) return `${secondsAgo}s ago`;
+    const minutesAgo = Math.floor(secondsAgo / 60);
+    if (minutesAgo < 60) return `${minutesAgo}m ago`;
+    return `${Math.floor(minutesAgo / 60)}h ago`;
+  };
+
   if (loading || !dashboardData) {
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
@@ -144,9 +193,39 @@ const AdminDashboard = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Typography.H1 className="mb-2">Admin Dashboard</Typography.H1>
+            <div className="flex items-center gap-3 mb-2">
+              <Typography.H1>Admin Dashboard</Typography.H1>
+              {/* Connection Status Indicator */}
+              <div className="flex items-center gap-2">
+                {isConnected ? (
+                  <div className="flex items-center gap-1 text-success-600" title="Connected to live updates">
+                    <Wifi className="w-4 h-4" />
+                    <span className="text-xs">Live</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-warning-600" title="Using polling updates">
+                    <WifiOff className="w-4 h-4" />
+                    <span className="text-xs">Polling</span>
+                  </div>
+                )}
+                {lastUpdate && (
+                  <button
+                    onClick={refreshDashboard}
+                    className="p-1 hover:bg-neutral-100 rounded transition-colors"
+                    title="Refresh dashboard"
+                  >
+                    <RefreshCw className="w-4 h-4 text-neutral-500" />
+                  </button>
+                )}
+              </div>
+            </div>
             <Typography.Body className="text-neutral-600">
               Platform overview and management control center
+              {lastUpdate && (
+                <span className="ml-2 text-xs text-neutral-400">
+                  Updated {formatLastUpdate()}
+                </span>
+              )}
             </Typography.Body>
           </div>
           <div className="flex items-center space-x-4">

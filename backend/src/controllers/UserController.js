@@ -3,7 +3,7 @@
 // Handles profile, dashboard, settings, notifications
 // =====================================================
 
-const { User, ITRFiling, ITRDraft, Document, ServiceTicket, FamilyMember } = require('../models');
+const { User, ITRFiling, ITRDraft, Document, ServiceTicket, FamilyMember, BankAccount, UserProfile } = require('../models');
 const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
@@ -44,12 +44,19 @@ class UserController {
           'id', 'userId', 'fullName', 'email', 'phone', 'role', 'status',
           'emailVerified', 'phoneVerified', 'createdAt', 'updatedAt',
           'lastLoginAt', 'loginCount', 'metadata', 'authProvider', 'passwordHash', 'dateOfBirth',
+          'panNumber', 'panVerified', 'panVerifiedAt',
         ],
       });
 
       if (!user) {
         throw new AppError('User not found', 404);
       }
+
+      // Get UserProfile with address fields
+      const userProfile = await UserProfile.findOne({
+        where: { userId: user.id },
+        attributes: ['addressLine1', 'addressLine2', 'city', 'state', 'pincode'],
+      });
 
       enterpriseLogger.info('User profile retrieved', { userId });
 
@@ -77,6 +84,16 @@ class UserController {
             loginCount: user.loginCount,
             metadata: user.metadata,
             dateOfBirth: user.dateOfBirth,
+            panNumber: user.panNumber,
+            panVerified: user.panVerified || false,
+            panVerifiedAt: user.panVerifiedAt,
+            address: userProfile ? {
+              addressLine1: userProfile.addressLine1 || null,
+              addressLine2: userProfile.addressLine2 || null,
+              city: userProfile.city || null,
+              state: userProfile.state || null,
+              pincode: userProfile.pincode || null,
+            } : null,
           },
         },
       });
@@ -97,9 +114,24 @@ class UserController {
   async updateUserProfile(req, res, next) {
     try {
       const userId = req.user.userId;
-      const { fullName, phone, metadata, dateOfBirth } = req.body;
+      const { 
+        fullName, 
+        phone, 
+        metadata, 
+        dateOfBirth,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        pincode,
+      } = req.body;
 
-      if (!fullName && !phone && !metadata && dateOfBirth === undefined) {
+      // Check if any fields are provided for update
+      const hasUserFields = fullName || phone || metadata || dateOfBirth !== undefined;
+      const hasAddressFields = addressLine1 !== undefined || addressLine2 !== undefined || 
+                               city !== undefined || state !== undefined || pincode !== undefined;
+
+      if (!hasUserFields && !hasAddressFields) {
         throw new AppError('No fields provided for update', 400);
       }
 
@@ -109,15 +141,81 @@ class UserController {
       }
 
       const updateData = {};
-      if (fullName) {updateData.fullName = fullName;}
-      if (phone) {updateData.phone = phone;}
-      if (dateOfBirth !== undefined) {updateData.dateOfBirth = dateOfBirth;}
-      if (metadata) {updateData.metadata = { ...user.metadata, ...metadata };}
+      const updatedFields = [];
 
-      await user.update(updateData);
+      // Update User model fields
+      if (fullName) {
+        updateData.fullName = fullName;
+        updatedFields.push('fullName');
+      }
+      if (phone) {
+        updateData.phone = phone;
+        updatedFields.push('phone');
+      }
+      if (dateOfBirth !== undefined) {
+        updateData.dateOfBirth = dateOfBirth;
+        updatedFields.push('dateOfBirth');
+      }
+      if (metadata) {
+        updateData.metadata = { ...user.metadata, ...metadata };
+        updatedFields.push('metadata');
+      }
 
-      // Reload user to get updated data including passwordHash
-      await user.reload();
+      if (Object.keys(updateData).length > 0) {
+        await user.update(updateData);
+        await user.reload();
+      }
+
+      // Update UserProfile address fields
+      let userProfile = await UserProfile.findOne({ where: { userId: user.id } });
+      
+      if (hasAddressFields) {
+        if (!userProfile) {
+          // Create UserProfile if it doesn't exist
+          userProfile = await UserProfile.create({
+            userId: user.id,
+            addressLine1: addressLine1 || null,
+            addressLine2: addressLine2 || null,
+            city: city || null,
+            state: state || null,
+            pincode: pincode || null,
+          });
+          updatedFields.push('address (created)');
+        } else {
+          // Update existing UserProfile
+          const profileUpdateData = {};
+          if (addressLine1 !== undefined) {
+            profileUpdateData.addressLine1 = addressLine1 || null;
+            updatedFields.push('addressLine1');
+          }
+          if (addressLine2 !== undefined) {
+            profileUpdateData.addressLine2 = addressLine2 || null;
+            updatedFields.push('addressLine2');
+          }
+          if (city !== undefined) {
+            profileUpdateData.city = city || null;
+            updatedFields.push('city');
+          }
+          if (state !== undefined) {
+            profileUpdateData.state = state || null;
+            updatedFields.push('state');
+          }
+          if (pincode !== undefined) {
+            profileUpdateData.pincode = pincode || null;
+            updatedFields.push('pincode');
+          }
+          
+          if (Object.keys(profileUpdateData).length > 0) {
+            await userProfile.update(profileUpdateData);
+            await userProfile.reload();
+          }
+        }
+      }
+
+      // Reload userProfile if it exists to get latest data
+      if (!userProfile) {
+        userProfile = await UserProfile.findOne({ where: { userId: user.id } });
+      }
 
       // Log audit event
       await auditService.logDataAccess(
@@ -125,11 +223,11 @@ class UserController {
         'update',
         'user_profile',
         userId,
-        { updatedFields: Object.keys(updateData) },
+        { updatedFields },
         req.ip,
       );
 
-      enterpriseLogger.info('User profile updated', { userId, updatedFields: Object.keys(updateData) });
+      enterpriseLogger.info('User profile updated', { userId, updatedFields });
 
       res.status(200).json({
         success: true,
@@ -150,6 +248,13 @@ class UserController {
             authProvider: user.authProvider,
             hasPassword: !!user.passwordHash,
             dateOfBirth: user.dateOfBirth,
+            address: userProfile ? {
+              addressLine1: userProfile.addressLine1 || null,
+              addressLine2: userProfile.addressLine2 || null,
+              city: userProfile.city || null,
+              state: userProfile.state || null,
+              pincode: userProfile.pincode || null,
+            } : null,
           },
         },
       });
@@ -369,6 +474,9 @@ class UserController {
       };
 
       enterpriseLogger.info('User dashboard data retrieved', { userId });
+
+      // Note: WebSocket events will trigger dashboard updates automatically
+      // This endpoint is for initial load and polling fallback
 
       res.status(200).json({
         success: true,
@@ -847,6 +955,262 @@ class UserController {
       'pending': 'Pending',
     };
     return labels[status] || 'Unknown';
+  }
+
+  // =====================================================
+  // BANK ACCOUNT MANAGEMENT
+  // =====================================================
+
+  /**
+   * Get user's bank accounts
+   * GET /api/users/bank-accounts
+   */
+  async getBankAccounts(req, res, next) {
+    try {
+      const userId = req.user.userId;
+
+      const bankAccounts = await BankAccount.findAll({
+        where: { userId },
+        order: [['isPrimary', 'DESC'], ['createdAt', 'DESC']],
+        attributes: ['id', 'bankName', 'accountNumber', 'ifsc', 'accountHolderName', 'accountType', 'isPrimary', 'createdAt', 'updatedAt'],
+      });
+
+      // Mask account numbers for display
+      const maskedAccounts = bankAccounts.map(account => {
+        const accountNumber = account.accountNumber;
+        const masked = accountNumber.length > 4 
+          ? '****' + accountNumber.slice(-4)
+          : '****';
+        
+        return {
+          ...account.toJSON(),
+          accountNumber: masked,
+          fullAccountNumber: accountNumber, // Include full number for editing
+        };
+      });
+
+      enterpriseLogger.info('Bank accounts retrieved', { userId, count: bankAccounts.length });
+
+      res.status(200).json({
+        success: true,
+        message: 'Bank accounts retrieved successfully',
+        data: maskedAccounts,
+      });
+    } catch (error) {
+      enterpriseLogger.error('Failed to get bank accounts', {
+        error: error.message,
+        userId: req.user?.userId,
+      });
+      next(error);
+    }
+  }
+
+  /**
+   * Add bank account
+   * POST /api/users/bank-accounts
+   */
+  async addBankAccount(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const { bankName, accountNumber, ifsc, accountHolderName, accountType, isPrimary } = req.body;
+      const { validateRequiredFields, isValidIFSC, normalizeIFSC } = require('../utils/validators');
+      const { sendCreated, sendValidationError, sendError } = require('../utils/responseFormatter');
+
+      // Validate required fields
+      const validation = validateRequiredFields(req.body, ['bankName', 'accountNumber', 'ifsc', 'accountHolderName']);
+      if (!validation.isValid) {
+        return sendValidationError(res, validation.missingFields.map(f => `${f} is required`));
+      }
+
+      // Validate IFSC format
+      if (!isValidIFSC(ifsc)) {
+        return sendValidationError(res, ['Invalid IFSC code format']);
+      }
+
+      // If setting as primary, unset other primary accounts
+      if (isPrimary) {
+        await BankAccount.update(
+          { isPrimary: false },
+          { where: { userId, isPrimary: true } }
+        );
+      }
+
+      const bankAccount = await BankAccount.create({
+        userId,
+        bankName,
+        accountNumber,
+        ifsc: normalizeIFSC(ifsc),
+        accountHolderName,
+        accountType: accountType || 'savings',
+        isPrimary: isPrimary || false,
+      });
+
+      enterpriseLogger.info('Bank account added', { userId, bankAccountId: bankAccount.id });
+
+      sendCreated(res, 'Bank account added successfully', {
+        ...bankAccount.toJSON(),
+        accountNumber: '****' + accountNumber.slice(-4),
+      });
+    } catch (error) {
+      enterpriseLogger.error('Failed to add bank account', {
+        error: error.message,
+        userId: req.user?.userId,
+      });
+      next(error);
+    }
+  }
+
+  /**
+   * Update bank account
+   * PUT /api/users/bank-accounts/:id
+   */
+  async updateBankAccount(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
+      const { bankName, accountNumber, ifsc, accountHolderName, accountType, isPrimary } = req.body;
+
+      const bankAccount = await BankAccount.findOne({
+        where: { id, userId },
+      });
+
+      if (!bankAccount) {
+        return res.status(404).json({
+          success: false,
+          error: 'Bank account not found',
+        });
+      }
+
+      // If setting as primary, unset other primary accounts
+      if (isPrimary && !bankAccount.isPrimary) {
+        await BankAccount.update(
+          { isPrimary: false },
+          { where: { userId, isPrimary: true } }
+        );
+      }
+
+      // Update fields
+      const updateData = {};
+      if (bankName) updateData.bankName = bankName;
+      if (accountNumber) updateData.accountNumber = accountNumber;
+      if (ifsc) {
+        const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/i;
+        if (!ifscRegex.test(ifsc)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid IFSC code format',
+          });
+        }
+        updateData.ifsc = ifsc.toUpperCase();
+      }
+      if (accountHolderName) updateData.accountHolderName = accountHolderName;
+      if (accountType) updateData.accountType = accountType;
+      if (isPrimary !== undefined) updateData.isPrimary = isPrimary;
+
+      await bankAccount.update(updateData);
+
+      enterpriseLogger.info('Bank account updated', { userId, bankAccountId: id });
+
+      res.status(200).json({
+        success: true,
+        message: 'Bank account updated successfully',
+        data: {
+          ...bankAccount.toJSON(),
+          accountNumber: '****' + (updateData.accountNumber || bankAccount.accountNumber).slice(-4),
+        },
+      });
+    } catch (error) {
+      enterpriseLogger.error('Failed to update bank account', {
+        error: error.message,
+        userId: req.user?.userId,
+      });
+      next(error);
+    }
+  }
+
+  /**
+   * Delete bank account
+   * DELETE /api/users/bank-accounts/:id
+   */
+  async deleteBankAccount(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
+
+      const bankAccount = await BankAccount.findOne({
+        where: { id, userId },
+      });
+
+      if (!bankAccount) {
+        return res.status(404).json({
+          success: false,
+          error: 'Bank account not found',
+        });
+      }
+
+      await bankAccount.destroy();
+
+      enterpriseLogger.info('Bank account deleted', { userId, bankAccountId: id });
+
+      res.status(200).json({
+        success: true,
+        message: 'Bank account deleted successfully',
+      });
+    } catch (error) {
+      enterpriseLogger.error('Failed to delete bank account', {
+        error: error.message,
+        userId: req.user?.userId,
+      });
+      next(error);
+    }
+  }
+
+  /**
+   * Set primary bank account
+   * PATCH /api/users/bank-accounts/:id/set-primary
+   */
+  async setPrimaryBankAccount(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
+
+      const bankAccount = await BankAccount.findOne({
+        where: { id, userId },
+      });
+
+      if (!bankAccount) {
+        return res.status(404).json({
+          success: false,
+          error: 'Bank account not found',
+        });
+      }
+
+      // Unset other primary accounts
+      await BankAccount.update(
+        { isPrimary: false },
+        { where: { userId, isPrimary: true } }
+      );
+
+      // Set this as primary
+      await bankAccount.update({ isPrimary: true });
+
+      enterpriseLogger.info('Primary bank account set', { userId, bankAccountId: id });
+
+      res.status(200).json({
+        success: true,
+        message: 'Primary bank account updated successfully',
+        data: {
+          ...bankAccount.toJSON(),
+          accountNumber: '****' + bankAccount.accountNumber.slice(-4),
+        },
+      });
+    } catch (error) {
+      enterpriseLogger.error('Failed to set primary bank account', {
+        error: error.message,
+        userId: req.user?.userId,
+      });
+      next(error);
+    }
   }
 }
 

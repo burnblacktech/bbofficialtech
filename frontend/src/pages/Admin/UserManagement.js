@@ -23,6 +23,8 @@ import {
   Trash2,
   Eye,
 } from 'lucide-react';
+import adminService from '../../services/api/adminService';
+import toast from 'react-hot-toast';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -32,99 +34,58 @@ const UserManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0 });
 
-  // Mock user data
+  // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
+      try {
+        const params = {
+          page: pagination.page,
+          limit: pagination.limit,
+          ...(filterRole !== 'all' && { role: filterRole }),
+          ...(filterStatus !== 'all' && { status: filterStatus }),
+          ...(searchTerm && { search: searchTerm }),
+        };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await adminService.getUsers(params);
+        const usersData = response.users || response.data || [];
+        
+        // Transform API response to match component expectations
+        const transformedUsers = usersData.map(user => ({
+          id: user.id,
+          name: user.fullName || user.name,
+          email: user.email,
+          phone: user.phone || '',
+          pan: user.panNumber || user.pan || '',
+          role: user.role || 'END_USER',
+          status: user.status || 'active',
+          createdAt: user.createdAt ? new Date(user.createdAt) : new Date(),
+          lastLogin: user.lastLoginAt ? new Date(user.lastLoginAt) : null,
+          filingsCount: user.filingsCount || 0,
+          totalRevenue: user.totalRevenue || 0,
+          isVerified: user.emailVerified || user.panVerified || false,
+          firmName: user.caFirm?.name || user.firmName,
+          subscriptionPlan: user.subscriptionPlan,
+        }));
 
-      const mockUsers = [
-        {
-          id: 1,
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          phone: '+919876543210',
-          pan: 'ABCDE1234F',
-          role: 'user',
-          status: 'active',
-          createdAt: new Date('2024-01-15'),
-          lastLogin: new Date('2024-01-20'),
-          filingsCount: 3,
-          totalRevenue: 7500,
-          isVerified: true,
-        },
-        {
-          id: 2,
-          name: 'Jane Smith',
-          email: 'jane.smith@example.com',
-          phone: '+919876543211',
-          pan: 'FGHIJ5678K',
-          role: 'user',
-          status: 'active',
-          createdAt: new Date('2024-01-10'),
-          lastLogin: new Date('2024-01-19'),
-          filingsCount: 1,
-          totalRevenue: 2500,
-          isVerified: true,
-        },
-        {
-          id: 3,
-          name: 'CA Firm Alpha',
-          email: 'admin@cafirmalpha.com',
-          phone: '+919876543212',
-          pan: 'LMNOP9012Q',
-          role: 'ca_firm_admin',
-          status: 'active',
-          createdAt: new Date('2024-01-05'),
-          lastLogin: new Date('2024-01-20'),
-          filingsCount: 45,
-          totalRevenue: 112500,
-          isVerified: true,
-          firmName: 'CA Firm Alpha',
-          subscriptionPlan: 'Pro Plan',
-        },
-        {
-          id: 4,
-          name: 'Mike Johnson',
-          email: 'mike.johnson@example.com',
-          phone: '+919876543213',
-          pan: 'RSTUV3456W',
-          role: 'user',
-          status: 'suspended',
-          createdAt: new Date('2024-01-08'),
-          lastLogin: new Date('2024-01-18'),
-          filingsCount: 0,
-          totalRevenue: 0,
-          isVerified: false,
-          suspensionReason: 'Violation of terms of service',
-        },
-        {
-          id: 5,
-          name: 'CA Firm Beta',
-          email: 'contact@cafirmbeta.com',
-          phone: '+919876543214',
-          pan: 'XYZAB7890C',
-          role: 'ca_firm_admin',
-          status: 'pending',
-          createdAt: new Date('2024-01-20'),
-          lastLogin: null,
-          filingsCount: 0,
-          totalRevenue: 0,
-          isVerified: false,
-          firmName: 'CA Firm Beta',
-          subscriptionPlan: null,
-        },
-      ];
-
-      setUsers(mockUsers);
-      setLoading(false);
+        setUsers(transformedUsers);
+        setPagination(prev => ({
+          ...prev,
+          total: response.total || response.count || transformedUsers.length,
+        }));
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        toast.error('Failed to load users. Please try again.');
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUsers();
-  }, []);
+  }, [pagination.page, filterRole, filterStatus, searchTerm]);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

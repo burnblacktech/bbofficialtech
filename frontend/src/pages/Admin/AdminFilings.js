@@ -1,13 +1,14 @@
 // =====================================================
 // ADMIN FILINGS PAGE
-// Enterprise-grade filing oversight and management for admins
+// Filing oversight and management with DesignSystem components
 // =====================================================
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import apiClient from '../../services/core/APIClient';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   useAdminFilings,
   useAdminFilingStats,
@@ -15,7 +16,6 @@ import {
 } from '../../features/admin/filings/hooks/use-filings';
 import {
   FileText,
-  Users,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -27,8 +27,6 @@ import {
   TrendingUp,
   IndianRupee,
   Calendar,
-  Building2,
-  User,
   BarChart3,
   PieChart,
   Activity,
@@ -36,7 +34,6 @@ import {
 import toast from 'react-hot-toast';
 
 const AdminFilings = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,41 +78,37 @@ const AdminFilings = () => {
     },
   });
 
-  const handleStatusUpdate = (filingId, newStatus) => {
-    updateStatusMutation.mutate({ filingId, status: newStatus });
-  };
-
   const getStatusIcon = (status) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-success-500" />;
       case 'in_progress':
-        return <Clock className="h-4 w-4 text-blue-500" />;
+        return <Clock className="h-4 w-4 text-info-500" />;
       case 'pending':
-        return <AlertCircle className="h-4 w-4 text-orange-500" />;
+        return <AlertCircle className="h-4 w-4 text-warning-500" />;
       case 'rejected':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
+        return <AlertCircle className="h-4 w-4 text-error-500" />;
       case 'under_review':
-        return <Eye className="h-4 w-4 text-purple-500" />;
+        return <Eye className="h-4 w-4 text-secondary-500" />;
       default:
-        return <FileText className="h-4 w-4 text-gray-500" />;
+        return <FileText className="h-4 w-4 text-neutral-500" />;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success-100 text-success-700';
       case 'in_progress':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-info-100 text-info-700';
       case 'pending':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-warning-100 text-warning-700';
       case 'rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-error-100 text-error-700';
       case 'under_review':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-secondary-100 text-secondary-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-neutral-100 text-neutral-700';
     }
   };
 
@@ -128,183 +121,201 @@ const AdminFilings = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-      </div>
+      <PageTransition className="min-h-screen bg-neutral-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+            <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
+            <Typography.Body className="text-neutral-600">Loading filings...</Typography.Body>
+          </div>
+        </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                ← Back to Dashboard
-              </button>
-              <h1 className="text-xl font-semibold text-gray-900">Filing Management</h1>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/admin/reports/filings')}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
-              >
-                <Download className="h-4 w-4" />
-                <span>Export Report</span>
-              </button>
-            </div>
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <Typography.H1 className="mb-2">Filing Management</Typography.H1>
+            <Typography.Body className="text-neutral-600">
+              Manage and monitor all ITR filings
+            </Typography.Body>
           </div>
+          <Button onClick={() => navigate('/admin/reports/filings')} className="bg-success-600 hover:bg-success-700">
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
+          </Button>
         </div>
-      </header>
 
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setSelectedTab(tab.id)}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-label-lg transition-colors ${
-                  selectedTab === tab.id
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <tab.icon className="h-4 w-4" />
-                <span>{tab.name}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+        {/* Navigation Tabs */}
+        <Card className="mb-6">
+          <CardContent className="p-2">
+            <nav className="flex space-x-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedTab(tab.id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedTab === tab.id
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                  }`}
+                >
+                  <tab.icon className="h-4 w-4" />
+                  <span>{tab.name}</span>
+                </button>
+              ))}
+            </nav>
+          </CardContent>
+        </Card>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Overview Tab */}
         {selectedTab === 'overview' && (
           <div className="space-y-6">
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-                  <FileText className="h-8 w-8 text-info-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">Total Filings</p>
-                    <p className="text-number-lg font-semibold text-gray-900">{stats.total || 0}</p>
-                  </div>
-                </div>
-              </div>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-info-100 rounded-xl flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-info-600" />
+                      </div>
+                      <div className="ml-4">
+                        <Typography.Small className="text-neutral-500">Total Filings</Typography.Small>
+                        <Typography.H3>{stats.total || 0}</Typography.H3>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-                  <CheckCircle className="h-8 w-8 text-success-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">Completed</p>
-                    <p className="text-number-lg font-semibold text-gray-900">{stats.completed || 0}</p>
-                  </div>
-                </div>
-              </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                        <CheckCircle className="h-6 w-6 text-success-600" />
+                      </div>
+                      <div className="ml-4">
+                        <Typography.Small className="text-neutral-500">Completed</Typography.Small>
+                        <Typography.H3>{stats.completed || 0}</Typography.H3>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-                  <Clock className="h-8 w-8 text-orange-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">In Progress</p>
-                    <p className="text-number-lg font-semibold text-gray-900">{stats.in_progress || 0}</p>
-                  </div>
-                </div>
-              </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
+                        <Clock className="h-6 w-6 text-warning-600" />
+                      </div>
+                      <div className="ml-4">
+                        <Typography.Small className="text-neutral-500">In Progress</Typography.Small>
+                        <Typography.H3>{stats.in_progress || 0}</Typography.H3>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-                  <AlertCircle className="h-8 w-8 text-error-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">Pending</p>
-                    <p className="text-number-lg font-semibold text-gray-900">{stats.pending || 0}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-error-100 rounded-xl flex items-center justify-center">
+                        <AlertCircle className="h-6 w-6 text-error-600" />
+                      </div>
+                      <div className="ml-4">
+                        <Typography.Small className="text-neutral-500">Pending</Typography.Small>
+                        <Typography.H3>{stats.pending || 0}</Typography.H3>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
 
             {/* Performance Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Completion Rate</h3>
-                  <TrendingUp className="h-5 w-5 text-green-500" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {stats.completion_rate || 0}%
-                </div>
-                <p className="text-sm text-gray-500">
-                  {stats.completed || 0} of {stats.total || 0} filings completed
-                </p>
-              </div>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Typography.Body className="font-semibold">Completion Rate</Typography.Body>
+                    <TrendingUp className="h-5 w-5 text-success-500" />
+                  </div>
+                  <Typography.H1 className="mb-2">{stats.completion_rate || 0}%</Typography.H1>
+                  <Typography.Small className="text-neutral-500">
+                    {stats.completed || 0} of {stats.total || 0} filings completed
+                  </Typography.Small>
+                </CardContent>
+              </Card>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Average Processing Time</h3>
-                  <Clock className="h-5 w-5 text-blue-500" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {stats.average_processing_time || 0} days
-                </div>
-                <p className="text-sm text-gray-500">
-                  Average time to process filings
-                </p>
-              </div>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Typography.Body className="font-semibold">Avg Processing Time</Typography.Body>
+                    <Clock className="h-5 w-5 text-info-500" />
+                  </div>
+                  <Typography.H1 className="mb-2">{stats.average_processing_time || 0} days</Typography.H1>
+                  <Typography.Small className="text-neutral-500">
+                    Average time to process filings
+                  </Typography.Small>
+                </CardContent>
+              </Card>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Revenue Generated</h3>
-                  <IndianRupee className="h-5 w-5 text-green-500" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  ₹{stats.revenue_generated || 0}
-                </div>
-                <p className="text-sm text-gray-500">
-                  Total revenue from filings
-                </p>
-              </div>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <Typography.Body className="font-semibold">Revenue Generated</Typography.Body>
+                    <IndianRupee className="h-5 w-5 text-success-500" />
+                  </div>
+                  <Typography.H1 className="mb-2">₹{stats.revenue_generated || 0}</Typography.H1>
+                  <Typography.Small className="text-neutral-500">
+                    Total revenue from filings
+                  </Typography.Small>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Filing Activity</h3>
-              <div className="space-y-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Filing Activity</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 {filings.slice(0, 5).map((filing) => (
-                  <div key={filing.filing_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={filing.filing_id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
                     <div className="flex items-center space-x-3">
                       {getStatusIcon(filing.status)}
                       <div>
-                        <p className="font-medium text-gray-900">{filing.itr_type}</p>
-                        <p className="text-sm text-gray-500">
+                        <Typography.Body className="font-medium">{filing.itr_type}</Typography.Body>
+                        <Typography.Small className="text-neutral-500">
                           {filing.user_name} • {filing.assessment_year}
-                        </p>
+                        </Typography.Small>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(filing.status)}`}>
-                        {filing.status.replace('_', ' ')}
+                        {filing.status?.replace(/_/g, ' ')}
                       </span>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => navigate(`/admin/filings/${filing.id || filing.filing_id}`)}
-                        className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
                       >
                         <Eye className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
@@ -312,154 +323,139 @@ const AdminFilings = () => {
         {selectedTab === 'filings' && (
           <div className="space-y-6">
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
-                {/* Search */}
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search filings..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                {/* Status Filter */}
-                <div className="flex items-center space-x-2">
-                  <Filter className="h-4 w-4 text-gray-400" />
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <input
+                      type="text"
+                      placeholder="Search filings..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-neutral-400" />
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="under_review">Under Review</option>
+                      <option value="completed">Completed</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
                   <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={itrTypeFilter}
+                    onChange={(e) => setItrTypeFilter(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                   >
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="under_review">Under Review</option>
-                    <option value="completed">Completed</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="all">All ITR Types</option>
+                    <option value="itr1">ITR-1</option>
+                    <option value="itr2">ITR-2</option>
+                    <option value="itr3">ITR-3</option>
+                    <option value="itr4">ITR-4</option>
+                  </select>
+                  <select
+                    value={dateRange}
+                    onChange={(e) => setDateRange(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="quarter">This Quarter</option>
+                    <option value="year">This Year</option>
                   </select>
                 </div>
-
-                {/* ITR Type Filter */}
-                <select
-                  value={itrTypeFilter}
-                  onChange={(e) => setItrTypeFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">All ITR Types</option>
-                  <option value="itr1">ITR-1</option>
-                  <option value="itr2">ITR-2</option>
-                  <option value="itr3">ITR-3</option>
-                  <option value="itr4">ITR-4</option>
-                </select>
-
-                {/* Date Range Filter */}
-                <select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">All Time</option>
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="quarter">This Quarter</option>
-                  <option value="year">This Year</option>
-                </select>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Filings List */}
             {filings.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No filings found</h3>
-                <p className="text-gray-500 mb-6">
-                  {searchTerm || statusFilter !== 'all' || itrTypeFilter !== 'all' || dateRange !== 'all'
-                    ? 'Try adjusting your search or filter criteria'
-                    : 'No filings have been submitted yet'
-                  }
-                </p>
-              </div>
+              <Card className="text-center py-12">
+                <CardContent>
+                  <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="h-8 w-8 text-neutral-400" />
+                  </div>
+                  <Typography.H3 className="mb-2">No filings found</Typography.H3>
+                  <Typography.Body className="text-neutral-600">
+                    {searchTerm || statusFilter !== 'all' || itrTypeFilter !== 'all' || dateRange !== 'all'
+                      ? 'Try adjusting your search or filter criteria'
+                      : 'No filings have been submitted yet'
+                    }
+                  </Typography.Body>
+                </CardContent>
+              </Card>
             ) : (
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {filings.length} Filing{filings.length !== 1 ? 's' : ''}
-                  </h2>
-                </div>
-
-                <div className="divide-y divide-gray-200">
-                  {filings.map((filing) => (
-                    <div key={filing.filing_id} className="px-6 py-4 hover:bg-gray-50">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          {getStatusIcon(filing.status)}
-                          <div>
-                            <h4 className="font-medium text-gray-900">{filing.itr_type}</h4>
-                            <p className="text-sm text-gray-500">
-                              {filing.user_name} • {filing.assessment_year}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Created: {new Date(filing.created_at).toLocaleDateString()}
-                            </p>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{filings.length} Filing{filings.length !== 1 ? 's' : ''}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <StaggerContainer className="divide-y divide-neutral-200">
+                    {filings.map((filing) => (
+                      <StaggerItem key={filing.filing_id} className="p-4 sm:p-6 hover:bg-neutral-50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                              {getStatusIcon(filing.status)}
+                            </div>
+                            <div>
+                              <Typography.Body className="font-medium">{filing.itr_type}</Typography.Body>
+                              <Typography.Small className="text-neutral-500">
+                                {filing.user_name} • {filing.assessment_year}
+                              </Typography.Small>
+                              <Typography.Small className="text-neutral-400 block">
+                                Created: {new Date(filing.created_at).toLocaleDateString()}
+                              </Typography.Small>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="flex items-center space-x-4">
-                          <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(filing.status)}`}>
-                            {filing.status.replace('_', ' ')}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(filing.status)}`}>
+                              {filing.status?.replace(/_/g, ' ')}
+                            </span>
 
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => navigate(`/admin/filings/${filing.id || filing.filing_id}`)}
-                              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
-                              title="View Details"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </button>
-
-                            <button
-                              onClick={() => navigate(`/admin/filings/${filing.filing_id}/edit`)}
-                              className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
-                              title="Edit Filing"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-
-                            {filing.status === 'completed' && filing.acknowledgment_number && (
-                              <button
-                                onClick={() => navigate(`/admin/filings/${filing.filing_id}/acknowledgment`)}
-                                className="p-2 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg transition-colors"
-                                title="Download Acknowledgment"
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate(`/admin/filings/${filing.id || filing.filing_id}`)}
                               >
-                                <Download className="h-4 w-4" />
-                              </button>
-                            )}
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate(`/admin/filings/${filing.filing_id}/edit`)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              {filing.status === 'completed' && filing.acknowledgment_number && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => navigate(`/admin/filings/${filing.filing_id}/acknowledgment`)}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Additional Info */}
-                      {filing.ca_name && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          Assigned CA: {filing.ca_name}
-                        </div>
-                      )}
-
-                      {filing.last_updated && (
-                        <div className="mt-1 text-xs text-gray-500">
-                          Last updated: {new Date(filing.last_updated).toLocaleString()}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      </StaggerItem>
+                    ))}
+                  </StaggerContainer>
+                </CardContent>
+              </Card>
             )}
           </div>
         )}
@@ -467,112 +463,132 @@ const AdminFilings = () => {
         {/* Analytics Tab */}
         {selectedTab === 'analytics' && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Filing Status Distribution</h3>
-                <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Filing Status Distribution</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
                   {analytics.status_distribution?.map((item) => (
                     <div key={item.status} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         {getStatusIcon(item.status)}
-                        <span className="text-sm font-medium text-gray-700">{item.status.replace('_', ' ')}</span>
+                        <Typography.Small className="font-medium capitalize">{item.status?.replace(/_/g, ' ')}</Typography.Small>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <div className="w-20 bg-gray-200 rounded-full h-2">
+                        <div className="w-20 bg-neutral-200 rounded-full h-2">
                           <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${(item.count / analytics.total) * 100}%` }}
-                          ></div>
+                            className="bg-primary-600 h-2 rounded-full"
+                            style={{ width: `${(item.count / (analytics.total || 1)) * 100}%` }}
+                          />
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                        <Typography.Small className="font-medium w-8 text-right">{item.count}</Typography.Small>
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">ITR Type Distribution</h3>
-                <div className="space-y-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle>ITR Type Distribution</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
                   {analytics.itr_type_distribution?.map((item) => (
                     <div key={item.itr_type} className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">{item.itr_type}</span>
+                      <Typography.Small className="font-medium">{item.itr_type}</Typography.Small>
                       <div className="flex items-center space-x-2">
-                        <div className="w-20 bg-gray-200 rounded-full h-2">
+                        <div className="w-20 bg-neutral-200 rounded-full h-2">
                           <div
-                            className="bg-green-600 h-2 rounded-full"
-                            style={{ width: `${(item.count / analytics.total) * 100}%` }}
-                          ></div>
+                            className="bg-success-600 h-2 rounded-full"
+                            style={{ width: `${(item.count / (analytics.total || 1)) * 100}%` }}
+                          />
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{item.count}</span>
+                        <Typography.Small className="font-medium w-8 text-right">{item.count}</Typography.Small>
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Filing Trends</h3>
-              <div className="text-center py-8">
-                <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Chart visualization would be implemented here</p>
-              </div>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Monthly Filing Trends</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BarChart3 className="h-8 w-8 text-neutral-400" />
+                  </div>
+                  <Typography.Body className="text-neutral-500">Chart visualization would be implemented here</Typography.Body>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
         {/* Reports Tab */}
         {selectedTab === 'reports' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Filing Reports</h3>
+          <Card>
+            <CardHeader>
+              <CardTitle>Filing Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <FileText className="h-6 w-6 text-blue-600" />
+                    <div className="w-10 h-10 bg-info-100 rounded-lg flex items-center justify-center">
+                      <FileText className="h-5 w-5 text-info-600" />
+                    </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Filing Summary Report</h4>
-                      <p className="text-sm text-gray-500">Complete overview of all filings</p>
+                      <Typography.Body className="font-medium">Filing Summary Report</Typography.Body>
+                      <Typography.Small className="text-neutral-500">Complete overview of all filings</Typography.Small>
                     </div>
                   </div>
                 </button>
 
-                <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <TrendingUp className="h-6 w-6 text-green-600" />
+                    <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="h-5 w-5 text-success-600" />
+                    </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Performance Report</h4>
-                      <p className="text-sm text-gray-500">CA and system performance metrics</p>
+                      <Typography.Body className="font-medium">Performance Report</Typography.Body>
+                      <Typography.Small className="text-neutral-500">CA and system performance metrics</Typography.Small>
                     </div>
                   </div>
                 </button>
 
-                <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <IndianRupee className="h-6 w-6 text-purple-600" />
+                    <div className="w-10 h-10 bg-secondary-100 rounded-lg flex items-center justify-center">
+                      <IndianRupee className="h-5 w-5 text-secondary-600" />
+                    </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Revenue Report</h4>
-                      <p className="text-sm text-gray-500">Financial performance analysis</p>
+                      <Typography.Body className="font-medium">Revenue Report</Typography.Body>
+                      <Typography.Small className="text-neutral-500">Financial performance analysis</Typography.Small>
                     </div>
                   </div>
                 </button>
 
-                <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-6 w-6 text-orange-600" />
+                    <div className="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-warning-600" />
+                    </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">Monthly Report</h4>
-                      <p className="text-sm text-gray-500">Monthly filing statistics</p>
+                      <Typography.Body className="font-medium">Monthly Report</Typography.Body>
+                      <Typography.Small className="text-neutral-500">Monthly filing statistics</Typography.Small>
                     </div>
                   </div>
                 </button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
-      </main>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

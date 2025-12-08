@@ -1,16 +1,16 @@
 // =====================================================
 // ADMIN ANALYTICS - MOBILE-FIRST ANALYTICS DASHBOARD
 // Enterprise-grade analytics with real-time data visualization
+// Using DesignSystem components for consistency with AdminDashboard
 // =====================================================
 
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '../../contexts/AuthContext';
-import api from '../../services/api';
+import { useState, useMemo } from 'react';
+import { useAdminAnalytics, useAdminCAAnalytics } from '../../features/admin/analytics/hooks/use-analytics';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   ArrowLeft,
   BarChart3,
-  PieChart,
   TrendingUp,
   TrendingDown,
   Users,
@@ -19,31 +19,59 @@ import {
   Calendar,
   Download,
   RefreshCw,
-  Filter,
-  Eye,
   Activity,
   Target,
   Zap,
   Clock,
+  Building2,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
+import useAdminDashboardRealtime from '../../hooks/useAdminDashboardRealtime';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from 'recharts';
+import * as XLSX from 'xlsx';
+
+const COLORS = ['#D4AF37', '#8B7355', '#6B5B73', '#4A5568', '#2D3748'];
 
 const AdminAnalytics = () => {
-  const { user } = useAuth();
   const [timeRange, setTimeRange] = useState('30d');
   const [metricType, setMetricType] = useState('overview');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [customDateFrom, setCustomDateFrom] = useState('');
+  const [customDateTo, setCustomDateTo] = useState('');
+  const [showCustomDate, setShowCustomDate] = useState(false);
+
+  // Real-time dashboard updates
+  const { connectionStatus, isConnected, lastUpdate, refreshDashboard: refreshRealtime } = useAdminDashboardRealtime();
 
   // Fetch analytics data
-  const { data: analyticsData, isLoading, error } = useQuery({
-    queryKey: ['adminAnalytics', timeRange, metricType, refreshKey],
-    queryFn: async () => {
-      const response = await api.get(`/admin/analytics?timeRange=${timeRange}&type=${metricType}`);
-      return response.data;
-    },
-    enabled: !!user?.id,
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000, // Refetch every minute
-  });
+  const { data: analyticsData, isLoading, error, refetch } = useAdminAnalytics(
+    timeRange,
+    metricType,
+    customDateFrom || undefined,
+    customDateTo || undefined,
+  );
+
+  const { data: caAnalytics } = useAdminCAAnalytics(
+    timeRange,
+    customDateFrom || undefined,
+    customDateTo || undefined,
+  );
 
   const overview = analyticsData?.overview || {};
   const trends = analyticsData?.trends || [];
@@ -51,121 +79,280 @@ const AdminAnalytics = () => {
   const userMetrics = analyticsData?.userMetrics || {};
   const filingMetrics = analyticsData?.filingMetrics || {};
   const revenueMetrics = analyticsData?.revenueMetrics || {};
+  const charts = analyticsData?.charts || {};
 
   const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
+    refetch();
+    refreshRealtime();
+  };
+
+  const formatLastUpdate = () => {
+    if (!lastUpdate) return null;
+    const secondsAgo = Math.floor((Date.now() - lastUpdate) / 1000);
+    if (secondsAgo < 60) return `${secondsAgo}s ago`;
+    const minutesAgo = Math.floor(secondsAgo / 60);
+    if (minutesAgo < 60) return `${minutesAgo}m ago`;
+    return `${Math.floor(minutesAgo / 60)}h ago`;
   };
 
   const formatNumber = (num) => {
+    if (!num && num !== 0) return '0';
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num?.toString() || '0';
+    return num.toString();
   };
 
   const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '₹0';
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount || 0);
+    }).format(amount);
+  };
+
+  // Export to CSV
+  const handleExportCSV = () => {
+    const data = [];
+
+    if (metricType === 'overview') {
+      data.push(['Metric', 'Value']);
+      topMetrics.forEach(metric => {
+        data.push([metric.name, metric.value]);
+      });
+    } else if (metricType === 'users') {
+      data.push(['Metric', 'Value']);
+      data.push(['Total Users', userMetrics.totalUsers || 0]);
+      data.push(['Daily Active Users', userMetrics.dailyActive || 0]);
+      data.push(['Weekly Active Users', userMetrics.weeklyActive || 0]);
+      data.push(['Monthly Active Users', userMetrics.monthlyActive || 0]);
+      data.push(['Retention Rate', `${userMetrics.retentionRate || 0}%`]);
+    } else if (metricType === 'filings') {
+      data.push(['Metric', 'Value']);
+      data.push(['Total Filings', filingMetrics.totalFilings || 0]);
+      data.push(['Completed', filingMetrics.completed || 0]);
+      data.push(['In Progress', filingMetrics.inProgress || 0]);
+      data.push(['Success Rate', `${filingMetrics.successRate || 0}%`]);
+    } else if (metricType === 'revenue') {
+      data.push(['Metric', 'Value']);
+      data.push(['Total Revenue', formatCurrency(revenueMetrics.total || 0)]);
+      data.push(['ARPU', formatCurrency(revenueMetrics.arpu || 0)]);
+      data.push(['LTV', formatCurrency(revenueMetrics.ltv || 0)]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Analytics');
+    XLSX.writeFile(wb, `analytics-${metricType}-${timeRange}-${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  // Prepare chart data
+  const trendChartData = useMemo(() => {
+    if (!trends || trends.length === 0) return [];
+
+    const userTrend = trends.find(t => t.name === 'Users');
+    const filingTrend = trends.find(t => t.name === 'Filings');
+    const revenueTrend = trends.find(t => t.name === 'Revenue');
+
+    const dates = new Set();
+    [userTrend, filingTrend, revenueTrend].forEach(trend => {
+      if (trend && trend.data) {
+        trend.data.forEach(item => dates.add(item.date));
+      }
+    });
+
+    return Array.from(dates).sort().map(date => ({
+      date,
+      users: userTrend?.data?.find(d => d.date === date)?.count || 0,
+      filings: filingTrend?.data?.find(d => d.date === date)?.count || 0,
+      revenue: revenueTrend?.data?.find(d => d.date === date)?.value || 0,
+    }));
+  }, [trends]);
+
+  const tooltipStyle = {
+    backgroundColor: '#fff',
+    border: '1px solid #e5e5e5',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  };
+
+  const tooltipStyleSimple = {
+    backgroundColor: '#fff',
+    border: '1px solid #e5e5e5',
+    borderRadius: '8px',
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="loading-spinner"></div>
-          <p className="text-sm text-neutral-600">Loading analytics...</p>
+      <PageTransition className="min-h-screen bg-neutral-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+            <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
+            <Typography.Body className="text-neutral-600">Loading analytics...</Typography.Body>
+          </div>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
-        <div className="dashboard-card-burnblack text-center p-8">
-          <BarChart3 className="h-12 w-12 text-error-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-burnblack-black mb-2">Error Loading Analytics</h3>
-          <p className="text-neutral-600 mb-4">Unable to load analytics data.</p>
-          <button onClick={handleRefresh} className="btn-burnblack">
-            <RefreshCw className="h-4 w-4 inline mr-2" />
-            Retry
-          </button>
+      <PageTransition className="min-h-screen bg-neutral-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <Card className="text-center p-8 max-w-md">
+              <CardContent className="pt-6">
+                <div className="w-12 h-12 bg-error-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="h-6 w-6 text-error-600" />
+                </div>
+                <Typography.H3 className="mb-2">Error Loading Analytics</Typography.H3>
+                <Typography.Body className="text-neutral-600 mb-4">
+                  Unable to load analytics data. Please try again.
+                </Typography.Body>
+                <Button onClick={handleRefresh} variant="primary">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Retry
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="min-h-screen bg-burnblack-white">
-      {/* Mobile Header */}
-      <header className="header-burnblack sticky top-0 z-50">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => window.history.back()}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
-              >
-                <ArrowLeft className="h-5 w-5 text-burnblack-black" />
-              </button>
-              <div>
-                <h1 className="text-lg font-semibold text-burnblack-black">Analytics</h1>
-                <p className="text-xs text-neutral-500">Platform Insights</p>
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => window.history.back()}
+              className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-all"
+            >
+              <ArrowLeft className="h-5 w-5 text-neutral-700" />
+            </button>
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <Typography.H1>Analytics</Typography.H1>
+                {/* Connection Status Indicator */}
+                <div className="flex items-center gap-2">
+                  {isConnected ? (
+                    <div className="flex items-center gap-1 text-success-600" title="Connected to live updates">
+                      <Wifi className="w-4 h-4" />
+                      <span className="text-xs">Live</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-warning-600" title="Using polling updates">
+                      <WifiOff className="w-4 h-4" />
+                      <span className="text-xs">Polling</span>
+                    </div>
+                  )}
+                  {lastUpdate && (
+                    <span className="text-xs text-neutral-400">
+                      Updated {formatLastUpdate()}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={handleRefresh}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
-              >
-                <RefreshCw className="h-5 w-5 text-burnblack-black" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform">
-                <Download className="h-5 w-5 text-burnblack-black" />
-              </button>
+              <Typography.Body className="text-neutral-600">
+                Platform Insights & Performance Metrics
+              </Typography.Body>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="px-4 py-4 space-y-6">
+          <div className="flex items-center space-x-3">
+            <Button onClick={handleRefresh} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+            <Button onClick={handleExportCSV} variant="primary" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
+        </div>
+
         {/* Time Range & Metric Type Selectors */}
-        <div className="space-y-3">
+        <div className="space-y-4 mb-8">
           {/* Time Range */}
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap gap-2">
             {['7d', '30d', '90d', '1y'].map(range => (
               <button
                 key={range}
-                onClick={() => setTimeRange(range)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  timeRange === range
-                    ? 'bg-burnblack-gold text-white'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                onClick={() => {
+                  setTimeRange(range);
+                  setShowCustomDate(false);
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  timeRange === range && !showCustomDate
+                    ? 'bg-primary-500 text-white shadow-sm'
+                    : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                 }`}
               >
                 {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '1 Year'}
               </button>
             ))}
+            <button
+              onClick={() => setShowCustomDate(!showCustomDate)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                showCustomDate
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+              }`}
+            >
+              <Calendar className="h-4 w-4" />
+              Custom
+            </button>
           </div>
 
+          {showCustomDate && (
+            <Card className="p-4">
+              <div className="flex flex-wrap gap-3 items-center">
+                <input
+                  type="date"
+                  value={customDateFrom}
+                  onChange={(e) => setCustomDateFrom(e.target.value)}
+                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+                <Typography.Small className="text-neutral-500">to</Typography.Small>
+                <input
+                  type="date"
+                  value={customDateTo}
+                  onChange={(e) => setCustomDateTo(e.target.value)}
+                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+                <Button
+                  onClick={() => {
+                    if (customDateFrom && customDateTo) {
+                      setTimeRange('custom');
+                      refetch();
+                    }
+                  }}
+                  variant="primary"
+                  size="sm"
+                >
+                  Apply
+                </Button>
+              </div>
+            </Card>
+          )}
+
           {/* Metric Type */}
-          <div className="flex space-x-2">
-            {['overview', 'users', 'filings', 'revenue'].map(type => (
+          <div className="flex flex-wrap gap-2">
+            {['overview', 'users', 'filings', 'revenue', 'ca'].map(type => (
               <button
                 key={type}
                 onClick={() => setMetricType(type)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   metricType === type
-                    ? 'bg-burnblack-gold text-white'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                    ? 'bg-secondary-500 text-white shadow-sm'
+                    : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                 }`}
               >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
+                {type === 'ca' ? 'CA/B2B' : type.charAt(0).toUpperCase() + type.slice(1)}
               </button>
             ))}
           </div>
@@ -175,265 +362,669 @@ const AdminAnalytics = () => {
         {metricType === 'overview' && (
           <>
             {/* Key Performance Indicators */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <Users className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Users</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(overview.totalUsers)}</p>
-                  <div className="flex items-center mt-1">
-                    {overview.userGrowth > 0 ? (
-                      <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
-                    )}
-                    <span className={`text-xs ${overview.userGrowth > 0 ? 'text-success-600' : 'text-error-600'}`}>
-                      {Math.abs(overview.userGrowth || 0)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Total Users
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(overview.totalUsers)}
+                        </Typography.H3>
+                        <div className="flex items-center mt-1">
+                          {overview.userGrowth > 0 ? (
+                            <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
+                          )}
+                          <Typography.Small className={overview.userGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
+                            {Math.abs(overview.userGrowth || 0).toFixed(1)}%
+                          </Typography.Small>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <Users className="w-6 h-6 text-primary-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <FileText className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Filings</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(overview.totalFilings)}</p>
-                  <div className="flex items-center mt-1">
-                    {overview.filingGrowth > 0 ? (
-                      <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
-                    )}
-                    <span className={`text-xs ${overview.filingGrowth > 0 ? 'text-success-600' : 'text-error-600'}`}>
-                      {Math.abs(overview.filingGrowth || 0)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Total Filings
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(overview.totalFilings)}
+                        </Typography.H3>
+                        <div className="flex items-center mt-1">
+                          {overview.filingGrowth > 0 ? (
+                            <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
+                          )}
+                          <Typography.Small className={overview.filingGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
+                            {Math.abs(overview.filingGrowth || 0).toFixed(1)}%
+                          </Typography.Small>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-success-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <IndianRupee className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Revenue</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatCurrency(overview.revenue)}</p>
-                  <div className="flex items-center mt-1">
-                    {overview.revenueGrowth > 0 ? (
-                      <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
-                    )}
-                    <span className={`text-xs ${overview.revenueGrowth > 0 ? 'text-success-600' : 'text-error-600'}`}>
-                      {Math.abs(overview.revenueGrowth || 0)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Revenue
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatCurrency(overview.revenue)}
+                        </Typography.H3>
+                        <div className="flex items-center mt-1">
+                          {overview.revenueGrowth > 0 ? (
+                            <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
+                          )}
+                          <Typography.Small className={overview.revenueGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
+                            {Math.abs(overview.revenueGrowth || 0).toFixed(1)}%
+                          </Typography.Small>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center">
+                        <IndianRupee className="w-6 h-6 text-secondary-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <Activity className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Active Users</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(overview.activeUsers)}</p>
-                  <div className="flex items-center mt-1">
-                    <span className="text-xs text-neutral-500">
-                      {((overview.activeUsers / overview.totalUsers) * 100).toFixed(1)}% of total
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Active Users
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(overview.activeUsers)}
+                        </Typography.H3>
+                        <div className="flex items-center mt-1">
+                          <Typography.Small className="text-neutral-500">
+                            {overview.totalUsers > 0 ? ((overview.activeUsers / overview.totalUsers) * 100).toFixed(1) : 0}% of total
+                          </Typography.Small>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center">
+                        <Activity className="w-6 h-6 text-warning-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
 
-            {/* Trends Chart Placeholder */}
-            <div className="dashboard-card-burnblack">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-burnblack-black">Trends</h2>
-                <div className="flex items-center space-x-2">
-                  <BarChart3 className="h-4 w-4 text-neutral-400" />
-                  <span className="text-xs text-neutral-500">Last {timeRange}</span>
-                </div>
-              </div>
+            {/* Trends Chart */}
+            {trendChartData.length > 0 && (
+              <StaggerItem>
+                <Card className="mb-8">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center space-x-2">
+                        <BarChart3 className="w-5 h-5 text-primary-600" />
+                        <span>Trends</span>
+                      </CardTitle>
+                      <Typography.Small className="text-neutral-500">Last {timeRange}</Typography.Small>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={trendChartData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                        <Tooltip contentStyle={tooltipStyle} />
+                        <Legend />
+                        <Area type="monotone" dataKey="users" stackId="1" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} name="Users" />
+                        <Area type="monotone" dataKey="filings" stackId="1" stroke="#8B7355" fill="#8B7355" fillOpacity={0.6} name="Filings" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
 
-              <div className="h-48 bg-neutral-50 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <BarChart3 className="h-12 w-12 text-neutral-300 mx-auto mb-2" />
-                  <p className="text-sm text-neutral-500">Chart visualization</p>
-                  <p className="text-xs text-neutral-400">Coming soon</p>
-                </div>
-              </div>
-            </div>
+            {/* Top Metrics */}
+            {topMetrics.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Target className="w-5 h-5 text-primary-600" />
+                      <span>Top Metrics</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {topMetrics.map((metric, index) => (
+                        <div key={metric.name || index} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-secondary-100 rounded-lg flex items-center justify-center">
+                              <Typography.Small className="font-semibold text-secondary-600">{index + 1}</Typography.Small>
+                            </div>
+                            <Typography.Small className="font-medium text-neutral-700">{metric.name}</Typography.Small>
+                          </div>
+                          <Typography.Small className="font-semibold text-neutral-900">{metric.value}</Typography.Small>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
           </>
         )}
 
         {/* User Metrics */}
         {metricType === 'users' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <Users className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">New Users</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(userMetrics.newUsers)}</p>
-                </div>
-              </div>
+          <div className="space-y-6">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          New Users
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(userMetrics.newUsers)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <Users className="w-6 h-6 text-primary-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <Target className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Retention Rate</p>
-                  <p className="text-lg font-bold text-burnblack-black">{userMetrics.retentionRate || 0}%</p>
-                </div>
-              </div>
-            </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Retention Rate
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {(userMetrics.retentionRate || 0).toFixed(1)}%
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                        <Target className="w-6 h-6 text-success-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
 
-            <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">User Activity</h2>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Daily Active Users</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(userMetrics.dailyActive)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Weekly Active Users</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(userMetrics.weeklyActive)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Monthly Active Users</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(userMetrics.monthlyActive)}</span>
-                </div>
-              </div>
-            </div>
+            {/* User Activity Chart */}
+            {userMetrics.acquisitionTrends && userMetrics.acquisitionTrends.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <TrendingUp className="w-5 h-5 text-primary-600" />
+                      <span>User Acquisition</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <LineChart data={userMetrics.acquisitionTrends}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                        <Tooltip contentStyle={tooltipStyleSimple} />
+                        <Line type="monotone" dataKey="count" stroke="#D4AF37" strokeWidth={2} dot={{ fill: '#D4AF37' }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
+
+            <StaggerItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Activity className="w-5 h-5 text-primary-600" />
+                    <span>User Activity</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Daily Active Users</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.dailyActive)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Weekly Active Users</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.weeklyActive)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Monthly Active Users</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.monthlyActive)}</Typography.Small>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+
+            {/* User Distribution Pie Chart */}
+            {charts.userDistribution && charts.userDistribution.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Users className="w-5 h-5 text-primary-600" />
+                      <span>User Distribution by Role</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <RechartsPieChart>
+                        <Pie
+                          data={charts.userDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {charts.userDistribution.map((entry) => (
+                            <Cell key={`cell-${entry.name}`} fill={COLORS[charts.userDistribution.indexOf(entry) % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
           </div>
         )}
 
         {/* Filing Metrics */}
         {metricType === 'filings' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <FileText className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Completed</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(filingMetrics.completed)}</p>
-                </div>
-              </div>
+          <div className="space-y-6">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Completed
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(filingMetrics.completed)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-success-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <Clock className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">In Progress</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(filingMetrics.inProgress)}</p>
-                </div>
-              </div>
-            </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          In Progress
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(filingMetrics.inProgress)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center">
+                        <Clock className="w-6 h-6 text-warning-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
 
-            <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Filing Status</h2>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Pending</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(filingMetrics.pending)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Success Rate</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{filingMetrics.successRate || 0}%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Average Processing Time</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{filingMetrics.avgProcessingTime || 0} days</span>
-                </div>
-              </div>
-            </div>
+            {/* Filing Trends Chart */}
+            {filingMetrics.trends && filingMetrics.trends.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-primary-600" />
+                      <span>Filing Trends</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <BarChart data={filingMetrics.trends}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                        <Tooltip contentStyle={tooltipStyleSimple} />
+                        <Bar dataKey="count" fill="#D4AF37" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
+
+            <StaggerItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="w-5 h-5 text-primary-600" />
+                    <span>Filing Status</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Pending</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(filingMetrics.pending)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Success Rate</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{(filingMetrics.successRate || 0).toFixed(1)}%</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Average Processing Time</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{filingMetrics.averageCompletionTime || 0} days</Typography.Small>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+
+            {/* Filing Status Distribution */}
+            {charts.filingDistribution && charts.filingDistribution.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-primary-600" />
+                      <span>Filing Status Distribution</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <RechartsPieChart>
+                        <Pie
+                          data={charts.filingDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {charts.filingDistribution.map((entry) => (
+                            <Cell key={`cell-${entry.name}`} fill={COLORS[charts.filingDistribution.indexOf(entry) % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
           </div>
         )}
 
         {/* Revenue Metrics */}
         {metricType === 'revenue' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <IndianRupee className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Revenue</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatCurrency(revenueMetrics.total)}</p>
-                </div>
-              </div>
+          <div className="space-y-6">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Total Revenue
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatCurrency(revenueMetrics.total)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center">
+                        <IndianRupee className="w-6 h-6 text-secondary-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
 
-              <div className="stat-card-burnblack">
-                <div className="stat-icon-burnblack">
-                  <Zap className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-neutral-600">ARPU</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatCurrency(revenueMetrics.arpu)}</p>
-                </div>
-              </div>
-            </div>
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          ARPU
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatCurrency(revenueMetrics.arpu)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                        <Zap className="w-6 h-6 text-success-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
 
-            <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Revenue Breakdown</h2>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">ITR Filing Fees</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.itrFees)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Consultation Fees</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.consultationFees)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Premium Services</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.premiumServices)}</span>
-                </div>
-              </div>
-            </div>
+            {/* Revenue Trends Chart */}
+            {revenueMetrics.trends && revenueMetrics.trends.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <TrendingUp className="w-5 h-5 text-primary-600" />
+                      <span>Revenue Trends</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <AreaChart data={revenueMetrics.trends}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                        <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={tooltipStyleSimple} />
+                        <Area type="monotone" dataKey="value" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
+
+            <StaggerItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <IndianRupee className="w-5 h-5 text-primary-600" />
+                    <span>Revenue Breakdown</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">ITR Filing Fees</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.itrFees)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Consultation Fees</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.consultationFees)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Premium Services</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.premiumServices)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">LTV (Lifetime Value)</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.ltv)}</Typography.Small>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+
+            {/* Revenue Distribution */}
+            {charts.revenueDistribution && charts.revenueDistribution.length > 0 && (
+              <StaggerItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-primary-600" />
+                      <span>Revenue by Type</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <RechartsPieChart>
+                        <Pie
+                          data={charts.revenueDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {charts.revenueDistribution.map((entry) => (
+                            <Cell key={`cell-${entry.name}`} fill={COLORS[charts.revenueDistribution.indexOf(entry) % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => formatCurrency(value)} />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            )}
           </div>
         )}
 
-        {/* Top Metrics */}
-        <div className="dashboard-card-burnblack">
-          <h2 className="text-lg font-semibold text-burnblack-black mb-4">Top Metrics</h2>
-          <div className="space-y-3">
-            {topMetrics.length === 0 ? (
-              <div className="text-center py-4">
-                <BarChart3 className="h-8 w-8 text-neutral-300 mx-auto mb-2" />
-                <p className="text-sm text-neutral-500">No metrics available</p>
-              </div>
-            ) : (
-              topMetrics.map((metric, index) => (
-                <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-50">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-6 h-6 bg-burnblack-gold bg-opacity-20 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-semibold text-burnblack-gold">{index + 1}</span>
+        {/* CA/B2B Metrics */}
+        {metricType === 'ca' && caAnalytics && (
+          <div className="space-y-6">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Total CAs
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(caAnalytics.totalCAs)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <Building2 className="w-6 h-6 text-primary-600" />
+                      </div>
                     </div>
-                    <span className="text-sm font-medium text-burnblack-black">{metric.name}</span>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+
+              <StaggerItem>
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Typography.Small className="text-neutral-600 mb-1">
+                          Verified CAs
+                        </Typography.Small>
+                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                          {formatNumber(caAnalytics.verifiedCAs)}
+                        </Typography.H3>
+                      </div>
+                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                        <Target className="w-6 h-6 text-success-600" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            </StaggerContainer>
+
+            <StaggerItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Building2 className="w-5 h-5 text-primary-600" />
+                    <span>CA Metrics</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Active CAs</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.activeCAs)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">New Registrations</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.newRegistrations)}</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">Verification Rate</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{(caAnalytics.verificationRate || 0).toFixed(1)}%</Typography.Small>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <Typography.Small className="text-neutral-600">B2B Revenue</Typography.Small>
+                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(caAnalytics.b2bRevenue)}</Typography.Small>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold text-burnblack-black">{metric.value}</span>
-                </div>
-              ))
-            )}
+                </CardContent>
+              </Card>
+            </StaggerItem>
           </div>
-        </div>
-      </main>
-    </div>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

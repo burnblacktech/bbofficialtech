@@ -111,7 +111,36 @@ class TaxRegimeCalculator {
         : this.oldRegimeSlabs[category];
 
       // Calculate tax on income
-      const taxResult = this.calculateTaxBySlabs(taxableIncome, slabs);
+      let taxResult = this.calculateTaxBySlabs(taxableIncome, slabs);
+
+      // Agricultural income aggregation (Old Regime only)
+      // Agricultural income is exempt but affects tax rates
+      // Partial integration applies when:
+      // 1. Agricultural income > ₹5,000 AND
+      // 2. Non-agricultural income > basic exemption limit
+      if (regime === 'old') {
+        const agriculturalIncome = this.extractAgriculturalIncome(formData);
+        // Use gross non-agricultural income (before deductions) for aggregation calculation
+        const nonAgriGrossIncome = grossTotalIncome - agriculturalIncome;
+        const basicExemption = category === 'superSeniorCitizen' ? 500000 : category === 'seniorCitizen' ? 300000 : 250000;
+        
+        // Apply partial integration only if both conditions are met
+        if (agriculturalIncome > 5000 && nonAgriGrossIncome > basicExemption) {
+          const agriAggregation = this.calculateAgriculturalAggregation(nonAgriGrossIncome, agriculturalIncome, age);
+          taxResult.tax += agriAggregation;
+          // Update breakdown if needed
+          if (agriAggregation > 0 && taxResult.breakdown) {
+            taxResult.breakdown.push({
+              min: 'N/A',
+              max: 'N/A',
+              rate: 'Marginal (Agri Aggregation)',
+              income: agriculturalIncome,
+              tax: agriAggregation,
+              description: `Tax on (₹${nonAgriGrossIncome.toLocaleString('en-IN')} + ₹${agriculturalIncome.toLocaleString('en-IN')}) - Tax on (₹${agriculturalIncome.toLocaleString('en-IN')} + ₹${basicExemption.toLocaleString('en-IN')})`,
+            });
+          }
+        }
+      }
 
       // Calculate cess (4% of tax)
       const cess = Math.round(taxResult.tax * 0.04);
@@ -263,6 +292,29 @@ class TaxRegimeCalculator {
       total += parseFloat(income.presumptiveProfessional.presumptiveIncome || 0);
     }
 
+    // ITR-4: Handle goods carriage income (Section 44AE)
+    if (income.goodsCarriage || formData.goodsCarriage) {
+      const goodsCarriage = income.goodsCarriage || formData.goodsCarriage;
+      if (goodsCarriage.totalPresumptiveIncome) {
+        // Use pre-calculated total if available
+        total += parseFloat(goodsCarriage.totalPresumptiveIncome) || 0;
+      } else if (goodsCarriage.vehicles && Array.isArray(goodsCarriage.vehicles)) {
+        // Calculate from vehicles array
+        const goodsCarriageIncome = goodsCarriage.vehicles.reduce((sum, vehicle) => {
+          const monthsOwned = parseFloat(vehicle.monthsOwned) || 12;
+          if (vehicle.type === 'heavy_goods') {
+            // Heavy goods vehicle: ₹1,000 per ton per month
+            const tons = parseFloat(vehicle.gvw) || 12;
+            return sum + (1000 * tons * monthsOwned);
+          } else {
+            // Light goods vehicle: ₹7,500 per vehicle per month
+            return sum + (7500 * monthsOwned);
+          }
+        }, 0);
+        total += goodsCarriageIncome;
+      }
+    }
+
     // Capital gains - handle structured data (ITR-2) or simple number
     let capitalGainsTotal = 0;
     if (income.capitalGains) {
@@ -337,12 +389,75 @@ class TaxRegimeCalculator {
                                   (income.directorPartner?.partnerIncome || 0);
     total += directorPartnerIncome;
 
-    // Other income sources
-    total += parseFloat(income.interestIncome || 0);
-    total += parseFloat(income.dividendIncome || 0);
-    total += parseFloat(income.otherIncome || 0);
+    // Other income sources - handle structured format (otherSources) or simple number
+    if (income.otherSources && typeof income.otherSources === 'object') {
+      total += parseFloat(income.otherSources.totalOtherSourcesIncome || 0) ||
+        (parseFloat(income.otherSources.totalInterestIncome || 0) + parseFloat(income.otherSources.totalOtherIncome || 0));
+    } else {
+      total += parseFloat(income.interestIncome || 0);
+      total += parseFloat(income.dividendIncome || 0);
+      total += parseFloat(income.otherIncome || 0);
+    }
 
     return total;
+  }
+
+  /**
+   * Extract agricultural income from formData
+   * Agricultural income is exempt but used for rate aggregation in Old Regime
+   */
+  extractAgriculturalIncome(formData) {
+    return parseFloat(
+      formData?.exemptIncome?.agriculturalIncome?.netAgriculturalIncome ||
+      formData?.exemptIncome?.netAgriculturalIncome ||
+      formData?.agriculturalIncome ||
+      0
+    );
+  }
+
+  /**
+   * Calculate agricultural income aggregation for rate purposes (Old Regime only)
+   * This implements the partial integration method where agricultural income affects tax rates
+   * 
+   * Formula (Partial Integration):
+   * Step 1: Tax on (non-agri income + agri income)
+   * Step 2: Tax on (agri income + basic exemption limit)
+   * Step 3: Tax payable = Step 1 - Step 2
+   * 
+   * Conditions for application:
+   * - Agricultural income > ₹5,000
+   * - Non-agricultural income > basic exemption limit (₹2.5L/₹3L/₹5L based on age)
+   * 
+   * @param {number} nonAgriIncome - Non-agricultural income (gross, before deductions)
+   * @param {number} agriIncome - Agricultural income (exempt but used for rate calculation)
+   * @param {number} age - Taxpayer age (for determining basic exemption limit)
+   * @returns {number} Additional tax due to agricultural income affecting the rate
+   */
+  calculateAgriculturalAggregation(nonAgriIncome, agriIncome, age = 0) {
+    // Determine taxpayer category for correct slabs and basic exemption
+    const category = this.getTaxpayerCategory(age);
+    const basicExemption = category === 'superSeniorCitizen' ? 500000 : category === 'seniorCitizen' ? 300000 : 250000;
+    
+    // Partial integration applies only if:
+    // 1. Agricultural income > ₹5,000 (regulatory threshold)
+    // 2. Non-agricultural income > basic exemption limit
+    if (agriIncome <= 5000 || nonAgriIncome <= basicExemption) {
+      return 0;
+    }
+
+    const slabs = this.oldRegimeSlabs[category];
+
+    // Step 1: Calculate tax on (non-agri + agri) - total income for rate purposes
+    const totalIncome = nonAgriIncome + agriIncome;
+    const taxOnTotal = this.calculateTaxBySlabs(totalIncome, slabs).tax;
+
+    // Step 2: Calculate tax on (agri + basic exemption) - tax on agricultural income portion
+    const agriWithExemption = agriIncome + basicExemption;
+    const taxOnAgriExemption = this.calculateTaxBySlabs(agriWithExemption, slabs).tax;
+
+    // Step 3: Additional tax due to agricultural income affecting the rate
+    // This is the difference: tax calculated at higher rate due to agri income
+    return Math.max(0, taxOnTotal - taxOnAgriExemption);
   }
 
   /**

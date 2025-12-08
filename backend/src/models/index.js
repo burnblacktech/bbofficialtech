@@ -29,6 +29,11 @@ const HelpArticle = require('./HelpArticle');
 const CAMarketplaceInquiry = require('./CAMarketplaceInquiry');
 const CABooking = require('./CABooking');
 const CAFirmReview = require('./CAFirmReview');
+const BankAccount = require('./BankAccount');
+const PricingPlan = require('./PricingPlan');
+const Coupon = require('./Coupon');
+const UserSegment = require('./UserSegment');
+const PlatformSettings = require('./PlatformSettings');
 
 // Define associations after all models are loaded
 require('./associations');
@@ -61,4 +66,9 @@ module.exports = {
   CAMarketplaceInquiry,
   CABooking,
   CAFirmReview,
+  BankAccount,
+  PricingPlan,
+  Coupon,
+  UserSegment,
+  PlatformSettings,
 };

@@ -26,29 +26,56 @@ class PreviousYearCopyService {
         currentAssessmentYear,
       });
 
-      // Extract year from assessment year (e.g., '2024-25' -> 2024)
+      // Extract year from assessment year (e.g., '2024-25' -> 2024) for comparison
       const currentYear = parseInt(currentAssessmentYear.split('-')[0]);
+      
+      // Build query separately for memberId vs NULL to avoid duplicate parameter issues
+      let query;
+      let queryParams;
+      
+      if (memberId) {
+        // When memberId is provided: $1=userId, $2=memberId, $3=currentYear
+        query = `
+          SELECT 
+            id,
+            itr_type,
+            assessment_year,
+            status,
+            submitted_at,
+            acknowledged_at,
+            json_payload,
+            created_at
+          FROM itr_filings
+          WHERE user_id = $1
+            AND member_id = $2
+            AND status IN ('submitted', 'acknowledged', 'processed')
+            AND CAST(SPLIT_PART(assessment_year, '-', 1) AS INTEGER) < $3
+          ORDER BY assessment_year DESC, submitted_at DESC
+        `;
+        queryParams = [userId, memberId, currentYear];
+      } else {
+        // When memberId is NULL: $1=userId, $2=currentYear
+        query = `
+          SELECT 
+            id,
+            itr_type,
+            assessment_year,
+            status,
+            submitted_at,
+            acknowledged_at,
+            json_payload,
+            created_at
+          FROM itr_filings
+          WHERE user_id = $1
+            AND member_id IS NULL
+            AND status IN ('submitted', 'acknowledged', 'processed')
+            AND CAST(SPLIT_PART(assessment_year, '-', 1) AS INTEGER) < $2
+          ORDER BY assessment_year DESC, submitted_at DESC
+        `;
+        queryParams = [userId, currentYear];
+      }
 
-      // Query for submitted/acknowledged/processed filings from previous years
-      const query = `
-        SELECT 
-          id,
-          itr_type,
-          assessment_year,
-          status,
-          submitted_at,
-          acknowledged_at,
-          json_payload,
-          created_at
-        FROM itr_filings
-        WHERE user_id = $1
-          AND (member_id = $2 OR ($2 IS NULL AND member_id IS NULL))
-          AND status IN ('submitted', 'acknowledged', 'processed')
-          AND assessment_year < $3
-        ORDER BY assessment_year DESC, submitted_at DESC
-      `;
-
-      const result = await dbQuery(query, [userId, memberId, currentAssessmentYear]);
+      const result = await dbQuery(query, queryParams);
 
       const previousYears = result.rows.map((row) => {
         // Extract summary from json_payload
@@ -177,6 +204,92 @@ class PreviousYearCopyService {
    * @param {string} targetITRType - Target ITR type
    * @returns {object} - Mapped data structure
    */
+  /**
+   * Validate previous year data compatibility with current year
+   * @param {object} previousData - Previous year filing data
+   * @param {string} previousYear - Previous assessment year (e.g., '2023-24')
+   * @param {string} currentYear - Current assessment year (e.g., '2024-25')
+   * @returns {object} Validation result with warnings and errors
+   */
+  validatePreviousYearCompatibility(previousData, previousYear, currentYear) {
+    const validation = {
+      isValid: true,
+      warnings: [],
+      errors: [],
+      incompatibleFields: [],
+    };
+
+    try {
+      // Extract year numbers for comparison
+      const prevYearNum = parseInt(previousYear.split('-')[0]);
+      const currYearNum = parseInt(currentYear.split('-')[0]);
+      const yearDiff = currYearNum - prevYearNum;
+
+      // Check if data is too old (more than 3 years)
+      if (yearDiff > 3) {
+        validation.warnings.push(`Data is from ${yearDiff} years ago. Some fields may have changed.`);
+      }
+
+      // Check for required fields that might have changed
+      const requiredFields = ['personal_info', 'personalInfo', 'income', 'deductions'];
+      const missingFields = requiredFields.filter(field => {
+        const camelCase = field === 'personal_info' ? 'personalInfo' : field;
+        return !previousData[field] && !previousData[camelCase];
+      });
+
+      if (missingFields.length > 0) {
+        validation.errors.push(`Missing required fields: ${missingFields.join(', ')}`);
+        validation.isValid = false;
+      }
+
+      // Check for deprecated fields or schema changes
+      // ITR-1 income limit changed from ₹50L to potentially different limits
+      if (previousData.income) {
+        const totalIncome = (previousData.income.salaryIncome || 0) +
+                           (previousData.income.housePropertyIncome || 0) +
+                           (previousData.income.otherIncome || 0);
+
+        // Check if ITR type might have changed due to income limits
+        if (previousData.itrType === 'ITR-1' && totalIncome > 5000000) {
+          validation.warnings.push('Total income exceeds ₹50L limit for ITR-1. Consider using ITR-2.');
+        }
+      }
+
+      // Check for tax regime changes (new regime introduced in AY 2020-21)
+      if (prevYearNum < 2020 && !previousData.regime) {
+        validation.warnings.push('Previous year filing predates new tax regime. Tax regime selection required.');
+      }
+
+      // Check for section 80C limit changes (if applicable)
+      if (previousData.deductions?.section80C) {
+        const section80CLimit = previousData.deductions.section80C;
+        // Section 80C limit has been ₹1.5L for many years, but check if it changed
+        if (section80CLimit > 150000) {
+          validation.warnings.push('Section 80C deduction exceeds standard limit. Please verify.');
+        }
+      }
+
+      enterpriseLogger.info('Previous year compatibility validation completed', {
+        previousYear,
+        currentYear,
+        isValid: validation.isValid,
+        warningsCount: validation.warnings.length,
+        errorsCount: validation.errors.length,
+      });
+
+    } catch (error) {
+      enterpriseLogger.error('Previous year compatibility validation failed', {
+        error: error.message,
+        previousYear,
+        currentYear,
+      });
+      validation.errors.push('Failed to validate compatibility: ' + error.message);
+      validation.isValid = false;
+    }
+
+    return validation;
+  }
+
   mapPreviousYearData(previousData, targetITRType) {
     try {
       const sourceData = previousData.data || previousData;

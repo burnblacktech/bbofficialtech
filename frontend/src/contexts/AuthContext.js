@@ -35,8 +35,11 @@ export const AuthProvider = ({ children }) => {
           setUser(currentUser);
           setIsAuthenticated(true);
 
-          // Load user profile (only if not already fetching)
-          if (!profileFetchInProgress.current) {
+          // For admin users, skip profile fetch (admin profile endpoint may not exist)
+          const isAdmin = currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'PLATFORM_ADMIN';
+
+          // Load user profile (only if not already fetching and not admin)
+          if (!profileFetchInProgress.current && !isAdmin) {
             try {
               profileFetchInProgress.current = true;
               const profileData = await authService.getProfile();

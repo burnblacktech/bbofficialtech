@@ -9,4 +9,12 @@ export { default as ForeignIncomeForm } from './foreign/components/ForeignIncome
 export { default as DirectorPartnerIncomeForm } from './director-partner/components/DirectorPartnerIncomeForm';
 export { default as ITR4IncomeForm } from './presumptive/components/ITR4IncomeForm';
 export { default as PresumptiveIncomeForm } from './presumptive/components/PresumptiveIncomeForm';
+export { default as Section44AEForm } from './presumptive/components/Section44AEForm';
+
+// Exempt and Agricultural Income
+export { default as ExemptIncomeForm } from './exempt-income/components/exempt-income-form';
+export { default as AgriculturalIncomeForm } from './agricultural/components/AgriculturalIncomeForm';
+
+// Other Sources Income (Interest, Dividends, etc.)
+export { default as OtherSourcesForm } from './other-sources/components/OtherSourcesForm';
 

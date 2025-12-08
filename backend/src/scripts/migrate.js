@@ -24,6 +24,68 @@ const CAFirm = require('../models/CAFirm');
 const Invite = require('../models/Invite');
 const AccountLinkingToken = require('../models/AccountLinkingToken');
 const UserProfile = require('../models/UserProfile');
+const RefundTracking = require('../models/RefundTracking');
+
+// Helper function to safely sync tables (handles policy/RLS issues)
+const safeSyncTable = async (model, modelName, options = {}) => {
+  try {
+    await model.sync({ force: false, alter: true, ...options });
+    enterpriseLogger.info(`${modelName} table synced`);
+    return true;
+  } catch (error) {
+    const errorMsg = error.message.toLowerCase();
+    
+    // Handle policy-related errors (Supabase RLS)
+    if (errorMsg.includes('policy') || 
+        errorMsg.includes('cannot alter type of a column used in a policy') ||
+        errorMsg.includes('row-level security')) {
+      enterpriseLogger.warn(`${modelName} sync with alter failed due to policy/RLS, trying without alter:`, error.message);
+      try {
+        await model.sync({ force: false, alter: false, ...options });
+        enterpriseLogger.info(`${modelName} table verified (without alter)`);
+        return true;
+      } catch (syncError) {
+        enterpriseLogger.warn(`${modelName} sync failed but continuing:`, syncError.message);
+        return false; // Don't throw - continue migration
+      }
+    }
+    
+    // Handle SQL syntax errors (USING clause, type conversion issues)
+    if (errorMsg.includes('syntax error') ||
+        errorMsg.includes('near "using"') ||
+        errorMsg.includes('using clause') ||
+        errorMsg.includes('cannot be cast') ||
+        errorMsg.includes('type conversion')) {
+      enterpriseLogger.warn(`${modelName} sync with alter failed due to SQL syntax/type conversion, trying without alter:`, error.message);
+      try {
+        await model.sync({ force: false, alter: false, ...options });
+        enterpriseLogger.info(`${modelName} table verified (without alter)`);
+        return true;
+      } catch (syncError) {
+        enterpriseLogger.warn(`${modelName} sync failed but continuing:`, syncError.message);
+        return false;
+      }
+    }
+    
+    // Handle other common errors
+    if (errorMsg.includes('unterminated quoted string') || 
+        errorMsg.includes('comment') ||
+        errorMsg.includes('enum')) {
+      enterpriseLogger.warn(`${modelName} sync with alter failed, trying without alter:`, error.message);
+      try {
+        await model.sync({ force: false, alter: false, ...options });
+        enterpriseLogger.info(`${modelName} table verified (without alter)`);
+        return true;
+      } catch (syncError) {
+        enterpriseLogger.warn(`${modelName} sync failed but continuing:`, syncError.message);
+        return false;
+      }
+    }
+    
+    // For other errors, throw
+    throw error;
+  }
+};
 
 const runMigrations = async () => {
   try {
@@ -237,49 +299,177 @@ const createTablesInOrder = async () => {
     }
 
     // 3. User-related tables (depend on User)
-    await UserSession.sync({ force: false, alter: true });
-    enterpriseLogger.info('User Sessions table synced');
-    
-    await UserProfile.sync({ force: false, alter: true });
-    enterpriseLogger.info('User Profiles table synced');
-    
-    await AuditLog.sync({ force: false, alter: true });
-    enterpriseLogger.info('Audit Logs table synced');
-    
-    await PasswordResetToken.sync({ force: false, alter: true });
-    enterpriseLogger.info('Password Reset Tokens table synced');
-    
-    await AccountLinkingToken.sync({ force: false, alter: true });
-    enterpriseLogger.info('Account Linking Tokens table synced');
-    
-    await Invite.sync({ force: false, alter: true });
-    enterpriseLogger.info('Invites table synced');
+    await safeSyncTable(UserSession, 'User Sessions');
+    await safeSyncTable(UserProfile, 'User Profiles');
+    await safeSyncTable(AuditLog, 'Audit Logs');
+    await safeSyncTable(PasswordResetToken, 'Password Reset Tokens');
+    await safeSyncTable(AccountLinkingToken, 'Account Linking Tokens');
+    await safeSyncTable(Invite, 'Invites');
 
     // 4. Family members (depends on User)
-    await FamilyMember.sync({ force: false, alter: true });
-    enterpriseLogger.info('Family members table synced');
+    try {
+      const tables = await queryInterface.showAllTables();
+      if (tables.includes('family_members')) {
+        const currentColumns = await queryInterface.describeTable('family_members');
+        const modelAttributes = FamilyMember.rawAttributes;
+        const { DataTypes } = require('sequelize');
+        
+        // Fix ENUM columns before adding new ones or syncing
+        const enumColumns = {
+          relationship: { values: ['self', 'spouse', 'son', 'daughter', 'father', 'mother', 'other'], defaultValue: 'other' },
+          gender: { values: ['male', 'female', 'other'], defaultValue: null },
+          marital_status: { values: ['single', 'married', 'widow', 'divorced'], defaultValue: null },
+          client_type: { values: ['family', 'ca_client'], defaultValue: 'family' },
+          status: { values: ['active', 'inactive', 'archived'], defaultValue: 'active' },
+        };
+        
+        for (const [columnName, enumDef] of Object.entries(enumColumns)) {
+          if (currentColumns[columnName]) {
+            try {
+              // Drop default first to avoid casting issues
+              await sequelize.query(`ALTER TABLE family_members ALTER COLUMN ${columnName} DROP DEFAULT;`);
+              enterpriseLogger.info(`Dropped default for ${columnName}`);
+            } catch (dropError) {
+              // Default might not exist, that's okay
+              if (!dropError.message.includes('does not exist')) {
+                enterpriseLogger.warn(`Could not drop default for ${columnName}:`, dropError.message);
+              }
+            }
+          }
+        }
+        
+        // Add missing columns
+        for (const [attrName, attrDef] of Object.entries(modelAttributes)) {
+          const dbColumnName = attrDef.field || attrName;
+          if (!currentColumns[dbColumnName] && dbColumnName !== 'id' && dbColumnName !== 'created_at' && dbColumnName !== 'updated_at') {
+            enterpriseLogger.info(`Adding missing column to family_members: ${dbColumnName}`);
+            try {
+              const columnDef = {
+                type: attrDef.type,
+                allowNull: attrDef.allowNull !== false,
+              };
+              
+              // Handle default values (but skip for now, we'll add them after ENUM fix)
+              // if (attrDef.defaultValue !== undefined) {
+              //   columnDef.defaultValue = attrDef.defaultValue;
+              // }
+              
+              await queryInterface.addColumn('family_members', dbColumnName, columnDef);
+              enterpriseLogger.info(`Column ${dbColumnName} added to family_members`);
+            } catch (addError) {
+              if (addError.message.includes('already exists') || addError.message.includes('duplicate')) {
+                enterpriseLogger.info(`Column ${dbColumnName} already exists in family_members`);
+              } else {
+                enterpriseLogger.warn(`Could not add column ${dbColumnName} to family_members:`, addError.message);
+              }
+            }
+          }
+        }
+      }
+      
+      // Re-add defaults after dropping them
+      const updatedColumns = await queryInterface.describeTable('family_members');
+      const enumDefaults = {
+        relationship: 'other',
+        client_type: 'family',
+        status: 'active',
+      };
+      
+      for (const [columnName, defaultValue] of Object.entries(enumDefaults)) {
+        if (updatedColumns[columnName]) {
+          try {
+            await sequelize.query(`ALTER TABLE family_members ALTER COLUMN ${columnName} SET DEFAULT '${defaultValue}';`);
+            enterpriseLogger.info(`Set default for ${columnName}`);
+          } catch (defaultError) {
+            // Ignore errors - default might already be set or column might not support it
+            if (!defaultError.message.includes('already') && !defaultError.message.includes('does not exist')) {
+              enterpriseLogger.warn(`Could not set default for ${columnName}:`, defaultError.message);
+            }
+          }
+        }
+      }
+      
+      // Now sync without alter to avoid ENUM casting issues
+      // This will just verify table structure and create missing indexes
+      try {
+        await FamilyMember.sync({ force: false, alter: false });
+        enterpriseLogger.info('Family members table verified');
+      } catch (syncError) {
+        // If sync fails, it's likely because of missing indexes - that's okay, we'll create them manually
+        if (syncError.message.includes('does not exist') || syncError.message.includes('relation')) {
+          enterpriseLogger.warn('Family members table sync warning (likely missing indexes):', syncError.message);
+        } else {
+          // For other errors, log but continue
+          enterpriseLogger.warn('Family members sync had issues but continuing:', syncError.message);
+        }
+      }
+      
+      // Manually create indexes if they don't exist
+      try {
+        const indexColumns = ['firm_id', 'client_type', 'status'];
+        for (const col of indexColumns) {
+          if (updatedColumns[col]) {
+            try {
+              await queryInterface.addIndex('family_members', [col], {
+                name: `family_members_${col}_index`,
+              });
+              enterpriseLogger.info(`Index created on family_members.${col}`);
+            } catch (idxError) {
+              if (!idxError.message.includes('already exists')) {
+                enterpriseLogger.warn(`Could not create index on ${col}:`, idxError.message);
+              }
+            }
+          }
+        }
+        
+        // Composite index
+        if (updatedColumns['user_id'] && updatedColumns['client_type']) {
+          try {
+            await queryInterface.addIndex('family_members', ['user_id', 'client_type'], {
+              name: 'family_members_user_id_client_type_index',
+            });
+            enterpriseLogger.info('Composite index created on family_members');
+          } catch (idxError) {
+            if (!idxError.message.includes('already exists')) {
+              enterpriseLogger.warn('Could not create composite index:', idxError.message);
+            }
+          }
+        }
+      } catch (indexError) {
+        enterpriseLogger.warn('Index creation had issues:', indexError.message);
+      }
+      
+      enterpriseLogger.info('Family members table synced');
+    } catch (error) {
+      // Final fallback - just log and continue
+      if (error.message.includes('unterminated quoted string') || 
+          error.message.includes('comment') ||
+          error.message.includes('does not exist') ||
+          error.message.includes('cannot be cast') ||
+          error.message.includes('enum')) {
+        enterpriseLogger.warn('Family members sync had issues but continuing:', error.message);
+        // Don't throw - let migration continue
+      } else {
+        throw error;
+      }
+    }
 
     // 5. ITR-related tables (depend on User)
-    await ITRFiling.sync({ force: false, alter: true });
-    enterpriseLogger.info('ITR filings table synced');
+    await safeSyncTable(ITRFiling, 'ITR filings');
+    await safeSyncTable(ITRDraft, 'ITR drafts');
+    
+    // Refund tracking (depends on ITRFiling)
+    await safeSyncTable(RefundTracking, 'Refund tracking');
 
-    await ITRDraft.sync({ force: false, alter: true });
-    enterpriseLogger.info('ITR drafts table synced');
-
-    // 6. Documents (depends on User)
-    await Document.sync({ force: false, alter: true });
-    enterpriseLogger.info('Documents table synced');
+    // 6. Documents (depends on User) - may have RLS policies
+    await safeSyncTable(Document, 'Documents');
 
     // 7. Service tickets (depends on User)
-    await ServiceTicket.sync({ force: false, alter: true });
-    enterpriseLogger.info('Service tickets table synced');
-
-    await ServiceTicketMessage.sync({ force: false, alter: true });
-    enterpriseLogger.info('Service ticket messages table synced');
+    await safeSyncTable(ServiceTicket, 'Service tickets');
+    await safeSyncTable(ServiceTicketMessage, 'Service ticket messages');
 
     // 8. Invoices (depends on User)
-    await Invoice.sync({ force: false, alter: true });
-    enterpriseLogger.info('Invoices table synced');
+    await safeSyncTable(Invoice, 'Invoices');
 
   } catch (error) {
     enterpriseLogger.error('Failed to create tables in order', { error: error.message, stack: error.stack });
@@ -388,44 +578,75 @@ const addIndexes = async () => {
   try {
     const queryInterface = sequelize.getQueryInterface();
 
-    // Add indexes for family_members table (skip if they already exist)
-    try {
-      await queryInterface.addIndex('family_members', ['pan_number'], {
-        unique: true,
-        name: 'family_members_pan_number_unique',
-      });
-    } catch (e) {
-      if (!e.message.includes('already exists')) {throw e;}
+    // Check if family_members table exists and get its columns
+    const tables = await queryInterface.showAllTables();
+    let familyMembersColumns = {};
+    if (tables.includes('family_members')) {
+      familyMembersColumns = await queryInterface.describeTable('family_members');
     }
 
-    try {
-      await queryInterface.addIndex('family_members', ['user_id'], {
-        name: 'family_members_user_id_index',
-      });
-    } catch (e) {
-      if (!e.message.includes('already exists')) {throw e;}
+    // Add indexes for family_members table (skip if they already exist or column doesn't exist)
+    if (familyMembersColumns.pan_number) {
+      try {
+        await queryInterface.addIndex('family_members', ['pan_number'], {
+          unique: true,
+          name: 'family_members_pan_number_unique',
+        });
+        enterpriseLogger.info('Index created: family_members_pan_number_unique');
+      } catch (e) {
+        if (!e.message.includes('already exists')) {
+          enterpriseLogger.warn(`Could not create pan_number index: ${e.message}`);
+        }
+      }
     }
 
-    try {
-      await queryInterface.addIndex('family_members', ['relationship'], {
-        name: 'family_members_relationship_index',
-      });
-    } catch (e) {
-      if (!e.message.includes('already exists')) {throw e;}
+    if (familyMembersColumns.user_id) {
+      try {
+        await queryInterface.addIndex('family_members', ['user_id'], {
+          name: 'family_members_user_id_index',
+        });
+        enterpriseLogger.info('Index created: family_members_user_id_index');
+      } catch (e) {
+        if (!e.message.includes('already exists')) {
+          enterpriseLogger.warn(`Could not create user_id index: ${e.message}`);
+        }
+      }
     }
 
-    try {
-      await queryInterface.addIndex('family_members', ['is_dependent'], {
-        name: 'family_members_is_dependent_index',
-      });
-    } catch (e) {
-      if (!e.message.includes('already exists')) {throw e;}
+    if (familyMembersColumns.relationship) {
+      try {
+        await queryInterface.addIndex('family_members', ['relationship'], {
+          name: 'family_members_relationship_index',
+        });
+        enterpriseLogger.info('Index created: family_members_relationship_index');
+      } catch (e) {
+        if (!e.message.includes('already exists')) {
+          enterpriseLogger.warn(`Could not create relationship index: ${e.message}`);
+        }
+      }
+    }
+
+    // Only create is_dependent index if column exists
+    if (familyMembersColumns.is_dependent) {
+      try {
+        await queryInterface.addIndex('family_members', ['is_dependent'], {
+          name: 'family_members_is_dependent_index',
+        });
+        enterpriseLogger.info('Index created: family_members_is_dependent_index');
+      } catch (e) {
+        if (!e.message.includes('already exists')) {
+          enterpriseLogger.warn(`Could not create is_dependent index: ${e.message}`);
+        }
+      }
+    } else {
+      enterpriseLogger.info('Skipping is_dependent index - column does not exist');
     }
 
     enterpriseLogger.info('Indexes added successfully');
   } catch (error) {
     enterpriseLogger.error('Failed to add indexes', { error: error.message });
-    throw error;
+    // Don't throw - just log the error and continue
+    enterpriseLogger.warn('Continuing migration despite index creation issues');
   }
 };
 

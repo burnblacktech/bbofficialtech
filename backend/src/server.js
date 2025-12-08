@@ -13,6 +13,7 @@ const path = require('path');
 const enterpriseLogger = require('./utils/logger');
 const { initializeDatabase, testConnection } = require('./config/database');
 const app = require('./app');
+const wsManager = require('./services/websocket/WebSocketManager');
 
 // =====================================================
 // SERVER CONFIGURATION;
@@ -170,6 +171,17 @@ const startServer = async () => {
         databaseConnected: true,
         tablesFound: tables.length,
       });
+
+      // Initialize WebSocket server
+      try {
+        wsManager.initialize(server);
+        enterpriseLogger.info('WebSocket server initialized');
+      } catch (error) {
+        enterpriseLogger.warn('WebSocket server initialization failed', {
+          error: error.message,
+          note: 'Server will continue without WebSocket support',
+        });
+      }
     });
   } catch (error) {
     enterpriseLogger.error('Failed to start server', {

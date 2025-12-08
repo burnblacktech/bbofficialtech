@@ -215,6 +215,89 @@ const generateSignedPayload = (dataToSign) => {
 };
 
 /**
+ * Encrypt password using AES encryption (as per ERI guide section 3)
+ * @param {string} plainText - Plain text password to encrypt
+ * @param {string} secretKey - Secret key for encryption (from ERI_API_SECRET or provided)
+ * @returns {string} Base64 encoded encrypted password
+ */
+const encryptPassword = (plainText, secretKey = null) => {
+  try {
+    const crypto = require('crypto');
+    const key = secretKey || process.env.ERI_API_SECRET || process.env.ERI_SECRET_KEY;
+    
+    if (!key) {
+      throw new Error('ERI secret key not found for password encryption');
+    }
+
+    // Use AES encryption (AES-256-CBC)
+    const algorithm = 'aes-256-cbc';
+    const keyBuffer = crypto.createHash('sha256').update(key).digest();
+    const iv = crypto.randomBytes(16);
+
+    const cipher = crypto.createCipheriv(algorithm, keyBuffer, iv);
+    let encrypted = cipher.update(plainText, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+
+    // Prepend IV to encrypted data (IV + encrypted data)
+    const result = iv.toString('base64') + ':' + encrypted;
+
+    enterpriseLogger.info('Password encrypted successfully', {
+      encryptedLength: result.length,
+    });
+
+    return result;
+
+  } catch (error) {
+    enterpriseLogger.error('Password encryption failed', {
+      error: error.message,
+    });
+    throw new Error(`Failed to encrypt password: ${error.message}`);
+  }
+};
+
+/**
+ * Decrypt password using AES decryption
+ * @param {string} encryptedString - Base64 encoded encrypted password with IV
+ * @param {string} secretKey - Secret key for decryption
+ * @returns {string} Decrypted plain text password
+ */
+const decryptPassword = (encryptedString, secretKey = null) => {
+  try {
+    const crypto = require('crypto');
+    const key = secretKey || process.env.ERI_API_SECRET || process.env.ERI_SECRET_KEY;
+    
+    if (!key) {
+      throw new Error('ERI secret key not found for password decryption');
+    }
+
+    // Split IV and encrypted data
+    const parts = encryptedString.split(':');
+    if (parts.length !== 2) {
+      throw new Error('Invalid encrypted password format');
+    }
+
+    const iv = Buffer.from(parts[0], 'base64');
+    const encrypted = parts[1];
+
+    // Use AES decryption (AES-256-CBC)
+    const algorithm = 'aes-256-cbc';
+    const keyBuffer = crypto.createHash('sha256').update(key).digest();
+
+    const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+    let decrypted = decipher.update(encrypted, 'base64', 'utf8');
+    decrypted += decipher.final('utf8');
+
+    return decrypted;
+
+  } catch (error) {
+    enterpriseLogger.error('Password decryption failed', {
+      error: error.message,
+    });
+    throw new Error(`Failed to decrypt password: ${error.message}`);
+  }
+};
+
+/**
  * Validates a signed payload structure
  * @param {object} payload - The payload to validate
  * @returns {boolean} True if payload structure is valid
@@ -261,4 +344,6 @@ module.exports = {
   extractDataFromPayload,
   validateConfiguration,
   loadCertificate,
+  encryptPassword,
+  decryptPassword,
 };

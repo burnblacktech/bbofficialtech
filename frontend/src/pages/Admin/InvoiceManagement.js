@@ -21,6 +21,8 @@ import {
   AlertCircle,
   RefreshCw,
 } from 'lucide-react';
+import adminService from '../../services/api/adminService';
+import toast from 'react-hot-toast';
 
 const InvoiceManagement = () => {
   const [invoices, setInvoices] = useState([]);
@@ -31,128 +33,55 @@ const InvoiceManagement = () => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
-  // Mock invoice data
+  // Fetch invoices (transactions) from API
   useEffect(() => {
     const fetchInvoices = async () => {
       setLoading(true);
+      try {
+        const params = {
+          ...(filterStatus !== 'all' && { paymentStatus: filterStatus }),
+          ...(filterType !== 'all' && { type: filterType }),
+          ...(searchTerm && { search: searchTerm }),
+        };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        const response = await adminService.getTransactions(params);
+        const transactionsData = response.transactions || response.data || [];
 
-      const mockInvoices = [
-        {
-          id: 'INV-2024-001',
-          invoiceNumber: 'BB-2024-001',
-          type: 'itr_filing',
-          status: 'paid',
-          amount: 2500,
-          currency: 'INR',
-          createdAt: new Date('2024-01-20T10:30:00'),
-          dueDate: new Date('2024-01-20T10:30:00'),
-          paidAt: new Date('2024-01-20T10:35:00'),
-          user: {
-            id: 1,
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            pan: 'ABCDE1234F',
+        // Transform API response to match component expectations
+        const transformedInvoices = transactionsData.map(transaction => ({
+          id: transaction.id || transaction.invoiceId,
+          invoiceNumber: transaction.invoiceNumber || transaction.invoice_id || `INV-${transaction.id}`,
+          type: transaction.type || transaction.invoiceType || 'itr_filing',
+          status: transaction.paymentStatus || transaction.status || 'pending',
+          amount: parseFloat(transaction.totalAmount || transaction.amount || 0),
+          currency: transaction.currency || 'INR',
+          createdAt: transaction.invoiceDate ? new Date(transaction.invoiceDate) : (transaction.createdAt ? new Date(transaction.createdAt) : new Date()),
+          dueDate: transaction.dueDate ? new Date(transaction.dueDate) : (transaction.createdAt ? new Date(transaction.createdAt) : new Date()),
+          paidAt: transaction.paidAt ? new Date(transaction.paidAt) : null,
+          user: transaction.user || {
+            id: transaction.userId,
+            name: transaction.userName || transaction.user?.fullName,
+            email: transaction.userEmail || transaction.user?.email,
+            pan: transaction.userPAN || transaction.user?.panNumber,
           },
-          description: 'ITR Filing for Assessment Year 2023-24',
-          paymentMethod: 'razorpay',
-          paymentId: 'pay_1234567890',
-          downloadUrl: '/invoices/INV-2024-001.pdf',
-        },
-        {
-          id: 'INV-2024-002',
-          invoiceNumber: 'BB-2024-002',
-          type: 'expert_review',
-          status: 'paid',
-          amount: 500,
-          currency: 'INR',
-          createdAt: new Date('2024-01-19T15:45:00'),
-          dueDate: new Date('2024-01-19T15:45:00'),
-          paidAt: new Date('2024-01-19T15:50:00'),
-          user: {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane.smith@example.com',
-            pan: 'FGHIJ5678K',
-          },
-          description: 'Expert Review Service for ITR Filing',
-          paymentMethod: 'razorpay',
-          paymentId: 'pay_1234567891',
-          downloadUrl: '/invoices/INV-2024-002.pdf',
-        },
-        {
-          id: 'INV-2024-003',
-          invoiceNumber: 'BB-2024-003',
-          type: 'ca_subscription',
-          status: 'paid',
-          amount: 15000,
-          currency: 'INR',
-          createdAt: new Date('2024-01-18T09:00:00'),
-          dueDate: new Date('2024-02-18T09:00:00'),
-          paidAt: new Date('2024-01-18T09:05:00'),
-          user: {
-            id: 3,
-            name: 'CA Firm Alpha',
-            email: 'admin@cafirmalpha.com',
-            pan: 'LMNOP9012Q',
-          },
-          description: 'Pro Plan Subscription - Monthly',
-          paymentMethod: 'razorpay',
-          paymentId: 'pay_1234567892',
-          downloadUrl: '/invoices/INV-2024-003.pdf',
-        },
-        {
-          id: 'INV-2024-004',
-          invoiceNumber: 'BB-2024-004',
-          type: 'itr_filing',
-          status: 'pending',
-          amount: 2500,
-          currency: 'INR',
-          createdAt: new Date('2024-01-20T14:30:00'),
-          dueDate: new Date('2024-01-21T14:30:00'),
-          paidAt: null,
-          user: {
-            id: 4,
-            name: 'Mike Johnson',
-            email: 'mike.johnson@example.com',
-            pan: 'RSTUV3456W',
-          },
-          description: 'ITR Filing for Assessment Year 2023-24',
-          paymentMethod: null,
-          paymentId: null,
-          downloadUrl: null,
-        },
-        {
-          id: 'INV-2024-005',
-          invoiceNumber: 'BB-2024-005',
-          type: 'ca_subscription',
-          status: 'overdue',
-          amount: 50000,
-          currency: 'INR',
-          createdAt: new Date('2024-01-15T10:00:00'),
-          dueDate: new Date('2024-01-16T10:00:00'),
-          paidAt: null,
-          user: {
-            id: 5,
-            name: 'CA Firm Beta',
-            email: 'contact@cafirmbeta.com',
-            pan: 'XYZAB7890C',
-          },
-          description: 'Enterprise Plan Subscription - Annual',
-          paymentMethod: null,
-          paymentId: null,
-          downloadUrl: null,
-        },
-      ];
+          description: transaction.description || transaction.notes || 'ITR Filing Service',
+          paymentMethod: transaction.paymentMethod || null,
+          paymentId: transaction.paymentId || transaction.payment_id || null,
+          downloadUrl: transaction.downloadUrl || `/invoices/${transaction.id}.pdf`,
+        }));
 
-      setInvoices(mockInvoices);
-      setLoading(false);
+        setInvoices(transformedInvoices);
+      } catch (error) {
+        console.error('Failed to fetch invoices:', error);
+        toast.error('Failed to load invoices. Please try again.');
+        setInvoices([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchInvoices();
-  }, []);
+  }, [filterStatus, filterType, searchTerm]);
 
   const filteredInvoices = invoices.filter(invoice => {
     const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||

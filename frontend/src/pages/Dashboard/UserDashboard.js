@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Upload, Users, TrendingUp, FileText, Settings, History, Pause, Play, ArrowRight, BarChart3 } from 'lucide-react';
+import { Upload, Users, TrendingUp, FileText, Settings, History, Pause, Play, ArrowRight, BarChart3, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import itrService from '../../services/api/itrService';
 import apiClient from '../../services/core/APIClient';
@@ -19,132 +19,79 @@ import QuickActionCard from '../../components/Dashboard/QuickActionCard';
 import FilingStatusTracker from '../../components/Dashboard/FilingStatusTracker';
 import DashboardWidgets from '../../components/Dashboard/DashboardWidgets';
 import WelcomeModal from '../../components/UI/WelcomeModal';
+import { DashboardSkeleton } from '../../components/UI/SkeletonLoader';
+
+// Hooks
+import { useUserDashboardStats, useUserFilings, useUserRefunds } from '../../hooks/useUserDashboard';
+import useDashboardRealtime from '../../hooks/useDashboardRealtime';
 
 const UserDashboard = () => {
   const { user, updateUser, justLoggedIn, setJustLoggedIn } = useAuth();
   const navigate = useNavigate();
-  const isInitializing = useRef(false); // Prevent multiple simultaneous initializations
+  const userId = user?.id || user?.userId;
+
+  // Real-time dashboard updates
+  const { connectionStatus, isConnected, lastUpdate, refreshDashboard } = useDashboardRealtime();
+
+  // React Query hooks for dashboard data
+  const { data: dashboardData, isLoading: statsLoading, error: statsError } = useUserDashboardStats(userId);
+  const { data: filingsData, isLoading: filingsLoading, error: filingsError } = useUserFilings(userId);
+  const { data: refundsData, isLoading: refundsLoading } = useUserRefunds(userId);
 
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const [hasFiled, setHasFiled] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [ongoingFilings, setOngoingFilings] = useState([]);
-  const [completedFilings, setCompletedFilings] = useState([]);
-  const [dashboardStats, setDashboardStats] = useState({
+
+  // Derived state from React Query data
+  const dashboardStats = dashboardData ? {
+    totalFilings: dashboardData.overview?.totalFilings || 0,
+    pendingActions: dashboardData.draftStats?.activeDrafts || dashboardData.overview?.draftFilings || 0,
+    documentsUploaded: dashboardData.overview?.totalDocuments || 0,
+    familyMembers: dashboardData.overview?.familyMembers || 0,
+    taxSaved: 0, // Not provided by API currently
+  } : {
     totalFilings: 0,
     pendingActions: 0,
     documentsUploaded: 0,
     familyMembers: 0,
     taxSaved: 0,
-  });
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [error, setError] = useState(null);
-  const [refundData, setRefundData] = useState({
+  };
+
+  const recentActivity = dashboardData?.recentActivity || [];
+  const ongoingFilings = filingsData?.ongoing || [];
+  const completedFilings = filingsData?.completed || [];
+  const hasFiled = (filingsData?.all?.length || 0) > 0;
+  const refundData = refundsData || {
     pendingRefunds: [],
     creditedRefunds: [],
     totalPendingAmount: 0,
     totalCreditedAmount: 0,
-  });
+  };
 
-  // Check if user needs welcome modal and load dashboard data
+  const loading = statsLoading || filingsLoading;
+  const error = statsError || filingsError;
+  const isEmpty = !loading && !hasFiled;
+
+  // Show welcome modal on first login
   useEffect(() => {
-    // Prevent multiple simultaneous initializations
-    if (isInitializing.current || !user) {
-      return;
+    if (justLoggedIn && !user?.onboardingCompleted) {
+      setShowWelcomeModal(true);
+      setJustLoggedIn(false);
     }
+  }, [justLoggedIn, user?.onboardingCompleted, setJustLoggedIn]);
 
-    const initializeDashboard = async () => {
-      isInitializing.current = true;
+  // Retry function for reloading dashboard data
+  const handleRetry = () => {
+    refreshDashboard();
+  };
 
-      // Only show welcome modal if user just logged in AND hasn't completed onboarding
-      if (justLoggedIn && !user.onboardingCompleted) {
-        setShowWelcomeModal(true);
-        setJustLoggedIn(false); // Clear the flag after showing modal
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Load dashboard data from API
-        try {
-          const dashboardResponse = await apiClient.get('/users/dashboard');
-          if (dashboardResponse.data?.success && dashboardResponse.data?.data) {
-            const dashboardData = dashboardResponse.data.data;
-
-            // Set dashboard stats
-            setDashboardStats({
-              totalFilings: dashboardData.overview?.totalFilings || 0,
-              pendingActions: dashboardData.draftStats?.activeDrafts || dashboardData.overview?.draftFilings || 0,
-              documentsUploaded: dashboardData.overview?.totalDocuments || 0,
-              familyMembers: dashboardData.overview?.familyMembers || 0,
-              taxSaved: 0, // Not provided by API currently
-            });
-
-            // Set recent activity
-            if (dashboardData.recentActivity && Array.isArray(dashboardData.recentActivity)) {
-              setRecentActivity(dashboardData.recentActivity);
-            }
-          }
-        } catch (dashboardError) {
-          console.error('Failed to load dashboard stats:', dashboardError);
-          // Don't show toast for dashboard API failure, just log it
-          // The dashboard will still work with filings data
-        }
-
-        // Load user's filings
-        try {
-          const filingsResponse = await itrService.getUserITRs();
-          const filings = filingsResponse.data?.filings || filingsResponse.filings || [];
-
-          const ongoing = filings.filter(f => ['draft', 'paused'].includes(f.status));
-          const completed = filings.filter(f => ['submitted', 'acknowledged', 'processed'].includes(f.status));
-
-          setOngoingFilings(ongoing);
-          setCompletedFilings(completed);
-          setHasFiled(filings.length > 0);
-
-          // Update pending actions based on ongoing filings if dashboard API didn't provide it
-          setDashboardStats(prev => ({
-            ...prev,
-            pendingActions: prev.pendingActions || ongoing.length,
-          }));
-        } catch (filingsError) {
-          console.error('Failed to load filings:', filingsError);
-          toast.error('Failed to load filing history. Some features may be limited.');
-        }
-
-        // Load refund data
-        try {
-          const refundResponse = await apiClient.get('/itr/refunds/history');
-          if (refundResponse.data?.success && refundResponse.data?.refunds) {
-            const refunds = refundResponse.data.refunds;
-            const pending = refunds.filter(r => ['processing', 'issued'].includes(r.status));
-            const credited = refunds.filter(r => r.status === 'credited');
-
-            setRefundData({
-              pendingRefunds: pending,
-              creditedRefunds: credited,
-              totalPendingAmount: pending.reduce((sum, r) => sum + (r.expectedAmount || 0), 0),
-              totalCreditedAmount: credited.reduce((sum, r) => sum + (r.expectedAmount || 0) + (r.interestAmount || 0), 0),
-            });
-          }
-        } catch (refundError) {
-          console.error('Failed to load refund data:', refundError);
-          // Don't show error toast, refunds are optional
-        }
-      } catch (error) {
-        console.error('Failed to initialize dashboard:', error);
-        setError(error.message || 'Failed to load dashboard data');
-        toast.error('Failed to load dashboard data. Please refresh the page.');
-      } finally {
-        setLoading(false);
-        isInitializing.current = false;
-      }
-    };
-
-    initializeDashboard();
-  }, [user?.id, justLoggedIn, setJustLoggedIn]); // Only depend on user.id to prevent re-runs when user object reference changes
+  // Format last update time
+  const formatLastUpdate = () => {
+    if (!lastUpdate) return null;
+    const secondsAgo = Math.floor((Date.now() - lastUpdate) / 1000);
+    if (secondsAgo < 60) return `${secondsAgo}s ago`;
+    const minutesAgo = Math.floor(secondsAgo / 60);
+    if (minutesAgo < 60) return `${minutesAgo}m ago`;
+    return `${Math.floor(minutesAgo / 60)}h ago`;
+  };
 
   // Mock filing data - in real app, this would come from API
   const filingData = {
@@ -210,13 +157,49 @@ const UserDashboard = () => {
   };
 
   const calculateProgress = (filing) => {
-    // Simple progress calculation based on status
-    // In a real implementation, this would be based on completed sections
-    if (filing.status === 'submitted') return 100;
-    if (filing.status === 'acknowledged') return 100;
-    if (filing.status === 'processed') return 100;
-    if (filing.status === 'paused') return 50; // Assume 50% if paused
-    if (filing.status === 'draft') return 30; // Assume 30% if draft
+    // If filing has explicit progress, use it (validated as number)
+    if (typeof filing.progress === 'number' && filing.progress >= 0 && filing.progress <= 100) {
+      return filing.progress;
+    }
+
+    // Fallback: Calculate progress based on status and completion
+    if (filing.status === 'submitted' || filing.status === 'acknowledged' || filing.status === 'processed') {
+      return 100;
+    }
+
+    // For paused filings, check if they have significant progress
+    if (filing.status === 'paused') {
+      // If paused recently, assume they were making progress
+      if (filing.pausedAt) {
+        const pausedDate = new Date(filing.pausedAt);
+        const now = new Date();
+        const daysSincePaused = (now - pausedDate) / (1000 * 60 * 60 * 24);
+        // If paused less than 7 days ago, assume 50% progress
+        // Otherwise, assume less progress (30%)
+        return daysSincePaused < 7 ? 50 : 30;
+      }
+      return 50;
+    }
+
+    // For draft filings, check updatedAt to estimate progress
+    if (filing.status === 'draft') {
+      if (filing.updatedAt) {
+        const updatedDate = new Date(filing.updatedAt);
+        const createdDate = filing.createdAt ? new Date(filing.createdAt) : updatedDate;
+        const daysSinceUpdate = (new Date() - updatedDate) / (1000 * 60 * 60 * 24);
+        const daysSinceCreation = (updatedDate - createdDate) / (1000 * 60 * 60 * 24);
+
+        // If updated recently (within 3 days), assume active work (30-40%)
+        // If updated long ago, assume abandoned (10-20%)
+        if (daysSinceUpdate < 3) {
+          return daysSinceCreation > 7 ? 40 : 30;
+        } else {
+          return 10;
+        }
+      }
+      return 30;
+    }
+
     return 0;
   };
 
@@ -238,28 +221,58 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <DashboardSkeleton />
+      </div>
+    );
+  }
+
+  // Show error state with retry option
+  if (error && !loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h2 className="text-heading-md font-semibold text-black mb-2">Failed to Load Dashboard</h2>
+            <p className="text-body-md text-gray-600 mb-6">{error}</p>
+              <button
+                onClick={handleRetry}
+                className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 mx-auto shadow-lg shadow-primary-500/20"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Retry
+              </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (error && !hasFiled && ongoingFilings.length === 0) {
+  // Show empty state (no filings) with guidance
+  if (isEmpty && !hasFiled && !loading && !error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md">
-          <div className="text-error-500 text-display-lg mb-4">⚠️</div>
-          <h2 className="text-heading-lg font-semibold text-black mb-2">Failed to Load Dashboard</h2>
-          <p className="text-body-md text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-          >
-            Refresh Page
-          </button>
+      <div className="min-h-screen bg-slate-50 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-card">
+            <div className="w-16 h-16 bg-aurora-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20">
+              <FileText className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-heading-md font-semibold text-slate-900 mb-2">No Filings Yet</h2>
+            <p className="text-body-md text-slate-600 mb-6">
+              Get started by filing your Income Tax Return. We'll guide you through the process step by step.
+            </p>
+            <button
+              onClick={handleStartFiling}
+              className="px-6 py-3 bg-aurora-gradient text-white rounded-xl hover:opacity-90 transition-all font-semibold shadow-lg shadow-primary-500/20"
+            >
+              Start Filing
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -279,14 +292,44 @@ const UserDashboard = () => {
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between lg:gap-6 mb-4">
           {/* Page Header - Compact */}
           <div className="flex-1 mb-3 lg:mb-0">
-            <h1 className="text-heading-lg sm:text-display-sm font-semibold text-black mb-1">
-              Welcome back, {user?.fullName?.split(' ')[0] || 'there'}!
-            </h1>
+            <div className="flex items-center justify-between mb-1">
+              <h1 className="text-heading-lg sm:text-display-sm font-semibold text-black">
+                Welcome back, {user?.fullName?.split(' ')[0] || 'there'}!
+              </h1>
+              {/* Connection Status Indicator */}
+              <div className="flex items-center gap-2">
+                {isConnected ? (
+                  <div className="flex items-center gap-1 text-success-600" title="Connected to live updates">
+                    <Wifi className="w-4 h-4" />
+                    <span className="text-xs hidden sm:inline">Live</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-warning-600" title="Using polling updates">
+                    <WifiOff className="w-4 h-4" />
+                    <span className="text-xs hidden sm:inline">Polling</span>
+                  </div>
+                )}
+                {lastUpdate && (
+                  <button
+                    onClick={refreshDashboard}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Refresh dashboard"
+                  >
+                    <RefreshCw className="w-4 h-4 text-gray-500" />
+                  </button>
+                )}
+              </div>
+            </div>
             <p className="text-body-sm sm:text-body-md text-gray-600">
               {hasFiled
                 ? 'Here\'s your filing status and next steps.'
                 : 'Let\'s get your taxes filed quickly and securely.'
               }
+              {lastUpdate && (
+                <span className="ml-2 text-xs text-gray-400">
+                  Updated {formatLastUpdate()}
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -308,7 +351,7 @@ const UserDashboard = () => {
               <h3 className="text-label-md font-semibold text-black">Refund Status</h3>
               <button
                 onClick={() => navigate('/itr/refund-tracking')}
-                className="text-body-sm text-orange-500 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+                className="text-body-sm text-primary-600 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded font-medium"
                 aria-label="View all refunds"
               >
                 View All
@@ -362,8 +405,8 @@ const UserDashboard = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <FileText className="w-5 h-5 text-orange-500" />
-                        <h3 className="font-semibold text-black">
+                        <FileText className="w-5 h-5 text-primary-500" />
+                        <h3 className="font-semibold text-slate-900">
                           {filing.itrType} - AY {filing.assessmentYear}
                         </h3>
                         <FilingStatusBadge filing={filing} showInvoice={false} className="text-xs" />
@@ -386,10 +429,10 @@ const UserDashboard = () => {
 
                       {/* Progress Bar */}
                       {progress > 0 && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                        <div className="w-full bg-slate-200 rounded-full h-2 mb-2">
                           <div
                             className={`h-2 rounded-full transition-all ${
-                              isPaused ? 'bg-warning-500' : 'bg-orange-500'
+                              isPaused ? 'bg-warning-500' : 'bg-primary-500'
                             }`}
                             style={{ width: `${progress}%` }}
                           />
@@ -426,7 +469,7 @@ const UserDashboard = () => {
                               state: { filing },
                             });
                           }}
-                          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors shadow-sm shadow-primary-500/20"
                         >
                           Continue
                           <ArrowRight className="w-4 h-4" />
@@ -537,7 +580,7 @@ const UserDashboard = () => {
                       case 'document_uploaded':
                         return { icon: Upload, bgColor: 'bg-info-50', iconColor: 'text-info-500' };
                       case 'member_added':
-                        return { icon: Users, bgColor: 'bg-orange-50', iconColor: 'text-orange-500' };
+                        return { icon: Users, bgColor: 'bg-primary-50', iconColor: 'text-primary-500' };
                       default:
                         return { icon: FileText, bgColor: 'bg-gray-100', iconColor: 'text-gray-600' };
                     }

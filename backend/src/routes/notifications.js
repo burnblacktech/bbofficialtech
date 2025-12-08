@@ -7,6 +7,7 @@ const router = express.Router();
 const sseNotificationService = require('../services/utils/NotificationService');
 const authMiddleware = require('../middleware/auth');
 const enterpriseLogger = require('../utils/logger');
+const { Notification } = require('../models');
 
 // Apply authentication middleware to all routes
 router.use(authMiddleware.authenticateToken);
@@ -275,74 +276,56 @@ router.get('/', async (req, res) => {
     const userId = req.user.id;
     const { type, read, page = 1, limit = 20 } = req.query;
 
-    // TODO: Implement Notification model and fetch from database
-    // For now, return mock data
-    const mockNotifications = [
-      {
-        id: '1',
-        type: 'filing_update',
-        title: 'ITR Filing Status Updated',
-        message: 'Your ITR-1 filing for AY 2024-25 has been submitted successfully.',
-        read: false,
-        createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        actionUrl: '/itr/filings/1',
-      },
-      {
-        id: '2',
-        type: 'document_request',
-        title: 'Document Request',
-        message: 'Please upload your Form 16 for verification.',
-        read: false,
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        actionUrl: '/documents',
-      },
-      {
-        id: '3',
-        type: 'deadline_reminder',
-        title: 'Deadline Reminder',
-        message: 'ITR filing deadline is approaching. Complete your filing soon.',
-        read: true,
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        actionUrl: '/itr/start',
-      },
-    ];
+    const { Op } = require('sequelize');
+    const { validatePagination } = require('../utils/validators');
+    const { sendPaginated, sendError } = require('../utils/responseFormatter');
 
-    // Apply filters
-    let filtered = mockNotifications;
+    const { page: validatedPage, limit: validatedLimit, offset } = validatePagination(req.query);
+
+    // Build where clause
+    const whereClause = { userId };
     if (type && type !== 'all') {
-      filtered = filtered.filter((n) => n.type === type);
+      whereClause.type = type;
     }
     if (read === 'read') {
-      filtered = filtered.filter((n) => n.read);
+      whereClause.read = true;
     } else if (read === 'unread') {
-      filtered = filtered.filter((n) => !n.read);
+      whereClause.read = false;
     }
 
-    // Pagination
-    const offset = (page - 1) * limit;
-    const paginated = filtered.slice(offset, offset + parseInt(limit));
-
-    res.json({
-      success: true,
-      data: {
-        notifications: paginated,
-        pagination: {
-          total: filtered.length,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages: Math.ceil(filtered.length / limit),
-        },
-      },
+    // Fetch notifications from database
+    const { count, rows: notifications } = await Notification.findAndCountAll({
+      where: whereClause,
+      order: [['createdAt', 'DESC']],
+      limit: validatedLimit,
+      offset,
     });
+
+    sendPaginated(
+      res,
+      notifications.map((n) => ({
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        message: n.message,
+        read: n.read,
+        readAt: n.readAt,
+        actionUrl: n.actionUrl,
+        metadata: n.metadata,
+        createdAt: n.createdAt,
+        updatedAt: n.updatedAt,
+      })),
+      count,
+      validatedPage,
+      validatedLimit
+    );
   } catch (error) {
     enterpriseLogger.error('Get notifications failed', {
       error: error.message,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -353,22 +336,23 @@ router.get('/', async (req, res) => {
 router.get('/unread-count', async (req, res) => {
   try {
     const userId = req.user.id;
+    const { sendSuccess, sendError } = require('../utils/responseFormatter');
 
-    // TODO: Implement Notification model and count from database
-    // For now, return mock count
-    res.json({
-      success: true,
-      count: 2, // Mock unread count
+    const count = await Notification.count({
+      where: {
+        userId,
+        read: false,
+      },
     });
+
+    sendSuccess(res, 200, null, { count });
   } catch (error) {
     enterpriseLogger.error('Get unread count failed', {
       error: error.message,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -380,22 +364,39 @@ router.put('/:notificationId/read', async (req, res) => {
   try {
     const { notificationId } = req.params;
     const userId = req.user.id;
+    const { isValidUUID } = require('../utils/validators');
+    const { sendSuccess, sendError, sendNotFound, sendValidationError } = require('../utils/responseFormatter');
 
-    // TODO: Implement Notification model and update in database
-    res.json({
-      success: true,
-      message: 'Notification marked as read',
+    if (!isValidUUID(notificationId)) {
+      return sendValidationError(res, ['Invalid notification ID format']);
+    }
+
+    const notification = await Notification.findOne({
+      where: {
+        id: notificationId,
+        userId,
+      },
+    });
+
+    if (!notification) {
+      return sendNotFound(res, 'Notification');
+    }
+
+    await notification.markAsRead();
+
+    sendSuccess(res, 200, 'Notification marked as read', {
+      id: notification.id,
+      read: notification.read,
+      readAt: notification.readAt,
     });
   } catch (error) {
     enterpriseLogger.error('Mark as read failed', {
       error: error.message,
       notificationId: req.params.notificationId,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -407,22 +408,41 @@ router.put('/:notificationId/unread', async (req, res) => {
   try {
     const { notificationId } = req.params;
     const userId = req.user.id;
+    const { isValidUUID } = require('../utils/validators');
+    const { sendSuccess, sendError, sendNotFound, sendValidationError } = require('../utils/responseFormatter');
 
-    // TODO: Implement Notification model and update in database
-    res.json({
-      success: true,
-      message: 'Notification marked as unread',
+    if (!isValidUUID(notificationId)) {
+      return sendValidationError(res, ['Invalid notification ID format']);
+    }
+
+    const notification = await Notification.findOne({
+      where: {
+        id: notificationId,
+        userId,
+      },
+    });
+
+    if (!notification) {
+      return sendNotFound(res, 'Notification');
+    }
+
+    await notification.update({
+      read: false,
+      readAt: null,
+    });
+
+    sendSuccess(res, 200, 'Notification marked as unread', {
+      id: notification.id,
+      read: notification.read,
     });
   } catch (error) {
     enterpriseLogger.error('Mark as unread failed', {
       error: error.message,
       notificationId: req.params.notificationId,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -433,21 +453,20 @@ router.put('/:notificationId/unread', async (req, res) => {
 router.put('/read-all', async (req, res) => {
   try {
     const userId = req.user.id;
+    const { sendSuccess, sendError } = require('../utils/responseFormatter');
 
-    // TODO: Implement Notification model and update all in database
-    res.json({
-      success: true,
-      message: 'All notifications marked as read',
+    const updatedCount = await Notification.markAllAsRead(userId);
+
+    sendSuccess(res, 200, 'All notifications marked as read', {
+      updatedCount,
     });
   } catch (error) {
     enterpriseLogger.error('Mark all as read failed', {
       error: error.message,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -459,22 +478,35 @@ router.delete('/:notificationId', async (req, res) => {
   try {
     const { notificationId } = req.params;
     const userId = req.user.id;
+    const { isValidUUID } = require('../utils/validators');
+    const { sendSuccess, sendError, sendNotFound, sendValidationError, sendDeleted } = require('../utils/responseFormatter');
 
-    // TODO: Implement Notification model and delete from database
-    res.json({
-      success: true,
-      message: 'Notification deleted',
+    if (!isValidUUID(notificationId)) {
+      return sendValidationError(res, ['Invalid notification ID format']);
+    }
+
+    const notification = await Notification.findOne({
+      where: {
+        id: notificationId,
+        userId,
+      },
     });
+
+    if (!notification) {
+      return sendNotFound(res, 'Notification');
+    }
+
+    await notification.destroy();
+
+    sendDeleted(res, 'Notification deleted');
   } catch (error) {
     enterpriseLogger.error('Delete notification failed', {
       error: error.message,
       notificationId: req.params.notificationId,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -485,21 +517,20 @@ router.delete('/:notificationId', async (req, res) => {
 router.delete('/all', async (req, res) => {
   try {
     const userId = req.user.id;
+    const { sendSuccess, sendError, sendDeleted } = require('../utils/responseFormatter');
 
-    // TODO: Implement Notification model and delete all from database
-    res.json({
-      success: true,
-      message: 'All notifications deleted',
+    const deletedCount = await Notification.destroy({
+      where: { userId },
     });
+
+    sendDeleted(res, 'All notifications deleted');
   } catch (error) {
     enterpriseLogger.error('Delete all notifications failed', {
       error: error.message,
       userId: req.user?.id,
+      stack: error.stack,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 

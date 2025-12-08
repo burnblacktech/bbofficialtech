@@ -12,6 +12,7 @@ const TaxPaymentService = require('../services/business/TaxPaymentService');
 const ITDPaymentGatewayService = require('../services/integration/ITDPaymentGatewayService');
 const Form26ASService = require('../services/integration/Form26ASService');
 const enterpriseLogger = require('../utils/logger');
+const wsManager = require('../services/websocket/WebSocketManager');
 
 // Initialize Razorpay (conditional on environment variables)
 let razorpay = null;
@@ -125,24 +126,63 @@ class PaymentController {
         orderId: razorpay_order_id,
       });
 
-      // Verify payment signature
-      const body = razorpay_order_id + '|' + razorpay_payment_id;
-      const expectedSignature = crypto
-        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-        .update(body.toString())
-        .digest('hex');
-
-      if (expectedSignature !== razorpay_signature) {
-        enterpriseLogger.warn('PaymentController: Invalid payment signature', {
+      // Check if payment bypass is enabled
+      const bypassPayment = process.env.BYPASS_PAYMENT === 'true' || process.env.NODE_ENV === 'development';
+      
+      // Handle bypassed payments (mock orders)
+      if (bypassPayment && razorpay_order_id && razorpay_order_id.startsWith('order_bypass_')) {
+        enterpriseLogger.warn('PaymentController: Payment verification bypassed (Development Mode)', {
           userId,
           filingId,
-          paymentId: razorpay_payment_id,
+          orderId: razorpay_order_id,
         });
 
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid payment signature',
+        // Mark payment as verified in bypass mode
+        // Continue with normal payment processing flow
+        // Note: In production, this should never happen
+      } else if (bypassPayment && razorpay_signature === 'bypassed') {
+        // Explicit bypass signature
+        enterpriseLogger.warn('PaymentController: Payment verification bypassed - Development Mode', {
+          userId,
+          filingId,
+          orderId: razorpay_order_id,
         });
+      } else {
+        // Normal payment verification
+        if (!razorpay) {
+          if (bypassPayment) {
+            // Bypass mode: Accept payment without verification
+            enterpriseLogger.warn('PaymentController: Payment verification bypassed - Razorpay not configured', {
+              userId,
+              filingId,
+            });
+          } else {
+            return res.status(503).json({
+              success: false,
+              message: 'Payment gateway not configured',
+            });
+          }
+        } else {
+          // Verify payment signature
+          const body = razorpay_order_id + '|' + razorpay_payment_id;
+          const expectedSignature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(body.toString())
+            .digest('hex');
+
+          if (expectedSignature !== razorpay_signature) {
+            enterpriseLogger.warn('PaymentController: Invalid payment signature', {
+              userId,
+              filingId,
+              paymentId: razorpay_payment_id,
+            });
+
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid payment signature',
+            });
+          }
+        }
       }
 
       // Get filing data
@@ -195,6 +235,39 @@ class PaymentController {
         paymentId: razorpay_payment_id,
         invoiceId: invoiceResult.invoiceId,
       });
+
+      // Broadcast WebSocket events for payment and revenue updates
+      try {
+        // Broadcast revenue update to admins
+        wsManager.broadcastToAdmins('REVENUE_UPDATE', {
+          amount,
+          paymentId: razorpay_payment_id,
+          invoiceId: invoiceResult.invoiceId,
+          userId,
+          filingId,
+          showToast: false,
+        });
+
+        // Broadcast dashboard stats update to user
+        wsManager.broadcastToUser(userId, 'DASHBOARD_STATS_UPDATE', {
+          userId,
+          showToast: false,
+        });
+
+        // Broadcast user activity
+        wsManager.broadcastToUser(userId, 'USER_ACTIVITY', {
+          userId,
+          type: 'payment_completed',
+          filingId,
+          amount,
+          showToast: false,
+        });
+      } catch (wsError) {
+        enterpriseLogger.warn('Failed to broadcast WebSocket event for payment', {
+          error: wsError.message,
+          paymentId: razorpay_payment_id,
+        });
+      }
 
       res.json({
         success: true,

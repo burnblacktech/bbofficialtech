@@ -124,6 +124,7 @@ const PlatformUserManagement = () => {
   };
 
   const handleDeleteUser = (userId, userName) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
       deleteUserMutation.mutate(userId);
     }

@@ -1,6 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
+// Dashboard-specific event types
+export const DASHBOARD_EVENTS = {
+  DASHBOARD_STATS_UPDATE: 'DASHBOARD_STATS_UPDATE',
+  FILING_STATUS_CHANGE: 'FILING_STATUS_CHANGE',
+  REVENUE_UPDATE: 'REVENUE_UPDATE',
+  USER_ACTIVITY: 'USER_ACTIVITY',
+  SYSTEM_METRICS_UPDATE: 'SYSTEM_METRICS_UPDATE',
+  ADMIN_ALERT: 'ADMIN_ALERT',
+  FILING_UPDATE: 'FILING_UPDATE',
+  ACK_RECEIVED: 'ACK_RECEIVED',
+  ERI_STATUS: 'ERI_STATUS',
+  SYSTEM_ALERT: 'SYSTEM_ALERT',
+};
+
 class WebSocketService {
   constructor() {
     this.ws = null;
@@ -9,6 +23,16 @@ class WebSocketService {
     this.reconnectInterval = 3000;
     this.listeners = new Map();
     this.isConnecting = false;
+    this.queryClient = null; // Will be set by setQueryClient
+    this.connectionStatusListeners = new Set();
+    this.lastMessageTime = null;
+  }
+
+  /**
+   * Set React Query client for cache invalidation
+   */
+  setQueryClient(queryClient) {
+    this.queryClient = queryClient;
   }
 
   connect(userId, token) {
@@ -23,10 +47,15 @@ class WebSocketService {
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.log('🔌 WebSocket connected');
+        // WebSocket connected
         this.isConnecting = false;
         this.reconnectAttempts = 0;
-        toast.success('Connected to live updates');
+        this.lastMessageTime = Date.now();
+        this.notifyConnectionStatus('connected');
+        // Don't show toast on initial connection to avoid spam
+        if (this.reconnectAttempts > 0) {
+          toast.success('Reconnected to live updates');
+        }
       };
 
       this.ws.onmessage = (event) => {
@@ -34,20 +63,25 @@ class WebSocketService {
           const data = JSON.parse(event.data);
           this.handleMessage(data);
         } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+          // Error parsing WebSocket message - silently fail
+          // In production, could log to error tracking service
         }
       };
 
       this.ws.onclose = () => {
-        console.log('🔌 WebSocket disconnected');
+        // WebSocket disconnected
         this.isConnecting = false;
+        this.notifyConnectionStatus('disconnected');
         this.handleReconnect();
       };
 
       this.ws.onerror = (error) => {
         console.error('WebSocket error:', error);
         this.isConnecting = false;
-        toast.error('Connection error. Retrying...');
+        this.notifyConnectionStatus('error');
+        if (this.reconnectAttempts === 0) {
+          toast.error('Connection error. Retrying...');
+        }
       };
 
     } catch (error) {
@@ -59,7 +93,7 @@ class WebSocketService {
   handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      // Attempting to reconnect
 
       setTimeout(() => {
         const userId = localStorage.getItem('userId');
@@ -69,13 +103,19 @@ class WebSocketService {
         }
       }, this.reconnectInterval);
     } else {
-      console.log('❌ Max reconnection attempts reached');
+      // Max reconnection attempts reached
       toast.error('Unable to connect to live updates');
     }
   }
 
   handleMessage(data) {
     const { type, payload } = data;
+    this.lastMessageTime = Date.now();
+
+    // Invalidate React Query cache for dashboard-related events
+    if (this.queryClient) {
+      this.invalidateCacheForEvent(type, payload);
+    }
 
     // Notify all listeners for this event type
     if (this.listeners.has(type)) {
@@ -90,21 +130,128 @@ class WebSocketService {
 
     // Handle specific message types
     switch (type) {
-      case 'FILING_UPDATE':
-        toast.success(`Filing ${payload.status}: ${payload.filingId}`);
+      case DASHBOARD_EVENTS.FILING_UPDATE:
+      case DASHBOARD_EVENTS.FILING_STATUS_CHANGE:
+        if (payload.showToast !== false) {
+          toast.success(`Filing ${payload.status}: ${payload.filingId || payload.id}`);
+        }
         break;
-      case 'ACK_RECEIVED':
-        toast.success(`Acknowledgement received: ${payload.ackNumber}`);
+      case DASHBOARD_EVENTS.ACK_RECEIVED:
+        if (payload.showToast !== false) {
+          toast.success(`Acknowledgement received: ${payload.ackNumber}`);
+        }
         break;
-      case 'ERI_STATUS':
-        toast.info(`ERI Status: ${payload.status}`);
+      case DASHBOARD_EVENTS.ERI_STATUS:
+        if (payload.showToast !== false) {
+          toast.info(`ERI Status: ${payload.status}`);
+        }
         break;
-      case 'SYSTEM_ALERT':
-        toast.error(`System Alert: ${payload.message}`);
+      case DASHBOARD_EVENTS.SYSTEM_ALERT:
+      case DASHBOARD_EVENTS.ADMIN_ALERT:
+        if (payload.showToast !== false) {
+          toast.error(`Alert: ${payload.message || payload.title}`);
+        }
+        break;
+      case DASHBOARD_EVENTS.REVENUE_UPDATE:
+        // Silent update for revenue - no toast
+        break;
+      case DASHBOARD_EVENTS.DASHBOARD_STATS_UPDATE:
+        // Silent update for stats - no toast
+        break;
+      case DASHBOARD_EVENTS.USER_ACTIVITY:
+        // Silent update for activity - no toast
         break;
       default:
-        console.log('Unhandled WebSocket message:', data);
+        // Unhandled WebSocket message - silently ignore
+        break;
     }
+  }
+
+  /**
+   * Invalidate React Query cache based on event type
+   */
+  invalidateCacheForEvent(eventType, payload) {
+    if (!this.queryClient) return;
+
+    switch (eventType) {
+      case DASHBOARD_EVENTS.DASHBOARD_STATS_UPDATE:
+        // Invalidate user dashboard stats
+        if (payload.userId) {
+          this.queryClient.invalidateQueries({ queryKey: ['dashboardStats', payload.userId] });
+        }
+        // Invalidate admin dashboard stats
+        this.queryClient.invalidateQueries({ queryKey: ['adminDashboardStats'] });
+        break;
+
+      case DASHBOARD_EVENTS.FILING_STATUS_CHANGE:
+      case DASHBOARD_EVENTS.FILING_UPDATE:
+        // Invalidate filing-related queries
+        if (payload.userId) {
+          this.queryClient.invalidateQueries({ queryKey: ['userFilings', payload.userId] });
+          this.queryClient.invalidateQueries({ queryKey: ['dashboardStats', payload.userId] });
+        }
+        if (payload.filingId) {
+          this.queryClient.invalidateQueries({ queryKey: ['filing', payload.filingId] });
+        }
+        // Invalidate admin filings
+        this.queryClient.invalidateQueries({ queryKey: ['adminFilings'] });
+        break;
+
+      case DASHBOARD_EVENTS.REVENUE_UPDATE:
+        // Invalidate revenue analytics
+        this.queryClient.invalidateQueries({ queryKey: ['adminRevenueAnalytics'] });
+        this.queryClient.invalidateQueries({ queryKey: ['adminAnalytics'] });
+        this.queryClient.invalidateQueries({ queryKey: ['adminChartData', 'revenue'] });
+        break;
+
+      case DASHBOARD_EVENTS.USER_ACTIVITY:
+        // Invalidate activity feeds
+        if (payload.userId) {
+          this.queryClient.invalidateQueries({ queryKey: ['recentActivity', payload.userId] });
+        }
+        this.queryClient.invalidateQueries({ queryKey: ['adminRecentActivity'] });
+        break;
+
+      case DASHBOARD_EVENTS.SYSTEM_METRICS_UPDATE:
+        // Invalidate system health metrics
+        this.queryClient.invalidateQueries({ queryKey: ['adminSystemHealth'] });
+        this.queryClient.invalidateQueries({ queryKey: ['adminSystemAlerts'] });
+        break;
+
+      case DASHBOARD_EVENTS.ADMIN_ALERT:
+        // Invalidate admin alerts
+        this.queryClient.invalidateQueries({ queryKey: ['adminSystemAlerts'] });
+        break;
+
+      default:
+        // For unknown events, do selective invalidation if payload has hints
+        if (payload.userId) {
+          this.queryClient.invalidateQueries({ queryKey: ['dashboardStats', payload.userId] });
+        }
+    }
+  }
+
+  /**
+   * Subscribe to connection status changes
+   */
+  onConnectionStatusChange(callback) {
+    this.connectionStatusListeners.add(callback);
+    return () => {
+      this.connectionStatusListeners.delete(callback);
+    };
+  }
+
+  /**
+   * Notify all connection status listeners
+   */
+  notifyConnectionStatus(status) {
+    this.connectionStatusListeners.forEach(callback => {
+      try {
+        callback(status);
+      } catch (error) {
+        console.error('Error in connection status listener:', error);
+      }
+    });
   }
 
   subscribe(eventType, callback) {
@@ -151,6 +298,20 @@ class WebSocketService {
       default: return 'unknown';
     }
   }
+
+  /**
+   * Get last message timestamp
+   */
+  getLastMessageTime() {
+    return this.lastMessageTime;
+  }
+
+  /**
+   * Check if WebSocket is connected
+   */
+  isConnected() {
+    return this.ws && this.ws.readyState === WebSocket.OPEN;
+  }
 }
 
 // Singleton instance
@@ -171,8 +332,14 @@ export const useWebSocket = (userId, token) => {
         setConnectionStatus(wsService.getConnectionStatus());
       }, 1000);
 
+      // Subscribe to connection status changes
+      const unsubscribeStatus = wsService.onConnectionStatusChange((status) => {
+        setConnectionStatus(status);
+      });
+
       return () => {
         clearInterval(statusInterval);
+        unsubscribeStatus();
       };
     }
   }, [userId, token]);
@@ -205,11 +372,12 @@ export const useWebSocket = (userId, token) => {
 
   // Cleanup on unmount
   useEffect(() => {
+    const listeners = listenersRef.current;
     return () => {
-      listenersRef.current.forEach((unsubs) => {
+      listeners.forEach((unsubs) => {
         unsubs.forEach(unsub => unsub());
       });
-      listenersRef.current.clear();
+      listeners.clear();
     };
   }, []);
 
@@ -243,7 +411,7 @@ export const useFilingUpdates = (userId, token) => {
         unsubscribe('ACK_RECEIVED');
       };
     }
-  }, [isConnected, subscribe]);
+  }, [isConnected, subscribe, unsubscribe]);
 
   return { filingUpdates, isConnected };
 };
@@ -260,7 +428,7 @@ export const useSystemAlerts = (userId, token) => {
 
       return () => unsubscribe('SYSTEM_ALERT');
     }
-  }, [isConnected, subscribe]);
+  }, [isConnected, subscribe, unsubscribe]);
 
   return { alerts, isConnected };
 };
@@ -277,7 +445,7 @@ export const useERIUpdates = (userId, token) => {
 
       return () => unsubscribe('ERI_STATUS');
     }
-  }, [isConnected, subscribe]);
+  }, [isConnected, subscribe, unsubscribe]);
 
   return { eriStatus, isConnected };
 };

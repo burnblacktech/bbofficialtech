@@ -95,6 +95,32 @@ class MemberService {
       throw error;
     }
   }
+
+  /**
+   * Get member's ITR filings
+   */
+  async getMemberFilings(memberId, params = {}) {
+    try {
+      const response = await apiClient.get(`/members/${memberId}/filings`, { params });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch member filings:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify PAN for multiple members (bulk verification)
+   */
+  async bulkVerifyPAN(memberIds) {
+    try {
+      const response = await apiClient.post('/members/bulk-verify-pan', { memberIds });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to bulk verify PAN:', error);
+      throw error;
+    }
+  }
 }
 
 // Create singleton instance

@@ -114,7 +114,7 @@ const FamilyMember = sequelize.define('FamilyMember', {
     allowNull: true,
     defaultValue: {},
     field: 'assigned_to',
-    comment: 'Quick lookup: { preparerId, reviewerId, assignedAt }',
+    comment: 'Quick lookup: preparerId, reviewerId, assignedAt',
   },
   status: {
     type: DataTypes.ENUM('active', 'inactive', 'archived'),

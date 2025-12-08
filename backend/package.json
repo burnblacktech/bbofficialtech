@@ -80,6 +80,7 @@
     "twilio": "^4.19.0",
     "uuid": "^9.0.1",
     "winston": "^3.17.0",
+    "ws": "^8.18.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -22,27 +22,26 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/icons/icon-192x192.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="%PUBLIC_URL%/icons/icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/icons/icon-192x192.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="%PUBLIC_URL%/icons/icon-192x192.png" />
+    <!-- Apple Touch Icons - Using logo as fallback until icons are created -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/bb-logo.svg" />
     
-    <!-- Standard Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/icons/icon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/icons/icon-16x16.png" />
+    <!-- Standard Icons - Using logo as fallback -->
+    <link rel="icon" href="%PUBLIC_URL%/bb-logo.svg" type="image/svg+xml" />
     
-    <!-- Microsoft Tiles -->
-    <meta name="msapplication-TileImage" content="%PUBLIC_URL%/icons/icon-144x144.png" />
+    <!-- Microsoft Tiles - Using logo as fallback -->
+    <meta name="msapplication-TileImage" content="%PUBLIC_URL%/bb-logo.svg" />
     <meta name="msapplication-config" content="%PUBLIC_URL%/browserconfig.xml" />
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="%PUBLIC_URL%/static/css/main.css" as="style" />
-    <link rel="preload" href="%PUBLIC_URL%/static/js/bundle.js" as="script" />
+    <!-- Google Fonts - Plus Jakarta Sans (Display Font) - newUI.md Section 6.1 -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Preload critical resources - CSS is bundled, no need to preload -->
+    <!-- <link rel="preload" href="%PUBLIC_URL%/static/css/main.css" as="style" /> -->
+    <!-- <link rel="preload" href="%PUBLIC_URL%/static/js/bundle.js" as="script" /> -->
     
     <title>BurnBlack ITR Filing Platform</title>
     

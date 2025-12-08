@@ -45,9 +45,12 @@ const AddMembers = () => {
     try {
       setLoading(true);
       const response = await memberService.getMembers();
-      setMembers(response.data || []);
+      // Handle different API response structures
+      const membersArray = response.data?.members || response.members || response.data || [];
+      setMembers(Array.isArray(membersArray) ? membersArray : []);
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to load family members');
+      setMembers([]); // Ensure members is always an array
     } finally {
       setLoading(false);
     }

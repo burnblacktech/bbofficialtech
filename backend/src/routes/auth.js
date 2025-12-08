@@ -98,6 +98,19 @@ router.post('/register',
         });
       }
 
+      // Validate phone format if provided
+      if (phone) {
+        const phoneDigits = phone.replace(/\D/g, '');
+        if (phoneDigits.length !== 10 || !/^[6-9]/.test(phoneDigits)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid phone number (10 digits, starting with 6-9)',
+          });
+        }
+        // Normalize phone to digits only
+        req.body.phone = phoneDigits;
+      }
+
       // Check if user already exists
       const existingUser = await User.findOne({
         where: {
@@ -121,7 +134,7 @@ router.post('/register',
         email: email.toLowerCase(),
         passwordHash: passwordHash,
         fullName: fullName,
-        phone: phone || null,
+        phone: req.body.phone || null, // Use normalized phone
         role: 'END_USER', // Default role for all public signups
         authProvider: 'LOCAL',
         status: 'active',
@@ -188,17 +201,23 @@ router.post('/login',
 
       // Find user by email (regardless of authProvider)
       // Use raw query to avoid schema mismatch issues
+      // Explicitly use public.users schema for clarity
       // Note: sequelize.query returns [results, metadata] when not using QueryTypes
-      const [queryResult] = await sequelize.query(
+      const queryResponse = await sequelize.query(
         `SELECT id, email, password_hash, role, status, auth_provider, full_name, 
          email_verified, phone_verified, token_version, last_login_at, onboarding_completed
-         FROM users WHERE email = :email LIMIT 1`,
+         FROM public.users WHERE email = :email LIMIT 1`,
         {
           replacements: { email: email.toLowerCase() },
         }
       );
 
-      // queryResult is the results array from the destructured return value
+      // Handle both [results, metadata] and direct results array formats
+      const queryResult = Array.isArray(queryResponse) && queryResponse.length > 0 
+        ? (Array.isArray(queryResponse[0]) ? queryResponse[0] : queryResponse)
+        : [];
+      
+      // queryResult should be the results array
       const user = Array.isArray(queryResult) && queryResult.length > 0 ? queryResult[0] : null;
 
       // Debug logging
@@ -207,6 +226,8 @@ router.post('/login',
         searchEmail: email,
         found: !!user,
         resultLength: queryResult ? queryResult.length : 0,
+        queryResponseType: Array.isArray(queryResponse) ? 'array' : typeof queryResponse,
+        queryResponseLength: Array.isArray(queryResponse) ? queryResponse.length : 'N/A',
         userId: user ? user.id : null,
         ip: req.ip,
       });
@@ -294,9 +315,9 @@ router.post('/login',
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       });
 
-      // Update last login using raw query to avoid schema issues
+      // Update last login using raw query - explicitly use public.users schema
       await sequelize.query(
-        `UPDATE users SET last_login_at = NOW(), updated_at = NOW() WHERE id = :userId`,
+        `UPDATE public.users SET last_login_at = NOW(), updated_at = NOW() WHERE id = :userId`,
         {
           replacements: { userId: user.id },
         }
@@ -418,7 +439,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'email', 'fullName', 'phone', 'role', 'status', 'createdAt', 'dateOfBirth', 'metadata', 'authProvider', 'passwordHash'],
+      attributes: ['id', 'email', 'fullName', 'phone', 'role', 'status', 'createdAt', 'dateOfBirth', 'metadata', 'authProvider', 'passwordHash', 'panNumber', 'panVerified', 'panVerifiedAt'],
     });
 
     if (!user) {
@@ -427,6 +448,13 @@ router.get('/profile', authenticateToken, async (req, res) => {
         error: 'User not found',
       });
     }
+
+    // Get UserProfile with address fields
+    const UserProfile = require('../models/UserProfile');
+    const userProfile = await UserProfile.findOne({
+      where: { userId: user.id },
+      attributes: ['addressLine1', 'addressLine2', 'city', 'state', 'pincode'],
+    });
 
     res.json({
       user: {
@@ -441,6 +469,16 @@ router.get('/profile', authenticateToken, async (req, res) => {
         metadata: user.metadata || {},
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
+        panNumber: user.panNumber,
+        panVerified: user.panVerified || false,
+        panVerifiedAt: user.panVerifiedAt,
+        address: userProfile ? {
+          addressLine1: userProfile.addressLine1 || null,
+          addressLine2: userProfile.addressLine2 || null,
+          city: userProfile.city || null,
+          state: userProfile.state || null,
+          pincode: userProfile.pincode || null,
+        } : null,
       },
     });
   } catch (error) {

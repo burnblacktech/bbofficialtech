@@ -1,117 +1,272 @@
 // =====================================================
-// TAX COMPUTATION BAR COMPONENT
-// Shows real-time tax computation with regime comparison
-// Desktop: Sticky top (below header)
-// Mobile: Fixed bottom
-// Fully compliant with UI.md specifications
+// TAX COMPUTATION BAR COMPONENT (POLISHED)
+// Glassmorphism design with smooth animations
+// Desktop: Sticky top with expandable dropdown
+// Mobile: Fixed bottom with swipe to expand
 // =====================================================
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { CheckCircle, ChevronRight, Sparkles, X } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, ChevronUp, CheckCircle, ArrowRight, Sparkles, TrendingUp, TrendingDown } from 'lucide-react';
 import AnimatedNumber from '../UI/AnimatedNumber';
 import { formatIndianCurrency } from '../../lib/format';
 
-// FlowBlock component for flow indicator
-const FlowBlock = ({ label, value, subtext }) => {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <span className="text-label-sm text-gray-500 uppercase mb-1 tracking-wide" style={{ fontSize: '11px', fontWeight: 500 }}>
+// Compact flow item for the summary bar
+const CompactFlowItem = ({ label, value, isLast = false, highlight = false }) => (
+  <div className="flex items-center gap-3">
+    <motion.div
+      className="flex flex-col"
+      animate={highlight ? { scale: [1, 1.02, 1] } : {}}
+      transition={{ duration: 0.3 }}
+    >
+      <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
         {label}
       </span>
-      <span className="text-number-lg font-semibold text-black-950" style={{ fontSize: '24px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-        <AnimatedNumber value={value} format="currency" />
+      <span className="text-base font-bold text-slate-900 tabular-nums">
+        <AnimatedNumber value={value} format="currency" compact />
       </span>
-      {subtext && (
-        <span className="text-body-sm text-gray-400 mt-1" style={{ fontSize: '13px', lineHeight: '20px' }}>
-          {subtext}
-        </span>
-      )}
-    </div>
-  );
-};
+    </motion.div>
+    {!isLast && (
+      <motion.div
+        animate={{ x: [0, 2, 0] }}
+        transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+      >
+        <ArrowRight className="w-4 h-4 text-slate-300" />
+      </motion.div>
+    )}
+  </div>
+);
 
-// RegimeColumn component for regime comparison
-const RegimeColumn = ({ title, taxAmount, result, maxTax, isRecommended, savings, color }) => {
-  const percentage = maxTax > 0 ? (taxAmount / maxTax) * 100 : 0;
-  const isRefund = result > 0;
-
-  return (
-    <div className="flex-1 flex flex-col items-center space-y-2">
-      <div className="text-heading-sm font-semibold text-gray-800" style={{ fontSize: '16px', fontWeight: 600 }}>
-        {title}
-      </div>
-      <div className="text-number-lg font-semibold text-gray-900" style={{ fontSize: '24px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-        <AnimatedNumber value={taxAmount} format="currency" />
-      </div>
-      {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded" style={{ height: '8px' }}>
-        <motion.div
-          className="rounded h-full"
-          style={{
-            backgroundColor: color === 'regime-old' ? '#6366F1' : '#8B5CF6',
-          }}
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        />
-      </div>
-      {isRefund ? (
-        <div className="flex items-center space-x-1 text-success-600 text-heading-md font-semibold" style={{ fontSize: '18px', fontWeight: 600 }}>
-          <CheckCircle className="w-4 h-4" />
-          <span>REFUND: <AnimatedNumber value={Math.abs(result)} format="currency" /></span>
-        </div>
-      ) : result < 0 ? (
-        <div className="text-error-600 text-heading-md font-semibold" style={{ fontSize: '18px', fontWeight: 600 }}>
-          DUE: <AnimatedNumber value={Math.abs(result)} format="currency" />
-        </div>
-      ) : null}
-      {isRecommended && (
-        <div
-          className="text-label-md font-semibold text-white uppercase px-3 py-1.5 rounded-md mt-1"
-          style={{
-            fontSize: '13px',
-            fontWeight: 500,
-            background: 'linear-gradient(135deg, #FF6B00 0%, #FFB800 100%)',
-          }}
-        >
-          RECOMMENDED • Save <AnimatedNumber value={savings} format="currency" />
-        </div>
-      )}
-    </div>
-  );
-};
-
-// AI Tip component
-const AITip = ({ tip, onDismiss }) => {
-  if (!tip) return null;
+// Result badge with animation
+const ResultBadge = ({ isRefund, amount }) => {
+  const isPositive = isRefund || amount === 0;
 
   return (
     <motion.div
-      className="bg-gold-50 rounded-lg p-3 flex items-start space-x-2 mb-4"
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.2 }}
-      style={{
-        backgroundColor: '#FEF3C7',
-        padding: '12px',
-        borderRadius: '8px',
-      }}
+      className={`
+        px-4 py-2 rounded-xl flex items-center gap-2
+        ${isPositive
+          ? 'bg-gradient-to-r from-emerald-50 to-emerald-100/50 border border-emerald-200'
+          : 'bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200'
+        }
+      `}
+      initial={{ scale: 0.95 }}
+      animate={{ scale: 1 }}
+      whileHover={{ scale: 1.02 }}
     >
-      <Sparkles className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0" style={{ width: '16px', height: '16px', color: '#F59E0B' }} />
-      <p className="text-body-md text-gray-600 flex-1" style={{ fontSize: '14px', lineHeight: '22px', fontWeight: 400 }}>
-        {tip}
-      </p>
-      {onDismiss && (
-        <button
-          onClick={onDismiss}
-          className="p-1 rounded hover:bg-gold-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
-          aria-label="Dismiss tip"
-        >
-          <X className="w-4 h-4 text-gray-500" style={{ width: '16px', height: '16px' }} />
-        </button>
-      )}
+      <motion.div
+        animate={{ rotate: isPositive ? [0, 10, 0] : [0, -10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+      >
+        {isPositive ? (
+          <TrendingUp className="w-4 h-4 text-emerald-600" />
+        ) : (
+          <TrendingDown className="w-4 h-4 text-amber-600" />
+        )}
+      </motion.div>
+      <div className="flex flex-col">
+        <span className={`text-[10px] font-medium uppercase tracking-wide ${isPositive ? 'text-emerald-600' : 'text-amber-600'}`}>
+          {isRefund ? 'Refund' : amount === 0 ? 'No Tax' : 'Due'}
+        </span>
+        <span className={`text-sm font-bold tabular-nums ${isPositive ? 'text-emerald-700' : 'text-amber-700'}`}>
+          {formatIndianCurrency(Math.abs(amount))}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+// Regime selector with badge
+const RegimeBadge = ({ regime, isRecommended, savings, onClick, isOpen }) => (
+  <motion.button
+    onClick={onClick}
+    className={`
+      flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all
+      ${isRecommended
+        ? 'bg-gradient-to-r from-emerald-50 to-emerald-100/50 border-emerald-300 text-emerald-700'
+        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+      }
+    `}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+  >
+    {isRecommended && (
+      <motion.div
+        animate={{ rotate: [0, 15, -15, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+      >
+        <Sparkles className="w-4 h-4 text-emerald-500" />
+      </motion.div>
+    )}
+    <span className="text-sm font-semibold">
+      {regime === 'old' ? 'Old Regime' : 'New Regime'}
+    </span>
+    {isRecommended && savings > 0 && (
+      <span className="text-xs font-medium bg-emerald-500 text-white px-2 py-0.5 rounded-full">
+        Save {formatIndianCurrency(savings, true)}
+      </span>
+    )}
+    <motion.div
+      animate={{ rotate: isOpen ? 180 : 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <ChevronDown className="w-4 h-4" />
+    </motion.div>
+  </motion.button>
+);
+
+// Glassmorphism dropdown for regime comparison
+const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, onClose }) => {
+  const oldRefund = Math.max(0, computedValues.tdsPaid - computedValues.taxPayableOld);
+  const newRefund = Math.max(0, computedValues.tdsPaid - computedValues.taxPayableNew);
+  const oldDue = Math.max(0, computedValues.taxPayableOld - computedValues.tdsPaid);
+  const newDue = Math.max(0, computedValues.taxPayableNew - computedValues.tdsPaid);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[560px] max-w-[95vw]"
+    >
+      {/* Backdrop blur container */}
+      <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200 shadow-2xl shadow-slate-900/10 overflow-hidden">
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900">Regime Comparison</h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+          >
+            <ChevronUp className="w-5 h-5 text-slate-600" />
+          </button>
+        </div>
+
+        {/* Comparison Cards */}
+        <div className="p-6">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* Old Regime Card */}
+            <motion.div
+              className={`
+                p-4 rounded-xl border-2 transition-all
+                ${recommendedRegime === 'old'
+                  ? 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-300'
+                  : 'bg-slate-50 border-slate-200'
+                }
+              `}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-slate-700">Old Regime</span>
+                {recommendedRegime === 'old' && (
+                  <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">
+                    Best
+                  </span>
+                )}
+              </div>
+              <div className="text-2xl font-bold text-slate-900 tabular-nums mb-2">
+                <AnimatedNumber value={computedValues.taxPayableOld} format="currency" />
+              </div>
+              <div className={`text-sm font-medium ${oldRefund > 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {oldRefund > 0 ? `↑ Refund: ${formatIndianCurrency(oldRefund)}` : `↓ Due: ${formatIndianCurrency(oldDue)}`}
+              </div>
+            </motion.div>
+
+            {/* New Regime Card */}
+            <motion.div
+              className={`
+                p-4 rounded-xl border-2 transition-all
+                ${recommendedRegime === 'new'
+                  ? 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-300'
+                  : 'bg-slate-50 border-slate-200'
+                }
+              `}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-slate-700">New Regime</span>
+                {recommendedRegime === 'new' && (
+                  <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">
+                    Best
+                  </span>
+                )}
+              </div>
+              <div className="text-2xl font-bold text-slate-900 tabular-nums mb-2">
+                <AnimatedNumber value={computedValues.taxPayableNew} format="currency" />
+              </div>
+              <div className={`text-sm font-medium ${newRefund > 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {newRefund > 0 ? `↑ Refund: ${formatIndianCurrency(newRefund)}` : `↓ Due: ${formatIndianCurrency(newDue)}`}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Savings Banner */}
+          {savings > 0 && (
+            <motion.div
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-4 text-white mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-emerald-100">
+                      {recommendedRegime === 'old' ? 'Old' : 'New'} Regime saves you
+                    </p>
+                    <p className="text-xl font-bold">{formatIndianCurrency(savings)}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Breakdown Table */}
+          <div className="space-y-2 text-sm">
+            <div className="grid grid-cols-3 gap-4 py-2 border-b border-slate-100">
+              <span className="font-medium text-slate-500">Breakdown</span>
+              <span className="text-center font-medium text-slate-500">Old</span>
+              <span className="text-center font-medium text-slate-500">New</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4 py-2">
+              <span className="text-slate-600">Gross Income</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.grossIncome)}</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.grossIncome)}</span>
+            </div>
+            {computedValues.agriculturalIncome > 0 && (
+              <div className="grid grid-cols-3 gap-4 py-2">
+                <span className="text-slate-600">Agricultural Income <span className="text-xs text-slate-400">(exempt)</span></span>
+                <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.agriculturalIncome)}</span>
+                <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.agriculturalIncome)}</span>
+              </div>
+            )}
+            <div className="grid grid-cols-3 gap-4 py-2">
+              <span className="text-slate-600">Deductions</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.deductionsOld)}</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.deductionsNew)}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4 py-2">
+              <span className="text-slate-600">Taxable Income</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.taxableIncomeOld)}</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.taxableIncomeNew)}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4 py-2 border-t border-slate-100">
+              <span className="text-slate-600">TDS/Advance Tax</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.tdsPaid)}</span>
+              <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.tdsPaid)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 };
@@ -122,45 +277,50 @@ const TaxComputationBar = ({
   taxableIncome,
   taxPayable,
   tdsPaid,
-  aiTip,
-  onDismissTip,
   onFileClick,
-  // Legacy props for backward compatibility
   formData,
   taxComputation,
   regimeComparison,
-  selectedRegime = 'old',
-  onRegimeChange,
+  selectedRegime = 'old', // Current selected regime from header
   className = '',
 }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Calculate values - use new props if available, otherwise fall back to legacy props
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Calculate values
   const computedValues = useMemo(() => {
-    // If new props are provided, use them directly
     if (grossIncome !== undefined && deductions !== undefined && taxableIncome !== undefined && taxPayable !== undefined) {
       return {
         grossIncome,
-        deductionsOld: deductions.old || 0,
-        deductionsNew: deductions.new || 0,
-        taxableIncomeOld: taxableIncome.old || 0,
-        taxableIncomeNew: taxableIncome.new || 0,
-        taxPayableOld: taxPayable.old || 0,
-        taxPayableNew: taxPayable.new || 0,
+        deductionsOld: deductions?.old || 0,
+        deductionsNew: deductions?.new || 0,
+        taxableIncomeOld: taxableIncome?.old || 0,
+        taxableIncomeNew: taxableIncome?.new || 0,
+        taxPayableOld: taxPayable?.old || 0,
+        taxPayableNew: taxPayable?.new || 0,
         tdsPaid: tdsPaid || 0,
       };
     }
 
-    // Legacy: Calculate totals from formData
     if (!formData) {
       return {
         grossIncome: 0,
@@ -173,16 +333,83 @@ const TaxComputationBar = ({
         tdsPaid: 0,
       };
     }
+
     const income = formData?.income || {};
-    const deductions = formData?.deductions || {};
+    const deductionsData = formData?.deductions || {};
     const taxesPaid = formData?.taxesPaid || {};
 
-    // Calculate gross income
-    const grossIncome =
+    let businessIncomeTotal = 0;
+    if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
+      businessIncomeTotal = (income.businessIncome.businesses || []).reduce((sum, biz) =>
+        sum + (parseFloat(biz.pnl?.netProfit || biz.netProfit || 0)), 0);
+    } else {
+      businessIncomeTotal = parseFloat(income.businessIncome) || 0;
+    }
+
+    let professionalIncomeTotal = 0;
+    if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
+      professionalIncomeTotal = (income.professionalIncome.professions || []).reduce((sum, prof) =>
+        sum + (parseFloat(prof.pnl?.netIncome || prof.netIncome || prof.netProfit || 0)), 0);
+    } else {
+      professionalIncomeTotal = parseFloat(income.professionalIncome) || 0;
+    }
+
+    // Handle presumptive income (ITR-4)
+    let presumptiveBusinessTotal = 0;
+    let presumptiveProfessionalTotal = 0;
+    if (income.presumptiveBusiness) {
+      presumptiveBusinessTotal = parseFloat(income.presumptiveBusiness.presumptiveIncome || 0);
+    }
+    if (income.presumptiveProfessional) {
+      presumptiveProfessionalTotal = parseFloat(income.presumptiveProfessional.presumptiveIncome || 0);
+    }
+
+    // Handle other sources income (structured format)
+    let otherSourcesTotal = 0;
+    if (typeof income.otherSources === 'object' && income.otherSources) {
+      otherSourcesTotal = parseFloat(income.otherSources.totalOtherSourcesIncome || 0) ||
+        (parseFloat(income.otherSources.totalInterestIncome || 0) + parseFloat(income.otherSources.totalOtherIncome || 0));
+    } else {
+      otherSourcesTotal = parseFloat(income.otherIncome) || 0;
+    }
+
+    // Extract agricultural income (exempt but shown for completeness)
+    const agriculturalIncome = parseFloat(
+      formData?.exemptIncome?.agriculturalIncome?.netAgriculturalIncome ||
+      formData?.exemptIncome?.netAgriculturalIncome ||
+      formData?.agriculturalIncome ||
+      0,
+    );
+
+    // Handle foreign income (ITR-2, ITR-3)
+    let foreignIncomeTotal = 0;
+    if (income.foreignIncome && typeof income.foreignIncome === 'object') {
+      if (income.foreignIncome.foreignIncomeDetails && Array.isArray(income.foreignIncome.foreignIncomeDetails)) {
+        foreignIncomeTotal = income.foreignIncome.foreignIncomeDetails.reduce((sum, item) =>
+          sum + (parseFloat(item.amount || item.income || 0)), 0);
+      } else {
+        foreignIncomeTotal = parseFloat(income.foreignIncome.totalIncome || income.foreignIncome.amount || 0);
+      }
+    }
+
+    // Handle director/partner income (ITR-2, ITR-3)
+    let directorPartnerIncomeTotal = 0;
+    if (income.directorPartner && typeof income.directorPartner === 'object') {
+      directorPartnerIncomeTotal =
+        (parseFloat(income.directorPartner.directorIncome) || 0) +
+        (parseFloat(income.directorPartner.partnerIncome) || 0);
+    }
+
+    // Calculate gross total income (including agricultural income for display)
+    const calculatedGrossIncome =
       (parseFloat(income.salary) || 0) +
-      (parseFloat(income.businessIncome) || 0) +
-      (parseFloat(income.professionalIncome) || 0) +
-      (parseFloat(income.otherIncome) || 0) +
+      businessIncomeTotal +
+      professionalIncomeTotal +
+      presumptiveBusinessTotal +
+      presumptiveProfessionalTotal +
+      otherSourcesTotal +
+      foreignIncomeTotal +
+      directorPartnerIncomeTotal +
       (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails
         ? (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
           (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0)
@@ -195,38 +422,33 @@ const TaxComputationBar = ({
             return sum + Math.max(0, rental - taxes - interest);
           }, 0)
         : parseFloat(income.houseProperty) || 0) +
-      (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) => sum + (parseFloat(e.amountInr) || 0), 0) +
-      (parseFloat(income.directorPartner?.directorIncome) || 0) +
-      (parseFloat(income.directorPartner?.partnerIncome) || 0);
+      agriculturalIncome; // Include agricultural income (exempt but shown)
 
-    // Calculate total deductions (old regime - includes all deductions)
     const totalDeductionsOld =
-      (parseFloat(deductions.section80C) || 0) +
-      (parseFloat(deductions.section80D) || 0) +
-      (parseFloat(deductions.section80G) || 0) +
-      (parseFloat(deductions.section80TTA) || 0) +
-      (parseFloat(deductions.section80TTB) || 0) +
-      Object.values(deductions.otherDeductions || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+      (parseFloat(deductionsData.section80C) || 0) +
+      (parseFloat(deductionsData.section80D) || 0) +
+      (parseFloat(deductionsData.section80G) || 0) +
+      (parseFloat(deductionsData.section80TTA) || 0) +
+      (parseFloat(deductionsData.section80TTB) || 0) +
+      Object.values(deductionsData.otherDeductions || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
 
-    // New regime deductions (limited - typically only standard deduction)
-    const totalDeductionsNew = 50000; // Standard deduction for new regime
+    const totalDeductionsNew = 50000;
 
-    // Calculate taxable income
-    const taxableIncomeOld = Math.max(0, grossIncome - totalDeductionsOld);
-    const taxableIncomeNew = Math.max(0, grossIncome - totalDeductionsNew);
+    const taxableIncomeOld = Math.max(0, calculatedGrossIncome - totalDeductionsOld);
+    const taxableIncomeNew = Math.max(0, calculatedGrossIncome - totalDeductionsNew);
 
-    // Calculate total taxes paid
     const totalTaxesPaid =
       (parseFloat(taxesPaid.tds) || 0) +
       (parseFloat(taxesPaid.advanceTax) || 0) +
       (parseFloat(taxesPaid.selfAssessmentTax) || 0);
 
-    // Get regime comparison data
     const oldRegimeTax = regimeComparison?.oldRegime?.totalTax || taxComputation?.totalTax || 0;
     const newRegimeTax = regimeComparison?.newRegime?.totalTax || 0;
 
     return {
-      grossIncome,
+      grossIncome: calculatedGrossIncome,
+      agriculturalIncome, // Include for display purposes
+      taxableGrossIncome: calculatedGrossIncome - agriculturalIncome, // Gross income excluding exempt agricultural income
       deductionsOld: totalDeductionsOld,
       deductionsNew: totalDeductionsNew,
       taxableIncomeOld,
@@ -237,306 +459,192 @@ const TaxComputationBar = ({
     };
   }, [formData, grossIncome, deductions, taxableIncome, taxPayable, tdsPaid, regimeComparison, taxComputation]);
 
-  // Calculate refunds and dues
-  const oldRegimeRefund = Math.max(0, computedValues.tdsPaid - computedValues.taxPayableOld);
-  const newRegimeRefund = Math.max(0, computedValues.tdsPaid - computedValues.taxPayableNew);
-  const oldRegimeDue = Math.max(0, computedValues.taxPayableOld - computedValues.tdsPaid);
-  const newRegimeDue = Math.max(0, computedValues.taxPayableNew - computedValues.tdsPaid);
-
-  // Determine recommended regime
   const recommendedRegime = computedValues.taxPayableOld <= computedValues.taxPayableNew ? 'old' : 'new';
   const savings = Math.abs(computedValues.taxPayableOld - computedValues.taxPayableNew);
-  const maxTax = Math.max(computedValues.taxPayableOld, computedValues.taxPayableNew, 1);
+  // Use selected regime from header, fallback to recommended
+  const currentRegime = selectedRegime || recommendedRegime;
+  const netTax = currentRegime === 'old' ? computedValues.taxPayableOld : computedValues.taxPayableNew;
+  const netResult = computedValues.tdsPaid - netTax;
+  const isRecommended = currentRegime === recommendedRegime;
 
-  const formatCurrency = (amount) => {
-    return formatIndianCurrency(Math.abs(amount));
-  };
-
-  // Desktop layout: Sticky top (below header at 64px)
+  // DESKTOP: Compact 60px bar with glassmorphism
   if (!isMobile) {
     return (
       <div
-        className={`tax-computation-bar-desktop sticky z-40 bg-white border-b border-gray-200 shadow-floating ${className}`}
-        style={{
-          top: '64px',
-          padding: '20px 24px',
-        }}
+        ref={dropdownRef}
+        className={`tax-computation-bar-desktop z-40 flex-shrink-0 ${className}`}
         role="region"
         aria-label="Tax computation summary"
       >
-        <div className="max-w-7xl mx-auto h-full flex flex-col justify-center">
-          {/* Flow Indicator */}
-          <div className="flex items-center justify-center gap-8 mb-6">
-            <FlowBlock
-              label="Gross Income"
-              value={computedValues.grossIncome}
-            />
-            <ChevronRight className="w-5 h-5 text-gray-300" style={{ width: '20px', height: '20px' }} />
-            <FlowBlock
-              label="Deductions"
-              value={computedValues.deductionsOld}
-              subtext={`Old: ${formatCurrency(computedValues.deductionsOld)} | New: ${formatCurrency(computedValues.deductionsNew)}`}
-            />
-            <ChevronRight className="w-5 h-5 text-gray-300" style={{ width: '20px', height: '20px' }} />
-            <FlowBlock
-              label="Taxable Income"
-              value={computedValues.taxableIncomeOld}
-              subtext="(Old Regime)"
-            />
-          </div>
+        {/* Glassmorphism background */}
+        <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
+          <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 h-[60px]">
+            <div className="flex items-center justify-between h-full gap-6">
+              {/* Flow Indicator */}
+              <div className="flex items-center gap-4">
+                <CompactFlowItem label="Income" value={computedValues.grossIncome} />
+                <CompactFlowItem label="Deductions" value={currentRegime === 'old' ? computedValues.deductionsOld : computedValues.deductionsNew} />
+                <CompactFlowItem label="Tax" value={netTax} isLast />
+              </div>
 
-          {/* Regime Comparison */}
-          <div className="bg-gray-50 rounded-xl p-4 mb-4 relative">
-            <div className="grid grid-cols-2 gap-6">
-              {/* Old Regime */}
-              <RegimeColumn
-                title="Old Regime"
-                taxAmount={computedValues.taxPayableOld}
-                result={oldRegimeRefund || -oldRegimeDue}
-                maxTax={maxTax}
-                isRecommended={recommendedRegime === 'old'}
-                savings={recommendedRegime === 'old' ? savings : 0}
-                color="regime-old"
+              {/* Result Badge */}
+              <ResultBadge isRefund={netResult >= 0} amount={netResult} />
+
+              {/* Regime Display (read-only, shows current selection) */}
+              <RegimeBadge
+                regime={currentRegime}
+                isRecommended={isRecommended}
+                savings={isRecommended ? savings : 0}
+                onClick={() => setShowDropdown(!showDropdown)}
+                isOpen={showDropdown}
               />
 
-              {/* Divider */}
-              <div className="absolute left-1/2 top-4 bottom-4 w-px bg-gray-200 transform -translate-x-1/2" />
-
-              {/* New Regime */}
-              <RegimeColumn
-                title="New Regime"
-                taxAmount={computedValues.taxPayableNew}
-                result={newRegimeRefund || -newRegimeDue}
-                maxTax={maxTax}
-                isRecommended={recommendedRegime === 'new'}
-                savings={recommendedRegime === 'new' ? savings : 0}
-                color="regime-new"
-              />
+              {/* File ITR Button */}
+              <motion.button
+                onClick={onFileClick}
+                className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 transition-shadow"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Review & File
+              </motion.button>
             </div>
           </div>
-
-          {/* AI Tip */}
-          <AITip tip={aiTip} onDismiss={onDismissTip} />
-
-          {/* CTA */}
-          <div className="flex justify-end">
-            <button
-              className="px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-card-hover focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-              onClick={onFileClick || (() => {
-                console.log('File ITR clicked');
-              })}
-              aria-label="Review and file ITR"
-            >
-              Review & File
-            </button>
-          </div>
         </div>
+
+        {/* Dropdown */}
+        <AnimatePresence>
+          {showDropdown && (
+            <RegimeComparisonDropdown
+              computedValues={computedValues}
+              recommendedRegime={recommendedRegime}
+              savings={savings}
+              onClose={() => setShowDropdown(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     );
   }
 
-  // Mobile layout: Fixed bottom with swipe to expand (using framer-motion)
-  const [isExpanded, setIsExpanded] = useState(false);
-  const y = useMotionValue(0);
-  const height = useTransform(y, [0, -200], [80, 280]);
-  const constraintsRef = useRef(null);
-
-  const handleDragEnd = (event, info) => {
-    const shouldExpand = info.offset.y < -50 || (isExpanded && info.offset.y < -100);
-    const shouldCollapse = info.offset.y > 50 || (!isExpanded && info.offset.y > 100);
-
-    if (shouldExpand) {
-      setIsExpanded(true);
-      y.set(0);
-    } else if (shouldCollapse) {
-      setIsExpanded(false);
-      y.set(0);
-    } else {
-      y.set(0);
-    }
-  };
-
+  // MOBILE: Fixed bottom bar
   return (
     <motion.div
-      ref={constraintsRef}
-      className={`tax-computation-bar-mobile fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-floating ${className}`}
-      style={{
-        borderTopLeftRadius: '20px',
-        borderTopRightRadius: '20px',
-        paddingBottom: 'env(safe-area-inset-bottom, 0)',
-        height: isExpanded ? 280 : 80,
-        y,
-      }}
+      className={`tax-computation-bar-mobile fixed bottom-0 left-0 right-0 z-50 ${className}`}
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0)' }}
+      animate={{ height: isExpanded ? 320 : 88 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       role="region"
       aria-label="Tax computation summary"
-      drag="y"
-      dragConstraints={{ top: -200, bottom: 0 }}
-      dragElastic={0.2}
-      onDragEnd={handleDragEnd}
-      animate={{
-        height: isExpanded ? 280 : 80,
-      }}
-      transition={{
-        type: 'spring',
-        damping: 25,
-        stiffness: 300,
-      }}
     >
-      {/* Drag Handle */}
-      <div className="flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing">
-        <div className="w-10 bg-gray-300 rounded" style={{ width: '40px', height: '4px', borderRadius: '2px' }} />
-      </div>
+      {/* Glassmorphism background */}
+      <div className="h-full bg-white/95 backdrop-blur-xl border-t border-slate-200 shadow-2xl shadow-slate-900/10 rounded-t-3xl overflow-hidden">
+        {/* Drag Handle */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex justify-center py-3 cursor-pointer"
+          aria-label={isExpanded ? 'Collapse tax bar' : 'Expand tax bar'}
+        >
+          <motion.div
+            className="w-12 h-1.5 bg-slate-300 rounded-full"
+            animate={{ backgroundColor: isExpanded ? '#94a3b8' : '#cbd5e1' }}
+          />
+        </button>
 
-      {!isExpanded ? (
-        // Collapsed State
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <div className="text-body-md text-gray-700 font-semibold" style={{ fontSize: '14px' }}>
-                {oldRegimeRefund > 0 ? `Refund: ${formatCurrency(oldRegimeRefund)}` : `Due: ${formatCurrency(oldRegimeDue)}`}
+        {!isExpanded ? (
+          // Collapsed: Key info
+          <div className="px-4 pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className={`text-lg font-bold ${netResult >= 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {netResult >= 0 ? 'Refund' : 'Due'}: {formatIndianCurrency(Math.abs(netResult))}
+                </div>
+                <div className="flex items-center gap-1 text-sm text-emerald-600">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{recommendedRegime.toUpperCase()} saves {formatIndianCurrency(savings)}</span>
+                </div>
               </div>
-              {recommendedRegime && savings > 0 && (
-                <div className="text-label-sm text-gold-600 font-semibold mt-1" style={{ fontSize: '13px' }}>
-                  {recommendedRegime.toUpperCase()} ✓ SAVES {formatCurrency(savings)}
+              <motion.button
+                onClick={onFileClick}
+                className="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold text-sm shadow-lg"
+                whileTap={{ scale: 0.95 }}
+              >
+                File ITR →
+              </motion.button>
+            </div>
+          </div>
+        ) : (
+          // Expanded: Full comparison
+          <div className="px-4 pb-4 overflow-y-auto" style={{ maxHeight: '280px' }}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-slate-900">Tax Summary</h3>
+              <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">AY 2024-25</span>
+            </div>
+
+            {/* Regime Cards */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className={`p-3 rounded-xl ${recommendedRegime === 'old' ? 'bg-emerald-50 border-2 border-emerald-300' : 'bg-slate-50 border border-slate-200'}`}>
+                <div className="text-xs font-medium text-slate-500 mb-1">Old Regime</div>
+                <div className="text-lg font-bold text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.taxPayableOld)}</div>
+                {recommendedRegime === 'old' && (
+                  <span className="text-[10px] font-bold text-emerald-600">✓ BEST</span>
+                )}
+              </div>
+              <div className={`p-3 rounded-xl ${recommendedRegime === 'new' ? 'bg-emerald-50 border-2 border-emerald-300' : 'bg-slate-50 border border-slate-200'}`}>
+                <div className="text-xs font-medium text-slate-500 mb-1">New Regime</div>
+                <div className="text-lg font-bold text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.taxPayableNew)}</div>
+                {recommendedRegime === 'new' && (
+                  <span className="text-[10px] font-bold text-emerald-600">✓ BEST</span>
+                )}
+              </div>
+            </div>
+
+            {/* Breakdown */}
+            <div className="space-y-2 text-sm mb-4">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Gross Income</span>
+                <span className="font-medium text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.grossIncome)}</span>
+              </div>
+              {computedValues.agriculturalIncome > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Agricultural Income <span className="text-xs text-slate-400">(exempt)</span></span>
+                  <span className="font-medium text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.agriculturalIncome)}</span>
                 </div>
               )}
+              <div className="flex justify-between">
+                <span className="text-slate-500">Deductions</span>
+                <span className="font-medium text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.deductionsOld)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">TDS Paid</span>
+                <span className="font-medium text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.tdsPaid)}</span>
+              </div>
             </div>
-          </div>
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full mb-3" style={{ height: '8px' }}>
-            <div
-              className="bg-orange-500 rounded-full h-full transition-all duration-600 ease-out"
-              style={{
-                width: `${Math.min(((oldRegimeRefund || oldRegimeDue) / Math.max(computedValues.taxPayableOld, computedValues.taxPayableNew, 1)) * 100, 100)}%`,
-              }}
-            />
-          </div>
-          {/* File ITR Button */}
-          <button
-            className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-            onClick={() => {
-              // TODO: Navigate to file ITR
-              console.log('File ITR clicked');
-            }}
-            aria-label="Review and file ITR"
-          >
-            Review & File →
-          </button>
-        </div>
-      ) : (
-        // Expanded State
-        <div className="px-4 py-3 overflow-y-auto" style={{ maxHeight: '240px' }}>
-          <div className="mb-3">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-heading-sm font-semibold text-gray-800" style={{ fontSize: '16px', fontWeight: 600 }}>TAX COMPUTATION</h3>
-              <span className="text-body-sm text-gray-500">AY 2024-25</span>
-            </div>
-            <div className="border-t border-gray-200 my-2" />
-          </div>
 
-          {/* Comparison Table */}
-          <div className="space-y-2 mb-4">
-            <div className="flex justify-between text-label-sm text-gray-500 uppercase" style={{ fontSize: '11px', fontWeight: 500, padding: '0 16px' }}>
-              <span></span>
-              <span>OLD</span>
-              <span>NEW</span>
-            </div>
-            <div className="flex justify-between text-body-md text-gray-700" style={{ fontSize: '14px', padding: '8px 16px' }}>
-              <span>Gross</span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.grossIncome} format="currency" />
-              </span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.grossIncome} format="currency" />
-              </span>
-            </div>
-            <div className="flex justify-between text-body-md text-gray-700" style={{ fontSize: '14px', padding: '8px 16px' }}>
-              <span>Deductions</span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.deductionsOld} format="currency" />
-              </span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.deductionsNew} format="currency" />
-              </span>
-            </div>
-            <div className="flex justify-between text-body-md text-gray-700" style={{ fontSize: '14px', padding: '8px 16px' }}>
-              <span>Taxable</span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.taxableIncomeOld} format="currency" />
-              </span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.taxableIncomeNew} format="currency" />
-              </span>
-            </div>
-            <div className="flex justify-between text-body-md text-gray-700" style={{ fontSize: '14px', padding: '8px 16px' }}>
-              <span>Tax</span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.taxPayableOld} format="currency" />
-              </span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.taxPayableNew} format="currency" />
-              </span>
-            </div>
-            <div className="flex justify-between text-body-md text-gray-700" style={{ fontSize: '14px', padding: '8px 16px' }}>
-              <span>TDS</span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.tdsPaid} format="currency" />
-              </span>
-              <span className="text-number-sm font-medium" style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-                <AnimatedNumber value={computedValues.tdsPaid} format="currency" />
-              </span>
-            </div>
-            <div className="border-t border-gray-200 my-2" />
-            <div className="flex justify-between text-heading-sm font-semibold" style={{ fontSize: '16px', fontWeight: 600, padding: '8px 16px' }}>
-              <span>RESULT</span>
-              <span className={`text-number-sm font-semibold ${recommendedRegime === 'old' ? 'text-success-500' : 'text-gray-700'}`} style={{ fontSize: '14px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                {oldRegimeRefund > 0 ? (
-                  <>
-                    <AnimatedNumber value={oldRegimeRefund} format="currency" />✓
-                  </>
-                ) : (
-                  <AnimatedNumber value={oldRegimeDue} format="currency" />
-                )}
-              </span>
-              <span className={`text-number-sm font-semibold ${recommendedRegime === 'new' ? 'text-success-500' : 'text-gray-700'}`} style={{ fontSize: '14px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                {newRegimeRefund > 0 ? (
-                  <>
-                    <AnimatedNumber value={newRegimeRefund} format="currency" />✓
-                  </>
-                ) : (
-                  <AnimatedNumber value={newRegimeDue} format="currency" />
-                )}
-              </span>
-            </div>
-            <div className="flex justify-between text-body-sm text-gray-500" style={{ fontSize: '13px', padding: '0 16px' }}>
-              <span></span>
-              <span>REFUND</span>
-              <span>REFUND</span>
-            </div>
+            {/* Savings Banner */}
+            {savings > 0 && (
+              <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-3 mb-4 flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-white" />
+                <div className="text-white">
+                  <p className="text-xs font-medium text-emerald-100">You save with {recommendedRegime === 'old' ? 'Old' : 'New'} Regime</p>
+                  <p className="text-lg font-bold">{formatIndianCurrency(savings)}</p>
+                </div>
+              </div>
+            )}
+
+            {/* CTA */}
+            <motion.button
+              onClick={onFileClick}
+              className="w-full py-3.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg"
+              whileTap={{ scale: 0.98 }}
+            >
+              Review & File ITR →
+            </motion.button>
           </div>
-
-          {recommendedRegime && savings > 0 && (
-            <div className="flex items-center space-x-1 text-success-600 text-body-md font-semibold mb-3" style={{ fontSize: '14px', fontWeight: 600 }}>
-              <CheckCircle className="w-4 h-4" />
-              <span>{recommendedRegime.toUpperCase()} REGIME SAVES <AnimatedNumber value={savings} format="currency" /></span>
-            </div>
-          )}
-
-          {/* File ITR Button */}
-          <button
-            className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-            onClick={onFileClick || (() => {
-              console.log('File ITR clicked');
-            })}
-            aria-label="Review and file ITR"
-          >
-            Review & File →
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   );
 };
 
 export default TaxComputationBar;
-

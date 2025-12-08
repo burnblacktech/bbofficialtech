@@ -43,12 +43,20 @@ class ITRAutoDetector {
       },
       {
         id: 'agricultural_income',
-        condition: (data) => data.agriculturalIncome > 100000, // threshold
+        condition: (data) => {
+          // Check both direct agriculturalIncome and nested exemptIncome.agriculturalIncome
+          const agriIncome = data.agriculturalIncome
+            || data.exemptIncome?.agriculturalIncome?.netAgriculturalIncome
+            || data.exemptIncome?.netAgriculturalIncome
+            || 0;
+          return agriIncome > 5000; // ₹5,000 threshold per ITD rules
+        },
         recommendedITR: 'ITR-2',
-        reason: 'Agricultural income above threshold',
-        additionalFields: ['agriculturalIncome'],
+        reason: 'Agricultural income exceeds ₹5,000 - ITR-2 is mandatory',
+        additionalFields: ['agriculturalIncome', 'exemptIncome'],
         caReviewRequired: false,
         estimatedTime: '20-30 minutes',
+        priority: 10, // Highest priority - regulatory requirement
       },
       {
         id: 'director_partner',
@@ -62,6 +70,15 @@ class ITRAutoDetector {
       {
         id: 'itr1_eligible',
         condition: (data) => {
+          // Check agricultural income - must be ≤ ₹5,000 for ITR-1
+          const agriIncome = data.agriculturalIncome
+            || data.exemptIncome?.agriculturalIncome?.netAgriculturalIncome
+            || data.exemptIncome?.netAgriculturalIncome
+            || 0;
+          if (agriIncome > 5000) {
+            return false; // ITR-1 not eligible if agricultural income > ₹5,000
+          }
+
           return (
             data.salary > 0 &&
             data.interestIncome <= 50000 && // bank interest limit
@@ -100,12 +117,21 @@ class ITRAutoDetector {
       }
     }
 
-    // Sort by confidence and priority
+    // Sort by priority (if set), then confidence, then ITR type
     results.sort((a, b) => {
+      // First sort by explicit priority (higher priority first)
+      if (a.priority !== undefined || b.priority !== undefined) {
+        const aPriority = a.priority || 0;
+        const bPriority = b.priority || 0;
+        if (aPriority !== bPriority) {
+          return bPriority - aPriority;
+        }
+      }
+      // Then by confidence
       if (a.confidence !== b.confidence) {
         return b.confidence - a.confidence;
       }
-      // Priority order: ITR-3 > ITR-2 > ITR-1
+      // Finally by ITR type priority: ITR-3 > ITR-2 > ITR-1
       const priority = { 'ITR-3': 3, 'ITR-2': 2, 'ITR-1': 1 };
       return priority[b.recommendedITR] - priority[a.recommendedITR];
     });
@@ -243,9 +269,10 @@ class ITRAutoDetector {
   }
 
   // Estimate tax impact (simplified)
-  estimateTaxImpact(currentITR, newITR, userData) {
+  estimateTaxImpact() {
     // This would integrate with the tax computation engine
     // For now, return a placeholder
+    // Parameters: currentITR, newITR, userData - reserved for future implementation
     return {
       estimatedChange: 0,
       reason: 'Tax impact calculation requires detailed computation',

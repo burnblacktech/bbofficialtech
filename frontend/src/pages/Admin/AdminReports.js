@@ -1,9 +1,9 @@
 // =====================================================
 // ADMIN REPORTS PAGE
-// Enterprise-grade comprehensive reporting system for admins
+// Comprehensive reporting with DesignSystem components
 // =====================================================
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -18,19 +18,14 @@ import {
   Users,
   IndianRupee,
   Building2,
-  Clock,
-  CheckCircle,
-  AlertCircle,
   Activity,
-  Filter,
-  Search,
-  Eye,
   RefreshCw,
   Settings,
   Database,
-  Globe,
   Shield,
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import api from '../../services/api';
 
 const AdminReports = () => {
@@ -48,7 +43,7 @@ const AdminReports = () => {
       return response.data;
     },
     enabled: !!user?.user_id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   // Fetch report templates
@@ -59,7 +54,7 @@ const AdminReports = () => {
       return response.data;
     },
     enabled: !!user?.user_id,
-    staleTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000,
   });
 
   const report = reportData?.report || {};
@@ -71,56 +66,56 @@ const AdminReports = () => {
       name: 'Platform Overview',
       description: 'Complete platform statistics and metrics',
       icon: BarChart3,
-      color: 'blue',
+      color: 'primary',
     },
     {
       id: 'users',
       name: 'User Analytics',
       description: 'User behavior, growth, and engagement metrics',
       icon: Users,
-      color: 'green',
+      color: 'success',
     },
     {
       id: 'filings',
       name: 'Filing Reports',
       description: 'ITR filing statistics and performance metrics',
       icon: FileText,
-      color: 'purple',
+      color: 'info',
     },
     {
       id: 'revenue',
       name: 'Revenue Analysis',
       description: 'Financial performance and revenue tracking',
       icon: IndianRupee,
-      color: 'yellow',
+      color: 'warning',
     },
     {
       id: 'ca-firms',
       name: 'CA Firm Analytics',
       description: 'CA firm performance and client management',
       icon: Building2,
-      color: 'orange',
+      color: 'primary',
     },
     {
       id: 'system',
       name: 'System Performance',
       description: 'System health, performance, and usage metrics',
       icon: Activity,
-      color: 'red',
+      color: 'error',
     },
     {
       id: 'compliance',
       name: 'Compliance Report',
       description: 'Regulatory compliance and audit trail',
       icon: Shield,
-      color: 'indigo',
+      color: 'info',
     },
     {
       id: 'security',
       name: 'Security Audit',
       description: 'Security events, threats, and access logs',
       icon: Shield,
-      color: 'red',
+      color: 'error',
     },
   ];
 
@@ -133,321 +128,303 @@ const AdminReports = () => {
   ];
 
   const formats = [
-    { value: 'pdf', label: 'PDF', icon: FileText },
-    { value: 'excel', label: 'Excel', icon: Database },
-    { value: 'csv', label: 'CSV', icon: Database },
-    { value: 'json', label: 'JSON', icon: Settings },
+    { value: 'pdf', label: 'PDF' },
+    { value: 'excel', label: 'Excel' },
+    { value: 'csv', label: 'CSV' },
+    { value: 'json', label: 'JSON' },
   ];
 
   const handleGenerateReport = () => {
-    // Generate report logic
     toast.success('Report generation started! You will be notified when ready.');
   };
 
   const handleDownloadReport = (reportId) => {
-    // Download report logic
     window.open(`/api/admin/reports/${reportId}/download?format=${reportFormat}`, '_blank');
+  };
+
+  const getColorClasses = (color) => {
+    const colors = {
+      primary: 'bg-primary-100 text-primary-600',
+      success: 'bg-success-100 text-success-600',
+      info: 'bg-info-100 text-info-600',
+      warning: 'bg-warning-100 text-warning-600',
+      error: 'bg-error-100 text-error-600',
+    };
+    return colors[color] || colors.primary;
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                ← Back to Dashboard
-              </button>
-              <h1 className="text-xl font-semibold text-gray-900">Reports & Analytics</h1>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/admin/reports/scheduled')}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
-              >
-                <Calendar className="h-4 w-4" />
-                <span>Scheduled Reports</span>
-              </button>
-            </div>
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <Typography.H1 className="mb-2">Reports & Analytics</Typography.H1>
+            <Typography.Body className="text-neutral-600">
+              Generate and export comprehensive reports
+            </Typography.Body>
           </div>
+          <Button onClick={() => navigate('/admin/reports/scheduled')}>
+            <Calendar className="w-4 h-4 mr-2" />
+            Scheduled Reports
+          </Button>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Report Controls */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
-            {/* Report Type */}
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Report Type
-              </label>
-              <select
-                value={selectedReport}
-                onChange={(e) => setSelectedReport(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {reportTypes.map((type) => (
-                  <option key={type.id} value={type.id}>{type.name}</option>
-                ))}
-              </select>
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between space-y-4 md:space-y-0 md:space-x-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Report Type
+                </label>
+                <select
+                  value={selectedReport}
+                  onChange={(e) => setSelectedReport(e.target.value)}
+                  className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                >
+                  {reportTypes.map((type) => (
+                    <option key={type.id} value={type.id}>{type.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Date Range
+                </label>
+                <select
+                  value={dateRange}
+                  onChange={(e) => setDateRange(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                >
+                  {dateRanges.map((range) => (
+                    <option key={range.value} value={range.value}>{range.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Format
+                </label>
+                <select
+                  value={reportFormat}
+                  onChange={(e) => setReportFormat(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                >
+                  {formats.map((format) => (
+                    <option key={format.value} value={format.value}>{format.label}</option>
+                  ))}
+                </select>
+              </div>
+              <Button onClick={handleGenerateReport}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Generate
+              </Button>
             </div>
-
-            {/* Date Range */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date Range
-              </label>
-              <select
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {dateRanges.map((range) => (
-                  <option key={range.value} value={range.value}>{range.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Format */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Format
-              </label>
-              <select
-                value={reportFormat}
-                onChange={(e) => setReportFormat(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {formats.map((format) => (
-                  <option key={format.value} value={format.value}>{format.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Generate Button */}
-            <div className="flex items-end">
-              <button
-                onClick={handleGenerateReport}
-                className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                <span>Generate</span>
-              </button>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Report Types Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {reportTypes.map((type) => (
-            <div
-              key={type.id}
-              onClick={() => setSelectedReport(type.id)}
-              className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                selectedReport === type.id
-                  ? 'border-orange-500 bg-orange-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  type.color === 'blue' ? 'bg-blue-100' :
-                  type.color === 'green' ? 'bg-green-100' :
-                  type.color === 'purple' ? 'bg-purple-100' :
-                  type.color === 'yellow' ? 'bg-yellow-100' :
-                  type.color === 'orange' ? 'bg-orange-100' :
-                  type.color === 'red' ? 'bg-red-100' :
-                  'bg-indigo-100'
-                }`}>
-                  <type.icon className={`h-5 w-5 ${
-                    type.color === 'blue' ? 'text-blue-600' :
-                    type.color === 'green' ? 'text-green-600' :
-                    type.color === 'purple' ? 'text-purple-600' :
-                    type.color === 'yellow' ? 'text-yellow-600' :
-                    type.color === 'orange' ? 'text-orange-600' :
-                    type.color === 'red' ? 'text-red-600' :
-                    'text-indigo-600'
-                  }`} />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">{type.name}</h3>
-                  <p className="text-body-md text-gray-500">{type.description}</p>
+            <StaggerItem key={type.id}>
+              <div
+                onClick={() => setSelectedReport(type.id)}
+                className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                  selectedReport === type.id
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-neutral-200 hover:border-neutral-300 bg-white'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(type.color)}`}>
+                    <type.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <Typography.Body className="font-medium">{type.name}</Typography.Body>
+                    <Typography.Small className="text-neutral-500">{type.description}</Typography.Small>
+                  </div>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Report Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <Card className="mb-6">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
               {reportTypes.find(t => t.id === selectedReport)?.name} Report
-            </h2>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleDownloadReport(selectedReport)}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
-              >
-                <Download className="h-4 w-4" />
-                <span>Download</span>
-              </button>
-            </div>
-          </div>
+            </CardTitle>
+            <Button onClick={() => handleDownloadReport(selectedReport)} className="bg-success-600 hover:bg-success-700">
+              <Download className="w-4 h-4 mr-2" />
+              Download
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {/* Report Summary */}
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <StaggerItem>
+                <div className="bg-neutral-50 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                      <Users className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Total Users</Typography.Small>
+                      <Typography.H3>{report.total_users || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="bg-neutral-50 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-success-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Total Filings</Typography.Small>
+                      <Typography.H3>{report.total_filings || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="bg-neutral-50 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                      <IndianRupee className="w-5 h-5 text-info-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Revenue</Typography.Small>
+                      <Typography.H3>₹{report.revenue || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="bg-neutral-50 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                      <Building2 className="w-5 h-5 text-warning-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">CA Firms</Typography.Small>
+                      <Typography.H3>{report.ca_firms || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
 
-          {/* Report Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center">
-                <Users className="h-8 w-8 text-blue-600" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-semibold text-gray-900">{report.total_users || 0}</p>
+            {/* Charts Placeholder */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div className="bg-neutral-50 rounded-lg p-6">
+                <Typography.H3 className="mb-4">Trend Analysis</Typography.H3>
+                <div className="text-center py-8">
+                  <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                  <Typography.Body className="text-neutral-500">Trend chart visualization</Typography.Body>
+                </div>
+              </div>
+              <div className="bg-neutral-50 rounded-lg p-6">
+                <Typography.H3 className="mb-4">Distribution</Typography.H3>
+                <div className="text-center py-8">
+                  <PieChart className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                  <Typography.Body className="text-neutral-500">Distribution chart visualization</Typography.Body>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center">
-                <FileText className="h-8 w-8 text-green-600" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Total Filings</p>
-                  <p className="text-2xl font-semibold text-gray-900">{report.total_filings || 0}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center">
-                <IndianRupee className="h-8 w-8 text-purple-600" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">Revenue</p>
-                  <p className="text-2xl font-semibold text-gray-900">₹{report.revenue || 0}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center">
-                <Building2 className="h-8 w-8 text-orange-600" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-600">CA Firms</p>
-                  <p className="text-2xl font-semibold text-gray-900">{report.ca_firms || 0}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts Placeholder */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Trend Analysis</h3>
-              <div className="text-center py-8">
-                <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Trend chart visualization would be implemented here</p>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Distribution</h3>
-              <div className="text-center py-8">
-                <PieChart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Distribution chart visualization would be implemented here</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Detailed Metrics */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Detailed Metrics</h3>
-
+            {/* Detailed Metrics */}
+            <Typography.H3 className="mb-4">Detailed Metrics</Typography.H3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-2">User Growth</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">New Users (30d)</span>
-                    <span className="font-medium">{report.new_users_30d || 0}</span>
+              <Card>
+                <CardContent className="p-4">
+                  <Typography.Body className="font-medium mb-2">User Growth</Typography.Body>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <Typography.Small className="text-neutral-600">New Users (30d)</Typography.Small>
+                      <Typography.Small className="font-medium">{report.new_users_30d || 0}</Typography.Small>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <Typography.Small className="text-neutral-600">Growth Rate</Typography.Small>
+                      <Typography.Small className="font-medium text-success-600">+{report.user_growth_rate || 0}%</Typography.Small>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Growth Rate</span>
-                    <span className="font-medium text-green-600">+{report.user_growth_rate || 0}%</span>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <Typography.Body className="font-medium mb-2">Filing Performance</Typography.Body>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <Typography.Small className="text-neutral-600">Completion Rate</Typography.Small>
+                      <Typography.Small className="font-medium">{report.filing_completion_rate || 0}%</Typography.Small>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <Typography.Small className="text-neutral-600">Avg Processing Time</Typography.Small>
+                      <Typography.Small className="font-medium">{report.avg_processing_time || 0} days</Typography.Small>
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-2">Filing Performance</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Completion Rate</span>
-                    <span className="font-medium">{report.filing_completion_rate || 0}%</span>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <Typography.Body className="font-medium mb-2">Revenue Metrics</Typography.Body>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <Typography.Small className="text-neutral-600">Monthly Revenue</Typography.Small>
+                      <Typography.Small className="font-medium">₹{report.monthly_revenue || 0}</Typography.Small>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <Typography.Small className="text-neutral-600">Growth Rate</Typography.Small>
+                      <Typography.Small className="font-medium text-success-600">+{report.revenue_growth_rate || 0}%</Typography.Small>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Avg Processing Time</span>
-                    <span className="font-medium">{report.avg_processing_time || 0} days</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-2">Revenue Metrics</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Monthly Revenue</span>
-                    <span className="font-medium">₹{report.monthly_revenue || 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Growth Rate</span>
-                    <span className="font-medium text-green-600">+{report.revenue_growth_rate || 0}%</span>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Report Templates */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Report Templates</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {templates.map((template) => (
-              <div key={template.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-3 mb-3">
-                  <FileText className="h-5 w-5 text-blue-600" />
-                  <h4 className="font-medium text-gray-900">{template.name}</h4>
+        <Card>
+          <CardHeader>
+            <CardTitle>Report Templates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {templates.map((template) => (
+                <div key={template.id} className="border border-neutral-200 rounded-lg p-4 hover:bg-neutral-50 transition-colors">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <Typography.Body className="font-medium">{template.name}</Typography.Body>
+                  </div>
+                  <Typography.Small className="text-neutral-600 block mb-3">{template.description}</Typography.Small>
+                  <div className="flex items-center justify-between">
+                    <Typography.Small className="text-neutral-500">Last used: {template.last_used}</Typography.Small>
+                    <Button variant="link" size="sm" onClick={() => handleDownloadReport(template.id)}>
+                      Use Template
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">{template.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">Last used: {template.last_used}</span>
-                  <button
-                    onClick={() => handleDownloadReport(template.id)}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    Use Template
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-    </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageTransition>
   );
 };
 

@@ -1,324 +1,610 @@
-// Admin Ticket Queue - Advanced Ticket Management
-// Comprehensive ticket management for admin users
-// Includes filtering, sorting, bulk actions, and SLA monitoring
+// =====================================================
+// ADMIN TICKET QUEUE PAGE
+// Advanced ticket management with DesignSystem components
+// =====================================================
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState, useEffect } from 'react';
 import {
   Ticket,
   Search,
-  Filter,
-  Clock,
-  AlertCircle,
+  RefreshCw,
   CheckCircle,
   User,
-  MessageSquare,
-  Calendar,
-  RefreshCw,
-  Eye,
-  Edit,
-  Trash2,
-  MoreVertical,
+  UserPlus,
   SortAsc,
   SortDesc,
-  Download,
-  Upload,
+  X,
+  AlertCircle,
 } from 'lucide-react';
-import {
-  EnterpriseCard,
-  EnterpriseButton,
-  EnterpriseBadge,
-  EnterpriseStatCard,
-} from '../../components/DesignSystem/EnterpriseComponents';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
+import Badge from '../../components/DesignSystem/components/Badge';
+import adminService from '../../services/api/adminService';
+import toast from 'react-hot-toast';
 
 const AdminTicketQueue = () => {
-  const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [ticketTypeFilter, setTicketTypeFilter] = useState('all');
   const [sortBy, setSortBy] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [selectedTickets, setSelectedTickets] = useState([]);
-
-  // Mock data - will be replaced with API calls
-  const mockTickets = [
-    {
-      id: '1',
-      ticketNumber: 'TK-2024-001',
-      title: 'ITR Filing Support - ITR-1',
-      description: 'Need assistance with salary income entry and Form-16 processing',
-      status: 'open',
-      priority: 'high',
-      ticketType: 'filing_support',
-      filingId: 'FIL-001',
-      userId: 'user-1',
-      caId: null,
-      tenantId: 'tenant-1',
-      createdAt: '2024-01-15T10:30:00Z',
-      updatedAt: '2024-01-15T10:30:00Z',
-      resolvedAt: null,
-      createdBy: 'user-1',
-      assignedTo: null,
-      slaDeadline: '2024-01-15T16:30:00Z',
-      tags: ['itr-1', 'form-16', 'salary'],
-      comments: 3,
-    },
-    {
-      id: '2',
-      ticketNumber: 'TK-2024-002',
-      title: 'Document Upload Issue',
-      description: 'Unable to upload Form-16 PDF file',
-      status: 'in_progress',
-      priority: 'medium',
-      ticketType: 'technical_support',
-      filingId: 'FIL-002',
-      userId: 'user-2',
-      caId: 'ca-1',
-      tenantId: 'tenant-1',
-      createdAt: '2024-01-15T09:15:00Z',
-      updatedAt: '2024-01-15T11:45:00Z',
-      resolvedAt: null,
-      createdBy: 'user-2',
-      assignedTo: 'CA Smith',
-      slaDeadline: '2024-01-15T15:15:00Z',
-      tags: ['document', 'upload', 'technical'],
-      comments: 5,
-    },
-  ];
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [pagination, setPagination] = useState({
+    total: 0,
+    limit: 50,
+    offset: 0,
+    totalPages: 0,
+  });
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [assignData, setAssignData] = useState({ assignedTo: '', caFirmId: '' });
+  const [closeData, setCloseData] = useState({ resolution: '', resolutionNotes: '' });
+  const [processing, setProcessing] = useState(null);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setTickets(mockTickets);
+    loadTickets();
+    loadStats();
+  }, [statusFilter, priorityFilter, ticketTypeFilter, pagination.offset, sortBy, sortOrder]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (pagination.offset === 0) {
+        loadTickets();
+      } else {
+        setPagination({ ...pagination, offset: 0 });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const loadTickets = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+        priority: priorityFilter !== 'all' ? priorityFilter.toUpperCase() : undefined,
+        ticketType: ticketTypeFilter !== 'all' ? ticketTypeFilter : undefined,
+        search: searchTerm || undefined,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        sortBy,
+        sortOrder,
+      };
+      const data = await adminService.getAdminTickets(params);
+      setTickets(data.tickets || []);
+      setPagination(data.pagination || pagination);
+    } catch (error) {
+      console.error('Failed to load tickets:', error);
+      toast.error('Failed to load tickets');
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const data = await adminService.getTicketStats();
+      setStats(data.stats);
+    } catch (error) {
+      console.error('Failed to load ticket statistics:', error);
+    }
+  };
 
   const handleSort = (field) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'ASC' ? 'DESC' : 'ASC');
     } else {
       setSortBy(field);
-      setSortOrder('asc');
+      setSortOrder('ASC');
     }
   };
 
-  const handleSelectTicket = (ticketId) => {
-    setSelectedTickets(prev =>
-      prev.includes(ticketId)
-        ? prev.filter(id => id !== ticketId)
-        : [...prev, ticketId],
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedTickets.length === tickets.length) {
-      setSelectedTickets([]);
-    } else {
-      setSelectedTickets(tickets.map(ticket => ticket.id));
+  const handleAssign = async () => {
+    if (!selectedTicket) return;
+    setProcessing('assign');
+    try {
+      await adminService.assignTicket(selectedTicket.id, assignData);
+      toast.success('Ticket assigned successfully');
+      setShowAssignModal(false);
+      setSelectedTicket(null);
+      setAssignData({ assignedTo: '', caFirmId: '' });
+      loadTickets();
+    } catch (error) {
+      console.error('Failed to assign ticket:', error);
+      toast.error(error.response?.data?.message || 'Failed to assign ticket');
+    } finally {
+      setProcessing(null);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading tickets...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleClose = async () => {
+    if (!selectedTicket) return;
+    setProcessing('close');
+    try {
+      await adminService.closeTicket(selectedTicket.id, closeData);
+      toast.success('Ticket closed successfully');
+      setShowCloseModal(false);
+      setSelectedTicket(null);
+      setCloseData({ resolution: '', resolutionNotes: '' });
+      loadTickets();
+      loadStats();
+    } catch (error) {
+      console.error('Failed to close ticket:', error);
+      toast.error(error.response?.data?.message || 'Failed to close ticket');
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const getStatusBadgeVariant = (status) => {
+    const statusMap = {
+      'OPEN': 'danger',
+      'IN_PROGRESS': 'warning',
+      'PENDING_USER': 'warning',
+      'PENDING_CA': 'warning',
+      'RESOLVED': 'success',
+      'CLOSED': 'secondary',
+      'ESCALATED': 'danger',
+    };
+    return statusMap[status] || 'secondary';
+  };
+
+  const getPriorityBadgeVariant = (priority) => {
+    const priorityMap = {
+      'LOW': 'success',
+      'MEDIUM': 'warning',
+      'HIGH': 'danger',
+      'URGENT': 'danger',
+      'CRITICAL': 'danger',
+    };
+    return priorityMap[priority] || 'secondary';
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Ticket Queue</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600">
-                <RefreshCw className="w-5 h-5" />
-              </button>
-            </div>
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <Typography.H1 className="mb-2">Ticket Queue</Typography.H1>
+            <Typography.Body className="text-neutral-600">
+              Manage and resolve support tickets
+            </Typography.Body>
           </div>
+          <Button variant="outline" onClick={() => { loadTickets(); loadStats(); }}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters and Search */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search tickets..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+        {/* Statistics Cards */}
+        {stats && (
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <StaggerItem>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                      <Ticket className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Total Tickets</Typography.Small>
+                      <Typography.H3>{stats.total || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+            <StaggerItem>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-warning-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Open Tickets</Typography.Small>
+                      <Typography.H3>{stats.open || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+            <StaggerItem>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-success-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Closed Tickets</Typography.Small>
+                      <Typography.H3>{stats.closed || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+            <StaggerItem>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-lg bg-error-100 flex items-center justify-center">
+                      <User className="w-5 h-5 text-error-600" />
+                    </div>
+                    <div className="ml-3">
+                      <Typography.Small className="text-neutral-500">Unassigned</Typography.Small>
+                      <Typography.H3>{stats.unassigned || 0}</Typography.H3>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+          </StaggerContainer>
+        )}
+
+        {/* Filters */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search tickets..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2.5 w-full border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPagination({ ...pagination, offset: 0 });
+                }}
+                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="all">All Status</option>
+                <option value="OPEN">Open</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="PENDING_USER">Pending User</option>
+                <option value="PENDING_CA">Pending CA</option>
+                <option value="RESOLVED">Resolved</option>
+                <option value="CLOSED">Closed</option>
+                <option value="ESCALATED">Escalated</option>
+              </select>
+              <select
+                value={priorityFilter}
+                onChange={(e) => {
+                  setPriorityFilter(e.target.value);
+                  setPagination({ ...pagination, offset: 0 });
+                }}
+                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="all">All Priority</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="URGENT">Urgent</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+              <select
+                value={ticketTypeFilter}
+                onChange={(e) => {
+                  setTicketTypeFilter(e.target.value);
+                  setPagination({ ...pagination, offset: 0 });
+                }}
+                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="all">All Types</option>
+                <option value="FILING_SUPPORT">Filing Support</option>
+                <option value="DOCUMENT_REVIEW">Document Review</option>
+                <option value="TAX_QUERY">Tax Query</option>
+                <option value="TECHNICAL_ISSUE">Technical Issue</option>
+                <option value="PAYMENT_ISSUE">Payment Issue</option>
+                <option value="REFUND_REQUEST">Refund Request</option>
+                <option value="GENERAL_INQUIRY">General Inquiry</option>
+              </select>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('all');
+                  setPriorityFilter('all');
+                  setTicketTypeFilter('all');
+                  setPagination({ ...pagination, offset: 0 });
+                }}
+              >
+                Clear Filters
+              </Button>
             </div>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-            </select>
-
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Priority</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-
-            <div className="flex space-x-2">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <Download className="w-4 h-4 inline mr-2" />
-                Export
-              </button>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Tickets Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Tickets ({tickets.length})
-              </h3>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={handleSelectAll}
-                  className="text-sm text-blue-600 hover:text-blue-800"
-                >
-                  {selectedTickets.length === tickets.length ? 'Deselect All' : 'Select All'}
-                </button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Tickets ({pagination.total})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
               </div>
-            </div>
-          </div>
+            ) : tickets.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Ticket className="w-8 h-8 text-neutral-400" />
+                </div>
+                <Typography.H3 className="mb-2">No tickets found</Typography.H3>
+                <Typography.Body className="text-neutral-600">
+                  No tickets match your current filters.
+                </Typography.Body>
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-neutral-200">
+                    <thead className="bg-neutral-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                          <button
+                            onClick={() => handleSort('ticketNumber')}
+                            className="flex items-center space-x-1 hover:text-neutral-700"
+                          >
+                            <span>Ticket</span>
+                            {sortBy === 'ticketNumber' && (
+                              sortOrder === 'ASC' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
+                            )}
+                          </button>
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Subject</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Priority</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">User</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Assigned To</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Created</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-neutral-200">
+                      {tickets.map((ticket) => (
+                        <tr key={ticket.id} className="hover:bg-neutral-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Typography.Small className="font-mono font-medium">{ticket.ticketNumber}</Typography.Small>
+                          </td>
+                          <td className="px-6 py-4">
+                            <Typography.Body className="font-medium">{ticket.subject}</Typography.Body>
+                            <Typography.Small className="text-neutral-500">{ticket.ticketType}</Typography.Small>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Badge variant={getStatusBadgeVariant(ticket.status)}>
+                              {ticket.status}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Badge variant={getPriorityBadgeVariant(ticket.priority)}>
+                              {ticket.priority}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Typography.Small>{ticket.user?.name || ticket.user?.email || 'N/A'}</Typography.Small>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Typography.Small>{ticket.assignedUser?.name || ticket.firm?.firmName || 'Unassigned'}</Typography.Small>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Typography.Small className="text-neutral-500">
+                              {new Date(ticket.createdAt).toLocaleDateString()}
+                            </Typography.Small>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-2">
+                              {!ticket.assignedTo && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedTicket(ticket);
+                                    setShowAssignModal(true);
+                                  }}
+                                  disabled={processing === ticket.id}
+                                >
+                                  <UserPlus className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {ticket.status !== 'CLOSED' && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedTicket(ticket);
+                                    setShowCloseModal(true);
+                                  }}
+                                  disabled={processing === ticket.id}
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedTickets.length === tickets.length}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <button
-                      onClick={() => handleSort('ticketNumber')}
-                      className="flex items-center space-x-1 hover:text-gray-700"
-                    >
-                      <span>Ticket</span>
-                      {sortBy === 'ticketNumber' && (
-                        sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
-                      )}
-                    </button>
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CA</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SLA</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {tickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={selectedTickets.includes(ticket.id)}
-                        onChange={() => handleSelectTicket(ticket.id)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {ticket.ticketNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div>
-                        <div className="font-medium">{ticket.title}</div>
-                        <div className="text-gray-500 text-xs">{ticket.description}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        ticket.status === 'open' ? 'bg-red-100 text-red-800' :
-                        ticket.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
-                        ticket.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {ticket.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        ticket.priority === 'high' ? 'bg-red-100 text-red-800' :
-                        ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
-                        {ticket.priority}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      User-{ticket.userId}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {ticket.assignedTo || 'Unassigned'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 text-gray-400 mr-1" />
-                        {new Date(ticket.slaDeadline).toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="text-gray-600 hover:text-gray-900">
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="text-gray-600 hover:text-gray-900">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                {/* Pagination */}
+                {pagination.totalPages > 1 && (
+                  <div className="px-6 py-4 border-t border-neutral-200 flex items-center justify-between">
+                    <Typography.Small className="text-neutral-600">
+                      Showing {pagination.offset + 1} to {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
+                    </Typography.Small>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPagination({ ...pagination, offset: Math.max(0, pagination.offset - pagination.limit) })}
+                        disabled={pagination.offset === 0}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPagination({ ...pagination, offset: pagination.offset + pagination.limit })}
+                        disabled={pagination.offset + pagination.limit >= pagination.total}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Assign Modal */}
+        {showAssignModal && selectedTicket && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-md">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Assign Ticket</CardTitle>
+                <button
+                  onClick={() => {
+                    setShowAssignModal(false);
+                    setSelectedTicket(null);
+                    setAssignData({ assignedTo: '', caFirmId: '' });
+                  }}
+                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Assign to User (User ID)
+                  </label>
+                  <input
+                    type="text"
+                    value={assignData.assignedTo}
+                    onChange={(e) => setAssignData({ ...assignData, assignedTo: e.target.value })}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter user ID"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Assign to CA Firm (Firm ID)
+                  </label>
+                  <input
+                    type="text"
+                    value={assignData.caFirmId}
+                    onChange={(e) => setAssignData({ ...assignData, caFirmId: e.target.value })}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter CA firm ID"
+                  />
+                </div>
+                <div className="flex gap-3 justify-end pt-4 border-t border-neutral-200">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowAssignModal(false);
+                      setSelectedTicket(null);
+                      setAssignData({ assignedTo: '', caFirmId: '' });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAssign}
+                    disabled={processing === 'assign' || (!assignData.assignedTo && !assignData.caFirmId)}
+                  >
+                    {processing === 'assign' ? 'Assigning...' : 'Assign'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
+        )}
+
+        {/* Close Modal */}
+        {showCloseModal && selectedTicket && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <Card className="w-full max-w-md">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Close Ticket</CardTitle>
+                <button
+                  onClick={() => {
+                    setShowCloseModal(false);
+                    setSelectedTicket(null);
+                    setCloseData({ resolution: '', resolutionNotes: '' });
+                  }}
+                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Resolution
+                  </label>
+                  <select
+                    value={closeData.resolution}
+                    onChange={(e) => setCloseData({ ...closeData, resolution: e.target.value })}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="">Select resolution</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="DUPLICATE">Duplicate</option>
+                    <option value="NOT_AN_ISSUE">Not an Issue</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Resolution Notes
+                  </label>
+                  <textarea
+                    value={closeData.resolutionNotes}
+                    onChange={(e) => setCloseData({ ...closeData, resolutionNotes: e.target.value })}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    rows={4}
+                    placeholder="Add notes about the resolution..."
+                  />
+                </div>
+                <div className="flex gap-3 justify-end pt-4 border-t border-neutral-200">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCloseModal(false);
+                      setSelectedTicket(null);
+                      setCloseData({ resolution: '', resolutionNotes: '' });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleClose}
+                    disabled={processing === 'close' || !closeData.resolution}
+                  >
+                    {processing === 'close' ? 'Closing...' : 'Close Ticket'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

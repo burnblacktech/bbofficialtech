@@ -1,14 +1,69 @@
 // =====================================================
-// BREATHING GRID COMPONENT
-// Implements the Breathing Grid Layout System from UI.md
-// Three density states: Glance → Summary → Detailed
-// Fully compliant with UI.md specifications including animations and keyboard navigation
+// BREATHING GRID COMPONENT (POLISHED ANIMATIONS)
+// Spring physics, staggered entrance, smooth transitions
+// Desktop: Fixed column layout with spring animations
+// Mobile/Tablet: Horizontal glance bar with scroll snap
 // =====================================================
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BREATHING_GRID } from '../../constants/designTokens';
-import { variants, transitions } from '../../lib/motion';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+
+// Grid configuration - Optimized spacing for reduced whitespace
+const GRID_CONFIG = {
+  glance: 72,
+  summary: 200,
+  summaryMin: 180,
+  summaryMax: 220,
+  expandedMin: 480,
+  expandedMax: 720,
+  gapDesktop: 16,      // Desktop: 16px gap (reduced from 24px)
+  gapTablet: 12,       // Tablet: 12px gap (reduced from 20px)
+  gapMobile: 8,        // Mobile: 8px gap (reduced from 16px)
+  paddingDesktop: 16,  // Desktop: 16px padding (reduced from 24px)
+  paddingTablet: 12,   // Tablet: 12px padding (reduced from 20px)
+  paddingMobile: 12,   // Mobile: 12px padding (reduced from 16px)
+};
+
+// Spring animation presets
+const SPRING = {
+  default: { type: 'spring', stiffness: 300, damping: 30 },
+  snappy: { type: 'spring', stiffness: 400, damping: 25 },
+  gentle: { type: 'spring', stiffness: 200, damping: 30 },
+  bouncy: { type: 'spring', stiffness: 500, damping: 20 },
+};
+
+// Animation variants for desktop grid cards
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: 20 },
+  visible: (i) => ({
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      ...SPRING.default,
+      delay: i * 0.05,
+    },
+  }),
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] } }, // ease-smooth
+};
+
+// Mobile glance bar item variants
+const glanceItemVariants = {
+  unselected: { scale: 1, backgroundColor: 'transparent' },
+  selected: {
+    scale: 1.05,
+    backgroundColor: 'rgba(212, 175, 55, 0.1)', // Updated to Gold-500
+    transition: SPRING.snappy,
+  },
+  tap: { scale: 0.95 },
+};
+
+// Panel transition variants
+const panelVariants = {
+  enter: { opacity: 0, x: 20, scale: 0.98 },
+  center: { opacity: 1, x: 0, scale: 1, transition: { ...SPRING.default, duration: 0.3, ease: [0.4, 0, 0.2, 1] } }, // ease-smooth
+  exit: { opacity: 0, x: -20, scale: 0.98, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }, // ease-in
+};
 
 const BreathingGrid = ({
   children,
@@ -17,17 +72,38 @@ const BreathingGrid = ({
   className = '',
   'aria-label': ariaLabel = 'ITR Filing Sections',
 }) => {
-  const [gridState, setGridState] = useState('default'); // 'default' | 'expanded'
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const gridRef = useRef(null);
   const sectionRefs = useRef([]);
+  const glanceBarRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
 
-  // Get array of section IDs
-  const sectionIds = React.Children.toArray(children)
-    .map((child) => child?.props?.id || child?.props?.sectionId)
-    .filter(Boolean);
+  const childrenArray = useMemo(() => React.Children.toArray(children).filter(Boolean), [children]);
+
+  const sectionIds = useMemo(() =>
+    childrenArray.map((child) => child?.props?.id || child?.props?.sectionId).filter(Boolean),
+    [childrenArray],
+  );
+
+  const expandedIndex = useMemo(() => {
+    if (!expandedSectionId) return -1;
+    return childrenArray.findIndex(
+      (c) => (c?.props?.id || c?.props?.sectionId) === expandedSectionId,
+    );
+  }, [childrenArray, expandedSectionId]);
+
+  const isExpanded = expandedIndex !== -1;
+
+  // Track first render for entrance animation
+  useEffect(() => {
+    if (!hasAnimated) {
+      const timer = setTimeout(() => setHasAnimated(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [hasAnimated]);
 
   // Detect screen size
   useEffect(() => {
@@ -36,102 +112,54 @@ const BreathingGrid = ({
       setIsMobile(width < 768);
       setIsTablet(width >= 768 && width < 1280);
     };
-
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Update grid state when expanded section changes
+  // Scroll glance bar to selected item on mobile
   useEffect(() => {
-    if (expandedSectionId) {
-      setGridState('expanded');
-    } else {
-      setGridState('default');
+    if ((isMobile || isTablet) && expandedSectionId && glanceBarRef.current) {
+      const selectedIndex = sectionIds.indexOf(expandedSectionId);
+      if (selectedIndex !== -1) {
+        const container = glanceBarRef.current;
+        const items = container.querySelectorAll('[role="tab"]');
+        if (items[selectedIndex]) {
+          items[selectedIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      }
     }
-  }, [expandedSectionId]);
+  }, [expandedSectionId, isMobile, isTablet, sectionIds]);
 
-  // Enhanced keyboard navigation per UI.md specs
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Only handle if focus is within grid or on a section card
       const isWithinGrid = gridRef.current?.contains(e.target);
-      const isSectionCard = e.target.closest('.section-card');
+      if (!isWithinGrid) return;
 
-      if (!isWithinGrid && !isSectionCard) return;
-
-      // Escape: Collapse expanded section
       if (e.key === 'Escape' && expandedSectionId) {
         e.preventDefault();
-        e.stopPropagation();
         onSectionExpand(null);
-        // Return focus to the collapsed section
-        const expandedIndex = sectionIds.indexOf(expandedSectionId);
         if (expandedIndex !== -1 && sectionRefs.current[expandedIndex]) {
-          setTimeout(() => {
-            sectionRefs.current[expandedIndex]?.focus();
-          }, 100);
+          setTimeout(() => sectionRefs.current[expandedIndex]?.focus(), 100);
         }
         return;
       }
 
-      // Home: Focus first section
-      if (e.key === 'Home' && !isMobile && !isTablet) {
+      if (!isMobile && !isTablet && ['ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
-        setFocusedIndex(0);
-        if (sectionRefs.current[0]) {
-          sectionRefs.current[0].focus();
-        }
-        return;
-      }
-
-      // End: Focus last section
-      if (e.key === 'End' && !isMobile && !isTablet) {
-        e.preventDefault();
-        const lastIndex = sectionIds.length - 1;
-        setFocusedIndex(lastIndex);
-        if (sectionRefs.current[lastIndex]) {
-          sectionRefs.current[lastIndex].focus();
-        }
-        return;
-      }
-
-      // Arrow keys: Navigate between sections (desktop only)
-      if (!isMobile && !isTablet && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const currentIndex = expandedSectionId
-          ? sectionIds.indexOf(expandedSectionId)
-          : focusedIndex !== null
-          ? focusedIndex
-          : 0;
-
-        let newIndex = currentIndex;
-
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          newIndex = currentIndex > 0 ? currentIndex - 1 : sectionIds.length - 1;
-        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          newIndex = currentIndex < sectionIds.length - 1 ? currentIndex + 1 : 0;
-        }
-
-        const newSectionId = sectionIds[newIndex];
+        const currentIndex = focusedIndex ?? 0;
+        const newIndex = e.key === 'ArrowLeft'
+          ? (currentIndex > 0 ? currentIndex - 1 : sectionIds.length - 1)
+          : (currentIndex < sectionIds.length - 1 ? currentIndex + 1 : 0);
         setFocusedIndex(newIndex);
-
-        // Focus the new section
-        if (sectionRefs.current[newIndex]) {
-          sectionRefs.current[newIndex].focus();
-        }
-
-        return;
+        sectionRefs.current[newIndex]?.focus();
       }
 
-      // Enter/Space: Expand/collapse focused section
       if ((e.key === 'Enter' || e.key === ' ') && focusedIndex !== null) {
+        e.preventDefault();
         const sectionId = sectionIds[focusedIndex];
         if (sectionId) {
-          e.preventDefault();
-          e.stopPropagation();
           onSectionExpand(sectionId === expandedSectionId ? null : sectionId);
         }
       }
@@ -140,116 +168,189 @@ const BreathingGrid = ({
     const gridElement = gridRef.current;
     if (gridElement) {
       gridElement.addEventListener('keydown', handleKeyDown);
-      return () => {
-        gridElement.removeEventListener('keydown', handleKeyDown);
-      };
+      return () => gridElement.removeEventListener('keydown', handleKeyDown);
     }
-  }, [expandedSectionId, focusedIndex, isMobile, isTablet, sectionIds, onSectionExpand]);
+  }, [expandedSectionId, expandedIndex, focusedIndex, isMobile, isTablet, sectionIds, onSectionExpand]);
 
-  // Handle click outside to collapse (desktop only)
   const handleGridClick = useCallback((e) => {
     if (e.target === e.currentTarget && expandedSectionId) {
       onSectionExpand(null);
     }
   }, [expandedSectionId, onSectionExpand]);
 
-  // Mobile/Tablet: Render glance bar + expanded content
+  // Determine card configuration
+  const getCardConfig = useCallback((index) => {
+    if (!isExpanded) {
+      return { density: 'summary', gridColumn: 'auto', row: Math.floor(index / 5) + 1 };
+    }
+
+    const distance = index - expandedIndex;
+
+    if (index === expandedIndex) {
+      return { density: 'detailed', gridColumn: '3', row: 1 };
+    }
+
+    if (distance === -2) return { density: 'glance', gridColumn: '1', row: 1 };
+    if (distance === -1) return { density: 'glance', gridColumn: '2', row: 1 };
+    if (distance === 1) return { density: 'glance', gridColumn: '4', row: 1 };
+    if (distance === 2) return { density: 'glance', gridColumn: '5', row: 1 };
+
+    const summaryOrder = index < expandedIndex - 2 ? index : index - 5;
+    return { density: 'summary', gridColumn: 'auto', row: 2, order: summaryOrder };
+  }, [expandedIndex, isExpanded]);
+
+  // =====================================================
+  // MOBILE/TABLET: Horizontal glance bar + expanded panel
+  // =====================================================
   if (isMobile || isTablet) {
     return (
       <div
-        className={`breathing-grid-mobile ${className}`}
         ref={gridRef}
+        className={`breathing-grid-mobile ${className}`}
         role="region"
         aria-label={ariaLabel}
+        style={{ paddingBottom: isMobile ? '100px' : '0' }}
       >
-        {/* Glance Bar */}
-        <div className="glance-bar-container">
-          <div
-            className="glance-bar"
-            role="tablist"
-            aria-label="Section navigation"
-            style={{
-              display: 'flex',
-              gap: '8px',
-              padding: '12px 16px',
-              overflowX: 'auto',
-              scrollSnapType: 'x mandatory',
-              WebkitOverflowScrolling: 'touch',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
-          >
-            {React.Children.map(children, (child, index) => {
-              if (!child) return null;
-              const sectionId = child.props?.id || child.props?.sectionId;
-              const isExpanded = sectionId === expandedSectionId;
-              const title = child.props?.title || child.props?.name || `Section ${index + 1}`;
+        {/* Glance Bar with scroll snap */}
+        <motion.div
+          className="glance-bar sticky top-[56px] z-30"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : SPRING.snappy}
+        >
+          <div className="bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
+            <div
+              ref={glanceBarRef}
+              className="flex items-center gap-2 h-16 px-4 overflow-x-auto hide-scrollbar"
+              role="tablist"
+              aria-label="Section navigation"
+              style={{
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              {childrenArray.map((child, index) => {
+                const sectionId = child.props?.id || child.props?.sectionId;
+                const isSelected = sectionId === expandedSectionId;
+                const title = child.props?.title || `Section ${index + 1}`;
+                const Icon = child.props?.icon;
+                const status = child.props?.status;
 
+                return (
+                  <motion.button
+                    key={sectionId || index}
+                    role="tab"
+                    aria-selected={isSelected}
+                    aria-controls={`panel-${sectionId}`}
+                    onClick={() => onSectionExpand(isSelected ? null : sectionId)}
+                    className={`
+                      relative flex flex-col items-center justify-center flex-shrink-0
+                      w-14 h-14 rounded-xl transition-colors
+                      ${isSelected ? 'text-primary-600' : 'text-slate-600'}
+                    `}
+                    style={{ scrollSnapAlign: 'center' }}
+                    variants={shouldReduceMotion ? {} : glanceItemVariants}
+                    initial="unselected"
+                    animate={isSelected ? 'selected' : 'unselected'}
+                    whileTap={shouldReduceMotion ? {} : 'tap'}
+                  >
+                    {/* Selection indicator */}
+                    {isSelected && (
+                      <motion.div
+                        layoutId="glanceIndicator"
+                        className="absolute inset-0 bg-primary-50 rounded-xl border-2 border-primary-300"
+                        initial={false}
+                        transition={SPRING.snappy}
+                      />
+                    )}
+
+                    <div className="relative z-10 flex flex-col items-center">
+                      {Icon && (
+                        <motion.div
+                          animate={isSelected ? { scale: 1.1 } : { scale: 1 }}
+                          transition={SPRING.snappy}
+                        >
+                          <Icon className="w-5 h-5" />
+                        </motion.div>
+                      )}
+                      <span className="text-[10px] mt-1 font-medium truncate max-w-[48px]">
+                        {title.length > 6 ? title.slice(0, 5) + '…' : title}
+                      </span>
+                    </div>
+
+                    {/* Status dot */}
+                    {status && status !== 'pending' && (
+                      <motion.div
+                        className={`
+                          absolute top-1 right-1 w-2 h-2 rounded-full
+                          ${status === 'complete' ? 'bg-emerald-500' :
+                            status === 'warning' ? 'bg-amber-500' :
+                            status === 'error' ? 'bg-red-500' : 'bg-slate-300'}
+                        `}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={SPRING.bouncy}
+                      />
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Expanded Content Panel */}
+        <AnimatePresence mode="wait">
+          {expandedSectionId && (
+            <motion.div
+              key={expandedSectionId}
+              role="tabpanel"
+              id={`panel-${expandedSectionId}`}
+              variants={shouldReduceMotion ? {} : panelVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="p-4"
+            >
+              {childrenArray.map((child) => {
+                const sectionId = child.props?.id || child.props?.sectionId;
+                if (sectionId === expandedSectionId) {
+                  return React.cloneElement(child, {
+                    key: sectionId,
+                    density: 'detailed',
+                    isExpanded: true,
+                    onExpand: () => onSectionExpand(null),
+                  });
+                }
+                return null;
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Default Summary Grid */}
+        {!expandedSectionId && (
+          <div className="grid gap-4 p-4" style={{
+            gridTemplateColumns: `repeat(auto-fill, minmax(${GRID_CONFIG.summaryMin}px, 1fr))`,
+          }}>
+            {childrenArray.map((child, index) => {
+              const sectionId = child.props?.id || child.props?.sectionId;
               return (
-                <div
-                  key={sectionId || child.key || index}
-                  role="tab"
-                  aria-selected={isExpanded}
-                  aria-controls={`section-${sectionId}`}
-                  tabIndex={isExpanded ? 0 : -1}
-                  onClick={() => onSectionExpand(isExpanded ? null : sectionId)}
-                  style={{
-                    minWidth: '56px',
-                    width: '56px',
-                    height: '56px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    borderRadius: '8px',
-                    borderBottom: isExpanded ? '3px solid #FF6B00' : '3px solid transparent',
-                    scrollSnapAlign: 'start',
-                    transition: 'all 200ms ease-out',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#FFF8F2';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
+                <motion.div
+                  key={sectionId || index}
+                  custom={index}
+                  variants={shouldReduceMotion ? {} : cardVariants}
+                  initial={hasAnimated ? false : 'hidden'}
+                  animate="visible"
                 >
                   {React.cloneElement(child, {
-                    density: 'glance',
+                    density: 'summary',
                     isExpanded: false,
-                    onExpand: () => onSectionExpand(isExpanded ? null : sectionId),
-                    'aria-label': title,
+                    onExpand: () => onSectionExpand(sectionId),
+                    className: `${child.props?.className || ''} section-card`,
                   })}
-                </div>
+                </motion.div>
               );
-            })}
-          </div>
-        </div>
-
-        {/* Expanded Content */}
-        {expandedSectionId && (
-          <div
-            className="expanded-content-mobile"
-            role="tabpanel"
-            id={`section-${expandedSectionId}`}
-            aria-labelledby={`tab-${expandedSectionId}`}
-            style={{
-              width: '100%',
-              padding: '16px',
-            }}
-          >
-            {React.Children.map(children, (child) => {
-              if (!child) return null;
-              const sectionId = child.props?.id || child.props?.sectionId;
-              if (sectionId === expandedSectionId) {
-                return React.cloneElement(child, {
-                  density: 'detailed',
-                  isExpanded: true,
-                  onExpand: () => onSectionExpand(null),
-                  key: sectionId || child.key,
-                });
-              }
-              return null;
             })}
           </div>
         )}
@@ -257,83 +358,88 @@ const BreathingGrid = ({
     );
   }
 
-  // Desktop: Render CSS Grid layout with animations
+  // =====================================================
+  // DESKTOP: Fixed 5-column grid with spring animations
+  // =====================================================
+  const gridTemplate = isExpanded
+    ? `${GRID_CONFIG.glance}px ${GRID_CONFIG.glance}px minmax(${GRID_CONFIG.expandedMin}px, ${GRID_CONFIG.expandedMax}px) ${GRID_CONFIG.glance}px ${GRID_CONFIG.glance}px`
+    : `repeat(auto-fill, ${GRID_CONFIG.summary}px)`;
+
   return (
     <motion.div
       ref={gridRef}
-      className={`breathing-grid breathing-grid-${gridState} ${className}`}
-      data-state={gridState}
+      className={`breathing-grid ${className}`}
       onClick={handleGridClick}
       role="region"
       aria-label={ariaLabel}
-      initial={false}
-      animate={{
-        gridTemplateColumns: gridState === 'default'
-          ? 'repeat(auto-fit, minmax(180px, 220px))'
-          : '72px 72px minmax(480px, 720px) 72px 72px',
-      }}
-      transition={{
-        duration: 0.4,
-        ease: [0, 0, 0.2, 1], // cubic-bezier(0, 0, 0.2, 1)
-      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
       style={{
         display: 'grid',
-        gap: BREATHING_GRID.gaps.grid,
-        padding: BREATHING_GRID.padding.desktop,
+        gridTemplateColumns: gridTemplate,
+        gap: isMobile ? `${GRID_CONFIG.gapMobile}px` : isTablet ? `${GRID_CONFIG.gapTablet}px` : `${GRID_CONFIG.gapDesktop}px`,
+        padding: isMobile ? `${GRID_CONFIG.paddingMobile}px` : isTablet ? `${GRID_CONFIG.paddingTablet}px` : `${GRID_CONFIG.paddingDesktop}px`,
         justifyContent: 'center',
-        maxWidth: '1440px',
+        alignContent: 'start',
+        maxWidth: '1400px',
         margin: '0 auto',
+        transition: shouldReduceMotion ? 'none' : 'grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // 300ms ease-smooth
       }}
     >
-      {React.Children.map(children, (child, index) => {
-        if (!child) return null;
+      {childrenArray.map((child, index) => {
         const sectionId = child.props?.id || child.props?.sectionId;
-        const isExpanded = sectionId === expandedSectionId;
-        const title = child.props?.title || child.props?.name || `Section ${index + 1}`;
+        const cardConfig = getCardConfig(index);
+        const title = child.props?.title || `Section ${index + 1}`;
 
-        // Determine density state
-        let density = 'summary';
+        let gridStyles = {};
         if (isExpanded) {
-          density = 'detailed';
-        } else if (gridState === 'expanded') {
-          // Check if this card is adjacent to expanded card
-          const expandedIndex = React.Children.toArray(children).findIndex(
-            (c) => (c?.props?.id || c?.props?.sectionId) === expandedSectionId,
-          );
-          const distance = Math.abs(index - expandedIndex);
-          if (distance <= 2 && distance > 0) {
-            density = 'glance';
+          if (cardConfig.density === 'detailed') {
+            gridStyles = { gridColumn: '3', gridRow: '1' };
+          } else if (cardConfig.density === 'glance') {
+            gridStyles = { gridColumn: cardConfig.gridColumn, gridRow: '1' };
+          } else {
+            gridStyles = { gridRow: '2' };
           }
         }
 
         return (
           <motion.div
-            key={sectionId || child.key || index}
-            initial={false}
-            animate={{
-              opacity: 1,
+            key={sectionId || index}
+            layout={!shouldReduceMotion}
+            custom={index}
+            variants={shouldReduceMotion ? {} : cardVariants}
+            initial={hasAnimated ? false : 'hidden'}
+            animate="visible"
+            exit="exit"
+            style={{
+              ...gridStyles,
+              width: cardConfig.density === 'glance' ? `${GRID_CONFIG.glance}px` :
+                     cardConfig.density === 'summary' ? `${GRID_CONFIG.summary}px` : '100%',
+              minWidth: cardConfig.density === 'detailed' ? `${GRID_CONFIG.expandedMin}px` : undefined,
+              maxWidth: cardConfig.density === 'detailed' ? `${GRID_CONFIG.expandedMax}px` : undefined,
+              zIndex: cardConfig.density === 'detailed' ? 10 : 1,
             }}
-            transition={{
-              duration: 0.2,
-              delay: index * 0.03, // Stagger animation
-            }}
-            ref={(el) => {
-              if (el) {
-                sectionRefs.current[index] = el;
-              }
-            }}
+            ref={(el) => { if (el) sectionRefs.current[index] = el; }}
+            whileHover={cardConfig.density !== 'detailed' && !shouldReduceMotion ? {
+              y: -4,
+              transition: SPRING.snappy,
+            } : {}}
           >
             {React.cloneElement(child, {
-              density,
-              isExpanded,
+              key: sectionId || child.key, // Ensure stable key
+              id: sectionId || child.props?.id,
+              sectionId: sectionId || child.props?.sectionId,
+              density: cardConfig.density,
+              isExpanded: cardConfig.density === 'detailed',
               onExpand: () => {
                 setFocusedIndex(index);
-                onSectionExpand(isExpanded ? null : sectionId);
+                onSectionExpand(cardConfig.density === 'detailed' ? null : sectionId);
               },
               'aria-label': title,
-              tabIndex: isExpanded ? 0 : density === 'summary' ? 0 : -1,
+              tabIndex: cardConfig.density === 'glance' ? -1 : 0,
               role: 'article',
-              'aria-expanded': isExpanded,
+              'aria-expanded': cardConfig.density === 'detailed',
               className: `${child.props?.className || ''} section-card`,
             })}
           </motion.div>
@@ -344,4 +450,3 @@ const BreathingGrid = ({
 };
 
 export default BreathingGrid;
-

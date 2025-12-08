@@ -3,6 +3,8 @@
 // Single validation system for all ITR types
 // Handles complex validation rules and cross-section dependencies
 // =====================================================
+/* eslint-disable camelcase */
+// Field names use snake_case to match API/database schemas
 
 import { validationService } from '../../../services';
 
@@ -488,9 +490,21 @@ class ITRValidationEngine {
     }
 
     // ITR-1 specific validations
-    if (itrType === 'ITR-1') {
+    if (itrType === 'ITR-1' || itrType === 'ITR1') {
       if (totalIncome > 5000000) {
         errors.push('ITR-1 is applicable only for total income up to ₹50 lakh');
+      }
+
+      // Check for agricultural income > ₹5,000 (not allowed in ITR-1) - CRITICAL REGULATORY RULE
+      const agriIncome = formData.exemptIncome?.agriculturalIncome?.netAgriculturalIncome
+        || formData.exemptIncome?.netAgriculturalIncome
+        || formData.agriculturalIncome
+        || 0;
+      if (agriIncome > 5000) {
+        errors.push(
+          `Agricultural income (₹${agriIncome.toLocaleString('en-IN')}) exceeds ₹5,000 limit. ` +
+          'ITR-1 is not permitted. You must file ITR-2.',
+        );
       }
 
       // Check for business income (not allowed in ITR-1)
@@ -499,7 +513,7 @@ class ITRValidationEngine {
       }
 
       // Check for multiple house properties (not allowed in ITR-1)
-      const houseProperties = formData.house_property?.properties || [];
+      const houseProperties = formData.house_property?.properties || formData.houseProperty?.properties || [];
       if (houseProperties.length > 1) {
         errors.push('ITR-1 allows only one house property. Consider ITR-2 for multiple properties.');
       }
@@ -709,6 +723,18 @@ class ITRValidationEngine {
         errors.push('ITR-1 is applicable only for total income up to ₹50 lakhs. Please use ITR-2.');
       }
 
+      // Check for agricultural income > ₹5,000 (CRITICAL REGULATORY RULE - MANDATORY)
+      const agriIncome = formData.exemptIncome?.agriculturalIncome?.netAgriculturalIncome
+        || formData.exemptIncome?.netAgriculturalIncome
+        || formData.agriculturalIncome
+        || 0;
+      if (agriIncome > 5000) {
+        errors.push(
+          `Agricultural income (₹${agriIncome.toLocaleString('en-IN')}) exceeds ₹5,000 limit. ` +
+          'ITR-1 is not permitted. You must file ITR-2.',
+        );
+      }
+
       // Check for business income
       const businessIncome = formData.income?.business_income || formData.income?.businessIncome || 0;
       if (businessIncome > 0) {
@@ -910,7 +936,8 @@ class ITRValidationEngine {
   }
 }
 
-// Create singleton instance
-const itrValidationEngine = new ITRValidationEngine();
+// Export the class for use with 'new'
+export default ITRValidationEngine;
 
-export default itrValidationEngine;
+// Also export a singleton instance for convenience
+export const itrValidationEngine = new ITRValidationEngine();

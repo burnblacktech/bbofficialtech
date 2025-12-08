@@ -1,16 +1,19 @@
 // =====================================================
-// COMPUTATION SECTION COMPONENT
+// COMPUTATION SECTION COMPONENT (POLISHED)
 // Reusable expandable section for ITR computation
+// Enhanced with better visual hierarchy and animations
 // =====================================================
 
-import React from 'react';
-import { ChevronDown, ChevronUp, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, CheckCircle, AlertCircle, IndianRupee, Info } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { springs, variants } from '../../lib/motion';
 import TaxCalculator from './TaxCalculator';
 import DeductionBreakdown from './DeductionBreakdown';
 import { DeductionsManager } from '../../features/deductions';
 import BalanceSheetForm from '../../features/income/business/components/balance-sheet-form';
 import AuditInformationForm from '../../features/income/business/components/audit-information-form';
-// Import from feature-first structure
 import {
   SalaryForm,
   HousePropertyForm,
@@ -21,11 +24,122 @@ import {
   DirectorPartnerIncomeForm,
   ITR4IncomeForm,
   PresumptiveIncomeForm,
+  Section44AEForm,
+  ExemptIncomeForm,
+  AgriculturalIncomeForm,
+  OtherSourcesForm,
 } from '../../features/income';
+import { ScheduleFA } from '../../features/foreign-assets';
 import { PersonalInfoForm } from '../../features/personal-info';
 import { TaxesPaidForm } from '../../features/taxes-paid';
 import { BankDetailsForm } from '../../features/bank-details';
 
+// =====================================================
+// STYLED SUB-SECTION WRAPPER
+// =====================================================
+const SubSection = ({ title, icon: Icon, children, defaultOpen = true, className = '' }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className={cn(
+      'rounded-xl border-2 border-slate-200 bg-gradient-to-br from-white to-slate-50/50 overflow-hidden',
+      'transition-all duration-200',
+      'hover:border-slate-300',
+      className,
+    )}>
+      {/* Header */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-slate-50/80 to-transparent hover:from-slate-100/80 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          {Icon && (
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
+              <Icon className="w-4 h-4 text-primary-600" />
+            </div>
+          )}
+          <h4 className="text-sm font-semibold text-slate-800">{title}</h4>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={springs.snappy}
+        >
+          <ChevronDown className="w-5 h-5 text-slate-400" />
+        </motion.div>
+      </button>
+
+      {/* Content */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={springs.gentle}
+          >
+            <div className="p-4 border-t border-slate-100">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// =====================================================
+// STYLED INPUT FIELD (Quick inline styling)
+// =====================================================
+const StyledCurrencyField = ({ label, value, onChange, hint, max, className = '' }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const isOverMax = max && value > max;
+
+  return (
+    <div className={className}>
+      <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>
+      <div className="relative">
+        <div className={cn(
+          'absolute left-0 top-0 bottom-0 flex items-center justify-center w-10',
+          'bg-slate-100 rounded-l-xl border-2 border-r-0 transition-colors',
+          isFocused ? 'border-primary-500 bg-primary-50' : 'border-slate-200',
+          isOverMax && 'border-red-400 bg-red-50',
+        )}>
+          <IndianRupee className={cn(
+            'w-4 h-4 transition-colors',
+            isFocused ? 'text-primary-600' : 'text-slate-500',
+            isOverMax && 'text-red-500',
+          )} />
+        </div>
+        <input
+          type="number"
+          value={value || 0}
+          onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className={cn(
+            'w-full pl-12 pr-4 py-2.5 rounded-xl bg-white border-2 transition-all duration-200',
+            'text-slate-900 text-right tabular-nums font-medium',
+            'focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500',
+            isOverMax ? 'border-red-400 focus:border-red-500' : 'border-slate-200',
+          )}
+        />
+      </div>
+      {hint && (
+        <p className={cn(
+          'text-xs mt-1.5',
+          isOverMax ? 'text-red-500' : 'text-slate-500',
+        )}>
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+};
+
+// =====================================================
+// MAIN COMPUTATION SECTION
+// =====================================================
 const ComputationSection = ({
   id,
   title,
@@ -42,8 +156,13 @@ const ComputationSection = ({
   regime,
   assessmentYear,
   onDataUploaded,
-  renderContentOnly = false, // When true, only render content (no card wrapper)
-  readOnly = false, // When true, disable all editing
+  renderContentOnly = false,
+  readOnly = false,
+  validationErrors = {},
+  autoFilledFields = {},
+  prefetchSources = {},
+  fieldVerificationStatuses = {},
+  fieldSources = {},
 }) => {
   const renderSectionContent = () => {
     switch (id) {
@@ -52,10 +171,15 @@ const ComputationSection = ({
           <PersonalInfoForm
             data={formData}
             onUpdate={onUpdate}
+            autoFilledFields={autoFilledFields}
+            sources={prefetchSources}
+            fieldVerificationStatuses={fieldVerificationStatuses}
+            fieldSources={fieldSources}
           />
         );
+
       case 'income':
-        // For ITR-2, use specialized components
+        // For ITR-2
         if (selectedITR === 'ITR-2' || selectedITR === 'ITR2') {
           return (
             <ITR2IncomeForm
@@ -68,7 +192,7 @@ const ComputationSection = ({
             />
           );
         }
-        // For ITR-3, use ITR3IncomeForm (includes business/professional income)
+        // For ITR-3
         if (selectedITR === 'ITR-3' || selectedITR === 'ITR3') {
           return (
             <ITR3IncomeForm
@@ -81,7 +205,7 @@ const ComputationSection = ({
             />
           );
         }
-        // For ITR-4, use ITR4IncomeForm (includes presumptive taxation)
+        // For ITR-4
         if (selectedITR === 'ITR-4' || selectedITR === 'ITR4') {
           return (
             <ITR4IncomeForm
@@ -93,35 +217,63 @@ const ComputationSection = ({
             />
           );
         }
-        // For other ITR types (ITR-1), use SalaryForm
+        // For ITR-1 (Sahaj) - Complete income sources
         return (
-          <div className="space-y-4">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 mb-4">Salary Income</h4>
-              <SalaryForm
-                data={formData}
-                onUpdate={onUpdate}
-                selectedITR={selectedITR}
-                onForm16Extracted={onDataUploaded}
-              />
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 mb-4">Other Income</h4>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Other Income (₹)</label>
-                <input
-                  type="number"
-                  value={formData.otherIncome || 0}
-                  onChange={(e) => onUpdate({ otherIncome: parseFloat(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          <motion.div
+            className="space-y-4"
+            variants={variants.staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Salary/Pension Income */}
+            <motion.div variants={variants.staggerItem}>
+              <SubSection title="Salary / Pension Income" icon={IndianRupee}>
+                <SalaryForm
+                  data={formData}
+                  onUpdate={onUpdate}
+                  selectedITR={selectedITR}
+                  onForm16Extracted={onDataUploaded}
                 />
-                <p className="text-xs text-gray-500 mt-1">Interest, dividends, winnings, etc.</p>
-              </div>
-            </div>
-          </div>
+              </SubSection>
+            </motion.div>
+
+            {/* House Property (1 property for ITR-1) */}
+            <motion.div variants={variants.staggerItem}>
+              <SubSection title="House Property Income" icon={IndianRupee} defaultOpen={false}>
+                <div className="space-y-4">
+                  <div className="bg-amber-50 rounded-lg border border-amber-200 p-3 flex items-start gap-2">
+                    <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-700">
+                      ITR-1 allows only one house property. For multiple properties, use ITR-2.
+                    </p>
+                  </div>
+                  <HousePropertyForm
+                    filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+                    data={formData?.houseProperty || { properties: [] }}
+                    onUpdate={(updates) => onUpdate({ houseProperty: { ...formData?.houseProperty, ...updates } })}
+                    selectedITR={selectedITR}
+                    onDataUploaded={onDataUploaded}
+                    maxProperties={1}
+                  />
+                </div>
+              </SubSection>
+            </motion.div>
+
+            {/* Other Sources (Interest, Dividends, etc.) */}
+            <motion.div variants={variants.staggerItem}>
+              <SubSection title="Income from Other Sources" icon={IndianRupee}>
+                <OtherSourcesForm
+                  data={formData?.otherSources || {}}
+                  onUpdate={(data) => onUpdate({ otherSources: data })}
+                  selectedITR={selectedITR}
+                  filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+                />
+              </SubSection>
+            </motion.div>
+          </motion.div>
         );
+
       case 'businessIncome':
-        // ITR-3 specific: Business Income section
         if (selectedITR === 'ITR-3' || selectedITR === 'ITR3') {
           return (
             <BusinessIncomeForm
@@ -132,8 +284,8 @@ const ComputationSection = ({
           );
         }
         return null;
+
       case 'professionalIncome':
-        // ITR-3 specific: Professional Income section
         if (selectedITR === 'ITR-3' || selectedITR === 'ITR3') {
           return (
             <ProfessionalIncomeForm
@@ -144,8 +296,8 @@ const ComputationSection = ({
           );
         }
         return null;
+
       case 'balanceSheet':
-        // ITR-3 specific: Balance Sheet section
         if (selectedITR === 'ITR-3' || selectedITR === 'ITR3') {
           return (
             <BalanceSheetForm
@@ -156,8 +308,8 @@ const ComputationSection = ({
           );
         }
         return null;
+
       case 'auditInfo':
-        // ITR-3 specific: Audit Information section
         if (selectedITR === 'ITR-3' || selectedITR === 'ITR3') {
           return (
             <AuditInformationForm
@@ -168,9 +320,78 @@ const ComputationSection = ({
           );
         }
         return null;
+
+      case 'presumptiveIncome':
+        if (selectedITR === 'ITR-4' || selectedITR === 'ITR4') {
+          return (
+            <PresumptiveIncomeForm
+              data={formData?.presumptiveBusiness || formData?.presumptiveProfessional || {}}
+              onChange={(data) => {
+                onUpdate({
+                  presumptiveBusiness: data.presumptiveBusiness || formData?.presumptiveBusiness,
+                  presumptiveProfessional: data.presumptiveProfessional || formData?.presumptiveProfessional,
+                });
+              }}
+            />
+          );
+        }
+        return null;
+
+      case 'scheduleFA':
+        if (['ITR-2', 'ITR2', 'ITR-3', 'ITR3'].includes(selectedITR)) {
+          return (
+            <ScheduleFA
+              filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+              onUpdate={() => onUpdate?.({})}
+            />
+          );
+        }
+        return null;
+
+      case 'goodsCarriage':
+        if (['ITR-4', 'ITR4'].includes(selectedITR)) {
+          return (
+            <Section44AEForm
+              data={formData?.goodsCarriage || {}}
+              onUpdate={(data) => onUpdate({ goodsCarriage: data })}
+              filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            />
+          );
+        }
+        return null;
+
+      case 'exemptIncome':
+        return (
+          <div className="space-y-6">
+            {/* Agricultural Income */}
+            <AgriculturalIncomeForm
+              data={formData?.agriculturalIncome || {}}
+              onUpdate={(data) => {
+                onUpdate({
+                  agriculturalIncome: data,
+                });
+              }}
+              selectedITR={selectedITR}
+              filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+              readOnly={false}
+            />
+
+            {/* Other Exempt Income */}
+            <ExemptIncomeForm
+              data={formData?.exemptIncomes || []}
+              onUpdate={(data) => {
+                onUpdate({
+                  exemptIncomes: data,
+                  hasExemptIncome: data?.length > 0,
+                });
+              }}
+            />
+          </div>
+        );
+
       case 'deductions':
         return (
-          <>
+          <div className="space-y-4">
             <DeductionsManager
               filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
               formData={formData}
@@ -180,8 +401,9 @@ const ComputationSection = ({
               formData={{ deductions: formData }}
               onUpdate={onUpdate}
             />
-          </>
+          </div>
         );
+
       case 'taxesPaid':
         return (
           <TaxesPaidForm
@@ -189,16 +411,17 @@ const ComputationSection = ({
             onUpdate={onUpdate}
           />
         );
+
       case 'taxComputation':
         return (
           <TaxCalculator
             formData={fullFormData || formData}
-            selectedITR={selectedITR}
             onComputed={onTaxComputed}
             regime={regime}
             assessmentYear={assessmentYear}
           />
         );
+
       case 'bankDetails':
         return (
           <BankDetailsForm
@@ -206,13 +429,13 @@ const ComputationSection = ({
             onUpdate={onUpdate}
           />
         );
+
       default:
         return null;
     }
   };
 
   const isComplete = () => {
-    // Basic validation - can be enhanced
     if (!formData) return false;
     if (id === 'personalInfo') {
       return formData.pan && formData.name;
@@ -220,383 +443,324 @@ const ComputationSection = ({
     return true;
   };
 
-  // If renderContentOnly is true, just render the content (used within SectionCard)
+  // Render content only (used within SectionCard)
   if (renderContentOnly) {
-    return <div className="section-card-content">{renderSectionContent()}</div>;
+    const content = renderSectionContent();
+
+    // Ensure we always return a valid React element
+    if (!content || content === null) {
+      return (
+        <motion.div
+          key={id}
+          className="section-card-content flex items-center justify-center py-8 text-neutral-400"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-center">
+            <Info className="w-8 h-8 mx-auto mb-2 text-neutral-300" />
+            <p className="text-sm">This section is not applicable for {selectedITR || 'your selected ITR form'}.</p>
+          </div>
+        </motion.div>
+      );
+    }
+
+    return (
+      <motion.div
+        key={id}
+        className="section-card-content"
+        variants={variants.staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        {content}
+      </motion.div>
+    );
   }
 
-  // Otherwise, render the full card with header (legacy mode)
+  // Full card with header (legacy mode)
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Section Header */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white hover:from-slate-100 hover:to-slate-50 transition-colors"
       >
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Icon className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl flex items-center justify-center">
+            <Icon className="w-6 h-6 text-primary-600" />
           </div>
           <div className="text-left">
-            <h3 className="font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-500">{description}</p>
+            <h3 className="font-semibold text-slate-900">{title}</h3>
+            <p className="text-sm text-slate-500">{description}</p>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          {isComplete() ? (
-            <CheckCircle className="w-5 h-5 text-green-600" />
-          ) : (
-            <AlertCircle className="w-5 h-5 text-orange-600" />
-          )}
-          {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400" />
-          )}
+        <div className="flex items-center gap-3">
+          <motion.div
+            initial={false}
+            animate={isComplete() ? { scale: [0, 1.2, 1] } : {}}
+            transition={springs.bouncy}
+          >
+            {isComplete() ? (
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-emerald-600" />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-amber-600" />
+              </div>
+            )}
+          </motion.div>
+          <motion.div
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={springs.snappy}
+          >
+            <ChevronDown className="w-5 h-5 text-slate-400" />
+          </motion.div>
         </div>
       </button>
 
       {/* Section Content */}
-      {isExpanded && (
-        <div className="border-t border-gray-200 p-4">
-          {renderSectionContent()}
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={springs.gentle}
+          >
+            <div className="border-t border-slate-100 p-4">
+              {renderSectionContent()}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-// PersonalInfoForm is now imported from features/personal-info
-// Inline component removed - see features/personal-info/components/PersonalInfoForm.js
-
-// ITR-2 Income Form Component (uses specialized forms)
+// =====================================================
+// ITR-2 INCOME FORM
+// =====================================================
 const ITR2IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, formData, onDataUploaded }) => {
-  // Handle updates - data structure matches income object
-  const handleSalaryUpdate = (value) => {
-    onUpdate({ salary: parseFloat(value) || 0 });
-  };
-
   const handleHousePropertyUpdate = (updates) => {
-    onUpdate({
-      houseProperty: {
-        ...data.houseProperty,
-        ...updates,
-      },
-    });
+    onUpdate({ houseProperty: { ...data.houseProperty, ...updates } });
   };
 
   const handleCapitalGainsUpdate = (updates) => {
-    onUpdate({
-      capitalGains: {
-        ...data.capitalGains,
-        ...updates,
-      },
-    });
+    onUpdate({ capitalGains: { ...data.capitalGains, ...updates } });
   };
 
   const handleForeignIncomeUpdate = (updates) => {
-    onUpdate({
-      foreignIncome: {
-        ...data.foreignIncome,
-        ...updates,
-      },
-    });
+    onUpdate({ foreignIncome: { ...data.foreignIncome, ...updates } });
   };
 
   const handleDirectorPartnerUpdate = (updates) => {
-    onUpdate({
-      directorPartner: {
-        ...data.directorPartner,
-        ...updates,
-      },
-    });
-  };
-
-  const handleOtherIncomeUpdate = (value) => {
-    onUpdate({ otherIncome: parseFloat(value) || 0 });
+    onUpdate({ directorPartner: { ...data.directorPartner, ...updates } });
   };
 
   return (
-    <div className="space-y-6">
-      {/* Salary Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h4 className="font-semibold text-gray-900 mb-4">Salary Income</h4>
-        <SalaryForm
-          data={data}
-          onUpdate={onUpdate}
-          selectedITR={selectedITR}
-          onForm16Extracted={onDataUploaded}
-        />
-      </div>
-
-      {/* House Property Form - Multiple Properties */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <HousePropertyForm
-          filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-          data={data.houseProperty || { properties: data.properties || [] }}
-          onUpdate={handleHousePropertyUpdate}
-          selectedITR={selectedITR}
-          onDataUploaded={onDataUploaded}
-        />
-      </div>
-
-      {/* Capital Gains Form */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <CapitalGainsForm
-          filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-          data={data.capitalGains || {}}
-          onUpdate={handleCapitalGainsUpdate}
-          selectedITR={selectedITR}
-          onDataUploaded={onDataUploaded}
-        />
-      </div>
-
-      {/* Foreign Income Form */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <ForeignIncomeForm
-          data={data.foreignIncome || {}}
-          onUpdate={handleForeignIncomeUpdate}
-          selectedITR={selectedITR}
-        />
-      </div>
-
-      {/* Director/Partner Income Form */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <DirectorPartnerIncomeForm
-          data={data.directorPartner || {}}
-          onUpdate={handleDirectorPartnerUpdate}
-          selectedITR={selectedITR}
-        />
-      </div>
-
-      {/* Other Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h4 className="font-semibold text-gray-900 mb-4">Other Income</h4>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Other Income (₹)</label>
-          <input
-            type="number"
-            value={data.otherIncome || 0}
-            onChange={(e) => handleOtherIncomeUpdate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+    <motion.div
+      className="space-y-4"
+      variants={variants.staggerContainer}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Salary Income" icon={IndianRupee}>
+          <SalaryForm
+            data={data}
+            onUpdate={onUpdate}
+            selectedITR={selectedITR}
+            onForm16Extracted={onDataUploaded}
           />
-          <p className="text-xs text-gray-500 mt-1">Interest, dividends, winnings, etc.</p>
-        </div>
-      </div>
-    </div>
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="House Property" icon={IndianRupee}>
+          <HousePropertyForm
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            data={data.houseProperty || { properties: data.properties || [] }}
+            onUpdate={handleHousePropertyUpdate}
+            selectedITR={selectedITR}
+            onDataUploaded={onDataUploaded}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Capital Gains" icon={IndianRupee}>
+          <CapitalGainsForm
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            data={data.capitalGains || {}}
+            onUpdate={handleCapitalGainsUpdate}
+            selectedITR={selectedITR}
+            onDataUploaded={onDataUploaded}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Foreign Income" icon={IndianRupee}>
+          <ForeignIncomeForm
+            data={data.foreignIncome || {}}
+            onUpdate={handleForeignIncomeUpdate}
+            selectedITR={selectedITR}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Director/Partner Income" icon={IndianRupee}>
+          <DirectorPartnerIncomeForm
+            data={data.directorPartner || {}}
+            onUpdate={handleDirectorPartnerUpdate}
+            selectedITR={selectedITR}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Income from Other Sources (Schedule OS)" icon={IndianRupee}>
+          <OtherSourcesForm
+            data={data.otherSources || {}}
+            onUpdate={(updates) => onUpdate({ otherSources: updates })}
+            selectedITR={selectedITR}
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+          />
+        </SubSection>
+      </motion.div>
+    </motion.div>
   );
 };
 
-// ITR-3 Income Form Component (includes all income sources)
+// =====================================================
+// ITR-3 INCOME FORM
+// =====================================================
 const ITR3IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, formData, onDataUploaded }) => {
-  const handleSalaryUpdate = (value) => {
-    onUpdate({ salary: parseFloat(value) || 0 });
-  };
-
   const handleHousePropertyUpdate = (updates) => {
-    onUpdate({
-      houseProperty: {
-        ...data.houseProperty,
-        ...updates,
-      },
-    });
+    onUpdate({ houseProperty: { ...data.houseProperty, ...updates } });
   };
 
   const handleCapitalGainsUpdate = (updates) => {
-    onUpdate({
-      capitalGains: {
-        ...data.capitalGains,
-        ...updates,
-      },
-    });
+    onUpdate({ capitalGains: { ...data.capitalGains, ...updates } });
   };
 
   const handleForeignIncomeUpdate = (updates) => {
-    onUpdate({
-      foreignIncome: {
-        ...data.foreignIncome,
-        ...updates,
-      },
-    });
+    onUpdate({ foreignIncome: { ...data.foreignIncome, ...updates } });
   };
 
   const handleDirectorPartnerUpdate = (updates) => {
-    onUpdate({
-      directorPartner: {
-        ...data.directorPartner,
-        ...updates,
-      },
-    });
-  };
-
-  const handleOtherIncomeUpdate = (value) => {
-    onUpdate({ otherIncome: parseFloat(value) || 0 });
+    onUpdate({ directorPartner: { ...data.directorPartner, ...updates } });
   };
 
   const handleBusinessIncomeUpdate = (updates) => {
-    onUpdate({
-      businessIncome: {
-        ...data.businessIncome,
-        ...updates,
-      },
-    });
+    onUpdate({ businessIncome: { ...data.businessIncome, ...updates } });
   };
 
   const handleProfessionalIncomeUpdate = (updates) => {
-    onUpdate({
-      professionalIncome: {
-        ...data.professionalIncome,
-        ...updates,
-      },
-    });
+    onUpdate({ professionalIncome: { ...data.professionalIncome, ...updates } });
   };
 
   return (
-    <div className="space-y-6">
-      {/* Salary Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h4 className="font-semibold text-gray-900 mb-4">Salary Income</h4>
-        <SalaryForm
-          data={data}
-          onUpdate={onUpdate}
-          selectedITR={selectedITR}
-          onForm16Extracted={onDataUploaded}
-        />
-      </div>
-
-      {/* Business Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <BusinessIncomeForm
-          filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-          data={data.businessIncome || {}}
-          onUpdate={handleBusinessIncomeUpdate}
-          selectedITR={selectedITR}
-          onDataUploaded={onDataUploaded}
-        />
-      </div>
-
-      {/* Professional Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <ProfessionalIncomeForm
-          filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-          data={data.professionalIncome || {}}
-          onUpdate={handleProfessionalIncomeUpdate}
-          selectedITR={selectedITR}
-          onDataUploaded={onDataUploaded}
-        />
-      </div>
-
-      {/* House Property Form - Multiple Properties */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <HousePropertyForm
-          filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-          data={data.houseProperty || { properties: data.properties || [] }}
-          onUpdate={handleHousePropertyUpdate}
-          selectedITR={selectedITR}
-          onDataUploaded={onDataUploaded}
-        />
-      </div>
-
-      {/* Capital Gains Form */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <CapitalGainsForm
-          filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-          data={data.capitalGains || {}}
-          onUpdate={handleCapitalGainsUpdate}
-          selectedITR={selectedITR}
-          onDataUploaded={onDataUploaded}
-        />
-      </div>
-
-      {/* Foreign Income Form */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <ForeignIncomeForm
-          data={data.foreignIncome || {}}
-          onUpdate={handleForeignIncomeUpdate}
-          selectedITR={selectedITR}
-        />
-      </div>
-
-      {/* Director/Partner Income Form */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <DirectorPartnerIncomeForm
-          data={data.directorPartner || {}}
-          onUpdate={handleDirectorPartnerUpdate}
-          selectedITR={selectedITR}
-        />
-      </div>
-
-      {/* Other Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h4 className="font-semibold text-gray-900 mb-4">Other Income</h4>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Other Income (₹)</label>
-          <input
-            type="number"
-            value={data.otherIncome || 0}
-            onChange={(e) => handleOtherIncomeUpdate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+    <motion.div
+      className="space-y-4"
+      variants={variants.staggerContainer}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Salary Income" icon={IndianRupee}>
+          <SalaryForm
+            data={data}
+            onUpdate={onUpdate}
+            selectedITR={selectedITR}
+            onForm16Extracted={onDataUploaded}
           />
-          <p className="text-xs text-gray-500 mt-1">Interest, dividends, winnings, etc.</p>
-        </div>
-      </div>
-    </div>
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Business Income" icon={IndianRupee}>
+          <BusinessIncomeForm
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            data={data.businessIncome || {}}
+            onUpdate={handleBusinessIncomeUpdate}
+            selectedITR={selectedITR}
+            onDataUploaded={onDataUploaded}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Professional Income" icon={IndianRupee}>
+          <ProfessionalIncomeForm
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            data={data.professionalIncome || {}}
+            onUpdate={handleProfessionalIncomeUpdate}
+            selectedITR={selectedITR}
+            onDataUploaded={onDataUploaded}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="House Property" icon={IndianRupee}>
+          <HousePropertyForm
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            data={data.houseProperty || { properties: data.properties || [] }}
+            onUpdate={handleHousePropertyUpdate}
+            selectedITR={selectedITR}
+            onDataUploaded={onDataUploaded}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Capital Gains" icon={IndianRupee}>
+          <CapitalGainsForm
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+            data={data.capitalGains || {}}
+            onUpdate={handleCapitalGainsUpdate}
+            selectedITR={selectedITR}
+            onDataUploaded={onDataUploaded}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Foreign Income" icon={IndianRupee}>
+          <ForeignIncomeForm
+            data={data.foreignIncome || {}}
+            onUpdate={handleForeignIncomeUpdate}
+            selectedITR={selectedITR}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Director/Partner Income" icon={IndianRupee}>
+          <DirectorPartnerIncomeForm
+            data={data.directorPartner || {}}
+            onUpdate={handleDirectorPartnerUpdate}
+            selectedITR={selectedITR}
+          />
+        </SubSection>
+      </motion.div>
+
+      <motion.div variants={variants.staggerItem}>
+        <SubSection title="Income from Other Sources (Schedule OS)" icon={IndianRupee}>
+          <OtherSourcesForm
+            data={data.otherSources || {}}
+            onUpdate={(updates) => onUpdate({ otherSources: updates })}
+            selectedITR={selectedITR}
+            filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+          />
+        </SubSection>
+      </motion.div>
+    </motion.div>
   );
 };
-
-// IncomeForm is now replaced with SalaryForm and other specialized components
-// For ITR-1, use SalaryForm component from features/income
-
-// Deductions Form Component
-const DeductionsForm = ({ data, onUpdate }) => {
-  const handleChange = (field, value) => {
-    onUpdate({ [field]: value });
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Section 80C (₹)</label>
-          <input
-            type="number"
-            value={data.section80C || 0}
-            onChange={(e) => handleChange('section80C', parseFloat(e.target.value) || 0)}
-            max={150000}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          <p className="text-xs text-gray-500 mt-1">Max: ₹1,50,000</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Section 80D (₹)</label>
-          <input
-            type="number"
-            value={data.section80D || 0}
-            onChange={(e) => handleChange('section80D', parseFloat(e.target.value) || 0)}
-            max={25000}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          <p className="text-xs text-gray-500 mt-1">Max: ₹25,000</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Section 80G (₹)</label>
-          <input
-            type="number"
-            value={data.section80G || 0}
-            onChange={(e) => handleChange('section80G', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// TaxesPaidForm is now imported from features/taxes-paid
-// Inline component removed - see features/taxes-paid/components/TaxesPaidForm.js
-
-// BankDetailsForm is now imported from features/bank-details
-// Inline component removed - see features/bank-details/components/BankDetailsForm.js
 
 export default ComputationSection;
-

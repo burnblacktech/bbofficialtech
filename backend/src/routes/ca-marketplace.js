@@ -4,7 +4,7 @@
 // =====================================================
 
 const express = require('express');
-const { CAFirm, User } = require('../models');
+const { CAFirm, User, CAFirmReview, CAMarketplaceInquiry, CABooking } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 const enterpriseLogger = require('../utils/logger');
 const { Op } = require('sequelize');
@@ -186,32 +186,56 @@ router.get('/firms/:firmId', async (req, res) => {
 router.get('/firms/:firmId/reviews', async (req, res) => {
   try {
     const { firmId } = req.params;
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, rating } = req.query;
+    const { validatePagination, isValidUUID } = require('../utils/validators');
+    const { sendPaginated, sendError, sendValidationError } = require('../utils/responseFormatter');
 
-    // TODO: Implement reviews model and fetch reviews
-    // For now, return empty reviews
-    res.json({
-      success: true,
-      data: {
-        reviews: [],
-        pagination: {
-          total: 0,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages: 0,
-        },
-      },
+    if (!isValidUUID(firmId)) {
+      return sendValidationError(res, ['Invalid firm ID format']);
+    }
+
+    const { page: validatedPage, limit: validatedLimit, offset } = validatePagination(req.query);
+
+    // Verify firm exists
+    const firm = await CAFirm.findByPk(firmId);
+    if (!firm || firm.status !== 'active') {
+      return res.status(404).json({
+        success: false,
+        error: 'CA firm not found',
+      });
+    }
+
+    // Fetch reviews
+    const { count, rows: reviews } = await CAFirmReview.findByFirm(firmId, {
+      rating: rating ? parseInt(rating) : undefined,
+      limit: validatedLimit,
+      offset,
     });
+
+    sendPaginated(
+      res,
+      reviews.map((review) => ({
+        id: review.id,
+        rating: review.rating,
+        comment: review.comment,
+        clientName: review.clientName,
+        date: review.date,
+        helpfulCount: review.helpfulCount,
+        verified: review.verified,
+        createdAt: review.createdAt,
+      })),
+      count,
+      validatedPage,
+      validatedLimit,
+      'Reviews retrieved successfully'
+    );
   } catch (error) {
     enterpriseLogger.error('Get CA firm reviews failed', {
       error: error.message,
       stack: error.stack,
       firmId: req.params.firmId,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -223,30 +247,39 @@ router.get('/firms/:firmId/slots', async (req, res) => {
   try {
     const { firmId } = req.params;
     const { date } = req.query;
+    const { isValidUUID } = require('../utils/validators');
+    const { sendSuccess, sendError, sendValidationError } = require('../utils/responseFormatter');
+
+    if (!isValidUUID(firmId)) {
+      return sendValidationError(res, ['Invalid firm ID format']);
+    }
 
     if (!date) {
-      return res.status(400).json({
+      return sendValidationError(res, ['Date parameter is required']);
+    }
+
+    // Verify date format
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      return sendValidationError(res, ['Invalid date format']);
+    }
+
+    // Verify firm exists
+    const firm = await CAFirm.findByPk(firmId);
+    if (!firm || firm.status !== 'active') {
+      return res.status(404).json({
         success: false,
-        error: 'Date parameter is required',
+        error: 'CA firm not found',
       });
     }
 
-    // TODO: Implement availability system
-    // For now, return mock time slots
-    const slots = [];
-    for (let hour = 9; hour <= 17; hour++) {
-      slots.push(`${hour.toString().padStart(2, '0')}:00`);
-      if (hour < 17) {
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
-      }
-    }
+    // Get available slots using CABooking model
+    const availableSlots = await CABooking.getAvailableSlots(firmId, date);
 
-    res.json({
-      success: true,
-      data: {
-        slots,
-        date,
-      },
+    sendSuccess(res, 200, null, {
+      slots: availableSlots,
+      date,
+      firmId,
     });
   } catch (error) {
     enterpriseLogger.error('Get available slots failed', {
@@ -254,10 +287,7 @@ router.get('/firms/:firmId/slots', async (req, res) => {
       stack: error.stack,
       firmId: req.params.firmId,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -273,39 +303,62 @@ router.post('/firms/:firmId/inquiry', authenticateToken, async (req, res) => {
   try {
     const { firmId } = req.params;
     const userId = req.user.userId;
-    const { message, type, filingId } = req.body;
+    const { message, type, filingId, clientName, clientEmail } = req.body;
+    const { isValidUUID, validateRequiredFields, isValidEmail } = require('../utils/validators');
+    const { sendSuccess, sendError, sendValidationError, sendNotFound } = require('../utils/responseFormatter');
 
-    if (!message) {
-      return res.status(400).json({
-        success: false,
-        error: 'Message is required',
-      });
+    if (!isValidUUID(firmId)) {
+      return sendValidationError(res, ['Invalid firm ID format']);
     }
 
+    // Validate required fields
+    const validation = validateRequiredFields(req.body, ['message']);
+    if (!validation.isValid) {
+      return sendValidationError(res, validation.missingFields.map(f => `${f} is required`));
+    }
+
+    // Get user details for inquiry
+    const { User } = require('../models');
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return sendError(res, 404, 'User not found');
+    }
+
+    // Verify firm exists
     const firm = await CAFirm.findByPk(firmId);
     if (!firm || firm.status !== 'active') {
-      return res.status(404).json({
-        success: false,
-        error: 'CA firm not found',
-      });
+      return sendNotFound(res, 'CA firm');
     }
 
-    // TODO: Implement inquiry model and save inquiry
-    // TODO: Send email notification to CA firm
+    // Create inquiry
+    const inquiry = await CAMarketplaceInquiry.create({
+      firmId,
+      userId,
+      clientName: clientName || user.fullName,
+      clientEmail: clientEmail || user.email,
+      message,
+      status: 'pending',
+      metadata: {
+        type: type || 'general',
+        filingId: filingId || null,
+      },
+    });
 
     enterpriseLogger.info('CA inquiry sent', {
+      inquiryId: inquiry.id,
       firmId,
       userId,
       type,
       filingId,
     });
 
-    res.json({
-      success: true,
-      message: 'Inquiry sent successfully',
-      data: {
-        inquiryId: 'temp-id', // TODO: Return actual inquiry ID
-      },
+    // TODO: Send email notification to CA firm
+    // This can be implemented using a notification service or email service
+
+    sendSuccess(res, 201, 'Inquiry sent successfully', {
+      inquiryId: inquiry.id,
+      status: inquiry.status,
+      createdAt: inquiry.createdAt,
     });
   } catch (error) {
     enterpriseLogger.error('Send inquiry failed', {
@@ -314,10 +367,7 @@ router.post('/firms/:firmId/inquiry', authenticateToken, async (req, res) => {
       firmId: req.params.firmId,
       userId: req.user?.userId,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 
@@ -329,28 +379,78 @@ router.post('/firms/:firmId/book', authenticateToken, async (req, res) => {
   try {
     const { firmId } = req.params;
     const userId = req.user.userId;
-    const { date, time, type, notes } = req.body;
+    const { date, time, type, notes, clientName, clientEmail } = req.body;
+    const { isValidUUID, validateRequiredFields } = require('../utils/validators');
+    const { sendSuccess, sendError, sendValidationError, sendNotFound, sendCreated } = require('../utils/responseFormatter');
 
-    if (!date || !time) {
-      return res.status(400).json({
-        success: false,
-        error: 'Date and time are required',
-      });
+    if (!isValidUUID(firmId)) {
+      return sendValidationError(res, ['Invalid firm ID format']);
     }
 
+    // Validate required fields
+    const validation = validateRequiredFields(req.body, ['date', 'time']);
+    if (!validation.isValid) {
+      return sendValidationError(res, validation.missingFields.map(f => `${f} is required`));
+    }
+
+    // Verify date format
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      return sendValidationError(res, ['Invalid date format']);
+    }
+
+    // Get user details
+    const { User } = require('../models');
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return sendError(res, 404, 'User not found');
+    }
+
+    // Verify firm exists
     const firm = await CAFirm.findByPk(firmId);
     if (!firm || firm.status !== 'active') {
-      return res.status(404).json({
-        success: false,
-        error: 'CA firm not found',
-      });
+      return sendNotFound(res, 'CA firm');
     }
 
-    // TODO: Implement booking model and save booking
-    // TODO: Check availability
-    // TODO: Send email notifications
+    // Check availability
+    const availableSlots = await CABooking.getAvailableSlots(firmId, date);
+    if (!availableSlots.includes(time)) {
+      return sendError(res, 400, 'Selected time slot is not available');
+    }
+
+    // Check if slot is already booked
+    const existingBooking = await CABooking.findOne({
+      where: {
+        firmId,
+        date,
+        timeSlot: time,
+        status: {
+          [require('sequelize').Op.in]: ['pending', 'confirmed'],
+        },
+      },
+    });
+
+    if (existingBooking) {
+      return sendError(res, 400, 'This time slot is already booked');
+    }
+
+    // Create booking
+    const booking = await CABooking.create({
+      firmId,
+      userId,
+      clientName: clientName || user.fullName,
+      clientEmail: clientEmail || user.email,
+      date,
+      timeSlot: time,
+      notes: notes || null,
+      status: 'pending',
+      metadata: {
+        type: type || 'consultation',
+      },
+    });
 
     enterpriseLogger.info('CA consultation booked', {
+      bookingId: booking.id,
       firmId,
       userId,
       date,
@@ -358,15 +458,15 @@ router.post('/firms/:firmId/book', authenticateToken, async (req, res) => {
       type,
     });
 
-    res.json({
-      success: true,
-      message: 'Consultation booked successfully',
-      data: {
-        bookingId: 'temp-id', // TODO: Return actual booking ID
-        date,
-        time,
-        type,
-      },
+    // TODO: Send email notifications to both user and CA firm
+    // This can be implemented using a notification service or email service
+
+    sendCreated(res, 'Consultation booked successfully', {
+      bookingId: booking.id,
+      status: booking.status,
+      date: booking.date,
+      timeSlot: booking.timeSlot,
+      createdAt: booking.createdAt,
     });
   } catch (error) {
     enterpriseLogger.error('Book consultation failed', {
@@ -375,10 +475,7 @@ router.post('/firms/:firmId/book', authenticateToken, async (req, res) => {
       firmId: req.params.firmId,
       userId: req.user?.userId,
     });
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
+    sendError(res, 500, 'Internal server error');
   }
 });
 

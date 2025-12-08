@@ -60,15 +60,32 @@ BurnBlack/
 - [x] AI-powered CA Bot with GPT-4
 - [x] Real-time tax computation engine
 - [x] Document management with OCR
-- [x] Payment integration (Razorpay/Stripe)
+- [x] Payment integration (Razorpay/Stripe) with bypass mode for development
+- [x] Enhanced Profile Settings with comprehensive validation
+  - Profile Tab: Address fields, real-time validation, completion indicator
+  - Bank Accounts Tab: IFSC validation, auto-lookup, account masking
+  - Filings Tab: Filtering, sorting, enhanced UX
+  - Security Tab: Password strength indicator, visibility toggle
+- [x] Edge Case Handling & Robustness
+  - Dashboard: Retry logic, empty/error state distinction, cancellation tokens
+  - ITR Journey: PAN verification blocking, family member deletion handling, route guards
+  - ITR Computation: Draft persistence, validation blocking, cross-section validation
+  - Form16 validation, previous year compatibility checks
+  - JSON schema validation, state synchronization across tabs
 
 ### **✅ Advanced Features**
-- [x] Form 16 auto-fill from PDF
+- [x] Form 16 auto-fill from PDF with validation
 - [x] Broker file processing
 - [x] Deduction type detection
 - [x] Expert review system
-- [x] Family member management
+- [x] Family member management with deletion handling
 - [x] CA firm administration
+- [x] Previous year data copy with compatibility validation
+- [x] ERI (e-Return Intermediary) integration setup (in progress)
+  - ERI signing service with CMS/PKCS#7 signatures
+  - ERI controller with basic endpoints
+  - Configuration validation
+  - Frontend integration pending
 
 ### **✅ Infrastructure**
 - [x] AWS Lightsail deployment scripts

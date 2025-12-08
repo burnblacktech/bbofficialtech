@@ -56,8 +56,23 @@ router.get('/drafts/:draftId', authenticateToken, async (req, res) => {
     }
 
     const draftRow = draft.rows[0];
-    const formData = draftRow.data ? (typeof draftRow.data === 'string' ? JSON.parse(draftRow.data) : draftRow.data) : 
-                     (draftRow.json_payload ? (typeof draftRow.json_payload === 'string' ? JSON.parse(draftRow.json_payload) : draftRow.json_payload) : {});
+    let formData = {};
+    try {
+      if (draftRow.data) {
+        formData = typeof draftRow.data === 'string' ? JSON.parse(draftRow.data) : draftRow.data;
+      } else if (draftRow.json_payload) {
+        formData = typeof draftRow.json_payload === 'string' ? JSON.parse(draftRow.json_payload) : draftRow.json_payload;
+      }
+    } catch (parseError) {
+      enterpriseLogger.error('Failed to parse draft data in GET endpoint', {
+        error: parseError.message,
+        draftId: req.params.draftId,
+        userId: req.user?.userId,
+      });
+      return res.status(500).json({
+        error: 'Invalid draft data format',
+      });
+    }
 
     res.json({
       draft: {
@@ -594,7 +609,8 @@ router.post('/pan/verify', authenticateToken, async (req, res) => {
         pan: verificationResult.pan,
         isValid: verificationResult.isValid,
         name: verificationResult.name,
-        status: verificationResult.status,
+        status: verificationResult.status || 'Active',
+        dateOfBirth: verificationResult.dateOfBirth || null,
         verifiedAt: verificationResult.verifiedAt,
         source: verificationResult.source,
       },
@@ -1070,7 +1086,7 @@ router.post('/recommendations', authenticateToken, async (req, res) => {
     const { formData, itrType, assessmentYear } = req.body;
     const userId = req.user.userId;
     const enterpriseLogger = require('../utils/logger');
-    const AIRecommendationService = require('../services/business/AIRecommendationService');
+    const aiRecommendationService = require('../services/business/AIRecommendationService');
 
     if (!formData || !itrType) {
       return res.status(400).json({
@@ -1079,7 +1095,8 @@ router.post('/recommendations', authenticateToken, async (req, res) => {
       });
     }
 
-    const recommendationService = new AIRecommendationService();
+    // AIRecommendationService is exported as a singleton instance
+    const recommendationService = aiRecommendationService;
     const recommendations = await recommendationService.generateRecommendations(
       formData,
       itrType,
@@ -1454,6 +1471,20 @@ router.post('/drafts/:filingId/share', authenticateToken, async (req, res) => {
 
 router.get('/filings/:filingId/acknowledgment/pdf', authenticateToken, async (req, res) => {
   await itrController.exportAcknowledgmentPDF(req, res);
+});
+
+// =====================================================
+// JSON EXPORT ROUTES
+// =====================================================
+
+// Export ITR data as JSON
+router.post('/export', authenticateToken, async (req, res) => {
+  await itrController.exportITRJson(req, res);
+});
+
+// Download exported JSON file
+router.get('/export/download/:fileName', authenticateToken, async (req, res) => {
+  await itrController.downloadExportedJson(req, res);
 });
 
 // =====================================================

@@ -165,30 +165,67 @@ class TaxComputationEngine {
       totalIncome += parseFloat(filingData.income.salary.totalSalary) || 0;
     }
 
-    // House property income
-    if (filingData.income?.houseProperty?.netRentalIncome) {
-      totalIncome += parseFloat(filingData.income.houseProperty.netRentalIncome) || 0;
+    // House property income - handle multiple properties (ITR-2) or single property
+    if (filingData.income?.houseProperty) {
+      if (filingData.income.houseProperty.properties && Array.isArray(filingData.income.houseProperty.properties)) {
+        // ITR-2: Multiple properties
+        totalIncome += filingData.income.houseProperty.properties.reduce((sum, prop) => {
+          const rentalIncome = parseFloat(prop.annualRentalIncome) || 0;
+          const municipalTaxes = parseFloat(prop.municipalTaxes) || 0;
+          const interestOnLoan = parseFloat(prop.interestOnLoan) || 0;
+          return sum + Math.max(0, rentalIncome - municipalTaxes - interestOnLoan);
+        }, 0);
+      } else if (filingData.income.houseProperty.netRentalIncome) {
+        // Single property format
+        totalIncome += parseFloat(filingData.income.houseProperty.netRentalIncome) || 0;
+      } else if (typeof filingData.income.houseProperty === 'number') {
+        // Simple number format
+        totalIncome += parseFloat(filingData.income.houseProperty) || 0;
+      }
     }
 
-    // Capital gains
-    if (filingData.income?.capitalGains?.shortTerm) {
-      totalIncome += parseFloat(filingData.income.capitalGains.shortTerm) || 0;
-    }
-    if (filingData.income?.capitalGains?.longTerm) {
-      totalIncome += parseFloat(filingData.income.capitalGains.longTerm) || 0;
+    // Capital gains - handle structured data (ITR-2) or simple number
+    if (filingData.income?.capitalGains) {
+      if (typeof filingData.income.capitalGains === 'object' && filingData.income.capitalGains.stcgDetails && filingData.income.capitalGains.ltcgDetails) {
+        // ITR-2 structured format with stcgDetails and ltcgDetails arrays
+        const stcgTotal = (filingData.income.capitalGains.stcgDetails || []).reduce(
+          (sum, entry) => sum + (parseFloat(entry.gainAmount) || 0),
+          0,
+        );
+        const ltcgTotal = (filingData.income.capitalGains.ltcgDetails || []).reduce(
+          (sum, entry) => sum + (parseFloat(entry.gainAmount) || 0),
+          0,
+        );
+        totalIncome += stcgTotal + ltcgTotal;
+      } else if (filingData.income.capitalGains.shortTerm || filingData.income.capitalGains.longTerm) {
+        // Legacy format with shortTerm and longTerm
+        totalIncome += parseFloat(filingData.income.capitalGains.shortTerm) || 0;
+        totalIncome += parseFloat(filingData.income.capitalGains.longTerm) || 0;
+      } else if (typeof filingData.income.capitalGains === 'number') {
+        // Simple number format
+        totalIncome += parseFloat(filingData.income.capitalGains) || 0;
+      }
     }
 
     // Business income - Handle ITR-3, ITR-4, and simple structures
     if (filingData.businessIncome?.businesses && Array.isArray(filingData.businessIncome.businesses)) {
-      // ITR-3: Multiple businesses with P&L
+      // ITR-3: Multiple businesses with P&L (top-level businessIncome)
       totalIncome += BusinessIncomeCalculator.calculateTotalBusinessIncome(filingData.businessIncome.businesses);
-    } else if (filingData.income?.businessIncome || filingData.income?.presumptiveBusiness) {
-      // ITR-4: Presumptive business income (8% of gross receipts)
-      if (filingData.itrType === 'ITR-4' || filingData.itrType === 'ITR4') {
-        const grossReceipts = parseFloat(filingData.income.presumptiveBusiness || filingData.income.businessIncome || 0);
-        const presumptiveRate = 0.08; // 8% for business
+    } else if (filingData.income?.businessIncome?.businesses && Array.isArray(filingData.income.businessIncome.businesses)) {
+      // ITR-3: Multiple businesses with P&L (inside income object)
+      totalIncome += BusinessIncomeCalculator.calculateTotalBusinessIncome(filingData.income.businessIncome.businesses);
+    } else if (filingData.income?.presumptiveBusiness && typeof filingData.income.presumptiveBusiness === 'object') {
+      // ITR-4: Presumptive business income (object with presumptiveIncome property)
+      if (filingData.income.presumptiveBusiness.presumptiveIncome) {
+        totalIncome += parseFloat(filingData.income.presumptiveBusiness.presumptiveIncome) || 0;
+      } else if (filingData.income.presumptiveBusiness.grossReceipts && !filingData.income.presumptiveBusiness.optedOut) {
+        // Calculate presumptive income if not already calculated
+        const grossReceipts = parseFloat(filingData.income.presumptiveBusiness.grossReceipts) || 0;
+        const presumptiveRate = parseFloat(filingData.income.presumptiveBusiness.presumptiveRate) || 0.08;
         totalIncome += grossReceipts * presumptiveRate;
-      } else if (typeof filingData.income.businessIncome === 'object' && filingData.income.businessIncome.netProfit) {
+      }
+    } else if (filingData.income?.businessIncome) {
+      if (typeof filingData.income.businessIncome === 'object' && filingData.income.businessIncome.netProfit) {
         totalIncome += parseFloat(filingData.income.businessIncome.netProfit) || 0;
       } else {
         totalIncome += parseFloat(filingData.income.businessIncome) || 0;
@@ -197,26 +234,109 @@ class TaxComputationEngine {
 
     // Professional income - Handle ITR-3, ITR-4, and simple structures
     if (filingData.professionalIncome?.professions && Array.isArray(filingData.professionalIncome.professions)) {
-      // ITR-3: Multiple professions with P&L
+      // ITR-3: Multiple professions with P&L (top-level professionalIncome)
       totalIncome += ProfessionalIncomeCalculator.calculateTotalProfessionalIncome(filingData.professionalIncome.professions);
-    } else if (filingData.income?.professionalIncome || filingData.income?.presumptiveProfessional) {
-      // ITR-4: Presumptive professional income (50% of gross receipts)
-      if (filingData.itrType === 'ITR-4' || filingData.itrType === 'ITR4') {
-        const grossReceipts = parseFloat(filingData.income.presumptiveProfessional || filingData.income.professionalIncome || 0);
-        const presumptiveRate = 0.50; // 50% for profession
+    } else if (filingData.income?.professionalIncome?.professions && Array.isArray(filingData.income.professionalIncome.professions)) {
+      // ITR-3: Multiple professions with P&L (inside income object)
+      totalIncome += ProfessionalIncomeCalculator.calculateTotalProfessionalIncome(filingData.income.professionalIncome.professions);
+    } else if (filingData.income?.presumptiveProfessional && typeof filingData.income.presumptiveProfessional === 'object') {
+      // ITR-4: Presumptive professional income (object with presumptiveIncome property)
+      if (filingData.income.presumptiveProfessional.presumptiveIncome) {
+        totalIncome += parseFloat(filingData.income.presumptiveProfessional.presumptiveIncome) || 0;
+      } else if (filingData.income.presumptiveProfessional.grossReceipts && !filingData.income.presumptiveProfessional.optedOut) {
+        // Calculate presumptive income if not already calculated
+        const grossReceipts = parseFloat(filingData.income.presumptiveProfessional.grossReceipts) || 0;
+        const presumptiveRate = parseFloat(filingData.income.presumptiveProfessional.presumptiveRate) || 0.50;
         totalIncome += grossReceipts * presumptiveRate;
-      } else if (typeof filingData.income.professionalIncome === 'object' && filingData.income.professionalIncome.netIncome) {
+      }
+    } else if (filingData.income?.professionalIncome) {
+      if (typeof filingData.income.professionalIncome === 'object' && filingData.income.professionalIncome.netIncome) {
         totalIncome += parseFloat(filingData.income.professionalIncome.netIncome) || 0;
       } else {
         totalIncome += parseFloat(filingData.income.professionalIncome) || 0;
       }
     }
 
-    // Other income
-    if (filingData.income?.otherIncome) {
-      Object.values(filingData.income.otherIncome).forEach(amount => {
-        totalIncome += parseFloat(amount) || 0;
-      });
+    // Foreign income (ITR-2, ITR-3)
+    if (filingData.income?.foreignIncome) {
+      if (filingData.income.foreignIncome.foreignIncomeDetails && Array.isArray(filingData.income.foreignIncome.foreignIncomeDetails)) {
+        // ITR-2 structured format
+        totalIncome += filingData.income.foreignIncome.foreignIncomeDetails.reduce(
+          (sum, entry) => sum + (parseFloat(entry.amountInr) || 0),
+          0,
+        );
+      } else if (typeof filingData.income.foreignIncome === 'object' && filingData.income.foreignIncome.totalIncome) {
+        totalIncome += parseFloat(filingData.income.foreignIncome.totalIncome) || 0;
+      } else if (typeof filingData.income.foreignIncome === 'number') {
+        totalIncome += parseFloat(filingData.income.foreignIncome) || 0;
+      }
+    }
+
+    // Director/Partner income (ITR-2, ITR-3)
+    if (filingData.income?.directorPartner) {
+      const directorIncome = parseFloat(filingData.income.directorPartner.directorIncome) || 0;
+      const partnerIncome = parseFloat(filingData.income.directorPartner.partnerIncome) || 0;
+      totalIncome += directorIncome + partnerIncome;
+    }
+
+    // Other income - handle structured format (otherSources) or simple number
+    if (filingData.income?.otherSources && typeof filingData.income.otherSources === 'object') {
+      // Structured format with interestIncomes, otherIncomes, etc.
+      if (filingData.income.otherSources.totalOtherSourcesIncome) {
+        totalIncome += parseFloat(filingData.income.otherSources.totalOtherSourcesIncome) || 0;
+      } else {
+        // Sum all numeric values in otherSources object
+        Object.values(filingData.income.otherSources).forEach(value => {
+          if (typeof value === 'number') {
+            totalIncome += parseFloat(value) || 0;
+          } else if (Array.isArray(value)) {
+            // Handle arrays like interestIncomes
+            value.forEach(item => {
+              if (typeof item === 'object' && item.amount) {
+                totalIncome += parseFloat(item.amount) || 0;
+              }
+            });
+          }
+        });
+      }
+    } else if (filingData.income?.otherIncome) {
+      // Simple otherIncome format
+      if (typeof filingData.income.otherIncome === 'object') {
+        Object.values(filingData.income.otherIncome).forEach(amount => {
+          totalIncome += parseFloat(amount) || 0;
+        });
+      } else {
+        totalIncome += parseFloat(filingData.income.otherIncome) || 0;
+      }
+    }
+
+    // Goods Carriage Income (ITR-4, Section 44AE)
+    if (filingData.goodsCarriage || filingData.income?.goodsCarriage) {
+      const goodsCarriage = filingData.goodsCarriage || filingData.income.goodsCarriage;
+      if (goodsCarriage.totalPresumptiveIncome) {
+        // Use pre-calculated total if available
+        totalIncome += parseFloat(goodsCarriage.totalPresumptiveIncome) || 0;
+      } else if (goodsCarriage.vehicles && Array.isArray(goodsCarriage.vehicles)) {
+        // Calculate from vehicles array
+        const goodsCarriageIncome = goodsCarriage.vehicles.reduce((sum, vehicle) => {
+          const monthsOwned = parseFloat(vehicle.monthsOwned) || 12;
+          if (vehicle.type === 'heavy_goods') {
+            // Heavy goods vehicle: ₹1,000 per ton per month
+            const tons = parseFloat(vehicle.gvw) || 12;
+            return sum + (1000 * tons * monthsOwned);
+          } else {
+            // Light goods vehicle: ₹7,500 per vehicle per month
+            return sum + (7500 * monthsOwned);
+          }
+        }, 0);
+        totalIncome += goodsCarriageIncome;
+      }
+    }
+
+    // Agricultural income (exempt but included for rate calculation in Old Regime)
+    if (filingData.exemptIncome?.agriculturalIncome?.netAgriculturalIncome) {
+      // Agricultural income is exempt but may be used for rate calculation
+      // This is handled separately in tax calculation logic
     }
 
     return totalIncome;

@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { CheckCircle, AlertCircle, Shield, Loader, X } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import fieldLockService, { VERIFICATION_STATUS } from '../../services/FieldLockService';
 
 const PANVerificationInline = ({
   panNumber: initialPAN = '',
@@ -16,6 +17,7 @@ const PANVerificationInline = ({
   memberType = 'self', // 'self' | 'family'
   memberId = null,
   compact = false,
+  onVerificationStart, // Callback when verification starts
 }) => {
   const [panNumber, setPanNumber] = useState(initialPAN);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -32,6 +34,16 @@ const PANVerificationInline = ({
       setVerificationResult(data.data);
       setIsVerifying(false);
       toast.success('PAN verified successfully!');
+      // Set field verification status to lock the PAN field
+      fieldLockService.setFieldVerificationStatus('personalInfo', 'pan', VERIFICATION_STATUS.VERIFIED, 'pan_verification');
+      // Also lock name and DOB if they were verified
+      if (data.data?.name) {
+        fieldLockService.setFieldVerificationStatus('personalInfo', 'name', VERIFICATION_STATUS.VERIFIED, 'pan_verification');
+      }
+      if (data.data?.dateOfBirth || data.data?.dob) {
+        fieldLockService.setFieldVerificationStatus('personalInfo', 'dob', VERIFICATION_STATUS.VERIFIED, 'pan_verification');
+      }
+
       if (onVerified) {
         // Include the PAN number in the verification result
         onVerified({
@@ -76,6 +88,11 @@ const PANVerificationInline = ({
 
     setIsVerifying(true);
     setError(null);
+
+    // Notify parent component that verification has started
+    if (onVerificationStart) {
+      onVerificationStart();
+    }
 
     verifyPANMutation.mutate({
       pan: panNumber,

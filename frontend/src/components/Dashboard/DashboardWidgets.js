@@ -1,6 +1,6 @@
 // =====================================================
 // DASHBOARD WIDGETS - STATS CARDS
-// Key metrics displayed as colorful cards
+// Key metrics displayed with new Solar Gold / Ember palette
 // =====================================================
 
 import React from 'react';
@@ -22,37 +22,37 @@ const DashboardWidgets = ({ stats }) => {
       title: 'Total Filings',
       value: widgetStats.totalFilings,
       icon: FileText,
-      color: 'orange',
-      bgGradient: 'bg-burn-gradient',
-      textColor: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      bgGradient: 'bg-aurora-gradient',
+      textColor: 'text-primary-600',
+      bgColor: 'bg-primary-50',
+      borderColor: 'border-primary-100',
     },
     {
       title: 'Pending Actions',
       value: widgetStats.pendingActions,
       icon: Clock,
-      color: 'warning',
-      bgGradient: 'from-warning-500 to-orange-500',
-      textColor: 'text-warning-600',
-      bgColor: 'bg-warning-50',
+      bgGradient: 'bg-gradient-to-br from-ember-500 to-ember-600',
+      textColor: 'text-ember-600',
+      bgColor: 'bg-ember-50',
+      borderColor: 'border-ember-100',
     },
     {
       title: 'Documents',
       value: widgetStats.documentsUploaded,
       icon: Folder,
-      color: 'info',
-      bgGradient: 'from-info-500 to-info-600',
+      bgGradient: 'bg-gradient-to-br from-info-500 to-info-600',
       textColor: 'text-info-600',
       bgColor: 'bg-info-50',
+      borderColor: 'border-info-100',
     },
     {
       title: 'Tax Saved',
       value: `₹${widgetStats.taxSaved.toLocaleString('en-IN')}`,
       icon: TrendingUp,
-      color: 'gold',
-      bgGradient: 'bg-burn-gradient',
-      textColor: 'text-gold-600',
-      bgColor: 'bg-gold-50',
+      bgGradient: 'bg-gradient-to-br from-success-500 to-success-600',
+      textColor: 'text-success-600',
+      bgColor: 'bg-success-50',
+      borderColor: 'border-success-100',
     },
   ];
 
@@ -63,17 +63,17 @@ const DashboardWidgets = ({ stats }) => {
         return (
           <div
             key={index}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 hover:shadow-md hover:border-gray-300 transition-all duration-200 group"
+            className={`bg-white rounded-xl shadow-card border ${widget.borderColor} p-4 hover:shadow-card-hover hover:border-slate-300 transition-all duration-200 group cursor-pointer`}
           >
-            <div className="flex items-start justify-between mb-2.5">
-              <div className={`p-2 rounded-lg ${widget.bgGradient === 'bg-burn-gradient' ? 'bg-burn-gradient' : `bg-gradient-to-br ${widget.bgGradient}`} shadow-sm group-hover:scale-110 transition-transform duration-200`}>
+            <div className="flex items-start justify-between mb-3">
+              <div className={`p-2.5 rounded-xl ${widget.bgGradient} shadow-sm group-hover:scale-105 transition-transform duration-200`}>
                 <Icon className="h-4 w-4 text-white" />
               </div>
-              <ArrowUpRight className={`h-3 w-3 ${widget.textColor} opacity-40 group-hover:opacity-60 transition-opacity`} />
+              <ArrowUpRight className={`h-3.5 w-3.5 ${widget.textColor} opacity-40 group-hover:opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all`} />
             </div>
             <div>
-              <p className="text-label-sm font-medium text-gray-500 mb-1 uppercase tracking-wide">{widget.title}</p>
-              <p className="text-number-md sm:text-number-lg font-semibold text-gray-900 tabular-nums">{widget.value}</p>
+              <p className="text-label-sm font-medium text-slate-500 mb-1">{widget.title}</p>
+              <p className="text-number-md sm:text-number-lg font-bold text-slate-900 tabular-nums">{widget.value}</p>
             </div>
           </div>
         );
@@ -83,4 +83,3 @@ const DashboardWidgets = ({ stats }) => {
 };
 
 export default DashboardWidgets;
-

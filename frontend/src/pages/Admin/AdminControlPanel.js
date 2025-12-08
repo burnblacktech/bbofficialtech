@@ -1,122 +1,61 @@
-// Admin Control Panel - Platform Management
-// Allows super_admin to control user limits, billing modes, service rates
-// Comprehensive platform-wide settings and configuration
+// =====================================================
+// ADMIN CONTROL PANEL PAGE
+// Platform management with DesignSystem components
+// =====================================================
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   Settings,
   Users,
   IndianRupee,
   Shield,
-  BarChart3,
   Save,
   RefreshCw,
   AlertCircle,
-  CheckCircle,
   Edit,
   Eye,
   Trash2,
 } from 'lucide-react';
-import {
-  EnterpriseCard,
-  EnterpriseButton,
-  EnterpriseBadge,
-  EnterpriseStatCard,
-} from '../../components/DesignSystem/EnterpriseComponents';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition } from '../../components/DesignSystem/Animations';
+import adminService from '../../services/api/adminService';
+import toast from 'react-hot-toast';
 
 const AdminControlPanel = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('billing');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [settings, setSettings] = useState({});
   const [caFirms, setCaFirms] = useState([]);
   const [userLimits, setUserLimits] = useState([]);
-
-  // Mock data - will be replaced with API calls
-  const mockSettings = {
-    defaultBillingMode: 'per_filing',
-    defaultItrRates: {
-      itr_1: 500,
-      itr_2: 800,
-      itr_3: 1200,
-      itr_4: 1000,
-    },
-    maxFilingsPerUserMonth: 10,
-    maxFilingsPerUserYear: 50,
-    serviceTicketAutoCreate: true,
-    caAssistedFilingVisible: true,
-    platformCommission: 5.0,
-  };
-
-  const mockCaFirms = [
-    {
-      id: '1',
-      name: 'ABC & Associates',
-      email: 'admin@abcassociates.com',
-      status: 'active',
-      billingMode: 'per_filing',
-      itrRates: {
-        itr_1: 600,
-        itr_2: 900,
-        itr_3: 1400,
-        itr_4: 1200,
-      },
-      maxFilingsPerMonth: 100,
-      maxFilingsPerYear: 1000,
-      commissionPercentage: 3.0,
-      createdAt: '2023-01-15',
-      lastActivity: '2024-01-15',
-    },
-    {
-      id: '2',
-      name: 'XYZ Chartered Accountants',
-      email: 'contact@xyzca.com',
-      status: 'active',
-      billingMode: 'subscription',
-      monthlySubscription: 5000,
-      maxFilingsPerMonth: 200,
-      maxFilingsPerYear: 2000,
-      commissionPercentage: 2.5,
-      createdAt: '2023-03-20',
-      lastActivity: '2024-01-14',
-    },
-  ];
-
-  const mockUserLimits = [
-    {
-      id: '1',
-      userId: 'user-1',
-      userName: 'John Doe',
-      tenantId: 'tenant-1',
-      tenantName: 'ABC & Associates',
-      maxFilingsPerMonth: 15,
-      maxFilingsPerYear: 75,
-      currentMonthFilings: 3,
-      currentYearFilings: 12,
-      resetDate: '2024-02-01',
-    },
-    {
-      id: '2',
-      userId: 'user-2',
-      userName: 'Jane Smith',
-      tenantId: 'tenant-2',
-      tenantName: 'XYZ Chartered Accountants',
-      maxFilingsPerMonth: 10,
-      maxFilingsPerYear: 50,
-      currentMonthFilings: 8,
-      currentYearFilings: 35,
-      resetDate: '2024-02-01',
-    },
-  ];
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setSettings(mockSettings);
-      setCaFirms(mockCaFirms);
-      setUserLimits(mockUserLimits);
-    }, 1000);
+    const loadData = async () => {
+      setInitialLoading(true);
+      setError(null);
+      try {
+        const [settingsData, caFirmsData, userLimitsData] = await Promise.all([
+          adminService.getSettings(),
+          adminService.getCAFirmsStats(),
+          adminService.getUserLimits(),
+        ]);
+
+        setSettings(settingsData);
+        setCaFirms(caFirmsData);
+        setUserLimits(userLimitsData.limits || []);
+      } catch (err) {
+        console.error('Failed to load control panel data:', err);
+        setError('Failed to load control panel data. Please try again.');
+        toast.error('Failed to load control panel data');
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const tabs = [
@@ -129,281 +68,293 @@ const AdminControlPanel = () => {
   const handleSaveSettings = async () => {
     setLoading(true);
     try {
-      // TODO: Implement API call to save settings
-      console.log('Saving settings:', settings);
-      // await adminService.updateSettings(settings);
-      setTimeout(() => {
-        setLoading(false);
-        alert('Settings saved successfully!');
-      }, 1000);
-    } catch (error) {
-      console.error('Error saving settings:', error);
+      await adminService.updateSettings(settings);
+      toast.success('Settings saved successfully!');
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      toast.error('Failed to save settings. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateCaFirm = (firmId, updates) => {
-    setCaFirms(caFirms.map(firm =>
-      firm.id === firmId ? { ...firm, ...updates } : firm,
-    ));
-  };
-
-  const handleUpdateUserLimit = (limitId, updates) => {
-    setUserLimits(userLimits.map(limit =>
-      limit.id === limitId ? { ...limit, ...updates } : limit,
-    ));
-  };
-
   const renderBillingTab = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
-        <h3 className="text-heading-lg font-semibold text-gray-900 mb-4">Default ITR Rates</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-label-lg font-medium text-gray-700 mb-1">ITR-1 Rate (₹)</label>
-            <input
-              type="number"
-              value={settings.defaultItrRates?.itr_1 || 0}
-              onChange={(e) => setSettings({
-                ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_1: parseInt(e.target.value) },
-              })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
+      <Card>
+        <CardHeader>
+          <CardTitle>Default ITR Rates</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-1 Rate (₹)</label>
+              <input
+                type="number"
+                value={settings.defaultItrRates?.itr_1 || 0}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  // eslint-disable-next-line camelcase
+                  defaultItrRates: { ...settings.defaultItrRates, itr_1: parseInt(e.target.value) },
+                })}
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-2 Rate (₹)</label>
+              <input
+                type="number"
+                value={settings.defaultItrRates?.itr_2 || 0}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  // eslint-disable-next-line camelcase
+                  defaultItrRates: { ...settings.defaultItrRates, itr_2: parseInt(e.target.value) },
+                })}
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-3 Rate (₹)</label>
+              <input
+                type="number"
+                value={settings.defaultItrRates?.itr_3 || 0}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  // eslint-disable-next-line camelcase
+                  defaultItrRates: { ...settings.defaultItrRates, itr_3: parseInt(e.target.value) },
+                })}
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-4 Rate (₹)</label>
+              <input
+                type="number"
+                value={settings.defaultItrRates?.itr_4 || 0}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  // eslint-disable-next-line camelcase
+                  defaultItrRates: { ...settings.defaultItrRates, itr_4: parseInt(e.target.value) },
+                })}
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-label-lg font-medium text-gray-700 mb-1">ITR-2 Rate (₹)</label>
-            <input
-              type="number"
-              value={settings.defaultItrRates?.itr_2 || 0}
-              onChange={(e) => setSettings({
-                ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_2: parseInt(e.target.value) },
-              })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-label-lg font-medium text-gray-700 mb-1">ITR-3 Rate (₹)</label>
-            <input
-              type="number"
-              value={settings.defaultItrRates?.itr_3 || 0}
-              onChange={(e) => setSettings({
-                ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_3: parseInt(e.target.value) },
-              })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-label-lg font-medium text-gray-700 mb-1">ITR-4 Rate (₹)</label>
-            <input
-              type="number"
-              value={settings.defaultItrRates?.itr_4 || 0}
-              onChange={(e) => setSettings({
-                ...settings,
-                defaultItrRates: { ...settings.defaultItrRates, itr_4: parseInt(e.target.value) },
-              })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
-        <h3 className="text-heading-lg font-semibold text-gray-900 mb-4">Platform Commission</h3>
-        <div className="max-w-md">
-          <label className="block text-label-lg font-medium text-gray-700 mb-1">Commission Percentage (%)</label>
-          <input
-            type="number"
-            step="0.1"
-            value={settings.platformCommission || 0}
-            onChange={(e) => setSettings({ ...settings, platformCommission: parseFloat(e.target.value) })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-          />
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Platform Commission</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="max-w-md">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">Commission Percentage (%)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={settings.platformCommission || 0}
+              onChange={(e) => setSettings({ ...settings, platformCommission: parseFloat(e.target.value) })}
+              className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
   const renderLimitsTab = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
-        <h3 className="text-heading-lg font-semibold text-gray-900 mb-4">Default User Limits</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-label-lg font-medium text-gray-700 mb-1">Max Filings Per Month</label>
-            <input
-              type="number"
-              value={settings.maxFilingsPerUserMonth || 0}
-              onChange={(e) => setSettings({ ...settings, maxFilingsPerUserMonth: parseInt(e.target.value) })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
+      <Card>
+        <CardHeader>
+          <CardTitle>Default User Limits</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Max Filings Per Month</label>
+              <input
+                type="number"
+                value={settings.maxFilingsPerUserMonth || 0}
+                onChange={(e) => setSettings({ ...settings, maxFilingsPerUserMonth: parseInt(e.target.value) })}
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Max Filings Per Year</label>
+              <input
+                type="number"
+                value={settings.maxFilingsPerUserYear || 0}
+                onChange={(e) => setSettings({ ...settings, maxFilingsPerUserYear: parseInt(e.target.value) })}
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-label-lg font-medium text-gray-700 mb-1">Max Filings Per Year</label>
-            <input
-              type="number"
-              value={settings.maxFilingsPerUserYear || 0}
-              onChange={(e) => setSettings({ ...settings, maxFilingsPerUserYear: parseInt(e.target.value) })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-heading-lg font-semibold text-gray-900">Individual User Limits</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">CA Firm</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Monthly Limit</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Yearly Limit</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Current Usage</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {userLimits.map((limit) => (
-                <tr key={limit.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-body-md font-medium text-gray-900">{limit.userName}</div>
-                    <div className="text-body-md text-gray-500">ID: {limit.userId}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    {limit.tenantName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    {limit.maxFilingsPerMonth}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    {limit.maxFilingsPerYear}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    <div className="text-body-md">{limit.currentMonthFilings}/{limit.maxFilingsPerMonth} (month)</div>
-                    <div className="text-body-md text-gray-500">{limit.currentYearFilings}/{limit.maxFilingsPerYear} (year)</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md font-medium">
-                    <button className="text-orange-600 hover:text-orange-700 mr-3">
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button className="text-info-600 hover:text-info-700">
-                      <Eye className="h-4 w-4" />
-                    </button>
-                  </td>
+      <Card>
+        <CardHeader>
+          <CardTitle>Individual User Limits</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-neutral-200">
+              <thead className="bg-neutral-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">CA Firm</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Monthly Limit</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Yearly Limit</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Current Usage</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-neutral-200">
+                {userLimits.map((limit) => (
+                  <tr key={limit.id} className="hover:bg-neutral-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Body className="font-medium">{limit.userName}</Typography.Body>
+                      <Typography.Small className="text-neutral-500">ID: {limit.userId}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{limit.tenantName}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{limit.maxFilingsPerMonth}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{limit.maxFilingsPerYear}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{limit.currentMonthFilings}/{limit.maxFilingsPerMonth} (month)</Typography.Small>
+                      <Typography.Small className="text-neutral-500 block">{limit.currentYearFilings}/{limit.maxFilingsPerYear} (year)</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
   const renderCaFirmsTab = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-heading-lg font-semibold text-gray-900">CA Firms Management</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Firm Name</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Billing Mode</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Commission</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
-                <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {caFirms.map((firm) => (
-                <tr key={firm.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-body-md font-medium text-gray-900">{firm.name}</div>
-                    <div className="text-body-md text-gray-500">{firm.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-medium ${
-                      firm.status === 'active' ? 'bg-success-50 text-success-600' : 'bg-error-50 text-error-600'
-                    }`}>
-                      {firm.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    {firm.billingMode.replace('_', ' ')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    {firm.commissionPercentage}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
-                    {new Date(firm.lastActivity).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-body-md font-medium">
-                    <button className="text-orange-600 hover:text-orange-700 mr-3">
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button className="text-info-600 hover:text-info-900 mr-3">
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button className="text-error-600 hover:text-error-900">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
+      <Card>
+        <CardHeader>
+          <CardTitle>CA Firms Management</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-neutral-200">
+              <thead className="bg-neutral-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Firm Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Billing Mode</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Commission</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Last Activity</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-neutral-200">
+                {caFirms.map((firm) => (
+                  <tr key={firm.id} className="hover:bg-neutral-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Body className="font-medium">{firm.name}</Typography.Body>
+                      <Typography.Small className="text-neutral-500">{firm.email}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        firm.status === 'active' ? 'bg-success-100 text-success-700' : 'bg-error-100 text-error-700'
+                      }`}>
+                        {firm.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{firm.billingMode.replace('_', ' ')}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{firm.commissionPercentage}%</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Typography.Small>{new Date(firm.lastActivity).toLocaleDateString()}</Typography.Small>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-error-600 hover:text-error-700">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
   const renderPlatformTab = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
-        <h3 className="text-heading-lg font-semibold text-gray-900 mb-4">Platform Features</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="text-label-lg font-medium text-gray-700">Auto-create Service Tickets</label>
-              <p className="text-body-md text-gray-500">Automatically create service tickets when users start filing</p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Platform Features</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography.Body className="font-medium">Auto-create Service Tickets</Typography.Body>
+                <Typography.Small className="text-neutral-500">Automatically create service tickets when users start filing</Typography.Small>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.serviceTicketAutoCreate || false}
+                  onChange={(e) => setSettings({ ...settings, serviceTicketAutoCreate: e.target.checked })}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500" />
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={settings.serviceTicketAutoCreate || false}
-                onChange={(e) => setSettings({ ...settings, serviceTicketAutoCreate: e.target.checked })}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="text-label-lg font-medium text-gray-700">CA-Assisted Filing Visibility</label>
-              <p className="text-body-md text-gray-500">Make CA-assisted filings visible to users</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography.Body className="font-medium">CA-Assisted Filing Visibility</Typography.Body>
+                <Typography.Small className="text-neutral-500">Make CA-assisted filings visible to users</Typography.Small>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.caAssistedFilingVisible || false}
+                  onChange={(e) => setSettings({ ...settings, caAssistedFilingVisible: e.target.checked })}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500" />
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={settings.caAssistedFilingVisible || false}
-                onChange={(e) => setSettings({ ...settings, caAssistedFilingVisible: e.target.checked })}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-            </label>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
@@ -422,20 +373,44 @@ const AdminControlPanel = () => {
     }
   };
 
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-error-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-error-600" />
+          </div>
+          <Typography.Body className="text-neutral-600 mb-4">{error}</Typography.Body>
+          <Button onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8">
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-display-md font-bold text-gray-900">Admin Control Panel</h1>
-          <p className="text-body-md text-gray-600 mt-1">
+          <Typography.H1 className="mb-2">Admin Control Panel</Typography.H1>
+          <Typography.Body className="text-neutral-600">
             Manage platform settings, billing, and user limits
-          </p>
+          </Typography.Body>
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-card border border-gray-200 mb-6">
-          <div className="border-b border-gray-200">
+        <Card className="mb-6">
+          <div className="border-b border-neutral-200">
             <nav className="-mb-px flex space-x-8 px-6">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -443,10 +418,10 @@ const AdminControlPanel = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-1 border-b-2 font-medium text-label-lg flex items-center ${
+                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${
                       activeTab === tab.id
-                        ? 'border-orange-500 text-orange-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-primary-500 text-primary-600'
+                        : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
                     }`}
                   >
                     <Icon className="h-5 w-5 mr-2" />
@@ -456,7 +431,7 @@ const AdminControlPanel = () => {
               })}
             </nav>
           </div>
-        </div>
+        </Card>
 
         {/* Tab Content */}
         <div className="mb-6">
@@ -465,25 +440,17 @@ const AdminControlPanel = () => {
 
         {/* Save Button */}
         <div className="flex items-center justify-end">
-          <button
-            onClick={handleSaveSettings}
-            disabled={loading}
-            className={`flex items-center px-6 py-2 rounded-lg ${
-              loading
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-orange-500 text-white hover:bg-orange-600'
-            }`}
-          >
+          <Button onClick={handleSaveSettings} disabled={loading}>
             {loading ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <Save className="h-4 w-4 mr-2" />
             )}
             {loading ? 'Saving...' : 'Save Settings'}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

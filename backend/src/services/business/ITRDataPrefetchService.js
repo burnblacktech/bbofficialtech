@@ -4,15 +4,15 @@
 // for auto-filling ITR forms
 // =====================================================
 
-const ERIIntegrationService = require('./ERIIntegrationService');
-const User = require('../../models/User');
-const FamilyMember = require('../../models/FamilyMember');
+const eriIntegrationService = require('./ERIIntegrationService');
+const { User, FamilyMember } = require('../../models');
 const enterpriseLogger = require('../../utils/logger');
 const { AppError } = require('../../middleware/errorHandler');
 
 class ITRDataPrefetchService {
   constructor() {
-    this.eriService = new ERIIntegrationService();
+    // ERIIntegrationService is exported as a singleton instance
+    this.eriService = eriIntegrationService;
   }
 
   /**

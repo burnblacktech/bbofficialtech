@@ -284,4 +284,43 @@ router.put('/notifications/:id/read', userController.markNotificationAsRead);
  */
 router.put('/notifications/read-all', userController.markAllNotificationsAsRead);
 
+// =====================================================
+// BANK ACCOUNT MANAGEMENT
+// =====================================================
+
+/**
+ * @route GET /api/users/bank-accounts
+ * @description Get authenticated user's bank accounts
+ * @access Private
+ */
+router.get('/bank-accounts', userController.getBankAccounts);
+
+/**
+ * @route POST /api/users/bank-accounts
+ * @description Add a new bank account
+ * @access Private
+ */
+router.post('/bank-accounts', userController.addBankAccount);
+
+/**
+ * @route PUT /api/users/bank-accounts/:id
+ * @description Update a bank account
+ * @access Private
+ */
+router.put('/bank-accounts/:id', userController.updateBankAccount);
+
+/**
+ * @route DELETE /api/users/bank-accounts/:id
+ * @description Delete a bank account
+ * @access Private
+ */
+router.delete('/bank-accounts/:id', userController.deleteBankAccount);
+
+/**
+ * @route PATCH /api/users/bank-accounts/:id/set-primary
+ * @description Set a bank account as primary
+ * @access Private
+ */
+router.patch('/bank-accounts/:id/set-primary', userController.setPrimaryBankAccount);
+
 module.exports = router;

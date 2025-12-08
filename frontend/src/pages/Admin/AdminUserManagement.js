@@ -1,29 +1,24 @@
 // =====================================================
 // ADMIN USER MANAGEMENT - MOBILE-FIRST USER ADMINISTRATION
-// Enterprise-grade user management with role-based access control
+// Enterprise-grade user management with DesignSystem components
 // =====================================================
 
-import React, { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   useAdminUsers,
   useUpdateAdminUserStatus,
-  useBulkAdminUserOperations,
-  useExportAdminUsers,
+  useDeleteAdminUser,
 } from '../../features/admin/users/hooks/use-users';
 import {
-  ArrowLeft,
   Search,
   Filter,
-  Plus,
-  Edit,
   Trash2,
   Shield,
   User,
-  Mail,
   Phone,
   Calendar,
   CheckCircle,
@@ -34,20 +29,27 @@ import {
   Star,
   Eye,
   Ban,
-  Check,
   X,
   Download,
-  RefreshCw,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  Tag,
 } from 'lucide-react';
 
 const AdminUserManagement = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterRegistrationSource, setFilterRegistrationSource] = useState('all');
+  const [filterHasFilings, setFilterHasFilings] = useState('all');
+  const [filterHasPayments, setFilterHasPayments] = useState('all');
+  const [registrationDateFrom, setRegistrationDateFrom] = useState('');
+  const [registrationDateTo, setRegistrationDateTo] = useState('');
+  const [lastLoginFrom, setLastLoginFrom] = useState('');
+  const [lastLoginTo, setLastLoginTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
@@ -61,6 +63,13 @@ const AdminUserManagement = () => {
     search: searchTerm || undefined,
     role: filterRole !== 'all' ? filterRole : undefined,
     status: filterStatus !== 'all' ? filterStatus : undefined,
+    authProvider: filterRegistrationSource !== 'all' ? filterRegistrationSource : undefined,
+    hasFilings: filterHasFilings === 'true' ? 'true' : undefined,
+    hasPayments: filterHasPayments === 'true' ? 'true' : undefined,
+    registrationDateFrom: registrationDateFrom || undefined,
+    registrationDateTo: registrationDateTo || undefined,
+    lastLoginFrom: lastLoginFrom || undefined,
+    lastLoginTo: lastLoginTo || undefined,
   };
 
   // Fetch users using hook
@@ -71,8 +80,7 @@ const AdminUserManagement = () => {
 
   // Mutations
   const updateUserStatusMutation = useUpdateAdminUserStatus();
-  const bulkOperationsMutation = useBulkAdminUserOperations();
-  const exportUsersMutation = useExportAdminUsers();
+  const deleteUserMutation = useDeleteAdminUser();
 
   const handleStatusChange = (userId, newStatus) => {
     updateUserStatusMutation.mutate({ userId, status: newStatus });
@@ -82,58 +90,62 @@ const AdminUserManagement = () => {
     navigate(`/admin/users/${userId}`);
   };
 
-  const handleDeleteUser = (userId) => {
-    // Note: Delete functionality would need to be added to hooks if required
-    // For now, show a message
-    toast.error('Delete functionality not yet implemented');
+  const handleDeleteUser = (userId, userName) => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm(`Are you sure you want to delete ${userName || 'this user'}? This action cannot be undone.`)) {
+      deleteUserMutation.mutate({
+        userId,
+        reason: 'Deleted by admin from user management page',
+      });
+    }
   };
 
   const getRoleIcon = (role) => {
     switch (role?.toLowerCase()) {
       case 'super_admin':
-        return <Crown className="h-4 w-4 text-yellow-600" />;
+        return <Crown className="h-4 w-4 text-warning-600" />;
       case 'platform_admin':
-        return <Shield className="h-4 w-4 text-blue-600" />;
+        return <Shield className="h-4 w-4 text-info-600" />;
       case 'ca_admin':
-        return <Star className="h-4 w-4 text-purple-600" />;
+        return <Star className="h-4 w-4 text-secondary-600" />;
       case 'chartered_accountant':
-        return <User className="h-4 w-4 text-green-600" />;
+        return <User className="h-4 w-4 text-success-600" />;
       case 'user':
-        return <User className="h-4 w-4 text-gray-600" />;
+        return <User className="h-4 w-4 text-neutral-600" />;
       default:
-        return <User className="h-4 w-4 text-gray-600" />;
+        return <User className="h-4 w-4 text-neutral-600" />;
     }
   };
 
   const getRoleColor = (role) => {
     switch (role?.toLowerCase()) {
       case 'super_admin':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warning-100 text-warning-800';
       case 'platform_admin':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-info-100 text-info-800';
       case 'ca_admin':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-secondary-100 text-secondary-800';
       case 'chartered_accountant':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success-100 text-success-800';
       case 'user':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-neutral-100 text-neutral-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-neutral-100 text-neutral-800';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'active':
-        return 'bg-success-100 text-success-800';
+        return 'bg-success-100 text-success-700';
       case 'inactive':
-        return 'bg-error-100 text-error-800';
+        return 'bg-error-100 text-error-700';
       case 'pending':
-        return 'bg-warning-100 text-warning-800';
+        return 'bg-warning-100 text-warning-700';
       case 'suspended':
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-neutral-200 text-neutral-700';
       default:
-        return 'bg-neutral-100 text-neutral-800';
+        return 'bg-neutral-100 text-neutral-700';
     }
   };
 
@@ -152,15 +164,12 @@ const AdminUserManagement = () => {
     }
   };
 
-  // Since we're using backend filtering, we can use users directly
-  // But keep client-side filtering as fallback for search
   const filteredUsers = users.filter(user => {
-    // Only do client-side search if backend doesn't support it
     const matchesSearch = !searchTerm ||
-                         user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.role?.toLowerCase().includes(searchTerm.toLowerCase());
+      user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.role?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
@@ -173,219 +182,355 @@ const AdminUserManagement = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="loading-spinner"></div>
-          <p className="text-sm text-neutral-600">Loading users...</p>
+      <PageTransition className="min-h-screen bg-neutral-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+            <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
+            <Typography.Body className="text-neutral-600">Loading users...</Typography.Body>
+          </div>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="min-h-screen bg-burnblack-white">
-      {/* Mobile Header */}
-      <header className="header-burnblack sticky top-0 z-50">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => window.history.back()}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
-              >
-                <ArrowLeft className="h-5 w-5 text-burnblack-black" />
-              </button>
-              <div>
-                <h1 className="text-lg font-semibold text-burnblack-black">User Management</h1>
-                <p className="text-xs text-neutral-500">{filteredUsers.length} users</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
-              >
-                <Filter className="h-5 w-5 text-burnblack-black" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform">
-                <Download className="h-5 w-5 text-burnblack-black" />
-              </button>
-            </div>
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <Typography.H1 className="mb-2">User Management</Typography.H1>
+            <Typography.Body className="text-neutral-600">
+              {filteredUsers.length} users found
+            </Typography.Body>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={() => setShowFilters(!showFilters)}
+              variant="outline"
+              size="sm"
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="px-4 py-4 space-y-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-burnblack-gold focus:border-transparent"
-          />
-        </div>
+        {/* Search and Filters */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex flex-col lg:flex-row gap-4">
+              {/* Search */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                <input
+                  type="text"
+                  placeholder="Search users by name, email, or role..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
 
-        {/* Filter Options */}
-        {showFilters && (
-          <div className="dashboard-card-burnblack p-4 space-y-3">
-            {/* Role Filter */}
-            <div>
-              <label className="text-xs font-medium text-neutral-700 mb-2 block">Role</label>
-              <select
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold"
-              >
-                {roleOptions.map(role => (
-                  <option key={role} value={role}>
-                    {role === 'all' ? 'All Roles' : role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </option>
-                ))}
-              </select>
+              {/* Filters */}
+              {showFilters && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
+                  <select
+                    value={filterRole}
+                    onChange={(e) => setFilterRole(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    {roleOptions.map(role => (
+                      <option key={role} value={role}>
+                        {role === 'all' ? 'All Roles' : role.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    {statusOptions.map(status => (
+                      <option key={status} value={status}>
+                        {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={filterRegistrationSource}
+                    onChange={(e) => setFilterRegistrationSource(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="all">All Sources</option>
+                    <option value="LOCAL">Local</option>
+                    <option value="GOOGLE">Google</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                  <select
+                    value={filterHasFilings}
+                    onChange={(e) => setFilterHasFilings(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="all">All Users</option>
+                    <option value="true">Has Filings</option>
+                    <option value="false">No Filings</option>
+                  </select>
+                  <select
+                    value={filterHasPayments}
+                    onChange={(e) => setFilterHasPayments(e.target.value)}
+                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="all">All Users</option>
+                    <option value="true">Has Payments</option>
+                    <option value="false">No Payments</option>
+                  </select>
+                  <div>
+                    <label className="block text-xs text-neutral-600 mb-1">Registration From</label>
+                    <input
+                      type="date"
+                      value={registrationDateFrom}
+                      onChange={(e) => setRegistrationDateFrom(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-neutral-600 mb-1">Registration To</label>
+                    <input
+                      type="date"
+                      value={registrationDateTo}
+                      onChange={(e) => setRegistrationDateTo(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-neutral-600 mb-1">Last Login From</label>
+                    <input
+                      type="date"
+                      value={lastLoginFrom}
+                      onChange={(e) => setLastLoginFrom(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-neutral-600 mb-1">Last Login To</label>
+                    <input
+                      type="date"
+                      value={lastLoginTo}
+                      onChange={(e) => setLastLoginTo(e.target.value)}
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Status Filter */}
-            <div>
-              <label className="text-xs font-medium text-neutral-700 mb-2 block">Status</label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold"
+        {/* Users List */}
+        {filteredUsers.length === 0 ? (
+          <Card className="text-center py-12">
+            <CardContent>
+              <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-neutral-400" />
+              </div>
+              <Typography.H3 className="mb-2">No users found</Typography.H3>
+              <Typography.Body className="text-neutral-600">
+                {searchTerm || filterRole !== 'all' || filterStatus !== 'all'
+                  ? 'No users match your filters. Try adjusting your search criteria.'
+                  : 'No users available yet.'}
+              </Typography.Body>
+            </CardContent>
+          </Card>
+        ) : (
+          <StaggerContainer className="space-y-4">
+            {filteredUsers.map((user) => (
+              <StaggerItem key={user.id}>
+                <Card hover className="cursor-pointer" onClick={() => handleViewUser(user.id)}>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1 min-w-0">
+                        {/* Avatar */}
+                        <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          {getRoleIcon(user.role)}
+                        </div>
+
+                        {/* User Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Typography.Small className="font-semibold text-neutral-900">
+                              {user.fullName || user.name || 'Unknown User'}
+                            </Typography.Small>
+                            <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${getRoleColor(user.role)}`}>
+                              {user.role?.replace(/_/g, ' ')}
+                            </span>
+                            <span className={`px-2 py-0.5 text-xs rounded-full font-medium flex items-center gap-1 ${getStatusColor(user.status)}`}>
+                              {getStatusIcon(user.status)}
+                              <span className="capitalize">{user.status}</span>
+                            </span>
+                          </div>
+
+                          <Typography.Small className="text-neutral-600 truncate block">
+                            {user.email}
+                          </Typography.Small>
+
+                          {/* Additional Info */}
+                          <div className="flex flex-wrap items-center gap-4 mt-2">
+                            {user.phone && (
+                              <div className="flex items-center space-x-1 text-neutral-500">
+                                <Phone className="h-3 w-3" />
+                                <Typography.Small className="text-xs">{user.phone}</Typography.Small>
+                              </div>
+                            )}
+                            <div className="flex items-center space-x-1 text-neutral-500">
+                              <Calendar className="h-3 w-3" />
+                              <Typography.Small className="text-xs">
+                                Joined {new Date(user.created_at).toLocaleDateString()}
+                              </Typography.Small>
+                            </div>
+                            {user.last_login && (
+                              <div className="flex items-center space-x-1 text-neutral-500">
+                                <Clock className="h-3 w-3" />
+                                <Typography.Small className="text-xs">
+                                  Last login {new Date(user.last_login).toLocaleDateString()}
+                                </Typography.Small>
+                              </div>
+                            )}
+                            {user.total_filings > 0 && (
+                              <div className="flex items-center space-x-1 text-neutral-500">
+                                <FileText className="h-3 w-3" />
+                                <Typography.Small className="text-xs">{user.total_filings} filings</Typography.Small>
+                              </div>
+                            )}
+                          </div>
+                          {/* Tags */}
+                          {user.metadata?.tags && user.metadata.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {user.metadata.tags.slice(0, 3).map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  <Tag className="h-2.5 w-2.5" />
+                                  {tag}
+                                </span>
+                              ))}
+                              {user.metadata.tags.length > 3 && (
+                                <span className="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded text-xs">
+                                  +{user.metadata.tags.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedUser(user);
+                          setShowUserModal(true);
+                        }}
+                        className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500 transition-colors"
+                      >
+                        <MoreVertical className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        )}
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <Typography.Small className="text-neutral-600">
+              Page {page} of {pagination.totalPages}
+            </Typography.Small>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
               >
-                {statusOptions.map(status => (
-                  <option key={status} value={status}>
-                    {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
-                  </option>
-                ))}
-              </select>
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                disabled={page === pagination.totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
             </div>
           </div>
         )}
-
-        {/* Users List */}
-        <div className="space-y-3">
-          {filteredUsers.length === 0 ? (
-            <div className="dashboard-card-burnblack p-8 text-center">
-              <User className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-burnblack-black mb-2">No users found</h3>
-              <p className="text-sm text-neutral-500">
-                {searchTerm || filterRole !== 'all' || filterStatus !== 'all'
-                  ? 'No users match your filters'
-                  : 'No users available'}
-              </p>
-            </div>
-          ) : (
-            filteredUsers.map((user) => (
-              <div
-                key={user.id}
-                className="dashboard-card-burnblack hover:shadow-sm transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-start space-x-3 flex-1">
-                    <div className="p-2 rounded-lg bg-neutral-50">
-                      {getRoleIcon(user.role)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-burnblack-black">{user.fullName || user.name}</h3>
-                      <p className="text-xs text-neutral-500">{user.email}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${getRoleColor(user.role)}`}>
-                          {user.role.replace('_', ' ')}
-                        </span>
-                        <span className={`px-2 py-1 text-xs rounded-full font-medium flex items-center space-x-1 ${getStatusColor(user.status)}`}>
-                          {getStatusIcon(user.status)}
-                          <span className="capitalize">{user.status}</span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-1">
-                    <button
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setShowUserModal(true);
-                      }}
-                      className="p-1 rounded hover:bg-neutral-100 active:scale-95 transition-transform"
-                      title="More options"
-                    >
-                      <MoreVertical className="h-4 w-4 text-neutral-600" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  {user.phone && (
-                    <div className="flex items-center space-x-1">
-                      <Phone className="h-3 w-3 text-neutral-400" />
-                      <span className="text-neutral-600">{user.phone}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-3 w-3 text-neutral-400" />
-                    <span className="text-neutral-600">
-                      Joined {new Date(user.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  {user.last_login && (
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3 text-neutral-400" />
-                      <span className="text-neutral-600">
-                        Last login {new Date(user.last_login).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                  {user.total_filings > 0 && (
-                    <div className="flex items-center space-x-1">
-                      <FileText className="h-3 w-3 text-neutral-400" />
-                      <span className="text-neutral-600">{user.total_filings} filings</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </main>
+      </div>
 
       {/* User Actions Modal */}
       {selectedUser && showUserModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 p-4">
-          <div className="dashboard-card-burnblack w-full max-w-md">
-            <div className="sticky top-0 bg-burnblack-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-burnblack-black">User Actions</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>User Actions</CardTitle>
               <button
                 onClick={() => {
                   setSelectedUser(null);
                   setShowUserModal(false);
                 }}
-                className="p-1 rounded-lg hover:bg-neutral-100"
+                className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
               >
-                <X className="h-5 w-5 text-neutral-500" />
+                <X className="h-5 w-5" />
               </button>
-            </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* User Info */}
+              <div className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-lg">
+                <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                  {getRoleIcon(selectedUser.role)}
+                </div>
+                <div>
+                  <Typography.Small className="font-medium text-neutral-900">
+                    {selectedUser.fullName || selectedUser.name}
+                  </Typography.Small>
+                  <Typography.Small className="text-neutral-600 text-xs">
+                    {selectedUser.email}
+                  </Typography.Small>
+                </div>
+              </div>
 
-            <div className="p-4 space-y-3">
               {/* View Profile */}
-              <button
+              <Button
+                variant="outline"
+                className="w-full"
                 onClick={() => {
-                  // Navigate to user profile
+                  handleViewUser(selectedUser.id);
                   setShowUserModal(false);
                 }}
-                className="w-full flex items-center justify-center space-x-2 p-3 bg-neutral-50 text-neutral-700 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
               >
-                <Eye className="h-4 w-4" />
-                <span>View Profile</span>
-              </button>
+                <Eye className="h-4 w-4 mr-2" />
+                View Profile
+              </Button>
 
               {/* Status Actions */}
               <div>
-                <h3 className="text-sm font-medium text-burnblack-black mb-2">Change Status</h3>
+                <Typography.Small className="font-medium text-neutral-700 mb-2 block">
+                  Change Status
+                </Typography.Small>
                 <div className="grid grid-cols-2 gap-2">
                   {['active', 'inactive', 'pending', 'suspended'].map(status => (
                     <button
@@ -397,7 +542,7 @@ const AdminUserManagement = () => {
                       disabled={selectedUser.status === status}
                       className={`p-2 rounded-lg text-sm font-medium transition-colors ${
                         selectedUser.status === status
-                          ? 'bg-burnblack-gold bg-opacity-20 text-burnblack-gold cursor-not-allowed'
+                          ? 'bg-primary-100 text-primary-700 cursor-not-allowed'
                           : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                       }`}
                     >
@@ -408,25 +553,25 @@ const AdminUserManagement = () => {
               </div>
 
               {/* Danger Actions */}
-              <div className="pt-3 border-t border-neutral-200">
-                <button
+              <div className="pt-4 border-t border-neutral-200">
+                <Button
+                  variant="error"
+                  className="w-full"
                   onClick={() => {
-                    handleDeleteUser(selectedUser.id);
+                    handleDeleteUser(selectedUser.id, selectedUser.fullName || selectedUser.name);
                     setShowUserModal(false);
                   }}
-                  className="w-full bg-error-600 text-white py-2 px-4 rounded-lg hover:bg-error-700 active:scale-95 transition-transform"
+                  disabled={deleteUserMutation.isLoading}
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <Trash2 className="h-4 w-4" />
-                    <span>Delete User</span>
-                  </div>
-                </button>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {deleteUserMutation.isLoading ? 'Deleting...' : 'Delete User'}
+                </Button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
-    </div>
+    </PageTransition>
   );
 };
 

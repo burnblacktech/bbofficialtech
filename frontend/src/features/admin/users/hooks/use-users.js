@@ -163,6 +163,25 @@ export const useSuspendAdminUser = () => {
 };
 
 /**
+ * Delete user mutation
+ */
+export const useDeleteAdminUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, reason, force }) => adminUsersService.deleteUser(userId, reason, force),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['adminUsers']);
+      queryClient.invalidateQueries(['adminUserDetails', variables.userId]);
+      toast.success('User deleted successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to delete user');
+    },
+  });
+};
+
+/**
  * Reset password mutation
  */
 export const useResetAdminUserPassword = () => {
@@ -241,6 +260,174 @@ export const useExportAdminUsers = () => {
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || 'Failed to export users');
+    },
+  });
+};
+
+/**
+ * Impersonate user mutation
+ */
+export const useImpersonateAdminUser = () => {
+  return useMutation({
+    mutationFn: ({ userId, reason }) => adminUsersService.impersonateUser(userId, reason),
+    onSuccess: (data) => {
+      // Store impersonation token
+      if (data.data?.token) {
+        localStorage.setItem('impersonationToken', data.data.token);
+        localStorage.setItem('originalToken', localStorage.getItem('token'));
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('isImpersonating', 'true');
+        toast.success(`Impersonating ${data.data.user?.email}. Refresh to continue.`);
+        // Reload page to apply new token
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to impersonate user');
+    },
+  });
+};
+
+/**
+ * Stop impersonation mutation
+ */
+export const useStopImpersonation = () => {
+  return useMutation({
+    mutationFn: () => adminUsersService.stopImpersonation(),
+    onSuccess: () => {
+      // Restore original token
+      const originalToken = localStorage.getItem('originalToken');
+      if (originalToken) {
+        localStorage.setItem('token', originalToken);
+      }
+      localStorage.removeItem('impersonationToken');
+      localStorage.removeItem('isImpersonating');
+      localStorage.removeItem('originalToken');
+      toast.success('Impersonation stopped. Refresh to continue.');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to stop impersonation');
+    },
+  });
+};
+
+/**
+ * Get user notes query
+ */
+export const useAdminUserNotes = (userId, enabled = true) => {
+  return useQuery({
+    queryKey: ['adminUserNotes', userId],
+    queryFn: () => adminUsersService.getUserNotes(userId),
+    enabled: enabled && !!userId,
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+};
+
+/**
+ * Create user note mutation
+ */
+export const useCreateAdminUserNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, noteData }) => adminUsersService.createUserNote(userId, noteData),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['adminUserNotes', variables.userId]);
+      toast.success('Note created successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to create note');
+    },
+  });
+};
+
+/**
+ * Update user note mutation
+ */
+export const useUpdateAdminUserNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, noteId, noteData }) => adminUsersService.updateUserNote(userId, noteId, noteData),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['adminUserNotes', variables.userId]);
+      toast.success('Note updated successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to update note');
+    },
+  });
+};
+
+/**
+ * Delete user note mutation
+ */
+export const useDeleteAdminUserNote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, noteId }) => adminUsersService.deleteUserNote(userId, noteId),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['adminUserNotes', variables.userId]);
+      toast.success('Note deleted successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to delete note');
+    },
+  });
+};
+
+/**
+ * Get user tags query
+ */
+export const useAdminUserTags = (userId, enabled = true) => {
+  return useQuery({
+    queryKey: ['adminUserTags', userId],
+    queryFn: () => adminUsersService.getUserTags(userId),
+    enabled: enabled && !!userId,
+    staleTime: 1 * 60 * 1000,
+  });
+};
+
+/**
+ * Add user tag mutation
+ */
+export const useAddAdminUserTag = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, tag }) => adminUsersService.addUserTag(userId, tag),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['adminUserTags', variables.userId]);
+      queryClient.invalidateQueries(['adminUserDetails', variables.userId]);
+      toast.success('Tag added successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to add tag');
+    },
+  });
+};
+
+/**
+ * Remove user tag mutation
+ */
+export const useRemoveAdminUserTag = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, tag }) => adminUsersService.removeUserTag(userId, tag),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['adminUserTags', variables.userId]);
+      queryClient.invalidateQueries(['adminUserDetails', variables.userId]);
+      toast.success('Tag removed successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to remove tag');
     },
   });
 };

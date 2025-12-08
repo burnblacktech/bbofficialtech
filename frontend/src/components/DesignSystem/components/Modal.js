@@ -50,38 +50,36 @@ const Modal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black bg-opacity-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm" // Dark overlay with blur - newUI.md
             onClick={handleOverlayClick}
           />
 
           {/* Modal */}
           <div className="flex min-h-full items-center justify-center p-4">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 30,
-                duration: 0.2,
+                duration: 0.3,
+                ease: [0.175, 0.885, 0.32, 1.275], // ease-spring - newUI.md Section 9.2
               }}
               className={`
-                relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-xl
+                relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-elevation-4
                 ${className}
               `}
               {...props}
             >
               {/* Header */}
               {(title || showCloseButton) && (
-                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between p-6 border-b border-neutral-200">
                   {title && (
-                    <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                    <h2 className="text-heading-2 font-semibold text-neutral-900">{title}</h2>
                   )}
                   {showCloseButton && !preventClose && (
                     <button
                       onClick={handleClose}
-                      className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors duration-150 ease-smooth"
                     >
                       <X className="h-5 w-5" />
                     </button>

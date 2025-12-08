@@ -23,6 +23,26 @@ Let me map out every user function and flow systematically.
 
 ## PART 1: AUTHENTICATION & ACCOUNT
 
+> **Design Token Reminder**  
+> All visual references in this document assume the Solar Gold / Ember Amber palette defined in `docs/UI.md` (primary `#FFC300`, secondary `#FF9800`), with Porcelain/Slate neutrals for surfaces and the shared semantic colors for status messaging.
+
+### Dashboard Implementation Checklist
+
+| Flow Reference | UI Section / Behavior | Frontend Route or Component | Notes |
+|----------------|-----------------------|-----------------------------|-------|
+| 2.1 Main Dashboard | Tax Impact Bar (sticky), quick stats | `apps/web/src/app/(dashboard)/dashboard/page.tsx` + `components/layout/tax-computation-bar` | Must compute both regimes via `use-tax-computation.ts` |
+| 2.1/2.2 | Section cards (Personal Info, Income, Deductions, TDS, Bank) w/ Breathing Grid states | `components/layout/breathing-grid` + feature-specific cards under `features/*/components` | Each section pulls summary via React Query hooks |
+| 2.3 Notifications Center | Notification drawer + deep links | `features/notifications/` (TBD) | Shares token styles with admin alerts |
+| 3.x Pre-Filing Setup | Start flow (ITR type, AY, data source) | `apps/web/src/app/(filing)/start/page.tsx` | Buttons use primary/ember tokens |
+| 4.x Data Entry | Section detail experience | `apps/web/src/app/(filing)/itr/[type]/[year]/page.tsx` | Ensure glance state always visible per Breathing Grid |
+
+### Short-Term Roadmap (End-User Focus)
+1. **P0:** Authentication + Dashboard (Sections 1, 2.1) – must match Solar Gold palette and share components with admin stats where applicable.
+2. **P0:** Tax computation + regime comparison (Sections 5.1/5.2) – embed in `tax-computation-bar`.
+3. **P1:** Filing sections prioritized by frequency – Salary, Deductions, TDS (Sections 4.2, 4.8, 4.9).
+4. **P1:** Draft management + discrepancy handling (Sections 6 & 8) leveraging shared status tokens.
+5. **P2:** Refund tracking + CA assistance (Sections 9 & 10) once dashboard foundation is stable.
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  1. AUTHENTICATION & ACCOUNT MANAGEMENT                                     │

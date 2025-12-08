@@ -147,6 +147,7 @@ const CAFirmStaffManagement = () => {
   };
 
   const handleDeleteStaff = (staffId, staffName) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm(`Are you sure you want to remove ${staffName}? This action cannot be undone.`)) {
       deleteStaffMutation.mutate(staffId);
     }

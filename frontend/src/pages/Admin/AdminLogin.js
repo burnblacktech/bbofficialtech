@@ -8,12 +8,12 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
+import apiClient from '../../services/core/APIClient';
 import {
   Shield,
   Eye,
   EyeOff,
   AlertCircle,
-  CheckCircle,
   Lock,
   User,
 } from 'lucide-react';
@@ -22,21 +22,30 @@ const AdminLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    twoFactorCode: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check if admin is already logged in
-    const adminToken = localStorage.getItem('adminToken');
-    if (adminToken) {
-      navigate('/admin/dashboard');
+    const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('accessToken');
+    const adminUser = localStorage.getItem('adminUser');
+    if (adminToken && adminUser) {
+      try {
+        const user = JSON.parse(adminUser);
+        // Verify it's actually an admin user
+        if (user.role === 'SUPER_ADMIN' || user.role === 'PLATFORM_ADMIN') {
+          navigate('/admin/dashboard');
+        }
+      } catch (e) {
+        // Invalid admin user data, clear and allow login
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+      }
     }
   }, [navigate]);
 
@@ -62,21 +71,29 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call admin login API
+      const response = await apiClient.post('/admin/login', {
+        email: formData.email,
+        password: formData.password,
+      });
 
-      // Mock authentication logic
-      const validAdmins = [
-        { email: 'admin@burnblack.com', password: 'AdminPass123!', role: 'super_admin' },
-        { email: 'support@burnblack.com', password: 'SupportPass123!', role: 'platform_admin' },
-        { email: 'billing@burnblack.com', password: 'BillingPass123!', role: 'platform_admin' },
-      ];
+      if (response.data.success) {
+        const { accessToken, refreshToken, user } = response.data.data;
 
-      const admin = validAdmins.find(a =>
-        a.email === formData.email && a.password === formData.password,
-      );
+        // Store tokens and user info
+        // Store as accessToken so API client can use it for admin routes
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('adminToken', accessToken); // Keep for admin-specific checks
+        localStorage.setItem('adminUser', JSON.stringify(user));
 
-      if (!admin) {
+        // Reset login attempts on success
+        setLoginAttempts(0);
+
+        // Redirect to admin dashboard
+        navigate('/admin/dashboard');
+      } else {
+        setError(response.data.error || 'Login failed. Please try again.');
         setLoginAttempts(prev => prev + 1);
         if (loginAttempts >= 2) {
           setIsLocked(true);
@@ -85,40 +102,22 @@ const AdminLogin = () => {
             setIsLocked(false);
             setLoginAttempts(0);
           }, 15 * 60 * 1000); // 15 minutes
-        } else {
-          setError('Invalid email or password. Please try again.');
         }
-        return;
       }
-
-      // Check if 2FA is required (simulate)
-      if (!showTwoFactor) {
-        setShowTwoFactor(true);
-        setError('');
-        return;
-      }
-
-      // Verify 2FA code (mock)
-      if (formData.twoFactorCode !== '123456') {
-        setError('Invalid 2FA code. Please try again.');
-        return;
-      }
-
-      // Successful login
-      const adminToken = btoa(JSON.stringify({
-        email: admin.email,
-        role: admin.role,
-        loginTime: new Date().toISOString(),
-      }));
-
-      localStorage.setItem('adminToken', adminToken);
-      localStorage.setItem('adminUser', JSON.stringify(admin));
-
-      // Redirect to admin dashboard
-      navigate('/admin/dashboard');
-
     } catch (err) {
-      setError('Login failed. Please try again.');
+      // Handle API errors
+      const errorMessage = err.response?.data?.error || err.message || 'Login failed. Please try again.';
+      setError(errorMessage);
+
+      setLoginAttempts(prev => prev + 1);
+      if (loginAttempts >= 2) {
+        setIsLocked(true);
+        setError('Too many failed attempts. Account locked for 15 minutes.');
+        setTimeout(() => {
+          setIsLocked(false);
+          setLoginAttempts(0);
+        }, 15 * 60 * 1000); // 15 minutes
+      }
     } finally {
       setLoading(false);
     }
@@ -204,42 +203,6 @@ const AdminLogin = () => {
                     </button>
                   </div>
                 </div>
-
-                {/* Two-Factor Authentication */}
-                {showTwoFactor && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-4"
-                  >
-                    <div className="flex items-center space-x-2 p-3 bg-primary-50 border border-primary-200 rounded-lg">
-                      <CheckCircle className="w-4 h-4 text-primary-600" />
-                      <Typography.Small className="text-primary-700">
-                        Two-factor authentication required
-                      </Typography.Small>
-                    </div>
-                    <div>
-                      <label htmlFor="twoFactorCode" className="block text-sm font-medium text-neutral-700 mb-2">
-                        2FA Code
-                      </label>
-                      <input
-                        id="twoFactorCode"
-                        name="twoFactorCode"
-                        type="text"
-                        required
-                        value={formData.twoFactorCode}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter 6-digit code"
-                        maxLength={6}
-                        disabled={loading || isLocked}
-                      />
-                      <Typography.Small className="text-neutral-500 mt-1">
-                        Enter the 6-digit code from your authenticator app
-                      </Typography.Small>
-                    </div>
-                  </motion.div>
-                )}
 
                 {/* Error Message */}
                 {error && (

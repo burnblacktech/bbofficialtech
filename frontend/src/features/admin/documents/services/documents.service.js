@@ -5,7 +5,7 @@
 
 import api from '../../../../services/api';
 
-const DOCUMENTS_BASE_URL = '/api/admin/documents';
+const DOCUMENTS_BASE_URL = '/admin/documents';
 
 export const adminDocumentsService = {
   getDocuments: async (params = {}) => {

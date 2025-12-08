@@ -149,6 +149,7 @@ const CAFirmClientPortfolio = () => {
   };
 
   const handleDeleteClient = (clientId, clientName) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm(`Are you sure you want to remove ${clientName}? This action cannot be undone.`)) {
       deleteClientMutation.mutate(clientId);
     }

@@ -21,9 +21,16 @@ import {
   TrendingUp,
   BarChart3,
 } from 'lucide-react';
+import adminService from '../../services/api/adminService';
+import toast from 'react-hot-toast';
 
 const PricingControl = () => {
-  const [pricingData, setPricingData] = useState(null);
+  const [pricingData, setPricingData] = useState({
+    endUserFilingFee: 0,
+    expertReviewFee: 0,
+    caSubscriptionPlans: [],
+    pricingHistory: [],
+  });
   const [loading, setLoading] = useState(true);
   const [editingPlan, setEditingPlan] = useState(null);
   const [showAddPlan, setShowAddPlan] = useState(false);
@@ -35,85 +42,50 @@ const PricingControl = () => {
     features: [],
   });
 
-  // Mock pricing data
+  // Fetch pricing data from API
   useEffect(() => {
     const fetchPricingData = async () => {
       setLoading(true);
+      try {
+        // Get pricing plans
+        const plansResponse = await adminService.getPricingPlans();
+        const plans = plansResponse.plans || plansResponse.data || [];
+        
+        // Get settings for end user fees
+        const settingsResponse = await adminService.getSettings();
+        const defaultItrRates = settingsResponse.defaultItrRates || {};
+        
+        // Transform API response to match component expectations
+        const transformedData = {
+          endUserFilingFee: defaultItrRates.itr_1 || 2500,
+          expertReviewFee: settingsResponse.expertReviewFee || 500,
+          caSubscriptionPlans: plans.map(plan => ({
+            id: plan.id,
+            name: plan.name || plan.planName,
+            clientLimit: plan.clientLimit || plan.maxClients || 0,
+            monthlyPrice: plan.monthlyPrice || plan.price || 0,
+            annualPrice: plan.annualPrice || (plan.price * 10) || 0,
+            features: plan.features || plan.featureList || [],
+            activeSubscribers: plan.activeSubscribers || plan.subscriberCount || 0,
+            revenue: plan.revenue || 0,
+          })),
+          pricingHistory: [], // Would need separate endpoint for history
+        };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const mockData = {
-        endUserFilingFee: 2500,
-        expertReviewFee: 500,
-        caSubscriptionPlans: [
-          {
-            id: 1,
-            name: 'Basic Plan',
-            clientLimit: 50,
-            monthlyPrice: 5000,
-            annualPrice: 50000,
-            features: [
-              'Up to 50 clients',
-              'Basic ITR filing support',
-              'Email support',
-              'Standard templates',
-            ],
-            activeSubscribers: 12,
-            revenue: 600000,
-          },
-          {
-            id: 2,
-            name: 'Pro Plan',
-            clientLimit: 200,
-            monthlyPrice: 15000,
-            annualPrice: 150000,
-            features: [
-              'Up to 200 clients',
-              'Advanced ITR filing support',
-              'Priority support',
-              'Custom templates',
-              'Bulk operations',
-              'Analytics dashboard',
-            ],
-            activeSubscribers: 8,
-            revenue: 1200000,
-          },
-          {
-            id: 3,
-            name: 'Enterprise Plan',
-            clientLimit: 1000,
-            monthlyPrice: 50000,
-            annualPrice: 500000,
-            features: [
-              'Unlimited clients',
-              'Full platform access',
-              'Dedicated support',
-              'Custom integrations',
-              'White-label options',
-              'Advanced analytics',
-              'API access',
-            ],
-            activeSubscribers: 3,
-            revenue: 1500000,
-          },
-        ],
-        pricingHistory: [
-          {
-            date: new Date('2024-01-01'),
-            endUserFee: 2000,
-            expertReviewFee: 400,
-          },
-          {
-            date: new Date('2024-01-15'),
-            endUserFee: 2500,
-            expertReviewFee: 500,
-          },
-        ],
-      };
-
-      setPricingData(mockData);
-      setLoading(false);
+        setPricingData(transformedData);
+      } catch (error) {
+        console.error('Failed to fetch pricing data:', error);
+        toast.error('Failed to load pricing data. Please try again.');
+        // Set default data on error
+        setPricingData({
+          endUserFilingFee: 2500,
+          expertReviewFee: 500,
+          caSubscriptionPlans: [],
+          pricingHistory: [],
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchPricingData();

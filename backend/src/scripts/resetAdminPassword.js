@@ -12,7 +12,7 @@ const { sequelize } = require('../config/database');
 // =====================================================
 const ADMIN_CONFIG = {
   email: 'admin@burnblack.com',
-  newPassword: 'Admin@2024', // Change this to your desired password
+  newPassword: 'admin123!@#', // Default password - change after first login
 };
 
 // =====================================================
@@ -24,9 +24,9 @@ async function resetAdminPassword() {
   console.log('');
 
   try {
-    // Check if admin exists
+    // Check if admin exists - explicitly use public.users schema
     const [existingAdmins] = await sequelize.query(
-      `SELECT id, email, full_name, role, status FROM users WHERE email = :email LIMIT 1`,
+      `SELECT id, email, full_name, role, status FROM public.users WHERE email = :email LIMIT 1`,
       {
         replacements: { email: ADMIN_CONFIG.email.toLowerCase() },
       }
@@ -62,10 +62,10 @@ async function resetAdminPassword() {
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(ADMIN_CONFIG.newPassword, saltRounds);
 
-    // Update the password
+    // Update the password - explicitly use public.users schema
     console.log('🔄 Updating admin password...');
     await sequelize.query(
-      `UPDATE users 
+      `UPDATE public.users 
        SET password_hash = :passwordHash, 
            updated_at = NOW() 
        WHERE email = :email`,

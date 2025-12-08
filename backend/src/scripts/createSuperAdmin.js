@@ -5,8 +5,12 @@
 // Does NOT delete existing users
 // =====================================================
 
+// Load environment variables first (to use same connection as server)
+require('dotenv').config();
+
 const { User } = require('../models');
 const { sequelize } = require('../config/database');
+const { QueryTypes } = require('sequelize');
 
 // =====================================================
 // CONFIGURATION
@@ -28,10 +32,12 @@ async function createSuperAdmin() {
 
   try {
     // Check if admin already exists (using raw query to avoid column issues)
-    const [existingAdmins] = await sequelize.query(
-      `SELECT id, email, full_name, role, status FROM users WHERE email = :email LIMIT 1`,
+    // Explicitly use public.users schema
+    const existingAdmins = await sequelize.query(
+      `SELECT id, email, full_name, role, status FROM public.users WHERE email = :email LIMIT 1`,
       {
         replacements: { email: ADMIN_CONFIG.email.toLowerCase() },
+        type: QueryTypes.SELECT,
       }
     );
     const existingAdmin = existingAdmins && existingAdmins.length > 0 ? existingAdmins[0] : null;
@@ -62,7 +68,7 @@ async function createSuperAdmin() {
     const userId = uuidv4();
     
     await sequelize.query(
-      `INSERT INTO users (
+      `INSERT INTO public.users (
         id, email, password_hash, full_name, role, auth_provider, 
         status, email_verified, created_at, updated_at
       ) VALUES (
@@ -84,10 +90,11 @@ async function createSuperAdmin() {
     );
     
     // Fetch the created user
-    const [createdUsers] = await sequelize.query(
-      `SELECT id, email, full_name, role, status, created_at FROM users WHERE id = :id`,
+    const createdUsers = await sequelize.query(
+      `SELECT id, email, full_name, role, status, created_at FROM public.users WHERE id = :id`,
       {
         replacements: { id: userId },
+        type: QueryTypes.SELECT,
       }
     );
     const superAdmin = createdUsers && createdUsers.length > 0 ? createdUsers[0] : null;
@@ -123,10 +130,11 @@ async function createSuperAdmin() {
       console.log('');
       console.log('💡 The admin user might already exist. Checking...');
       try {
-        const [existing] = await sequelize.query(
-          `SELECT id, email, full_name, role, status FROM users WHERE email = :email LIMIT 1`,
+        const existing = await sequelize.query(
+          `SELECT id, email, full_name, role, status FROM public.users WHERE email = :email LIMIT 1`,
           {
             replacements: { email: ADMIN_CONFIG.email.toLowerCase() },
+            type: QueryTypes.SELECT,
           }
         );
         if (existing && existing.length > 0) {

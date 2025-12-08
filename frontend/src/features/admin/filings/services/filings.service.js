@@ -5,7 +5,7 @@
 
 import api from '../../../../services/api';
 
-const FILINGS_BASE_URL = '/api/admin/filings';
+const FILINGS_BASE_URL = '/admin/filings';
 
 export const adminFilingsService = {
   /**

@@ -96,8 +96,8 @@ class APIClient {
       async (error) => {
         const originalRequest = error.config;
 
-        // Log error in development
-        if (process.env.NODE_ENV === 'development') {
+        // Log error in development (skip if suppressed for optional endpoints)
+        if (process.env.NODE_ENV === 'development' && !originalRequest?._suppressErrorLog) {
           // eslint-disable-next-line no-console
           console.error(`❌ API Error: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url}`, {
             status: error.response?.status,
@@ -112,8 +112,10 @@ class APIClient {
           return this.handleTokenRefresh(originalRequest);
         }
 
-        // Handle other HTTP errors with user-friendly messages
-        this.handleHttpError(error);
+        // Handle other HTTP errors with user-friendly messages (skip if suppressed)
+        if (!originalRequest?._suppressErrorLog) {
+          this.handleHttpError(error);
+        }
 
         return Promise.reject(error);
       },
@@ -387,6 +389,9 @@ class APIClient {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    // Also clear admin tokens
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     // Reset refresh state to prevent loops
     this.isRefreshing = false;
     this.refreshAttempts = 0;

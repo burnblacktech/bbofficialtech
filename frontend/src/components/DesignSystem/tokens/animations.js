@@ -1,21 +1,33 @@
 // =====================================================
 // DESIGN TOKENS - ANIMATIONS
+// Ultra-Grade Modern UI Design System - newUI.md aligned
 // =====================================================
 
 export const ANIMATIONS = {
-  shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-    soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-    medium: '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    strong: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    glow: '0 0 20px rgba(59, 130, 246, 0.3)',
-    'glow-success': '0 0 20px rgba(34, 197, 94, 0.3)',
-    'glow-warning': '0 0 20px rgba(245, 158, 11, 0.3)',
-    'glow-error': '0 0 20px rgba(239, 68, 68, 0.3)',
+  // Easing Curves - newUI.md Section 9.2
+  easings: {
+    'ease-smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',        // Most UI transitions
+    'ease-bounce': 'cubic-bezier(0.34, 1.56, 0.64, 1)',   // Success states, celebrations
+    'ease-spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)', // Modals, popups
+    // Legacy aliases
+    easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
+    easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
+    easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  },
+  // Animation Durations - newUI.md Section 9.1
+  durations: {
+    small: '150ms',        // Button state changes
+    medium: '250ms',       // Card expand
+    large: '350ms',        // Page transitions
+    cardExpand: '300ms',   // Card expand/collapse
+    valueUpdate: '400ms',  // Value update animations
+    regimeSwitch: '500ms', // Regime toggle
+  },
+  transitions: {
+    fast: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
+    normal: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
+    slow: '500ms cubic-bezier(0.4, 0, 0.2, 1)',
   },
   borderRadius: {
     none: '0',
@@ -28,17 +40,6 @@ export const ANIMATIONS = {
     '4xl': '2rem',   // 32px
     '5xl': '2.5rem', // 40px
     full: '9999px',
-  },
-  transitions: {
-    fast: '150ms ease-in-out',
-    normal: '300ms ease-in-out',
-    slow: '500ms ease-in-out',
-  },
-  easings: {
-    easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
-    easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
-    easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-    spring: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   },
 };
 

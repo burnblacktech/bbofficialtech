@@ -1,0 +1,522 @@
+// =====================================================
+// E-VERIFICATION PAGE
+// Verify ITR after submission using multiple methods
+// =====================================================
+
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  Smartphone,
+  Building2,
+  Key,
+  Send,
+  Shield,
+  AlertCircle,
+  RefreshCw,
+  Loader,
+  FileCheck,
+  Download,
+  PartyPopper,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import EVerificationOptions from '../../components/ITR/EVerificationOptions';
+
+const EVerification = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get filing details from navigation state
+  const filing = location.state?.filing;
+  const acknowledgmentNumber = filing?.acknowledgmentNumber || location.state?.acknowledgmentNumber;
+  const assessmentYear = filing?.assessmentYear || location.state?.assessmentYear || '2025-26';
+
+  // Component state
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [verificationStatus, setVerificationStatus] = useState('pending'); // pending, processing, success, failed
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otpError, setOtpError] = useState(null);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Route guard
+  useEffect(() => {
+    if (!acknowledgmentNumber) {
+      toast.error('No filing found for verification');
+      navigate('/filing-history');
+    }
+  }, [acknowledgmentNumber, navigate]);
+
+  // Resend timer countdown
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
+
+  // Handle method selection
+  const handleMethodSelect = (method) => {
+    setSelectedMethod(method);
+    setOtpSent(false);
+    setOtp(['', '', '', '', '', '']);
+    setOtpError(null);
+  };
+
+  // Handle OTP input
+  const handleOtpChange = (index, value) => {
+    if (value.length > 1) return; // Only allow single digit
+    if (!/^\d*$/.test(value)) return; // Only allow numbers
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    setOtpError(null);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  // Handle OTP backspace
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
+    }
+  };
+
+  // Send OTP
+  const handleSendOtp = async () => {
+    setIsProcessing(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setOtpSent(true);
+      setResendTimer(60); // 60 seconds resend timer
+      toast.success(`OTP sent to your registered ${selectedMethod === 'aadhaar' ? 'Aadhaar-linked mobile' : 'mobile number'}`);
+    } catch (error) {
+      toast.error('Failed to send OTP. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Verify OTP
+  const handleVerifyOtp = async () => {
+    const otpValue = otp.join('');
+    if (otpValue.length !== 6) {
+      setOtpError('Please enter complete 6-digit OTP');
+      return;
+    }
+
+    setIsProcessing(true);
+    setVerificationStatus('processing');
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // For demo, accept any 6-digit OTP
+      setVerificationStatus('success');
+      toast.success('ITR verified successfully!');
+    } catch (error) {
+      setVerificationStatus('failed');
+      setOtpError('Invalid OTP. Please try again.');
+      toast.error('Verification failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle net banking verification
+  const handleNetBankingVerify = async () => {
+    setIsProcessing(true);
+    try {
+      // In production, this would redirect to bank's login page
+      // For demo, simulate success after delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setVerificationStatus('success');
+      toast.success('ITR verified via Net Banking!');
+    } catch (error) {
+      setVerificationStatus('failed');
+      toast.error('Net Banking verification failed');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle DSC verification
+  const handleDscVerify = async () => {
+    setIsProcessing(true);
+    try {
+      // In production, this would initiate DSC signing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setVerificationStatus('success');
+      toast.success('ITR signed with DSC!');
+    } catch (error) {
+      setVerificationStatus('failed');
+      toast.error('DSC verification failed');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle physical ITR-V send
+  const handlePhysicalSend = () => {
+    // Download ITR-V
+    toast.success('ITR-V downloaded. Send signed copy to CPC Bangalore within 120 days.');
+    // In production, trigger actual download
+  };
+
+  // Go to dashboard after success
+  const handleGoToDashboard = () => {
+    navigate('/dashboard');
+  };
+
+  // Download acknowledgment
+  const handleDownloadAck = () => {
+    toast.success('Acknowledgment downloaded');
+    // In production, trigger actual download
+  };
+
+  // Render success state
+  if (verificationStatus === 'success') {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white rounded-2xl shadow-card border border-slate-200 p-8 max-w-md w-full text-center"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', damping: 10, delay: 0.2 }}
+            className="w-20 h-20 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
+            <PartyPopper className="w-10 h-10 text-success-600" />
+          </motion.div>
+
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">
+            ITR Successfully Verified! 🎉
+          </h2>
+          <p className="text-slate-600 mb-6">
+            Your Income Tax Return for AY {assessmentYear} has been e-verified and submitted to the Income Tax Department.
+          </p>
+
+          <div className="bg-success-50 border border-success-200 rounded-xl p-4 mb-6">
+            <div className="flex items-center justify-center gap-2 text-success-700 mb-2">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-semibold">Acknowledgment Number</span>
+            </div>
+            <p className="text-lg font-mono font-bold text-success-800">
+              {acknowledgmentNumber}
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={handleDownloadAck}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors"
+            >
+              <Download className="w-5 h-5" />
+              Download Acknowledgment
+            </button>
+
+            <button
+              onClick={handleGoToDashboard}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20"
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div className="px-4 py-3 max-w-3xl mx-auto">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-lg hover:bg-slate-100 active:scale-95 transition-all"
+            >
+              <ArrowLeft className="h-5 w-5 text-slate-700" />
+            </button>
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">E-Verify Your ITR</h1>
+              <p className="text-xs text-slate-500">Complete verification within 30 days</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="px-4 py-6 max-w-3xl mx-auto">
+        {/* Filing Info Card */}
+        <div className="bg-white rounded-2xl shadow-card border border-slate-200 p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+              <FileCheck className="w-6 h-6 text-primary-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-slate-900">ITR Submitted Successfully</h3>
+              <p className="text-sm text-slate-500">AY {assessmentYear} • {acknowledgmentNumber}</p>
+            </div>
+            <div className="flex items-center gap-1 text-warning-600 bg-warning-50 px-3 py-1 rounded-full">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-medium">Pending Verification</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Info Banner */}
+        <div className="bg-info-50 border border-info-200 rounded-xl p-4 mb-6">
+          <div className="flex gap-3">
+            <Shield className="w-5 h-5 text-info-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-info-900 mb-1">Why E-Verify?</h4>
+              <p className="text-sm text-info-700">
+                E-verification validates your identity and completes your ITR filing. Without verification, your return won't be processed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Verification Methods */}
+        {!selectedMethod ? (
+          <EVerificationOptions onSelect={handleMethodSelect} />
+        ) : (
+          <div className="bg-white rounded-2xl shadow-card border border-slate-200 p-6">
+            {/* Back to methods */}
+            <button
+              onClick={() => setSelectedMethod(null)}
+              className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 mb-4"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Choose different method
+            </button>
+
+            {/* Aadhaar OTP */}
+            {selectedMethod === 'aadhaar' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                    <Smartphone className="w-6 h-6 text-success-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">Aadhaar OTP Verification</h3>
+                    <p className="text-sm text-slate-500">OTP will be sent to Aadhaar-linked mobile</p>
+                  </div>
+                </div>
+
+                {!otpSent ? (
+                  <button
+                    onClick={handleSendOtp}
+                    disabled={isProcessing}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                  >
+                    {isProcessing ? (
+                      <Loader className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
+                    {isProcessing ? 'Sending...' : 'Send OTP'}
+                  </button>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Enter 6-digit OTP
+                      </label>
+                      <div className="flex gap-2 justify-center">
+                        {otp.map((digit, index) => (
+                          <input
+                            key={`otp-input-${index}`}
+                            id={`otp-${index}`}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={1}
+                            value={digit}
+                            onChange={(e) => handleOtpChange(index, e.target.value)}
+                            onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                            className={`w-12 h-14 text-center text-xl font-bold border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all ${
+                              otpError ? 'border-error-500' : 'border-slate-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      {otpError && (
+                        <p className="text-sm text-error-600 mt-2 text-center">{otpError}</p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2">
+                      {resendTimer > 0 ? (
+                        <span className="text-sm text-slate-500">
+                          Resend OTP in {resendTimer}s
+                        </span>
+                      ) : (
+                        <button
+                          onClick={handleSendOtp}
+                          className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                          Resend OTP
+                        </button>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={handleVerifyOtp}
+                      disabled={isProcessing || otp.join('').length !== 6}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                    >
+                      {isProcessing ? (
+                        <Loader className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-5 h-5" />
+                      )}
+                      {isProcessing ? 'Verifying...' : 'Verify OTP'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Net Banking */}
+            {selectedMethod === 'netbanking' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-info-100 rounded-xl flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-info-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">Net Banking Verification</h3>
+                    <p className="text-sm text-slate-500">Login to your bank to verify</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                  <p className="text-sm text-slate-600">
+                    You'll be redirected to your bank's website to login and authorize the verification.
+                    Your bank details are not shared with us.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleNetBankingVerify}
+                  disabled={isProcessing}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <Loader className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Building2 className="w-5 h-5" />
+                  )}
+                  {isProcessing ? 'Connecting...' : 'Continue to Bank'}
+                </button>
+              </div>
+            )}
+
+            {/* DSC */}
+            {selectedMethod === 'dsc' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-ember-100 rounded-xl flex items-center justify-center">
+                    <Key className="w-6 h-6 text-ember-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">Digital Signature (DSC)</h3>
+                    <p className="text-sm text-slate-500">Sign using your registered DSC</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                  <p className="text-sm text-slate-600">
+                    Ensure your DSC token is connected to your computer.
+                    You'll be prompted to select your certificate and enter the PIN.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleDscVerify}
+                  disabled={isProcessing}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <Loader className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Key className="w-5 h-5" />
+                  )}
+                  {isProcessing ? 'Signing...' : 'Sign with DSC'}
+                </button>
+              </div>
+            )}
+
+            {/* Physical ITR-V */}
+            {selectedMethod === 'physical' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                    <Send className="w-6 h-6 text-slate-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">Physical ITR-V Submission</h3>
+                    <p className="text-sm text-slate-500">Send signed ITR-V to CPC</p>
+                  </div>
+                </div>
+
+                <div className="bg-warning-50 border border-warning-200 rounded-xl p-4 mb-4">
+                  <div className="flex gap-2">
+                    <AlertCircle className="w-5 h-5 text-warning-600 flex-shrink-0" />
+                    <div className="text-sm text-warning-700">
+                      <p className="font-medium mb-1">Important Instructions:</p>
+                      <ol className="list-decimal ml-4 space-y-1">
+                        <li>Download and print the ITR-V</li>
+                        <li>Sign it in blue ink</li>
+                        <li>Send via Speed Post to CPC Bangalore within 120 days</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-xl p-4 mb-4">
+                  <p className="text-sm text-slate-700 font-medium mb-2">Send to:</p>
+                  <p className="text-sm text-slate-600">
+                    Income Tax Department - CPC<br />
+                    Post Bag No - 1<br />
+                    Electronic City Post Office<br />
+                    Bengaluru - 560100, Karnataka
+                  </p>
+                </div>
+
+                <button
+                  onClick={handlePhysicalSend}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20"
+                >
+                  <Download className="w-5 h-5" />
+                  Download ITR-V
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default EVerification;

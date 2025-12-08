@@ -1,9 +1,9 @@
 // =====================================================
 // ADMIN SYSTEM HEALTH PAGE
-// Enterprise-grade system monitoring and health dashboard
+// System monitoring with DesignSystem components
 // =====================================================
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -15,22 +15,20 @@ import {
   Wifi,
   AlertTriangle,
   CheckCircle,
-  Clock,
   Activity,
   TrendingUp,
-  TrendingDown,
   RefreshCw,
   Settings,
   Shield,
-  Zap,
   Globe,
   Users,
   FileText,
   IndianRupee,
-  BarChart3,
-  PieChart,
   LineChart,
+  PieChart,
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import api from '../../services/api';
 
 const AdminSystemHealth = () => {
@@ -47,8 +45,8 @@ const AdminSystemHealth = () => {
       return response.data;
     },
     enabled: !!user?.user_id,
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: autoRefresh ? 30 * 1000 : false, // Auto refresh every 30 seconds
+    staleTime: 30 * 1000,
+    refetchInterval: autoRefresh ? 30 * 1000 : false,
   });
 
   // Fetch system metrics
@@ -59,7 +57,7 @@ const AdminSystemHealth = () => {
       return response.data;
     },
     enabled: !!user?.user_id,
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: 1 * 60 * 1000,
   });
 
   // Fetch system alerts
@@ -70,7 +68,7 @@ const AdminSystemHealth = () => {
       return response.data;
     },
     enabled: !!user?.user_id,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 30 * 1000,
   });
 
   const health = healthData?.health || {};
@@ -86,22 +84,16 @@ const AdminSystemHealth = () => {
     }
   }, [autoRefresh, refetch]);
 
-  const getHealthStatus = (value, thresholds) => {
-    if (value >= thresholds.critical) return { status: 'critical', color: 'red', icon: AlertTriangle };
-    if (value >= thresholds.warning) return { status: 'warning', color: 'orange', icon: AlertTriangle };
-    return { status: 'healthy', color: 'green', icon: CheckCircle };
-  };
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'healthy':
-        return 'bg-success-100 text-success-800';
+        return 'bg-success-100 text-success-700';
       case 'warning':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-warning-100 text-warning-700';
       case 'critical':
-        return 'bg-error-100 text-error-800';
+        return 'bg-error-100 text-error-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-neutral-100 text-neutral-700';
     }
   };
 
@@ -110,11 +102,11 @@ const AdminSystemHealth = () => {
       case 'critical':
         return <AlertTriangle className="h-4 w-4 text-error-500" />;
       case 'warning':
-        return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+        return <AlertTriangle className="h-4 w-4 text-warning-500" />;
       case 'info':
         return <Activity className="h-4 w-4 text-info-500" />;
       default:
-        return <Activity className="h-4 w-4 text-gray-500" />;
+        return <Activity className="h-4 w-4 text-neutral-500" />;
     }
   };
 
@@ -123,363 +115,410 @@ const AdminSystemHealth = () => {
       case 'critical':
         return 'bg-error-50 border-error-200';
       case 'warning':
-        return 'bg-orange-50 border-orange-200';
+        return 'bg-warning-50 border-warning-200';
       case 'info':
         return 'bg-info-50 border-info-200';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-neutral-50 border-neutral-200';
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-card border-b">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
+    <PageTransition className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <Typography.H1 className="mb-2">System Health</Typography.H1>
+            <Typography.Body className="text-neutral-600">
+              Monitor system performance and health status
+            </Typography.Body>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Typography.Small className="text-neutral-600">Auto Refresh</Typography.Small>
               <button
-                onClick={() => navigate('/dashboard')}
-                className="text-body-md text-gray-600 hover:text-gray-900"
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  autoRefresh ? 'bg-primary-500' : 'bg-neutral-200'
+                }`}
               >
-                ← Back to Dashboard
-              </button>
-              <h1 className="text-heading-lg font-semibold text-gray-900">System Health</h1>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <label className="text-label-lg text-gray-600">Auto Refresh</label>
-                <button
-                  onClick={() => setAutoRefresh(!autoRefresh)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    autoRefresh ? 'bg-orange-500' : 'bg-gray-200'
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    autoRefresh ? 'translate-x-6' : 'translate-x-1'
                   }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      autoRefresh ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <select
-                value={selectedTimeRange}
-                onChange={(e) => setSelectedTimeRange(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="1h">Last Hour</option>
-                <option value="24h">Last 24 Hours</option>
-                <option value="7d">Last 7 Days</option>
-                <option value="30d">Last 30 Days</option>
-              </select>
-
-              <button
-                onClick={() => refetch()}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Refresh Now"
-              >
-                <RefreshCw className="h-4 w-4" />
+                />
               </button>
             </div>
+            <select
+              value={selectedTimeRange}
+              onChange={(e) => setSelectedTimeRange(e.target.value)}
+              className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="1h">Last Hour</option>
+              <option value="24h">Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+            <Button variant="outline" onClick={() => refetch()}>
+              <RefreshCw className="w-4 h-4" />
+            </Button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* System Status Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white rounded-lg shadow-card p-4">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
                 <div className="flex items-center">
-              <Server className="h-8 w-8 text-info-600" />
+                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                    <Server className="w-5 h-5 text-info-600" />
+                  </div>
                   <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">Server Status</p>
+                    <Typography.Small className="text-neutral-500">Server Status</Typography.Small>
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-label-sm rounded-full ${getStatusColor(health.server?.status || 'healthy')}`}>
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(health.server?.status || 'healthy')}`}>
                         {health.server?.status || 'healthy'}
                       </span>
-                      <span className="text-body-md text-gray-500">
-                    Uptime: {health.server?.uptime || '99.9%'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-              <Database className="h-8 w-8 text-success-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">Database</p>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-label-sm rounded-full ${getStatusColor(health.database?.status || 'healthy')}`}>
-                        {health.database?.status || 'healthy'}
-                      </span>
-                      <span className="text-body-md text-gray-500">
-                    {health.database?.connections || 0} connections
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-              <Wifi className="h-8 w-8 text-info-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">API Response</p>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-label-sm rounded-full ${getStatusColor(health.api?.status || 'healthy')}`}>
-                        {health.api?.status || 'healthy'}
-                      </span>
-                      <span className="text-body-md text-gray-500">
-                    {health.api?.avg_response_time || 0}ms avg
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-              <div className="bg-white rounded-lg shadow-card p-4">
-                <div className="flex items-center">
-              <Shield className="h-8 w-8 text-error-600" />
-                  <div className="ml-3">
-                    <p className="text-label-lg font-medium text-gray-600">Security</p>
-                <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(health.security?.status || 'healthy')}`}>
-                    {health.security?.status || 'healthy'}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {alerts.filter(alert => alert.severity === 'critical').length} critical
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Performance Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600">CPU Usage</h3>
-              <Cpu className="h-4 w-4 text-gray-400" />
-            </div>
-            <div className="text-2xl font-semibold text-gray-900 mb-1">
-              {metrics.cpu?.usage || 0}%
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full"
-                style={{ width: `${metrics.cpu?.usage || 0}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600">Memory Usage</h3>
-              <HardDrive className="h-4 w-4 text-gray-400" />
-            </div>
-            <div className="text-2xl font-semibold text-gray-900 mb-1">
-              {metrics.memory?.usage || 0}%
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-green-600 h-2 rounded-full"
-                style={{ width: `${metrics.memory?.usage || 0}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600">Disk Usage</h3>
-              <HardDrive className="h-4 w-4 text-gray-400" />
-            </div>
-            <div className="text-2xl font-semibold text-gray-900 mb-1">
-              {metrics.disk?.usage || 0}%
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-purple-600 h-2 rounded-full"
-                style={{ width: `${metrics.disk?.usage || 0}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600">Network I/O</h3>
-              <Globe className="h-4 w-4 text-gray-400" />
-            </div>
-            <div className="text-2xl font-semibold text-gray-900 mb-1">
-              {metrics.network?.io_rate || 0} MB/s
-            </div>
-            <div className="flex items-center space-x-1 text-sm text-gray-500">
-              <TrendingUp className="h-3 w-3" />
-              <span>+{metrics.network?.io_growth || 0}%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* System Alerts */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">System Alerts</h3>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-500">
-                {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
-              </span>
-              <button
-                onClick={() => navigate('/admin/alerts')}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-              >
-                View All
-              </button>
-            </div>
-          </div>
-
-          {alerts.length === 0 ? (
-            <div className="text-center py-8">
-              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">All Systems Healthy</h4>
-              <p className="text-gray-500">No active alerts at this time.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {alerts.slice(0, 5).map((alert) => (
-                <div key={alert.id} className={`p-4 border rounded-lg ${getAlertColor(alert.severity)}`}>
-                  <div className="flex items-start space-x-3">
-                    {getAlertIcon(alert.severity)}
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-gray-900">{alert.title}</h4>
-                        <span className="text-xs text-gray-500">
-                          {new Date(alert.timestamp).toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">{alert.message}</p>
-                      {alert.source && (
-                        <p className="text-xs text-gray-500 mt-1">Source: {alert.source}</p>
-                      )}
+                      <Typography.Small className="text-neutral-500">
+                        {health.server?.uptime || '99.9%'}
+                      </Typography.Small>
                     </div>
                   </div>
                 </div>
-              ))}
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                    <Database className="w-5 h-5 text-success-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">Database</Typography.Small>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(health.database?.status || 'healthy')}`}>
+                        {health.database?.status || 'healthy'}
+                      </span>
+                      <Typography.Small className="text-neutral-500">
+                        {health.database?.connections || 0} conn
+                      </Typography.Small>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                    <Wifi className="w-5 h-5 text-info-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">API Response</Typography.Small>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(health.api?.status || 'healthy')}`}>
+                        {health.api?.status || 'healthy'}
+                      </span>
+                      <Typography.Small className="text-neutral-500">
+                        {health.api?.avg_response_time || 0}ms
+                      </Typography.Small>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-error-100 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-error-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">Security</Typography.Small>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(health.security?.status || 'healthy')}`}>
+                        {health.security?.status || 'healthy'}
+                      </span>
+                      <Typography.Small className="text-neutral-500">
+                        {alerts.filter(alert => alert.severity === 'critical').length} critical
+                      </Typography.Small>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+        </StaggerContainer>
+
+        {/* Performance Metrics */}
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography.Small className="text-neutral-500">CPU Usage</Typography.Small>
+                  <Cpu className="h-4 w-4 text-neutral-400" />
+                </div>
+                <Typography.H3 className="mb-1">{metrics.cpu?.usage || 0}%</Typography.H3>
+                <div className="w-full bg-neutral-200 rounded-full h-2">
+                  <div
+                    className="bg-primary-600 h-2 rounded-full"
+                    style={{ width: `${metrics.cpu?.usage || 0}%` }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography.Small className="text-neutral-500">Memory Usage</Typography.Small>
+                  <HardDrive className="h-4 w-4 text-neutral-400" />
+                </div>
+                <Typography.H3 className="mb-1">{metrics.memory?.usage || 0}%</Typography.H3>
+                <div className="w-full bg-neutral-200 rounded-full h-2">
+                  <div
+                    className="bg-success-600 h-2 rounded-full"
+                    style={{ width: `${metrics.memory?.usage || 0}%` }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography.Small className="text-neutral-500">Disk Usage</Typography.Small>
+                  <HardDrive className="h-4 w-4 text-neutral-400" />
+                </div>
+                <Typography.H3 className="mb-1">{metrics.disk?.usage || 0}%</Typography.H3>
+                <div className="w-full bg-neutral-200 rounded-full h-2">
+                  <div
+                    className="bg-info-600 h-2 rounded-full"
+                    style={{ width: `${metrics.disk?.usage || 0}%` }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography.Small className="text-neutral-500">Network I/O</Typography.Small>
+                  <Globe className="h-4 w-4 text-neutral-400" />
+                </div>
+                <Typography.H3 className="mb-1">{metrics.network?.io_rate || 0} MB/s</Typography.H3>
+                <div className="flex items-center space-x-1 text-sm text-neutral-500">
+                  <TrendingUp className="h-3 w-3" />
+                  <span>+{metrics.network?.io_growth || 0}%</span>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+        </StaggerContainer>
+
+        {/* System Alerts */}
+        <Card className="mb-6">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>System Alerts</CardTitle>
+            <div className="flex items-center space-x-2">
+              <Typography.Small className="text-neutral-500">
+                {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
+              </Typography.Small>
+              <Button variant="link" onClick={() => navigate('/admin/alerts')}>
+                View All
+              </Button>
             </div>
-          )}
-        </div>
+          </CardHeader>
+          <CardContent>
+            {alerts.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-success-600" />
+                </div>
+                <Typography.H3 className="mb-2">All Systems Healthy</Typography.H3>
+                <Typography.Body className="text-neutral-500">No active alerts at this time.</Typography.Body>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {alerts.slice(0, 5).map((alert) => (
+                  <div key={alert.id} className={`p-4 border rounded-lg ${getAlertColor(alert.severity)}`}>
+                    <div className="flex items-start space-x-3">
+                      {getAlertIcon(alert.severity)}
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <Typography.Body className="font-medium">{alert.title}</Typography.Body>
+                          <Typography.Small className="text-neutral-500">
+                            {new Date(alert.timestamp).toLocaleString()}
+                          </Typography.Small>
+                        </div>
+                        <Typography.Small className="text-neutral-600 mt-1 block">{alert.message}</Typography.Small>
+                        {alert.source && (
+                          <Typography.Small className="text-neutral-500 mt-1 block">Source: {alert.source}</Typography.Small>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Application Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center">
-              <Users className="h-8 w-8 text-blue-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Active Users</p>
-                <p className="text-2xl font-semibold text-gray-900">{metrics.users?.active || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center">
-              <FileText className="h-8 w-8 text-green-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Filings Today</p>
-                <p className="text-2xl font-semibold text-gray-900">{metrics.filings?.today || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center">
-              <IndianRupee className="h-8 w-8 text-purple-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Revenue Today</p>
-                <p className="text-2xl font-semibold text-gray-900">₹{metrics.revenue?.today || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center">
-              <Activity className="h-8 w-8 text-orange-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">API Calls/min</p>
-                <p className="text-2xl font-semibold text-gray-900">{metrics.api?.calls_per_minute || 0}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">Active Users</Typography.Small>
+                    <Typography.H3>{metrics.users?.active || 0}</Typography.H3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-success-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">Filings Today</Typography.Small>
+                    <Typography.H3>{metrics.filings?.today || 0}</Typography.H3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                    <IndianRupee className="w-5 h-5 text-info-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">Revenue Today</Typography.Small>
+                    <Typography.H3>₹{metrics.revenue?.today || 0}</Typography.H3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+          <StaggerItem>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-warning-600" />
+                  </div>
+                  <div className="ml-3">
+                    <Typography.Small className="text-neutral-500">API Calls/min</Typography.Small>
+                    <Typography.H3>{metrics.api?.calls_per_minute || 0}</Typography.H3>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+        </StaggerContainer>
 
         {/* Performance Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">System Performance</h3>
-            <div className="text-center py-8">
-              <LineChart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Performance chart visualization would be implemented here</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Resource Usage</h3>
-            <div className="text-center py-8">
-              <PieChart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Resource usage chart would be implemented here</p>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>System Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <LineChart className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                <Typography.Body className="text-neutral-500">Performance chart visualization</Typography.Body>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Resource Usage</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <PieChart className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                <Typography.Body className="text-neutral-500">Resource usage chart</Typography.Body>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* System Actions */}
-        <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">System Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <div className="flex items-center space-x-3">
-                <RefreshCw className="h-6 w-6 text-blue-600" />
-                <div>
-                  <h4 className="font-medium text-gray-900">Restart Services</h4>
-                  <p className="text-sm text-gray-500">Restart application services</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>System Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                    <RefreshCw className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <div>
+                    <Typography.Body className="font-medium">Restart Services</Typography.Body>
+                    <Typography.Small className="text-neutral-500">Restart application services</Typography.Small>
+                  </div>
                 </div>
-              </div>
-            </button>
-
-            <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <div className="flex items-center space-x-3">
-                <Database className="h-6 w-6 text-green-600" />
-                <div>
-                  <h4 className="font-medium text-gray-900">Database Backup</h4>
-                  <p className="text-sm text-gray-500">Create system backup</p>
+              </button>
+              <button className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                    <Database className="w-5 h-5 text-success-600" />
+                  </div>
+                  <div>
+                    <Typography.Body className="font-medium">Database Backup</Typography.Body>
+                    <Typography.Small className="text-neutral-500">Create system backup</Typography.Small>
+                  </div>
                 </div>
-              </div>
-            </button>
-
-            <button className="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <div className="flex items-center space-x-3">
-                <Settings className="h-6 w-6 text-purple-600" />
-                <div>
-                  <h4 className="font-medium text-gray-900">System Settings</h4>
-                  <p className="text-sm text-gray-500">Configure system parameters</p>
+              </button>
+              <button className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                    <Settings className="w-5 h-5 text-info-600" />
+                  </div>
+                  <div>
+                    <Typography.Body className="font-medium">System Settings</Typography.Body>
+                    <Typography.Small className="text-neutral-500">Configure parameters</Typography.Small>
+                  </div>
                 </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageTransition>
   );
 };
 

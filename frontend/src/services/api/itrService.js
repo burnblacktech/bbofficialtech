@@ -283,6 +283,35 @@ class ITRService {
       throw error;
     }
   }
+
+  // Get available previous year filings (optional feature - errors are expected)
+  async getAvailablePreviousYears(memberId = null, currentAssessmentYear = '2025-26') {
+    try {
+      const response = await apiClient.get('/itr/previous-years', {
+        params: { memberId, currentAssessmentYear },
+        _suppressErrorLog: true, // Suppress error logging for optional features
+      });
+      return response.data;
+    } catch (error) {
+      // Don't log errors for optional features - no previous year filing is normal
+      // Return empty result for any error (404, 500, etc. are all expected for new users)
+      return { success: false, previousYears: [], count: 0 };
+    }
+  }
+
+  // Check if user already filed for current AY (for revised return) - optional feature
+  async checkExistingFiling(memberId = null, assessmentYear = '2025-26') {
+    try {
+      const response = await apiClient.get('/itr/filings', {
+        params: { memberId, assessmentYear, status: 'submitted,acknowledged,processed' },
+        _suppressErrorLog: true, // Suppress error logging for optional features
+      });
+      return response.data?.data?.length > 0 ? response.data.data[0] : null;
+    } catch (error) {
+      // Silently fail - no existing filing is normal for first-time filers
+      return null;
+    }
+  }
 }
 
 // Create singleton instance

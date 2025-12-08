@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
 import { AlertCircle, CheckCircle, Mail, Lock, User, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
+import PANVerificationInline from '../../components/ITR/PANVerificationInline';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -33,6 +34,10 @@ const SignupPage = () => {
     score: 0,
     feedback: [],
   });
+
+  // PAN verification state
+  const [panVerified, setPanVerified] = useState(false);
+  const [panVerificationResult, setPanVerificationResult] = useState(null);
 
   // Calculate password strength
   const calculatePasswordStrength = (password) => {
@@ -61,6 +66,22 @@ const SignupPage = () => {
     if (field === 'password') {
       setPasswordStrength(calculatePasswordStrength(value));
     }
+
+    // Reset PAN verification if PAN is changed
+    if (field === 'pan') {
+      setPanVerified(false);
+      setPanVerificationResult(null);
+    }
+  };
+
+  const handlePANVerified = (result) => {
+    setPanVerified(true);
+    setPanVerificationResult(result);
+    // Auto-populate DOB if available and empty
+    if (result.dateOfBirth && !formData.dateOfBirth) {
+      setFormData(prev => ({ ...prev, dateOfBirth: result.dateOfBirth }));
+    }
+    toast.success('PAN verified successfully!');
   };
 
   const validateStep1 = () => {
@@ -112,6 +133,10 @@ const SignupPage = () => {
       setError('Invalid PAN format (e.g., ABCDE1234F)');
       return false;
     }
+    if (!panVerified) {
+      setError('Please verify your PAN before continuing');
+      return false;
+    }
     return true;
   };
 
@@ -127,6 +152,11 @@ const SignupPage = () => {
     if (step > 1) {
       setStep(step - 1);
       setError('');
+      // Reset PAN verification when going back from step 2
+      if (step === 2) {
+        setPanVerified(false);
+        setPanVerificationResult(null);
+      }
     }
   };
 
@@ -371,7 +401,7 @@ const SignupPage = () => {
                   PAN Number
                 </label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
                   <input
                     id="pan"
                     name="pan"
@@ -384,9 +414,45 @@ const SignupPage = () => {
                     onChange={(e) => handleInputChange('pan', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 mb-4">
                   We'll verify your PAN with the Income Tax Department
                 </p>
+
+                {/* PAN Verification Inline Component */}
+                {formData.pan && formData.pan.length === 10 && /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.pan) && (
+                  <div className="mt-4">
+                    <PANVerificationInline
+                      panNumber={formData.pan}
+                      onVerified={handlePANVerified}
+                      onCancel={() => {
+                        setPanVerified(false);
+                        setPanVerificationResult(null);
+                      }}
+                      memberType="self"
+                      compact={true}
+                    />
+                  </div>
+                )}
+
+                {/* Show verification status */}
+                {panVerified && panVerificationResult && (
+                  <div className="mt-4 p-3 bg-success-50 border border-success-200 rounded-md flex items-start space-x-2">
+                    <CheckCircle className="h-5 w-5 text-success-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-success-800">PAN Verified Successfully</p>
+                      {panVerificationResult.fullName && (
+                        <p className="text-xs text-success-700 mt-1">
+                          Name: {panVerificationResult.fullName}
+                        </p>
+                      )}
+                      {panVerificationResult.dateOfBirth && (
+                        <p className="text-xs text-success-700 mt-1">
+                          Date of Birth: {new Date(panVerificationResult.dateOfBirth).toLocaleDateString('en-IN')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -446,13 +512,15 @@ const SignupPage = () => {
             )}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || (step === 2 && !panVerified)}
               className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
             >
               {isLoading
                 ? 'Processing...'
                 : step === 3
                 ? 'Create Account'
+                : step === 2 && !panVerified
+                ? 'Verify PAN to Continue'
                 : 'Continue'}
             </button>
           </div>

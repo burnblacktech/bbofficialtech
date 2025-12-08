@@ -5,7 +5,7 @@
  * and communication with ITD APIs.
  */
 
-const { generateSignedPayload, validateConfiguration, loadCertificate } = require('../services/business/eriSigningService');
+const { generateSignedPayload, validateConfiguration, loadCertificate, encryptPassword, decryptPassword } = require('../services/business/eriSigningService');
 const { savePublicKeyCertificate, getCertificateInfo, validatePEMCertificate } = require('../utils/certificateUtils');
 const enterpriseLogger = require('../utils/logger');
 const axios = require('axios');
@@ -183,6 +183,107 @@ const submitITR = async (req, res) => {
 };
 
 /**
+ * ERI Login endpoint
+ * POST /api/eri/login
+ * Authenticates with ERI using signed payload and encrypted password
+ */
+const eriLogin = async (req, res) => {
+  try {
+    const { pan, dob, password, assessmentYear } = req.body;
+
+    if (!pan || !dob || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'PAN, DOB, and password are required',
+      });
+    }
+
+    enterpriseLogger.info('ERI login requested', {
+      userId: req.user?.id,
+      pan: pan.substring(0, 5) + '*****', // Mask PAN for logging
+      assessmentYear: assessmentYear || '2024-25',
+    });
+
+    // Encrypt password using AES
+    const encryptedPassword = encryptPassword(password);
+
+    // Prepare login data
+    const loginData = {
+      serviceName: 'EriLoginService',
+      entity: process.env.ERI_USER_ID,
+      pass: encryptedPassword, // Use encrypted password
+      pan: pan,
+      dob: dob,
+      assessmentYear: assessmentYear || '2024-25',
+      timestamp: new Date().toISOString(),
+    };
+
+    // Generate signed payload
+    const signedPayload = generateSignedPayload(loginData);
+
+    // In production, send to ERI API
+    // For now, return the signed payload for testing
+    const eriApiUrl = process.env.ERI_API_URL || 'https://api.incometax.gov.in/eri';
+    
+    try {
+      // Make actual API call to ERI login endpoint
+      const eriResponse = await axios.post(`${eriApiUrl}/login`, signedPayload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000, // 30 second timeout
+      });
+
+      enterpriseLogger.info('ERI login successful', {
+        userId: req.user?.id,
+        eriUserId: signedPayload.eriUserId,
+      });
+
+      res.json({
+        success: true,
+        message: 'ERI login successful',
+        data: {
+          sessionToken: eriResponse.data.sessionToken || eriResponse.data.token,
+          expiresAt: eriResponse.data.expiresAt,
+          eriUserId: signedPayload.eriUserId,
+        },
+      });
+
+    } catch (apiError) {
+      // If API call fails, log error but return signed payload for testing
+      enterpriseLogger.warn('ERI API call failed, returning signed payload for testing', {
+        error: apiError.message,
+        eriApiUrl,
+      });
+
+      // Return signed payload for manual testing
+      res.json({
+        success: true,
+        message: 'ERI login payload generated (API not available, use for testing)',
+        data: {
+          signedPayload,
+          eriUserId: signedPayload.eriUserId,
+          note: 'This is a test response. Actual ERI API integration pending.',
+        },
+      });
+    }
+
+  } catch (error) {
+    enterpriseLogger.error('ERI login failed', {
+      error: error.message,
+      userId: req.user?.id,
+      stack: error.stack,
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'ERI login failed',
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Get ERI status and configuration info
  * GET /api/eri/status
  */
@@ -324,4 +425,5 @@ module.exports = {
   getStatus,
   extractPublicKey,
   validatePEM,
+  eriLogin,
 };

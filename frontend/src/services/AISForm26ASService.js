@@ -43,38 +43,42 @@ class AISForm26ASService {
   }
 
   /**
-   * Authenticate with Income Tax Portal
+   * Authenticate with Income Tax Portal via ERI
    */
   async authenticateWithIncomeTaxPortal(userId, credentials) {
     try {
-      console.log('🔐 Authenticating with Income Tax Portal...');
+      console.log('🔐 Authenticating with Income Tax Portal via ERI...');
 
       const authRequest = {
-        userId,
         pan: credentials.pan,
-        password: credentials.password,
         dob: credentials.dob,
+        password: credentials.password,
         assessmentYear: credentials.assessmentYear || '2024-25',
       };
 
-      const response = await apiClient.post(this.endpoints.AUTHENTICATE, authRequest);
+      // Use ERI login endpoint
+      const response = await apiClient.post('/api/eri/login', authRequest);
 
-      if (response.success) {
-        console.log('✅ Successfully authenticated with Income Tax Portal');
+      if (response.data?.success) {
+        console.log('✅ Successfully authenticated with Income Tax Portal via ERI');
         return {
           success: true,
-          authToken: response.data.authToken,
-          sessionId: response.data.sessionId,
-          expiresAt: response.data.expiresAt,
+          authToken: response.data.data?.sessionToken,
+          sessionId: response.data.data?.sessionToken,
+          expiresAt: response.data.data?.expiresAt,
+          eriUserId: response.data.data?.eriUserId,
           pan: credentials.pan,
         };
       }
 
-      return { success: false, error: response.message };
+      return { success: false, error: response.data?.message || 'Authentication failed' };
 
     } catch (error) {
-      console.error('❌ Authentication failed:', error);
-      return { success: false, error: error.message };
+      console.error('❌ ERI authentication failed:', error);
+      return {
+        success: false,
+        error: error.response?.data?.error || error.message || 'Authentication failed',
+      };
     }
   }
 

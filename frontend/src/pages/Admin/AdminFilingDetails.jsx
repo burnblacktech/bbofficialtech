@@ -109,12 +109,14 @@ const AdminFilingDetails = () => {
   };
 
   const handleReprocess = () => {
+    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to reprocess this filing?')) {
       reprocessFilingMutation.mutate({ filingId, reason: 'Admin reprocess request' });
     }
   };
 
   const handleCancel = () => {
+    // eslint-disable-next-line no-alert
     const reason = window.prompt('Please provide a reason for cancellation:');
     if (reason) {
       cancelFilingMutation.mutate({ filingId, reason });
@@ -122,6 +124,7 @@ const AdminFilingDetails = () => {
   };
 
   const handleOverrideValidation = () => {
+    // eslint-disable-next-line no-alert
     const reason = window.prompt('Please provide a reason for overriding validation:');
     if (reason) {
       overrideValidationMutation.mutate({ filingId, reason });
@@ -129,6 +132,7 @@ const AdminFilingDetails = () => {
   };
 
   const handleFlagForReview = () => {
+    // eslint-disable-next-line no-alert
     const reason = window.prompt('Please provide a reason for flagging:');
     if (reason) {
       flagForReviewMutation.mutate({ filingId, reason });
