@@ -53,7 +53,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="text-body-sm border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="text-body-sm border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-gold-500"
           >
             <option value="all">All Payments</option>
             <option value="advance_tax">Advance Tax</option>

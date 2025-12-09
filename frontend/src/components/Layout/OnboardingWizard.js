@@ -93,12 +93,12 @@ const OnboardingWizard = ({ onComplete }) => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-gold-50 mobile-safe-area mobile-scroll-smooth">
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-50 mobile-safe-area mobile-scroll-smooth">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 container-mobile">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-orange-500 text-white p-3 rounded-full">
+            <div className="bg-gold-500 text-white p-3 rounded-full">
               <Calculator className="w-8 h-8" />
             </div>
           </div>
@@ -118,7 +118,7 @@ const OnboardingWizard = ({ onComplete }) => {
                 <div className="flex flex-col items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                     index <= currentStep
-                      ? 'bg-orange-500 text-white'
+                      ? 'bg-gold-500 text-white'
                       : 'bg-gray-200 text-gray-400'
                   }`}>
                     <step.icon className="w-5 h-5" />

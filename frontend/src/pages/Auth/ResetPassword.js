@@ -182,7 +182,7 @@ const ResetPassword = () => {
 
           <Link
             to="/login"
-            className="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 text-center"
+            className="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-center"
           >
             Go to Login
           </Link>
@@ -226,7 +226,7 @@ const ResetPassword = () => {
                 type="text"
                 required
                 maxLength={6}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                 placeholder="000000"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -241,7 +241,7 @@ const ResetPassword = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={countdown > 0 || isLoading}
-                  className="text-body-sm text-orange-600 hover:text-orange-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
                 </button>
@@ -262,7 +262,7 @@ const ResetPassword = () => {
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 required
-                className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                 placeholder="Enter new password"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
@@ -311,7 +311,7 @@ const ResetPassword = () => {
                 type={showConfirmPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 required
-                className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                 placeholder="Confirm new password"
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
@@ -333,7 +333,7 @@ const ResetPassword = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Resetting...' : 'Reset Password'}
             </button>
@@ -342,7 +342,7 @@ const ResetPassword = () => {
           <div className="text-center">
             <p className="text-body-sm text-gray-600">
               Remember your password?{' '}
-              <Link to="/login" className="font-medium text-orange-600 hover:text-orange-500">
+              <Link to="/login" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign in
               </Link>
             </p>

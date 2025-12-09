@@ -297,7 +297,7 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
               onBlur={() => handleFieldBlur('firstName')}
               required
               disabled={fieldLockService.shouldLockField('familyMember', 'firstName', fieldVerificationStatuses.firstName)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -313,7 +313,7 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
               onBlur={() => handleFieldBlur('lastName')}
               required
               disabled={fieldLockService.shouldLockField('familyMember', 'lastName', fieldVerificationStatuses.lastName)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -331,14 +331,14 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
                 maxLength={10}
                 required
                 disabled={fieldLockService.shouldLockField('familyMember', 'panNumber', fieldVerificationStatuses.panNumber)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono uppercase disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 font-mono uppercase disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="ABCDE1234F"
               />
               {formData.panNumber && formData.panNumber.length === 10 && !formData.panVerified && (
                 <button
                   type="button"
                   onClick={() => setShowPANVerification(true)}
-                  className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm"
+                  className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors text-sm"
                 >
                   Verify PAN
                 </button>
@@ -360,7 +360,7 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
               value={formData.relationship}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             >
               <option value="">Select relationship</option>
               {relationshipOptions.map(opt => (
@@ -380,7 +380,7 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
               onChange={handleInputChange}
               onBlur={() => handleFieldBlur('dateOfBirth')}
               disabled={fieldLockService.shouldLockField('familyMember', 'dateOfBirth', fieldVerificationStatuses.dateOfBirth)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -394,7 +394,7 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
               value={formData.phoneNumber}
               onChange={handleInputChange}
               onBlur={() => handleFieldBlur('phoneNumber')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             />
           </div>
 
@@ -408,14 +408,14 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
               value={formData.email}
               onChange={handleInputChange}
               onBlur={() => handleFieldBlur('email')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             />
           </div>
         </div>
 
         {/* PAN Verification Inline */}
         {showPANVerification && (
-          <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <div className="mt-4 p-4 bg-gold-50 border border-gold-200 rounded-lg">
             <PANVerificationInline
               panNumber={formData.panNumber}
               onVerified={(result, pan) => handlePANVerified(result, pan)}
@@ -440,7 +440,7 @@ const MemberFormInline = ({ onSuccess, onCancel, editingMember = null, compact =
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center px-6 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>

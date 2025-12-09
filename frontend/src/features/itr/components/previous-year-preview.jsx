@@ -58,7 +58,7 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <Loader className="h-8 w-8 animate-spin text-orange-500 mr-3" />
+            <Loader className="h-8 w-8 animate-spin text-gold-500 mr-3" />
             <span className="text-body-md text-gray-600">Loading previous year data...</span>
           </div>
         </div>
@@ -248,8 +248,8 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
           {sections.taxes_paid && previousData.taxes_paid && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center mb-4">
-                <div className="p-2 bg-orange-100 rounded-lg mr-3">
-                  <CreditCard className="h-5 w-5 text-orange-600" />
+                <div className="p-2 bg-gold-100 rounded-lg mr-3">
+                  <CreditCard className="h-5 w-5 text-gold-600" />
                 </div>
                 <h3 className="text-heading-md text-gray-900">Taxes Paid</h3>
               </div>
@@ -304,7 +304,7 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
           </button>
           <button
             onClick={handleProceed}
-            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 flex items-center justify-center"
+            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 flex items-center justify-center"
           >
             Continue to Review
             <ArrowRight className="w-4 h-4 ml-2" />

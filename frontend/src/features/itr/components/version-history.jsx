@@ -55,7 +55,7 @@ const VersionHistory = ({ filingId, draftType = 'itr_filing' }) => {
   if (isLoading) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500 mx-auto"></div>
         <p className="text-body-md text-gray-600 mt-4">Loading version history...</p>
       </div>
     );

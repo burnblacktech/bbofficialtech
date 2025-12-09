@@ -56,7 +56,7 @@ const DiscrepancyHistory = ({
       case 'accept_source':
         return 'bg-success-100 text-success-800';
       case 'custom':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-gold-100 text-gold-800';
       case 'explained':
         return 'bg-gray-100 text-gray-800';
       default:
@@ -96,7 +96,7 @@ const DiscrepancyHistory = ({
         <select
           value={filterDate}
           onChange={(e) => setFilterDate(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by date"
         >
           <option value="all">All Time</option>
@@ -107,7 +107,7 @@ const DiscrepancyHistory = ({
         <select
           value={filterAction}
           onChange={(e) => setFilterAction(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by action"
         >
           <option value="all">All Actions</option>

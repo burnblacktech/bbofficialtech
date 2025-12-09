@@ -124,7 +124,7 @@ const RefundTracking = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin text-orange-500 mx-auto mb-4" aria-hidden="true" />
+          <RefreshCw className="h-8 w-8 animate-spin text-gold-500 mx-auto mb-4" aria-hidden="true" />
           <p className="text-body-md text-gray-600">Loading refund status...</p>
         </div>
       </div>
@@ -138,7 +138,7 @@ const RefundTracking = () => {
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-body-md text-gray-600 hover:text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+            className="flex items-center gap-2 text-body-md text-gray-600 hover:text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
             aria-label="Go back"
           >
             <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -154,7 +154,7 @@ const RefundTracking = () => {
             <Button
               onClick={handleRefresh}
               disabled={updating}
-              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white"
+              className="flex items-center gap-2 bg-gold-500 hover:bg-gold-600 text-white"
             >
               <RefreshCw className={cn('h-4 w-4', updating && 'animate-spin')} aria-hidden="true" />
               Refresh

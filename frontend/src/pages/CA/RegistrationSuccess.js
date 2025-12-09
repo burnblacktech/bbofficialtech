@@ -200,7 +200,7 @@ const RegistrationSuccess = () => {
               <span className="text-gray-700">Staff Management System</span>
             </div>
             <div className="flex items-center space-x-3">
-              <TrendingUp className="w-5 h-5 text-orange-600" />
+              <TrendingUp className="w-5 h-5 text-gold-600" />
               <span className="text-gray-700">Analytics & Reporting</span>
             </div>
             <div className="flex items-center space-x-3">

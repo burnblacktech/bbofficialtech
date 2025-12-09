@@ -157,7 +157,7 @@ const FAQs = () => {
                 onClick={() => setSelectedCategory(category.id)}
                 className={`px-4 py-2 rounded-md text-body-sm font-medium transition-colors ${
                   selectedCategory === category.id
-                    ? 'bg-orange-500 text-white'
+                    ? 'bg-gold-500 text-white'
                     : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                 }`}
               >
@@ -242,7 +242,7 @@ const FAQs = () => {
                                   element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 }
                               }}
-                              className="text-left text-body-sm text-orange-600 hover:text-orange-700 hover:underline"
+                              className="text-left text-body-sm text-gold-600 hover:text-gold-700 hover:underline"
                             >
                               {relatedFaq.question}
                             </button>
@@ -258,14 +258,14 @@ const FAQs = () => {
         </div>
 
         {/* Still need help */}
-        <div className="mt-8 bg-orange-50 border border-orange-200 rounded-lg p-6">
+        <div className="mt-8 bg-gold-50 border border-gold-200 rounded-lg p-6">
           <h3 className="text-heading-md text-gray-900 mb-2">Still need help?</h3>
           <p className="text-body-sm text-gray-600 mb-4">
             Can't find what you're looking for? Our support team is here to help.
           </p>
           <Link
             to="/help/contact"
-            className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 transition-colors"
           >
             Contact Support
           </Link>

@@ -153,8 +153,8 @@ const FileUpload = ({
         className={cn(
           'border-2 border-dashed rounded-[10px] p-6 text-center transition-all cursor-pointer',
           {
-            'border-gray-300 bg-gray-50 hover:border-orange-400 hover:bg-orange-50': !isDragging && !error && !disabled,
-            'border-orange-500 bg-orange-100': isDragging && !error && !disabled,
+            'border-gray-300 bg-gray-50 hover:border-gold-400 hover:bg-gold-50': !isDragging && !error && !disabled,
+            'border-gold-500 bg-gold-100': isDragging && !error && !disabled,
             'border-error-500 bg-error-50': error,
             'border-gray-200 bg-gray-100 cursor-not-allowed': disabled,
           },
@@ -179,7 +179,7 @@ const FileUpload = ({
           'w-10 h-10 mx-auto mb-2',
           {
             'text-gray-400': !isDragging && !error,
-            'text-orange-500': isDragging,
+            'text-gold-500': isDragging,
             'text-error-500': error,
           },
         )} />

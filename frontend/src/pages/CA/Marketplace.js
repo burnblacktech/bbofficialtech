@@ -93,7 +93,7 @@ const CAMarketplace = () => {
                 placeholder="Search by CA name, specialization, or location..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
             </div>
 
@@ -105,7 +105,7 @@ const CAMarketplace = () => {
               <Filter className="h-4 w-4" />
               Filters
               {(filters.location || filters.specialization || filters.minRating || filters.minPrice || filters.maxPrice) && (
-                <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-gold-500 text-white text-xs px-2 py-0.5 rounded-full">
                   {[
                     filters.location,
                     filters.specialization,
@@ -132,7 +132,7 @@ const CAMarketplace = () => {
                     placeholder="City, State"
                     value={filters.location}
                     onChange={(e) => handleFilterChange('location', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   />
                 </div>
 
@@ -144,7 +144,7 @@ const CAMarketplace = () => {
                   <select
                     value={filters.specialization}
                     onChange={(e) => handleFilterChange('specialization', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   >
                     <option value="">All Specializations</option>
                     <option value="individual">Individual ITR</option>
@@ -163,7 +163,7 @@ const CAMarketplace = () => {
                   <select
                     value={filters.minRating}
                     onChange={(e) => handleFilterChange('minRating', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   >
                     <option value="">Any Rating</option>
                     <option value="4.5">4.5+ Stars</option>
@@ -183,7 +183,7 @@ const CAMarketplace = () => {
                     placeholder="0"
                     value={filters.minPrice}
                     onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   />
                 </div>
 
@@ -196,7 +196,7 @@ const CAMarketplace = () => {
                     placeholder="No limit"
                     value={filters.maxPrice}
                     onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   />
                 </div>
               </div>
@@ -220,7 +220,7 @@ const CAMarketplace = () => {
         {/* Results */}
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
             <p className="text-body-md text-gray-600">Loading CA firms...</p>
           </div>
         ) : firms.length === 0 ? (
@@ -232,7 +232,7 @@ const CAMarketplace = () => {
             </p>
             <button
               onClick={clearFilters}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               Clear All Filters
             </button>
@@ -350,7 +350,7 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
             e.stopPropagation();
             onViewProfile(firm.id);
           }}
-          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-body-sm font-medium"
+          className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 text-body-sm font-medium"
         >
           View Profile
         </button>

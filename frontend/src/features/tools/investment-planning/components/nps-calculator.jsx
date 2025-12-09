@@ -55,7 +55,7 @@ const NPSCalculator = ({ npsRecommendation = null }) => {
             onChange={(e) => setContribution(Math.max(0, parseFloat(e.target.value) || 0))}
             placeholder="50000"
             max={50000}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
           <p className="text-xs text-gray-500 mt-1">Max: ₹50,000</p>
         </div>
@@ -70,7 +70,7 @@ const NPSCalculator = ({ npsRecommendation = null }) => {
             placeholder="30"
             min={1}
             max={60}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
         <div>
@@ -83,7 +83,7 @@ const NPSCalculator = ({ npsRecommendation = null }) => {
             onChange={(e) => setExpectedReturns(Math.max(0, parseFloat(e.target.value) || 9))}
             placeholder="9"
             step="0.1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
       </div>
@@ -134,9 +134,9 @@ const NPSCalculator = ({ npsRecommendation = null }) => {
       )}
 
       {npsRecommendation && (
-        <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
-          <h4 className="font-semibold text-orange-900 mb-2">Recommended Investment</h4>
-          <p className="text-sm text-orange-800">
+        <div className="border border-gold-200 rounded-lg p-4 bg-gold-50">
+          <h4 className="font-semibold text-gold-900 mb-2">Recommended Investment</h4>
+          <p className="text-sm text-gold-800">
             Based on your profile, we recommend investing ₹{npsRecommendation.investmentAmount?.toLocaleString('en-IN')} in NPS for additional tax deduction.
           </p>
         </div>

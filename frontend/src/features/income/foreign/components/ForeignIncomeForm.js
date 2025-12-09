@@ -144,12 +144,12 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
       <div className="border border-gray-200 rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Globe className="w-5 h-5 text-orange-600" />
+            <Globe className="w-5 h-5 text-gold-600" />
             <h4 className="font-semibold text-gray-900">Foreign Income Details</h4>
           </div>
           <button
             onClick={addForeignIncomeEntry}
-            className="flex items-center px-3 py-1.5 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+            className="flex items-center px-3 py-1.5 text-sm bg-gold-500 text-white rounded-lg hover:bg-gold-600"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Entry
@@ -161,7 +161,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
             <p className="text-gray-500 mb-4">No foreign income entries added yet</p>
             <button
               onClick={addForeignIncomeEntry}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               Add Foreign Income Entry
             </button>
@@ -186,7 +186,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                     <select
                       value={entry.country || ''}
                       onChange={(e) => updateForeignIncomeEntry(index, 'country', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="">Select Country</option>
                       {commonCountries.map((country) => (
@@ -202,7 +202,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                     <select
                       value={entry.incomeType || 'salary'}
                       onChange={(e) => updateForeignIncomeEntry(index, 'incomeType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="salary">Salary</option>
                       <option value="business">Business</option>
@@ -219,7 +219,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={entry.amount || 0}
                       onChange={(e) => updateForeignIncomeEntry(index, 'amount', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="0"
                     />
                   </div>
@@ -231,7 +231,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                       step="0.01"
                       value={entry.exchangeRate || 1}
                       onChange={(e) => updateForeignIncomeEntry(index, 'exchangeRate', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="1.00"
                     />
                     <p className="text-xs text-gray-500 mt-1">Rate to convert to INR</p>
@@ -254,7 +254,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={entry.taxPaidAbroad || 0}
                       onChange={(e) => updateForeignIncomeEntry(index, 'taxPaidAbroad', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="0"
                     />
                   </div>
@@ -265,7 +265,7 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                         type="checkbox"
                         checked={entry.dtaaApplicable || false}
                         onChange={(e) => updateForeignIncomeEntry(index, 'dtaaApplicable', e.target.checked)}
-                        className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                        className="w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
                       />
                       <span className="text-sm font-medium text-gray-700">DTAA (Double Taxation Avoidance Agreement) Applicable</span>
                     </label>

@@ -53,7 +53,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="border border-gray-200 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Shield className="w-5 h-5 text-orange-600" />
+            <Shield className="w-5 h-5 text-gold-600" />
             <h4 className="font-semibold text-gray-900">Self & Family</h4>
           </div>
           <input
@@ -62,7 +62,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
             onChange={(e) => handleInsuranceChange('self', e.target.value)}
             placeholder="Enter premium amount"
             max={remainingCapacity.self}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
           <p className="text-xs text-gray-500 mt-2">
             Max deduction: ₹{remainingCapacity.self.toLocaleString('en-IN')}
@@ -71,7 +71,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
 
         <div className="border border-gray-200 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Users className="w-5 h-5 text-orange-600" />
+            <Users className="w-5 h-5 text-gold-600" />
             <h4 className="font-semibold text-gray-900">Parents</h4>
           </div>
           <input
@@ -80,7 +80,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
             onChange={(e) => handleInsuranceChange('parents', e.target.value)}
             placeholder="Enter premium amount"
             max={remainingCapacity.parents}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
           <p className="text-xs text-gray-500 mt-2">
             Max deduction: ₹{remainingCapacity.parents.toLocaleString('en-IN')} (for senior citizens)
@@ -89,7 +89,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
 
         <div className="border border-gray-200 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Heart className="w-5 h-5 text-orange-600" />
+            <Heart className="w-5 h-5 text-gold-600" />
             <h4 className="font-semibold text-gray-900">Preventive Check-up</h4>
           </div>
           <input
@@ -98,7 +98,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
             onChange={(e) => handleInsuranceChange('preventiveCheckup', e.target.value)}
             placeholder="Enter amount"
             max={5000}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
           <p className="text-xs text-gray-500 mt-2">Max deduction: ₹5,000</p>
         </div>
@@ -127,7 +127,7 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
           <div className="pt-2 border-t border-gray-300">
             <div className="flex justify-between">
               <span className="font-semibold text-gray-900">Total Deduction (80D):</span>
-              <span className="font-bold text-lg text-orange-600">
+              <span className="font-bold text-lg text-gold-600">
                 ₹{totalDeduction.toLocaleString('en-IN')}
               </span>
             </div>
@@ -137,11 +137,11 @@ const HealthInsurancePlanner = ({ recommendations = [], remainingCapacity = { se
 
       {/* Recommendations */}
       {recommendations && recommendations.length > 0 && (
-        <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
-          <h4 className="font-semibold text-orange-900 mb-2">AI Recommendations</h4>
+        <div className="border border-gold-200 rounded-lg p-4 bg-gold-50">
+          <h4 className="font-semibold text-gold-900 mb-2">AI Recommendations</h4>
           <ul className="space-y-2">
             {recommendations.map((rec, index) => (
-              <li key={index} className="text-sm text-orange-800">
+              <li key={index} className="text-sm text-gold-800">
                 • {rec.description} - Premium ₹{rec.investmentAmount?.toLocaleString('en-IN')} for ₹{rec.deductionAmount?.toLocaleString('en-IN')} deduction
               </li>
             ))}

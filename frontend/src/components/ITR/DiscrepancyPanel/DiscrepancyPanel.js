@@ -118,7 +118,7 @@ const DiscrepancyPanel = ({
             value={explanationText}
             onChange={(e) => setExplanationText(e.target.value)}
             placeholder="e.g., Document shows gross salary, but I'm entering net salary after deductions..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:ring-offset-1"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500 focus:ring-offset-1"
             style={{ fontSize: '14px', lineHeight: '22px', minHeight: '80px' }}
             rows={3}
           />

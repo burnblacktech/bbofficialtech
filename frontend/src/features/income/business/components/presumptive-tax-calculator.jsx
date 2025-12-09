@@ -79,7 +79,7 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center gap-3 mb-6">
-        <Calculator className="h-6 w-6 text-orange-600" />
+        <Calculator className="h-6 w-6 text-gold-600" />
         <h3 className="text-heading-md text-gray-800">Presumptive Tax Calculator</h3>
       </div>
 
@@ -110,7 +110,7 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
           <select
             value={formData.section}
             onChange={(e) => handleChange('section', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           >
             <option value="44AD">Section 44AD (Business)</option>
             <option value="44ADA">Section 44ADA (Profession)</option>
@@ -124,7 +124,7 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
             type="number"
             value={formData.grossReceipts}
             onChange={(e) => handleChange('grossReceipts', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
               errors.grossReceipts ? 'border-red-300' : 'border-gray-300'
             }`}
             placeholder="Enter gross receipts"
@@ -157,7 +157,7 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
                 type="number"
                 value={formData.numberOfVehicles}
                 onChange={(e) => handleChange('numberOfVehicles', e.target.value)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                   errors.numberOfVehicles ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter number of vehicles"
@@ -172,7 +172,7 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
                 type="number"
                 value={formData.heavyVehicles}
                 onChange={(e) => handleChange('heavyVehicles', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="Enter number of heavy vehicles"
               />
             </div>

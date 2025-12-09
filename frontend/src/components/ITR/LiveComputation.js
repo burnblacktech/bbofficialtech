@@ -148,18 +148,18 @@ const LiveComputation = ({ taxCalculation, filingData, isLoading }) => {
             <motion.div
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
-              className="bg-orange-50 border border-orange-200 rounded-lg p-4"
+              className="bg-gold-50 border border-gold-200 rounded-lg p-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <TrendingDown className="h-5 w-5 text-orange-600" />
-                  <span className="text-sm font-medium text-orange-800">Tax Due</span>
+                  <TrendingDown className="h-5 w-5 text-gold-600" />
+                  <span className="text-sm font-medium text-gold-800">Tax Due</span>
                 </div>
-                <span className="text-xl font-bold text-orange-600">
+                <span className="text-xl font-bold text-gold-600">
                   ₹{taxDue?.toLocaleString() || 0}
                 </span>
               </div>
-              <p className="text-xs text-orange-600 mt-1">
+              <p className="text-xs text-gold-600 mt-1">
                 Pay this amount to complete your filing
               </p>
             </motion.div>

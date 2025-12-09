@@ -317,7 +317,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
               <select
                 value={permissions.baseRole}
                 onChange={(e) => handleRoleChange(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               >
                 {availableRoles?.map(role => (
                   <option key={role.value} value={role.value}>
@@ -373,7 +373,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                       placeholder="Search modules..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                     />
                   </div>
 
@@ -403,7 +403,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                   type="checkbox"
                                   checked={isChecked || false}
                                   onChange={() => handleModulePermissionToggle(module, action)}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
                                 />
                                 <span className="text-sm text-gray-700 capitalize">
                                   {action.replace('_', ' ')}
@@ -511,7 +511,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                             : prev.modules.filter(m => m !== module),
                                         }));
                                       }}
-                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
                                     />
                                     <span className="text-sm">{definition.name}</span>
                                   </label>
@@ -538,7 +538,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                             : prev.actions.filter(a => a !== action),
                                         }));
                                       }}
-                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
                                     />
                                     <span className="text-sm capitalize">{action.replace('_', ' ')}</span>
                                   </label>
@@ -555,7 +555,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                     ...prev,
                                     duration: e.target.value,
                                   }))}
-                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                                 >
                                   <option value={ACCESS_DURATIONS.ONE_DAY}>1 Day</option>
                                   <option value={ACCESS_DURATIONS.ONE_WEEK}>1 Week</option>
@@ -577,7 +577,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                       ...prev,
                                       customExpiryDate: e.target.value,
                                     }))}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                                   />
                                 </div>
                               )}
@@ -593,7 +593,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                   reason: e.target.value,
                                 }))}
                                 placeholder="Reason for temporary access"
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                               />
                             </div>
 

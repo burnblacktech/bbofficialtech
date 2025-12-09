@@ -241,7 +241,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
                 ? 'border-red-400 focus:ring-red-500 bg-red-50'
                 : fieldSource
                   ? 'border-blue-300 focus:ring-blue-500 bg-blue-50/30'
-                  : 'border-gray-300 focus:ring-orange-500 hover:border-gray-400'
+                  : 'border-gray-300 focus:ring-gold-500 hover:border-gray-400'
             } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           />
         )}
@@ -261,14 +261,14 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
   return (
     <div className="space-y-6">
       {/* Progress indicator */}
-      <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-4 border border-orange-200">
+      <div className="bg-gradient-to-r from-gold-50 to-amber-50 rounded-lg p-4 border border-gold-200">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-700">Profile Completion</span>
-          <span className="text-sm font-semibold text-orange-600">{completionPercentage}%</span>
+          <span className="text-sm font-semibold text-gold-600">{completionPercentage}%</span>
         </div>
-        <div className="w-full bg-orange-200 rounded-full h-2">
+        <div className="w-full bg-gold-200 rounded-full h-2">
           <div
-            className="bg-gradient-to-r from-orange-500 to-amber-500 h-2 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-gold-500 to-amber-500 h-2 rounded-full transition-all duration-500"
             style={{ width: `${completionPercentage}%` }}
           />
         </div>
@@ -277,7 +277,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
       {/* Basic Information Section */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center">
-          <User className="w-4 h-4 mr-2 text-orange-500" />
+          <User className="w-4 h-4 mr-2 text-gold-500" />
           Basic Information
         </h4>
 
@@ -316,7 +316,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             <select
               value={data?.gender || ''}
               onChange={(e) => handleChange('gender', e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-gray-400"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400"
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -340,7 +340,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             <select
               value={data?.residentialStatus || 'RES'}
               onChange={(e) => handleChange('residentialStatus', e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-gray-400"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400"
             >
               {RESIDENTIAL_STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -353,7 +353,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
       {/* Contact Information Section */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center">
-          <Mail className="w-4 h-4 mr-2 text-orange-500" />
+          <Mail className="w-4 h-4 mr-2 text-gold-500" />
           Contact Information
         </h4>
 
@@ -391,7 +391,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
       {/* Address Section */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center">
-          <MapPin className="w-4 h-4 mr-2 text-orange-500" />
+          <MapPin className="w-4 h-4 mr-2 text-gold-500" />
           Address Details
         </h4>
 
@@ -422,7 +422,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             <select
               value={data?.state || ''}
               onChange={(e) => handleChange('state', e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-gray-400"
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400"
             >
               <option value="">Select State</option>
               {INDIAN_STATES.map(state => (

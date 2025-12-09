@@ -30,7 +30,7 @@ const TrustIndicators = memo(({ stats, isLoading }) => {
       <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="text-center">
-            <div className="text-number-lg text-orange-500 animate-pulse">---</div>
+            <div className="text-number-lg text-gold-500 animate-pulse">---</div>
             <div className="text-body-sm text-gray-600 animate-pulse">---</div>
           </div>
         ))}
@@ -48,19 +48,19 @@ const TrustIndicators = memo(({ stats, isLoading }) => {
   return (
     <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
       <div className="text-center">
-        <div className="text-number-lg text-orange-500">{statsData.totalUsersFormatted}</div>
+        <div className="text-number-lg text-gold-500">{statsData.totalUsersFormatted}</div>
         <div className="text-body-sm text-gray-600">Users Trust Us</div>
       </div>
       <div className="text-center">
-        <div className="text-number-lg text-orange-500">{statsData.totalRefundsFormatted}</div>
+        <div className="text-number-lg text-gold-500">{statsData.totalRefundsFormatted}</div>
         <div className="text-body-sm text-gray-600">Refunds Generated</div>
       </div>
       <div className="text-center">
-        <div className="text-number-lg text-orange-500">{statsData.successRateFormatted}</div>
+        <div className="text-number-lg text-gold-500">{statsData.successRateFormatted}</div>
         <div className="text-body-sm text-gray-600">Success Rate</div>
       </div>
       <div className="text-center">
-        <div className="text-number-lg text-orange-500">{statsData.supportAvailability}</div>
+        <div className="text-number-lg text-gold-500">{statsData.supportAvailability}</div>
         <div className="text-body-sm text-gray-600">Support</div>
       </div>
     </div>
@@ -209,7 +209,7 @@ const LandingPage = () => {
               </Link>
               <Link
                 to="/login"
-                className="bg-orange-500 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-orange-600 transition-colors shadow-md hover:shadow-lg"
+                className="bg-gold-500 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-gold-600 transition-colors shadow-md hover:shadow-lg"
               >
                 Get Started
               </Link>
@@ -219,7 +219,7 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 text-center bg-gradient-to-br from-orange-50 via-orange-50/50 to-gold-50">
+      <section className="py-20 text-center bg-gradient-to-br from-gold-50 via-gold-50/50 to-gold-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-display-lg text-black mb-6">
             Secure ITR Filing Made Simple
@@ -231,7 +231,7 @@ const LandingPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/login"
-              className="bg-orange-500 text-white px-8 py-4 rounded-lg text-heading-md hover:bg-orange-600 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
+              className="bg-gold-500 text-white px-8 py-4 rounded-lg text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
               aria-label="Start your free trial with BurnBlack"
             >
               Start Free Trial
@@ -239,7 +239,7 @@ const LandingPage = () => {
             </Link>
             <Link
               to="#features"
-              className="border border-orange-300 text-orange-600 px-8 py-4 rounded-lg text-heading-md hover:bg-orange-50 transition-all duration-200 transform hover:scale-105"
+              className="border border-gold-300 text-gold-600 px-8 py-4 rounded-lg text-heading-md hover:bg-gold-50 transition-all duration-200 transform hover:scale-105"
               aria-label="Learn more about BurnBlack features"
             >
               Learn More
@@ -266,8 +266,8 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Bot className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Bot className="w-8 h-8 text-gold-600" />
               </div>
               <h3 className="text-heading-lg mb-4">AI-Powered Filing</h3>
               <p className="text-body-md text-gray-600">
@@ -302,8 +302,8 @@ const LandingPage = () => {
 
             {/* Feature 4 */}
             <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-8 h-8 text-orange-600" />
+              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Clock className="w-8 h-8 text-gold-600" />
               </div>
               <h3 className="text-heading-lg mb-4">Lightning Fast</h3>
               <p className="text-body-md text-gray-600">
@@ -355,8 +355,8 @@ const LandingPage = () => {
             {/* Individual Users */}
             <div className="bg-white p-8 rounded-lg shadow-sm">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-                  <UserCheck className="w-6 h-6 text-orange-600" />
+                <div className="w-12 h-12 bg-gold-100 rounded-lg flex items-center justify-center mr-4">
+                  <UserCheck className="w-6 h-6 text-gold-600" />
                 </div>
                 <h3 className="text-heading-lg">Individual Users</h3>
               </div>
@@ -380,7 +380,7 @@ const LandingPage = () => {
               </ul>
               <Link
                 to="/login"
-                className="mt-6 inline-block bg-orange-500 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-orange-600 transition-colors"
+                className="mt-6 inline-block bg-gold-500 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-gold-600 transition-colors"
               >
                 Start Free
               </Link>
@@ -484,19 +484,19 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-orange-500">
+      <section className="py-20 bg-gold-500">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-display-md text-white mb-4">
             Ready to Transform Your Tax Filing?
           </h2>
-          <p className="text-body-lg text-orange-50 mb-8">
+          <p className="text-body-lg text-gold-50 mb-8">
             Join thousands of users who have already made the switch to BurnBlack.
             Start your free trial today and experience the difference.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/login"
-              className="bg-white text-orange-600 px-8 py-4 rounded-lg text-heading-md hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
+              className="bg-white text-gold-600 px-8 py-4 rounded-lg text-heading-md hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
               aria-label="Start your free trial with BurnBlack"
             >
               Start Free Trial
@@ -504,7 +504,7 @@ const LandingPage = () => {
             </Link>
             <Link
               to="/login"
-              className="border border-orange-300 text-white px-8 py-4 rounded-lg text-heading-md hover:bg-orange-600 transition-all duration-200 transform hover:scale-105"
+              className="border border-gold-300 text-white px-8 py-4 rounded-lg text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105"
               aria-label="Schedule a demo with BurnBlack"
             >
               Schedule Demo
@@ -519,7 +519,7 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center">
                   <Shield className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -536,30 +536,30 @@ const LandingPage = () => {
             <div>
               <h4 className="text-heading-sm text-white mb-4">Product</h4>
               <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="#features" className="text-gray-400 hover:text-orange-500 transition-colors">Features</Link></li>
-                <li><Link to="/help" className="text-gray-400 hover:text-orange-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/help/faqs" className="text-gray-400 hover:text-orange-500 transition-colors">FAQs</Link></li>
-                <li><Link to="/tools" className="text-gray-400 hover:text-orange-500 transition-colors">Tools</Link></li>
+                <li><Link to="#features" className="text-gray-400 hover:text-gold-500 transition-colors">Features</Link></li>
+                <li><Link to="/help" className="text-gray-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
+                <li><Link to="/help/faqs" className="text-gray-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
+                <li><Link to="/tools" className="text-gray-400 hover:text-gold-500 transition-colors">Tools</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Support</h4>
               <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="/help" className="text-gray-400 hover:text-orange-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/help/contact" className="text-gray-400 hover:text-orange-500 transition-colors">Contact Us</Link></li>
-                <li><Link to="/help/faqs" className="text-gray-400 hover:text-orange-500 transition-colors">FAQs</Link></li>
-                <li><Link to="/notifications" className="text-gray-400 hover:text-orange-500 transition-colors">Notifications</Link></li>
+                <li><Link to="/help" className="text-gray-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
+                <li><Link to="/help/contact" className="text-gray-400 hover:text-gold-500 transition-colors">Contact Us</Link></li>
+                <li><Link to="/help/faqs" className="text-gray-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
+                <li><Link to="/notifications" className="text-gray-400 hover:text-gold-500 transition-colors">Notifications</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Company</h4>
               <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="/dashboard" className="text-gray-400 hover:text-orange-500 transition-colors">Dashboard</Link></li>
-                <li><Link to="/profile" className="text-gray-400 hover:text-orange-500 transition-colors">Profile</Link></li>
-                <li><Link to="/preferences" className="text-gray-400 hover:text-orange-500 transition-colors">Preferences</Link></li>
-                <li><Link to="/help" className="text-gray-400 hover:text-orange-500 transition-colors">Help</Link></li>
+                <li><Link to="/dashboard" className="text-gray-400 hover:text-gold-500 transition-colors">Dashboard</Link></li>
+                <li><Link to="/profile" className="text-gray-400 hover:text-gold-500 transition-colors">Profile</Link></li>
+                <li><Link to="/preferences" className="text-gray-400 hover:text-gold-500 transition-colors">Preferences</Link></li>
+                <li><Link to="/help" className="text-gray-400 hover:text-gold-500 transition-colors">Help</Link></li>
               </ul>
             </div>
           </div>

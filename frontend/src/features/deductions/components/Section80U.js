@@ -169,7 +169,7 @@ const Section80U = ({ filingId, onUpdate }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -192,7 +192,7 @@ const Section80U = ({ filingId, onUpdate }) => {
           </div>
           <div className="text-right">
             <div className="text-body-xs text-gray-500 mb-1">Deduction Amount</div>
-            <div className="text-heading-xl font-bold text-orange-600">
+            <div className="text-heading-xl font-bold text-gold-600">
               ₹{deductionAmount.toLocaleString('en-IN')}
             </div>
             <div className="text-body-xs text-gray-500 mt-1">
@@ -229,7 +229,7 @@ const Section80U = ({ filingId, onUpdate }) => {
                   onChange={(e) => {
                     setFormData({ ...formData, disabilityPercentage: e.target.value });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.disabilityPercentage ? 'border-red-500' : 'border-gray-300'
                   }`}
                 >
@@ -259,7 +259,7 @@ const Section80U = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.certificateNumber}
                   onChange={(e) => setFormData({ ...formData, certificateNumber: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.certificateNumber ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Certificate number"
@@ -277,7 +277,7 @@ const Section80U = ({ filingId, onUpdate }) => {
                   type="date"
                   value={formData.certificateDate}
                   onChange={(e) => setFormData({ ...formData, certificateDate: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.certificateDate ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -296,7 +296,7 @@ const Section80U = ({ filingId, onUpdate }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, certificateIssuingAuthority: e.target.value })
                   }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.certificateIssuingAuthority ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Name of the issuing authority"
@@ -321,7 +321,7 @@ const Section80U = ({ filingId, onUpdate }) => {
               <button
                 type="submit"
                 disabled={saveDeductionMutation.isPending}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
               >
                 Save Details
               </button>
@@ -372,8 +372,8 @@ const Section80U = ({ filingId, onUpdate }) => {
                         {deduction.certificateIssuingAuthority}
                       </span>
                     </div>
-                    <div className="mt-4 p-3 bg-orange-50 rounded-lg">
-                      <div className="text-body-sm font-semibold text-orange-900">
+                    <div className="mt-4 p-3 bg-gold-50 rounded-lg">
+                      <div className="text-body-sm font-semibold text-gold-900">
                         Fixed Deduction: ₹{deductionAmount.toLocaleString('en-IN')}
                       </div>
                     </div>
@@ -387,11 +387,11 @@ const Section80U = ({ filingId, onUpdate }) => {
                       onChange={handleProofUpload}
                       className="hidden"
                     />
-                    <Upload className="w-5 h-5 text-gray-500 hover:text-orange-500" />
+                    <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
                   </label>
                   <button
                     onClick={handleEdit}
-                    className="p-1 text-gray-500 hover:text-orange-500"
+                    className="p-1 text-gray-500 hover:text-gold-500"
                   >
                     <Edit className="w-5 h-5" />
                   </button>
@@ -404,7 +404,7 @@ const Section80U = ({ filingId, onUpdate }) => {
               <p className="text-gray-600 mb-4">No disability details added yet</p>
               <button
                 onClick={() => setShowEditForm(true)}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
               >
                 Add Disability Details
               </button>

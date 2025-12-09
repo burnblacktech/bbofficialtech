@@ -71,7 +71,7 @@ const ArticleView = () => {
             <p className="text-body-md text-gray-600 mb-6">The article you're looking for doesn't exist.</p>
             <Link
               to="/help"
-              className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Help Center
@@ -98,7 +98,7 @@ const ArticleView = () => {
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               {article.category && (
-                <span className="inline-block px-3 py-1 text-body-xs font-medium bg-orange-100 text-orange-700 rounded-full mb-3">
+                <span className="inline-block px-3 py-1 text-body-xs font-medium bg-gold-100 text-gold-700 rounded-full mb-3">
                   {article.category}
                 </span>
               )}
@@ -186,7 +186,7 @@ const ArticleView = () => {
         {(relatedArticles.length > 0 || (categoryArticles?.data?.articles?.length > 0)) && (
           <div className="mb-6">
             <h2 className="text-heading-xl text-gray-900 mb-6 flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-orange-600" />
+              <BookOpen className="h-6 w-6 text-gold-600" />
               Related Articles
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,14 +204,14 @@ const ArticleView = () => {
         )}
 
         {/* Still Need Help */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+        <div className="bg-gold-50 border border-gold-200 rounded-lg p-6">
           <h3 className="text-heading-md text-gray-900 mb-2">Still need help?</h3>
           <p className="text-body-sm text-gray-600 mb-4">
             Can't find what you're looking for? Our support team is here to help.
           </p>
           <Link
             to="/help/contact"
-            className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
           >
             Contact Support
           </Link>

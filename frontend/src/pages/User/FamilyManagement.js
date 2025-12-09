@@ -179,7 +179,7 @@ const FamilyManagement = () => {
       case 'parent':
         return <User className="h-4 w-4 text-success-500" />;
       case 'sibling':
-        return <User className="h-4 w-4 text-orange-500" />;
+        return <User className="h-4 w-4 text-gold-500" />;
       default:
         return <User className="h-4 w-4 text-gray-600" />;
     }
@@ -324,10 +324,10 @@ const FamilyManagement = () => {
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => handleEdit(member)}
-                      className="p-1 rounded hover:bg-orange-50 active:scale-95 transition-transform"
+                      className="p-1 rounded hover:bg-gold-50 active:scale-95 transition-transform"
                       title="Edit"
                     >
-                      <Edit className="h-4 w-4 text-orange-500" />
+                      <Edit className="h-4 w-4 text-gold-500" />
                     </button>
                     <button
                       onClick={() => handleDelete(member.id)}
@@ -519,7 +519,7 @@ const FamilyManagement = () => {
                   name="isDependent"
                   checked={memberData.isDependent}
                   onChange={handleInputChange}
-                  className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                  className="rounded border-gray-300 text-gold-500 focus:ring-gold-500"
                 />
                 <label className="text-sm text-gray-700">Mark as dependent</label>
               </div>
@@ -540,7 +540,7 @@ const FamilyManagement = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 active:scale-95 transition-transform disabled:opacity-50"
+                  className="flex-1 bg-gold-500 text-white py-2 px-4 rounded-lg hover:bg-gold-600 active:scale-95 transition-transform disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">
@@ -562,25 +562,25 @@ const FamilyManagement = () => {
         <div className="flex justify-around">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-orange-600"
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-gold-600"
           >
             <FileText className="h-5 w-5 mb-1" />
             <span className="text-xs">Dashboard</span>
           </button>
-          <button className="flex flex-col items-center p-2 text-orange-600">
+          <button className="flex flex-col items-center p-2 text-gold-600">
             <Users className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Family</span>
           </button>
           <button
             onClick={() => navigate('/profile')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-orange-600"
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-gold-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
           <button
             onClick={() => navigate('/settings')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-orange-600"
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-gold-600"
           >
             <Settings className="h-5 w-5 mb-1" />
             <span className="text-xs">Settings</span>

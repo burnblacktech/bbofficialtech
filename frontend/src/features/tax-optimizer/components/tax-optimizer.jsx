@@ -103,7 +103,7 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center px-4 py-3 text-body-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                 }`}
               >
@@ -121,7 +121,7 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
           <div className="space-y-4">
             {isLoadingOpportunities ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
               </div>
             ) : opportunities.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
@@ -180,7 +180,7 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
             </p>
             <button
               onClick={() => setActiveTab('simulate')}
-              className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               <Calculator className="h-4 w-4 mr-2" />
               Create Simulation

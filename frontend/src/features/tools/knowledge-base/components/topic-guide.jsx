@@ -43,7 +43,7 @@ const TopicGuide = ({ selectedTopicId, onTopicSelect }) => {
       <div className="space-y-4">
         <button
           onClick={() => onTopicSelect(null)}
-          className="text-sm text-orange-600 hover:text-orange-700 flex items-center gap-1"
+          className="text-sm text-gold-600 hover:text-gold-700 flex items-center gap-1"
         >
           ← Back to topics
         </button>
@@ -66,16 +66,16 @@ const TopicGuide = ({ selectedTopicId, onTopicSelect }) => {
           <div
             key={topic.id}
             onClick={() => onTopicSelect(topic.id)}
-            className="border border-gray-200 rounded-lg p-4 hover:border-orange-300 hover:shadow-md transition-all cursor-pointer"
+            className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 hover:shadow-md transition-all cursor-pointer"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <BookOpen className="w-5 h-5 text-orange-600" />
+                  <BookOpen className="w-5 h-5 text-gold-600" />
                   <h4 className="font-semibold text-gray-900">{topic.title}</h4>
                 </div>
                 <p className="text-sm text-gray-600">{topic.summary}</p>
-                <span className="inline-block mt-2 px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">
+                <span className="inline-block mt-2 px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded">
                   {topic.category}
                 </span>
               </div>

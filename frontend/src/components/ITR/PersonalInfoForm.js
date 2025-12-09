@@ -191,7 +191,7 @@ const PersonalInfoForm = ({
                 </label>
                 <input
                   {...register('firstName')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Enter first name"
                 />
                 {errors.firstName && (
@@ -205,7 +205,7 @@ const PersonalInfoForm = ({
                 </label>
                 <input
                   {...register('lastName')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Enter last name"
                 />
                 {errors.lastName && (
@@ -220,7 +220,7 @@ const PersonalInfoForm = ({
                 <input
                   {...register('dateOfBirth')}
                   type="date"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
                 {errors.dateOfBirth && (
                   <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth.message}</p>
@@ -233,7 +233,7 @@ const PersonalInfoForm = ({
                 </label>
                 <select
                   {...register('gender')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                 >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
@@ -251,7 +251,7 @@ const PersonalInfoForm = ({
                 </label>
                 <select
                   {...register('maritalStatus')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                 >
                   <option value="">Select marital status</option>
                   <option value="single">Single</option>
@@ -270,7 +270,7 @@ const PersonalInfoForm = ({
                 </label>
                 <input
                   {...register('pan')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="ABCDE1234F"
                   maxLength="10"
                 />
@@ -285,7 +285,7 @@ const PersonalInfoForm = ({
                 </label>
                 <input
                   {...register('aadhaar')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="123456789012"
                   maxLength="12"
                 />
@@ -311,7 +311,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('address.line1')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="Enter address line 1"
                   />
                   {errors.address?.line1 && (
@@ -325,7 +325,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('address.line2')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="Enter address line 2"
                   />
                 </div>
@@ -336,7 +336,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('address.city')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="Enter city"
                   />
                   {errors.address?.city && (
@@ -350,7 +350,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('address.state')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="Enter state"
                   />
                   {errors.address?.state && (
@@ -364,7 +364,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('address.pincode')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="123456"
                     maxLength="6"
                   />
@@ -379,7 +379,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('address.country')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     value="India"
                     readOnly
                   />
@@ -403,7 +403,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('contact.phone')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="9876543210"
                     maxLength="10"
                   />
@@ -419,7 +419,7 @@ const PersonalInfoForm = ({
                   <input
                     {...register('contact.email')}
                     type="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="example@email.com"
                   />
                   {errors.contact?.email && (
@@ -433,7 +433,7 @@ const PersonalInfoForm = ({
                   </label>
                   <input
                     {...register('contact.alternatePhone')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="9876543210"
                     maxLength="10"
                   />
@@ -604,7 +604,7 @@ const BankAccountForm = ({ account, onSave, onCancel }) => {
               type="text"
               value={formData.bankName}
               onChange={(e) => handleChange('bankName', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="Enter bank name"
               required
             />
@@ -618,7 +618,7 @@ const BankAccountForm = ({ account, onSave, onCancel }) => {
               type="text"
               value={formData.accountNumber}
               onChange={(e) => handleChange('accountNumber', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="Enter account number"
               required
             />
@@ -632,7 +632,7 @@ const BankAccountForm = ({ account, onSave, onCancel }) => {
               type="text"
               value={formData.ifscCode}
               onChange={(e) => handleChange('ifscCode', e.target.value.toUpperCase())}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="SBIN0001234"
               maxLength="11"
               required
@@ -646,7 +646,7 @@ const BankAccountForm = ({ account, onSave, onCancel }) => {
             <select
               value={formData.accountType}
               onChange={(e) => handleChange('accountType', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               required
             >
               <option value="">Select account type</option>

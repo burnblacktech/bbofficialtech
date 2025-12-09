@@ -39,10 +39,10 @@ const VisualLimitGauge = ({
       border: 'border-purple-200',
     },
     orange: {
-      bg: 'bg-orange-500',
-      text: 'text-orange-600',
-      light: 'bg-orange-50',
-      border: 'border-orange-200',
+      bg: 'bg-gold-500',
+      text: 'text-gold-600',
+      light: 'bg-gold-50',
+      border: 'border-gold-200',
     },
   };
 
@@ -65,12 +65,12 @@ const VisualLimitGauge = ({
           {isOverLimit ? (
             <AlertCircle className="w-4 h-4 text-red-500 mr-1" />
           ) : isNearLimit ? (
-            <TrendingUp className="w-4 h-4 text-orange-500 mr-1" />
+            <TrendingUp className="w-4 h-4 text-gold-500 mr-1" />
           ) : (
             <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
           )}
           <span className={`text-sm font-medium ${
-            isOverLimit ? 'text-red-600' : isNearLimit ? 'text-orange-600' : 'text-green-600'
+            isOverLimit ? 'text-red-600' : isNearLimit ? 'text-gold-600' : 'text-green-600'
           }`}>
             {showPercentage && `${Math.round(percentage)}%`}
           </span>
@@ -82,7 +82,7 @@ const VisualLimitGauge = ({
         <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ease-out ${
-              isOverLimit ? 'bg-red-500' : isNearLimit ? 'bg-orange-500' : colors.bg
+              isOverLimit ? 'bg-red-500' : isNearLimit ? 'bg-gold-500' : colors.bg
             }`}
             style={{ width: `${Math.min(percentage, 100)}%` }}
           ></div>
@@ -114,7 +114,7 @@ const VisualLimitGauge = ({
             ⚠️ Over limit by {formatAmount(claimed - limit)}
           </div>
         ) : isNearLimit ? (
-          <div className="text-orange-600 bg-orange-50 rounded px-2 py-1">
+          <div className="text-gold-600 bg-gold-50 rounded px-2 py-1">
             ⚡ Only {formatAmount(remaining)} remaining
           </div>
         ) : (

@@ -78,7 +78,7 @@ const FieldLockIndicator = ({
         {isLocked && section && field && (
           <button
             onClick={handleUnlockClick}
-            className="text-xs text-orange-600 hover:text-orange-700 font-medium underline flex items-center gap-1"
+            className="text-xs text-gold-600 hover:text-gold-700 font-medium underline flex items-center gap-1"
             title="Unlock this field"
           >
             <Unlock className="w-3 h-3" />

@@ -67,7 +67,7 @@ const CAProfile = () => {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
             <p className="text-body-md text-gray-600">Loading CA profile...</p>
           </div>
         </div>
@@ -83,7 +83,7 @@ const CAProfile = () => {
             <p className="text-error-800">CA firm not found</p>
             <button
               onClick={() => navigate('/ca/marketplace')}
-              className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="mt-4 px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               Back to Marketplace
             </button>
@@ -166,7 +166,7 @@ const CAProfile = () => {
                   {services.map((service, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-body-sm font-medium"
+                      className="px-3 py-1 bg-gold-50 text-gold-700 rounded-full text-body-sm font-medium"
                     >
                       {service}
                     </span>
@@ -209,7 +209,7 @@ const CAProfile = () => {
                 <div className="space-y-3">
                   <button
                     onClick={() => setShowBookingModal(true)}
-                    className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium flex items-center justify-center gap-2"
+                    className="w-full px-4 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 font-medium flex items-center justify-center gap-2"
                   >
                     <Calendar className="h-5 w-5" />
                     Book Consultation
@@ -244,7 +244,7 @@ const CAProfile = () => {
           <h2 className="text-heading-lg font-semibold text-gray-900 mb-6">Reviews</h2>
           {isLoadingReviews ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500 mx-auto"></div>
             </div>
           ) : reviews.length === 0 ? (
             <div className="text-center py-8 text-gray-600">

@@ -109,7 +109,7 @@ const PlatformCompliance = () => {
       case 'critical':
         return <AlertTriangle className="h-4 w-4 text-error-500" />;
       case 'high':
-        return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+        return <AlertTriangle className="h-4 w-4 text-gold-500" />;
       case 'medium':
         return <AlertTriangle className="h-4 w-4 text-warning-500" />;
       case 'low':
@@ -141,7 +141,7 @@ const PlatformCompliance = () => {
       case 'non_compliant':
         return <AlertTriangle className="h-4 w-4 text-error-500" />;
       case 'under_review':
-        return <Clock className="h-4 w-4 text-orange-500" />;
+        return <Clock className="h-4 w-4 text-gold-500" />;
       case 'pending':
         return <Clock className="h-4 w-4 text-info-500" />;
       default:
@@ -174,7 +174,7 @@ const PlatformCompliance = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -206,7 +206,7 @@ const PlatformCompliance = () => {
 
               <button
                 onClick={() => navigate('/platform-admin/compliance/settings')}
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                className="bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 transition-colors flex items-center space-x-2"
               >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
@@ -226,7 +226,7 @@ const PlatformCompliance = () => {
                 onClick={() => setSelectedTab(tab.id)}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-label-lg transition-colors ${
                   selectedTab === tab.id
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -267,7 +267,7 @@ const PlatformCompliance = () => {
 
               <div className="bg-white rounded-lg shadow-card p-4">
                 <div className="flex items-center">
-                  <Clock className="h-8 w-8 text-orange-600" />
+                  <Clock className="h-8 w-8 text-gold-600" />
                   <div className="ml-3">
                     <p className="text-label-lg font-medium text-gray-600">Under Review</p>
                     <p className="text-number-lg font-semibold text-gray-900">{stats.under_review || 0}</p>
@@ -300,7 +300,7 @@ const PlatformCompliance = () => {
                       <div className="flex items-center space-x-2">
                         <div className="w-20 bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-orange-500 h-2 rounded-full"
+                            className="bg-gold-500 h-2 rounded-full"
                             style={{ width: `${category.compliance_rate}%` }}
                           ></div>
                         </div>
@@ -380,7 +380,7 @@ const PlatformCompliance = () => {
                     placeholder="Search compliance issues..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   />
                 </div>
 
@@ -390,7 +390,7 @@ const PlatformCompliance = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   >
                     <option value="all">All Status</option>
                     <option value="compliant">Compliant</option>
@@ -404,7 +404,7 @@ const PlatformCompliance = () => {
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                 >
                   <option value="all">All Severity</option>
                   <option value="critical">Critical</option>
@@ -492,7 +492,7 @@ const PlatformCompliance = () => {
                           {issue.status === 'non_compliant' && (
                             <button
                               onClick={() => handleStatusUpdate(issue.id, 'under_review')}
-                              className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
+                              className="p-2 text-gold-600 hover:text-gold-800 hover:bg-gold-50 rounded-lg transition-colors"
                               title="Mark Under Review"
                             >
                               <Clock className="h-4 w-4" />
@@ -535,7 +535,7 @@ const PlatformCompliance = () => {
                   {alerts.map((alert) => (
                     <div key={alert.id} className={`p-4 border rounded-lg ${
                       alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
-                      alert.severity === 'high' ? 'bg-orange-50 border-orange-200' :
+                      alert.severity === 'high' ? 'bg-gold-50 border-gold-200' :
                       alert.severity === 'medium' ? 'bg-warning-50 border-warning-200' :
                       'bg-info-50 border-info-200'
                     }`}>

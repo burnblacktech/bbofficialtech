@@ -113,9 +113,9 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 ${
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 ${
                     activeTab === tab.id
-                      ? 'bg-orange-500 text-white shadow-sm'
+                      ? 'bg-gold-500 text-white shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
@@ -151,7 +151,7 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
       </div>
 
       {/* Summary Card */}
-      <div className="bg-gradient-to-r from-orange-50 to-gold-50 rounded-lg shadow-sm border border-orange-200 p-6">
+      <div className="bg-gradient-to-r from-gold-50 to-gold-50 rounded-lg shadow-sm border border-gold-200 p-6">
         <h3 className="text-heading-md text-gray-900 mb-4">Total Deductions Summary</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {deductionTabs
@@ -161,17 +161,17 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
               return (
                 <div key={tab.id} className="bg-white rounded-lg p-3">
                   <div className="text-body-xs text-gray-600 mb-1">{tab.label}</div>
-                  <div className="text-heading-sm font-bold text-orange-600">
+                  <div className="text-heading-sm font-bold text-gold-600">
                     ₹{amount.toLocaleString('en-IN')}
                   </div>
                 </div>
               );
             })}
         </div>
-        <div className="mt-4 pt-4 border-t border-orange-200">
+        <div className="mt-4 pt-4 border-t border-gold-200">
           <div className="flex justify-between items-center">
             <span className="text-heading-md font-semibold text-gray-900">Total Deductions</span>
-            <span className="text-heading-xl font-bold text-orange-600">
+            <span className="text-heading-xl font-bold text-gold-600">
               ₹{totalDeductions.toLocaleString('en-IN')}
             </span>
           </div>

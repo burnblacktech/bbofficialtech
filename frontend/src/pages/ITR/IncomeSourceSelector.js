@@ -67,7 +67,7 @@ const INCOME_SOURCES = [
     label: 'Business Income',
     description: 'Income from business activities',
     icon: Building2,
-    color: 'from-amber-500 to-orange-500',
+    color: 'from-amber-500 to-gold-500',
     bgColor: 'bg-amber-50',
     itrTypes: ['ITR-3', 'ITR-4'],
     subOptions: [

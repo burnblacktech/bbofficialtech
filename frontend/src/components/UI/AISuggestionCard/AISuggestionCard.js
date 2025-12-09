@@ -58,7 +58,7 @@ export const AISuggestionCard = ({
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
             aria-label="Dismiss suggestion"
           >
             <X className="w-4 h-4 text-gray-500" />
@@ -133,7 +133,7 @@ export const AISuggestionCard = ({
         {actionLabel && onAction && (
           <button
             onClick={onAction}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-lg font-semibold hover:bg-gold-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             {actionLabel}
@@ -142,7 +142,7 @@ export const AISuggestionCard = ({
         {comparisonLink && (
           <button
             onClick={comparisonLink.onClick}
-            className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
+            className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
             style={{ fontSize: '13px' }}
           >
             {comparisonLink.label || 'See Comparison'}

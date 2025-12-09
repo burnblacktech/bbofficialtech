@@ -14,7 +14,7 @@ import PANVerificationInline from '../../components/ITR/PANVerificationInline';
 import apiClient from '../../services/core/APIClient';
 import bankAccountService from '../../services/api/bankAccountService';
 import itrService from '../../services/api/itrService';
-import { FilingCardSkeleton, ActivityFeedSkeleton } from '../../components/UI/SkeletonLoader';
+import { FilingCardSkeleton, ActivityFeedSkeleton } from '../../components/UI/Skeletons';
 import FilingStatusBadge from '../../components/ITR/FilingStatusBadge';
 import { validateIFSC } from '../../lib/validation-patterns';
 import { bankDetailsService } from '../../features/bank-details/services/bank-details.service';
@@ -153,7 +153,7 @@ const ProfileSettings = () => {
             </div>
             <button
               onClick={() => navigate('/preferences')}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 flex items-center gap-2 text-body-sm font-medium"
+              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 flex items-center gap-2 text-body-sm font-medium"
             >
               <Settings className="h-4 w-4" />
               Preferences
@@ -174,7 +174,7 @@ const ProfileSettings = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${
                       activeTab === tab.id
-                        ? 'border-orange-500 text-orange-600'
+                        ? 'border-gold-500 text-gold-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >
@@ -643,7 +643,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
             <div
               className={`h-full transition-all duration-300 ${
                 completionPercentage === 100 ? 'bg-success-500' :
-                completionPercentage >= 70 ? 'bg-orange-500' : 'bg-warning-500'
+                completionPercentage >= 70 ? 'bg-gold-500' : 'bg-warning-500'
               }`}
               style={{ width: `${completionPercentage}%` }}
             ></div>
@@ -695,7 +695,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
                 disabled={isLoading || isDataLoading || (user?.emailVerified && fieldLockService.shouldLockField('personalInfo', 'name', VERIFICATION_STATUS.VERIFIED).locked)}
-                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                   fieldErrors.fullName ? 'border-error-300 focus:border-error-500' :
                   fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-gray-300'
                 }`}
@@ -750,7 +750,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
                 disabled={isLoading || isDataLoading}
-                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                   fieldErrors.phone ? 'border-error-300 focus:border-error-500' :
                   fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-gray-300'
                 }`}
@@ -792,7 +792,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   onChange={handlePANChange}
                   maxLength={10}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono uppercase disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 font-mono uppercase disabled:bg-gray-50 disabled:cursor-not-allowed ${
                     panVerified && formData.panNumber ? 'border-success-300' : 'border-gray-300'
                   }`}
                   placeholder="ABCDE1234F"
@@ -818,7 +818,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
           </div>
           {/* PAN Verification Inline */}
           {showPANVerification && formData.panNumber && formData.panNumber.length === 10 && (
-            <div className="md:col-span-2 mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <div className="md:col-span-2 mt-4 p-4 bg-gold-50 border border-gold-200 rounded-lg">
               <PANVerificationInline
                 panNumber={formData.panNumber}
                 onVerified={handlePANVerified}
@@ -847,7 +847,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 }}
                 disabled={isLoading || isDataLoading}
                 max={new Date().toISOString().split('T')[0]}
-                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                   fieldErrors.dateOfBirth ? 'border-error-300 focus:border-error-500' :
                   fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-gray-300'
                 }`}
@@ -894,7 +894,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                     fieldErrors.addressLine1 ? 'border-error-300 focus:border-error-500' :
                     fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-gray-300'
                   }`}
@@ -924,7 +924,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 value={formData.addressLine2}
                 onChange={(e) => setFormData(prev => ({ ...prev, addressLine2: e.target.value }))}
                 disabled={isLoading || isDataLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Apartment, suite, unit, building, floor, etc."
               />
             </div>
@@ -945,7 +945,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                     fieldErrors.city ? 'border-error-300 focus:border-error-500' :
                     fieldValidations.city && formData.city ? 'border-success-300' : 'border-gray-300'
                   }`}
@@ -983,7 +983,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                     fieldErrors.state ? 'border-error-300 focus:border-error-500' :
                     fieldValidations.state && formData.state ? 'border-success-300' : 'border-gray-300'
                   }`}
@@ -1024,7 +1024,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
                     fieldErrors.pincode ? 'border-error-300 focus:border-error-500' :
                     fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-gray-300'
                   }`}
@@ -1072,7 +1072,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
             <button
               type="submit"
               disabled={isSaveDisabled}
-              className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
               {isLoading ? (
                 <>
@@ -1304,7 +1304,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                 type={showPasswords.current ? 'text' : 'password'}
                 value={formData.currentPassword}
                 onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                   validationErrors.currentPassword
                     ? 'border-error-300'
                     : 'border-gray-300'
@@ -1335,7 +1335,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               type={showPasswords.new ? 'text' : 'password'}
               value={formData.newPassword}
               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+              className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 validationErrors.newPassword
                   ? 'border-error-300'
                   : formData.newPassword && passwordStrength.score >= 2
@@ -1411,7 +1411,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               type={showPasswords.confirm ? 'text' : 'password'}
               value={formData.confirmPassword}
               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+              className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 validationErrors.confirmPassword
                   ? 'border-error-300'
                   : formData.confirmPassword && formData.newPassword === formData.confirmPassword
@@ -1444,7 +1444,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
           <button
             type="submit"
             disabled={isLoading || passwordStrength.score < 2 || Object.keys(validationErrors).length > 0}
-            className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
               <>
@@ -1875,7 +1875,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Account
@@ -1941,7 +1941,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.ifsc && !validationErrors.ifsc && formData.ifsc.length === 11
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-orange-500 focus:border-orange-500'
+                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="HDFC0001234"
                   maxLength={11}
@@ -1986,7 +1986,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.bankName && !validationErrors.bankName
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-orange-500 focus:border-orange-500'
+                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="Enter bank name"
                 />
@@ -2024,7 +2024,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.accountNumber && !validationErrors.accountNumber
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-orange-500 focus:border-orange-500'
+                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="Enter account number"
                   minLength={9}
@@ -2065,7 +2065,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.accountHolderName && !validationErrors.accountHolderName
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-orange-500 focus:border-orange-500'
+                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="Enter account holder name"
                 />
@@ -2088,7 +2088,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
               <select
                 value={formData.accountType}
                 onChange={(e) => setFormData(prev => ({ ...prev, accountType: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 <option value="savings">Savings</option>
                 <option value="current">Current</option>
@@ -2102,7 +2102,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                 id="isPrimary"
                 checked={formData.isPrimary}
                 onChange={(e) => setFormData(prev => ({ ...prev, isPrimary: e.target.checked }))}
-                className="h-4 w-4 text-orange-500 focus:ring-orange-500"
+                className="h-4 w-4 text-gold-500 focus:ring-gold-500"
               />
               <label htmlFor="isPrimary" className="ml-2 text-sm text-gray-700">
                 Set as primary account
@@ -2121,7 +2121,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
             <button
               type="submit"
               disabled={addAccountMutation.isLoading || updateAccountMutation.isLoading || Object.keys(validationErrors).length > 0}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {addAccountMutation.isLoading || updateAccountMutation.isLoading ? (
                 <span className="flex items-center gap-2">
@@ -2146,7 +2146,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
             </p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors font-medium"
             >
               <Plus className="w-5 h-5 mr-2" />
               Add Bank Account
@@ -2436,7 +2436,7 @@ const FilingsTab = () => {
         label: 'Submitted',
       },
       acknowledged: {
-        color: 'bg-orange-50 text-orange-600 border-orange-100',
+        color: 'bg-gold-50 text-gold-600 border-gold-100',
         icon: CheckCircle,
         label: 'Acknowledged',
       },
@@ -2527,7 +2527,7 @@ const FilingsTab = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('/itr/select-person')}
-            className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors text-sm font-medium"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Filing
@@ -2546,7 +2546,7 @@ const FilingsTab = () => {
               placeholder="Search by ITR type, year, or acknowledgment number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
@@ -2561,7 +2561,7 @@ const FilingsTab = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
             >
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
@@ -2577,7 +2577,7 @@ const FilingsTab = () => {
               <select
                 value={yearFilter}
                 onChange={(e) => setYearFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
               >
                 <option value="all">All Years</option>
                 {availableYears.map(year => (
@@ -2592,7 +2592,7 @@ const FilingsTab = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
               >
                 <option value="date-desc">Newest First</option>
                 <option value="date-asc">Oldest First</option>
@@ -2614,7 +2614,7 @@ const FilingsTab = () => {
                     setYearFilter('all');
                     setSearchTerm('');
                   }}
-                  className="text-orange-600 hover:text-orange-700 underline"
+                  className="text-gold-600 hover:text-gold-700 underline"
                 >
                   Clear filters
                 </button>
@@ -2639,7 +2639,7 @@ const FilingsTab = () => {
           {allFilings.length === 0 ? (
             <button
               onClick={() => navigate('/itr/select-person')}
-              className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors font-medium"
             >
               <Plus className="w-5 h-5 mr-2" />
               Start Your First Filing
@@ -2726,7 +2726,7 @@ const FilingsTab = () => {
                         e.stopPropagation();
                         handleFilingClick(filing);
                       }}
-                      className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+                      className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors text-sm font-medium"
                     >
                       Continue
                       <ChevronRight className="w-4 h-4 ml-1" />

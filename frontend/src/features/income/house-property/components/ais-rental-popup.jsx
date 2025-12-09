@@ -60,7 +60,7 @@ const AISRentalIncomePopup = ({ filingId, formProperties = [], onClose, onApplie
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading AIS data...</p>
         </div>
       </div>
@@ -92,7 +92,7 @@ const AISRentalIncomePopup = ({ filingId, formProperties = [], onClose, onApplie
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <TrendingUp className="w-5 h-5 text-orange-600" />
+            <TrendingUp className="w-5 h-5 text-gold-600" />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">AIS Rental Income Data</h3>
               <p className="text-sm text-gray-500">
@@ -130,7 +130,7 @@ const AISRentalIncomePopup = ({ filingId, formProperties = [], onClose, onApplie
                 type="checkbox"
                 checked={selectedProperties.length === mappedProperties.length && mappedProperties.length > 0}
                 onChange={handleSelectAll}
-                className="w-4 h-4 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
+                className="w-4 h-4 text-gold-600 rounded focus:ring-2 focus:ring-gold-500"
               />
               <span className="text-sm font-medium text-gray-700">Select All</span>
             </label>
@@ -147,7 +147,7 @@ const AISRentalIncomePopup = ({ filingId, formProperties = [], onClose, onApplie
               <div
                 key={property.id}
                 className={`border rounded-lg p-4 ${
-                  isSelected ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
+                  isSelected ? 'border-gold-500 bg-gold-50' : 'border-gray-200'
                 } ${discrepancy ? 'border-yellow-300' : ''}`}
               >
                 <div className="flex items-start gap-3">
@@ -155,7 +155,7 @@ const AISRentalIncomePopup = ({ filingId, formProperties = [], onClose, onApplie
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => toggleProperty(property.id)}
-                    className="mt-1 w-4 h-4 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
+                    className="mt-1 w-4 h-4 text-gold-600 rounded focus:ring-2 focus:ring-gold-500"
                   />
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">

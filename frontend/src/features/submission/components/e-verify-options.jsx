@@ -54,9 +54,9 @@ const VERIFICATION_METHODS = [
     name: 'Bank Account EVC',
     description: 'Verify using EVC sent to your registered bank account',
     icon: CreditCard,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
+    color: 'text-gold-600',
+    bgColor: 'bg-gold-50',
+    borderColor: 'border-gold-200',
   },
   {
     id: 'DSC',
@@ -281,7 +281,7 @@ const EVerifyOptions = ({
                     maxLength={6}
                     value={otpValue}
                     onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="000000"
                   />
                   <button
@@ -289,7 +289,7 @@ const EVerifyOptions = ({
                       setOtpSent(false);
                       setOtpValue('');
                     }}
-                    className="mt-2 text-body-sm text-orange-600 hover:text-orange-700"
+                    className="mt-2 text-body-sm text-gold-600 hover:text-gold-700"
                   >
                     Resend OTP
                   </button>
@@ -328,7 +328,7 @@ const EVerifyOptions = ({
                 onChange={(e) =>
                   setDematCredentials({ ...dematCredentials, dpId: e.target.value })
                 }
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 placeholder="Enter DP ID"
               />
             </div>
@@ -342,7 +342,7 @@ const EVerifyOptions = ({
                 onChange={(e) =>
                   setDematCredentials({ ...dematCredentials, clientId: e.target.value })
                 }
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 placeholder="Enter Client ID"
               />
             </div>
@@ -376,7 +376,7 @@ const EVerifyOptions = ({
                     maxLength={6}
                     value={otpValue}
                     onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="000000"
                   />
                   <button
@@ -384,7 +384,7 @@ const EVerifyOptions = ({
                       setOtpSent(false);
                       setOtpValue('');
                     }}
-                    className="mt-2 text-body-sm text-orange-600 hover:text-orange-700"
+                    className="mt-2 text-body-sm text-gold-600 hover:text-gold-700"
                   >
                     Resend EVC
                   </button>
@@ -402,7 +402,7 @@ const EVerifyOptions = ({
                     onChange={(e) =>
                       setBankEvcDetails({ ...bankEvcDetails, accountNumber: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="Enter account number"
                   />
                 </div>
@@ -416,7 +416,7 @@ const EVerifyOptions = ({
                     onChange={(e) =>
                       setBankEvcDetails({ ...bankEvcDetails, ifsc: e.target.value.toUpperCase() })
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="Enter IFSC code"
                   />
                 </div>
@@ -436,7 +436,7 @@ const EVerifyOptions = ({
                 type="file"
                 accept=".p12,.pfx"
                 onChange={(e) => setDscFile(e.target.files[0])}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
               <p className="mt-2 text-body-sm text-gray-500">
                 Supported formats: .p12, .pfx

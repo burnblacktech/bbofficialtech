@@ -20,7 +20,7 @@ const HelpCenter = () => {
       title: 'Getting Started',
       description: 'Learn how to file your ITR',
       icon: BookOpen,
-      color: 'bg-orange-100 text-orange-600',
+      color: 'bg-gold-100 text-gold-600',
       articles: 12,
     },
     {
@@ -112,7 +112,7 @@ const HelpCenter = () => {
                 to={link.path}
                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
               >
-                <Icon className="h-8 w-8 text-orange-600 mb-3" />
+                <Icon className="h-8 w-8 text-gold-600 mb-3" />
                 <h3 className="text-heading-sm text-gray-900">{link.title}</h3>
               </Link>
             );

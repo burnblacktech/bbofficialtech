@@ -46,7 +46,7 @@ const sourceConfig = {
     tooltip: 'Manually entered data',
   },
   ai: {
-    color: 'linear-gradient(135deg, #FF6B00 0%, #FFB800 100%)',
+    color: 'linear-gradient(135deg, #D4AF37 0%, #FFE4A0 100%)',
     icon: Sparkles,
     label: 'AI Extracted',
     tooltip: 'AI-generated suggestion',

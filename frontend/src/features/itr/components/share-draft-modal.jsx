@@ -170,7 +170,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
           <div className="bg-white p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Share2 className="h-5 w-5 text-orange-600 mr-2" />
+                <Share2 className="h-5 w-5 text-gold-600 mr-2" />
                 <h3 id="share-draft-title" className="text-heading-lg text-gray-800 font-semibold">
                   Share Draft for Review
                 </h3>
@@ -198,7 +198,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
                     placeholder="ca@example.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     required
                     disabled={isSharing}
                   />
@@ -218,7 +218,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Please review this draft and provide feedback..."
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     disabled={isSharing}
                   />
                 </div>
@@ -249,7 +249,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-body-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isSharing || !recipientEmail}
                   >
                     {isSharing ? (
@@ -313,7 +313,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                 <div className="flex items-center justify-end pt-4">
                   <button
                     onClick={handleClose}
-                    className="px-4 py-2 text-body-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
+                    className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors"
                   >
                     Done
                   </button>

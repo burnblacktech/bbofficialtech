@@ -20,11 +20,13 @@ import {
 } from 'lucide-react';
 import apiClient from '../../../services/core/APIClient';
 import toast from 'react-hot-toast';
+import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
 const Section80CCC = ({ filingId, onUpdate }) => {
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingDeduction, setEditingDeduction] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, deductionId: null });
   const [formData, setFormData] = useState({
     providerName: '',
     policyNumber: '',
@@ -202,9 +204,14 @@ const Section80CCC = ({ filingId, onUpdate }) => {
   };
 
   const handleDelete = (deductionId) => {
-    if (window.confirm('Are you sure you want to delete this deduction?')) {
-      deleteDeductionMutation.mutate(deductionId);
+    setDeleteConfirm({ isOpen: true, deductionId });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm.deductionId) {
+      deleteDeductionMutation.mutate(deleteConfirm.deductionId);
     }
+    setDeleteConfirm({ isOpen: false, deductionId: null });
   };
 
   const resetForm = () => {
@@ -254,7 +261,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -265,8 +272,8 @@ const Section80CCC = ({ filingId, onUpdate }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <Shield className="h-6 w-6 text-orange-600" />
+            <div className="p-3 bg-gold-100 rounded-lg">
+              <Shield className="h-6 w-6 text-gold-600" />
             </div>
             <div>
               <h2 className="text-heading-lg text-gray-900">Section 80CCC</h2>
@@ -275,7 +282,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center space-x-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Add Contribution</span>
@@ -290,7 +297,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              className="bg-orange-500 h-2 rounded-full transition-all duration-500"
+              className="bg-gold-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${Math.min(utilizationPercentage, 100)}%` }}
             />
           </div>
@@ -335,7 +342,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                           <span className="text-body-sm font-medium text-gray-900">{deduction.policyNumber}</span>
                         </div>
                         <div className="mt-3">
-                          <div className="text-heading-md font-bold text-orange-600">
+                          <div className="text-heading-md font-bold text-gold-600">
                             ₹{parseFloat(deduction.contributionAmount || 0).toLocaleString('en-IN')}
                           </div>
                           <div className="text-body-xs text-gray-600">Contribution Amount</div>
@@ -363,7 +370,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                     </label>
                     <button
                       onClick={() => handleEdit(deduction)}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-md transition-colors"
+                      className="p-2 text-gold-600 hover:bg-gold-50 rounded-md transition-colors"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
@@ -388,7 +395,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
           >
             Add First Contribution
           </button>
@@ -423,7 +430,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                 <select
                   value={formData.providerType}
                   onChange={(e) => setFormData({ ...formData, providerType: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 >
                   {providerTypes.map((type) => (
                     <option key={type.id} value={type.id}>
@@ -442,7 +449,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.providerName}
                   onChange={(e) => setFormData({ ...formData, providerName: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.providerName ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter provider name"
@@ -461,7 +468,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.policyNumber}
                   onChange={(e) => setFormData({ ...formData, policyNumber: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.policyNumber ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter policy number"
@@ -481,7 +488,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                   value={formData.contributionAmount}
                   onChange={(e) => setFormData({ ...formData, contributionAmount: e.target.value })}
                   max={remainingLimit}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.contributionAmount ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter contribution amount"
@@ -504,7 +511,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
                 <div>
@@ -515,7 +522,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                     type="date"
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
               </div>
@@ -541,14 +548,14 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                     resetForm();
                     setShowAddForm(false);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {addDeductionMutation.isPending || updateDeductionMutation.isPending
                     ? 'Saving...'
@@ -561,6 +568,17 @@ const Section80CCC = ({ filingId, onUpdate }) => {
           </div>
         </div>
       )}
+
+      <ConfirmationDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, deductionId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Deduction"
+        message="Are you sure you want to delete this deduction? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 };

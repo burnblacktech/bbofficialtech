@@ -243,7 +243,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
                   type={field.type || 'text'}
                   value={value}
                   onChange={(e) => handleFieldChange(sectionKey, field.key, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-sm focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                 />
               </div>
@@ -314,7 +314,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
                   type="checkbox"
                   checked={selectedSections[section]}
                   onChange={() => handleSectionToggle(section)}
-                  className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-gray-300 rounded"
                 />
                 <span className="ml-3 text-body-sm font-medium text-gray-900">
                   {section.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim()}
@@ -389,8 +389,8 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="p-2 bg-orange-100 rounded-lg mr-3">
-                    <CreditCard className="h-5 w-5 text-orange-600" />
+                  <div className="p-2 bg-gold-100 rounded-lg mr-3">
+                    <CreditCard className="h-5 w-5 text-gold-600" />
                   </div>
                   <h3 className="text-heading-md text-gray-900">Taxes Paid</h3>
                 </div>
@@ -430,7 +430,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
           <button
             onClick={handleApplyCopy}
             disabled={copyMutation.isPending || availableSections.filter(s => selectedSections[s]).length === 0}
-            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center"
+            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
           >
             {copyMutation.isPending ? (
               <>

@@ -26,7 +26,7 @@ const SimulationResults = ({ simulationResult, selectedScenario, scenariosToComp
     // Comparison view
     return (
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-6 border border-orange-200">
+        <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-lg p-6 border border-gold-200">
           <h3 className="text-heading-md text-gray-900 mb-2">Scenario Comparison</h3>
           <p className="text-body-sm text-gray-600">
             Compare {simulationResult.scenarios.length} scenarios to find the best option
@@ -104,7 +104,7 @@ const SimulationResults = ({ simulationResult, selectedScenario, scenariosToComp
                         scenarioResult.scenario.id,
                         scenarioResult.scenario.changes,
                       )}
-                      className="px-3 py-1 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+                      className="px-3 py-1 bg-gold-500 text-white rounded-lg hover:bg-gold-600 text-sm"
                     >
                       Apply
                     </button>

@@ -121,7 +121,7 @@ const UnlockFieldModal = ({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Please provide a reason for unlocking this field..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 resize-none"
               rows={3}
               required
             />
@@ -143,7 +143,7 @@ const UnlockFieldModal = ({
           <button
             onClick={handleUnlock}
             disabled={!reason.trim() || isUnlocking || !unlockRequest.canUnlock}
-            className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
           >
             {isUnlocking ? (
               <>

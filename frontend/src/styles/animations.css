@@ -520,7 +520,7 @@ select:focus-visible {
 }
 
 .gradient-text-primary {
-  background: linear-gradient(135deg, #FFC300 0%, #FF9800 50%, #FF6B00 100%);
+  background: linear-gradient(135deg, #FFE4A0 0%, #D4AF37 50%, #B8960C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -560,7 +560,7 @@ select:focus-visible {
   inset: -2px;
   padding: 2px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #FFC300 0%, #FF9800 50%, #FF6B00 100%);
+  background: linear-gradient(135deg, #FFE4A0 0%, #D4AF37 50%, #B8960C 100%);
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);

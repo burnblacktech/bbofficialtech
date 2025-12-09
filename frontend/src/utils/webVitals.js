@@ -3,7 +3,7 @@
 // Performance monitoring using Web Vitals API
 // =====================================================
 
-import { onCLS, onFID, onFCP, onLCP, onTTFB, onINP } from 'web-vitals';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
 
 /**
  * Send metrics to analytics endpoint
@@ -47,12 +47,14 @@ const sendToAnalytics = (metric) => {
  */
 export const initWebVitals = () => {
   // Core Web Vitals (LCP, FID, CLS)
-  onCLS(sendToAnalytics);
-  onFID(sendToAnalytics);
-  onFCP(sendToAnalytics);
-  onLCP(sendToAnalytics);
-  onTTFB(sendToAnalytics);
-  onINP(sendToAnalytics); // Interaction to Next Paint (replaces FID in 2024)
+  getCLS(sendToAnalytics);
+  getFID(sendToAnalytics);
+  getFCP(sendToAnalytics);
+  getLCP(sendToAnalytics);
+  getTTFB(sendToAnalytics);
+  // Note: INP (Interaction to Next Paint) is available in newer versions
+  // If your web-vitals version supports it, uncomment:
+  // getINP(sendToAnalytics);
 
   console.log('Web Vitals tracking initialized');
 };

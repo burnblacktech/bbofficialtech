@@ -51,24 +51,7 @@ module.exports = {
           900: '#663800',  // Darkest variant
         },
         
-        // Legacy orange (keeping for backward compatibility)
-        orange: {
-          50: '#FFF8F2',
-          100: '#FFF0E5',
-          400: '#FF8533',
-          500: '#FF6B00',
-          600: '#E55F00',
-          700: '#CC5500',
-        },
-        
-        // Legacy gold (keeping for backward compatibility)
-        gold: {
-          50: '#FFFCF2',
-          100: '#FFF9E5',
-          400: '#FFC933',
-          500: '#FFB800',
-          600: '#E5A600',
-        },
+        // Note: orange colors deprecated - use gold (primary) or ember (secondary accent) instead
         
         // =====================================================
         // SUPPORTING BRAND COLORS

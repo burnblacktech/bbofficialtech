@@ -142,7 +142,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                   onUpdate({ balanceSheet: { ...balanceSheet, hasBalanceSheet: e.target.checked } });
                 }
               }}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-orange-500"
+              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
             />
             <span className="text-sm text-gray-700">Maintain Balance Sheet</span>
           </label>
@@ -196,7 +196,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                         type="number"
                         value={balanceSheet.assets?.currentAssets?.[field] || 0}
                         onChange={(e) => updateAssetsCategory('currentAssets', field, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   ))}
@@ -224,7 +224,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                         type="number"
                         value={balanceSheet.assets?.fixedAssets?.[field] || 0}
                         onChange={(e) => updateAssetsCategory('fixedAssets', field, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   ))}
@@ -248,7 +248,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="number"
                       value={balanceSheet.assets?.investments || 0}
                       onChange={(e) => setValue('assets.investments', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -257,7 +257,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="number"
                       value={balanceSheet.assets?.loansAdvances || 0}
                       onChange={(e) => setValue('assets.loansAdvances', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                 </div>
@@ -291,7 +291,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                         type="number"
                         value={balanceSheet.liabilities?.currentLiabilities?.[field] || 0}
                         onChange={(e) => updateLiabilitiesCategory('currentLiabilities', field, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   ))}
@@ -319,7 +319,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                         type="number"
                         value={balanceSheet.liabilities?.longTermLiabilities?.[field] || 0}
                         onChange={(e) => updateLiabilitiesCategory('longTermLiabilities', field, e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   ))}
@@ -342,7 +342,7 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
                     type="number"
                     value={balanceSheet.liabilities?.capital || 0}
                     onChange={(e) => setValue('liabilities.capital', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
               </div>

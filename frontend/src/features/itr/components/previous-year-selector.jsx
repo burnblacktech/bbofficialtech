@@ -87,7 +87,7 @@ const PreviousYearSelector = ({ userId: propUserId, memberId: propMemberId = nul
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <Loader className="h-8 w-8 animate-spin text-orange-500 mr-3" />
+            <Loader className="h-8 w-8 animate-spin text-gold-500 mr-3" />
             <span className="text-body-md text-gray-600">Loading previous year filings...</span>
           </div>
         </div>
@@ -152,7 +152,7 @@ const PreviousYearSelector = ({ userId: propUserId, memberId: propMemberId = nul
               </button>
               <button
                 onClick={() => navigate('/itr/computation', { state: { dataSource: 'manual' } })}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg text-sm font-medium hover:bg-gold-600"
               >
                 Start Fresh
               </button>
@@ -192,7 +192,7 @@ const PreviousYearSelector = ({ userId: propUserId, memberId: propMemberId = nul
                 onClick={() => handleSelect(filing.filingId)}
                 className={`w-full text-left p-6 rounded-lg border-2 transition-all ${
                   isSelected
-                    ? 'border-orange-500 bg-orange-50 shadow-md'
+                    ? 'border-gold-500 bg-gold-50 shadow-md'
                     : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
                 }`}
               >
@@ -207,7 +207,7 @@ const PreviousYearSelector = ({ userId: propUserId, memberId: propMemberId = nul
                       </h3>
                       {getStatusBadge(filing.status)}
                       {isSelected && (
-                        <CheckCircle className="h-5 w-5 text-orange-600 flex-shrink-0" />
+                        <CheckCircle className="h-5 w-5 text-gold-600 flex-shrink-0" />
                       )}
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
@@ -259,7 +259,7 @@ const PreviousYearSelector = ({ userId: propUserId, memberId: propMemberId = nul
           <button
             onClick={handleProceed}
             disabled={!selectedFilingId}
-            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center"
+            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
           >
             Continue
             <ArrowRight className="w-4 h-4 ml-2" />

@@ -272,7 +272,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                     type="text"
                     value={profession.professionName || ''}
                     onChange={(e) => updateProfession(professionIndex, 'professionName', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
                 <div>
@@ -280,7 +280,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                   <select
                     value={profession.professionType || ''}
                     onChange={(e) => updateProfession(professionIndex, 'professionType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   >
                     <option value="">Select Profession</option>
                     <option value="ca">Chartered Accountant</option>
@@ -298,7 +298,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                     type="text"
                     value={profession.registrationNumber || ''}
                     onChange={(e) => updateProfession(professionIndex, 'registrationNumber', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="CA/Medical/Legal registration"
                   />
                 </div>
@@ -307,7 +307,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                   <textarea
                     value={profession.professionAddress || ''}
                     onChange={(e) => updateProfession(professionIndex, 'professionAddress', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     rows={2}
                   />
                 </div>
@@ -331,7 +331,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                 type="number"
                 value={profession.pnl?.professionalFees || 0}
                 onChange={(e) => updatePNL(professionIndex, 'professionalFees', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
               />
             </div>
 
@@ -361,7 +361,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.expenses?.officeRent || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'officeRent', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -370,7 +370,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.expenses?.professionalFeesPaid || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'professionalFeesPaid', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -379,7 +379,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.expenses?.travel || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'travel', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -388,7 +388,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.expenses?.communication || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'communication', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -397,7 +397,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.expenses?.booksPeriodicals || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'booksPeriodicals', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -406,7 +406,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.expenses?.other || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                 </div>
@@ -439,7 +439,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.depreciation?.officeEquipment || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'officeEquipment', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -448,7 +448,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.depreciation?.furniture || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'furniture', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -457,7 +457,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.depreciation?.vehicles || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'vehicles', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -466,7 +466,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                       type="number"
                       value={profession.pnl?.depreciation?.other || 0}
                       onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                 </div>

@@ -84,7 +84,7 @@ const CAReviewQueue = () => {
       case 'URGENT':
         return 'bg-red-100 text-red-700';
       case 'HIGH':
-        return 'bg-orange-100 text-orange-700';
+        return 'bg-gold-100 text-gold-700';
       case 'MEDIUM':
         return 'bg-yellow-100 text-yellow-700';
       case 'LOW':
@@ -97,7 +97,7 @@ const CAReviewQueue = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'OPEN':
-        return <Clock className="w-5 h-5 text-orange-600" />;
+        return <Clock className="w-5 h-5 text-gold-600" />;
       case 'IN_PROGRESS':
         return <AlertCircle className="w-5 h-5 text-blue-600" />;
       case 'CLOSED':

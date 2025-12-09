@@ -170,7 +170,7 @@ const FirmDashboard = () => {
                 <p className="text-sm text-gray-600 mb-1">Pending Reviews</p>
                 <p className="text-2xl font-bold text-gray-900">{queue?.pending || 0}</p>
               </div>
-              <Clock className="w-8 h-8 text-orange-600" />
+              <Clock className="w-8 h-8 text-gold-600" />
             </div>
             <div className="mt-4">
               <Button
@@ -234,7 +234,7 @@ const FirmDashboard = () => {
                 <p className="text-sm text-gray-600">Completed</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-orange-600">{queue.byPriority?.URGENT || 0}</p>
+                <p className="text-2xl font-bold text-gold-600">{queue.byPriority?.URGENT || 0}</p>
                 <p className="text-sm text-gray-600">Urgent</p>
               </div>
             </div>

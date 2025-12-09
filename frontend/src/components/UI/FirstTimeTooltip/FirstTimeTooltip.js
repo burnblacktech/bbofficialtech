@@ -110,7 +110,7 @@ export const FirstTimeTooltip = ({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
-                className="absolute border-2 border-orange-500 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
+                className="absolute border-2 border-gold-500 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
                 style={getSpotlightStyle()}
               />
             )}
@@ -173,7 +173,7 @@ export const FirstTimeTooltip = ({
                           <div
                             key={index}
                             className={cn('h-1 w-1 rounded-full', {
-                              'bg-orange-500': index === currentStep,
+                              'bg-gold-500': index === currentStep,
                               'bg-gray-600': index !== currentStep,
                             })}
                           />
@@ -194,7 +194,7 @@ export const FirstTimeTooltip = ({
                       )}
                       <button
                         onClick={handleNext}
-                        className="px-3 py-1.5 bg-orange-500 text-white rounded-lg text-body-sm font-semibold hover:bg-orange-600 transition-colors"
+                        className="px-3 py-1.5 bg-gold-500 text-white rounded-lg text-body-sm font-semibold hover:bg-gold-600 transition-colors"
                         style={{ fontSize: '13px', fontWeight: 600 }}
                       >
                         {currentStep < steps.length - 1 ? 'Next' : 'Got it'}

@@ -65,7 +65,7 @@ const TaxCalendar = ({ year = null }) => {
   if (isLoading) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-600 mx-auto"></div>
         <p className="mt-2 text-gray-600">Loading calendar...</p>
       </div>
     );
@@ -83,7 +83,7 @@ const TaxCalendar = ({ year = null }) => {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <Calendar className="w-6 h-6 text-orange-600" />
+            <Calendar className="w-6 h-6 text-gold-600" />
             {months[currentMonth]} {currentYear}
           </h2>
           <button
@@ -99,7 +99,7 @@ const TaxCalendar = ({ year = null }) => {
             setCurrentMonth(now.getMonth());
             setCurrentYear(now.getFullYear());
           }}
-          className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          className="px-4 py-2 bg-gold-600 text-white rounded-lg hover:bg-gold-700 transition-colors"
         >
           Today
         </button>
@@ -137,10 +137,10 @@ const TaxCalendar = ({ year = null }) => {
               <div
                 key={day}
                 className={`min-h-[100px] border border-gray-100 p-2 ${
-                  isToday ? 'bg-orange-50' : ''
+                  isToday ? 'bg-gold-50' : ''
                 } ${isPast ? 'opacity-60' : ''}`}
               >
-                <div className={`text-sm font-semibold mb-1 ${isToday ? 'text-orange-600' : 'text-gray-900'}`}>
+                <div className={`text-sm font-semibold mb-1 ${isToday ? 'text-gold-600' : 'text-gray-900'}`}>
                   {day}
                 </div>
                 <div className="space-y-1">

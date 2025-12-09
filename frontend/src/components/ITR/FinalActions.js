@@ -128,7 +128,7 @@ const FinalActions = ({
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-1">Final Amount</p>
             <p className={`text-xl font-bold ${
-              hasTaxLiability ? 'text-orange-600' : hasRefund ? 'text-green-600' : 'text-gray-900'
+              hasTaxLiability ? 'text-gold-600' : hasRefund ? 'text-green-600' : 'text-gray-900'
             }`}>
               {hasTaxLiability && `₹${taxCalculation?.taxPayable?.toLocaleString('en-IN')}`}
               {hasRefund && `+₹${Math.abs(taxCalculation?.refundDue)?.toLocaleString('en-IN')} Refund`}
@@ -302,7 +302,7 @@ const FinalActions = ({
                   setShowConfirmation(false);
                   if (onSubmit) onSubmit();
                 }}
-                className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                className="flex-1 px-4 py-2 bg-gold-600 text-white rounded-lg hover:bg-gold-700"
               >
                 Submit Anyway
               </button>

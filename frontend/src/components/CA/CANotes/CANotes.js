@@ -89,7 +89,7 @@ const CANotes = ({
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500"
                     style={{ fontSize: '14px', lineHeight: '22px', minHeight: '80px' }}
                     rows={3}
                   />
@@ -150,7 +150,7 @@ const CANotes = ({
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Add a private note (not visible to client)..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-orange-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500"
                 style={{ fontSize: '14px', lineHeight: '22px', minHeight: '80px' }}
                 rows={3}
               />

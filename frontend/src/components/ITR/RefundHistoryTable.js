@@ -29,7 +29,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
       issued: 'bg-info-100 text-info-800',
       processing: 'bg-warning-100 text-warning-800',
       failed: 'bg-error-100 text-error-800',
-      adjusted: 'bg-orange-100 text-orange-800',
+      adjusted: 'bg-gold-100 text-gold-800',
     };
 
     return (
@@ -59,7 +59,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
         <select
           value={filterYear}
           onChange={(e) => setFilterYear(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by assessment year"
         >
           <option value="all">All Years</option>
@@ -70,7 +70,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by status"
         >
           <option value="all">All Status</option>

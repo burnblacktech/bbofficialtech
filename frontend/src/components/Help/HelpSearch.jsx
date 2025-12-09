@@ -109,7 +109,7 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
             }}
             onFocus={() => setShowSuggestions(true)}
             placeholder={placeholder}
-            className="w-full pl-12 pr-12 py-4 text-body-md border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full pl-12 pr-12 py-4 text-body-md border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           />
           {query && (
             <button
@@ -122,7 +122,7 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
           )}
           <button
             type="submit"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 text-body-sm font-medium"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-body-sm font-medium"
             disabled={isLoading || query.trim().length < 2}
           >
             {isLoading ? 'Searching...' : 'Search'}
@@ -186,7 +186,7 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
                           <div className="text-body-xs text-gray-500 mt-1 line-clamp-2">{result.snippet}</div>
                         )}
                         {result.category && (
-                          <div className="text-body-xs text-orange-600 mt-1">{result.category}</div>
+                          <div className="text-body-xs text-gold-600 mt-1">{result.category}</div>
                         )}
                       </Link>
                     ))}

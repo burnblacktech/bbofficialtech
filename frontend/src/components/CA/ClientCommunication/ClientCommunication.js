@@ -107,7 +107,7 @@ const ClientCommunication = ({
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="Type your message to the client..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500"
             style={{ fontSize: '14px', lineHeight: '22px', minHeight: '100px' }}
             rows={4}
           />
@@ -118,7 +118,7 @@ const ClientCommunication = ({
                 type="checkbox"
                 checked={emailNotification}
                 onChange={(e) => setEmailNotification(e.target.checked)}
-                className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                className="w-4 h-4 text-gold-500 border-gray-300 rounded focus:ring-gold-500"
               />
               <span className="text-body-sm text-gray-600" style={{ fontSize: '13px', lineHeight: '20px' }}>
                 Send email notification

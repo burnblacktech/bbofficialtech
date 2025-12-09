@@ -123,8 +123,8 @@ const Section44AEForm = ({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center">
-            <Truck className="w-5 h-5 text-orange-600" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-100 to-amber-50 flex items-center justify-center">
+            <Truck className="w-5 h-5 text-gold-600" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-slate-900">
@@ -346,18 +346,18 @@ const Section44AEForm = ({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-200 p-4"
+                className="bg-gradient-to-br from-gold-50 to-amber-50 rounded-xl border border-gold-200 p-4"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-orange-800">
+                    <span className="text-sm font-medium text-gold-800">
                       Total Presumptive Income (44AE)
                     </span>
-                    <p className="text-xs text-orange-600 mt-0.5">
+                    <p className="text-xs text-gold-600 mt-0.5">
                       {vehicles.length} vehicle{vehicles.length > 1 ? 's' : ''} • Based on ownership months
                     </p>
                   </div>
-                  <span className="text-xl font-bold text-orange-700 tabular-nums">
+                  <span className="text-xl font-bold text-gold-700 tabular-nums">
                     {formatCurrency(totalPresumptiveIncome)}
                   </span>
                 </div>

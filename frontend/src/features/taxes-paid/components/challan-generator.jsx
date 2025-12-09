@@ -77,14 +77,14 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
         currency: result.currency || 'INR',
         name: 'BurnBlack',
         description: `Tax Payment - Challan ${generatedChallan.challanNumber}`,
-        order_id: result.orderId,
+        orderId: result.orderId,
         handler: async (response) => {
           try {
             // Verify payment
             const verifyResult = await taxPaymentService.verifyPayment(paymentId, {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
+              razorpayOrderId: response.razorpay_order_id || response.razorpayOrderId,
+              razorpayPaymentId: response.razorpay_payment_id || response.razorpayPaymentId,
+              razorpaySignature: response.razorpay_signature || response.razorpaySignature,
             });
 
             if (verifyResult.success) {
@@ -104,7 +104,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
           // User details would come from context
         },
         theme: {
-          color: '#f97316', // Orange theme
+          color: '#D4AF37', // Gold theme (brand primary)
         },
         modal: {
           ondismiss: () => {
@@ -157,7 +157,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center mb-6">
-        <FileText className="h-6 w-6 text-orange-600 mr-3" />
+        <FileText className="h-6 w-6 text-gold-600 mr-3" />
         <h3 className="text-heading-md text-gray-800">Generate Tax Payment Challan</h3>
       </div>
 
@@ -186,7 +186,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
               type="text"
               value={challanData.assessmentYear}
               onChange={(e) => setChallanData({ ...challanData, assessmentYear: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
@@ -197,7 +197,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
             <select
               value={challanData.typeOfPayment}
               onChange={(e) => setChallanData({ ...challanData, typeOfPayment: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="100">Advance Tax (100)</option>
               <option value="300">Self-Assessment Tax (300)</option>
@@ -213,7 +213,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
               type="number"
               value={challanData.amount}
               onChange={(e) => setChallanData({ ...challanData, amount: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0"
             />
           </div>
@@ -225,7 +225,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
             <select
               value={challanData.modeOfPayment}
               onChange={(e) => setChallanData({ ...challanData, modeOfPayment: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="online">Online Payment</option>
               <option value="offline">Offline Payment</option>
@@ -240,7 +240,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
               <select
                 value={challanData.paymentMethod}
                 onChange={(e) => setChallanData({ ...challanData, paymentMethod: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 <option value="razorpay">Razorpay (Seamless)</option>
                 <option value="itd_direct">ITD Direct Gateway</option>

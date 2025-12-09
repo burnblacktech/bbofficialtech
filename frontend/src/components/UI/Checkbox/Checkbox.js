@@ -54,10 +54,10 @@ const Checkbox = ({
         className={cn(
           'w-5 h-5 rounded border-2 flex items-center justify-center transition-all cursor-pointer',
           {
-            'bg-orange-500 border-orange-500': checked && !indeterminate && !disabled,
+            'bg-gold-500 border-gold-500': checked && !indeterminate && !disabled,
             'bg-white border-gray-300': !checked && !indeterminate && !disabled,
             'bg-gray-100 border-gray-300 cursor-not-allowed': disabled,
-            'bg-orange-500 border-orange-500': indeterminate && !disabled,
+            'bg-gold-500 border-gold-500': indeterminate && !disabled,
             'border-error-500': error && !disabled,
           },
         )}

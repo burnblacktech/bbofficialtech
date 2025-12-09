@@ -418,7 +418,7 @@ const DataSourceSelector = ({ onProceed }) => {
                 >
                   <div className="bg-white rounded-xl border-2 border-neutral-200 shadow-sm p-3">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 rounded bg-gradient-to-br from-amber-500 to-gold-600 flex items-center justify-center flex-shrink-0">
                         <RefreshCw className="w-3 h-3 text-white" />
                       </div>
                       <h3 className="text-xs font-semibold text-neutral-900">

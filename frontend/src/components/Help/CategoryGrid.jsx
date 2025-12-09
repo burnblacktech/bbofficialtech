@@ -20,7 +20,7 @@ const categoryIcons = {
 };
 
 const categoryColors = {
-  'getting-started': 'bg-orange-100 text-orange-600',
+  'getting-started': 'bg-gold-100 text-gold-600',
   'filing': 'bg-royal-100 text-royal-600',
   'tax-deductions': 'bg-green-100 text-green-600',
   'documents': 'bg-purple-100 text-purple-600',
@@ -49,7 +49,7 @@ const CategoryGrid = ({ categories, onCategoryClick }) => {
             key={category.id}
             to={`/help/category/${category.id}`}
             onClick={() => handleCategoryClick(category)}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow hover:border-orange-300"
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow hover:border-gold-300"
           >
             <div className={`inline-flex p-3 rounded-lg mb-4 ${colorClass}`}>
               <Icon className="h-6 w-6" />

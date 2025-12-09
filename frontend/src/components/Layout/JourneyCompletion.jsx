@@ -163,7 +163,7 @@ const JourneyCompletion = ({ journeyId, delegationId, isDelegated = false }) => 
   if (journeyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -188,7 +188,7 @@ const JourneyCompletion = ({ journeyId, delegationId, isDelegated = false }) => 
               </div>
               <div className="flex items-center space-x-4">
                 {isDelegated && (
-                  <div className="flex items-center space-x-2 text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
+                  <div className="flex items-center space-x-2 text-sm text-gold-600 bg-gold-50 px-3 py-2 rounded-lg">
                     <Shield className="w-4 h-4" />
                     <span>Delegated Completion</span>
                   </div>
@@ -221,14 +221,14 @@ const JourneyCompletion = ({ journeyId, delegationId, isDelegated = false }) => 
                     isCompleted
                       ? 'bg-success-500 border-success-500 text-white'
                       : isActive
-                        ? 'bg-orange-500 border-orange-500 text-white'
+                        ? 'bg-gold-500 border-gold-500 text-white'
                         : 'bg-gray-100 border-gray-300 text-gray-500'
                   }`}>
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="ml-3">
                     <p className={`text-sm font-medium ${
-                      isActive ? 'text-orange-600' : isCompleted ? 'text-success-500' : 'text-gray-500'
+                      isActive ? 'text-gold-600' : isCompleted ? 'text-success-500' : 'text-gray-500'
                     }`}>
                       {step.name}
                     </p>
@@ -322,7 +322,7 @@ const JourneyCompletion = ({ journeyId, delegationId, isDelegated = false }) => 
                 const savedData = { ...formData, documents, completionNotes };
                 localStorage.setItem(`journey_${journeyId}_draft`, JSON.stringify(savedData));
               }}
-              className="px-4 py-2 text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors flex items-center gap-2"
+              className="px-4 py-2 text-gold-600 bg-gold-50 rounded-lg hover:bg-gold-100 transition-colors flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
               Save Draft
@@ -331,7 +331,7 @@ const JourneyCompletion = ({ journeyId, delegationId, isDelegated = false }) => 
             {currentStep < steps.length ? (
               <button
                 onClick={() => setCurrentStep(Math.min(steps.length, currentStep + 1))}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
               >
                 Next
               </button>
@@ -369,10 +369,10 @@ const JourneyCompletion = ({ journeyId, delegationId, isDelegated = false }) => 
 const PersonalInformationStep = ({ formData, onChange, isDelegated }) => (
   <div className="space-y-6">
     <div className="flex items-center space-x-2 mb-4">
-      <User className="w-5 h-5 text-orange-600" />
+      <User className="w-5 h-5 text-gold-600" />
       <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
       {isDelegated && (
-        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+        <span className="px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded-full">
           Completing on behalf
         </span>
       )}
@@ -385,7 +385,7 @@ const PersonalInformationStep = ({ formData, onChange, isDelegated }) => (
           type="text"
           value={formData.fullName || ''}
           onChange={(e) => onChange('fullName', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter full name"
         />
       </div>
@@ -396,7 +396,7 @@ const PersonalInformationStep = ({ formData, onChange, isDelegated }) => (
           type="text"
           value={formData.panNumber || ''}
           onChange={(e) => onChange('panNumber', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter PAN number"
         />
       </div>
@@ -407,7 +407,7 @@ const PersonalInformationStep = ({ formData, onChange, isDelegated }) => (
           type="date"
           value={formData.dateOfBirth || ''}
           onChange={(e) => onChange('dateOfBirth', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
         />
       </div>
 
@@ -417,7 +417,7 @@ const PersonalInformationStep = ({ formData, onChange, isDelegated }) => (
           type="tel"
           value={formData.mobileNumber || ''}
           onChange={(e) => onChange('mobileNumber', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter mobile number"
         />
       </div>
@@ -429,10 +429,10 @@ const PersonalInformationStep = ({ formData, onChange, isDelegated }) => (
 const IncomeDetailsStep = ({ formData, onChange, isDelegated }) => (
   <div className="space-y-6">
     <div className="flex items-center space-x-2 mb-4">
-      <IndianRupee className="w-5 h-5 text-orange-600" />
+      <IndianRupee className="w-5 h-5 text-gold-600" />
       <h2 className="text-lg font-semibold text-gray-900">Income Details</h2>
       {isDelegated && (
-        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+        <span className="px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded-full">
           Completing on behalf
         </span>
       )}
@@ -445,7 +445,7 @@ const IncomeDetailsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.salaryIncome || ''}
           onChange={(e) => onChange('salaryIncome', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter salary income"
         />
       </div>
@@ -456,7 +456,7 @@ const IncomeDetailsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.rentalIncome || ''}
           onChange={(e) => onChange('rentalIncome', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter rental income"
         />
       </div>
@@ -467,7 +467,7 @@ const IncomeDetailsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.capitalGains || ''}
           onChange={(e) => onChange('capitalGains', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter capital gains"
         />
       </div>
@@ -478,7 +478,7 @@ const IncomeDetailsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.otherIncome || ''}
           onChange={(e) => onChange('otherIncome', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter other income"
         />
       </div>
@@ -490,10 +490,10 @@ const IncomeDetailsStep = ({ formData, onChange, isDelegated }) => (
 const DeductionsStep = ({ formData, onChange, isDelegated }) => (
   <div className="space-y-6">
     <div className="flex items-center space-x-2 mb-4">
-      <FileCheck className="w-5 h-5 text-orange-500" />
+      <FileCheck className="w-5 h-5 text-gold-500" />
       <h2 className="text-lg font-semibold text-gray-900">Deductions</h2>
       {isDelegated && (
-        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+        <span className="px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded-full">
           Completing on behalf
         </span>
       )}
@@ -506,7 +506,7 @@ const DeductionsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.section80C || ''}
           onChange={(e) => onChange('section80C', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter Section 80C deduction"
         />
       </div>
@@ -517,7 +517,7 @@ const DeductionsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.section80D || ''}
           onChange={(e) => onChange('section80D', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter Section 80D deduction"
         />
       </div>
@@ -528,7 +528,7 @@ const DeductionsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.homeLoanInterest || ''}
           onChange={(e) => onChange('homeLoanInterest', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter home loan interest"
         />
       </div>
@@ -539,7 +539,7 @@ const DeductionsStep = ({ formData, onChange, isDelegated }) => (
           type="number"
           value={formData.otherDeductions || ''}
           onChange={(e) => onChange('otherDeductions', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           placeholder="Enter other deductions"
         />
       </div>
@@ -551,10 +551,10 @@ const DeductionsStep = ({ formData, onChange, isDelegated }) => (
 const DocumentsStep = ({ documents, onUpload, isDelegated }) => (
   <div className="space-y-6">
     <div className="flex items-center space-x-2 mb-4">
-      <FileText className="w-5 h-5 text-orange-500" />
+      <FileText className="w-5 h-5 text-gold-500" />
       <h2 className="text-lg font-semibold text-gray-900">Documents</h2>
       {isDelegated && (
-        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+        <span className="px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded-full">
           Completing on behalf
         </span>
       )}
@@ -575,7 +575,7 @@ const DocumentsStep = ({ documents, onUpload, isDelegated }) => (
       />
       <label
         htmlFor="document-upload"
-        className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors cursor-pointer"
+        className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors cursor-pointer"
       >
         <Upload className="w-4 h-4 mr-2" />
         Select Files
@@ -613,10 +613,10 @@ const DocumentsStep = ({ documents, onUpload, isDelegated }) => (
 const ReviewSubmitStep = ({ formData, documents, completionNotes, setCompletionNotes, onComplete, isLoading, isDelegated }) => (
   <div className="space-y-6">
     <div className="flex items-center space-x-2 mb-4">
-      <Send className="w-5 h-5 text-orange-500" />
+      <Send className="w-5 h-5 text-gold-500" />
       <h2 className="text-lg font-semibold text-gray-900">Review & Submit</h2>
       {isDelegated && (
-        <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+        <span className="px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded-full">
           Completing on behalf
         </span>
       )}
@@ -659,7 +659,7 @@ const ReviewSubmitStep = ({ formData, documents, completionNotes, setCompletionN
       <textarea
         value={completionNotes}
         onChange={(e) => setCompletionNotes(e.target.value)}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
         rows={4}
         placeholder="Add any notes about the completion..."
         required={isDelegated}
@@ -719,7 +719,7 @@ const AuditTrailModal = ({ journeyId, delegationId, onClose }) => {
                       {entry.delegation_type} • {new Date(entry.delegation_timestamp).toLocaleString()}
                     </p>
                   </div>
-                  <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+                  <span className="px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded-full">
                     Delegated
                   </span>
                 </div>

@@ -174,7 +174,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                 type="checkbox"
                 checked={auditInfo.isAuditApplicable || false}
                 onChange={(e) => handleChange('isAuditApplicable', e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-orange-500"
+                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
               />
               <span className="text-sm font-medium text-gray-700">
                 Tax audit is applicable (Section 44AB)
@@ -199,7 +199,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="text"
                       value={auditInfo.auditReportNumber || ''}
                       onChange={(e) => handleChange('auditReportNumber', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="Enter audit report number"
                       required={auditInfo.isAuditApplicable}
                     />
@@ -215,7 +215,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="date"
                       value={auditInfo.auditReportDate || ''}
                       onChange={(e) => handleChange('auditReportDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       required={auditInfo.isAuditApplicable}
                       max={new Date().toISOString().split('T')[0]}
                     />
@@ -264,7 +264,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="text"
                       value={auditInfo.caDetails?.caName || ''}
                       onChange={(e) => handleCAChange('caName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       required={auditInfo.isAuditApplicable}
                     />
                     {errors.caDetails?.caName && (
@@ -279,7 +279,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="text"
                       value={auditInfo.caDetails?.membershipNumber || ''}
                       onChange={(e) => handleCAChange('membershipNumber', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="ICAI membership number"
                       required={auditInfo.isAuditApplicable}
                     />
@@ -295,7 +295,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="text"
                       value={auditInfo.caDetails?.firmName || ''}
                       onChange={(e) => handleCAChange('firmName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -305,7 +305,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                     <textarea
                       value={auditInfo.caDetails?.firmAddress || ''}
                       onChange={(e) => handleCAChange('firmAddress', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       rows={2}
                     />
                   </div>
@@ -321,7 +321,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="checkbox"
                       checked={auditInfo.bookOfAccountsMaintained || false}
                       onChange={(e) => handleChange('bookOfAccountsMaintained', e.target.checked)}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-orange-500"
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
                     />
                     <span className="text-sm text-gray-700">
                       Book of accounts maintained as per Income Tax Act
@@ -332,7 +332,7 @@ const AuditInformationForm = ({ filingId, selectedITR, onUpdate }) => {
                       type="checkbox"
                       checked={auditInfo.form3CDFiled || false}
                       onChange={(e) => handleChange('form3CDFiled', e.target.checked)}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-orange-500"
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
                     />
                     <span className="text-sm text-gray-700">
                       Form 3CD has been filed

@@ -19,7 +19,8 @@ import QuickActionCard from '../../components/Dashboard/QuickActionCard';
 import FilingStatusTracker from '../../components/Dashboard/FilingStatusTracker';
 import DashboardWidgets from '../../components/Dashboard/DashboardWidgets';
 import WelcomeModal from '../../components/UI/WelcomeModal';
-import { DashboardSkeleton } from '../../components/UI/SkeletonLoader';
+import { DashboardSkeleton } from '../../components/UI/Skeletons';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 // Hooks
 import { useUserDashboardStats, useUserFilings, useUserRefunds } from '../../hooks/useUserDashboard';
@@ -58,13 +59,21 @@ const UserDashboard = () => {
   const recentActivity = dashboardData?.recentActivity || [];
   const ongoingFilings = filingsData?.ongoing || [];
   const completedFilings = filingsData?.completed || [];
-  const hasFiled = (filingsData?.all?.length || 0) > 0;
+  const allFilings = filingsData?.all || [];
+  const hasFiled = allFilings.length > 0;
   const refundData = refundsData || {
     pendingRefunds: [],
     creditedRefunds: [],
     totalPendingAmount: 0,
     totalCreditedAmount: 0,
   };
+
+  // Calculate completion rate
+  const totalFilingsCount = allFilings.length;
+  const completedFilingsCount = completedFilings.length;
+  const completionRate = totalFilingsCount > 0
+    ? Math.round((completedFilingsCount / totalFilingsCount) * 100)
+    : 0;
 
   const loading = statsLoading || filingsLoading;
   const error = statsError || filingsError;
@@ -229,6 +238,16 @@ const UserDashboard = () => {
 
   // Show error state with retry option
   if (error && !loading) {
+    // Ensure errorMessage is always a string, never an object
+    let errorMessage = getErrorMessage(error) || 'Failed to load dashboard data';
+    // Defensive check: if somehow we still have an object, convert it to string
+    if (typeof errorMessage !== 'string') {
+      try {
+        errorMessage = JSON.stringify(errorMessage);
+      } catch {
+        errorMessage = 'Failed to load dashboard data';
+      }
+    }
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <div className="max-w-4xl mx-auto">
@@ -239,7 +258,7 @@ const UserDashboard = () => {
               </svg>
             </div>
             <h2 className="text-heading-md font-semibold text-black mb-2">Failed to Load Dashboard</h2>
-            <p className="text-body-md text-gray-600 mb-6">{error}</p>
+            <p className="text-body-md text-gray-600 mb-6">{errorMessage}</p>
               <button
                 onClick={handleRetry}
                 className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 mx-auto shadow-lg shadow-primary-500/20"
@@ -287,12 +306,11 @@ const UserDashboard = () => {
         user={user}
       />
 
-      {/* Compact Layout: Header + Widgets in one row */}
-      <div className="mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between lg:gap-6 mb-4">
-          {/* Page Header - Compact */}
-          <div className="flex-1 mb-3 lg:mb-0">
-            <div className="flex items-center justify-between mb-1">
+      {/* Page Header */}
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:gap-6 mb-6">
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-2">
               <h1 className="text-heading-lg sm:text-display-sm font-semibold text-black">
                 Welcome back, {user?.fullName?.split(' ')[0] || 'there'}!
               </h1>
@@ -312,7 +330,7 @@ const UserDashboard = () => {
                 {lastUpdate && (
                   <button
                     onClick={refreshDashboard}
-                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                     title="Refresh dashboard"
                   >
                     <RefreshCw className="w-4 h-4 text-gray-500" />
@@ -334,62 +352,159 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* Dashboard Widgets - Compact */}
-        <DashboardWidgets
-          stats={{
-            totalFilings: dashboardStats.totalFilings,
-            pendingActions: dashboardStats.pendingActions || ongoingFilings.length,
-            documentsUploaded: dashboardStats.documentsUploaded,
-            taxSaved: dashboardStats.taxSaved,
-          }}
-        />
+        {/* Key Metrics Section - Prominent */}
+        <div className="space-y-4">
+          {/* Primary Metrics Grid */}
+          <DashboardWidgets
+            stats={{
+              totalFilings: dashboardStats.totalFilings || totalFilingsCount,
+              pendingActions: dashboardStats.pendingActions || ongoingFilings.length,
+              documentsUploaded: dashboardStats.documentsUploaded,
+              taxSaved: dashboardStats.taxSaved,
+            }}
+          />
 
-        {/* Refund Status Widget - UI.md aligned */}
-        {(refundData.pendingRefunds.length > 0 || refundData.creditedRefunds.length > 0) && (
-          <div className="mt-4 bg-white rounded-xl border border-gray-200 p-3">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-label-md font-semibold text-black">Refund Status</h3>
-              <button
-                onClick={() => navigate('/itr/refund-tracking')}
-                className="text-body-sm text-primary-600 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded font-medium"
-                aria-label="View all refunds"
-              >
-                View All
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {refundData.pendingRefunds.length > 0 && (
+          {/* Extended Metrics Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Completion Rate Card */}
+            {hasFiled && (
+              <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5 hover:shadow-card-hover transition-all duration-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-sm">
+                      <BarChart3 className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-label-sm font-medium text-gray-600">Completion Rate</p>
+                      <p className="text-number-lg font-bold text-black tabular-nums">{completionRate}%</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className="bg-gradient-to-r from-primary-500 to-primary-600 h-2.5 rounded-full transition-all duration-500"
+                    style={{ width: `${completionRate}%` }}
+                  />
+                </div>
+                <p className="text-body-sm text-gray-600 mt-2">
+                  {completedFilingsCount} of {totalFilingsCount} filing{totalFilingsCount !== 1 ? 's' : ''} completed
+                </p>
+              </div>
+            )}
+
+            {/* Refund Status Card - Always Visible */}
+            <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5 hover:shadow-card-hover transition-all duration-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-success-500 to-success-600 rounded-xl shadow-sm">
+                    <TrendingUp className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-label-sm font-medium text-gray-600">Refund Status</p>
+                    <p className="text-number-lg font-bold text-black tabular-nums">
+                      ₹{(refundData.totalPendingAmount + refundData.totalCreditedAmount).toLocaleString('en-IN')}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/itr/refund-tracking')}
+                  className="text-body-sm text-primary-600 hover:text-primary-700 font-medium"
+                  aria-label="View all refunds"
+                >
+                  View All
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-warning-50 border border-warning-200 rounded-lg">
-                  <p className="text-label-sm text-gray-600 mb-1">Pending Refunds</p>
+                  <p className="text-label-xs text-gray-600 mb-1">Pending</p>
                   <p className="text-number-md font-bold tabular-nums text-black">
                     ₹{refundData.totalPendingAmount.toLocaleString('en-IN')}
                   </p>
-                  <p className="text-body-sm text-gray-600 mt-1">
-                    {refundData.pendingRefunds.length} refund{refundData.pendingRefunds.length !== 1 ? 's' : ''} processing
+                  <p className="text-body-xs text-gray-600 mt-1">
+                    {refundData.pendingRefunds.length} refund{refundData.pendingRefunds.length !== 1 ? 's' : ''}
                   </p>
                 </div>
-              )}
-              {refundData.creditedRefunds.length > 0 && (
                 <div className="p-3 bg-success-50 border border-success-200 rounded-lg">
-                  <p className="text-label-sm text-gray-600 mb-1">Credited Refunds</p>
+                  <p className="text-label-xs text-gray-600 mb-1">Credited</p>
                   <p className="text-number-md font-bold tabular-nums text-black">
                     ₹{refundData.totalCreditedAmount.toLocaleString('en-IN')}
                   </p>
-                  <p className="text-body-sm text-gray-600 mt-1">
-                    {refundData.creditedRefunds.length} refund{refundData.creditedRefunds.length !== 1 ? 's' : ''} credited
+                  <p className="text-body-xs text-gray-600 mt-1">
+                    {refundData.creditedRefunds.length} refund{refundData.creditedRefunds.length !== 1 ? 's' : ''}
                   </p>
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        )}
+
+          {/* Recent Activity Summary - Compact */}
+          {recentActivity.length > 0 && (
+            <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-heading-sm font-semibold text-black">Recent Activity</h3>
+                {recentActivity.length > 3 && (
+                  <button
+                    onClick={() => {/* Scroll to full activity section */}}
+                    className="text-body-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    View All
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {recentActivity.slice(0, 3).map((activity, index) => {
+                  const getActivityIcon = (type) => {
+                    switch (type) {
+                      case 'filing_created':
+                      case 'filing_submitted':
+                        return { icon: FileText, bgColor: 'bg-success-50', iconColor: 'text-success-500' };
+                      case 'document_uploaded':
+                        return { icon: Upload, bgColor: 'bg-info-50', iconColor: 'text-info-500' };
+                      case 'member_added':
+                        return { icon: Users, bgColor: 'bg-primary-50', iconColor: 'text-primary-500' };
+                      default:
+                        return { icon: FileText, bgColor: 'bg-gray-100', iconColor: 'text-gray-600' };
+                    }
+                  };
+
+                  const { icon: ActivityIcon, bgColor, iconColor } = getActivityIcon(activity.type);
+                  const formattedDate = activity.timestamp ? formatRelativeTime(activity.timestamp) : '';
+
+                  return (
+                    <div
+                      key={activity.id || index}
+                      className="flex items-center gap-3 py-2 px-2 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <div className={`w-8 h-8 ${bgColor} rounded-full flex items-center justify-center flex-shrink-0`}>
+                        <ActivityIcon className={`w-4 h-4 ${iconColor}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-body-sm font-medium text-black truncate">
+                          {activity.description || activity.title || 'Activity'}
+                        </p>
+                        {activity.metadata && (
+                          <p className="text-body-xs text-gray-600 truncate">
+                            {activity.metadata.itrType || activity.metadata.filename || activity.metadata.name || ''}
+                          </p>
+                        )}
+                      </div>
+                      {formattedDate && (
+                        <span className="text-body-xs text-gray-500 flex-shrink-0">{formattedDate}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Continue Filing Section - Ongoing/Paused Filings */}
       {ongoingFilings.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-heading-sm font-semibold text-black mb-3">Continue Filing</h2>
-          <div className="space-y-3">
+        <div className="mb-6">
+          <h2 className="text-heading-sm font-semibold text-black mb-4">Continue Filing</h2>
+          <div className="space-y-4">
             {ongoingFilings.map((filing) => {
               const progress = calculateProgress(filing);
               const isPaused = filing.status === 'paused';
@@ -397,42 +512,52 @@ const UserDashboard = () => {
               return (
                 <div
                   key={filing.id}
-                  className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200 cursor-pointer group"
                   onClick={() => navigate(`/itr/computation?filingId=${filing.id}`, {
                     state: { filing },
                   })}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <FileText className="w-5 h-5 text-primary-500" />
-                        <h3 className="font-semibold text-slate-900">
-                          {filing.itrType} - AY {filing.assessmentYear}
-                        </h3>
-                        <FilingStatusBadge filing={filing} showInvoice={false} className="text-xs" />
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-primary-50 rounded-lg group-hover:bg-primary-100 transition-colors">
+                          <FileText className="w-5 h-5 text-primary-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-slate-900 text-heading-sm truncate">
+                            {filing.itrType} - AY {filing.assessmentYear}
+                          </h3>
+                          <div className="mt-1">
+                            <FilingStatusBadge filing={filing} showInvoice={false} className="text-xs" />
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-4 text-body-sm text-gray-600 mb-2">
+                      <div className="flex flex-wrap items-center gap-3 text-body-sm text-gray-600 mb-3">
                         {isPaused && filing.pausedAt && (
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1.5">
                             <Pause className="w-4 h-4" />
                             Paused {formatRelativeTime(filing.pausedAt)}
                           </span>
                         )}
                         {!isPaused && filing.updatedAt && (
-                          <span>Last edited {formatRelativeTime(filing.updatedAt)}</span>
+                          <span className="flex items-center gap-1.5">
+                            Last edited {formatRelativeTime(filing.updatedAt)}
+                          </span>
                         )}
                         {progress > 0 && (
-                          <span className="font-medium">{progress}% complete</span>
+                          <span className="font-medium text-primary-600">{progress}% complete</span>
                         )}
                       </div>
 
                       {/* Progress Bar */}
                       {progress > 0 && (
-                        <div className="w-full bg-slate-200 rounded-full h-2 mb-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3">
                           <div
-                            className={`h-2 rounded-full transition-all ${
-                              isPaused ? 'bg-warning-500' : 'bg-primary-500'
+                            className={`h-2.5 rounded-full transition-all duration-500 ${
+                              isPaused
+                                ? 'bg-gradient-to-r from-warning-500 to-warning-600'
+                                : 'bg-gradient-to-r from-primary-500 to-primary-600'
                             }`}
                             style={{ width: `${progress}%` }}
                           />
@@ -441,13 +566,13 @@ const UserDashboard = () => {
 
                       {/* Invoice Badge */}
                       {filing.invoice && (
-                        <div className="mt-2">
+                        <div className="mt-3">
                           <InvoiceBadge invoice={filing.invoice} />
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 ml-4">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       {isPaused ? (
                         <button
                           onClick={(e) => {
@@ -456,7 +581,7 @@ const UserDashboard = () => {
                               state: { filing },
                             });
                           }}
-                          className="flex items-center gap-2 px-4 py-2 bg-success-500 text-white rounded-lg hover:bg-success-600 transition-colors"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-success-500 text-white rounded-lg hover:bg-success-600 transition-all shadow-sm shadow-success-500/20 hover:shadow-md"
                         >
                           <Play className="w-4 h-4" />
                           Resume
@@ -469,7 +594,7 @@ const UserDashboard = () => {
                               state: { filing },
                             });
                           }}
-                          className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors shadow-sm shadow-primary-500/20"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all shadow-sm shadow-primary-500/20 hover:shadow-md"
                         >
                           Continue
                           <ArrowRight className="w-4 h-4" />
@@ -494,84 +619,84 @@ const UserDashboard = () => {
       </div>
 
       {/* Quick Actions + More Options in 2 columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Quick Action Cards */}
         <div>
-          <h2 className="text-heading-sm font-semibold text-black mb-3">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-3">
-          <QuickActionCard
-            title="Upload Documents"
-            description="Upload Form 16, bank statements, and other tax documents"
-            icon={Upload}
-            color="blue"
-            onClick={handleUploadDocuments}
-          />
+          <h2 className="text-heading-sm font-semibold text-black mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <QuickActionCard
+              title="Upload Documents"
+              description="Upload Form 16, bank statements, and other tax documents"
+              icon={Upload}
+              color="blue"
+              onClick={handleUploadDocuments}
+            />
 
-          <QuickActionCard
-            title="Manage Family Members"
-            description="Add family members for joint filing and tax optimization"
-            icon={Users}
-            color="green"
-            onClick={handleManageMembers}
-          />
+            <QuickActionCard
+              title="Manage Family Members"
+              description="Add family members for joint filing and tax optimization"
+              icon={Users}
+              color="green"
+              onClick={handleManageMembers}
+            />
 
-          <QuickActionCard
-            title="Financial Profile"
-            description="View your financial history and tax insights"
-            icon={BarChart3}
-            color="purple"
-            onClick={handleViewFinancialProfile}
-          />
+            <QuickActionCard
+              title="Financial Profile"
+              description="View your financial history and tax insights"
+              icon={BarChart3}
+              color="purple"
+              onClick={handleViewFinancialProfile}
+            />
 
-          <QuickActionCard
-            title="Settings & Profile"
-            description="Manage your account settings and personal information"
-            icon={Settings}
-            color="orange"
-            onClick={handleViewSettings}
-          />
+            <QuickActionCard
+              title="Settings & Profile"
+              description="Manage your account settings and personal information"
+              icon={Settings}
+              color="orange"
+              onClick={handleViewSettings}
+            />
           </div>
         </div>
 
         {/* Secondary Actions */}
         <div>
-          <h2 className="text-heading-sm font-semibold text-black mb-3">More Options</h2>
-          <div className="grid grid-cols-1 gap-3">
-          <QuickActionCard
-            title="Filing History"
-            description="View and download your previous tax returns"
-            icon={History}
-            color="gray"
-            onClick={handleViewHistory}
-          />
+          <h2 className="text-heading-sm font-semibold text-black mb-4">More Options</h2>
+          <div className="grid grid-cols-1 gap-4">
+            <QuickActionCard
+              title="Filing History"
+              description="View and download your previous tax returns"
+              icon={History}
+              color="gray"
+              onClick={handleViewHistory}
+            />
 
-          <QuickActionCard
-            title="Check Refund Status"
-            description="Track your tax refund status and timeline"
-            icon={TrendingUp}
-            color="gold"
-            onClick={handleCheckRefund}
-          />
+            <QuickActionCard
+              title="Check Refund Status"
+              description="Track your tax refund status and timeline"
+              icon={TrendingUp}
+              color="gold"
+              onClick={handleCheckRefund}
+            />
 
-          <QuickActionCard
-            title="Download ITR-V"
-            description="Download your ITR-V acknowledgment form"
-            icon={FileText}
-            color="gray"
-            onClick={handleDownloadITRV}
-          />
+            <QuickActionCard
+              title="Download ITR-V"
+              description="Download your ITR-V acknowledgment form"
+              icon={FileText}
+              color="gray"
+              onClick={handleDownloadITRV}
+            />
           </div>
         </div>
       </div>
 
-      {/* Recent Activity Section - Compact */}
-      {(hasFiled || recentActivity.length > 0) && (
-        <div className="mt-4">
-          <h2 className="text-heading-sm font-semibold text-black mb-3">Recent Activity</h2>
-          <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-            {recentActivity.length > 0 ? (
+      {/* Full Recent Activity Section - Detailed */}
+      {(hasFiled || recentActivity.length > 3) && (
+        <div className="mt-6">
+          <h2 className="text-heading-sm font-semibold text-black mb-4">All Recent Activity</h2>
+          <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5">
+            {recentActivity.length > 3 ? (
               <div className="space-y-0">
-                {recentActivity.slice(0, 5).map((activity, index) => {
+                {recentActivity.slice(3).map((activity, index) => {
                   const getActivityIcon = (type) => {
                     switch (type) {
                       case 'filing_created':
@@ -587,41 +712,40 @@ const UserDashboard = () => {
                   };
 
                   const { icon: ActivityIcon, bgColor, iconColor } = getActivityIcon(activity.type);
-                  const activityDate = activity.timestamp ? new Date(activity.timestamp) : null;
-                  const formattedDate = activityDate ? formatRelativeTime(activity.timestamp) : '';
+                  const formattedDate = activity.timestamp ? formatRelativeTime(activity.timestamp) : '';
 
                   return (
                     <div
-                      key={activity.id || index}
-                      className={`flex items-center justify-between py-2 px-2 ${
-                        index < recentActivity.length - 1 ? 'border-b border-gray-100' : ''
-                      } hover:bg-gray-50 rounded transition-colors`}
+                      key={activity.id || `activity-${index + 3}`}
+                      className={`flex items-center justify-between py-3 px-3 ${
+                        index < recentActivity.length - 4 ? 'border-b border-gray-100' : ''
+                      } hover:bg-gray-50 rounded-lg transition-colors`}
                     >
                       <div className="flex items-center min-w-0 flex-1">
-                        <div className={`w-7 h-7 ${bgColor} rounded-full flex items-center justify-center mr-2.5 flex-shrink-0`}>
-                          <ActivityIcon className={`w-3 h-3 ${iconColor}`} />
+                        <div className={`w-8 h-8 ${bgColor} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
+                          <ActivityIcon className={`w-4 h-4 ${iconColor}`} />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-body-sm font-medium text-black truncate">
                             {activity.description || activity.title || 'Activity'}
                           </p>
                           {activity.metadata && (
-                            <p className="text-body-sm text-gray-600 truncate">
+                            <p className="text-body-xs text-gray-600 truncate mt-0.5">
                               {activity.metadata.itrType || activity.metadata.filename || activity.metadata.name || ''}
                             </p>
                           )}
                         </div>
                       </div>
                       {formattedDate && (
-                        <span className="text-body-sm text-gray-500 ml-2 flex-shrink-0">{formattedDate}</span>
+                        <span className="text-body-sm text-gray-500 ml-3 flex-shrink-0">{formattedDate}</span>
                       )}
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-center py-4">
-                <p className="text-body-md text-gray-500">No recent activity</p>
+              <div className="text-center py-6">
+                <p className="text-body-md text-gray-500">No additional activity to display</p>
               </div>
             )}
           </div>

@@ -211,13 +211,13 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
                 onClick={() => handleScenarioTypeChange(scenarioType.id)}
                 className={`p-4 border-2 rounded-lg text-left transition-all ${
                   currentScenario.type === scenarioType.id
-                    ? 'border-orange-500 bg-orange-50'
+                    ? 'border-gold-500 bg-gold-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-start">
                   <Icon className={`h-5 w-5 mr-3 mt-0.5 ${
-                    currentScenario.type === scenarioType.id ? 'text-orange-600' : 'text-gray-400'
+                    currentScenario.type === scenarioType.id ? 'text-gold-600' : 'text-gray-400'
                   }`} />
                   <div className="flex-1">
                     <h4 className="text-body-sm font-medium text-gray-900 mb-1">
@@ -264,13 +264,13 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
                     onChange={(e) => handleFieldChange(field.name, parseFloat(e.target.value) || 0)}
                     placeholder={field.placeholder}
                     max={field.max}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   />
                 ) : field.type === 'select' ? (
                   <select
                     value={currentScenario.changes[field.name] || ''}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   >
                     <option value="">Select {field.label}</option>
                     {field.options.map((option) => (
@@ -288,7 +288,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
             <button
               onClick={handleAddScenario}
               disabled={!currentScenario.changes.amount && currentScenario.type !== 'hraOptimization'}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
+              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add to Scenarios
@@ -313,7 +313,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
                   className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg"
                 >
                   <div className="flex items-center">
-                    <Icon className="h-5 w-5 text-orange-600 mr-3" />
+                    <Icon className="h-5 w-5 text-gold-600 mr-3" />
                     <div>
                       <p className="text-body-sm font-medium text-gray-900">{scenario.name}</p>
                       <p className="text-body-xs text-gray-600">
@@ -339,7 +339,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
         <button
           onClick={handleSimulate}
           disabled={scenarios.length === 0 && (!currentScenario.changes.amount && currentScenario.type !== 'hraOptimization')}
-          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
+          className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
         >
           <Calculator className="h-4 w-4 mr-2" />
           {scenarios.length > 1 ? 'Compare Scenarios' : 'Simulate Scenario'}

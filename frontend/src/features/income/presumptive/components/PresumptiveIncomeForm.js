@@ -48,7 +48,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
             <select
               value={formData.businessType}
               onChange={(e) => handleChange('businessType', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
             >
               <option value="">Select business type</option>
               <option value="retail_trade">Retail Trade</option>
@@ -67,7 +67,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
               type="number"
               value={formData.turnover}
               onChange={(e) => handleChange('turnover', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="Enter annual turnover"
             />
           </div>
@@ -80,7 +80,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
               type="number"
               value={formData.presumptiveRate}
               onChange={(e) => handleChange('presumptiveRate', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="Enter presumptive rate"
             />
           </div>
@@ -93,7 +93,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
               type="number"
               value={formData.presumptiveIncome}
               onChange={(e) => handleChange('presumptiveIncome', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="Enter presumptive income"
             />
           </div>
@@ -112,7 +112,7 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious }) => {
             {onNext && (
               <button
                 onClick={handleNext}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
               >
                 Next
               </button>

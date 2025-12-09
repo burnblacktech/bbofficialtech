@@ -97,7 +97,7 @@ const NotificationsPanel = () => {
                   </div>
                   {!notification.read && (
                     <div className="flex-shrink-0">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-gold-500 rounded-full"></div>
                     </div>
                   )}
                 </div>
@@ -110,7 +110,7 @@ const NotificationsPanel = () => {
       {/* Footer */}
       {notifications.length > 0 && (
         <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-          <button className="w-full text-sm text-orange-600 hover:text-orange-700 font-medium">
+          <button className="w-full text-sm text-gold-600 hover:text-gold-700 font-medium">
             View All Notifications
           </button>
         </div>

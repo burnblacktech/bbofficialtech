@@ -369,7 +369,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                   <select
                     value={property.propertyType || 'self_occupied'}
                     onChange={(e) => updateProperty(index, 'propertyType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   >
                     <option value="self_occupied">Self Occupied</option>
                     <option value="let_out">Let Out</option>
@@ -394,7 +394,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                         updateProperty(index, 'isEdited', true);
                       }
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
@@ -404,7 +404,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                     type="number"
                     value={property.municipalTaxes || 0}
                     onChange={(e) => updateProperty(index, 'municipalTaxes', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
@@ -414,7 +414,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                     type="number"
                     value={property.interestOnLoan || 0}
                     onChange={(e) => updateProperty(index, 'interestOnLoan', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
@@ -434,7 +434,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                     type="number"
                     value={property.preConstructionInterest || 0}
                     onChange={(e) => updateProperty(index, 'preConstructionInterest', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
@@ -444,7 +444,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                     value={property.propertyAddress || ''}
                     onChange={(e) => updateProperty(index, 'propertyAddress', e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="Enter property address"
                   />
                 </div>

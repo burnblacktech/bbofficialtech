@@ -100,7 +100,7 @@ const NotificationsCenter = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <Bell className="h-8 w-8 text-orange-600" />
+                <Bell className="h-8 w-8 text-gold-600" />
                 <h1 className="text-display-md text-gray-900 font-bold">Notifications</h1>
               </div>
               <p className="text-body-lg text-gray-600">
@@ -137,7 +137,7 @@ const NotificationsCenter = () => {
         {/* Notifications List */}
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
             <p className="text-body-md text-gray-600">Loading notifications...</p>
           </div>
         ) : notifications.length === 0 ? (

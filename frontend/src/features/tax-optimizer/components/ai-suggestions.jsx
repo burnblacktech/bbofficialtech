@@ -82,7 +82,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <Sparkles className="h-5 w-5 text-orange-600 mr-2" />
+          <Sparkles className="h-5 w-5 text-gold-600 mr-2" />
           <h3 className="text-heading-md text-gray-900">AI-Powered Recommendations</h3>
         </div>
         <div className="flex items-center gap-3">
@@ -94,7 +94,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
               </span>
             </div>
           )}
-          <span className="px-3 py-1 text-body-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+          <span className="px-3 py-1 text-body-xs font-medium bg-gold-100 text-gold-800 rounded-full">
             {visibleOpportunities.length} opportunities
           </span>
         </div>
@@ -198,7 +198,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
 
               <button
                 onClick={() => handleSimulateOpportunity(opportunity)}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors flex items-center justify-center text-sm font-medium"
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg hover:border-gold-500 hover:bg-gold-50 transition-colors flex items-center justify-center text-sm font-medium"
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Simulate This

@@ -6,6 +6,19 @@
 const { sequelize } = require('../config/database');
 const { query: dbQuery } = require('../utils/dbQuery');
 const enterpriseLogger = require('../utils/logger');
+const {
+  successResponse,
+  errorResponse,
+  validationErrorResponse,
+  notFoundResponse,
+  unauthorizedResponse,
+  paginatedResponse,
+} = require('../utils/responseFormatter');
+const {
+  validateITRType,
+  validateRequiredFields,
+  validatePagination,
+} = require('../utils/validationUtils');
 const validationEngine = require('../services/core/ValidationEngine');
 const taxComputationEngine = require('../services/core/TaxComputationEngine');
 const serviceTicketService = require('../services/business/ServiceTicketService');
@@ -1268,6 +1281,19 @@ class ITRController {
       } else {
         query += ' ORDER BY created_at DESC';
       }
+
+      // Get total count for pagination
+      const countQuery = query.replace(
+        /SELECT[\s\S]*?FROM/,
+        'SELECT COUNT(*) as total FROM'
+      );
+      const countResult = await dbQuery(countQuery, params);
+      const total = parseInt(countResult.rows[0].total, 10);
+
+      // Add pagination
+      const paramIndex = params.length + 1;
+      query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      params.push(limitNum, offset);
 
       const filings = await dbQuery(query, params);
 

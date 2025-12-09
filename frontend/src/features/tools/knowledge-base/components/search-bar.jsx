@@ -26,7 +26,7 @@ const SearchBar = ({ query, onQueryChange, results, isLoading }) => {
           value={localQuery}
           onChange={(e) => setLocalQuery(e.target.value)}
           placeholder="Search tax topics, sections, ITR guides..."
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
         />
         {localQuery && (
           <button
@@ -42,7 +42,7 @@ const SearchBar = ({ query, onQueryChange, results, isLoading }) => {
       </div>
       {isLoading && (
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gold-600"></div>
         </div>
       )}
       {results && results.length > 0 && (

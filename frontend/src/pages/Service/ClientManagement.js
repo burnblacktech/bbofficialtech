@@ -209,8 +209,8 @@ const ClientManagement = () => {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-orange-600" />
+            <div className="p-2 bg-gold-100 rounded-lg">
+              <TrendingUp className="h-6 w-6 text-gold-600" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Family Clients</p>

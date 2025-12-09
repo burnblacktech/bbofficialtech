@@ -224,7 +224,7 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                       type="text"
                       value={account.bankName || ''}
                       onChange={(e) => handleAccountChange(account.id, 'bankName', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="Bank Name"
                     />
                   </div>
@@ -237,7 +237,7 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                       value={account.ifsc || ''}
                       onChange={(e) => handleAccountChange(account.id, 'ifsc', e.target.value)}
                       maxLength={11}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 uppercase"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 uppercase"
                       placeholder="ABCD0123456"
                     />
                   </div>
@@ -249,7 +249,7 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                       type="text"
                       value={account.accountNumber || ''}
                       onChange={(e) => handleAccountChange(account.id, 'accountNumber', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="Account Number"
                     />
                   </div>
@@ -260,7 +260,7 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                     <select
                       value={account.accountType || 'savings'}
                       onChange={(e) => handleAccountChange(account.id, 'accountType', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     >
                       <option value="savings">Savings</option>
                       <option value="current">Current</option>

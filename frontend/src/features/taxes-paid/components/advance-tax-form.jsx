@@ -102,7 +102,7 @@ const AdvanceTaxForm = ({ data = [], onUpdate, onGenerateChallan }) => {
                       type="text"
                       value={payment.challanNumber}
                       onChange={(e) => handleChange(payment.id, 'challanNumber', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="Enter challan number"
                     />
                   </div>
@@ -114,7 +114,7 @@ const AdvanceTaxForm = ({ data = [], onUpdate, onGenerateChallan }) => {
                       type="text"
                       value={payment.bsrCode}
                       onChange={(e) => handleChange(payment.id, 'bsrCode', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="Enter BSR code"
                     />
                   </div>
@@ -126,7 +126,7 @@ const AdvanceTaxForm = ({ data = [], onUpdate, onGenerateChallan }) => {
                       type="date"
                       value={payment.dateOfPayment}
                       onChange={(e) => handleChange(payment.id, 'dateOfPayment', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     />
                   </div>
                   <div>
@@ -137,7 +137,7 @@ const AdvanceTaxForm = ({ data = [], onUpdate, onGenerateChallan }) => {
                       type="number"
                       value={payment.amount}
                       onChange={(e) => handleChange(payment.id, 'amount', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="0"
                     />
                   </div>
@@ -153,12 +153,12 @@ const AdvanceTaxForm = ({ data = [], onUpdate, onGenerateChallan }) => {
             </div>
           ))}
 
-          <div className="bg-orange-50 rounded-xl border border-orange-200 p-4">
+          <div className="bg-gold-50 rounded-xl border border-gold-200 p-4">
             <div className="flex items-center justify-between">
               <span className="text-body-md font-semibold text-gray-800">
                 Total Advance Tax Paid
               </span>
-              <span className="text-heading-md font-semibold text-orange-600">
+              <span className="text-heading-md font-semibold text-gold-600">
                 {formatCurrency(totalAdvanceTax)}
               </span>
             </div>

@@ -63,7 +63,7 @@ const VersionComparison = ({ versions = [], onRestore }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center mb-6">
-        <GitCompare className="h-6 w-6 text-orange-600 mr-3" />
+        <GitCompare className="h-6 w-6 text-gold-600 mr-3" />
         <h3 className="text-heading-md text-gray-800">Compare Versions</h3>
       </div>
 
@@ -75,7 +75,7 @@ const VersionComparison = ({ versions = [], onRestore }) => {
           <select
             value={version1 || ''}
             onChange={(e) => setVersion1(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           >
             <option value="">Select version</option>
             {versions.map((v) => (
@@ -92,7 +92,7 @@ const VersionComparison = ({ versions = [], onRestore }) => {
           <select
             value={version2 || ''}
             onChange={(e) => setVersion2(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           >
             <option value="">Select version</option>
             {versions.map((v) => (

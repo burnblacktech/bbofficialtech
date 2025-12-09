@@ -26,7 +26,7 @@ const RegimeComparison = ({ comparisonData, onSelectRegime }) => {
   return (
     <div className="space-y-4">
       {/* Comparison Header */}
-      <div className="bg-gradient-to-r from-orange-50 to-gold-50 rounded-lg p-4 border border-orange-200">
+      <div className="bg-gradient-to-r from-gold-50 to-gold-50 rounded-lg p-4 border border-gold-200">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-gray-900 mb-1">Regime Comparison</h3>
@@ -43,7 +43,7 @@ const RegimeComparison = ({ comparisonData, onSelectRegime }) => {
               New Regime Recommended
             </div>
           ) : (
-            <div className="flex items-center px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+            <div className="flex items-center px-3 py-1.5 bg-gold-100 text-gold-700 rounded-full text-sm font-medium">
               <CheckCircle className="w-4 h-4 mr-1" />
               Old Regime Recommended
             </div>

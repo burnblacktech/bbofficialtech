@@ -112,7 +112,7 @@ const ContactSupport = () => {
                 onClick={() => setActiveTab('chat')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
                   activeTab === 'chat'
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -123,7 +123,7 @@ const ContactSupport = () => {
                 onClick={() => setActiveTab('email')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
                   activeTab === 'email'
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -134,7 +134,7 @@ const ContactSupport = () => {
                 onClick={() => setActiveTab('phone')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
                   activeTab === 'phone'
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -158,8 +158,8 @@ const ContactSupport = () => {
             <div className="bg-gray-50 rounded-lg p-4 mb-6 h-64 overflow-y-auto">
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                    <span className="text-orange-600 text-sm font-medium">BB</span>
+                  <div className="flex-shrink-0 w-8 h-8 bg-gold-100 rounded-full flex items-center justify-center">
+                    <span className="text-gold-600 text-sm font-medium">BB</span>
                   </div>
                   <div className="flex-1">
                     <div className="bg-white rounded-lg p-3 shadow-sm">
@@ -179,12 +179,12 @@ const ContactSupport = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
               <button
                 type="submit"
                 disabled={isLoading || !message.trim()}
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="px-6 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
               >
                 <Send className="w-5 h-5" />
               </button>
@@ -215,7 +215,7 @@ const ContactSupport = () => {
                 <select
                   value={ticketForm.category}
                   onChange={(e) => setTicketForm({ ...ticketForm, category: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 >
                   <option value="general">General Inquiry</option>
@@ -234,7 +234,7 @@ const ContactSupport = () => {
                 <select
                   value={ticketForm.priority}
                   onChange={(e) => setTicketForm({ ...ticketForm, priority: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 >
                   <option value="low">Low</option>
@@ -253,7 +253,7 @@ const ContactSupport = () => {
                   value={ticketForm.subject}
                   onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
                   placeholder="What can we help you with?"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 />
               </div>
@@ -267,7 +267,7 @@ const ContactSupport = () => {
                   value={ticketForm.message}
                   onChange={(e) => setTicketForm({ ...ticketForm, message: e.target.value })}
                   placeholder="Describe your issue or question..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 />
               </div>
@@ -318,7 +318,7 @@ const ContactSupport = () => {
               <button
                 type="submit"
                 disabled={createTicketMutation.isPending}
-                className="w-full py-2 px-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 flex items-center justify-center"
+                className="w-full py-2 px-4 bg-gold-500 text-white rounded-lg hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50 flex items-center justify-center"
               >
                 {createTicketMutation.isPending ? (
                   <>
@@ -357,12 +357,12 @@ const ContactSupport = () => {
 
             <div className="space-y-6">
               <div className="text-center p-8 bg-gray-50 rounded-lg">
-                <Phone className="mx-auto h-12 w-12 text-orange-600 mb-4" />
+                <Phone className="mx-auto h-12 w-12 text-gold-600 mb-4" />
                 <h3 className="text-heading-lg text-gray-900 mb-2">+91 1800-XXX-XXXX</h3>
                 <p className="text-body-sm text-gray-600 mb-4">Toll-free number</p>
                 <a
                   href="tel:+911800XXXXXX"
-                  className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
                 >
                   <Phone className="w-5 h-5 mr-2" />
                   Call Now

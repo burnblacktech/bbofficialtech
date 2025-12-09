@@ -266,7 +266,7 @@ const InteractiveCard = ({
           animate={{ scale: 1 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="w-3 h-3 bg-orange-500 rounded-full" />
+          <div className="w-3 h-3 bg-gold-500 rounded-full" />
         </motion.div>
       )}
     </motion.div>

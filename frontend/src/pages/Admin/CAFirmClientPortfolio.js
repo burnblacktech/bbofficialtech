@@ -162,7 +162,7 @@ const CAFirmClientPortfolio = () => {
       case 'inactive':
         return <UserX className="h-4 w-4 text-red-500" />;
       case 'pending':
-        return <Clock className="h-4 w-4 text-orange-500" />;
+        return <Clock className="h-4 w-4 text-gold-500" />;
       case 'suspended':
         return <AlertCircle className="h-4 w-4 text-red-500" />;
       default:
@@ -177,7 +177,7 @@ const CAFirmClientPortfolio = () => {
       case 'inactive':
         return 'bg-red-100 text-red-800';
       case 'pending':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-gold-100 text-gold-800';
       case 'suspended':
         return 'bg-red-100 text-red-800';
       default:
@@ -518,7 +518,7 @@ const CAFirmClientPortfolio = () => {
                       {client.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(client.client_id, 'suspended')}
-                          className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
+                          className="p-2 text-gold-600 hover:text-gold-800 hover:bg-gold-50 rounded-lg transition-colors"
                           title="Suspend Client"
                         >
                           <AlertCircle className="h-4 w-4" />

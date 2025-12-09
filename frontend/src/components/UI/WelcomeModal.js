@@ -83,8 +83,8 @@ const WelcomeModal = ({ isOpen, onClose, user }) => {
                   transition={{ delay: index * 0.1 }}
                   className="flex items-start space-x-4"
                 >
-                  <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <feature.icon className="w-6 h-6 text-orange-500" />
+                  <div className="w-12 h-12 bg-gold-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="w-6 h-6 text-gold-500" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">

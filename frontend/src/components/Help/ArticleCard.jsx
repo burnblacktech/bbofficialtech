@@ -25,12 +25,12 @@ const ArticleCard = ({ article, showCategory = true, showStats = true }) => {
   return (
     <Link
       to={articleUrl}
-      className="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow hover:border-orange-300"
+      className="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow hover:border-gold-300"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           {showCategory && category && (
-            <span className="inline-block px-2 py-1 text-body-xs font-medium bg-orange-100 text-orange-700 rounded mb-2">
+            <span className="inline-block px-2 py-1 text-body-xs font-medium bg-gold-100 text-gold-700 rounded mb-2">
               {category}
             </span>
           )}

@@ -145,9 +145,9 @@ const PlatformSystemHealth = () => {
       case 'stopped':
         return 'text-error-600';
       case 'starting':
-        return 'text-orange-600';
+        return 'text-gold-600';
       case 'stopping':
-        return 'text-orange-600';
+        return 'text-gold-600';
       default:
         return 'text-gray-600';
     }
@@ -163,7 +163,7 @@ const PlatformSystemHealth = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -190,7 +190,7 @@ const PlatformSystemHealth = () => {
                 <button
                   onClick={() => setAutoRefresh(!autoRefresh)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    autoRefresh ? 'bg-orange-500' : 'bg-gray-200'
+                    autoRefresh ? 'bg-gold-500' : 'bg-gray-200'
                   }`}
                 >
                   <span
@@ -204,7 +204,7 @@ const PlatformSystemHealth = () => {
               <select
                 value={selectedTimeRange}
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               >
                 <option value="1h">Last Hour</option>
                 <option value="24h">Last 24 Hours</option>
@@ -222,7 +222,7 @@ const PlatformSystemHealth = () => {
 
               <button
                 onClick={() => navigate('/platform-admin/system/settings')}
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                className="bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 transition-colors flex items-center space-x-2"
               >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
@@ -242,7 +242,7 @@ const PlatformSystemHealth = () => {
                 onClick={() => setSelectedTab(tab.id)}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-label-lg transition-colors ${
                   selectedTab === tab.id
-                    ? 'border-orange-500 text-orange-600'
+                    ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -429,7 +429,7 @@ const PlatformSystemHealth = () => {
 
               <div className="bg-white rounded-lg shadow-card p-4">
                 <div className="flex items-center">
-                  <Activity className="h-8 w-8 text-orange-600" />
+                  <Activity className="h-8 w-8 text-gold-600" />
                   <div className="ml-3">
                     <p className="text-label-lg font-medium text-gray-600">API Calls/min</p>
                     <p className="text-number-lg font-semibold text-gray-900">{metrics.api?.calls_per_minute || 0}</p>
@@ -448,7 +448,7 @@ const PlatformSystemHealth = () => {
                   </span>
                   <button
                     onClick={() => navigate('/platform-admin/system/alerts')}
-                    className="text-orange-600 hover:text-orange-700 text-label-lg font-medium"
+                    className="text-gold-600 hover:text-gold-700 text-label-lg font-medium"
                   >
                     View All
                   </button>
@@ -466,7 +466,7 @@ const PlatformSystemHealth = () => {
                   {alerts.slice(0, 5).map((alert) => (
                     <div key={alert.id} className={`p-4 border rounded-lg ${
                       alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
-                      alert.severity === 'warning' ? 'bg-orange-50 border-orange-200' :
+                      alert.severity === 'warning' ? 'bg-gold-50 border-gold-200' :
                       'bg-info-50 border-info-100'
                     }`}>
                       <div className="flex items-start space-x-3">
@@ -611,7 +611,7 @@ const PlatformSystemHealth = () => {
                   {alerts.map((alert) => (
                     <div key={alert.id} className={`p-4 border rounded-lg ${
                       alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
-                      alert.severity === 'warning' ? 'bg-orange-50 border-orange-200' :
+                      alert.severity === 'warning' ? 'bg-gold-50 border-gold-200' :
                       'bg-info-50 border-info-100'
                     }`}>
                       <div className="flex items-start space-x-3">

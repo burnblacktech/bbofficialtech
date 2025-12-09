@@ -161,14 +161,14 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                       transition-all duration-200 text-sm sm:text-base
                       ${
                         active
-                          ? 'bg-orange-50 text-orange-700 font-medium'
+                          ? 'bg-gold-50 text-gold-700 font-medium'
                           : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }
                       ${isCollapsed ? 'justify-center' : ''}
                     `}
                     title={isCollapsed ? item.name : ''}
                   >
-                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-orange-600' : ''}`} />
+                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-gold-600' : ''}`} />
                     {!isCollapsed && <span className="text-sm sm:text-base">{item.name}</span>}
                   </button>
                 </li>

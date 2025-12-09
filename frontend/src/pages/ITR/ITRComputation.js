@@ -2572,6 +2572,23 @@ const ITRComputation = () => {
                   <span className="hidden sm:inline">Save</span>
                 </button>
               )}
+
+              {/* Download JSON button - compact */}
+              {!isReadOnly && (
+                <button
+                  onClick={handleDownloadJSON}
+                  disabled={isDownloading}
+                  className="flex items-center px-2 py-1 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
+                  style={{ gap: '2px' }}
+                >
+                  {isDownloading ? (
+                    <Loader className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Download className="w-3.5 h-3.5" />
+                  )}
+                  <span className="hidden sm:inline">Download JSON</span>
+                </button>
+              )}
             </div>
           </div>
 

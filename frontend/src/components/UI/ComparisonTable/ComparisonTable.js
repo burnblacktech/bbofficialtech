@@ -38,7 +38,7 @@ const ComparisonTable = ({
     return (
       <div className={cn('flex items-center justify-center py-12', className)}>
         <div className="flex flex-col items-center gap-3">
-          <Loader className="w-6 h-6 text-orange-500 animate-spin" />
+          <Loader className="w-6 h-6 text-gold-500 animate-spin" />
           <p className="text-body-md text-gray-600">Loading comparison...</p>
         </div>
       </div>
@@ -174,7 +174,7 @@ const ComparisonTable = ({
           transition={{ duration: 0.3, delay: rows.length * 0.03 }}
           className="p-4 bg-gray-50 border-t border-gray-200 text-center"
         >
-          <span className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white text-label-md uppercase px-4 py-2 rounded-lg font-semibold" style={{ fontSize: '13px', fontWeight: 500 }}>
+          <span className="inline-block bg-gradient-to-r from-gold-500 to-gold-600 text-white text-label-md uppercase px-4 py-2 rounded-lg font-semibold" style={{ fontSize: '13px', fontWeight: 500 }}>
             {recommendedRegime.toUpperCase()} REGIME RECOMMENDED • Save {formatIndianCurrency(savings)}
           </span>
         </motion.div>

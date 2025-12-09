@@ -18,9 +18,9 @@ const PDFExportButton = ({
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantClasses = {
-    primary: 'bg-orange-500 text-white hover:bg-orange-600',
+    primary: 'bg-gold-500 text-white hover:bg-gold-600',
     secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
-    outline: 'border-2 border-orange-500 text-orange-600 hover:bg-orange-50',
+    outline: 'border-2 border-gold-500 text-gold-600 hover:bg-gold-50',
   };
 
   const sizeClasses = {

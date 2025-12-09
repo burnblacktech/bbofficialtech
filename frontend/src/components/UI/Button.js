@@ -8,14 +8,14 @@ import { cn } from '../../utils/cn';
 
 const buttonVariants = {
   variant: {
-    primary: 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm',
+    primary: 'bg-gold-500 hover:bg-gold-600 text-white shadow-sm',
     secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300',
     outline: 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700',
     ghost: 'hover:bg-gray-100 text-gray-700',
     success: 'bg-success-500 hover:bg-success-600 text-white shadow-sm',
     warning: 'bg-warning-500 hover:bg-warning-600 text-white shadow-sm',
     danger: 'bg-error-500 hover:bg-error-600 text-white shadow-sm',
-    link: 'text-orange-600 hover:text-orange-700 underline-offset-4 hover:underline p-0 h-auto',
+    link: 'text-gold-600 hover:text-gold-700 underline-offset-4 hover:underline p-0 h-auto',
   },
   size: {
     sm: 'h-9 px-3 text-sm',
@@ -58,7 +58,7 @@ const Button = React.forwardRef(({
   const baseClasses = cn(
     // Base styles
     'inline-flex items-center justify-center font-medium transition-colors duration-200',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2',
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
 
     // Variant styles

@@ -113,10 +113,10 @@ const LiveTaxSummary = ({ filingData, onSaveDraft }) => {
         </div>
 
         {/* Tax Due */}
-        <div className="bg-orange-50 rounded-lg p-4">
+        <div className="bg-gold-50 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-orange-700">Tax Due</span>
-            <span className="text-lg font-bold text-orange-900">
+            <span className="text-sm font-medium text-gold-700">Tax Due</span>
+            <span className="text-lg font-bold text-gold-900">
               {formatCurrency(taxSummary.taxDue)}
             </span>
           </div>

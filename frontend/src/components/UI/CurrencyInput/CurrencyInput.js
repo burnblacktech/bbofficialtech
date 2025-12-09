@@ -67,7 +67,7 @@ const CurrencyInput = forwardRef(({
     '26as': { bg: COLORS.source['26as'], label: '26AS' },
     broker: { bg: COLORS.source.broker, label: 'Broker' },
     manual: { bg: COLORS.source.manual, label: 'Manual' },
-    ai: { bg: 'linear-gradient(135deg, #FF6B00 0%, #FFB800 100%)', label: 'AI' },
+    ai: { bg: 'linear-gradient(135deg, #D4AF37 0%, #FFE4A0 100%)', label: 'AI' },
   };
 
   return (
@@ -112,7 +112,7 @@ const CurrencyInput = forwardRef(({
             'flex rounded-[10px] border overflow-hidden transition-all',
             {
               'border-gray-300': !error && !isFocused && !hasSource,
-              'border-orange-500 shadow-[0_0_0_3px_rgba(255,107,0,0.1)]': isFocused && !error,
+              'border-gold-500 shadow-[0_0_0_3px_rgba(212,175,55,0.1)]': isFocused && !error,
               'border-2 border-error-500 bg-error-50': error,
               'border-gray-200 bg-gray-100': disabled,
               'border-info-200 bg-info-50': hasSource && !error && !isFocused,

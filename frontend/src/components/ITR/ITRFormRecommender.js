@@ -164,7 +164,7 @@ const ITRFormRecommender = () => {
       case 'ITR-3':
         return 'bg-purple-500';
       case 'ITR-4':
-        return 'bg-orange-500';
+        return 'bg-gold-500';
       default:
         return 'bg-gray-500';
     }

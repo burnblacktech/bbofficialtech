@@ -93,9 +93,9 @@ const DiscrepancyPanel = ({
         <div className="space-y-2">
           <label className={cn(
             'flex items-start p-3 rounded-xl border-2 cursor-pointer transition-colors',
-            'hover:bg-orange-50',
+            'hover:bg-gold-50',
             selectedResolution === 'accept_source'
-              ? 'bg-orange-100 border-orange-500'
+              ? 'bg-gold-100 border-gold-500'
               : 'border-gray-200 bg-white',
           )}>
             <input
@@ -107,7 +107,7 @@ const DiscrepancyPanel = ({
                 setSelectedResolution('accept_source');
                 if (onAcceptUploaded) onAcceptUploaded();
               }}
-              className="mt-1 mr-3 text-orange-500 focus:ring-2 focus:ring-orange-500"
+              className="mt-1 mr-3 text-gold-500 focus:ring-2 focus:ring-gold-500"
               aria-label="Use AIS value"
             />
             <div className="flex-1">
@@ -122,9 +122,9 @@ const DiscrepancyPanel = ({
 
           <label className={cn(
             'flex items-start p-3 rounded-xl border-2 cursor-pointer transition-colors',
-            'hover:bg-orange-50',
+            'hover:bg-gold-50',
             selectedResolution === 'accept_manual'
-              ? 'bg-orange-100 border-orange-500'
+              ? 'bg-gold-100 border-gold-500'
               : 'border-gray-200 bg-white',
           )}>
             <input
@@ -136,7 +136,7 @@ const DiscrepancyPanel = ({
                 setSelectedResolution('accept_manual');
                 if (onAcceptManual) onAcceptManual();
               }}
-              className="mt-1 mr-3 text-orange-500 focus:ring-2 focus:ring-orange-500"
+              className="mt-1 mr-3 text-gold-500 focus:ring-2 focus:ring-gold-500"
               aria-label="Keep my value"
             />
             <div className="flex-1">
@@ -161,7 +161,7 @@ const DiscrepancyPanel = ({
             value={explanationText}
             onChange={(e) => setExplanationText(e.target.value)}
             placeholder="Difference is due to..."
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
             rows={3}
             aria-label="Explanation for discrepancy"
           />
@@ -192,7 +192,7 @@ const DiscrepancyPanel = ({
               onExplain(explanationText);
             }
           }}
-          className="bg-orange-500 hover:bg-orange-600 text-white text-body-md"
+          className="bg-gold-500 hover:bg-gold-600 text-white text-body-md"
           size="sm"
         >
           Resolve Discrepancy

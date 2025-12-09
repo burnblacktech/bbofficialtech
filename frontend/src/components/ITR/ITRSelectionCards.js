@@ -61,7 +61,7 @@ const ITR_CARDS = [
     id: 'ITR-3',
     name: 'ITR-3',
     icon: Building2,
-    color: 'from-amber-500 to-orange-500',
+    color: 'from-amber-500 to-gold-500',
     eligibility: [
       'Everything in ITR-2, PLUS:',
       'Business or professional income',

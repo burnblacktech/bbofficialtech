@@ -127,7 +127,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
               type="checkbox"
               checked={balanceSheet.hasBalanceSheet || false}
               onChange={(e) => updateBalanceSheet('hasBalanceSheet', e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-orange-500"
+              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
             />
             <span className="text-sm text-gray-700">Maintain Balance Sheet</span>
           </label>
@@ -178,7 +178,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.currentAssets?.cash || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'cash', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -187,7 +187,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.currentAssets?.bank || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'bank', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -196,7 +196,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.currentAssets?.inventory || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'inventory', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -205,7 +205,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.currentAssets?.receivables || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'receivables', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -214,7 +214,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.currentAssets?.other || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="pt-2 border-t border-gray-200">
@@ -238,7 +238,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.building || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'building', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -247,7 +247,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.machinery || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'machinery', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -256,7 +256,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.vehicles || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'vehicles', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -265,7 +265,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.furniture || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'furniture', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -274,7 +274,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.other || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="pt-2 border-t border-gray-200">
@@ -300,7 +300,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                         ...balanceSheet.assets,
                         investments: parseFloat(e.target.value) || 0,
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -312,7 +312,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                         ...balanceSheet.assets,
                         loansAdvances: parseFloat(e.target.value) || 0,
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                 </div>
@@ -343,7 +343,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.creditors || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'creditors', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -352,7 +352,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.bankOverdraft || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'bankOverdraft', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -361,7 +361,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.shortTermLoans || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'shortTermLoans', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -370,7 +370,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.other || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="pt-2 border-t border-gray-200">
@@ -394,7 +394,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.liabilities.longTermLiabilities?.longTermLoans || 0}
                       onChange={(e) => updateLiabilitiesCategory('longTermLiabilities', 'longTermLoans', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -403,7 +403,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       type="number"
                       value={balanceSheet.liabilities.longTermLiabilities?.other || 0}
                       onChange={(e) => updateLiabilitiesCategory('longTermLiabilities', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="pt-2 border-t border-gray-200">
@@ -428,7 +428,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       ...balanceSheet.liabilities,
                       capital: parseFloat(e.target.value) || 0,
                     })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
               </div>

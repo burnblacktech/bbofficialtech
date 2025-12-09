@@ -187,7 +187,7 @@ const TaxGlossary = () => {
 
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <BookOpen className="h-8 w-8 text-orange-600" />
+            <BookOpen className="h-8 w-8 text-gold-600" />
             <h1 className="text-heading-2xl text-gray-900">Tax Glossary</h1>
           </div>
           <p className="text-body-md text-gray-600">
@@ -210,7 +210,7 @@ const TaxGlossary = () => {
               onClick={() => setSelectedLetter('all')}
               className={`px-3 py-1 rounded-md text-body-sm font-medium ${
                 selectedLetter === 'all'
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-gold-500 text-white'
                   : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
               }`}
             >
@@ -222,7 +222,7 @@ const TaxGlossary = () => {
                 onClick={() => setSelectedLetter(letter)}
                 className={`px-3 py-1 rounded-md text-body-sm font-medium ${
                   selectedLetter === letter
-                    ? 'bg-orange-500 text-white'
+                    ? 'bg-gold-500 text-white'
                     : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                 }`}
               >
@@ -245,7 +245,7 @@ const TaxGlossary = () => {
                 <div className="space-y-6">
                   {terms.map((item) => (
                     <div key={item.term} id={`term-${item.term}`} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
-                      <h3 className="text-heading-sm text-orange-600 mb-2">{item.term}</h3>
+                      <h3 className="text-heading-sm text-gold-600 mb-2">{item.term}</h3>
                       <p className="text-body-md text-gray-600 mb-3">{item.definition}</p>
 
                       {item.example && (
@@ -280,7 +280,7 @@ const TaxGlossary = () => {
                                     }
                                   }, 100);
                                 }}
-                                className="inline-flex items-center gap-1 px-2 py-1 text-body-xs text-orange-600 bg-orange-50 border border-orange-200 rounded hover:bg-orange-100"
+                                className="inline-flex items-center gap-1 px-2 py-1 text-body-xs text-gold-600 bg-gold-50 border border-gold-200 rounded hover:bg-gold-100"
                               >
                                 {relatedTerm}
                                 <ExternalLink className="h-3 w-3" />

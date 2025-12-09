@@ -57,7 +57,7 @@ const CapitalGainsBreakdown = ({
 
       {/* Summary */}
       {totalGains > 0 && (
-        <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border border-orange-200 p-4">
+        <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-xl border border-gold-200 p-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-body-sm text-gray-600">Total STCG</p>
@@ -90,7 +90,7 @@ const CapitalGainsBreakdown = ({
             {stcgDetails.map((entry, index) => (
               <div
                 key={entry.id || index}
-                className="bg-white rounded-xl border border-gray-200 p-4 hover:border-orange-300 transition-colors"
+                className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gold-300 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -105,7 +105,7 @@ const CapitalGainsBreakdown = ({
                     {onEditEntry && (
                       <button
                         onClick={() => onEditEntry(entry, index, 'stcg')}
-                        className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50"
+                        className="p-2 text-gray-400 hover:text-gold-600 rounded-lg hover:bg-gold-50"
                         aria-label="Edit entry"
                       >
                         <Edit2 className="h-4 w-4" />
@@ -142,7 +142,7 @@ const CapitalGainsBreakdown = ({
             {ltcgDetails.map((entry, index) => (
               <div
                 key={entry.id || index}
-                className="bg-white rounded-xl border border-gray-200 p-4 hover:border-orange-300 transition-colors"
+                className="bg-white rounded-xl border border-gray-200 p-4 hover:border-gold-300 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -157,7 +157,7 @@ const CapitalGainsBreakdown = ({
                     {onEditEntry && (
                       <button
                         onClick={() => onEditEntry(entry, index, 'ltcg')}
-                        className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50"
+                        className="p-2 text-gray-400 hover:text-gold-600 rounded-lg hover:bg-gold-50"
                         aria-label="Edit entry"
                       >
                         <Edit2 className="h-4 w-4" />

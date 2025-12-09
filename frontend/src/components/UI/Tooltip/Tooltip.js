@@ -280,8 +280,8 @@ export const RichTooltip = ({
               className={cn(
                 'inline-flex items-center gap-1 text-body-sm font-medium',
                 {
-                  'text-orange-400 hover:text-orange-300': variant === 'dark',
-                  'text-orange-500 hover:text-orange-600': variant === 'light',
+                  'text-gold-400 hover:text-gold-300': variant === 'dark',
+                  'text-gold-500 hover:text-gold-600': variant === 'light',
                 },
               )}
               style={{ fontSize: '13px' }}

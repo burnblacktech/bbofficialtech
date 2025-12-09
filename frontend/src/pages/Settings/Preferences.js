@@ -26,7 +26,7 @@ const Preferences = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Settings className="h-8 w-8 text-orange-600" />
+            <Settings className="h-8 w-8 text-gold-600" />
             <h1 className="text-display-md text-gray-900 font-bold">Preferences</h1>
           </div>
           <p className="text-body-lg text-gray-600">
@@ -50,7 +50,7 @@ const Preferences = () => {
                       flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-body-sm transition-colors
                       ${
                         activeTab === tab.id
-                          ? 'border-orange-500 text-orange-600'
+                          ? 'border-gold-500 text-gold-600'
                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }
                     `}

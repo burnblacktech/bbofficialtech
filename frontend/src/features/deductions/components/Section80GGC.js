@@ -16,11 +16,13 @@ import {
 } from 'lucide-react';
 import apiClient from '../../../services/core/APIClient';
 import toast from 'react-hot-toast';
+import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
 const Section80GGC = ({ filingId, onUpdate }) => {
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingDeduction, setEditingDeduction] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, deductionId: null });
   const [formData, setFormData] = useState({
     partyName: '',
     partyRegistrationNumber: '',
@@ -172,9 +174,14 @@ const Section80GGC = ({ filingId, onUpdate }) => {
   };
 
   const handleDelete = (deductionId) => {
-    if (window.confirm('Are you sure you want to delete this donation?')) {
-      deleteDeductionMutation.mutate(deductionId);
+    setDeleteConfirm({ isOpen: true, deductionId });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm.deductionId) {
+      deleteDeductionMutation.mutate(deleteConfirm.deductionId);
     }
+    setDeleteConfirm({ isOpen: false, deductionId: null });
   };
 
   const resetForm = () => {
@@ -220,7 +227,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -238,7 +245,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
           </div>
           <div className="text-right">
             <div className="text-body-xs text-gray-500 mb-1">Total Claimed</div>
-            <div className="text-heading-xl font-bold text-orange-600">
+            <div className="text-heading-xl font-bold text-gold-600">
               ₹{totalAmount.toLocaleString('en-IN')}
             </div>
             <div className="text-body-xs text-gray-500 mt-1">No upper limit</div>
@@ -285,7 +292,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.partyName}
                   onChange={(e) => setFormData({ ...formData, partyName: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.partyName ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Name of the registered political party"
@@ -305,7 +312,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, partyRegistrationNumber: e.target.value })
                   }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.partyRegistrationNumber ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Registration number"
@@ -322,7 +329,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                 <select
                   value={formData.paymentMode}
                   onChange={(e) => setFormData({ ...formData, paymentMode: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 >
                   <option value="online">Online/Bank Transfer</option>
                   <option value="cheque">Cheque</option>
@@ -338,7 +345,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   type="number"
                   value={formData.donationAmount}
                   onChange={(e) => setFormData({ ...formData, donationAmount: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.donationAmount ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="0"
@@ -359,7 +366,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.receiptNumber}
                   onChange={(e) => setFormData({ ...formData, receiptNumber: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Receipt number"
                 />
               </div>
@@ -370,7 +377,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   type="date"
                   value={formData.receiptDate}
                   onChange={(e) => setFormData({ ...formData, receiptDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
               </div>
             </div>
@@ -389,7 +396,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
               <button
                 type="submit"
                 disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
               >
                 {editingDeduction ? 'Update' : 'Add'} Donation
               </button>
@@ -405,7 +412,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
             <h4 className="text-heading-md text-gray-900">Your Donations</h4>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               <Plus className="w-4 h-4" />
               Add Donation
@@ -418,7 +425,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
               <p className="text-gray-600 mb-4">No political party donations added yet</p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
               >
                 Add Your First Donation
               </button>
@@ -455,11 +462,11 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                           onChange={(e) => handleProofUpload(e, deduction.id)}
                           className="hidden"
                         />
-                        <Upload className="w-5 h-5 text-gray-500 hover:text-orange-500" />
+                        <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
                       </label>
                       <button
                         onClick={() => handleEdit(deduction)}
-                        className="p-1 text-gray-500 hover:text-orange-500"
+                        className="p-1 text-gray-500 hover:text-gold-500"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
@@ -477,6 +484,17 @@ const Section80GGC = ({ filingId, onUpdate }) => {
           )}
         </>
       )}
+
+      <ConfirmationDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, deductionId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Donation"
+        message="Are you sure you want to delete this donation? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 };

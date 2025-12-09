@@ -3,13 +3,15 @@
 // Display summary of all foreign assets with breakdown
 // =====================================================
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Building2, TrendingUp, Home, Globe, DollarSign, Edit, Trash2 } from 'lucide-react';
 import { useDeleteForeignAsset } from '../hooks/use-foreign-assets';
 import toast from 'react-hot-toast';
+import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
 const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
   const deleteAsset = useDeleteForeignAsset();
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, assetId: null });
 
   const formatCurrency = (amount) => {
     if (!amount && amount !== 0) return '₹0';
@@ -21,31 +23,47 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
   };
 
   const getAssetIcon = (assetType) => {
-    const icons = {
-      bank_account: Building2,
-      equity_holding: TrendingUp,
-      immovable_property: Home,
+    // Support both snake_case (from API) and camelCase
+    const iconMap = {
+      bankAccount: Building2,
+      equityHolding: TrendingUp,
+      immovableProperty: Home,
       other: Globe,
     };
-    return icons[assetType] || Globe;
+    // Map snake_case to camelCase for backward compatibility
+    const normalizedType = assetType === 'bank_account' ? 'bankAccount' :
+                          assetType === 'equity_holding' ? 'equityHolding' :
+                          assetType === 'immovable_property' ? 'immovableProperty' :
+                          assetType;
+    return iconMap[normalizedType] || Globe;
   };
 
   const getAssetTypeLabel = (assetType) => {
-    const labels = {
-      bank_account: 'Bank Account',
-      equity_holding: 'Equity Holding',
-      immovable_property: 'Immovable Property',
+    // Support both snake_case (from API) and camelCase
+    const labelMap = {
+      bankAccount: 'Bank Account',
+      equityHolding: 'Equity Holding',
+      immovableProperty: 'Immovable Property',
       other: 'Other Asset',
     };
-    return labels[assetType] || 'Asset';
+    // Map snake_case to camelCase for backward compatibility
+    const normalizedType = assetType === 'bank_account' ? 'bankAccount' :
+                          assetType === 'equity_holding' ? 'equityHolding' :
+                          assetType === 'immovable_property' ? 'immovableProperty' :
+                          assetType;
+    return labelMap[normalizedType] || 'Asset';
   };
 
   const handleDelete = async (assetId) => {
-    if (window.confirm('Are you sure you want to delete this asset?')) {
+    setDeleteConfirm({ isOpen: true, assetId });
+  };
+
+  const confirmDelete = async () => {
+    if (deleteConfirm.assetId) {
       try {
         const result = await deleteAsset.mutateAsync({
           filingId,
-          assetId,
+          assetId: deleteConfirm.assetId,
         });
 
         if (result.success) {
@@ -55,6 +73,7 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
         toast.error('Failed to delete asset');
       }
     }
+    setDeleteConfirm({ isOpen: false, assetId: null });
   };
 
   // Calculate breakdown by type
@@ -98,14 +117,14 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
   return (
     <div className="space-y-6">
       {/* Total Summary */}
-      <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-6 border border-orange-200">
+      <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-lg p-6 border border-gold-200">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-body-sm text-gray-600 mb-1">Total Foreign Assets Value</p>
             <p className="text-heading-xl font-bold text-gray-900">{formatCurrency(totalValue)}</p>
           </div>
           <div className="p-4 bg-white rounded-lg">
-            <DollarSign className="h-8 w-8 text-orange-600" />
+            <DollarSign className="h-8 w-8 text-gold-600" />
           </div>
         </div>
       </div>
@@ -120,7 +139,7 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
               <div key={type} className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center">
-                    <Icon className="h-5 w-5 text-orange-600 mr-2" />
+                    <Icon className="h-5 w-5 text-gold-600 mr-2" />
                     <span className="text-body-sm font-medium text-gray-700">
                       {getAssetTypeLabel(type)}
                     </span>
@@ -191,7 +210,7 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <Icon className="h-5 w-5 text-orange-600" />
+                      <Icon className="h-5 w-5 text-gold-600" />
                       <h5 className="text-heading-sm font-medium text-gray-900">
                         {asset.assetDetails?.bankName ||
                           asset.assetDetails?.companyName ||
@@ -249,6 +268,17 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
           })}
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, assetId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Asset"
+        message="Are you sure you want to delete this asset? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 };

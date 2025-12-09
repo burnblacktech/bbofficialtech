@@ -104,7 +104,7 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
                       <select
                         value={item.type}
                         onChange={(e) => handleChange(item.id, 'type', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       >
                         <option value="">Select type</option>
                         {EXEMPT_INCOME_TYPES.map((type) => (
@@ -129,7 +129,7 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
                         value={item.amount}
                         onChange={(e) => handleChange(item.id, 'amount', e.target.value)}
                         max={typeConfig?.maxAmount || undefined}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                         placeholder="0"
                       />
                     </div>
@@ -143,7 +143,7 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
                           value={item.description}
                           onChange={(e) => handleChange(item.id, 'description', e.target.value)}
                           rows={2}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                           placeholder="Additional details..."
                         />
                       </div>

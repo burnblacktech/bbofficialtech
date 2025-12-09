@@ -11,24 +11,24 @@
 export const getPrimaryColorClasses = (variant = 'default') => {
   const variants = {
     default: {
-      bg: 'bg-orange-500',
-      hover: 'hover:bg-orange-600',
-      active: 'active:bg-orange-700',
+      bg: 'bg-gold-500',
+      hover: 'hover:bg-gold-600',
+      active: 'active:bg-gold-700',
       text: 'text-white',
-      border: 'border-orange-500',
+      border: 'border-gold-500',
     },
     outline: {
       bg: 'bg-transparent',
-      hover: 'hover:bg-orange-50',
-      active: 'active:bg-orange-100',
-      text: 'text-orange-600',
-      border: 'border-orange-500',
+      hover: 'hover:bg-gold-50',
+      active: 'active:bg-gold-100',
+      text: 'text-gold-600',
+      border: 'border-gold-500',
     },
     ghost: {
       bg: 'bg-transparent',
-      hover: 'hover:bg-orange-50',
-      active: 'active:bg-orange-100',
-      text: 'text-orange-600',
+      hover: 'hover:bg-gold-50',
+      active: 'active:bg-gold-100',
+      text: 'text-gold-600',
       border: 'border-transparent',
     },
   };
@@ -154,15 +154,15 @@ export const getGoldColorClasses = (variant = 'default') => {
  * Helps with migration
  */
 export const colorMap = {
-  // Blue → Orange (primary actions)
-  'bg-blue-600': 'bg-orange-500',
-  'bg-blue-500': 'bg-orange-500',
-  'bg-blue-700': 'bg-orange-600',
-  'text-blue-600': 'text-orange-600',
-  'text-blue-500': 'text-orange-500',
-  'border-blue-600': 'border-orange-500',
-  'bg-blue-100': 'bg-orange-50',
-  'text-blue-800': 'text-orange-700',
+  // Blue → Gold (primary actions)
+  'bg-blue-600': 'bg-gold-500',
+  'bg-blue-500': 'bg-gold-500',
+  'bg-blue-700': 'bg-gold-600',
+  'text-blue-600': 'text-gold-600',
+  'text-blue-500': 'text-gold-500',
+  'border-blue-600': 'border-gold-500',
+  'bg-blue-100': 'bg-gold-50',
+  'text-blue-800': 'text-gold-700',
 
   // Green → Success or Gold (context-dependent)
   'bg-green-600': 'bg-success-500', // Use success for success states
@@ -174,7 +174,7 @@ export const colorMap = {
   'bg-green-100': 'bg-success-50',
   'text-green-800': 'text-success-600',
 
-  // Purple → Info or Orange (context-dependent)
+  // Purple → Info or Gold (context-dependent)
   'bg-purple-600': 'bg-info-500', // Use info for informational features
   'bg-purple-500': 'bg-info-500',
   'bg-purple-700': 'bg-info-600',
@@ -212,7 +212,7 @@ export const getActivityIconColors = (type) => {
     filing_created: { bg: 'bg-success-50', icon: 'text-success-500' },
     filing_submitted: { bg: 'bg-success-50', icon: 'text-success-500' },
     document_uploaded: { bg: 'bg-info-50', icon: 'text-info-500' },
-    member_added: { bg: 'bg-orange-50', icon: 'text-orange-500' },
+    member_added: { bg: 'bg-gold-50', icon: 'text-gold-500' },
     default: { bg: 'bg-gray-100', icon: 'text-gray-600' },
   };
   return colorMap[type] || colorMap.default;

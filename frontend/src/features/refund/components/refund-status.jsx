@@ -34,7 +34,7 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
       case 'failed':
         return <XCircle className="h-8 w-8 text-error-500" />;
       case 'adjusted':
-        return <AlertCircle className="h-8 w-8 text-orange-500" />;
+        return <AlertCircle className="h-8 w-8 text-gold-500" />;
       default:
         return <Clock className="h-8 w-8 text-gray-500" />;
     }
@@ -51,7 +51,7 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
       case 'failed':
         return 'bg-error-50 border-error-200 text-error-900';
       case 'adjusted':
-        return 'bg-orange-50 border-orange-200 text-orange-900';
+        return 'bg-gold-50 border-gold-200 text-gold-900';
       default:
         return 'bg-gray-50 border-gray-200 text-gray-900';
     }

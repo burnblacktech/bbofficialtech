@@ -69,7 +69,7 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
 
       {/* Tax Summary Card */}
       {taxComputation && (
-        <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200 p-6">
+        <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-xl border-2 border-gold-200 p-6">
           <h4 className="text-heading-md text-gray-800 mb-4">Tax Summary</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
@@ -115,17 +115,17 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
           return (
             <div
               key={section.id}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-300 transition-colors"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gold-300 transition-colors"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <Icon className="h-6 w-6 text-orange-600 mr-3" />
+                  <Icon className="h-6 w-6 text-gold-600 mr-3" />
                   <h4 className="text-heading-md text-gray-800">{section.title}</h4>
                 </div>
                 {onEditSection && (
                   <button
                     onClick={() => onEditSection(section.id)}
-                    className="text-body-sm text-orange-600 hover:text-orange-700 font-medium"
+                    className="text-body-sm text-gold-600 hover:text-gold-700 font-medium"
                   >
                     Edit
                   </button>

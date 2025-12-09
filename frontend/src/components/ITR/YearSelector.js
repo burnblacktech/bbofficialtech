@@ -75,7 +75,7 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
           Financial Year
         </h3>
         {currentYearInfo?.isBelated && (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
             <AlertCircle className="w-3 h-3 mr-1" />
             Belated Return
           </span>
@@ -86,7 +86,7 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
         <select
           value={selectedYear}
           onChange={(e) => onYearChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-medium"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-medium"
         >
           {availableYears.map((year) => (
             <option key={year.fy} value={year.fy}>
@@ -106,7 +106,7 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
               <span className="font-semibold text-gray-900">{currentYearInfo.dueDate}</span>
             </div>
             {currentYearInfo.isBelated ? (
-              <div className="flex items-center justify-between text-orange-600">
+              <div className="flex items-center justify-between text-gold-600">
                 <span className="flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
                   Belated Return

@@ -43,7 +43,7 @@ const Progress = ({
         <div className="w-full bg-gray-200 rounded" style={{ height: '8px', borderRadius: '4px' }}>
           {indeterminate ? (
             <div
-              className="h-full rounded bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_100%] animate-shimmer"
+              className="h-full rounded bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 bg-[length:200%_100%] animate-shimmer"
               style={{
                 width: '40%',
                 animation: 'shimmer 1.5s infinite',
@@ -51,7 +51,7 @@ const Progress = ({
             />
           ) : (
             <div
-              className="h-full rounded transition-all duration-300 ease-out bg-gradient-to-r from-orange-500 to-orange-600"
+              className="h-full rounded transition-all duration-300 ease-out bg-gradient-to-r from-gold-500 to-gold-600"
               style={{
                 width: `${percentage}%`,
                 borderRadius: '4px',
@@ -80,8 +80,8 @@ const Progress = ({
                     className={cn(
                       'w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all',
                       {
-                        'bg-orange-500 border-orange-500': isCompleted,
-                        'bg-white border-orange-500': isCurrent,
+                        'bg-gold-500 border-gold-500': isCompleted,
+                        'bg-white border-gold-500': isCurrent,
                         'bg-white border-gray-300': isUpcoming,
                       },
                     )}
@@ -90,7 +90,7 @@ const Progress = ({
                     {isCompleted ? (
                       <Check className="w-3.5 h-3.5 text-white" />
                     ) : isCurrent ? (
-                      <div className="w-3 h-3 bg-orange-500 rounded-full" />
+                      <div className="w-3 h-3 bg-gold-500 rounded-full" />
                     ) : null}
                   </div>
                   <span
@@ -112,7 +112,7 @@ const Progress = ({
                   <div
                     className={cn(
                       'flex-1 h-0.5 mx-2',
-                      index < currentStep ? 'bg-orange-500' : 'bg-gray-300',
+                      index < currentStep ? 'bg-gold-500' : 'bg-gray-300',
                     )}
                   />
                 )}
@@ -151,7 +151,7 @@ const Progress = ({
           cx={circleSize / 2}
           cy={circleSize / 2}
           r={radius}
-          stroke="#FF6B00"
+          stroke="#D4AF37"
           strokeWidth={stroke}
           fill="none"
           strokeDasharray={circumference}

@@ -130,7 +130,7 @@ const DocumentUploader = ({
         onDrop={handleDrop}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           dragActive
-            ? 'border-orange-500 bg-orange-50'
+            ? 'border-gold-500 bg-gold-50'
             : 'border-gray-300 hover:border-gray-400 bg-gray-50'
         } ${uploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
@@ -149,7 +149,7 @@ const DocumentUploader = ({
             {uploading ? 'Uploading...' : 'Drag and drop files here'}
           </p>
           <p className="text-body-sm text-gray-500">
-            or <span className="text-orange-600 font-medium">browse</span> to upload
+            or <span className="text-gold-600 font-medium">browse</span> to upload
           </p>
           <p className="text-body-xs text-gray-400 mt-2">
             Supported: {accept} (Max {maxSizeMB}MB per file, {maxFiles} files max)

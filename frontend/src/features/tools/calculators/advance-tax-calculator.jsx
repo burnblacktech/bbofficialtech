@@ -77,7 +77,7 @@ const AdvanceTaxCalculator = () => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center gap-3 mb-6">
-        <Calculator className="h-6 w-6 text-orange-600" />
+        <Calculator className="h-6 w-6 text-gold-600" />
         <h3 className="text-heading-md text-gray-800">Advance Tax Calculator</h3>
       </div>
 
@@ -103,7 +103,7 @@ const AdvanceTaxCalculator = () => {
             type="number"
             value={formData.estimatedIncome}
             onChange={(e) => handleChange('estimatedIncome', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
               errors.estimatedIncome ? 'border-red-300' : 'border-gray-300'
             }`}
             placeholder="Enter estimated income"
@@ -119,7 +119,7 @@ const AdvanceTaxCalculator = () => {
             type="number"
             value={formData.estimatedDeductions}
             onChange={(e) => handleChange('estimatedDeductions', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             placeholder="Enter estimated deductions"
           />
         </div>
@@ -130,7 +130,7 @@ const AdvanceTaxCalculator = () => {
             type="number"
             value={formData.estimatedTax}
             onChange={(e) => handleChange('estimatedTax', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             placeholder="Enter estimated tax"
           />
         </div>
@@ -141,7 +141,7 @@ const AdvanceTaxCalculator = () => {
             type="number"
             value={formData.tdsDeducted}
             onChange={(e) => handleChange('tdsDeducted', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             placeholder="Enter TDS deducted"
           />
         </div>
@@ -152,7 +152,7 @@ const AdvanceTaxCalculator = () => {
             type="number"
             value={formData.advanceTaxPaid}
             onChange={(e) => handleChange('advanceTaxPaid', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             placeholder="Enter advance tax paid"
           />
         </div>

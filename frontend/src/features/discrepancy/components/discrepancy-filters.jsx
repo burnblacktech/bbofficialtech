@@ -54,7 +54,7 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
                 onClick={() => onFilterChange({ ...filters, severity: option.id })}
                 className={`px-3 py-1.5 rounded-lg text-body-sm font-medium transition-colors ${
                   filters.severity === option.id
-                    ? 'bg-orange-100 text-orange-700 border-2 border-orange-500'
+                    ? 'bg-gold-100 text-gold-700 border-2 border-gold-500'
                     : 'bg-gray-100 text-gray-700 border-2 border-transparent hover:bg-gray-200'
                 }`}
               >
@@ -76,7 +76,7 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
                 onClick={() => onFilterChange({ ...filters, source: option.id })}
                 className={`px-3 py-1.5 rounded-lg text-body-sm font-medium transition-colors ${
                   filters.source === option.id
-                    ? 'bg-orange-100 text-orange-700 border-2 border-orange-500'
+                    ? 'bg-gold-100 text-gold-700 border-2 border-gold-500'
                     : 'bg-gray-100 text-gray-700 border-2 border-transparent hover:bg-gray-200'
                 }`}
               >

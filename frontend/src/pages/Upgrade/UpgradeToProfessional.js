@@ -52,7 +52,7 @@ const UpgradeToProfessional = () => {
       icon: TrendingUp,
       title: 'Advanced Reporting',
       description: 'Get detailed analytics and reports for your practice',
-      color: 'text-orange-600',
+      color: 'text-gold-600',
     },
     {
       icon: IndianRupee,

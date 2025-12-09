@@ -163,7 +163,7 @@ const DocumentUploadPage = ({
                   style={{
                     width: `${getStorageUsagePercentage()}%`,
                     backgroundColor: getStorageColor() === 'red' ? '#ef4444' :
-                                   getStorageColor() === 'orange' ? '#f97316' : '#10b981',
+                                   getStorageColor() === 'orange' ? '#D4AF37' : '#10b981',
                   }}
                 ></div>
               </div>

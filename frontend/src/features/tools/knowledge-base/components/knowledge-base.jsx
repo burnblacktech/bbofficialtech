@@ -36,7 +36,7 @@ const KnowledgeBase = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <BookOpen className="w-6 h-6 text-orange-600" />
+          <BookOpen className="w-6 h-6 text-gold-600" />
           Tax Knowledge Base
         </h2>
       </div>
@@ -62,7 +62,7 @@ const KnowledgeBase = () => {
                   flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm
                   ${
                     activeTab === tab.id
-                      ? 'border-orange-500 text-orange-600'
+                      ? 'border-gold-500 text-gold-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }
                 `}
@@ -84,7 +84,7 @@ const KnowledgeBase = () => {
                 {searchResults.results.map((result, index) => (
                   <div
                     key={index}
-                    className="border border-gray-200 rounded-lg p-4 hover:border-orange-300 transition-colors cursor-pointer"
+                    className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 transition-colors cursor-pointer"
                     onClick={() => {
                       if (result.type === 'topic') {
                         setSelectedTopic(result.id);
@@ -100,7 +100,7 @@ const KnowledgeBase = () => {
                   >
                     <h4 className="font-semibold text-gray-900 mb-1">{result.title}</h4>
                     <p className="text-sm text-gray-600">{result.summary}</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">
+                    <span className="inline-block mt-2 px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded">
                       {result.type}
                     </span>
                   </div>

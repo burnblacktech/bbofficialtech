@@ -139,8 +139,8 @@ const BreakdownInput = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-orange-50 rounded-lg">
-            <Icon className="w-5 h-5 text-orange-600" />
+          <div className="p-2 bg-gold-50 rounded-lg">
+            <Icon className="w-5 h-5 text-gold-600" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -153,7 +153,7 @@ const BreakdownInput = ({
         <button
           onClick={handleAddItem}
           disabled={localItems.length >= maxItems}
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          className="bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Add Item</span>
@@ -199,7 +199,7 @@ const BreakdownInput = ({
                     placeholder="Description (e.g., SBI FD Interest)"
                     value={item.description}
                     onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
                   />
                 </div>
               </div>
@@ -232,7 +232,7 @@ const BreakdownInput = ({
                   placeholder={placeholder}
                   value={item.amount || ''}
                   onChange={(e) => handleUpdateItem(item.id, 'amount', parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
                 />
               </div>
 
@@ -246,7 +246,7 @@ const BreakdownInput = ({
                   placeholder="e.g., SBI Bank"
                   value={item.source}
                   onChange={(e) => handleUpdateItem(item.id, 'source', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
                 />
               </div>
 
@@ -291,7 +291,7 @@ const BreakdownInput = ({
                       placeholder="Any additional details..."
                       value={item.notes || ''}
                       onChange={(e) => handleUpdateItem(item.id, 'notes', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
                       rows={2}
                     />
                   </div>
@@ -304,7 +304,7 @@ const BreakdownInput = ({
                       type="date"
                       value={item.date || ''}
                       onChange={(e) => handleUpdateItem(item.id, 'date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
                     />
                   </div>
                 </div>

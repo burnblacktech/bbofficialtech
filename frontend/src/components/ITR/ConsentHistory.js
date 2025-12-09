@@ -39,7 +39,7 @@ const ConsentHistory = ({ returnId, versionId }) => {
       case 'revoked':
         return <XCircle className="w-4 h-4 text-red-600" />;
       case 'expired':
-        return <Clock className="w-4 h-4 text-orange-600" />;
+        return <Clock className="w-4 h-4 text-gold-600" />;
       default:
         return <Shield className="w-4 h-4 text-gray-600" />;
     }

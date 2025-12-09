@@ -56,7 +56,7 @@ const DiscrepancyBulkResolve = ({
         </div>
         <button
           onClick={handleSelectAll}
-          className="flex items-center text-body-sm text-orange-600 hover:text-orange-700"
+          className="flex items-center text-body-sm text-gold-600 hover:text-gold-700"
         >
           {selectedIds.length === discrepancies.length ? (
             <>
@@ -73,11 +73,11 @@ const DiscrepancyBulkResolve = ({
       </div>
 
       {selectedIds.length > 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+        <div className="bg-gold-50 border border-gold-200 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <CheckSquare className="h-5 w-5 text-orange-600 mr-2" />
-              <span className="text-body-md font-semibold text-orange-900">
+              <CheckSquare className="h-5 w-5 text-gold-600 mr-2" />
+              <span className="text-body-md font-semibold text-gold-900">
                 {selectedIds.length} discrepancy(ies) selected
               </span>
             </div>
@@ -109,7 +109,7 @@ const DiscrepancyBulkResolve = ({
               Resolution Action
             </label>
             <div className="space-y-2">
-              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-orange-300 cursor-pointer">
+              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-gold-300 cursor-pointer">
                 <input
                   type="radio"
                   name="resolutionAction"
@@ -122,7 +122,7 @@ const DiscrepancyBulkResolve = ({
                   Accept source value for all selected
                 </span>
               </label>
-              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-orange-300 cursor-pointer">
+              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-gold-300 cursor-pointer">
                 <input
                   type="radio"
                   name="resolutionAction"
@@ -135,7 +135,7 @@ const DiscrepancyBulkResolve = ({
                   Keep manual value for all selected
                 </span>
               </label>
-              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-orange-300 cursor-pointer">
+              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-gold-300 cursor-pointer">
                 <input
                   type="radio"
                   name="resolutionAction"

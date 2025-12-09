@@ -72,17 +72,17 @@ const NotificationList = ({
           <div
             key={notification.id}
             className={`bg-white rounded-lg border-2 p-4 transition-all hover:shadow-md cursor-pointer ${
-              isUnread ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
+              isUnread ? 'border-gold-300 bg-gold-50' : 'border-gray-200'
             } ${getNotificationColor(notification.type)}`}
             onClick={() => onClick && onClick(notification)}
           >
             <div className="flex items-start gap-3">
               {/* Icon */}
               <div className={`p-2 rounded-lg ${
-                isUnread ? 'bg-orange-100' : 'bg-gray-100'
+                isUnread ? 'bg-gold-100' : 'bg-gray-100'
               }`}>
                 <Icon className={`h-5 w-5 ${
-                  isUnread ? 'text-orange-600' : 'text-gray-600'
+                  isUnread ? 'text-gold-600' : 'text-gray-600'
                 }`} />
               </div>
 
@@ -106,7 +106,7 @@ const NotificationList = ({
 
                   {/* Unread Badge */}
                   {isUnread && (
-                    <div className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0 mt-1"></div>
+                    <div className="w-2 h-2 bg-gold-500 rounded-full flex-shrink-0 mt-1"></div>
                   )}
                 </div>
               </div>

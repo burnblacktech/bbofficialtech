@@ -39,7 +39,7 @@ export const Disclaimer = ({
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-body-sm font-medium text-orange-500 hover:text-orange-600 transition-colors mt-2"
+            className="inline-flex items-center gap-1 text-body-sm font-medium text-gold-500 hover:text-gold-600 transition-colors mt-2"
             style={{ fontSize: '13px' }}
           >
             {link.label}

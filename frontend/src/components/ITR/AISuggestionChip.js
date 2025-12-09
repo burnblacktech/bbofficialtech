@@ -27,11 +27,11 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
     switch (suggestion.priority) {
       case 'high':
         return {
-          bg: 'bg-orange-100',
-          border: 'border-orange-200',
-          text: 'text-orange-800',
-          icon: 'text-orange-600',
-          button: 'bg-orange-600 hover:bg-orange-700',
+          bg: 'bg-gold-100',
+          border: 'border-gold-200',
+          text: 'text-gold-800',
+          icon: 'text-gold-600',
+          button: 'bg-gold-600 hover:bg-gold-700',
         };
       case 'medium':
         return {

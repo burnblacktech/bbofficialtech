@@ -128,7 +128,7 @@ const PANVerificationInline = ({
                   onChange={handlePANChange}
                   placeholder="ABCDE1234F"
                   maxLength={10}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-center text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-center text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   disabled={isVerifying}
                 />
                 <button
@@ -145,9 +145,9 @@ const PANVerificationInline = ({
               </div>
             </div>
             {error && (
-              <div className={`flex flex-col space-y-2 text-sm ${isServiceUnavailable ? 'text-orange-600' : 'text-red-600'}`}>
+              <div className={`flex flex-col space-y-2 text-sm ${isServiceUnavailable ? 'text-gold-600' : 'text-red-600'}`}>
                 <div className="flex items-start space-x-2">
-                  <AlertCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isServiceUnavailable ? 'text-orange-600' : 'text-red-600'}`} />
+                  <AlertCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isServiceUnavailable ? 'text-gold-600' : 'text-red-600'}`} />
                   <span>{error}</span>
                 </div>
                 {isServiceUnavailable && (
@@ -170,7 +170,7 @@ const PANVerificationInline = ({
                       }
                       toast.success('Proceeding with manual verification');
                     }}
-                    className="text-xs font-medium text-orange-700 hover:text-orange-900 underline text-left"
+                    className="text-xs font-medium text-gold-700 hover:text-gold-900 underline text-left"
                   >
                     Verify Manually & Continue
                   </button>
@@ -238,7 +238,7 @@ const PANVerificationInline = ({
               onChange={handlePANChange}
               placeholder="ABCDE1234F"
               maxLength={10}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               disabled={isVerifying}
             />
             <p className="text-xs text-gray-500 text-center mt-2">
@@ -247,14 +247,14 @@ const PANVerificationInline = ({
           </div>
 
           {error && (
-            <div className={`rounded-lg p-4 border ${isServiceUnavailable ? 'bg-orange-50 border-orange-200' : 'bg-red-50 border-red-200'}`}>
+            <div className={`rounded-lg p-4 border ${isServiceUnavailable ? 'bg-gold-50 border-gold-200' : 'bg-red-50 border-red-200'}`}>
               <div className="flex items-start space-x-3">
-                <AlertCircle className={`h-5 w-5 ${isServiceUnavailable ? 'text-orange-600' : 'text-red-600'} mt-0.5 flex-shrink-0`} />
+                <AlertCircle className={`h-5 w-5 ${isServiceUnavailable ? 'text-gold-600' : 'text-red-600'} mt-0.5 flex-shrink-0`} />
                 <div className="flex-1">
-                  <h4 className={`text-sm font-semibold mb-1 ${isServiceUnavailable ? 'text-orange-900' : 'text-red-900'}`}>
+                  <h4 className={`text-sm font-semibold mb-1 ${isServiceUnavailable ? 'text-gold-900' : 'text-red-900'}`}>
                     {isServiceUnavailable ? 'Service Unavailable' : 'Verification Failed'}
                   </h4>
-                  <p className={`text-xs ${isServiceUnavailable ? 'text-orange-700' : 'text-red-700'} mb-3`}>
+                  <p className={`text-xs ${isServiceUnavailable ? 'text-gold-700' : 'text-red-700'} mb-3`}>
                     {error}
                   </p>
                   {isServiceUnavailable && (
@@ -278,7 +278,7 @@ const PANVerificationInline = ({
                         }
                         toast.success('You can proceed with manual verification');
                       }}
-                      className="text-sm font-medium text-orange-700 hover:text-orange-900 underline"
+                      className="text-sm font-medium text-gold-700 hover:text-gold-900 underline"
                     >
                       Verify Manually & Continue
                     </button>
@@ -334,7 +334,7 @@ const PANVerificationInline = ({
               <span className="text-sm text-gray-600">Status</span>
               <span className={`text-sm font-semibold px-2 py-1 rounded-full ${
                 verificationResult.source === 'MANUAL'
-                  ? 'bg-orange-100 text-orange-700'
+                  ? 'bg-gold-100 text-gold-700'
                   : 'bg-green-100 text-green-700'
               }`}>
                 {verificationResult.status || 'Active'}
@@ -343,12 +343,12 @@ const PANVerificationInline = ({
           </div>
 
           {verificationResult.source === 'MANUAL' ? (
-            <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+            <div className="bg-gold-50 rounded-lg p-4 border border-gold-200">
               <div className="flex items-center space-x-3">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
+                <AlertCircle className="h-5 w-5 text-gold-600" />
                 <div>
-                  <h4 className="text-sm font-semibold text-orange-900 mb-1">Manual Verification</h4>
-                  <p className="text-xs text-orange-700">
+                  <h4 className="text-sm font-semibold text-gold-900 mb-1">Manual Verification</h4>
+                  <p className="text-xs text-gold-700">
                     Please verify your PAN details manually before proceeding with ITR filing
                   </p>
                 </div>

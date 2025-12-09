@@ -31,7 +31,7 @@ const NotificationFilters = ({ filters, onFilterChange }) => {
           <select
             value={filters.type}
             onChange={(e) => onFilterChange('type', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
           >
             {notificationTypes.map((type) => (
               <option key={type.value} value={type.value}>
@@ -49,7 +49,7 @@ const NotificationFilters = ({ filters, onFilterChange }) => {
           <select
             value={filters.read}
             onChange={(e) => onFilterChange('read', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-body-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
           >
             <option value="all">All</option>
             <option value="unread">Unread Only</option>

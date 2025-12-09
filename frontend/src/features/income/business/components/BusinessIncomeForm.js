@@ -241,7 +241,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.grossReceipts || 0}
             onChange={(e) => handleChange('grossReceipts', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
             max={20000000}
           />
           <p className="text-xs text-gray-500 mt-1">Maximum ₹2 crores for ITR-4</p>
@@ -254,7 +254,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
           <select
             value={data?.presumptiveRate || 8}
             onChange={(e) => handleChange('presumptiveRate', parseFloat(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           >
             <option value={8}>8% (Digital Receipts)</option>
             <option value={6}>6% (Digital Receipts)</option>
@@ -347,7 +347,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
           </h3>
           <button
             onClick={addBusiness}
-            className="flex items-center gap-2 px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors text-sm"
           >
             <Plus className="w-4 h-4" />
             Add Business
@@ -396,7 +396,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                       type="text"
                       value={business.businessName || ''}
                       onChange={(e) => updateBusiness(businessIndex, 'businessName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -405,7 +405,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                       type="text"
                       value={business.businessNature || ''}
                       onChange={(e) => updateBusiness(businessIndex, 'businessNature', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -414,7 +414,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                       type="text"
                       value={business.businessPAN || ''}
                       onChange={(e) => updateBusiness(businessIndex, 'businessPAN', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       maxLength={10}
                       placeholder="ABCDE1234F"
                     />
@@ -425,7 +425,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                       type="text"
                       value={business.gstNumber || ''}
                       onChange={(e) => updateBusiness(businessIndex, 'gstNumber', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="29ABCDE1234F1Z5"
                     />
                   </div>
@@ -434,7 +434,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                     <textarea
                       value={business.businessAddress || ''}
                       onChange={(e) => updateBusiness(businessIndex, 'businessAddress', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       rows={2}
                     />
                   </div>
@@ -459,7 +459,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                     type="number"
                     value={business.pnl?.grossReceipts || 0}
                     onChange={(e) => updatePNL(businessIndex, 'grossReceipts', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
                 <div>
@@ -468,7 +468,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                     type="number"
                     value={business.pnl?.openingStock || 0}
                     onChange={(e) => updatePNL(businessIndex, 'openingStock', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
                 <div>
@@ -477,7 +477,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                     type="number"
                     value={business.pnl?.purchases || 0}
                     onChange={(e) => updatePNL(businessIndex, 'purchases', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
                 <div>
@@ -486,7 +486,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                     type="number"
                     value={business.pnl?.closingStock || 0}
                     onChange={(e) => updatePNL(businessIndex, 'closingStock', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
               </div>
@@ -517,7 +517,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.directExpenses?.rawMaterials || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'directExpenses', 'rawMaterials', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -526,7 +526,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.directExpenses?.wages || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'directExpenses', 'wages', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -535,7 +535,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.directExpenses?.powerFuel || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'directExpenses', 'powerFuel', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -544,7 +544,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.directExpenses?.freight || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'directExpenses', 'freight', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -553,7 +553,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.directExpenses?.other || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'directExpenses', 'other', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   </div>
@@ -586,7 +586,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.rent || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'rent', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -595,7 +595,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.salary || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'salary', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -604,7 +604,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.utilities || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'utilities', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -613,7 +613,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.insurance || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'insurance', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -622,7 +622,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.advertising || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'advertising', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -631,7 +631,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.professionalFees || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'professionalFees', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -640,7 +640,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.indirectExpenses?.other || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'indirectExpenses', 'other', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   </div>
@@ -673,7 +673,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.depreciation?.building || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'depreciation', 'building', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -682,7 +682,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.depreciation?.machinery || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'depreciation', 'machinery', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -691,7 +691,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.depreciation?.vehicles || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'depreciation', 'vehicles', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div>
@@ -700,7 +700,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.depreciation?.furniture || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'depreciation', 'furniture', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -709,7 +709,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                         type="number"
                         value={business.pnl?.depreciation?.other || 0}
                         onChange={(e) => updateExpenseCategory(businessIndex, 'depreciation', 'other', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                       />
                     </div>
                   </div>
@@ -723,7 +723,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
                   type="number"
                   value={business.pnl?.otherExpenses || 0}
                   onChange={(e) => updatePNL(businessIndex, 'otherExpenses', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
               </div>
 
@@ -772,7 +772,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
           type="text"
           value={data?.businessName || ''}
           onChange={(e) => handleChange('businessName', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
         />
       </div>
 
@@ -782,7 +782,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
           type="text"
           value={data?.businessNature || ''}
           onChange={(e) => handleChange('businessNature', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
         />
       </div>
 
@@ -793,7 +793,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.grossReceipts || 0}
             onChange={(e) => handleChange('grossReceipts', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -803,7 +803,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.openingStock || 0}
             onChange={(e) => handleChange('openingStock', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -813,7 +813,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.purchases || 0}
             onChange={(e) => handleChange('purchases', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -823,7 +823,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.closingStock || 0}
             onChange={(e) => handleChange('closingStock', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -833,7 +833,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.directExpenses || 0}
             onChange={(e) => handleChange('directExpenses', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -843,7 +843,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.indirectExpenses || 0}
             onChange={(e) => handleChange('indirectExpenses', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -853,7 +853,7 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             type="number"
             value={data?.depreciation || 0}
             onChange={(e) => handleChange('depreciation', parseFloat(e.target.value) || 0)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
       </div>

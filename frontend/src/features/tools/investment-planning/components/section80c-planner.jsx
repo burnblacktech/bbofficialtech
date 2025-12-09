@@ -58,7 +58,7 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
           return (
             <div key={option.key} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Icon className="w-5 h-5 text-orange-600" />
+                <Icon className="w-5 h-5 text-gold-600" />
                 <h4 className="font-semibold text-gray-900">{option.label}</h4>
               </div>
               <div className="space-y-2">
@@ -67,7 +67,7 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
                   value={value}
                   onChange={(e) => handleInvestmentChange(option.key, e.target.value)}
                   placeholder="Enter amount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
                 <div className="text-xs text-gray-600 space-y-1">
                   <p>Lock-in: {option.lockIn}</p>
@@ -103,7 +103,7 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
           <div className="pt-2 border-t border-gray-300">
             <div className="flex justify-between">
               <span className="font-semibold text-gray-900">Eligible Deduction:</span>
-              <span className="font-bold text-lg text-orange-600">
+              <span className="font-bold text-lg text-gold-600">
                 ₹{Math.min(totalInvested, remainingCapacity).toLocaleString('en-IN')}
               </span>
             </div>
@@ -113,11 +113,11 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
 
       {/* Recommendations */}
       {recommendations && recommendations.length > 0 && (
-        <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
-          <h4 className="font-semibold text-orange-900 mb-2">AI Recommendations</h4>
+        <div className="border border-gold-200 rounded-lg p-4 bg-gold-50">
+          <h4 className="font-semibold text-gold-900 mb-2">AI Recommendations</h4>
           <ul className="space-y-2">
             {recommendations.slice(0, 3).map((rec, index) => (
-              <li key={index} className="text-sm text-orange-800">
+              <li key={index} className="text-sm text-gold-800">
                 • {rec.description} - Invest ₹{rec.investmentAmount?.toLocaleString('en-IN')} for ₹{rec.deductionAmount?.toLocaleString('en-IN')} deduction
               </li>
             ))}

@@ -173,7 +173,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
     <div className="bg-white shadow-card rounded-xl">
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center">
-          <Shield className="h-6 w-6 text-orange-500 mr-3" aria-hidden="true" />
+          <Shield className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
           <div>
             <h2 className="text-heading-lg font-medium text-gray-900">Verification Details</h2>
             <p className="text-body-md text-gray-600 mt-1">
@@ -189,7 +189,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
           {/* Verification Method Selection */}
           <div>
             <h3 className="text-heading-sm font-medium text-gray-900 mb-4 flex items-center">
-              <Shield className="h-5 w-5 text-orange-500 mr-2" aria-hidden="true" />
+              <Shield className="h-5 w-5 text-gold-500 mr-2" aria-hidden="true" />
               Verification Method
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -207,12 +207,12 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   htmlFor="aadhaar_otp"
                   className={`block p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                     verificationMethod === 'AADHAAR_OTP'
-                      ? 'border-orange-500 bg-orange-50'
+                      ? 'border-gold-500 bg-gold-50'
                       : 'border-gray-200 hover:border-gray-300'
                   } ${isReadOnly ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div className="flex items-center">
-                    <Smartphone className="h-6 w-6 text-orange-500 mr-3" aria-hidden="true" />
+                    <Smartphone className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
                     <div className="flex-1">
                       <h4 className="text-body-md font-medium text-gray-900">Aadhaar OTP</h4>
                       <p className="text-body-sm text-gray-600">Quick and secure</p>
@@ -234,12 +234,12 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   htmlFor="dsc"
                   className={`block p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                     verificationMethod === 'DSC'
-                      ? 'border-orange-500 bg-orange-50'
+                      ? 'border-gold-500 bg-gold-50'
                       : 'border-gray-200 hover:border-gray-300'
                   } ${isReadOnly ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div className="flex items-center">
-                    <CreditCard className="h-6 w-6 text-orange-500 mr-3" aria-hidden="true" />
+                    <CreditCard className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
                     <div className="flex-1">
                       <h4 className="text-body-md font-medium text-gray-900">Digital Signature</h4>
                       <p className="text-body-sm text-gray-600">DSC certificate</p>
@@ -261,12 +261,12 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   htmlFor="netbanking"
                   className={`block p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                     verificationMethod === 'NETBANKING'
-                      ? 'border-orange-500 bg-orange-50'
+                      ? 'border-gold-500 bg-gold-50'
                       : 'border-gray-200 hover:border-gray-300'
                   } ${isReadOnly ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div className="flex items-center">
-                    <Globe className="h-6 w-6 text-orange-500 mr-3" aria-hidden="true" />
+                    <Globe className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
                     <div className="flex-1">
                       <h4 className="text-body-md font-medium text-gray-900">Net Banking</h4>
                       <p className="text-body-sm text-gray-600">Bank credentials</p>
@@ -314,7 +314,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="aadhaarOtp"
                       {...register('aadhaarOtp')}
                       disabled={isReadOnly || !otpSent}
-                      className="flex-1 block w-full border border-gray-200 rounded-l-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="flex-1 block w-full border border-gray-200 rounded-l-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="Enter 6-digit OTP"
                       maxLength="6"
                       aria-label="Aadhaar OTP"
@@ -324,11 +324,11 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                         type="button"
                         onClick={sendAadhaarOTP}
                         disabled={isVerifying || otpSent}
-                        className="inline-flex items-center px-4 py-2 border border-l-0 border-gray-200 rounded-r-lg bg-gray-50 text-body-md text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="inline-flex items-center px-4 py-2 border border-l-0 border-gray-200 rounded-r-lg bg-gray-50 text-body-md text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gold-500"
                         aria-label={otpSent ? 'OTP already sent' : 'Send OTP'}
                       >
                         {isVerifying ? (
-                          <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-orange-500 rounded-full" aria-hidden="true"></div>
+                          <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gold-500 rounded-full" aria-hidden="true"></div>
                         ) : otpSent ? (
                           'OTP Sent'
                         ) : (
@@ -366,7 +366,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateName"
                       {...register('dscDetails.certificateName')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="Enter certificate name"
                       aria-label="Certificate name"
                     />
@@ -387,7 +387,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateIssuer"
                       {...register('dscDetails.certificateIssuer')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="Enter certificate issuer"
                       aria-label="Certificate issuer"
                     />
@@ -408,7 +408,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateValidFrom"
                       {...register('dscDetails.certificateValidFrom')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       aria-label="Certificate valid from date"
                     />
                     {errors.dscDetails?.certificateValidFrom && (
@@ -428,7 +428,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateValidTo"
                       {...register('dscDetails.certificateValidTo')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       aria-label="Certificate valid to date"
                     />
                     {errors.dscDetails?.certificateValidTo && (
@@ -448,7 +448,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateSerialNumber"
                       {...register('dscDetails.certificateSerialNumber')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="Enter certificate serial number"
                       aria-label="Certificate serial number"
                     />
@@ -476,7 +476,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="netbankingDetails.bankName"
                       {...register('netbankingDetails.bankName')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="Enter bank name"
                       aria-label="Bank name"
                     />
@@ -497,7 +497,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="netbankingDetails.userId"
                       {...register('netbankingDetails.userId')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                       placeholder="Enter net banking user ID"
                       aria-label="Net banking user ID"
                     />
@@ -519,7 +519,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                         id="netbankingDetails.password"
                         {...register('netbankingDetails.password')}
                         disabled={isReadOnly}
-                        className="block w-full pr-10 border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                        className="block w-full pr-10 border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                         placeholder="Enter net banking password"
                         aria-label="Net banking password"
                       />
@@ -528,7 +528,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+                            className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
                             aria-label={showPassword ? 'Hide password' : 'Show password'}
                           >
                             {showPassword ? (
@@ -567,7 +567,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   id="verificationStatus"
                   {...register('verificationStatus')}
                   disabled={isReadOnly}
-                  className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                  className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                   aria-label="Verification status"
                 >
                   <option value="pending">Pending</option>
@@ -592,7 +592,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                     id="verificationDate"
                     {...register('verificationDate')}
                     disabled={isReadOnly}
-                    className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+                    className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
                     aria-label="Verification date"
                   />
                   {errors.verificationDate && (
@@ -616,7 +616,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
               {...register('verificationNotes')}
               disabled={isReadOnly}
               rows={3}
-              className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100"
+              className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
               placeholder="Add any additional notes about verification"
               aria-label="Verification notes"
             />
@@ -631,7 +631,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   type="checkbox"
                   {...register('isConsentGiven')}
                   disabled={isReadOnly}
-                  className="h-4 w-4 text-orange-500 focus:ring-2 focus:ring-orange-500 border-gray-200 rounded disabled:opacity-50"
+                  className="h-4 w-4 text-gold-500 focus:ring-2 focus:ring-gold-500 border-gray-200 rounded disabled:opacity-50"
                   aria-label="Consent for verification"
                 />
               </div>
@@ -661,7 +661,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-label-md font-medium rounded-lg shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-label-md font-medium rounded-lg shadow-sm text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

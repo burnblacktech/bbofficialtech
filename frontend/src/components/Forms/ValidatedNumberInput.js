@@ -149,7 +149,7 @@ const ValidatedNumberInput = ({
     }
 
     if (!validationState.isTouched) {
-      return `${baseClasses} border-gray-300 focus:ring-orange-500 focus:border-orange-500`;
+      return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
     }
 
     if (validationState.errors.length > 0) {
@@ -164,12 +164,12 @@ const ValidatedNumberInput = ({
       return `${baseClasses} border-green-300 focus:ring-green-500 focus:border-green-500`;
     }
 
-    return `${baseClasses} border-gray-300 focus:ring-orange-500 focus:border-orange-500`;
+    return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
   };
 
   const getValidationIcon = () => {
     if (isValidating) {
-      return <RefreshCw className="w-4 h-4 text-orange-500 animate-spin" />;
+      return <RefreshCw className="w-4 h-4 text-gold-500 animate-spin" />;
     }
 
     if (!validationState.isTouched || !value) {

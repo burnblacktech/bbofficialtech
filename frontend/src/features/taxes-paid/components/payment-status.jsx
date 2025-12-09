@@ -79,7 +79,7 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
         </div>
       </div>
     );
@@ -172,7 +172,7 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
               href={payment.paymentProofUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-body-sm text-orange-600 hover:text-orange-700"
+              className="inline-flex items-center text-body-sm text-gold-600 hover:text-gold-700"
             >
               <FileText className="h-4 w-4 mr-2" />
               View Proof

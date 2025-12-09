@@ -13,7 +13,7 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -52,9 +52,9 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-orange-600" />
+          <Sparkles className="w-6 h-6 text-gold-600" />
           <h3 className="text-heading-md text-gray-900">AI-Powered Deduction Suggestions</h3>
-          <span className="px-2 py-1 text-xs rounded bg-orange-100 text-orange-700 font-medium">
+          <span className="px-2 py-1 text-xs rounded bg-gold-100 text-gold-700 font-medium">
             {suggestions.length} suggestions
           </span>
         </div>
@@ -109,7 +109,7 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
                   {suggestion.actionable && onApplySuggestion && (
                     <button
                       onClick={() => onApplySuggestion(suggestion)}
-                      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm font-medium"
+                      className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 text-sm font-medium"
                     >
                       Apply
                     </button>

@@ -178,7 +178,7 @@ const LoginPage = () => {
                 required
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
                   emailError ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm`}
+                } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
                 value={email}
                 onChange={handleEmailChange}
@@ -200,7 +200,7 @@ const LoginPage = () => {
                 required
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border ${
                   passwordError ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm`}
+                } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
@@ -229,7 +229,7 @@ const LoginPage = () => {
               id="remember-me"
               name="remember-me"
               type="checkbox"
-              className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+              className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-gray-300 rounded"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             />
@@ -242,7 +242,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -289,7 +289,7 @@ const LoginPage = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-orange-600 hover:text-orange-500">
+              <Link to="/forgot-password" className="font-medium text-gold-600 hover:text-gold-500">
                 Forgot password?
               </Link>
             </div>
@@ -298,7 +298,7 @@ const LoginPage = () => {
           <div className="text-center">
             <p className="text-body-sm text-gray-600">
               Don't have an account?{' '}
-              <Link to="/signup" className="font-medium text-orange-600 hover:text-orange-500">
+              <Link to="/signup" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign up
               </Link>
             </p>

@@ -25,7 +25,7 @@ const ComputationSheet = ({ filingId, regime = 'old', taxComputation }) => {
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <FileText className="h-6 w-6 text-orange-600 mr-3" />
+          <FileText className="h-6 w-6 text-gold-600 mr-3" />
           <h3 className="text-heading-md text-gray-800">Detailed Computation Sheet</h3>
         </div>
         <div className="flex gap-2">
@@ -53,7 +53,7 @@ const ComputationSheet = ({ filingId, regime = 'old', taxComputation }) => {
 
       {isLoading ? (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500 mx-auto"></div>
           <p className="text-body-md text-gray-600 mt-4">Calculating tax breakdown...</p>
         </div>
       ) : (
@@ -126,7 +126,7 @@ const ComputationSheet = ({ filingId, regime = 'old', taxComputation }) => {
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-orange-50">
+                    <tr className="bg-gold-50">
                       <td
                         colSpan={3}
                         className="p-3 text-body-md font-semibold text-gray-800 border border-gray-200"

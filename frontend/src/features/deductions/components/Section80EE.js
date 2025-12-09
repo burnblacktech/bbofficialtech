@@ -20,11 +20,13 @@ import {
 } from 'lucide-react';
 import apiClient from '../../../services/core/APIClient';
 import toast from 'react-hot-toast';
+import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
 const Section80EE = ({ filingId, onUpdate }) => {
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingDeduction, setEditingDeduction] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, deductionId: null });
   const [formData, setFormData] = useState({
     sectionType: '80EE',
     lenderName: '',
@@ -215,9 +217,14 @@ const Section80EE = ({ filingId, onUpdate }) => {
   };
 
   const handleDelete = (deductionId) => {
-    if (window.confirm('Are you sure you want to delete this deduction?')) {
-      deleteDeductionMutation.mutate(deductionId);
+    setDeleteConfirm({ isOpen: true, deductionId });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm.deductionId) {
+      deleteDeductionMutation.mutate(deleteConfirm.deductionId);
     }
+    setDeleteConfirm({ isOpen: false, deductionId: null });
   };
 
   const resetForm = () => {
@@ -265,7 +272,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
       </div>
     );
   }
@@ -279,8 +286,8 @@ const Section80EE = ({ filingId, onUpdate }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <Home className="h-6 w-6 text-orange-600" />
+            <div className="p-3 bg-gold-100 rounded-lg">
+              <Home className="h-6 w-6 text-gold-600" />
             </div>
             <div>
               <h2 className="text-heading-lg text-gray-900">Section 80EE / 80EEA</h2>
@@ -289,7 +296,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center space-x-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Add Loan</span>
@@ -300,7 +307,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <span className="text-body-sm font-medium text-gray-700">Total Interest Deduction</span>
-            <span className="text-heading-lg font-bold text-orange-600">₹{totalAmount.toLocaleString('en-IN')}</span>
+            <span className="text-heading-lg font-bold text-gold-600">₹{totalAmount.toLocaleString('en-IN')}</span>
           </div>
         </div>
       </div>
@@ -320,8 +327,8 @@ const Section80EE = ({ filingId, onUpdate }) => {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
-                    <div className="p-3 bg-orange-100 rounded-lg">
-                      <Home className="h-6 w-6 text-orange-600" />
+                    <div className="p-3 bg-gold-100 rounded-lg">
+                      <Home className="h-6 w-6 text-gold-600" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
@@ -344,7 +351,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                           <span className="text-body-sm font-medium text-gray-900">{deduction.propertyAddress}</span>
                         </div>
                         <div className="mt-3">
-                          <div className="text-heading-md font-bold text-orange-600">
+                          <div className="text-heading-md font-bold text-gold-600">
                             ₹{deductionAmount.toLocaleString('en-IN')}
                           </div>
                           <div className="text-body-xs text-gray-600">Interest Paid (Limit: ₹{deductionLimit.toLocaleString('en-IN')})</div>
@@ -372,7 +379,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                     </label>
                     <button
                       onClick={() => handleEdit(deduction)}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-md transition-colors"
+                      className="p-2 text-gold-600 hover:bg-gold-50 rounded-md transition-colors"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
@@ -397,7 +404,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
           >
             Add Loan
           </button>
@@ -432,7 +439,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                 <select
                   value={formData.sectionType}
                   onChange={(e) => setFormData({ ...formData, sectionType: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 >
                   {sectionTypes.map((type) => (
                     <option key={type.id} value={type.id}>
@@ -454,7 +461,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.lenderName}
                   onChange={(e) => setFormData({ ...formData, lenderName: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.lenderName ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter lender/bank name"
@@ -473,7 +480,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   type="text"
                   value={formData.loanAccountNumber}
                   onChange={(e) => setFormData({ ...formData, loanAccountNumber: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.loanAccountNumber ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter loan account number"
@@ -493,7 +500,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   value={formData.interestPaid}
                   onChange={(e) => setFormData({ ...formData, interestPaid: e.target.value })}
                   max={limit}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.interestPaid ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter interest paid during the year"
@@ -515,7 +522,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   value={formData.propertyAddress}
                   onChange={(e) => setFormData({ ...formData, propertyAddress: e.target.value })}
                   rows={2}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.propertyAddress ? 'border-error-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter property address"
@@ -534,7 +541,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   type="date"
                   value={formData.loanSanctionDate}
                   onChange={(e) => setFormData({ ...formData, loanSanctionDate: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
                     formErrors.loanSanctionDate ? 'border-error-500' : 'border-gray-300'
                   }`}
                 />
@@ -552,7 +559,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   type="number"
                   value={formData.loanAmount}
                   onChange={(e) => setFormData({ ...formData, loanAmount: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Enter total loan amount"
                 />
               </div>
@@ -564,7 +571,7 @@ const Section80EE = ({ filingId, onUpdate }) => {
                   type="checkbox"
                   checked={formData.isFirstTimeHomeBuyer}
                   onChange={(e) => setFormData({ ...formData, isFirstTimeHomeBuyer: e.target.checked })}
-                  className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded mt-1"
+                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-gray-300 rounded mt-1"
                 />
                 <label htmlFor="isFirstTimeHomeBuyer" className="ml-2 block text-body-sm text-gray-700">
                   First-time home buyer
@@ -596,14 +603,14 @@ const Section80EE = ({ filingId, onUpdate }) => {
                     resetForm();
                     setShowAddForm(false);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {addDeductionMutation.isPending || updateDeductionMutation.isPending
                     ? 'Saving...'
@@ -616,6 +623,17 @@ const Section80EE = ({ filingId, onUpdate }) => {
           </div>
         </div>
       )}
+
+      <ConfirmationDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, deductionId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Deduction"
+        message="Are you sure you want to delete this deduction? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 };

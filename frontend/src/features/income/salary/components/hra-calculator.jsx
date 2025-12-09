@@ -44,7 +44,7 @@ const HRACalculator = ({ onCalculate }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center mb-4">
-        <Calculator className="h-5 w-5 text-orange-600 mr-2" />
+        <Calculator className="h-5 w-5 text-gold-600 mr-2" />
         <h3 className="text-heading-md text-gray-800">HRA Exemption Calculator</h3>
       </div>
 
@@ -57,7 +57,7 @@ const HRACalculator = ({ onCalculate }) => {
             type="number"
             value={hraData.basicSalary}
             onChange={(e) => setHraData({ ...hraData, basicSalary: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             placeholder="0"
           />
         </div>
@@ -70,7 +70,7 @@ const HRACalculator = ({ onCalculate }) => {
             type="number"
             value={hraData.hraReceived}
             onChange={(e) => setHraData({ ...hraData, hraReceived: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             placeholder="0"
           />
         </div>
@@ -83,7 +83,7 @@ const HRACalculator = ({ onCalculate }) => {
             type="number"
             value={hraData.rentPaid}
             onChange={(e) => setHraData({ ...hraData, rentPaid: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             placeholder="0"
           />
         </div>
@@ -95,7 +95,7 @@ const HRACalculator = ({ onCalculate }) => {
           <select
             value={hraData.cityType}
             onChange={(e) => setHraData({ ...hraData, cityType: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           >
             <option value="non-metro">Non-Metro (40% of Basic)</option>
             <option value="metro">Metro (50% of Basic)</option>

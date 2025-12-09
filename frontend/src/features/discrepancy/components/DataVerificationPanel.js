@@ -125,7 +125,7 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
             </div>
             <button
               onClick={() => setIsExpanded(true)}
-              className="text-body-sm text-orange-600 hover:text-orange-700 font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+              className="text-body-sm text-gold-600 hover:text-gold-700 font-medium focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
             >
               Review All →
             </button>
@@ -165,7 +165,7 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
                 e.stopPropagation();
                 setShowHistory(!showHistory);
               }}
-              className="text-body-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded"
+              className="text-body-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
               aria-label={showHistory ? 'Hide history' : 'Show history'}
             >
               {showHistory ? 'Hide' : 'Show'} History

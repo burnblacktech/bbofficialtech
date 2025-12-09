@@ -148,7 +148,7 @@ export const ValidationSummary = ({
                   {onFieldClick && (
                     <button
                       onClick={() => onFieldClick(error.fieldId)}
-                      className="text-orange-500 hover:text-orange-600 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 rounded"
+                      className="text-gold-500 hover:text-gold-600 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-1 rounded"
                       style={{ fontSize: '13px' }}
                     >
                       Go to field →

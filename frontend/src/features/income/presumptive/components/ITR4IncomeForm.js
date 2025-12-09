@@ -94,7 +94,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
             type="number"
             value={data.salary || 0}
             onChange={(e) => handleSalaryUpdate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
       </div>
@@ -108,7 +108,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
               type="checkbox"
               checked={presumptiveBusiness.hasPresumptiveBusiness}
               onChange={(e) => handlePresumptiveBusinessUpdate('hasPresumptiveBusiness', e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
             />
             <label className="text-sm text-gray-700">I have presumptive business income</label>
           </div>
@@ -129,7 +129,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
                 type="checkbox"
                 checked={presumptiveBusiness.optedOut}
                 onChange={(e) => handlePresumptiveBusinessUpdate('optedOut', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
               />
               <label className="text-sm text-gray-700">Opt out of presumptive scheme (declare actual profit)</label>
             </div>
@@ -152,7 +152,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
                         }
                         handlePresumptiveBusinessUpdate('grossReceipts', value);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                     <p className="text-xs text-gray-500 mt-1">Maximum ₹2 crores for ITR-4</p>
                   </div>
@@ -164,7 +164,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
                     <select
                       value={presumptiveBusiness.presumptiveRate}
                       onChange={(e) => handlePresumptiveBusinessUpdate('presumptiveRate', parseFloat(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value={8}>8% (Non-digital receipts)</option>
                       <option value={6}>6% (Digital receipts)</option>
@@ -204,7 +204,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
               type="checkbox"
               checked={presumptiveProfessional.hasPresumptiveProfessional}
               onChange={(e) => handlePresumptiveProfessionalUpdate('hasPresumptiveProfessional', e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
             />
             <label className="text-sm text-gray-700">I have presumptive professional income</label>
           </div>
@@ -225,7 +225,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
                 type="checkbox"
                 checked={presumptiveProfessional.optedOut}
                 onChange={(e) => handlePresumptiveProfessionalUpdate('optedOut', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
               />
               <label className="text-sm text-gray-700">Opt out of presumptive scheme (declare actual income)</label>
             </div>
@@ -248,7 +248,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
                         }
                         handlePresumptiveProfessionalUpdate('grossReceipts', value);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                     <p className="text-xs text-gray-500 mt-1">Maximum ₹50 lakhs for ITR-4</p>
                   </div>
@@ -309,7 +309,7 @@ const ITR4IncomeForm = ({ data, onUpdate, selectedITR, fullFormData, onDataUploa
             type="number"
             value={data.otherIncome || 0}
             onChange={(e) => handleOtherIncomeUpdate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
           <p className="text-xs text-gray-500 mt-1">Interest, dividends, winnings, etc.</p>
         </div>

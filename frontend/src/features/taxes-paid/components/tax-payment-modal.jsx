@@ -51,15 +51,15 @@ const TaxPaymentModal = ({
         currency: result.currency || 'INR',
         name: 'BurnBlack',
         description: `Tax Payment - Challan ${challanNumber}`,
-        order_id: result.orderId,
+        orderId: result.orderId,
         handler: async (response) => {
           try {
             // Verify payment
             const verifyResult = await verifyPayment.mutateAsync({
               paymentId,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
+              razorpayOrderId: response.razorpay_order_id || response.razorpayOrderId,
+              razorpayPaymentId: response.razorpay_payment_id || response.razorpayPaymentId,
+              razorpaySignature: response.razorpay_signature || response.razorpaySignature,
             });
 
             if (verifyResult.success) {
@@ -78,7 +78,7 @@ const TaxPaymentModal = ({
           }
         },
         theme: {
-          color: '#f97316', // Orange theme
+          color: '#D4AF37', // Gold theme (brand primary)
         },
         modal: {
           ondismiss: () => {
@@ -222,12 +222,12 @@ const TaxPaymentModal = ({
                     onClick={() => setSelectedMethod('razorpay')}
                     className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                       selectedMethod === 'razorpay'
-                        ? 'border-orange-500 bg-orange-50'
+                        ? 'border-gold-500 bg-gold-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-center">
-                      <CreditCard className="h-5 w-5 mr-3 text-orange-600" />
+                      <CreditCard className="h-5 w-5 mr-3 text-gold-600" />
                       <div>
                         <div className="text-body-md font-medium text-gray-900">Razorpay</div>
                         <div className="text-body-xs text-gray-600">Net Banking, UPI, Cards, Wallets</div>
@@ -239,7 +239,7 @@ const TaxPaymentModal = ({
                     onClick={() => setSelectedMethod('itd_direct')}
                     className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                       selectedMethod === 'itd_direct'
-                        ? 'border-orange-500 bg-orange-50'
+                        ? 'border-gold-500 bg-gold-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -284,7 +284,7 @@ const TaxPaymentModal = ({
                 <button
                   onClick={selectedMethod === 'razorpay' ? handleRazorpayPayment : handleITDPayment}
                   disabled={createPaymentOrder.isPending || initiateITDPayment.isPending}
-                  className="flex-1 py-2 px-4 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center"
+                  className="flex-1 py-2 px-4 bg-gold-500 text-white rounded-lg text-sm font-medium hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
                 >
                   {createPaymentOrder.isPending || initiateITDPayment.isPending ? (
                     <>
@@ -313,7 +313,7 @@ const TaxPaymentModal = ({
             <div className="flex justify-end">
               <button
                 onClick={onClose}
-                className="py-2 px-4 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600"
+                className="py-2 px-4 bg-gold-500 text-white rounded-lg text-sm font-medium hover:bg-gold-600"
               >
                 Close
               </button>

@@ -31,7 +31,7 @@ const NotificationBadge = ({ className = '' }) => {
       aria-label={`${unreadCount} unread notifications`}
     >
       <Bell className="h-5 w-5" />
-      <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-body-xs font-bold">
+      <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-white text-body-xs font-bold">
         {unreadCount > 99 ? '99+' : unreadCount}
       </span>
     </button>

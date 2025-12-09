@@ -18,7 +18,7 @@ const RefundTimeline = ({ timeline = [] }) => {
       case 'failed':
         return <XCircle className="h-5 w-5 text-error-500" />;
       case 'adjusted':
-        return <AlertCircle className="h-5 w-5 text-orange-500" />;
+        return <AlertCircle className="h-5 w-5 text-gold-500" />;
       default:
         return <Clock className="h-5 w-5 text-gray-400" />;
     }

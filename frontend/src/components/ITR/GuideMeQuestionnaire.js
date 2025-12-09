@@ -48,7 +48,7 @@ const INCOME_SOURCES_STEP1 = [
     id: 'business',
     label: 'Business / Shop / Trade',
     icon: Building2,
-    color: 'from-amber-500 to-orange-500',
+    color: 'from-amber-500 to-gold-500',
   },
   {
     id: 'freelance',

@@ -66,7 +66,7 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
 
       {/* Summary */}
       {(totalIncome > 0 || totalLoss > 0) && (
-        <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border border-orange-200 p-4">
+        <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-xl border border-gold-200 p-4">
           <div className="grid grid-cols-2 gap-4">
             {totalIncome > 0 && (
               <div>
@@ -107,7 +107,7 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
             return (
               <div
                 key={property.id || index}
-                className="bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-300 transition-colors"
+                className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gold-300 transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -125,7 +125,7 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
                     {onEditProperty && (
                       <button
                         onClick={() => onEditProperty(property, index)}
-                        className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50"
+                        className="p-2 text-gray-400 hover:text-gold-600 rounded-lg hover:bg-gold-50"
                         aria-label="Edit property"
                       >
                         <Edit2 className="h-4 w-4" />

@@ -178,7 +178,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-orange-600 mr-2" />
+                <Calendar className="h-5 w-5 text-gold-600 mr-2" />
                 <h3 id="booking-modal-title" className="text-heading-lg text-gray-800 font-semibold">
                   Book Consultation
                 </h3>
@@ -219,7 +219,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                         onClick={() => setConsultationType(type.value)}
                         className={`p-3 border-2 rounded-lg transition-colors flex flex-col items-center gap-2 ${
                           consultationType === type.value
-                            ? 'border-orange-500 bg-orange-50'
+                            ? 'border-gold-500 bg-gold-50'
                             : 'border-gray-300 hover:border-gray-400'
                         }`}
                       >
@@ -243,7 +243,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={minDate}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 />
               </div>
@@ -256,7 +256,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                   </label>
                   {isLoadingSlots ? (
                     <div className="text-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500 mx-auto"></div>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gold-500 mx-auto"></div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
@@ -267,7 +267,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                           onClick={() => setSelectedTime(slot)}
                           className={`p-2 border-2 rounded-lg text-body-sm font-medium transition-colors ${
                             selectedTime === slot
-                              ? 'border-orange-500 bg-orange-50 text-orange-700'
+                              ? 'border-gold-500 bg-gold-50 text-gold-700'
                               : 'border-gray-300 hover:border-gray-400'
                           }`}
                         >
@@ -290,7 +290,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any specific topics you'd like to discuss..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 />
               </div>
 
@@ -306,7 +306,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={bookConsultationMutation.isPending || !selectedDate || !selectedTime}
-                  className="px-4 py-2 text-body-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {bookConsultationMutation.isPending ? (
                     <>

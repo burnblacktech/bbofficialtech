@@ -10,7 +10,7 @@ const ProgressIndicator = ({ steps, currentStep, className = '' }) => {
 
         return (
           <div key={index} className="flex items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${isCompleted ? 'bg-success-500 text-white' : isCurrent ? 'bg-orange-500 text-white' : 'bg-gray-300 text-gray-600'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${isCompleted ? 'bg-success-500 text-white' : isCurrent ? 'bg-gold-500 text-white' : 'bg-gray-300 text-gray-600'}`}>
               {isCompleted ? '✓' : index + 1}
             </div>
             <span className={`ml-2 text-sm ${isCompleted || isCurrent ? 'text-gray-900' : 'text-gray-500'}`}>

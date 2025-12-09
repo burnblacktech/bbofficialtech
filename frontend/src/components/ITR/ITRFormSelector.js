@@ -130,7 +130,7 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
       case 'ITR-2':
         return 'bg-info-500';
       case 'ITR-3':
-        return 'bg-orange-500';
+        return 'bg-gold-500';
       case 'ITR-4':
         return 'bg-warning-500';
       default:
@@ -145,7 +145,7 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
-            <Loader className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-4" />
+            <Loader className="w-8 h-8 animate-spin text-gold-500 mx-auto mb-4" />
             <p className="text-gray-600">Analyzing profile to recommend ITR form...</p>
           </div>
         </div>
@@ -207,7 +207,7 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
               className={`
                 p-4 rounded-lg border-2 transition-all text-left
                 ${isSelected
-                  ? 'border-orange-500 bg-orange-50 shadow-md'
+                  ? 'border-gold-500 bg-gold-50 shadow-md'
                   : 'border-gray-200 hover:border-gray-300 bg-white'
                 }
                 ${isRecommended && !isSelected ? 'ring-2 ring-info-200' : ''}
@@ -221,7 +221,7 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
                 {itrDescriptions[itrType]?.shortDescription || 'Income Tax Return'}
               </p>
               {isSelected && (
-                <div className="flex items-center text-orange-600 text-xs">
+                <div className="flex items-center text-gold-600 text-xs">
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Selected
                 </div>

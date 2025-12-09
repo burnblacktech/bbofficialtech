@@ -184,7 +184,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               type="text"
               value={formData.assetDetails.companyName}
               onChange={(e) => handleChange('assetDetails.companyName', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 errors['assetDetails.companyName'] ? 'border-error-500' : 'border-gray-300'
               }`}
               placeholder="Enter company name"
@@ -202,7 +202,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               type="text"
               value={formData.assetDetails.isin}
               onChange={(e) => handleChange('assetDetails.isin', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="e.g., US0378331005"
             />
           </div>
@@ -214,7 +214,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
             <select
               value={formData.assetDetails.securityType}
               onChange={(e) => handleChange('assetDetails.securityType', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="equity">Equity</option>
               <option value="preference">Preference Shares</option>
@@ -231,7 +231,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
             <select
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 errors.country ? 'border-error-500' : 'border-gray-300'
               }`}
             >
@@ -256,7 +256,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.assetDetails.numberOfShares}
               onChange={(e) => handleChange('assetDetails.numberOfShares', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 errors['assetDetails.numberOfShares'] ? 'border-error-500' : 'border-gray-300'
               }`}
               placeholder="0"
@@ -275,7 +275,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.assetDetails.faceValuePerShare}
               onChange={(e) => handleChange('assetDetails.faceValuePerShare', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0.00"
             />
           </div>
@@ -290,7 +290,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
                 handleChange('currency', e.target.value);
                 handleChange('assetDetails.currency', e.target.value);
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               {currencies.map((curr) => (
                 <option key={curr} value={curr}>
@@ -312,7 +312,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
                 handleChange('assetDetails.currentMarketValue', e.target.value);
                 handleChange('valuationAmountForeign', e.target.value);
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0.00"
             />
           </div>
@@ -325,7 +325,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               type="date"
               value={formData.assetDetails.purchaseDate}
               onChange={(e) => handleChange('assetDetails.purchaseDate', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
         </div>
@@ -345,7 +345,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.valuationAmountForeign}
               onChange={(e) => handleChange('valuationAmountForeign', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0.00"
             />
           </div>
@@ -359,7 +359,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.0001"
               value={formData.exchangeRate}
               onChange={(e) => handleChange('exchangeRate', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="e.g., 83.25"
             />
             <p className="mt-1 text-body-xs text-gray-500">RBI reference rate for valuation date</p>
@@ -374,7 +374,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.valuationAmountInr || calculatedInr}
               onChange={(e) => handleChange('valuationAmountInr', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="Auto-calculated"
             />
             {calculatedInr > 0 && !formData.valuationAmountInr && (
@@ -392,7 +392,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
               type="date"
               value={formData.valuationDate}
               onChange={(e) => handleChange('valuationDate', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
         </div>
@@ -408,7 +408,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
             id="dtaaApplicable"
             checked={formData.dtaaApplicable}
             onChange={(e) => handleChange('dtaaApplicable', e.target.checked)}
-            className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+            className="mt-1 w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
           />
           <label htmlFor="dtaaApplicable" className="ml-2 text-body-sm text-gray-700">
             DTAA (Double Taxation Avoidance Agreement) Applicable
@@ -423,7 +423,7 @@ const ForeignEquityForm = ({ filingId, asset, onClose, onSuccess }) => {
             <select
               value={formData.dtaaCountry}
               onChange={(e) => handleChange('dtaaCountry', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 errors.dtaaCountry ? 'border-error-500' : 'border-gray-300'
               }`}
             >

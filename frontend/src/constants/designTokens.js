@@ -5,20 +5,15 @@
 
 export const COLORS = {
   // Brand Colors
-  orange: {
-    50: '#FFF8F2',
-    100: '#FFF0E5',
-    400: '#FF8533',
-    500: '#FF6B00',
-    600: '#E55F00',
-    700: '#CC5500',
-  },
   gold: {
-    50: '#FFFCF2',
-    100: '#FFF9E5',
-    400: '#FFC933',
-    500: '#FFB800',
-    600: '#E5A600',
+    50: '#FFF8E7',
+    100: '#FFF8E7',
+    300: '#FFE4A0',
+    400: '#FFD700',
+    500: '#D4AF37',
+    600: '#B8960C',
+    700: '#B8960C',
+    900: '#7A6508',
   },
   black: {
     500: '#737373',
@@ -173,7 +168,7 @@ export const BREATHING_GRID = {
 };
 
 export const GRADIENTS = {
-  burn: 'linear-gradient(135deg, #FF6B00 0%, #FFB800 100%)',
+  burn: 'linear-gradient(135deg, #D4AF37 0%, #FFE4A0 100%)', // Gold gradient
 };
 
 export default {

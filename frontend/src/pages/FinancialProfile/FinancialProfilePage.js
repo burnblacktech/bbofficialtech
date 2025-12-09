@@ -203,7 +203,7 @@ const FinancialProfilePage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your financial profile...</p>
         </div>
       </div>
@@ -220,7 +220,7 @@ const FinancialProfilePage = () => {
           <p className="text-gray-700 mb-4">{profileError.message}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
           >
             Retry
           </button>
@@ -247,7 +247,7 @@ const FinancialProfilePage = () => {
           <div className="space-x-4">
             <button
               onClick={() => navigate('/itr-selection')}
-              className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+              className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
             >
               Start Filing
             </button>
@@ -281,7 +281,7 @@ const FinancialProfilePage = () => {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="flex items-center px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50"
+                className="flex items-center px-3 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 disabled:opacity-50"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh'}
@@ -340,8 +340,8 @@ const FinancialProfilePage = () => {
 
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
               <div className="flex items-center">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <IndianRupee className="w-6 h-6 text-orange-600" />
+                <div className="p-2 bg-gold-100 rounded-lg">
+                  <IndianRupee className="w-6 h-6 text-gold-600" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total Refund</p>
@@ -412,8 +412,8 @@ const FinancialProfilePage = () => {
                 {insights.map((insight, index) => (
                   <div key={index} className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                     <div className="flex items-start">
-                      <div className="p-2 bg-orange-100 rounded-lg mr-3">
-                        <Lightbulb className="w-5 h-5 text-orange-600" />
+                      <div className="p-2 bg-gold-100 rounded-lg mr-3">
+                        <Lightbulb className="w-5 h-5 text-gold-600" />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-black mb-2">{insight.title}</h4>
@@ -514,7 +514,7 @@ const FinancialProfilePage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       <div className="flex items-center space-x-2">
-                        <button className="text-orange-600 hover:text-orange-800">
+                        <button className="text-gold-600 hover:text-gold-800">
                           <Eye className="w-4 h-4" />
                         </button>
                         <button className="text-gray-600 hover:text-gray-800">

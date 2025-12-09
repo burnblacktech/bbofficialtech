@@ -36,8 +36,8 @@ const SectionCard = ({
     // eslint-disable-next-line camelcase
     attention_needed: {
       icon: AlertCircle,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
+      color: 'text-gold-600',
+      bgColor: 'bg-gold-100',
       label: 'Attention Needed',
     },
     incomplete: {
@@ -150,7 +150,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             type="text"
             value={data?.fullName || ''}
             onChange={(e) => onUpdate({ fullName: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -160,7 +160,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             type="text"
             value={data?.fatherName || ''}
             onChange={(e) => onUpdate({ fatherName: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -170,7 +170,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             type="email"
             value={data?.email || ''}
             onChange={(e) => onUpdate({ email: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -180,7 +180,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             type="tel"
             value={data?.phone || ''}
             onChange={(e) => onUpdate({ phone: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
       </div>
@@ -203,7 +203,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             });
           }}
           rows={2}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
         />
       </div>
     </div>

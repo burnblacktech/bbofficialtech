@@ -9,12 +9,14 @@ import { authService } from '../../services';
 import { Monitor, Smartphone, Tablet, LogOut, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
+import { ConfirmationDialog } from '../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
 const SessionManagement = () => {
   const { user, logout } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [logoutConfirm, setLogoutConfirm] = useState({ isOpen: false, sessionId: null, isAll: false });
 
   useEffect(() => {
     loadSessions();
@@ -72,46 +74,44 @@ const SessionManagement = () => {
   };
 
   const handleLogoutSession = async (sessionId) => {
-    if (!window.confirm('Are you sure you want to logout from this device?')) {
-      return;
-    }
-
-    try {
-      // TODO: Implement API call to logout specific session
-      // await apiClient.post(`/auth/sessions/${sessionId}/logout`);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      setSessions(sessions.filter(s => s.id !== sessionId));
-      toast.success('Logged out from device successfully');
-
-      // If current session, redirect to login
-      const session = sessions.find(s => s.id === sessionId);
-      if (session?.isCurrent) {
-        logout();
-      }
-    } catch (error) {
-      toast.error('Failed to logout from device');
-    }
+    setLogoutConfirm({ isOpen: true, sessionId, isAll: false });
   };
 
   const handleLogoutAll = async () => {
-    if (!window.confirm('Are you sure you want to logout from all devices? You will need to login again.')) {
-      return;
-    }
+    setLogoutConfirm({ isOpen: true, sessionId: null, isAll: true });
+  };
 
+  const confirmLogout = async () => {
     try {
-      // TODO: Implement API call to logout all sessions
-      // await apiClient.post('/auth/sessions/logout-all');
+      if (logoutConfirm.isAll) {
+        // TODO: Implement API call to logout all sessions
+        // await apiClient.post('/auth/sessions/logout-all');
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-      toast.success('Logged out from all devices');
-      logout();
+        toast.success('Logged out from all devices');
+        logout();
+      } else if (logoutConfirm.sessionId) {
+        // TODO: Implement API call to logout specific session
+        // await apiClient.post(`/auth/sessions/${logoutConfirm.sessionId}/logout`);
+
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        setSessions(sessions.filter(s => s.id !== logoutConfirm.sessionId));
+        toast.success('Logged out from device successfully');
+
+        // If current session, redirect to login
+        const session = sessions.find(s => s.id === logoutConfirm.sessionId);
+        if (session?.isCurrent) {
+          logout();
+        }
+      }
     } catch (error) {
-      toast.error('Failed to logout from all devices');
+      toast.error(logoutConfirm.isAll ? 'Failed to logout from all devices' : 'Failed to logout from device');
+    } finally {
+      setLogoutConfirm({ isOpen: false, sessionId: null, isAll: false });
     }
   };
 
@@ -191,12 +191,12 @@ const SessionManagement = () => {
             {sessions.map((session) => (
               <div
                 key={session.id}
-                className={`p-6 ${session.isCurrent ? 'bg-orange-50' : ''}`}
+                className={`p-6 ${session.isCurrent ? 'bg-gold-50' : ''}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
                     <div className={`flex-shrink-0 p-3 rounded-lg ${
-                      session.isCurrent ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
+                      session.isCurrent ? 'bg-gold-100 text-gold-600' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {getDeviceIcon(session.deviceType)}
                     </div>
@@ -206,7 +206,7 @@ const SessionManagement = () => {
                           {session.deviceName}
                         </h3>
                         {session.isCurrent && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gold-100 text-gold-800">
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Current
                           </span>
@@ -286,6 +286,19 @@ const SessionManagement = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={logoutConfirm.isOpen}
+        onClose={() => setLogoutConfirm({ isOpen: false, sessionId: null, isAll: false })}
+        onConfirm={confirmLogout}
+        title={logoutConfirm.isAll ? 'Logout from All Devices' : 'Logout from Device'}
+        message={logoutConfirm.isAll
+          ? 'Are you sure you want to logout from all devices? You will need to login again.'
+          : 'Are you sure you want to logout from this device?'}
+        confirmLabel="Logout"
+        cancelLabel="Cancel"
+        variant="destructive"
+      />
     </div>
   );
 };

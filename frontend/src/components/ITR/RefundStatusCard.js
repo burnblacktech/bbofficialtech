@@ -30,7 +30,7 @@ const RefundStatusCard = ({
       case 'failed':
         return <XCircle className="h-6 w-6 text-error-500" aria-hidden="true" />;
       case 'adjusted':
-        return <AlertCircle className="h-6 w-6 text-orange-500" aria-hidden="true" />;
+        return <AlertCircle className="h-6 w-6 text-gold-500" aria-hidden="true" />;
       default:
         return <Clock className="h-6 w-6 text-gray-600" aria-hidden="true" />;
     }
@@ -47,7 +47,7 @@ const RefundStatusCard = ({
       case 'failed':
         return 'bg-error-50 border-error-200 text-gray-900';
       case 'adjusted':
-        return 'bg-orange-50 border-orange-200 text-gray-900';
+        return 'bg-gold-50 border-gold-200 text-gray-900';
       default:
         return 'bg-gray-50 border-gray-200 text-gray-900';
     }

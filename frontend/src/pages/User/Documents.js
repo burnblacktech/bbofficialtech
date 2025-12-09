@@ -435,7 +435,7 @@ const Documents = () => {
                 >
                   <div className="flex items-center space-x-3">
                     {expandedFolders.has(category) ? (
-                      <FolderOpen className="h-5 w-5 text-orange-500" />
+                      <FolderOpen className="h-5 w-5 text-gold-500" />
                     ) : (
                       <Folder className="h-5 w-5 text-gray-600" />
                     )}
@@ -514,25 +514,25 @@ const Documents = () => {
         <div className="flex justify-around">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-orange-600"
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-gold-600"
           >
             <FileText className="h-5 w-5 mb-1" />
             <span className="text-xs">Dashboard</span>
           </button>
-          <button className="flex flex-col items-center p-2 text-orange-600">
+          <button className="flex flex-col items-center p-2 text-gold-600">
             <Folder className="h-5 w-5 mb-1" />
             <span className="text-xs font-medium">Documents</span>
           </button>
           <button
             onClick={() => navigate('/profile')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-orange-600"
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-gold-600"
           >
             <User className="h-5 w-5 mb-1" />
             <span className="text-xs">Profile</span>
           </button>
           <button
             onClick={() => navigate('/settings')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-orange-600"
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-gold-600"
           >
             <Settings className="h-5 w-5 mb-1" />
             <span className="text-xs">Settings</span>

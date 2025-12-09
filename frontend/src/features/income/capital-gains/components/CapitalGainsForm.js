@@ -791,7 +791,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                     <select
                       value={entry.assetType || ''}
                       onChange={(e) => updateSTCGEntry(index, 'assetType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="">Select Asset Type</option>
                       <option value="equity_shares">Equity Shares</option>
@@ -819,7 +819,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                           setStcgDetails(updated);
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -828,7 +828,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                       type="number"
                       value={entry.purchaseValue || 0}
                       onChange={(e) => updateSTCGEntry(index, 'purchaseValue', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -837,7 +837,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                       type="number"
                       value={entry.expenses || 0}
                       onChange={(e) => updateSTCGEntry(index, 'expenses', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -896,7 +896,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                     <select
                       value={entry.assetType || ''}
                       onChange={(e) => updateLTCGEntry(index, 'assetType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="">Select Asset Type</option>
                       <option value="equity_shares">Equity Shares</option>
@@ -912,7 +912,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                       type="number"
                       value={entry.saleValue || 0}
                       onChange={(e) => updateLTCGEntry(index, 'saleValue', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -921,7 +921,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                       type="number"
                       value={entry.indexedCost || 0}
                       onChange={(e) => updateLTCGEntry(index, 'indexedCost', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
@@ -930,7 +930,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                       type="number"
                       value={entry.expenses || 0}
                       onChange={(e) => updateLTCGEntry(index, 'expenses', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">

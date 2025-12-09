@@ -307,8 +307,8 @@ const CABotPage = () => {
               </div>
 
               <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                  <Calculator className="w-6 h-6 text-orange-600" />
+                <div className="w-12 h-12 bg-gold-100 rounded-lg flex items-center justify-center mb-4">
+                  <Calculator className="w-6 h-6 text-gold-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Real-time Computation

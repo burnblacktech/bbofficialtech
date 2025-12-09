@@ -140,7 +140,7 @@ const PlatformUserManagement = () => {
         return <Building2 className="h-4 w-4 text-green-500" />;
       case 'ca':
       case 'senior_ca':
-        return <UserCheck className="h-4 w-4 text-orange-500" />;
+        return <UserCheck className="h-4 w-4 text-gold-500" />;
       case 'user':
       case 'guest':
         return <Users className="h-4 w-4 text-gray-500" />;
@@ -159,7 +159,7 @@ const PlatformUserManagement = () => {
         return 'bg-green-100 text-green-800';
       case 'ca':
       case 'senior_ca':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-gold-100 text-gold-800';
       case 'user':
       case 'guest':
         return 'bg-gray-100 text-gray-800';
@@ -175,7 +175,7 @@ const PlatformUserManagement = () => {
       case 'inactive':
         return <UserX className="h-4 w-4 text-red-500" />;
       case 'pending':
-        return <Clock className="h-4 w-4 text-orange-500" />;
+        return <Clock className="h-4 w-4 text-gold-500" />;
       case 'suspended':
         return <AlertCircle className="h-4 w-4 text-red-500" />;
       default:
@@ -190,7 +190,7 @@ const PlatformUserManagement = () => {
       case 'inactive':
         return 'bg-red-100 text-red-800';
       case 'pending':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-gold-100 text-gold-800';
       case 'suspended':
         return 'bg-red-100 text-red-800';
       default:
@@ -281,7 +281,7 @@ const PlatformUserManagement = () => {
 
           <div className="bg-white rounded-lg shadow-sm p-4">
             <div className="flex items-center">
-              <Clock className="h-8 w-8 text-orange-600" />
+              <Clock className="h-8 w-8 text-gold-600" />
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600">Pending</p>
                 <p className="text-2xl font-semibold text-gray-900">{stats.pending || 0}</p>
@@ -488,7 +488,7 @@ const PlatformUserManagement = () => {
                       {user.status === 'active' && (
                         <button
                           onClick={() => handleStatusUpdate(user.user_id, 'suspended')}
-                          className="p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-colors"
+                          className="p-2 text-gold-600 hover:text-gold-800 hover:bg-gold-50 rounded-lg transition-colors"
                           title="Suspend User"
                         >
                           <AlertCircle className="h-4 w-4" />

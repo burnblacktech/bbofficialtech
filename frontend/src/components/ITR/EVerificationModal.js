@@ -84,7 +84,7 @@ const EVerificationModal = ({
     try {
       let result;
 
-      switch (data.verification_method) {
+      switch (data.verificationMethod || data.verification_method) {
         case 'AADHAAR_OTP':
           if (!otpSent) {
             // Send OTP first
@@ -131,10 +131,11 @@ const EVerificationModal = ({
           throw new Error('Invalid verification method');
       }
 
+      const verificationMethod = data.verificationMethod || data.verification_method;
       if (result.success && result.verified) {
         setVerificationStatus({
           success: true,
-          method: data.verification_method,
+          method: verificationMethod,
           message: result.message || 'Verification successful',
         });
 
@@ -142,7 +143,7 @@ const EVerificationModal = ({
 
         if (onVerificationComplete) {
           onVerificationComplete({
-            method: data.verification_method,
+            method: verificationMethod,
             verified: true,
             verificationToken: result.verificationToken,
           });
@@ -150,7 +151,7 @@ const EVerificationModal = ({
       } else {
         setVerificationStatus({
           success: false,
-          method: data.verification_method,
+          method: verificationMethod,
           message: result.message || 'Verification failed',
         });
         toast.error(result.message || 'Verification failed');
@@ -219,7 +220,7 @@ const EVerificationModal = ({
               ref={firstFocusableRef}
               onClick={handleClose}
               disabled={isProcessing}
-              className="text-gray-400 hover:text-gray-600 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded"
+              className="text-gray-400 hover:text-gray-600 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded"
               aria-label="Close modal"
             >
               <X className="h-5 w-5" />
@@ -237,7 +238,7 @@ const EVerificationModal = ({
                 <p className="text-body-md text-gray-600 mb-6">{verificationStatus.message}</p>
                 <Button
                   onClick={handleClose}
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                  className="bg-gold-500 hover:bg-gold-600 text-white"
                 >
                   Continue
                 </Button>
@@ -277,7 +278,7 @@ const EVerificationModal = ({
                 <VerificationForm
                   onSubmit={handleVerificationSubmit}
                   initialData={{
-                    verification_method: 'AADHAAR_OTP',
+                    verificationMethod: 'AADHAAR_OTP',
                   }}
                   isReadOnly={isProcessing}
                 />
@@ -296,7 +297,7 @@ const EVerificationModal = ({
 
                 {isProcessing && (
                   <div className="mt-6 flex items-center justify-center py-4">
-                    <Loader className="h-5 w-5 animate-spin text-orange-500 mr-2" aria-hidden="true" />
+                    <Loader className="h-5 w-5 animate-spin text-gold-500 mr-2" aria-hidden="true" />
                     <span className="text-body-md text-gray-600">Processing verification...</span>
                   </div>
                 )}

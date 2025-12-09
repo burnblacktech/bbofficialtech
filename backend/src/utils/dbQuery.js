@@ -81,13 +81,13 @@ async function query(query, params = []) {
       benchmark: true, // Enable Sequelize query timing
       logging: (msg, timing) => {
         // Log slow queries (> 100ms) or all queries in development
+        // Note: results is not available in the logging callback, it's logged after query completes
         if (timing > 100 || process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
           enterpriseLogger.info('Database query executed', {
             queryId,
             duration: `${timing}ms`,
             slow: timing > 100,
             query: convertedQuery.substring(0, 200),
-            rowCount: results?.length || 0,
           });
         }
       },

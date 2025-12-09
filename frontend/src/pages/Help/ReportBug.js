@@ -98,7 +98,7 @@ const ReportBug = () => {
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
               placeholder="Brief description of the bug"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
@@ -114,7 +114,7 @@ const ReportBug = () => {
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe the bug in detail"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
@@ -129,7 +129,7 @@ const ReportBug = () => {
               value={formData.steps}
               onChange={(e) => handleInputChange('steps', e.target.value)}
               placeholder="1. Go to...&#10;2. Click on...&#10;3. See error..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
@@ -145,7 +145,7 @@ const ReportBug = () => {
                 value={formData.expected}
                 onChange={(e) => handleInputChange('expected', e.target.value)}
                 placeholder="What should happen"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
             </div>
             <div>
@@ -158,7 +158,7 @@ const ReportBug = () => {
                 value={formData.actual}
                 onChange={(e) => handleInputChange('actual', e.target.value)}
                 placeholder="What actually happens"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
             </div>
           </div>
@@ -172,7 +172,7 @@ const ReportBug = () => {
               id="severity"
               value={formData.severity}
               onChange={(e) => handleInputChange('severity', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="low">Low - Minor issue, doesn't affect functionality</option>
               <option value="medium">Medium - Affects some functionality</option>
@@ -193,7 +193,7 @@ const ReportBug = () => {
                 value={formData.browser}
                 onChange={(e) => handleInputChange('browser', e.target.value)}
                 placeholder="e.g., Chrome 120, Safari 17"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
             </div>
             <div>
@@ -206,7 +206,7 @@ const ReportBug = () => {
                 value={formData.device}
                 onChange={(e) => handleInputChange('device', e.target.value)}
                 placeholder="e.g., Windows 11, iPhone 14"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
             </div>
           </div>
@@ -216,11 +216,11 @@ const ReportBug = () => {
             <label className="block text-label-md text-gray-700 mb-1">
               Screenshots or Files
             </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-orange-400 transition-colors">
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-gold-400 transition-colors">
               <div className="space-y-1 text-center">
                 <Upload className="mx-auto h-12 w-12 text-gray-400" />
                 <div className="flex text-body-sm text-gray-600">
-                  <label className="relative cursor-pointer rounded-md font-medium text-orange-600 hover:text-orange-500">
+                  <label className="relative cursor-pointer rounded-md font-medium text-gold-600 hover:text-gold-500">
                     <span>Upload files</span>
                     <input
                       type="file"
@@ -257,14 +257,14 @@ const ReportBug = () => {
           <div className="flex space-x-4">
             <Link
               to="/help"
-              className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 text-center"
+              className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-center"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Submitting...' : 'Submit Bug Report'}
             </button>

@@ -163,7 +163,7 @@ export const DraftStatus = ({
       )}
 
       {isDirty && !isSaving && (
-        <div className="flex items-center text-orange-600">
+        <div className="flex items-center text-gold-600">
           <AlertCircle className="w-4 h-4 mr-1" />
           Unsaved changes
         </div>

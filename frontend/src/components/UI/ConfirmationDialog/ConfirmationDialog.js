@@ -97,7 +97,7 @@ export const ConfirmationDialog = ({
               </div>
               <button
                 onClick={onClose}
-                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5 text-gray-500" />
@@ -122,7 +122,7 @@ export const ConfirmationDialog = ({
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
+                className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
                 style={{ fontSize: '13px' }}
               >
                 {cancelLabel}

@@ -53,7 +53,7 @@ const BreakdownList = ({
     return (
       <div className={cn('flex items-center justify-center py-12', className)}>
         <div className="flex flex-col items-center gap-3">
-          <Loader className="w-6 h-6 text-orange-500 animate-spin" />
+          <Loader className="w-6 h-6 text-gold-500 animate-spin" />
           <p className="text-body-md text-gray-600">Loading breakdown...</p>
         </div>
       </div>
@@ -127,7 +127,7 @@ const BreakdownCategory = ({
         }}
         className={cn(
           'w-full flex items-center justify-between p-4 text-left transition-colors',
-          'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
+          'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2',
           item.hasWarning && 'bg-warning-50',
         )}
         aria-expanded={hasChildren ? isExpanded : undefined}
@@ -223,7 +223,7 @@ const BreakdownCategory = ({
                     {onResolveWarning && (
                       <button
                         onClick={() => onResolveWarning(child.id)}
-                        className="text-body-sm text-orange-500 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-1"
+                        className="text-body-sm text-gold-500 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-1"
                         style={{ fontSize: '13px', lineHeight: '20px' }}
                         aria-label={`Resolve warning for ${child.label}`}
                       >

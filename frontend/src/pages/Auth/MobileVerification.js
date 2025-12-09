@@ -121,8 +121,8 @@ const MobileVerification = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 mb-4">
-            <Phone className="h-8 w-8 text-orange-600" />
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gold-100 mb-4">
+            <Phone className="h-8 w-8 text-gold-600" />
           </div>
           <h2 className="text-heading-xl text-gray-900">
             Verify Your Mobile
@@ -156,7 +156,7 @@ const MobileVerification = () => {
                   type="text"
                   required
                   maxLength={6}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                   placeholder="000000"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -174,7 +174,7 @@ const MobileVerification = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={countdown > 0 || isLoading || status === 'verifying'}
-                  className="text-body-sm text-orange-600 hover:text-orange-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
                 </button>
@@ -183,7 +183,7 @@ const MobileVerification = () => {
               <button
                 type="submit"
                 disabled={isLoading || otp.length !== 6 || status === 'verifying'}
-                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
               >
                 {status === 'verifying' ? (
                   <span className="flex items-center justify-center">
@@ -213,7 +213,7 @@ const MobileVerification = () => {
               </div>
               <Link
                 to="/dashboard"
-                className="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Go to Dashboard
               </Link>
@@ -243,7 +243,7 @@ const MobileVerification = () => {
                     handleSendOTP();
                   }}
                   disabled={isLoading}
-                  className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                  className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   Try Again
                 </button>
@@ -261,7 +261,7 @@ const MobileVerification = () => {
         <div className="text-center">
           <p className="text-body-sm text-gray-600">
             Need help?{' '}
-            <Link to="/help/contact" className="font-medium text-orange-600 hover:text-orange-500">
+            <Link to="/help/contact" className="font-medium text-gold-600 hover:text-gold-500">
               Contact Support
             </Link>
           </p>

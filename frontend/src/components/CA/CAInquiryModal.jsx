@@ -154,7 +154,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <MessageSquare className="h-5 w-5 text-orange-600 mr-2" />
+                <MessageSquare className="h-5 w-5 text-gold-600 mr-2" />
                 <h3 id="inquiry-modal-title" className="text-heading-lg text-gray-800 font-semibold">
                   Send Inquiry
                 </h3>
@@ -186,7 +186,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                   ref={firstInputRef}
                   value={inquiryType}
                   onChange={(e) => setInquiryType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 >
                   <option value="general">General Inquiry</option>
                   <option value="itr_filing">ITR Filing Help</option>
@@ -208,7 +208,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                     value={filingId}
                     onChange={(e) => setFilingId(e.target.value)}
                     placeholder="Enter filing ID if related to specific filing"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   />
                 </div>
               )}
@@ -224,7 +224,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Describe your inquiry or question..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 />
                 <p className="mt-1 text-body-xs text-gray-500">
@@ -259,7 +259,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                 <button
                   type="submit"
                   disabled={sendInquiryMutation.isPending || !message.trim()}
-                  className="px-4 py-2 text-body-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sendInquiryMutation.isPending ? (
                     <>

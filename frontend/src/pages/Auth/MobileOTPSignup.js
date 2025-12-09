@@ -214,7 +214,7 @@ const MobileOTPSignup = () => {
                   name="phone"
                   type="tel"
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                   placeholder="10-digit mobile number"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -239,7 +239,7 @@ const MobileOTPSignup = () => {
                   type="text"
                   required
                   maxLength={6}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                   placeholder="000000"
                   value={formData.otp}
                   onChange={(e) => handleInputChange('otp', e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -254,7 +254,7 @@ const MobileOTPSignup = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={countdown > 0 || isLoading}
-                  className="text-body-sm text-orange-600 hover:text-orange-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
                 </button>
@@ -283,7 +283,7 @@ const MobileOTPSignup = () => {
                   name="fullName"
                   type="text"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                   placeholder="Enter your full name"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
@@ -299,7 +299,7 @@ const MobileOTPSignup = () => {
                   name="email"
                   type="email"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
@@ -316,7 +316,7 @@ const MobileOTPSignup = () => {
                   type="text"
                   required
                   maxLength={10}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 uppercase focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 uppercase focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                   placeholder="ABCDE1234F"
                   value={formData.pan}
                   onChange={(e) => handleInputChange('pan', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))}
@@ -329,17 +329,17 @@ const MobileOTPSignup = () => {
                   name="acceptTerms"
                   type="checkbox"
                   required
-                  className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded mt-1"
+                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-gray-300 rounded mt-1"
                   checked={formData.acceptTerms}
                   onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
                 />
                 <label htmlFor="acceptTerms" className="ml-2 block text-body-sm text-gray-700">
                   I accept the{' '}
-                  <Link to="/terms" className="text-orange-600 hover:text-orange-500">
+                  <Link to="/terms" className="text-gold-600 hover:text-gold-500">
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link to="/privacy" className="text-orange-600 hover:text-orange-500">
+                  <Link to="/privacy" className="text-gold-600 hover:text-gold-500">
                     Privacy Policy
                   </Link>
                 </label>
@@ -352,7 +352,7 @@ const MobileOTPSignup = () => {
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Back
               </button>
@@ -360,7 +360,7 @@ const MobileOTPSignup = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading
                 ? 'Processing...'
@@ -375,7 +375,7 @@ const MobileOTPSignup = () => {
           <div className="text-center">
             <p className="text-body-sm text-gray-600">
               Already have an account?{' '}
-              <Link to="/login" className="font-medium text-orange-600 hover:text-orange-500">
+              <Link to="/login" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign in
               </Link>
             </p>

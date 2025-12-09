@@ -24,20 +24,20 @@ const AISuggestionCard = ({
   const getConfidenceColor = () => {
     if (confidence >= 80) return 'text-success-600';
     if (confidence >= 60) return 'text-warning-600';
-    return 'text-orange-600';
+    return 'text-gold-600';
   };
 
   const getConfidenceBg = () => {
     if (confidence >= 80) return 'bg-success-50 border-success-200';
     if (confidence >= 60) return 'bg-warning-50 border-warning-200';
-    return 'bg-orange-50 border-orange-200';
+    return 'bg-gold-50 border-gold-200';
   };
 
   return (
     <div className={cn('rounded-xl border p-4', getConfidenceBg(), className)}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-orange-500" aria-hidden="true" />
+          <Sparkles className="h-5 w-5 text-gold-500" aria-hidden="true" />
           <h4 className="text-heading-sm font-semibold text-gray-900">AI Suggestion</h4>
         </div>
         <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ const AISuggestionCard = ({
 
       <div className="mb-3 p-3 bg-white bg-opacity-50 rounded-lg">
         <div className="flex items-center gap-2 mb-1">
-          <TrendingUp className="h-4 w-4 text-orange-500" aria-hidden="true" />
+          <TrendingUp className="h-4 w-4 text-gold-500" aria-hidden="true" />
           <p className="text-label-md font-medium text-gray-900">Recommended Value</p>
         </div>
         <p className="text-number-md font-bold tabular-nums text-gray-900">
@@ -91,7 +91,7 @@ const AISuggestionCard = ({
               onApply();
             }
           }}
-          className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+          className="flex-1 bg-gold-500 hover:bg-gold-600 text-white"
           size="sm"
         >
           Apply Suggestion

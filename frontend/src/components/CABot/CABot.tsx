@@ -388,7 +388,7 @@ const CABot: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-orange-50 to-gold-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gold-50 to-gold-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 p-4">
         <div className="flex items-center justify-between">
@@ -421,7 +421,7 @@ const CABot: React.FC = () => {
               onClick={toggleVoice}
               className={`p-2 rounded-lg transition-colors ${
                 filingState.isVoiceEnabled 
-                  ? 'bg-orange-100 text-orange-600' 
+                  ? 'bg-gold-100 text-gold-600' 
                   : 'hover:bg-gray-100 text-gray-600'
               }`}
               title={filingState.isVoiceEnabled ? 'Disable Voice' : 'Enable Voice'}
@@ -462,7 +462,7 @@ const CABot: React.FC = () => {
             filingState.userType === UserType.NON_EDUCATED 
               ? 'bg-green-100 text-green-800'
               : filingState.userType === UserType.EDUCATED
-              ? 'bg-orange-100 text-orange-800'
+              ? 'bg-gold-100 text-gold-800'
               : 'bg-gold-100 text-gold-800'
           }`}>
             {filingState.userType === UserType.NON_EDUCATED 
@@ -485,7 +485,7 @@ const CABot: React.FC = () => {
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                 message.type === 'user'
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-gold-500 text-white'
                   : message.type === 'bot'
                   ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
                   : 'bg-yellow-50 text-yellow-800 border border-yellow-200'
@@ -493,7 +493,7 @@ const CABot: React.FC = () => {
             >
               <div className="flex items-start space-x-2">
                 {message.type === 'bot' && (
-                  <Bot className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <Bot className="w-5 h-5 text-gold-600 mt-0.5 flex-shrink-0" />
                 )}
                 {message.type === 'user' && (
                   <User className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
@@ -542,7 +542,7 @@ const CABot: React.FC = () => {
                   ? 'अपना संदेश टाइप करें...' 
                   : 'Type your message...'
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               disabled={isTyping}
             />
           </div>

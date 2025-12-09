@@ -62,7 +62,7 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
                 type="checkbox"
                 checked={isDirector}
                 onChange={(e) => handleDirectorChange(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
               />
               <span className="ml-2 text-sm font-medium text-gray-700">Are you a director of any company?</span>
             </label>
@@ -75,7 +75,7 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
                 type="number"
                 value={directorIncome}
                 onChange={(e) => handleDirectorIncomeChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="0"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -100,7 +100,7 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
                 type="checkbox"
                 checked={isPartner}
                 onChange={(e) => handlePartnerChange(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-orange-500"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
               />
               <span className="ml-2 text-sm font-medium text-gray-700">Are you a partner in any firm?</span>
             </label>
@@ -113,7 +113,7 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
                 type="number"
                 value={partnerIncome}
                 onChange={(e) => handlePartnerIncomeChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="0"
               />
               <p className="text-xs text-gray-500 mt-1">

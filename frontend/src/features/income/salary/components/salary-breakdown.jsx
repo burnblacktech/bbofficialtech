@@ -53,7 +53,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
           {employers.map((employer, index) => (
             <div
               key={employer.id || index}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-orange-300 transition-colors"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gold-300 transition-colors"
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -68,7 +68,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
                   {onEditEmployer && (
                     <button
                       onClick={() => onEditEmployer(employer)}
-                      className="p-2 text-gray-400 hover:text-orange-600 rounded-lg hover:bg-orange-50"
+                      className="p-2 text-gray-400 hover:text-gold-600 rounded-lg hover:bg-gold-50"
                       aria-label="Edit employer"
                     >
                       <Edit2 className="h-4 w-4" />
@@ -111,7 +111,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
                 </div>
                 <div>
                   <p className="text-body-sm text-gray-600">Total</p>
-                  <p className="text-body-md font-semibold text-orange-600">
+                  <p className="text-body-md font-semibold text-gold-600">
                     {formatCurrency(calculateTotal(employer))}
                   </p>
                 </div>
@@ -119,10 +119,10 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
             </div>
           ))}
 
-          <div className="bg-orange-50 rounded-xl border border-orange-200 p-4">
+          <div className="bg-gold-50 rounded-xl border border-gold-200 p-4">
             <div className="flex items-center justify-between">
               <span className="text-body-md font-semibold text-gray-800">Total Salary Income</span>
-              <span className="text-heading-md font-semibold text-orange-600">
+              <span className="text-heading-md font-semibold text-gold-600">
                 {formatCurrency(totalSalary)}
               </span>
             </div>

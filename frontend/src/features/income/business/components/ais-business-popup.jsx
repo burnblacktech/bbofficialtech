@@ -60,7 +60,7 @@ const AISBusinessPopup = ({ filingId, formBusinesses = [], onClose, onApplied })
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading AIS data...</p>
         </div>
       </div>
@@ -98,7 +98,7 @@ const AISBusinessPopup = ({ filingId, formBusinesses = [], onClose, onApplied })
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Building2 className="w-5 h-5 text-orange-600" />
+            <Building2 className="w-5 h-5 text-gold-600" />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">AIS Business Income Data</h3>
               <p className="text-sm text-gray-500">
@@ -137,7 +137,7 @@ const AISBusinessPopup = ({ filingId, formBusinesses = [], onClose, onApplied })
                 type="checkbox"
                 checked={selectedBusinesses.length === mappedData.length && mappedData.length > 0}
                 onChange={handleSelectAll}
-                className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                className="w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
               />
               <span className="text-sm font-medium text-gray-700">Select All</span>
             </label>
@@ -159,7 +159,7 @@ const AISBusinessPopup = ({ filingId, formBusinesses = [], onClose, onApplied })
                 key={business.id}
                 className={`border rounded-lg p-4 cursor-pointer transition-colors ${
                   isSelected
-                    ? 'border-orange-500 bg-orange-50'
+                    ? 'border-gold-500 bg-gold-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => toggleBusiness(business.id)}
@@ -170,7 +170,7 @@ const AISBusinessPopup = ({ filingId, formBusinesses = [], onClose, onApplied })
                     checked={isSelected}
                     onChange={() => toggleBusiness(business.id)}
                     onClick={(e) => e.stopPropagation()}
-                    className="mt-1 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                    className="mt-1 w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
                   />
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
@@ -246,7 +246,7 @@ const AISBusinessPopup = ({ filingId, formBusinesses = [], onClose, onApplied })
                         )}
                       </div>
                       {isSelected && (
-                        <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-gold-600 flex-shrink-0" />
                       )}
                     </div>
                     {conflict && (

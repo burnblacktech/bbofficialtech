@@ -103,7 +103,7 @@ export const EditConfirmationDialog = ({
               </div>
               <button
                 onClick={handleCancel}
-                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5 text-gray-500" />
@@ -128,7 +128,7 @@ export const EditConfirmationDialog = ({
                     {valueFormatter(originalValue)}
                   </p>
                 </div>
-                <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                <div className="bg-gold-50 rounded-lg p-3 border border-gold-200">
                   <p
                     className="text-body-sm text-gray-600 mb-1"
                     style={{ fontSize: '13px', lineHeight: '20px' }}
@@ -136,7 +136,7 @@ export const EditConfirmationDialog = ({
                     Your value:
                   </p>
                   <p
-                    className="text-body-md font-semibold text-orange-700"
+                    className="text-body-md font-semibold text-gold-700"
                     style={{ fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}
                   >
                     {valueFormatter(newValue)}
@@ -158,7 +158,7 @@ export const EditConfirmationDialog = ({
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="e.g., Corrected as per actual salary slip"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 resize-none"
                   rows={3}
                   style={{ fontSize: '13px', lineHeight: '20px' }}
                 />
@@ -175,7 +175,7 @@ export const EditConfirmationDialog = ({
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
               <button
                 onClick={handleCancel}
-                className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
+                className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
                 style={{ fontSize: '13px' }}
               >
                 Cancel
@@ -183,7 +183,7 @@ export const EditConfirmationDialog = ({
               {onRevert && (
                 <button
                   onClick={handleRevert}
-                  className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg"
+                  className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
                   style={{ fontSize: '13px' }}
                 >
                   Revert to Original
@@ -191,7 +191,7 @@ export const EditConfirmationDialog = ({
               )}
               <button
                 onClick={handleConfirm}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-body-sm font-semibold hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                className="px-4 py-2 bg-gold-500 text-white rounded-lg text-body-sm font-semibold hover:bg-gold-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 Save My Value

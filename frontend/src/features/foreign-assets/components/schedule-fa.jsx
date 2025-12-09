@@ -58,7 +58,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
         </div>
       </div>
     );
@@ -92,7 +92,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
           {!showAddForm && (
             <button
               onClick={() => handleAddAsset('bank_accounts')}
-              className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Asset
@@ -117,7 +117,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center px-4 py-3 text-body-sm font-medium border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-orange-500 text-orange-600'
+                      ? 'border-gold-500 text-gold-600'
                       : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                   }`}
                 >
@@ -180,7 +180,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
                 </p>
                 <button
                   onClick={() => handleAddAsset(activeTab)}
-                  className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                  className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add {tabs.find(t => t.id === activeTab)?.label.slice(0, -1)}
@@ -225,7 +225,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
                       </div>
                       <button
                         onClick={() => handleEditAsset(asset)}
-                        className="ml-4 px-3 py-1 text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded"
+                        className="ml-4 px-3 py-1 text-sm text-gold-600 hover:text-gold-700 hover:bg-gold-50 rounded"
                       >
                         Edit
                       </button>

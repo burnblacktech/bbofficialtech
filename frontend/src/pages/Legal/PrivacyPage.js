@@ -13,7 +13,7 @@ const PrivacyPage = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link
           to="/signup"
-          className="inline-flex items-center text-orange-600 hover:text-orange-500 mb-8"
+          className="inline-flex items-center text-gold-600 hover:text-gold-500 mb-8"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Sign Up
@@ -110,7 +110,7 @@ const PrivacyPage = () => {
               <h2 className="text-heading-lg text-black mb-4">7. Contact Us</h2>
               <p className="text-body-md text-gray-700 mb-4">
                 If you have questions about this Privacy Policy, please contact us at{' '}
-                <Link to="/help/contact" className="text-orange-600 hover:text-orange-500">
+                <Link to="/help/contact" className="text-gold-600 hover:text-gold-500">
                   our support center
                 </Link>.
               </p>
@@ -120,7 +120,7 @@ const PrivacyPage = () => {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <Link
               to="/signup"
-              className="inline-flex items-center px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
             >
               <Shield className="w-5 h-5 mr-2" />
               I Accept - Continue Sign Up

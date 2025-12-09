@@ -91,7 +91,7 @@ const PreConstructionCalculator = ({ onCalculate, initialData = {} }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center gap-3 mb-6">
-        <Calculator className="h-6 w-6 text-orange-600" />
+        <Calculator className="h-6 w-6 text-gold-600" />
         <h3 className="text-heading-md text-gray-800">Pre-construction Interest Calculator</h3>
       </div>
 
@@ -128,7 +128,7 @@ const PreConstructionCalculator = ({ onCalculate, initialData = {} }) => {
             type="number"
             value={formData.loanAmount}
             onChange={(e) => handleChange('loanAmount', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
               errors.loanAmount ? 'border-red-300' : 'border-gray-300'
             }`}
             placeholder="Enter loan amount"
@@ -147,7 +147,7 @@ const PreConstructionCalculator = ({ onCalculate, initialData = {} }) => {
             step="0.01"
             value={formData.interestRate}
             onChange={(e) => handleChange('interestRate', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
               errors.interestRate ? 'border-red-300' : 'border-gray-300'
             }`}
             placeholder="Enter interest rate"
@@ -165,7 +165,7 @@ const PreConstructionCalculator = ({ onCalculate, initialData = {} }) => {
             type="date"
             value={formData.constructionStartDate}
             onChange={(e) => handleChange('constructionStartDate', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
               errors.constructionStartDate ? 'border-red-300' : 'border-gray-300'
             }`}
           />
@@ -182,7 +182,7 @@ const PreConstructionCalculator = ({ onCalculate, initialData = {} }) => {
             type="date"
             value={formData.constructionEndDate}
             onChange={(e) => handleChange('constructionEndDate', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
@@ -194,7 +194,7 @@ const PreConstructionCalculator = ({ onCalculate, initialData = {} }) => {
             type="date"
             value={formData.possessionDate}
             onChange={(e) => handleChange('possessionDate', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
               errors.possessionDate ? 'border-red-300' : 'border-gray-300'
             }`}
           />

@@ -37,12 +37,12 @@ const DeductionUtilizationDashboard = ({ filingId, formData, userAge = 30, total
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-orange-50 to-gold-50 rounded-lg p-6 border border-orange-200">
+        <div className="bg-gradient-to-br from-gold-50 to-gold-50 rounded-lg p-6 border border-gold-200">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-6 h-6 text-orange-600" />
+            <TrendingUp className="w-6 h-6 text-gold-600" />
             <div className="text-body-sm font-medium text-gray-700">Total Claimed</div>
           </div>
-          <div className="text-heading-xl font-bold text-orange-600">
+          <div className="text-heading-xl font-bold text-gold-600">
             ₹{utilizations.totalClaimed.toLocaleString('en-IN')}
           </div>
         </div>
@@ -147,14 +147,14 @@ const DeductionUtilizationDashboard = ({ filingId, formData, userAge = 30, total
       {remainingOpportunities.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <AlertCircle className="w-5 h-5 text-orange-600" />
+            <AlertCircle className="w-5 h-5 text-gold-600" />
             <h3 className="text-heading-md text-gray-900">Top Deduction Opportunities</h3>
           </div>
           <div className="space-y-3">
             {remainingOpportunities.map((opp) => (
               <div
                 key={opp.section}
-                className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200"
+                className="flex items-center justify-between p-3 bg-gold-50 rounded-lg border border-gold-200"
               >
                 <div>
                   <div className="text-heading-sm font-semibold text-gray-900">
@@ -164,7 +164,7 @@ const DeductionUtilizationDashboard = ({ filingId, formData, userAge = 30, total
                     You can still claim ₹{opp.remaining.toLocaleString('en-IN')}
                   </div>
                 </div>
-                <div className="text-heading-md font-bold text-orange-600">
+                <div className="text-heading-md font-bold text-gold-600">
                   ₹{opp.remaining.toLocaleString('en-IN')}
                 </div>
               </div>

@@ -104,7 +104,7 @@ const Select = ({
             'flex items-center justify-between',
             'focus:outline-none focus:ring-0',
             {
-              'border-gray-300 bg-white focus:border-orange-500 focus:shadow-[0_0_0_3px_rgba(255,107,0,0.1)]':
+              'border-gray-300 bg-white focus:border-gold-500 focus:shadow-[0_0_0_3px_rgba(255,107,0,0.1)]':
                 !error && !disabled,
               'border-2 border-error-500 bg-error-50': error,
               'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed': disabled,
@@ -147,7 +147,7 @@ const Select = ({
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search..."
-                  className="w-full h-10 px-3 text-body-md border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                  className="w-full h-10 px-3 text-body-md border border-gray-300 rounded-lg focus:outline-none focus:border-gold-500"
                   style={{ fontSize: '14px', lineHeight: '22px' }}
                   autoFocus
                 />
@@ -168,7 +168,7 @@ const Select = ({
                     'w-full px-4 py-3 text-left text-body-md transition-colors',
                     'hover:bg-gray-50 focus:bg-gray-50 focus:outline-none',
                     {
-                      'bg-orange-50 text-orange-600': value === option.value,
+                      'bg-gold-50 text-gold-600': value === option.value,
                       'text-gray-800': value !== option.value,
                     },
                   )}

@@ -15,7 +15,7 @@ const LoadingSpinner = ({ message, size = 'md', className = '' }) => {
 
   return (
     <div className={`flex flex-col items-center justify-center py-8 ${className}`}>
-      <Loader2 className={`${sizeClasses[size]} text-orange-500 animate-spin`} />
+      <Loader2 className={`${sizeClasses[size]} text-gold-500 animate-spin`} />
       {message && (
         <p className="mt-4 text-body-sm text-gray-600">{message}</p>
       )}

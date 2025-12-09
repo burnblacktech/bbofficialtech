@@ -16,7 +16,7 @@ const TaxSavingSuggestions = ({
   if (isLoading) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-600 mx-auto"></div>
         <p className="mt-2 text-gray-600">Loading recommendations...</p>
       </div>
     );
@@ -46,12 +46,12 @@ const TaxSavingSuggestions = ({
     <div className="space-y-6">
       {/* Tax Savings Summary */}
       {taxSavings && (
-        <div className="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg p-6">
-          <h3 className="font-semibold text-orange-900 mb-4">Potential Tax Savings</h3>
+        <div className="bg-gradient-to-r from-gold-50 to-gold-100 border border-gold-200 rounded-lg p-6">
+          <h3 className="font-semibold text-gold-900 mb-4">Potential Tax Savings</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg p-4">
               <p className="text-sm text-gray-600">Total Deduction</p>
-              <p className="text-2xl font-bold text-orange-600">
+              <p className="text-2xl font-bold text-gold-600">
                 ₹{taxSavings.totalDeduction?.toLocaleString('en-IN')}
               </p>
             </div>
@@ -72,13 +72,13 @@ const TaxSavingSuggestions = ({
       {/* Recommendations List */}
       <div className="space-y-4">
         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-orange-600" />
+          <TrendingUp className="w-5 h-5 text-gold-600" />
           Recommended Investments
         </h3>
         {recommendations.map((rec, index) => (
           <div
             key={index}
-            className="border border-gray-200 rounded-lg p-4 hover:border-orange-300 transition-colors"
+            className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 transition-colors"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">

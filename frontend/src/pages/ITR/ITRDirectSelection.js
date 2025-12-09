@@ -84,7 +84,7 @@ const ITR_TYPES = [
     name: 'ITR-3',
     subtitle: 'For Business/Professional Income',
     icon: Building2,
-    color: 'from-amber-500 to-orange-500',
+    color: 'from-amber-500 to-gold-500',
     bgColor: 'bg-amber-50',
     borderColor: 'border-amber-200',
     textColor: 'text-amber-700',

@@ -157,14 +157,14 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-semibold text-gray-900 flex items-center">
-            <CreditCard className="w-4 h-4 mr-2 text-orange-500" />
+            <CreditCard className="w-4 h-4 mr-2 text-gold-500" />
             Tax Deducted at Source (TDS)
             {isAutoFilled('tds') && <SourceChip source="26as" size="sm" className="ml-2" />}
           </h4>
           <button
             type="button"
             onClick={() => setShowTDSDetails(!showTDSDetails)}
-            className="flex items-center text-sm text-orange-600 hover:text-orange-700 font-medium"
+            className="flex items-center text-sm text-gold-600 hover:text-gold-700 font-medium"
           >
             {showTDSDetails ? 'Simple View' : 'Detailed Entry'}
             {showTDSDetails ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
@@ -180,7 +180,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                 type="number"
                 value={data?.tds || 0}
                 onChange={(e) => handleChange('tds', e.target.value)}
-                className={`w-full pl-8 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-lg font-semibold ${
+                className={`w-full pl-8 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-lg font-semibold ${
                   isAutoFilled('tds') ? 'border-blue-300 bg-blue-50/30' : 'border-gray-300'
                 }`}
                 placeholder="0"
@@ -216,7 +216,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       type="text"
                       value={entry.deductorName}
                       onChange={(e) => handleTDSEntryChange(entry.id, 'deductorName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm"
                       placeholder="Company/Employer Name"
                     />
                   </div>
@@ -227,7 +227,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       value={entry.tan}
                       onChange={(e) => handleTDSEntryChange(entry.id, 'tan', e.target.value.toUpperCase())}
                       maxLength={10}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-mono"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-mono"
                       placeholder="ABCD12345E"
                     />
                   </div>
@@ -236,7 +236,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                     <select
                       value={entry.section}
                       onChange={(e) => handleTDSEntryChange(entry.id, 'section', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm"
                     >
                       {tdsSections.map(s => (
                         <option key={s.value} value={s.value}>{s.label}</option>
@@ -249,7 +249,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       type="number"
                       value={entry.amount}
                       onChange={(e) => handleTDSEntryChange(entry.id, 'amount', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-semibold"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-semibold"
                       placeholder="0"
                     />
                   </div>
@@ -260,7 +260,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
             <button
               type="button"
               onClick={handleAddTDSEntry}
-              className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-orange-400 hover:text-orange-600 transition-colors flex items-center justify-center"
+              className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gold-400 hover:text-gold-600 transition-colors flex items-center justify-center"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add TDS Entry
@@ -269,7 +269,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
             {tdsEntries.length > 0 && (
               <div className="flex justify-end">
                 <div className="text-sm font-semibold text-gray-900">
-                  Total TDS: <span className="text-orange-600">{formatCurrency(totalTDS)}</span>
+                  Total TDS: <span className="text-gold-600">{formatCurrency(totalTDS)}</span>
                 </div>
               </div>
             )}
@@ -280,7 +280,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
       {/* TCS Section */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-gray-900 flex items-center">
-          <CreditCard className="w-4 h-4 mr-2 text-orange-500" />
+          <CreditCard className="w-4 h-4 mr-2 text-gold-500" />
           Tax Collected at Source (TCS)
         </h4>
         <div>
@@ -290,7 +290,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
               type="number"
               value={data?.tcs || 0}
               onChange={(e) => handleChange('tcs', e.target.value)}
-              className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="0"
             />
           </div>
@@ -302,13 +302,13 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-semibold text-gray-900 flex items-center">
-            <Building2 className="w-4 h-4 mr-2 text-orange-500" />
+            <Building2 className="w-4 h-4 mr-2 text-gold-500" />
             Advance Tax
           </h4>
           <button
             type="button"
             onClick={() => setShowAdvanceTaxDetails(!showAdvanceTaxDetails)}
-            className="flex items-center text-sm text-orange-600 hover:text-orange-700 font-medium"
+            className="flex items-center text-sm text-gold-600 hover:text-gold-700 font-medium"
           >
             {showAdvanceTaxDetails ? 'Simple View' : 'Add Challans'}
             {showAdvanceTaxDetails ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
@@ -324,7 +324,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                 type="number"
                 value={data?.advanceTax || 0}
                 onChange={(e) => handleChange('advanceTax', e.target.value)}
-                className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="0"
               />
             </div>
@@ -356,7 +356,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       value={entry.bsrCode}
                       onChange={(e) => handleAdvanceTaxEntryChange(entry.id, 'bsrCode', e.target.value)}
                       maxLength={7}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-mono"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-mono"
                       placeholder="1234567"
                     />
                   </div>
@@ -366,7 +366,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       type="date"
                       value={entry.challanDate}
                       onChange={(e) => handleAdvanceTaxEntryChange(entry.id, 'challanDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm"
                     />
                   </div>
                   <div>
@@ -376,7 +376,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       value={entry.challanNumber}
                       onChange={(e) => handleAdvanceTaxEntryChange(entry.id, 'challanNumber', e.target.value)}
                       maxLength={5}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-mono"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-mono"
                       placeholder="00001"
                     />
                   </div>
@@ -386,7 +386,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
                       type="number"
                       value={entry.amount}
                       onChange={(e) => handleAdvanceTaxEntryChange(entry.id, 'amount', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm font-semibold"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-semibold"
                       placeholder="0"
                     />
                   </div>
@@ -397,7 +397,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
             <button
               type="button"
               onClick={handleAddAdvanceTaxEntry}
-              className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-orange-400 hover:text-orange-600 transition-colors flex items-center justify-center"
+              className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gold-400 hover:text-gold-600 transition-colors flex items-center justify-center"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Advance Tax Challan
@@ -406,7 +406,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
             {advanceTaxEntries.length > 0 && (
               <div className="flex justify-end">
                 <div className="text-sm font-semibold text-gray-900">
-                  Total Advance Tax: <span className="text-orange-600">{formatCurrency(totalAdvanceTax)}</span>
+                  Total Advance Tax: <span className="text-gold-600">{formatCurrency(totalAdvanceTax)}</span>
                 </div>
               </div>
             )}
@@ -417,7 +417,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
       {/* Self Assessment Tax Section */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-gray-900 flex items-center">
-          <Calculator className="w-4 h-4 mr-2 text-orange-500" />
+          <Calculator className="w-4 h-4 mr-2 text-gold-500" />
           Self Assessment Tax
         </h4>
         <div>
@@ -427,7 +427,7 @@ const TaxesPaidForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) 
               type="number"
               value={data?.selfAssessmentTax || 0}
               onChange={(e) => handleChange('selfAssessmentTax', e.target.value)}
-              className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
               placeholder="0"
             />
           </div>

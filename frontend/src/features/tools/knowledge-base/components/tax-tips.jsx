@@ -66,7 +66,7 @@ const TaxTips = () => {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-        <Lightbulb className="w-5 h-5 text-orange-600" />
+        <Lightbulb className="w-5 h-5 text-gold-600" />
         Tax Saving Tips
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -75,11 +75,11 @@ const TaxTips = () => {
           return (
             <div
               key={tip.id}
-              className="border border-gray-200 rounded-lg p-4 hover:border-orange-300 hover:shadow-md transition-all"
+              className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 hover:shadow-md transition-all"
             >
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <Icon className="w-5 h-5 text-orange-600" />
+                <div className="p-2 bg-gold-100 rounded-lg">
+                  <Icon className="w-5 h-5 text-gold-600" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">

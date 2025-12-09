@@ -89,7 +89,7 @@ const ValidatedSelect = ({
     }
 
     if (!validationState.isTouched) {
-      return `${baseClasses} border-gray-300 focus:ring-orange-500 focus:border-orange-500`;
+      return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
     }
 
     if (validationState.errors.length > 0) {
@@ -104,12 +104,12 @@ const ValidatedSelect = ({
       return `${baseClasses} border-green-300 focus:ring-green-500 focus:border-green-500`;
     }
 
-    return `${baseClasses} border-gray-300 focus:ring-orange-500 focus:border-orange-500`;
+    return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
   };
 
   const getValidationIcon = () => {
     if (isValidating) {
-      return <RefreshCw className="w-4 h-4 text-orange-500 animate-spin" />;
+      return <RefreshCw className="w-4 h-4 text-gold-500 animate-spin" />;
     }
 
     if (!validationState.isTouched || !value) {
@@ -227,7 +227,7 @@ const ValidatedSelect = ({
                     onClick={() => handleChange(option.value)}
                     className={`w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors ${
                       value === option.value
-                        ? 'bg-orange-50 text-orange-700 font-medium'
+                        ? 'bg-gold-50 text-gold-700 font-medium'
                         : 'text-gray-900'
                     }`}
                   >

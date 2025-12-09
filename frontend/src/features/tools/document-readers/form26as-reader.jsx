@@ -68,7 +68,7 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center gap-3 mb-6">
-        <FileText className="h-6 w-6 text-orange-600" />
+        <FileText className="h-6 w-6 text-gold-600" />
         <h3 className="text-heading-md text-gray-800">Form 26AS Reader</h3>
       </div>
 
@@ -186,9 +186,9 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
                 {formatCurrency(form26ASData.totalTCS || 0)}
               </p>
             </div>
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+            <div className="bg-gold-50 border border-gold-200 rounded-lg p-4">
               <p className="text-body-sm text-gray-600 mb-1">Advance Tax</p>
-              <p className="text-heading-md font-semibold text-orange-700">
+              <p className="text-heading-md font-semibold text-gold-700">
                 {formatCurrency(form26ASData.advanceTax || 0)}
               </p>
             </div>

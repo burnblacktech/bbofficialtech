@@ -219,7 +219,7 @@ const FilingHistory = () => {
                       onClick={() => setActiveTab(tab)}
                       className={`px-4 py-2 font-medium capitalize border-b-2 transition-colors ${
                         activeTab === tab
-                          ? 'border-orange-500 text-orange-600'
+                          ? 'border-gold-500 text-gold-600'
                           : 'border-transparent text-gray-600 hover:text-gray-900'
                       }`}
                     >
