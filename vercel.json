@@ -17,6 +17,9 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build"
+      },
+      "env": {
+        "CI": "false"
       }
     }
   ],
@@ -30,7 +33,7 @@
       "dest": "backend/api/index.js"
     },
     {
-      "src": "/(.*\\.(js|css|woff|woff2|ttf|eot|svg|png|jpg|jpeg|gif|ico))",
+      "src": "/(.*\\.(js|css|woff|woff2|ttf|eot|svg|png|jpg|jpeg|gif|ico|json|map))",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       },
