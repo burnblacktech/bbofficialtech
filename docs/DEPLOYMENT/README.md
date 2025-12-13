@@ -6,6 +6,10 @@ This directory contains deployment guides and configuration files for the Burnbl
 
 - **[VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md)** - Comprehensive guide for deploying to Vercel
 - **[ENVIRONMENT_VARIABLES_TEMPLATE.md](./ENVIRONMENT_VARIABLES_TEMPLATE.md)** - Template for all required environment variables
+- **[VERCEL_ENV_VARIABLES_CHECKLIST.md](./VERCEL_ENV_VARIABLES_CHECKLIST.md)** - Complete checklist of Vercel environment variables
+- **[GENERATING_SECRETS_WINDOWS.md](./GENERATING_SECRETS_WINDOWS.md)** - Windows-friendly guide for generating secure secrets
+- **[ERI_TESTING_GUIDE.md](./ERI_TESTING_GUIDE.md)** - Guide for testing ERI integration
+- **[ERI_IP_WHITELISTING_AND_CERTIFICATE_GUIDE.md](./ERI_IP_WHITELISTING_AND_CERTIFICATE_GUIDE.md)** - IP whitelisting and certificate setup for ERI
 
 ## Quick Start
 

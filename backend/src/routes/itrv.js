@@ -5,12 +5,13 @@
 
 const express = require('express');
 const router = express.Router();
+const Joi = require('joi');
 const itrvController = require('../controllers/ITRVController');
-const { authenticate } = require('../middleware/auth');
-const { validate } = require('../middleware/validation');
+const { authenticateToken } = require('../middleware/auth');
+const { validateRequest } = require('../middleware/validateRequest');
 
 // All routes require authentication
-router.use(authenticate);
+router.use(authenticateToken);
 
 /**
  * @route   POST /api/itrv/initialize/:filingId
@@ -50,13 +51,11 @@ router.post('/check-status/:filingId', itrvController.checkStatusFromPortal);
  */
 router.post(
   '/verify/:filingId',
-  validate({
-    verificationMethod: {
-      required: true,
-      type: 'string',
-      enum: ['AADHAAR_OTP', 'NETBANKING', 'DSC', 'EVC', 'MANUAL'],
-    },
-  }),
+  validateRequest(Joi.object({
+    verificationMethod: Joi.string()
+      .valid('AADHAAR_OTP', 'NETBANKING', 'DSC', 'EVC', 'MANUAL')
+      .required(),
+  })),
   itrvController.markAsVerified,
 );
 

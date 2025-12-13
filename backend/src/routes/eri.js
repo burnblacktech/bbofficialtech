@@ -6,11 +6,52 @@
 const express = require('express');
 const router = express.Router();
 const ERIService = require('../services/ERIService');
+const eriController = require('../controllers/eriController');
+const eriIntegrationService = require('../services/business/ERIIntegrationService');
 const { authenticateToken } = require('../middleware/auth');
 const enterpriseLogger = require('../utils/logger');
 const { sendSuccess, sendError } = require('../utils/responseFormatter');
 
-// All routes require authentication
+// Test endpoints (no auth required for testing)
+router.post('/test-signing', eriController.testSigning);
+router.get('/validate-config', eriController.validateConfig);
+router.get('/test-connection', async (req, res) => {
+  try {
+    const isLiveMode = process.env.FEATURE_ERI_LIVE === 'true';
+    const baseUrl = process.env.ERI_API_BASE_URL || 'https://eri.incometax.gov.in/api';
+    const apiKey = process.env.ERI_API_KEY || process.env.ERI_API_SECRET;
+    
+    const config = {
+      isLiveMode,
+      baseUrl,
+      hasApiKey: !!apiKey,
+      userId: process.env.ERI_USER_ID ? 'Set' : 'Missing',
+      password: process.env.ERI_PASSWORD ? 'Set' : 'Missing',
+      secretKey: process.env.ERI_API_SECRET ? 'Set' : 'Missing',
+    };
+
+    // Test PAN verification (will use mock if not live)
+    try {
+      const panTest = await eriIntegrationService.verifyPan('ABCDE1234F');
+      config.panVerificationTest = {
+        status: 'Success',
+        source: panTest.source || 'Unknown',
+        isValid: panTest.isValid !== false,
+      };
+    } catch (error) {
+      config.panVerificationTest = {
+        status: 'Failed',
+        error: error.message,
+      };
+    }
+
+    sendSuccess(res, 'ERI connection test completed', config);
+  } catch (error) {
+    sendError(res, 'ERI connection test failed', 500, error.message);
+  }
+});
+
+// All other routes require authentication
 router.use(authenticateToken);
 
 /**
