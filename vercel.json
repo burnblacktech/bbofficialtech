@@ -23,11 +23,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "destination": "/api/index"
     },
     {
       "source": "/health",
-      "destination": "/api/health"
+      "destination": "/api/index"
     },
     {
       "source": "/(.*)",
@@ -36,7 +36,7 @@
   ],
   "headers": [
     {
-      "source": "/(.*\\.(js|css|woff|woff2|ttf|eot|svg|png|jpg|jpeg|gif|ico|json|map))",
+      "source": "/static/:path*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -50,6 +50,6 @@
     "NODE_ENV": "production",
     "CI": "false"
   },
-  "installCommand": "npm install --legacy-peer-deps --prefix backend && npm install --legacy-peer-deps --prefix frontend"
+  "installCommand": "cd backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps"
 }
 
