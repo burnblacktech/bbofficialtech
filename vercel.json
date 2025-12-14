@@ -23,20 +23,20 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.js"
+      "destination": "/backend/api/index.js"
     },
     {
       "source": "/health",
-      "destination": "/api/index.js"
+      "destination": "/backend/api/index.js"
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/frontend/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/static/:path*",
+      "source": "/frontend/static/:path*",
       "headers": [
         {
           "key": "Cache-Control",
