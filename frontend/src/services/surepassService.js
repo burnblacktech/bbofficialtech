@@ -1,31 +1,28 @@
 // SurePass API Service for PAN Verification
 // Provides real-time PAN validation with additional details
 
+import apiClient from './core/APIClient';
+import { getApiBaseUrl } from '../utils/apiConfig';
+
 class SurePassService {
   constructor() {
     // No direct SurePass credentials needed - all calls go through our backend API
     this.serviceName = 'SurePassService';
+    this.baseURL = getApiBaseUrl();
   }
 
   // Verify PAN number using our backend API (which calls SurePass)
   async verifyPAN(panNumber) {
     try {
-      const response = await fetch('http://localhost:3002/api/v2/surepass/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({
-          pan: panNumber,
-          userId: localStorage.getItem('userId'),
-          isCAFiling: false,
-        }),
+      const response = await apiClient.post('/v2/surepass/verify', {
+        pan: panNumber,
+        userId: localStorage.getItem('userId'),
+        isCAFiling: false,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok && data.success) {
+      if (data.success) {
         return {
           success: true,
           data: {
@@ -53,7 +50,7 @@ class SurePassService {
       console.error('SurePass API Error:', error);
       return {
         success: false,
-        error: 'Network error or API unavailable',
+        error: error.response?.data?.error || 'Network error or API unavailable',
         code: 'NETWORK_ERROR',
       };
     }
@@ -98,20 +95,13 @@ class SurePassService {
   // Get additional PAN details using our backend API
   async getPANDetails(panNumber) {
     try {
-      const response = await fetch('http://localhost:3002/api/v2/surepass/details', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({
-          pan: panNumber,
-        }),
+      const response = await apiClient.post('/v2/surepass/details', {
+        pan: panNumber,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok && data.success) {
+      if (data.success) {
         return {
           success: true,
           data: {
@@ -133,7 +123,7 @@ class SurePassService {
       console.error('SurePass Details API Error:', error);
       return {
         success: false,
-        error: 'Failed to fetch additional details',
+        error: error.response?.data?.error || 'Failed to fetch additional details',
       };
     }
   }
@@ -141,20 +131,13 @@ class SurePassService {
   // Batch PAN verification using our backend API
   async verifyMultiplePANs(panNumbers) {
     try {
-      const response = await fetch('http://localhost:3002/api/v2/surepass/batch-verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({
-          panNumbers: panNumbers,
-        }),
+      const response = await apiClient.post('/v2/surepass/batch-verify', {
+        panNumbers: panNumbers,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok && data.success) {
+      if (data.success) {
         return data.data; // Return the results array directly
       } else {
         return panNumbers.map(pan => ({
@@ -168,7 +151,7 @@ class SurePassService {
       return panNumbers.map(pan => ({
         pan,
         success: false,
-        error: error.message,
+        error: error.response?.data?.error || error.message,
       }));
     }
   }
@@ -176,15 +159,9 @@ class SurePassService {
   // Check API health using our backend
   async checkAPIHealth() {
     try {
-      const response = await fetch('http://localhost:3002/api/v2/surepass/health', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
-
-      const data = await response.json();
-      return response.ok && data.success && data.surepassStatus === 'online';
+      const response = await apiClient.get('/v2/surepass/health');
+      const data = response.data;
+      return data.success && data.surepassStatus === 'online';
     } catch (error) {
       console.error('SurePass Health Check Error:', error);
       return false;

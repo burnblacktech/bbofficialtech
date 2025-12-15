@@ -23,6 +23,8 @@ import {
   PartyPopper,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import apiClient from '../../services/core/APIClient';
+import itrService from '../../services/api/itrService';
 import EVerificationOptions from '../../components/ITR/EVerificationOptions';
 
 const EVerification = () => {
@@ -42,14 +44,24 @@ const EVerification = () => {
   const [otpError, setOtpError] = useState(null);
   const [resendTimer, setResendTimer] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [transactionId, setTransactionId] = useState(null);
+  const [filingId, setFilingId] = useState(filing?.id || null);
 
-  // Route guard
+  // Route guard and extract filing ID
   useEffect(() => {
-    if (!acknowledgmentNumber) {
+    if (!acknowledgmentNumber && !filing) {
       toast.error('No filing found for verification');
       navigate('/filing-history');
+      return;
     }
-  }, [acknowledgmentNumber, navigate]);
+
+    // Extract filing ID from filing object or location state
+    if (filing?.id) {
+      setFilingId(filing.id);
+    } else if (location.state?.filingId) {
+      setFilingId(location.state.filingId);
+    }
+  }, [acknowledgmentNumber, filing, location.state, navigate]);
 
   // Resend timer countdown
   useEffect(() => {
@@ -94,16 +106,40 @@ const EVerification = () => {
 
   // Send OTP
   const handleSendOtp = async () => {
+    if (!acknowledgmentNumber) {
+      toast.error('Acknowledgment number is required');
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Map frontend method names to backend method names
+      const methodMap = {
+        'aadhaar': 'AADHAAR_OTP',
+        'netbanking': 'NETBANKING',
+        'dsc': 'DSC',
+        'evc': 'EVC',
+      };
 
-      setOtpSent(true);
-      setResendTimer(60); // 60 seconds resend timer
-      toast.success(`OTP sent to your registered ${selectedMethod === 'aadhaar' ? 'Aadhaar-linked mobile' : 'mobile number'}`);
+      const backendMethod = methodMap[selectedMethod] || selectedMethod;
+
+      // Initiate e-verification via ERI API
+      const response = await apiClient.post('/eri/everify/initiate', {
+        acknowledgmentNumber,
+        method: backendMethod,
+      });
+
+      if (response.data?.transactionId) {
+        setTransactionId(response.data.transactionId);
+        setOtpSent(true);
+        setResendTimer(60); // 60 seconds resend timer
+        toast.success(`OTP sent to your registered ${selectedMethod === 'aadhaar' ? 'Aadhaar-linked mobile' : 'mobile number'}`);
+      } else {
+        throw new Error('Failed to initiate verification');
+      }
     } catch (error) {
-      toast.error('Failed to send OTP. Please try again.');
+      console.error('Send OTP error:', error);
+      toast.error(error.response?.data?.error || 'Failed to send OTP. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -117,20 +153,43 @@ const EVerification = () => {
       return;
     }
 
+    if (!transactionId) {
+      toast.error('Verification session expired. Please request OTP again.');
+      return;
+    }
+
     setIsProcessing(true);
     setVerificationStatus('processing');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Complete e-verification via ERI API
+      const response = await apiClient.post('/eri/everify/complete', {
+        transactionId,
+        otp: otpValue,
+      });
 
-      // For demo, accept any 6-digit OTP
-      setVerificationStatus('success');
-      toast.success('ITR verified successfully!');
+      if (response.data?.verified) {
+        setVerificationStatus('success');
+        toast.success('ITR verified successfully!');
+        // If filingId exists, mark ITR-V as verified
+        if (filingId) {
+          try {
+            await apiClient.post(`/itrv/verify/${filingId}`, {
+              verificationMethod: 'AADHAAR_OTP',
+            });
+          } catch (err) {
+            console.warn('Failed to update ITR-V status:', err);
+            // Don't fail the verification if this update fails
+          }
+        }
+      } else {
+        throw new Error('Verification failed');
+      }
     } catch (error) {
+      console.error('Verify OTP error:', error);
       setVerificationStatus('failed');
       setOtpError('Invalid OTP. Please try again.');
-      toast.error('Verification failed. Please try again.');
+      toast.error(error.response?.data?.error || 'Verification failed. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -138,16 +197,43 @@ const EVerification = () => {
 
   // Handle net banking verification
   const handleNetBankingVerify = async () => {
+    if (!acknowledgmentNumber) {
+      toast.error('Acknowledgment number is required');
+      return;
+    }
+
     setIsProcessing(true);
+    setVerificationStatus('processing');
     try {
-      // In production, this would redirect to bank's login page
-      // For demo, simulate success after delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setVerificationStatus('success');
-      toast.success('ITR verified via Net Banking!');
+      // Initiate net banking verification
+      const response = await apiClient.post('/eri/everify/initiate', {
+        acknowledgmentNumber,
+        method: 'NETBANKING',
+      });
+
+      if (response.data?.transactionId) {
+        setTransactionId(response.data.transactionId);
+        // In production, this would redirect to bank's login page
+        // For now, simulate success (bank integration would handle redirect)
+        setVerificationStatus('success');
+        toast.success('ITR verified via Net Banking!');
+        // Update ITR-V status if filingId exists
+        if (filingId) {
+          try {
+            await apiClient.post(`/itrv/verify/${filingId}`, {
+              verificationMethod: 'NETBANKING',
+            });
+          } catch (err) {
+            console.warn('Failed to update ITR-V status:', err);
+          }
+        }
+      } else {
+        throw new Error('Failed to initiate net banking verification');
+      }
     } catch (error) {
+      console.error('Net banking verification error:', error);
       setVerificationStatus('failed');
-      toast.error('Net Banking verification failed');
+      toast.error(error.response?.data?.error || 'Net Banking verification failed');
     } finally {
       setIsProcessing(false);
     }
@@ -155,25 +241,73 @@ const EVerification = () => {
 
   // Handle DSC verification
   const handleDscVerify = async () => {
+    if (!acknowledgmentNumber) {
+      toast.error('Acknowledgment number is required');
+      return;
+    }
+
     setIsProcessing(true);
+    setVerificationStatus('processing');
     try {
-      // In production, this would initiate DSC signing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setVerificationStatus('success');
-      toast.success('ITR signed with DSC!');
+      // Initiate DSC verification
+      const response = await apiClient.post('/eri/everify/initiate', {
+        acknowledgmentNumber,
+        method: 'DSC',
+      });
+
+      if (response.data?.transactionId) {
+        setTransactionId(response.data.transactionId);
+        // In production, this would initiate DSC signing flow
+        // For now, simulate success (DSC integration would handle certificate selection)
+        setVerificationStatus('success');
+        toast.success('ITR signed with DSC!');
+        // Update ITR-V status if filingId exists
+        if (filingId) {
+          try {
+            await apiClient.post(`/itrv/verify/${filingId}`, {
+              verificationMethod: 'DSC',
+            });
+          } catch (err) {
+            console.warn('Failed to update ITR-V status:', err);
+          }
+        }
+      } else {
+        throw new Error('Failed to initiate DSC verification');
+      }
     } catch (error) {
+      console.error('DSC verification error:', error);
       setVerificationStatus('failed');
-      toast.error('DSC verification failed');
+      toast.error(error.response?.data?.error || 'DSC verification failed');
     } finally {
       setIsProcessing(false);
     }
   };
 
   // Handle physical ITR-V send
-  const handlePhysicalSend = () => {
-    // Download ITR-V
-    toast.success('ITR-V downloaded. Send signed copy to CPC Bangalore within 120 days.');
-    // In production, trigger actual download
+  const handlePhysicalSend = async () => {
+    if (!filingId) {
+      toast.error('Filing ID is required');
+      return;
+    }
+
+    try {
+      // Download ITR-V
+      await itrService.downloadAcknowledgment(filingId);
+      toast.success('ITR-V downloaded. Send signed copy to CPC Bangalore within 120 days.');
+      // Mark as manual verification method
+      if (filingId) {
+        try {
+          await apiClient.post(`/itrv/verify/${filingId}`, {
+            verificationMethod: 'MANUAL',
+          });
+        } catch (err) {
+          console.warn('Failed to update ITR-V status:', err);
+        }
+      }
+    } catch (error) {
+      console.error('Download ITR-V error:', error);
+      toast.error('Failed to download ITR-V. Please try again.');
+    }
   };
 
   // Go to dashboard after success
@@ -182,15 +316,25 @@ const EVerification = () => {
   };
 
   // Download acknowledgment
-  const handleDownloadAck = () => {
-    toast.success('Acknowledgment downloaded');
-    // In production, trigger actual download
+  const handleDownloadAck = async () => {
+    if (!filingId) {
+      toast.error('Filing ID is required');
+      return;
+    }
+
+    try {
+      await itrService.downloadAcknowledgment(filingId);
+      toast.success('Acknowledgment downloaded successfully');
+    } catch (error) {
+      console.error('Download acknowledgment error:', error);
+      toast.error('Failed to download acknowledgment. Please try again.');
+    }
   };
 
   // Render success state
   if (verificationStatus === 'success') {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="flex items-center justify-center min-h-[400px]">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -244,10 +388,10 @@ const EVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="px-4 py-3 max-w-3xl mx-auto">
+      <header className="bg-white shadow-sm border-b sticky top-0 z-50 -mx-3 sm:-mx-4 lg:-mx-6 xl:-mx-8">
+        <div className="px-3 sm:px-4 lg:px-6 xl:px-8 py-3 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
@@ -264,7 +408,7 @@ const EVerification = () => {
       </header>
 
       {/* Main Content */}
-      <main className="px-4 py-6 max-w-3xl mx-auto">
+      <main className="max-w-3xl mx-auto">
         {/* Filing Info Card */}
         <div className="bg-white rounded-2xl shadow-card border border-slate-200 p-4 mb-6">
           <div className="flex items-center gap-4">

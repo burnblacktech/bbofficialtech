@@ -111,12 +111,10 @@ const ITRVTracking = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
-            <p className="text-gray-600">Loading ITR-V status...</p>
-          </div>
+      <div>
+        <div className="text-center py-12">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
+          <p className="text-gray-600">Loading ITR-V status...</p>
         </div>
       </div>
     );
@@ -124,24 +122,22 @@ const ITRVTracking = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-error-600" />
-              <h3 className="text-lg font-semibold text-error-900">Error Loading ITR-V Status</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
-              {error?.response?.data?.message || error?.message || 'An unexpected error occurred.'}
-            </p>
-            <div className="flex gap-2">
-              <Button variant="primary" onClick={() => refetch()}>
-                Retry
-              </Button>
-              <Button variant="secondary" onClick={() => navigate(-1)} icon={<ArrowLeft className="w-4 h-4" />}>
-                Go Back
-              </Button>
-            </div>
+      <div>
+        <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertCircle className="w-6 h-6 text-error-600" />
+            <h3 className="text-lg font-semibold text-error-900">Error Loading ITR-V Status</h3>
+          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            {error?.response?.data?.message || error?.message || 'An unexpected error occurred.'}
+          </p>
+          <div className="flex gap-2">
+            <Button variant="primary" onClick={() => refetch()}>
+              Retry
+            </Button>
+            <Button variant="secondary" onClick={() => navigate(-1)} icon={<ArrowLeft className="w-4 h-4" />}>
+              Go Back
+            </Button>
           </div>
         </div>
       </div>
@@ -150,18 +146,16 @@ const ITRVTracking = () => {
 
   if (!itrvData && !filingId) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-            <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Filing Selected</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Please select a filing to view ITR-V tracking information.
-            </p>
-            <Button variant="primary" onClick={() => navigate('/itr/filings')}>
-              View My Filings
-            </Button>
-          </div>
+      <div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Filing Selected</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Please select a filing to view ITR-V tracking information.
+          </p>
+          <Button variant="primary" onClick={() => navigate('/itr/filings')}>
+            View My Filings
+          </Button>
         </div>
       </div>
     );
@@ -169,40 +163,37 @@ const ITRVTracking = () => {
 
   if (!itrvData) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              icon={<ArrowLeft className="w-4 h-4" />}
-            >
-              Back
-            </Button>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">ITR-V Tracking Not Initialized</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              ITR-V tracking has not been initialized for this filing. Initialize it to start tracking.
-            </p>
-            <Button
-              variant="primary"
-              onClick={handleInitialize}
-              disabled={initializeMutation.isPending}
-              icon={initializeMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-            >
-              {initializeMutation.isPending ? 'Initializing...' : 'Initialize ITR-V Tracking'}
-            </Button>
-          </div>
+      <div>
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            icon={<ArrowLeft className="w-4 h-4" />}
+          >
+            Back
+          </Button>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">ITR-V Tracking Not Initialized</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            ITR-V tracking has not been initialized for this filing. Initialize it to start tracking.
+          </p>
+          <Button
+            variant="primary"
+            onClick={handleInitialize}
+            disabled={initializeMutation.isPending}
+            icon={initializeMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+          >
+            {initializeMutation.isPending ? 'Initializing...' : 'Initialize ITR-V Tracking'}
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div>
         {/* Header */}
         <div className="mb-6">
           <Button
@@ -286,7 +277,6 @@ const ITRVTracking = () => {
             </div>
           </Modal>
         )}
-      </div>
     </div>
   );
 };

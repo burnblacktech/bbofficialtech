@@ -83,13 +83,13 @@ const CAReviewQueue = () => {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'URGENT':
-        return 'bg-red-100 text-red-700';
+        return 'bg-error-100 text-error-700';
       case 'HIGH':
         return 'bg-gold-100 text-gold-700';
       case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-700';
+        return 'bg-warning-100 text-warning-700';
       case 'LOW':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-info-100 text-info-700';
       default:
         return 'bg-gray-100 text-gray-700';
     }
@@ -100,10 +100,10 @@ const CAReviewQueue = () => {
       case 'OPEN':
         return <Clock className="w-5 h-5 text-gold-600" />;
       case 'IN_PROGRESS':
-        return <AlertCircle className="w-5 h-5 text-blue-600" />;
+        return <AlertCircle className="w-5 h-5 text-info-600" />;
       case 'CLOSED':
       case 'RESOLVED':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-success-600" />;
       default:
         return <Clock className="w-5 h-5 text-gray-600" />;
     }
@@ -112,7 +112,7 @@ const CAReviewQueue = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader className="w-8 h-8 animate-spin text-primary-600" />
       </div>
     );
   }
@@ -150,7 +150,7 @@ const CAReviewQueue = () => {
                   onClick={() => setFilter(f)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     filter === f
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >

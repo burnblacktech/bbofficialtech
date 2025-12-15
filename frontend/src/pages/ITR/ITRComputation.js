@@ -52,6 +52,7 @@ import { formatIndianCurrency } from '../../lib/format';
 import useAutoSave, { AutoSaveIndicator } from '../../hooks/useAutoSave';
 import formDataService from '../../services/FormDataService';
 import { enterpriseLogger } from '../../utils/logger';
+import ErrorHandler from '../../services/core/ErrorHandler';
 import verificationStatusService from '../../services/VerificationStatusService';
 import { motion, AnimatePresence } from 'framer-motion';
 import ITRComputationHeader from '../../components/ITR/ITRComputationHeader';
@@ -156,12 +157,15 @@ const ITRComputation = () => {
 
   const entryPoint = getEntryPoint();
 
-  // Store entry point in localStorage for page refresh recovery
+  // Store entry point and ITR type in localStorage for page refresh recovery
   useEffect(() => {
     if (entryPoint) {
       safeLocalStorageSet('itr_computation_entry_point', entryPoint);
     }
-  }, [entryPoint]);
+    if (selectedITR) {
+      safeLocalStorageSet('itr_computation_selected_itr', selectedITR);
+    }
+  }, [entryPoint, selectedITR]);
 
   // Route guard: Redirect if no selectedPerson and no draftId/filingId
   useEffect(() => {
@@ -188,13 +192,25 @@ const ITRComputation = () => {
     }
   }, [selectedPerson, draftId, filingId, viewMode, navigate]);
   const autoDetectITR = location.state?.autoDetectITR || false;
-  const initialITR = location.state?.selectedITR;
+  // Get initial ITR from location state, recommendation, or localStorage recovery
+  const getInitialITR = () => {
+    if (location.state?.selectedITR) return location.state.selectedITR;
+    if (location.state?.recommendedITR) return location.state.recommendedITR;
+    // Try to recover from localStorage entry point
+    const recoveredEntryPoint = safeLocalStorageGet('itr_computation_entry_point', null);
+    if (recoveredEntryPoint) {
+      const recoveredDraft = safeLocalStorageGet('itr_draft_current', null);
+      if (recoveredDraft?.selectedITR) return recoveredDraft.selectedITR;
+    }
+    return 'ITR-1'; // Default to ITR-1
+  };
+  const initialITR = getInitialITR();
   const _recommendation = location.state?.recommendation;
   const dataSource = location.state?.dataSource; // 'form16', 'it-portal', 'manual', 'previous-year'
   const showDocumentUpload = location.state?.showDocumentUpload || false;
   const showITPortalConnect = location.state?.showITPortalConnect || false;
   const copiedFromPreviousYear = location.state?.copiedFromPreviousYear || false;
-  const [selectedITR, setSelectedITR] = useState(initialITR || 'ITR-1');
+  const [selectedITR, setSelectedITR] = useState(initialITR);
   // Initialize assessment year from draft or location state, default to current year
   const getDefaultAssessmentYear = () => {
     if (location.state?.assessmentYear) return location.state.assessmentYear;
@@ -223,21 +239,25 @@ const ITRComputation = () => {
   // Form data state (must be declared before useRealTimeValidation)
   const [formData, setFormData] = useState({
     personalInfo: {
-      pan: selectedPerson?.panNumber || '',
-      name: selectedPerson?.name || '',
-      dateOfBirth: '',
+      pan: selectedPerson?.panNumber || user?.panNumber || '',
+      name: selectedPerson?.name || user?.firstName || user?.name || '',
+      dateOfBirth: user?.dateOfBirth || selectedPerson?.dateOfBirth || '',
       address: '',
       city: '',
       state: '',
       pincode: '',
-      phone: '',
-      email: '',
+      phone: user?.phone || selectedPerson?.phone || '',
+      email: user?.email || selectedPerson?.email || '',
     },
     income: {
       salary: 0,
+      // ITR-1: businessIncome must be 0 (not an object)
+      // ITR-3: businessIncome is an object with businesses array
       businessIncome: (selectedITR === 'ITR-3' || selectedITR === 'ITR3') ? {
         businesses: [],
       } : 0,
+      // ITR-1: professionalIncome must be 0 (not an object)
+      // ITR-3: professionalIncome is an object with professions array
       professionalIncome: (selectedITR === 'ITR-3' || selectedITR === 'ITR3') ? {
         professions: [],
       } : 0,
@@ -255,6 +275,8 @@ const ITRComputation = () => {
         presumptiveIncome: 0,
         optedOut: false,
       } : undefined,
+      // ITR-1: capitalGains must be 0 (not an object)
+      // ITR-2/3: capitalGains is an object with details
       capitalGains: (selectedITR === 'ITR-2' || selectedITR === 'ITR2' || selectedITR === 'ITR-3' || selectedITR === 'ITR3') ? {
         hasCapitalGains: false,
         stcgDetails: [],
@@ -397,6 +419,65 @@ const ITRComputation = () => {
       );
     }
   }, [formData?.exemptIncome?.agriculturalIncome?.netAgriculturalIncome, formData?.exemptIncome?.netAgriculturalIncome, formData?.agriculturalIncome, selectedITR]);
+
+  // Enforce ITR-1 data structure constraints when formData changes
+  useEffect(() => {
+    if (selectedITR === 'ITR-1' || selectedITR === 'ITR1') {
+      setFormData(prev => {
+        let updated = { ...prev };
+        let hasChanges = false;
+
+        // Ensure businessIncome is 0 (not an object)
+        if (typeof updated.income?.businessIncome === 'object') {
+          updated.income = { ...updated.income, businessIncome: 0 };
+          hasChanges = true;
+        }
+
+        // Ensure professionalIncome is 0 (not an object)
+        if (typeof updated.income?.professionalIncome === 'object') {
+          updated.income = { ...updated.income, professionalIncome: 0 };
+          hasChanges = true;
+        }
+
+        // Ensure capitalGains is 0 (not an object)
+        if (typeof updated.income?.capitalGains === 'object') {
+          updated.income = { ...updated.income, capitalGains: 0 };
+          hasChanges = true;
+        }
+
+        // Ensure only one house property
+        if (updated.income?.houseProperty?.properties?.length > 1) {
+          updated.income = {
+            ...updated.income,
+            houseProperty: {
+              ...updated.income.houseProperty,
+              properties: updated.income.houseProperty.properties.slice(0, 1),
+            },
+          };
+          hasChanges = true;
+        }
+
+        // Remove ITR-3/4 specific fields if they exist
+        if (updated.balanceSheet !== undefined) {
+          const { balanceSheet, ...rest } = updated;
+          updated = rest;
+          hasChanges = true;
+        }
+        if (updated.auditInfo !== undefined) {
+          const { auditInfo, ...rest } = updated;
+          updated = rest;
+          hasChanges = true;
+        }
+        if (updated.scheduleFA !== undefined) {
+          const { scheduleFA, ...rest } = updated;
+          updated = rest;
+          hasChanges = true;
+        }
+
+        return hasChanges ? updated : prev;
+      });
+    }
+  }, [selectedITR, formData?.income?.businessIncome, formData?.income?.professionalIncome, formData?.income?.capitalGains, formData?.income?.houseProperty?.properties?.length]);
   const [regimeComparison, setRegimeComparison] = useState(null);
   const [showComparison, setShowComparison] = useState(false);
   const [uploadedData, setUploadedData] = useState(null); // Track uploaded/scanned data
@@ -466,13 +547,16 @@ const ITRComputation = () => {
         }
 
         // 3. Get user profile data
-        if (selectedPerson) {
+        // Merge selectedPerson with user profile data (email from user profile)
+        if (selectedPerson || user) {
           sources.userProfile = {
             personalInfo: {
-              name: selectedPerson.name,
-              pan: selectedPerson.panNumber,
-              email: selectedPerson.email,
-              phone: selectedPerson.phone,
+              name: selectedPerson?.name || user?.firstName || user?.name || '',
+              pan: selectedPerson?.panNumber || selectedPerson?.pan || '',
+              // Email from user profile (Google OAuth) or selectedPerson
+              email: user?.email || selectedPerson?.email || '',
+              phone: selectedPerson?.phone || user?.phone || '',
+              dateOfBirth: user?.dateOfBirth || selectedPerson?.dateOfBirth || '',
             },
           };
         }
@@ -493,6 +577,17 @@ const ITRComputation = () => {
           formData,
           fieldVerificationStatuses,
         );
+
+        // Log auto-population results for debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[ITRComputation] Auto-population result:', {
+            sources,
+            personalInfoBefore: formData.personalInfo,
+            personalInfoAfter: result.formData.personalInfo,
+            autoFilledFields: result.autoFilledFields,
+            fieldSources: result.fieldSources,
+          });
+        }
 
         setFormData(result.formData);
         setAutoFilledFields(result.autoFilledFields);
@@ -686,6 +781,34 @@ const ITRComputation = () => {
           if (draftResponse.draft?.itrType || parsedData.selectedITR) {
             restoredITR = draftResponse.draft?.itrType || parsedData.selectedITR;
             setSelectedITR(restoredITR);
+            
+            // Ensure ITR-1 data structure is correct when loading
+            if (restoredITR === 'ITR-1' || restoredITR === 'ITR1') {
+              setFormData(prev => {
+                const updated = { ...prev };
+                // Ensure businessIncome is 0 (not an object)
+                if (typeof updated.income?.businessIncome === 'object') {
+                  updated.income.businessIncome = 0;
+                }
+                // Ensure professionalIncome is 0 (not an object)
+                if (typeof updated.income?.professionalIncome === 'object') {
+                  updated.income.professionalIncome = 0;
+                }
+                // Ensure capitalGains is 0 (not an object)
+                if (typeof updated.income?.capitalGains === 'object') {
+                  updated.income.capitalGains = 0;
+                }
+                // Ensure only one house property
+                if (updated.income?.houseProperty?.properties?.length > 1) {
+                  updated.income.houseProperty.properties = updated.income.houseProperty.properties.slice(0, 1);
+                }
+                // Remove ITR-3/4 specific fields
+                delete updated.balanceSheet;
+                delete updated.auditInfo;
+                delete updated.scheduleFA;
+                return updated;
+              });
+            }
           }
 
           // Save to localStorage for page refresh recovery
@@ -718,7 +841,7 @@ const ITRComputation = () => {
   const [isComputingTax, setIsComputingTax] = useState(false);
 
   // Client-side tax calculation (immediate fallback while server computation is in progress)
-  const calculateClientSideTax = useCallback((data, regime) => {
+  const calculateClientSideTax = useCallback((data, regime, itrType = selectedITR) => {
     if (!data || !data.income) return null;
 
     const income = data.income || {};
@@ -728,22 +851,26 @@ const ITRComputation = () => {
     // Calculate gross income - match the same logic as grossIncome useMemo
     const salaryIncome = parseFloat(income.salary || 0);
 
-    // Business income
+    // Business income (excluded for ITR-1)
     let businessIncome = 0;
-    if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
-      businessIncome = income.businessIncome.businesses.reduce((sum, biz) =>
-        sum + (parseFloat(biz.pnl?.netProfit || biz.netProfit || 0)), 0);
-    } else {
-      businessIncome = parseFloat(income.businessIncome || 0);
+    if (itrType !== 'ITR-1' && itrType !== 'ITR1') {
+      if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
+        businessIncome = income.businessIncome.businesses.reduce((sum, biz) =>
+          sum + (parseFloat(biz.pnl?.netProfit || biz.netProfit || 0)), 0);
+      } else {
+        businessIncome = parseFloat(income.businessIncome || 0);
+      }
     }
 
-    // Professional income
+    // Professional income (excluded for ITR-1)
     let professionalIncome = 0;
-    if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
-      professionalIncome = income.professionalIncome.professions.reduce((sum, prof) =>
-        sum + (parseFloat(prof.pnl?.netIncome || prof.netIncome || prof.netProfit || 0)), 0);
-    } else {
-      professionalIncome = parseFloat(income.professionalIncome || 0);
+    if (itrType !== 'ITR-1' && itrType !== 'ITR1') {
+      if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
+        professionalIncome = income.professionalIncome.professions.reduce((sum, prof) =>
+          sum + (parseFloat(prof.pnl?.netIncome || prof.netIncome || prof.netProfit || 0)), 0);
+      } else {
+        professionalIncome = parseFloat(income.professionalIncome || 0);
+      }
     }
 
     // House property income
@@ -759,13 +886,15 @@ const ITRComputation = () => {
       housePropertyIncome = parseFloat(income.houseProperty || 0);
     }
 
-    // Capital gains
+    // Capital gains (excluded for ITR-1)
     let capitalGains = 0;
-    if (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails) {
-      capitalGains = (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
-        (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0);
-    } else {
-      capitalGains = parseFloat(income.capitalGains || 0);
+    if (itrType !== 'ITR-1' && itrType !== 'ITR1') {
+      if (typeof income.capitalGains === 'object' && income.capitalGains?.stcgDetails) {
+        capitalGains = (income.capitalGains.stcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0) +
+          (income.capitalGains.ltcgDetails || []).reduce((sum, e) => sum + (parseFloat(e.gainAmount) || 0), 0);
+      } else {
+        capitalGains = parseFloat(income.capitalGains || 0);
+      }
     }
 
     // Other sources income (from OtherSourcesForm - structured format)
@@ -790,13 +919,17 @@ const ITRComputation = () => {
       }
     }
 
-    // Foreign income
-    const foreignIncome = (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
-      sum + (parseFloat(e.amountInr) || 0), 0);
+    // Foreign income (excluded for ITR-1)
+    const foreignIncome = (itrType !== 'ITR-1' && itrType !== 'ITR1')
+      ? (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
+          sum + (parseFloat(e.amountInr) || 0), 0)
+      : 0;
 
-    // Director/Partner income
-    const directorPartnerIncome = parseFloat(income.directorPartner?.directorIncome || 0) +
-      parseFloat(income.directorPartner?.partnerIncome || 0);
+    // Director/Partner income (excluded for ITR-1)
+    const directorPartnerIncome = (itrType !== 'ITR-1' && itrType !== 'ITR1')
+      ? (parseFloat(income.directorPartner?.directorIncome || 0) +
+         parseFloat(income.directorPartner?.partnerIncome || 0))
+      : 0;
 
     const grossIncome = salaryIncome + businessIncome + professionalIncome + housePropertyIncome +
       capitalGains + otherSourcesIncome + foreignIncome + directorPartnerIncome;
@@ -844,7 +977,7 @@ const ITRComputation = () => {
       taxesPaid: totalTaxesPaid,
       refundOrPayable: totalTaxesPaid - totalTax,
     };
-  }, []);
+  }, [selectedITR]);
 
   // Compute tax function
   const handleComputeTax = useCallback(async () => {
@@ -855,7 +988,7 @@ const ITRComputation = () => {
     }
 
     // Immediately update with client-side calculation for instant feedback
-    const clientSideTax = calculateClientSideTax(formData, taxRegime);
+    const clientSideTax = calculateClientSideTax(formData, taxRegime, selectedITR);
     if (clientSideTax) {
       setTaxComputation({
         ...clientSideTax,
@@ -1020,6 +1153,56 @@ const ITRComputation = () => {
           ...allErrors.personalInfo,
           assessmentYear: 'Assessment year must be in format: YYYY-YY (e.g., 2024-25)',
         };
+      }
+
+      // ITR-1 specific validations
+      if (selectedITR === 'ITR-1' || selectedITR === 'ITR1') {
+        // Validate total income ≤ ₹50 lakhs
+        if (totalIncome > 5000000) {
+          allErrors.income = {
+            ...allErrors.income,
+            total: 'ITR-1 is applicable only for total income up to ₹50 lakhs. Please use ITR-2.',
+          };
+        }
+
+        // Validate agricultural income ≤ ₹5,000
+        const agriIncome = formData.exemptIncome?.agriculturalIncome?.netAgriculturalIncome
+          || formData.exemptIncome?.netAgriculturalIncome
+          || formData.agriculturalIncome
+          || 0;
+        if (agriIncome > 5000) {
+          allErrors.exemptIncome = {
+            ...allErrors.exemptIncome,
+            agriculturalIncome: `Agricultural income (₹${agriIncome.toLocaleString('en-IN')}) exceeds ₹5,000 limit. ITR-1 is not permitted. You must file ITR-2.`,
+          };
+        }
+
+        // Validate no business income
+        const businessIncome = typeof income.businessIncome === 'number' ? income.businessIncome : 0;
+        if (businessIncome > 0) {
+          allErrors.income = {
+            ...allErrors.income,
+            businessIncome: 'Business income cannot be declared in ITR-1. Consider ITR-3 or ITR-4.',
+          };
+        }
+
+        // Validate no capital gains
+        const capitalGains = typeof income.capitalGains === 'number' ? income.capitalGains : 0;
+        if (capitalGains > 0) {
+          allErrors.income = {
+            ...allErrors.income,
+            capitalGains: 'Capital gains cannot be declared in ITR-1. Please use ITR-2.',
+          };
+        }
+
+        // Validate maximum 1 house property
+        const houseProperties = income.houseProperty?.properties || formData.houseProperty?.properties || [];
+        if (houseProperties.length > 1) {
+          allErrors.income = {
+            ...allErrors.income,
+            houseProperty: 'ITR-1 allows only one house property. Consider ITR-2 for multiple properties.',
+          };
+        }
       }
 
       // Validate ITR type-specific income limits
@@ -1866,6 +2049,16 @@ const ITRComputation = () => {
         };
       }
 
+      // Log data updates for personalInfo section (for debugging)
+      if (section === 'personalInfo' && process.env.NODE_ENV === 'development') {
+        console.log('[ITRComputation] Personal Info Updated:', {
+          section,
+          previous: prev[section],
+          updates: validatedData,
+          merged: updated[section],
+        });
+      }
+
       return updated;
     });
   }, []);
@@ -1962,6 +2155,12 @@ const ITRComputation = () => {
           // Reset error flag on success
           draftCreationErrorRef.current = false;
           errorDisplayedRef.current = false;
+
+          // Show success notification
+          toast.success('Draft saved automatically', {
+            icon: '💾',
+            duration: 2000,
+          });
 
           // Allow navigation to complete
           setTimeout(() => {
@@ -2207,8 +2406,43 @@ const ITRComputation = () => {
   const handleSaveDraft = async () => {
     setIsSaving(true);
     try {
+      // Validate ITR-1 data before saving
+      if (selectedITR === 'ITR-1' || selectedITR === 'ITR1') {
+        const validationResult = validationEngine.validateBusinessRules(formData, selectedITR);
+        if (!validationResult.isValid && validationResult.errors.length > 0) {
+          toast.error(validationResult.errors[0], { duration: 6000 });
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      // Ensure ITR-1 data structure is correct before saving
+      const sanitizedFormData = { ...formData };
+      if (selectedITR === 'ITR-1' || selectedITR === 'ITR1') {
+        // Ensure businessIncome is 0 (not an object)
+        if (typeof sanitizedFormData.income?.businessIncome === 'object') {
+          sanitizedFormData.income.businessIncome = 0;
+        }
+        // Ensure professionalIncome is 0 (not an object)
+        if (typeof sanitizedFormData.income?.professionalIncome === 'object') {
+          sanitizedFormData.income.professionalIncome = 0;
+        }
+        // Ensure capitalGains is 0 (not an object)
+        if (typeof sanitizedFormData.income?.capitalGains === 'object') {
+          sanitizedFormData.income.capitalGains = 0;
+        }
+        // Ensure only one house property
+        if (sanitizedFormData.income?.houseProperty?.properties?.length > 1) {
+          sanitizedFormData.income.houseProperty.properties = sanitizedFormData.income.houseProperty.properties.slice(0, 1);
+        }
+        // Remove ITR-3/4 specific fields
+        delete sanitizedFormData.balanceSheet;
+        delete sanitizedFormData.auditInfo;
+        delete sanitizedFormData.scheduleFA;
+      }
+
       const draftData = {
-        formData,
+        formData: sanitizedFormData,
         selectedITR,
         assessmentYear,
         taxRegime,
@@ -2228,45 +2462,36 @@ const ITRComputation = () => {
           duration: 2000,
         });
       } else {
-        // Create new draft
+        // Create new filing + draft (createITR already creates both)
         const response = await itrService.createITR({
           itrType: selectedITR,
           formData: draftData.formData,
           assessmentYear: draftData.assessmentYear,
+          taxRegime: draftData.taxRegime,
         });
-        if (response?.filing?.id) {
-          // Create draft for the filing
-          const draftResponse = await apiClient.post('/itr/drafts', {
-            filingId: response.filing.id,
-            formData: draftData.formData,
-            itrType: selectedITR,
-            assessmentYear: draftData.assessmentYear,
-            taxRegime: draftData.taxRegime,
+        // createITR already creates both filing and draft, so just update URL
+        if (response?.draft?.id || response?.id) {
+          const newDraftId = response.draft?.id || response.id;
+          const newFilingId = response.filing?.id || response.filingId;
+                    // Update URL with draft ID and filing ID
+          navigate(`/itr/computation?draftId=${newDraftId}${newFilingId ? `&filingId=${newFilingId}` : ''}`, {
+            replace: true,
+            state: { ...location.state, draftId: newDraftId, filingId: newFilingId },
           });
-          if (draftResponse.data?.draft?.id) {
-            // Update URL with draft ID
-            navigate(`/itr/computation?draftId=${draftResponse.data.draft.id}`, {
-              replace: true,
-              state: { ...location.state, draftId: draftResponse.data.draft.id },
-            });
-            toast.success('Draft saved successfully', {
-              icon: '✅',
-              duration: 2000,
-            });
-          } else {
-            toast.error('Failed to create draft. Please try again.');
-          }
+          toast.success('Draft saved successfully', {
+            icon: '✅',
+            duration: 2000,
+          });
         } else {
-          toast.error('Failed to create filing. Please try again.');
+          toast.error('Failed to create draft. Please try again.');
         }
       }
     } catch (error) {
       enterpriseLogger.error('Failed to save draft', { error });
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to save draft';
+      const errorMessage = ErrorHandler.getMessage(error, 'Failed to save draft');
       toast.error(errorMessage, {
         duration: 4000,
       });
-      toast.error(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -2402,7 +2627,7 @@ const ITRComputation = () => {
       if (filingId && !currentFiling) {
         try {
           const response = await itrService.getUserITRs();
-          const filing = response.filings?.find(f => f.id === filingId);
+          const filing = response.filings?.find(f => f.id === parseInt(filingId, 10));
           if (filing) {
             setCurrentFiling(filing);
             if (filing.status === 'paused') {
@@ -2412,14 +2637,48 @@ const ITRComputation = () => {
             if (filing.formData) {
               setFormData(filing.formData);
             }
+
+            // Try to find and load associated draft for this filing
+            try {
+              const draftsResponse = await itrService.getUserDrafts();
+              // Backend returns { data: { drafts: [...], pagination: {...} } }
+              const drafts = draftsResponse?.data?.drafts || draftsResponse?.drafts || [];
+              const filingDraft = drafts.find(d => d.filingId === filing.id || d.filing_id === filing.id);
+              if (filingDraft && filingDraft.id) {
+                // Load draft data
+                const draftData = await itrService.getDraftById(filingDraft.id);
+                if (draftData?.draft?.formData) {
+                  setFormData(draftData.draft.formData);
+                  // Update URL to include draftId if not already present
+                  if (!draftId) {
+                    navigate(`/itr/computation?filingId=${filingId}&draftId=${filingDraft.id}`, { replace: true });
+                  }
+                  // Restore other draft metadata
+                  if (draftData.draft.assessmentYear) {
+                    setAssessmentYear(draftData.draft.assessmentYear);
+                  }
+                  if (draftData.draft.taxRegime) {
+                    setTaxRegime(draftData.draft.taxRegime);
+                  }
+                  if (draftData.draft.itrType) {
+                    setSelectedITR(draftData.draft.itrType);
+                  }
+                  toast.success('Draft loaded for filing');
+                }
+              }
+            } catch (draftError) {
+              enterpriseLogger.warn('Failed to load draft for filing', { error: draftError, filingId });
+              // Don't show error to user - filing data is already loaded
+            }
           }
         } catch (error) {
           enterpriseLogger.error('Failed to load filing', { error });
+          toast.error('Failed to load filing: ' + (error.message || 'Unknown error'));
         }
       }
     };
     loadFiling();
-  }, [filingId, currentFiling]);
+  }, [filingId, currentFiling, draftId, navigate]);
 
   const handleDownloadJSON = useCallback(async () => {
     // Check authentication before export
@@ -2430,6 +2689,18 @@ const ITRComputation = () => {
 
     setIsDownloading(true);
     try {
+      // Validate ITR-1 specific rules before export
+      if (selectedITR === 'ITR-1' || selectedITR === 'ITR1') {
+        const validationResult = validationEngine.validateBusinessRules(formData, selectedITR);
+        if (!validationResult.isValid && validationResult.errors.length > 0) {
+          toast.error(validationResult.errors[0], {
+            duration: 6000,
+          });
+          setIsDownloading(false);
+          return;
+        }
+      }
+
       // Validate JSON schema before export
       try {
         itrJsonExportService.validateJsonForExport(formData, selectedITR);
@@ -2642,7 +2913,8 @@ const ITRComputation = () => {
       }
     } catch (error) {
       enterpriseLogger.error('ITR submission error', { error });
-      toast.error(error.response?.data?.error || 'Failed to submit ITR');
+      const errorMessage = ErrorHandler.getMessage(error, 'Failed to submit ITR');
+      toast.error(errorMessage);
     }
   }, [draftId, formData, navigate]);
 
@@ -2774,38 +3046,70 @@ const ITRComputation = () => {
   const shouldShowSection = useCallback((sectionId, selectedITR) => {
     const itr = selectedITR || 'ITR-1';
 
-    // ITR-1 restrictions
+    // ITR-1 restrictions (Sahaj - Simple form for salaried individuals)
     if (itr === 'ITR-1' || itr === 'ITR1') {
-      // Hide capital gains, business, professional, Schedule FA, balance sheet, audit
-      if (['businessIncome', 'professionalIncome', 'balanceSheet', 'auditInfo', 'scheduleFA'].includes(sectionId)) {
+      // Hide: capital gains, business, professional, Schedule FA, balance sheet, audit, presumptive income
+      const hiddenSections = [
+        'businessIncome',
+        'professionalIncome',
+        'balanceSheet',
+        'auditInfo',
+        'scheduleFA',
+        'presumptiveIncome',
+        'goodsCarriage',
+      ];
+      // Capital gains is part of income section, but should not be shown as separate section
+      if (hiddenSections.includes(sectionId)) {
         return false;
       }
       return true;
     }
 
-    // ITR-2 restrictions
+    // ITR-2 restrictions (For individuals with capital gains, multiple house properties)
     if (itr === 'ITR-2' || itr === 'ITR2') {
-      // Hide business and professional income
-      if (['businessIncome', 'professionalIncome', 'balanceSheet', 'auditInfo', 'presumptiveIncome', 'goodsCarriage'].includes(sectionId)) {
+      // Hide: business, professional income, balance sheet, audit, presumptive income
+      // Show: capital gains (in income section), Schedule FA
+      const hiddenSections = [
+        'businessIncome',
+        'professionalIncome',
+        'balanceSheet',
+        'auditInfo',
+        'presumptiveIncome',
+        'goodsCarriage',
+      ];
+      if (hiddenSections.includes(sectionId)) {
         return false;
       }
       return true;
     }
 
-    // ITR-3 restrictions
+    // ITR-3 restrictions (For individuals with business/professional income)
     if (itr === 'ITR-3' || itr === 'ITR3') {
-      // Hide businessIncome and professionalIncome as they're now in the income section
-      // Show all sections except presumptive income
-      if (['businessIncome', 'professionalIncome', 'presumptiveIncome', 'goodsCarriage'].includes(sectionId)) {
+      // Hide: presumptive income, goods carriage
+      // Show: business income, professional income, balance sheet, audit, Schedule FA, capital gains
+      // Note: businessIncome and professionalIncome are separate sections, not in income section
+      const hiddenSections = [
+        'presumptiveIncome',
+        'goodsCarriage',
+      ];
+      if (hiddenSections.includes(sectionId)) {
         return false;
       }
       return true;
     }
 
-    // ITR-4 restrictions
+    // ITR-4 restrictions (Sugam - For presumptive taxation)
     if (itr === 'ITR-4' || itr === 'ITR4') {
-      // Hide business, professional, balance sheet, audit, Schedule FA
-      if (['businessIncome', 'professionalIncome', 'balanceSheet', 'auditInfo', 'scheduleFA'].includes(sectionId)) {
+      // Hide: business income (detailed), professional income (detailed), balance sheet, audit, Schedule FA, capital gains
+      // Show: presumptive income, goods carriage
+      const hiddenSections = [
+        'businessIncome',
+        'professionalIncome',
+        'balanceSheet',
+        'auditInfo',
+        'scheduleFA',
+      ];
+      if (hiddenSections.includes(sectionId)) {
         return false;
       }
       return true;
@@ -2865,20 +3169,24 @@ const ITRComputation = () => {
     // Salary income
     total += parseFloat(income.salary) || 0;
 
-    // Business income
-    if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
-      total += (income.businessIncome.businesses || []).reduce((sum, b) =>
-        sum + (parseFloat(b.pnl?.netProfit || b.netProfit || 0)), 0);
-    } else {
-      total += parseFloat(income.businessIncome) || 0;
+    // Business income (excluded for ITR-1)
+    if (selectedITR !== 'ITR-1' && selectedITR !== 'ITR1') {
+      if (typeof income.businessIncome === 'object' && income.businessIncome?.businesses) {
+        total += (income.businessIncome.businesses || []).reduce((sum, b) =>
+          sum + (parseFloat(b.pnl?.netProfit || b.netProfit || 0)), 0);
+      } else {
+        total += parseFloat(income.businessIncome) || 0;
+      }
     }
 
-    // Professional income
-    if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
-      total += (income.professionalIncome.professions || []).reduce((sum, p) =>
-        sum + (parseFloat(p.pnl?.netIncome || p.netIncome || p.netProfit || 0)), 0);
-    } else {
-      total += parseFloat(income.professionalIncome) || 0;
+    // Professional income (excluded for ITR-1)
+    if (selectedITR !== 'ITR-1' && selectedITR !== 'ITR1') {
+      if (typeof income.professionalIncome === 'object' && income.professionalIncome?.professions) {
+        total += (income.professionalIncome.professions || []).reduce((sum, p) =>
+          sum + (parseFloat(p.pnl?.netIncome || p.netIncome || p.netProfit || 0)), 0);
+      } else {
+        total += parseFloat(income.professionalIncome) || 0;
+      }
     }
 
     // Other sources income (from OtherSourcesForm - structured format)
@@ -2912,9 +3220,12 @@ const ITRComputation = () => {
       total += parseFloat(income.capitalGains) || 0;
     }
 
-    // House property
+    // House property (max 1 property for ITR-1)
     if (typeof income.houseProperty === 'object' && income.houseProperty?.properties) {
-      total += income.houseProperty.properties.reduce((sum, p) => {
+      const properties = (selectedITR === 'ITR-1' || selectedITR === 'ITR1')
+        ? income.houseProperty.properties.slice(0, 1) // Only first property for ITR-1
+        : income.houseProperty.properties;
+      total += properties.reduce((sum, p) => {
         const rental = parseFloat(p.annualRentalIncome) || 0;
         const taxes = parseFloat(p.municipalTaxes) || 0;
         const interest = parseFloat(p.interestOnLoan) || 0;
@@ -2924,13 +3235,17 @@ const ITRComputation = () => {
       total += parseFloat(income.houseProperty) || 0;
     }
 
-    // Foreign income
-    total += (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
-      sum + (parseFloat(e.amountInr) || 0), 0);
+    // Foreign income (excluded for ITR-1)
+    if (selectedITR !== 'ITR-1' && selectedITR !== 'ITR1') {
+      total += (income.foreignIncome?.foreignIncomeDetails || []).reduce((sum, e) =>
+        sum + (parseFloat(e.amountInr) || 0), 0);
+    }
 
-    // Director/Partner income
-    total += parseFloat(income.directorPartner?.directorIncome) || 0;
-    total += parseFloat(income.directorPartner?.partnerIncome) || 0;
+    // Director/Partner income (excluded for ITR-1)
+    if (selectedITR !== 'ITR-1' && selectedITR !== 'ITR1') {
+      total += parseFloat(income.directorPartner?.directorIncome) || 0;
+      total += parseFloat(income.directorPartner?.partnerIncome) || 0;
+    }
 
     // Validation: Log warning if income sources might be missing (development only)
     if (process.env.NODE_ENV === 'development') {
@@ -2972,7 +3287,7 @@ const ITRComputation = () => {
     }
 
     return total;
-  }, [formData?.income, formData?.otherSources]);
+  }, [formData?.income, formData?.otherSources, selectedITR]);
 
   // Memoized deductions calculation
   const deductions = useMemo(() => {
@@ -3048,7 +3363,44 @@ const ITRComputation = () => {
             <div className="hidden lg:flex items-center gap-2">
               <ITRToggle
                 selectedITR={selectedITR}
-                onITRChange={setSelectedITR}
+                onITRChange={(newITR) => {
+                  // Validate ITR change for ITR-1
+                  if (newITR === 'ITR-1' || newITR === 'ITR1') {
+                    // Check if current data is compatible with ITR-1
+                    const validationResult = validationEngine.validateBusinessRules(formData, newITR);
+                    if (!validationResult.isValid && validationResult.errors.length > 0) {
+                      toast.error(validationResult.errors[0] + ' Cannot switch to ITR-1.', { duration: 6000 });
+                      return; // Don't change ITR type
+                    }
+                    // Sanitize form data for ITR-1
+                    setFormData(prev => {
+                      const updated = { ...prev };
+                      // Ensure businessIncome is 0 (not an object)
+                      if (typeof updated.income?.businessIncome === 'object') {
+                        updated.income.businessIncome = 0;
+                      }
+                      // Ensure professionalIncome is 0 (not an object)
+                      if (typeof updated.income?.professionalIncome === 'object') {
+                        updated.income.professionalIncome = 0;
+                      }
+                      // Ensure capitalGains is 0 (not an object)
+                      if (typeof updated.income?.capitalGains === 'object') {
+                        updated.income.capitalGains = 0;
+                      }
+                      // Ensure only one house property
+                      if (updated.income?.houseProperty?.properties?.length > 1) {
+                        updated.income.houseProperty.properties = updated.income.houseProperty.properties.slice(0, 1);
+                        toast.warning('Only first house property retained for ITR-1');
+                      }
+                      // Remove ITR-3/4 specific fields
+                      delete updated.balanceSheet;
+                      delete updated.auditInfo;
+                      delete updated.scheduleFA;
+                      return updated;
+                    });
+                  }
+                  setSelectedITR(newITR);
+                }}
                 currentFormData={formData}
                 onValidateCompatibility={async (currentITR, proposedITR, formData) => {
                   // Basic compatibility check

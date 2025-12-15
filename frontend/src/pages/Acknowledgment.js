@@ -13,7 +13,8 @@ import {
   Mail,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import filingService from '../services/filingService';
+import itrService from '../services/api/itrService';
+import apiClient from '../services/core/APIClient';
 import {
   EnterpriseCard,
   EnterpriseButton,
@@ -37,10 +38,12 @@ const Acknowledgment = () => {
   // Fetch filing details - Justification: Display complete filing information
   const { data: filing, isLoading: filingLoading } = useQuery(
     ['filing', filingId],
-    () => filingService.getFiling(filingId),
+    () => itrService.getFilingById(filingId),
     {
+      enabled: !!filingId,
       onError: (error) => {
         toast.error('Failed to load filing details');
+        console.error('Failed to load filing details:', error);
       },
     },
   );
@@ -48,43 +51,28 @@ const Acknowledgment = () => {
   // Fetch submission details - Justification: Get submission timestamp and verification method
   const { data: submission } = useQuery(
     ['filing-submission', filingId],
-    () => fetch(`/api/filing/${filingId}/submission`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    }).then(res => res.json()),
+    () => apiClient.get(`/itr/filings/${filingId}/submission`),
     {
+      enabled: !!filingId,
       onError: (error) => {
         console.error('Failed to load submission details:', error);
+        // Silently fail - submission details are optional
       },
     },
   );
 
   // Handle download acknowledgment - Justification: Allow users to save acknowledgment as PDF
   const handleDownloadAcknowledgment = async () => {
+    if (!filingId) {
+      toast.error('Filing ID is required');
+      return;
+    }
+
     setIsDownloading(true);
     try {
-      // Mock download - in real implementation, generate and download PDF
-      const response = await fetch(`/api/filing/${filingId}/acknowledgment/download`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ITR_Acknowledgment_${ackNumber}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast.success('Acknowledgment downloaded successfully!');
-      } else {
-        throw new Error('Failed to download acknowledgment');
-      }
+      // downloadAcknowledgment already handles the download internally
+      await itrService.downloadAcknowledgment(filingId);
+      toast.success('Acknowledgment downloaded successfully!');
     } catch (error) {
       toast.error('Failed to download acknowledgment');
       console.error('Download error:', error);
@@ -137,8 +125,8 @@ const Acknowledgment = () => {
       {/* Success Header - Justification: Clear confirmation of successful filing */}
       <div className="bg-white shadow rounded-lg mb-6">
         <div className="px-6 py-8 text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-success-100 mb-4">
+            <CheckCircle className="h-8 w-8 text-success-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Filing Submitted Successfully!
@@ -148,14 +136,14 @@ const Acknowledgment = () => {
           </p>
 
           {/* Acknowledgment Number - Justification: Most important information prominently displayed */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <h2 className="text-lg font-semibold text-green-800 mb-2">
+          <div className="bg-success-50 border border-success-200 rounded-lg p-4 mb-6">
+            <h2 className="text-lg font-semibold text-success-800 mb-2">
               Acknowledgment Number
             </h2>
-            <p className="text-2xl font-mono font-bold text-green-900">
+            <p className="text-2xl font-mono font-bold text-success-900">
               {ackNumber || 'ACK' + Date.now().toString().slice(-8)}
             </p>
-            <p className="text-sm text-green-700 mt-1">
+            <p className="text-sm text-success-700 mt-1">
               Please save this number for future reference
             </p>
           </div>
@@ -223,7 +211,7 @@ const Acknowledgment = () => {
                 <CheckCircle className="h-5 w-5 text-gray-400 mr-3" />
                 <div>
                   <p className="text-sm font-medium text-gray-900">Status</p>
-                  <p className="text-sm text-green-600 font-medium">Submitted</p>
+                  <p className="text-sm text-success-600 font-medium">Submitted</p>
                 </div>
               </div>
             </div>
@@ -232,29 +220,29 @@ const Acknowledgment = () => {
       </div>
 
       {/* Important Information - Justification: Legal and procedural information */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-        <h3 className="text-lg font-medium text-blue-900 mb-3">Important Information</h3>
-        <div className="space-y-3 text-sm text-blue-800">
+      <div className="bg-info-50 border border-info-200 rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-medium text-info-900 mb-3">Important Information</h3>
+        <div className="space-y-3 text-sm text-info-800">
           <div className="flex items-start">
-            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+            <div className="w-2 h-2 bg-info-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
             <p>
               Your acknowledgment number serves as proof of filing. Please keep it safe.
             </p>
           </div>
           <div className="flex items-start">
-            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+            <div className="w-2 h-2 bg-info-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
             <p>
               You can track your filing status on the Income Tax Department website using your PAN.
             </p>
           </div>
           <div className="flex items-start">
-            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+            <div className="w-2 h-2 bg-info-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
             <p>
               If you need to make any corrections, you can file a revised return within the specified time limit.
             </p>
           </div>
           <div className="flex items-start">
-            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+            <div className="w-2 h-2 bg-info-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
             <p>
               Keep all supporting documents safe for at least 6 years as per Income Tax Act.
             </p>

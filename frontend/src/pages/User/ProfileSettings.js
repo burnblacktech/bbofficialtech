@@ -143,14 +143,13 @@ const ProfileSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div>
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-black">Profile Settings</h1>
-              <p className="text-gray-700 mt-2">Manage your account information and preferences</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-2">Manage your account information and preferences</p>
             </div>
             <button
               onClick={() => navigate('/preferences')}
@@ -192,7 +191,6 @@ const ProfileSettings = () => {
             {renderTabContent()}
           </div>
         </div>
-      </div>
     </div>
   );
 };
@@ -1309,8 +1307,8 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
       )}
 
       {!hasPassword && isOAuthUser && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
+        <div className="mb-6 p-4 bg-info-50 border border-info-200 rounded-lg">
+          <p className="text-sm text-info-800">
             You signed up with Google OAuth. Set a password to enable email/password login.
           </p>
         </div>
@@ -1933,8 +1931,8 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
             )}
           </div>
 
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="mb-4 p-3 bg-info-50 border border-info-200 rounded-lg">
+            <p className="text-sm text-info-800">
               <strong>Note:</strong> Bank account details are required for receiving tax refunds. Ensure all information is accurate.
             </p>
           </div>

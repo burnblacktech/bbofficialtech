@@ -80,7 +80,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard')}
             >
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-burn-gradient rounded-lg flex items-center justify-center mr-1.5 sm:mr-2 shadow-card relative">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-lg flex items-center justify-center mr-1.5 sm:mr-2 shadow-card relative">
                 <img
                   src="/bb-logo.svg"
                   alt="BurnBlack Logo"
@@ -108,7 +108,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
                 <button
                   onClick={() => setShowSearch(false)}
@@ -139,7 +139,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                 aria-label="Notifications"
               >
                 <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full"></span>
+                <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-error-500 rounded-full"></span>
               </button>
               {showNotifications && <NotificationsPanel />}
             </div>
@@ -159,7 +159,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1.5 lg:p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-burn-gradient rounded-full flex items-center justify-center shadow-card">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-full flex items-center justify-center shadow-card">
                   <span className="text-white text-xs sm:text-sm font-medium">
                     {getUserInitials()}
                   </span>
@@ -207,7 +207,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                   <div className="border-t border-gray-200 my-1"></div>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-error-600 hover:bg-error-50 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>

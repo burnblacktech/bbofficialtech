@@ -7,10 +7,12 @@
 import { authService } from './';
 import apiClient from './core/APIClient';
 import { validateITRJson } from '../lib/itrSchemaValidator';
+import { getApiBaseUrl } from '../utils/apiConfig';
 
 class ITRJsonExportService {
   constructor() {
-    this.apiEndpoint = '/api/itr/export';
+    // Will be constructed dynamically using getApiBaseUrl
+    this.getApiEndpoint = () => `${getApiBaseUrl()}/itr/export`;
   }
 
   /**
@@ -77,7 +79,7 @@ class ITRJsonExportService {
         throw new Error('Authentication token not found. Please log in again.');
       }
 
-      const response = await fetch(this.apiEndpoint, {
+      const response = await fetch(this.getApiEndpoint(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -292,6 +294,25 @@ class ITRJsonExportService {
         const presumptiveProfessionalIncome = formData.income.presumptiveProfessional?.presumptiveIncome || 0;
         transformed.income.businessIncome = presumptiveBusinessIncome;
         transformed.income.professionalIncome = presumptiveProfessionalIncome;
+      }
+
+      // Store ITR-1 specific structured data
+      if (itrType === 'ITR-1' || itrType === 'ITR1') {
+        // Extract salary details from Form 16 or salary income
+        transformed.income.salaryDetails = formData.income?.salaryDetails || {
+          grossSalary: formData.income?.salary || 0,
+          allowances: formData.income?.allowances || {},
+          deductions: formData.income?.salaryDeductions || {},
+        };
+        // Extract house property details (only one property allowed for ITR-1)
+        const houseProperties = formData.income?.houseProperty?.properties || [];
+        transformed.income.housePropertyDetails = {
+          properties: houseProperties.slice(0, 1), // Only first property for ITR-1
+          totalIncome: houseProperties.length > 0 ? (houseProperties[0]?.annualValue || 0) : 0,
+        };
+        // Ensure business and capital gains are 0 for ITR-1
+        transformed.income.businessIncome = 0;
+        transformed.income.capitalGains = 0;
       }
     }
 
@@ -1214,8 +1235,15 @@ class ITRJsonExportService {
         // ITR-1 specific fields
         // eslint-disable-next-line camelcase
         jsonData.ITR1_Specific = {
-          'Income_from_Salary_Detailed': itrData.income?.salaryDetails || {},
-          'Income_from_House_Property_Detailed': itrData.income?.housePropertyDetails || {},
+          'Income_from_Salary_Detailed': itrData.income?.salaryDetails || {
+            grossSalary: itrData.income?.salary || 0,
+            allowances: {},
+            deductions: {},
+          },
+          'Income_from_House_Property_Detailed': itrData.income?.housePropertyDetails || {
+            properties: (itrData.income?.houseProperty?.properties || []).slice(0, 1),
+            totalIncome: 0,
+          },
           'Business_Income_Already_Covered': 'NO',
           'Capital_Gains_Already_Covered': 'NO',
         };

@@ -29,13 +29,17 @@ class ITRService {
         taxRegime: filingData.taxRegime,
       });
       // Return in expected format for backward compatibility
+      // Backend returns: { draft: { id, filingId, ... } }
+      const draftData = response.data.draft || response.data;
       return {
         filing: {
-          id: response.data.filingId || response.data.id,
+          id: draftData.filingId || draftData.id,
         },
         draft: {
-          id: response.data.id,
+          id: draftData.id,
         },
+        filingId: draftData.filingId,
+        id: draftData.id,
         ...response.data,
       };
     } catch (error) {
@@ -170,6 +174,17 @@ class ITRService {
   async getDraftById(draftId) {
     try {
       const response = await apiClient.get(`/itr/drafts/${draftId}`);
+      return response.data;
+    } catch (error) {
+      errorHandler.handle(error);
+      throw error;
+    }
+  }
+
+  // Get user's drafts
+  async getUserDrafts(params = {}) {
+    try {
+      const response = await apiClient.get('/itr/drafts', { params });
       return response.data;
     } catch (error) {
       errorHandler.handle(error);

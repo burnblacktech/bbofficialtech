@@ -159,7 +159,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
         return (
           <div key={field.id} className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              {field.label} {field.required && <span className="text-red-500">*</span>}
+              {field.label} {field.required && <span className="text-error-500">*</span>}
             </label>
             <textarea
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -169,7 +169,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
               onChange={(e) => handleFieldChange(section.id, field.id, e.target.value)}
             />
             {fieldErrors?.isValid === false && (
-              <p className="text-sm text-red-600">{fieldErrors.errors[0]}</p>
+              <p className="text-sm text-error-600">{fieldErrors.errors[0]}</p>
             )}
           </div>
         );
@@ -178,7 +178,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
         return (
           <div key={field.id} className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              {field.label} {field.required && <span className="text-red-500">*</span>}
+              {field.label} {field.required && <span className="text-error-500">*</span>}
             </label>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -194,7 +194,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
               ))}
             </select>
             {fieldErrors?.isValid === false && (
-              <p className="text-sm text-red-600">{fieldErrors.errors[0]}</p>
+              <p className="text-sm text-error-600">{fieldErrors.errors[0]}</p>
             )}
           </div>
         );
@@ -203,7 +203,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
         return (
           <div key={field.id} className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              {field.label} {field.required && <span className="text-red-500">*</span>}
+              {field.label} {field.required && <span className="text-error-500">*</span>}
             </label>
             <div className="space-y-2">
               {field.options.map(option => (
@@ -222,7 +222,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
               ))}
             </div>
             {fieldErrors?.isValid === false && (
-              <p className="text-sm text-red-600">{fieldErrors.errors[0]}</p>
+              <p className="text-sm text-error-600">{fieldErrors.errors[0]}</p>
             )}
           </div>
         );
@@ -320,7 +320,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
           className="mb-8 space-y-6"
         >
           {/* Import Options Header */}
-          <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+          <Card className="p-6 bg-gradient-to-r from-primary-50 to-amber-50 border-primary-200">
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 🚀 Save Time with Smart Import

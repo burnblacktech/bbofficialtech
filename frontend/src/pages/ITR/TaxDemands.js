@@ -165,112 +165,110 @@ const TaxDemands = () => {
   // Detail View
   if (demandId && demandDetail) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setSearchParams({});
-                setSelectedDemand(null);
-              }}
-              icon={<RefreshCw className="w-4 h-4" />}
-            >
-              Back to Demands
-            </Button>
+      <div>
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSearchParams({});
+              setSelectedDemand(null);
+            }}
+            icon={<RefreshCw className="w-4 h-4" />}
+          >
+            Back to Demands
+          </Button>
+        </div>
+
+        <DemandCard
+          demand={demandDetail}
+          onPay={handlePay}
+          onDispute={handleDispute}
+        />
+
+        {/* Breakdown */}
+        {demandDetail.breakdown && Object.keys(demandDetail.breakdown).length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Amount Breakdown</h2>
+            <div className="space-y-2">
+              {Object.entries(demandDetail.breakdown).map(([key, value]) => (
+                <div key={key} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
+                  <span className="text-sm text-gray-600 capitalize">{key.replace(/_/g, ' ')}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formatIndianCurrency(parseFloat(value))}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
+        )}
 
-          <DemandCard
-            demand={demandDetail}
-            onPay={handlePay}
-            onDispute={handleDispute}
-          />
-
-          {/* Breakdown */}
-          {demandDetail.breakdown && Object.keys(demandDetail.breakdown).length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Amount Breakdown</h2>
-              <div className="space-y-2">
-                {Object.entries(demandDetail.breakdown).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
-                    <span className="text-sm text-gray-600 capitalize">{key.replace(/_/g, ' ')}</span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {formatIndianCurrency(parseFloat(value))}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Payment History */}
-          {demandDetail.paymentHistory && demandDetail.paymentHistory.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h2>
-              <div className="space-y-3">
-                {demandDetail.paymentHistory.map((payment, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {formatIndianCurrency(payment.amount)}
+        {/* Payment History */}
+        {demandDetail.paymentHistory && demandDetail.paymentHistory.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment History</h2>
+            <div className="space-y-3">
+              {demandDetail.paymentHistory.map((payment, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {formatIndianCurrency(payment.amount)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {payment.paymentMethod} • {new Date(payment.paymentDate).toLocaleDateString('en-IN')}
+                    </p>
+                    {payment.transactionId && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Txn ID: {payment.transactionId}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {payment.paymentMethod} • {new Date(payment.paymentDate).toLocaleDateString('en-IN')}
-                      </p>
-                      {payment.transactionId && (
-                        <p className="text-xs text-gray-400 mt-1">
-                          Txn ID: {payment.transactionId}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Timeline */}
-          {demandDetail.timeline && demandDetail.timeline.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Timeline</h2>
-              <NoticeTimeline timeline={demandDetail.timeline} />
-            </div>
-          )}
-
-          {/* Dispute Info */}
-          {demandDetail.status === 'disputed' && demandDetail.disputeReason && (
-            <div className="bg-white rounded-lg shadow-sm border border-warning-200 p-6 mt-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Dispute Information</h2>
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Dispute Status</p>
-                <StatusBadge status={demandDetail.disputeStatus || 'pending'} size="md" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">Dispute Reason</p>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">{demandDetail.disputeReason}</p>
-              </div>
-              {demandDetail.disputeDocuments && demandDetail.disputeDocuments.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Supporting Documents</p>
-                  <div className="space-y-2">
-                    {demandDetail.disputeDocuments.map((doc, index) => (
-                      <a
-                        key={index}
-                        href={doc}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
-                      >
-                        <FileText className="w-4 h-4" />
-                        Document {index + 1}
-                      </a>
-                    ))}
+                    )}
                   </div>
                 </div>
-              )}
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Timeline */}
+        {demandDetail.timeline && demandDetail.timeline.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Timeline</h2>
+            <NoticeTimeline timeline={demandDetail.timeline} />
+          </div>
+        )}
+
+        {/* Dispute Info */}
+        {demandDetail.status === 'disputed' && demandDetail.disputeReason && (
+          <div className="bg-white rounded-lg shadow-sm border border-warning-200 p-6 mt-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Dispute Information</h2>
+            <div className="mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Dispute Status</p>
+              <StatusBadge status={demandDetail.disputeStatus || 'pending'} size="md" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">Dispute Reason</p>
+              <p className="text-sm text-gray-700 whitespace-pre-wrap">{demandDetail.disputeReason}</p>
+            </div>
+            {demandDetail.disputeDocuments && demandDetail.disputeDocuments.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Supporting Documents</p>
+                <div className="space-y-2">
+                  {demandDetail.disputeDocuments.map((doc, index) => (
+                    <a
+                      key={index}
+                      href={doc}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Document {index + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Payment Modal */}
         {showPaymentModal && selectedDemand && (
@@ -321,8 +319,7 @@ const TaxDemands = () => {
 
   // List View
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div>
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Tax Demands</h1>
@@ -499,7 +496,6 @@ const TaxDemands = () => {
             />
           </Modal>
         )}
-      </div>
     </div>
   );
 };

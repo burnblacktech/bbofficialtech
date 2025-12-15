@@ -99,7 +99,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
         <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 border-b border-gray-200">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-burn-gradient rounded-lg flex items-center justify-center shadow-card relative">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-lg flex items-center justify-center shadow-card relative">
                 <img
                   src="/bb-logo.svg"
                   alt="BurnBlack Logo"
@@ -117,7 +117,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
             </div>
           )}
           {isCollapsed && (
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-burn-gradient rounded-lg flex items-center justify-center mx-auto shadow-card">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-lg flex items-center justify-center mx-auto shadow-card">
               <img
                 src="/bb-logo.svg"
                 alt="BurnBlack Logo"
@@ -181,7 +181,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
         {!isCollapsed && (
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-burn-gradient rounded-full flex items-center justify-center shadow-card">
+              <div className="w-10 h-10 bg-aurora-gradient rounded-full flex items-center justify-center shadow-card">
                 <span className="text-white text-sm font-medium">
                   {user?.fullName
                     ?.split(' ')

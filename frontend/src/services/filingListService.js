@@ -4,7 +4,9 @@
 // Following BUSINESS_TECHNICAL_BRIDGE specifications
 // =====================================================
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+import { getApiBaseUrl } from '../utils/apiConfig';
+
+const API_BASE_URL = getApiBaseUrl();
 
 // =====================================================
 // API CLIENT UTILITY

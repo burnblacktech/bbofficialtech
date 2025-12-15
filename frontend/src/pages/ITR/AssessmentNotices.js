@@ -128,12 +128,10 @@ const AssessmentNotices = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
-            <p className="text-gray-600">Loading assessment notices...</p>
-          </div>
+      <div>
+        <div className="text-center py-12">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
+          <p className="text-gray-600">Loading assessment notices...</p>
         </div>
       </div>
     );
@@ -141,20 +139,18 @@ const AssessmentNotices = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-error-600" />
-              <h3 className="text-lg font-semibold text-error-900">Error Loading Notices</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
-              {error?.response?.data?.message || error?.message || 'An unexpected error occurred.'}
-            </p>
-            <Button variant="primary" onClick={() => refetch()}>
-              Retry
-            </Button>
+      <div>
+        <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertCircle className="w-6 h-6 text-error-600" />
+            <h3 className="text-lg font-semibold text-error-900">Error Loading Notices</h3>
           </div>
+          <p className="text-sm text-gray-600 mb-4">
+            {error?.response?.data?.message || error?.message || 'An unexpected error occurred.'}
+          </p>
+          <Button variant="primary" onClick={() => refetch()}>
+            Retry
+          </Button>
         </div>
       </div>
     );
@@ -163,8 +159,7 @@ const AssessmentNotices = () => {
   // Detail View
   if (noticeId && noticeDetail) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div>
           <div className="mb-6">
             <Button
               variant="ghost"
@@ -215,7 +210,6 @@ const AssessmentNotices = () => {
               )}
             </div>
           )}
-        </div>
 
         {/* Response Modal */}
         {showResponseModal && selectedNotice && (
@@ -244,8 +238,7 @@ const AssessmentNotices = () => {
 
   // List View
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div>
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -406,7 +399,6 @@ const AssessmentNotices = () => {
             />
           </Modal>
         )}
-      </div>
     </div>
   );
 };

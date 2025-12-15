@@ -171,7 +171,7 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
             dragActive
-              ? 'border-blue-500 bg-blue-50'
+              ? 'border-primary-500 bg-primary-50'
               : 'border-gray-300 hover:border-gray-400'
           } ${isUploading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
           onDragEnter={handleDrag}
@@ -191,8 +191,8 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
           {isUploading ? (
             <div className="space-y-4">
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-sm font-medium text-blue-600">
+              <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p className="text-sm font-medium text-primary-600">
                 {isExtracting ? 'Extracting data...' : 'Uploading file...'}
               </p>
 

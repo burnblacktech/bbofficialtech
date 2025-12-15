@@ -103,10 +103,10 @@ const PropertyDocumentOCRUpload = ({ onExtracted, propertyIndex = null, filingId
   return (
     <div className="space-y-4">
       {/* Upload Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6">
+      <div className="bg-gradient-to-r from-primary-50 to-amber-50 border-2 border-primary-200 rounded-xl p-6">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-purple-100 rounded-lg">
-            <Home className="h-6 w-6 text-purple-600" />
+          <div className="p-3 bg-primary-100 rounded-lg">
+            <Home className="h-6 w-6 text-primary-600" />
           </div>
           <div className="flex-1">
             <h4 className="text-heading-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
@@ -123,7 +123,7 @@ const PropertyDocumentOCRUpload = ({ onExtracted, propertyIndex = null, filingId
               <select
                 value={documentType}
                 onChange={(e) => setDocumentType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-body-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-body-sm"
                 disabled={isProcessing}
               >
                 <option value="sale_deed">Sale Deed</option>
@@ -148,7 +148,7 @@ const PropertyDocumentOCRUpload = ({ onExtracted, propertyIndex = null, filingId
                 className={`inline-flex items-center px-4 py-2.5 border-2 rounded-lg font-medium transition-colors cursor-pointer ${
                   isProcessing
                     ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
-                    : 'bg-white text-purple-700 border-purple-300 hover:bg-purple-50 hover:border-purple-400'
+                    : 'bg-white text-primary-700 border-primary-300 hover:bg-primary-50 hover:border-primary-400'
                 }`}
               >
                 {isProcessing ? (
@@ -173,8 +173,8 @@ const PropertyDocumentOCRUpload = ({ onExtracted, propertyIndex = null, filingId
         <div className="bg-white border-2 border-green-200 rounded-xl p-6 shadow-sm">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-success-100 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-success-600" />
               </div>
               <div>
                 <h5 className="text-heading-sm font-semibold text-gray-900 mb-1">Extracted Property Data</h5>
@@ -196,7 +196,7 @@ const PropertyDocumentOCRUpload = ({ onExtracted, propertyIndex = null, filingId
               </button>
               <button
                 onClick={handleClear}
-                className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+                className="p-2 text-gray-400 hover:text-error-600 rounded-lg hover:bg-error-50"
                 title="Clear"
               >
                 <X className="h-4 w-4" />

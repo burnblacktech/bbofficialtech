@@ -863,6 +863,16 @@ const AppContent = () => {
               </Layout>
             }
           />
+          <Route
+            path="/acknowledgment/:filingId"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading acknowledgment..." />}>
+                  <Acknowledgment />
+                </Suspense>
+              </Layout>
+            }
+          />
 
           {/* User Management Routes */}
           <Route

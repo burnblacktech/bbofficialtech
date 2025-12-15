@@ -15,7 +15,9 @@ import { useAuthStore } from './authStore';
 // API CLIENT CONFIGURATION
 // =====================================================
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+import { getApiBaseUrl } from '../utils/apiConfig';
+
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiClient {
   constructor(baseURL) {

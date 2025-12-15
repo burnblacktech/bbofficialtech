@@ -103,12 +103,12 @@ const StyledCurrencyField = ({ label, value, onChange, hint, max, className = ''
           'absolute left-0 top-0 bottom-0 flex items-center justify-center w-10',
           'bg-slate-100 rounded-l-xl border-2 border-r-0 transition-colors',
           isFocused ? 'border-primary-500 bg-primary-50' : 'border-slate-200',
-          isOverMax && 'border-red-400 bg-red-50',
+          isOverMax && 'border-error-400 bg-error-50',
         )}>
           <IndianRupee className={cn(
             'w-4 h-4 transition-colors',
             isFocused ? 'text-primary-600' : 'text-slate-500',
-            isOverMax && 'text-red-500',
+            isOverMax && 'text-error-500',
           )} />
         </div>
         <input
@@ -128,7 +128,7 @@ const StyledCurrencyField = ({ label, value, onChange, hint, max, className = ''
       {hint && (
         <p className={cn(
           'text-xs mt-1.5',
-          isOverMax ? 'text-red-500' : 'text-slate-500',
+          isOverMax ? 'text-error-500' : 'text-slate-500',
         )}>
           {hint}
         </p>
@@ -175,6 +175,7 @@ const ComputationSection = ({
             sources={prefetchSources}
             fieldVerificationStatuses={fieldVerificationStatuses}
             fieldSources={fieldSources}
+            readOnly={readOnly}
           />
         );
 
@@ -332,6 +333,7 @@ const ComputationSection = ({
                   presumptiveProfessional: data.presumptiveProfessional || formData?.presumptiveProfessional,
                 });
               }}
+              selectedITR={selectedITR}
             />
           );
         }
@@ -502,8 +504,8 @@ const ComputationSection = ({
             transition={springs.bouncy}
           >
             {isComplete() ? (
-              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-emerald-600" />
+              <div className="w-8 h-8 rounded-full bg-success-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-success-600" />
               </div>
             ) : (
               <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">

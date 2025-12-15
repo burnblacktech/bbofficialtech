@@ -6,7 +6,11 @@
 import React, { useState, useEffect } from 'react';
 import { Calculator, Info, AlertCircle, Building2, Briefcase, Truck } from 'lucide-react';
 
-const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filingId }) => {
+const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filingId, selectedITR }) => {
+  // Presumptive income is only applicable for ITR-4
+  if (selectedITR !== 'ITR-4' && selectedITR !== 'ITR4') {
+    return null;
+  }
   const [section, setSection] = useState(data.section || '44AD');
   const [formData, setFormData] = useState({
     section: data.section || '44AD',
@@ -104,11 +108,11 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
               onClick={() => handleSectionChange('44AD')}
               className={`p-4 border-2 rounded-lg text-left transition-colors ${
                 section === '44AD'
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-primary-500 bg-primary-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <Building2 className="h-5 w-5 text-blue-600 mb-2" />
+              <Building2 className="h-5 w-5 text-primary-600 mb-2" />
               <div className="font-semibold text-gray-900">Section 44AD</div>
               <div className="text-xs text-gray-600 mt-1">Business (Turnover ≤ ₹2 Cr)</div>
             </button>
@@ -116,11 +120,11 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
               onClick={() => handleSectionChange('44ADA')}
               className={`p-4 border-2 rounded-lg text-left transition-colors ${
                 section === '44ADA'
-                  ? 'border-purple-500 bg-purple-50'
+                  ? 'border-primary-500 bg-primary-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <Briefcase className="h-5 w-5 text-purple-600 mb-2" />
+              <Briefcase className="h-5 w-5 text-primary-600 mb-2" />
               <div className="font-semibold text-gray-900">Section 44ADA</div>
               <div className="text-xs text-gray-600 mt-1">Profession (Receipts ≤ ₹50 L)</div>
             </button>
@@ -128,11 +132,11 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
               onClick={() => handleSectionChange('44AE')}
               className={`p-4 border-2 rounded-lg text-left transition-colors ${
                 section === '44AE'
-                  ? 'border-green-500 bg-green-50'
+                  ? 'border-success-500 bg-success-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <Truck className="h-5 w-5 text-green-600 mb-2" />
+              <Truck className="h-5 w-5 text-success-600 mb-2" />
               <div className="font-semibold text-gray-900">Section 44AE</div>
               <div className="text-xs text-gray-600 mt-1">Goods Carriage</div>
             </button>

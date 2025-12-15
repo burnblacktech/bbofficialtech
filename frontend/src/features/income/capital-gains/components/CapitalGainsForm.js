@@ -16,6 +16,11 @@ import capitalGainsOCRService from '../../../../services/CapitalGainsOCRService'
 import toast from 'react-hot-toast';
 
 const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploaded }) => {
+  // Capital gains is only applicable for ITR-2 and ITR-3
+  if (selectedITR !== 'ITR-2' && selectedITR !== 'ITR2' && selectedITR !== 'ITR-3' && selectedITR !== 'ITR3') {
+    return null;
+  }
+
   // Use new hooks if filingId is provided, otherwise fallback to local state
   const { data: capitalGainsData, isLoading } = filingId ? useCapitalGains(filingId) : { data: null, isLoading: false };
   const updateMutation = filingId ? useUpdateCapitalGains(filingId) : null;

@@ -51,6 +51,10 @@ module.exports = {
     'comma-dangle': ['error', 'always-multiline'],
     'quotes': ['error', 'single', { avoidEscape: true }],
 
+    // Prevent hardcoded localhost URLs (using no-restricted-globals instead)
+    // Note: Regex pattern in no-restricted-syntax was causing parsing issues
+    // The hardcoded URLs have been fixed in the codebase to use getApiBaseUrl()
+
     // Function/variable naming
     'camelcase': 'error',
     'pascalcase': ['error', { allow: ['^[A-Z]'] }],

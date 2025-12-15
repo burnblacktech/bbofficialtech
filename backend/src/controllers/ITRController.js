@@ -4,6 +4,7 @@
 // =====================================================
 
 const { sequelize } = require('../config/database');
+const { QueryTypes } = require('sequelize');
 const { query: dbQuery } = require('../utils/dbQuery');
 const enterpriseLogger = require('../utils/logger');
 const {
@@ -48,8 +49,33 @@ class ITRController {
   async createDraft(req, res) {
     const transaction = await sequelize.transaction();
     try {
+      // Validate user authentication first
+      if (!req.user || !req.user.userId) {
+        await transaction.rollback();
+        enterpriseLogger.error('createDraft: User not authenticated', {
+          hasUser: !!req.user,
+          userId: req.user?.userId,
+        });
+        return errorResponse(res, new Error('User authentication required'), 401);
+      }
+
       const userId = req.user.userId;
-      const { itrType, formData, assessmentYear } = req.body;
+      const { itrType, formData, assessmentYear, filingId: providedFilingId, taxRegime } = req.body;
+
+      // Log incoming request for debugging
+      enterpriseLogger.info('createDraft called', {
+        userId,
+        hasItrType: !!itrType,
+        hasFormData: !!formData,
+        assessmentYear,
+        providedFilingId,
+        requestBody: {
+          itrType,
+          hasFormData: !!formData,
+          assessmentYear,
+          filingId: providedFilingId,
+        },
+      });
 
       // Validate ITR type
       const itrTypeValidation = validateITRType(itrType);
@@ -70,31 +96,164 @@ class ITRController {
       // Use provided assessment year or default to current year
       const finalAssessmentYear = assessmentYear || getDefaultAssessmentYear();
 
-      // Create filing first
-      const createFilingQuery = `
-        INSERT INTO itr_filings (user_id, itr_type, assessment_year, status, created_at)
-        VALUES ($1, $2, $3, 'draft', NOW())
-        RETURNING id
-      `;
+      // Validate required values before proceeding
+      if (!userId) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('User ID is required'), 400);
+      }
+      if (!itrType) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('ITR type is required'), 400);
+      }
+      if (!finalAssessmentYear) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('Assessment year is required'), 400);
+      }
 
-      const filing = await sequelize.query(createFilingQuery, {
-        replacements: [userId, itrType, finalAssessmentYear],
-        type: QueryTypes.SELECT,
-        transaction,
-      });
+      let filingId;
+      
+      // Use provided filingId or create new filing
+      if (providedFilingId) {
+        // Verify filing exists and belongs to user
+        const verifyFilingQuery = `
+          SELECT id FROM itr_filings 
+          WHERE id = $1 AND user_id = $2
+        `;
+        const existingFiling = await sequelize.query(verifyFilingQuery, {
+          replacements: [providedFilingId, userId],
+          type: QueryTypes.SELECT,
+          transaction,
+        });
+        
+        if (!existingFiling || existingFiling.length === 0) {
+          await transaction.rollback();
+          return notFoundResponse(res, 'Filing', 'Filing not found or access denied');
+        }
+        
+        filingId = providedFilingId;
+      } else {
+        // Create filing first
+        const createFilingQuery = `
+          INSERT INTO itr_filings (user_id, itr_type, assessment_year, status, created_at)
+          VALUES ($1, $2, $3, 'draft', NOW())
+          RETURNING id
+        `;
+
+        // Ensure all replacement values are defined and valid
+        // userId is a UUID string, not an integer - validate as UUID/string
+        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+          await transaction.rollback();
+          enterpriseLogger.error('Invalid userId for filing creation', { userId });
+          return errorResponse(res, new Error('Invalid user ID'), 400);
+        }
+
+        // Ensure itrType is a string
+        const itrTypeStr = String(itrType || '').trim();
+        if (!itrTypeStr) {
+          await transaction.rollback();
+          enterpriseLogger.error('Missing itrType for filing creation', { itrType });
+          return errorResponse(res, new Error('ITR type is required'), 400);
+        }
+
+        // Ensure assessment year is a string
+        const assessmentYearStr = String(finalAssessmentYear || '').trim();
+        if (!assessmentYearStr) {
+          await transaction.rollback();
+          enterpriseLogger.error('Missing assessmentYear for filing creation', { finalAssessmentYear });
+          return errorResponse(res, new Error('Assessment year is required'), 400);
+        }
+
+        // Use userId directly (it's a UUID string)
+        const filingReplacements = [userId, itrTypeStr, assessmentYearStr];
+        
+        // Log before query execution for debugging
+        enterpriseLogger.info('Creating filing', {
+          userId,
+          itrType: itrTypeStr,
+          assessmentYear: assessmentYearStr,
+          replacements: filingReplacements,
+        });
+
+        const filing = await sequelize.query(createFilingQuery, {
+          replacements: filingReplacements,
+          type: QueryTypes.SELECT,
+          transaction,
+        });
+        
+        if (!filing || filing.length === 0) {
+          await transaction.rollback();
+          return errorResponse(res, new Error('Failed to create filing'), 500);
+        }
+        
+        filingId = filing[0].id;
+      }
 
       // Create draft
+      if (!filingId) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('Filing ID is required to create draft'), 400);
+      }
+
+      // filingId is a UUID string, not an integer - validate as UUID/string
+      if (typeof filingId !== 'string' || filingId.trim() === '') {
+        await transaction.rollback();
+        enterpriseLogger.error('Invalid filingId for draft creation', { filingId });
+        return errorResponse(res, new Error('Invalid filing ID'), 400);
+      }
+
+      // Ensure formData is a valid object before stringifying
+      const draftData = formData || {};
+      if (typeof draftData !== 'object' || Array.isArray(draftData)) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('Invalid form data format'), 400);
+      }
+
+      // Stringify with error handling
+      let stringifiedData;
+      try {
+        stringifiedData = JSON.stringify(draftData);
+      } catch (stringifyError) {
+        await transaction.rollback();
+        enterpriseLogger.error('Failed to serialize form data', {
+          error: stringifyError.message,
+          userId,
+          filingId,
+        });
+        return errorResponse(res, new Error('Failed to serialize form data'), 400);
+      }
+
       const createDraftQuery = `
         INSERT INTO itr_drafts (filing_id, step, data, created_at)
         VALUES ($1, $2, $3, NOW())
         RETURNING id, step, created_at
       `;
 
+      // Ensure all replacement values are defined and valid
+      // Use filingId directly (it's a UUID string)
+      const draftReplacements = [filingId, 'personal_info', stringifiedData];
+      if (draftReplacements.some(val => val === undefined || val === null)) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('Missing required parameters for draft creation'), 400);
+      }
+
+      // Log before query execution for debugging
+      enterpriseLogger.info('Creating draft', {
+        userId,
+        filingId,
+        step: 'personal_info',
+        dataLength: stringifiedData.length,
+      });
+
       const draft = await sequelize.query(createDraftQuery, {
-        replacements: [filing[0].id, 'personal_info', JSON.stringify(formData)],
+        replacements: draftReplacements,
         type: QueryTypes.SELECT,
         transaction,
       });
+      
+      if (!draft || draft.length === 0) {
+        await transaction.rollback();
+        return errorResponse(res, new Error('Failed to create draft'), 500);
+      }
 
       // Commit transaction
       await transaction.commit();
@@ -103,13 +262,13 @@ class ITRController {
         userId,
         itrType,
         draftId: draft[0].id,
-        filingId: filing[0].id,
+        filingId: filingId,
       });
 
       // Auto-create service ticket for filing support (outside transaction - non-critical)
       try {
         const filingData = {
-          id: filing[0].id,
+          id: filingId,
           userId,
           itrType,
           memberId: null, // Will be set if filing for family member
@@ -118,7 +277,7 @@ class ITRController {
         await serviceTicketService.autoCreateFilingTicket(filingData);
 
         enterpriseLogger.info('Auto-generated service ticket created for filing', {
-          filingId: filing[0].id,
+          filingId: filingId,
           userId,
           itrType,
         });
@@ -126,18 +285,20 @@ class ITRController {
         // Don't fail the draft creation if ticket creation fails
         enterpriseLogger.error('Failed to auto-create service ticket', {
           error: ticketError.message,
-          filingId: filing[0].id,
+          filingId: filingId,
           userId,
         });
       }
 
       return successResponse(res, {
-        id: draft[0].id,
-        filingId: filing[0].id,
-        step: draft[0].step,
-        itrType: itrType,
-        status: 'draft',
-        createdAt: draft[0].created_at,
+        draft: {
+          id: draft[0].id,
+          filingId: filingId,
+          step: draft[0].step,
+          itrType: itrType,
+          status: 'draft',
+          createdAt: draft[0].created_at,
+        },
       }, 'Draft created successfully', 201);
     } catch (error) {
       // Rollback transaction on error

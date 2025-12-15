@@ -249,24 +249,22 @@ const UserDashboard = () => {
       }
     }
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-            </div>
-            <h2 className="text-heading-md font-semibold text-black mb-2">Failed to Load Dashboard</h2>
-            <p className="text-body-md text-gray-600 mb-6">{errorMessage}</p>
-              <button
-                onClick={handleRetry}
-                className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 mx-auto shadow-lg shadow-primary-500/20"
-              >
-                <RefreshCw className="w-4 h-4" />
-                Retry
-              </button>
+      <div>
+        <div className="bg-white rounded-xl border border-red-200 p-8 text-center">
+          <div className="w-16 h-16 bg-error-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-error-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
           </div>
+          <h2 className="text-heading-md font-semibold text-black mb-2">Failed to Load Dashboard</h2>
+          <p className="text-body-md text-gray-600 mb-6">{errorMessage}</p>
+          <button
+            onClick={handleRetry}
+            className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 mx-auto shadow-lg shadow-primary-500/20"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -275,8 +273,7 @@ const UserDashboard = () => {
   // Show empty state (no filings) with guidance
   if (isEmpty && !hasFiled && !loading && !error) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div>
           <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-card">
             <div className="w-16 h-16 bg-aurora-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20">
               <FileText className="w-8 h-8 text-white" />
@@ -293,7 +290,6 @@ const UserDashboard = () => {
             </button>
           </div>
         </div>
-      </div>
     );
   }
 
@@ -605,6 +601,67 @@ const UserDashboard = () => {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Filing History Section */}
+      {completedFilings.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-heading-sm font-semibold text-black">Filing History</h2>
+            <button
+              onClick={handleViewHistory}
+              className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+            >
+              View All
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {completedFilings.slice(0, 5).map((filing) => (
+              <div
+                key={filing.id}
+                className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200 cursor-pointer group"
+                onClick={() => navigate(`/itr/computation?filingId=${filing.id}`, {
+                  state: { filing, viewMode: 'readonly' },
+                })}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="p-2 bg-success-50 rounded-lg group-hover:bg-success-100 transition-colors flex-shrink-0">
+                      <FileText className="w-4 h-4 text-success-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 text-sm truncate">
+                        {filing.itrType} - AY {filing.assessmentYear}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <FilingStatusBadge filing={filing} showInvoice={false} className="text-xs" />
+                        {filing.submittedAt && (
+                          <span className="text-xs text-gray-500">
+                            Submitted {formatRelativeTime(filing.submittedAt)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/itr/computation?filingId=${filing.id}`, {
+                          state: { filing, viewMode: 'readonly' },
+                        });
+                      }}
+                      className="px-4 py-2 text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+                    >
+                      View
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

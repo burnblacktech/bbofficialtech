@@ -26,7 +26,7 @@ const RESIDENTIAL_STATUS_OPTIONS = [
   { value: 'RNOR', label: 'Resident but Not Ordinarily Resident (RNOR)' },
 ];
 
-const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} }) => {
+const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {}, readOnly = false }) => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
@@ -214,6 +214,8 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
 
   // Input field component with consistent styling
   const FormField = ({ field, label, type = 'text', required = false, placeholder, maxLength, icon: Icon, helpText, disabled = false, children }) => {
+    // If form is readOnly, disable all fields
+    const isDisabled = disabled || readOnly;
     const hasError = errors[field] && touched[field];
     const fieldSource = getFieldSource(field);
 
@@ -223,7 +225,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
           <label className="flex items-center text-sm font-medium text-gray-700">
             {Icon && <Icon className="w-4 h-4 mr-1.5 text-gray-400" />}
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="text-error-500 ml-1">*</span>}
           </label>
           {fieldSource && <SourceChip source={fieldSource} size="sm" />}
         </div>
@@ -234,19 +236,19 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             onChange={(e) => handleChange(field, e.target.value)}
             onBlur={() => handleBlur(field)}
             maxLength={maxLength}
-            disabled={disabled}
+            disabled={isDisabled}
             placeholder={placeholder}
             className={`w-full px-3 py-2.5 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 ${
               hasError
-                ? 'border-red-400 focus:ring-red-500 bg-red-50'
+                ? 'border-error-400 focus:ring-error-500 bg-error-50'
                 : fieldSource
-                  ? 'border-blue-300 focus:ring-blue-500 bg-blue-50/30'
+                  ? 'border-info-300 focus:ring-info-500 bg-info-50/30'
                   : 'border-gray-300 focus:ring-gold-500 hover:border-gray-400'
-            } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            } ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           />
         )}
         {hasError && (
-          <p className="flex items-center text-sm text-red-600 mt-1">
+          <p className="flex items-center text-sm text-error-600 mt-1">
             <AlertCircle className="w-3.5 h-3.5 mr-1" />
             {errors[field]}
           </p>
@@ -316,7 +318,8 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             <select
               value={data?.gender || ''}
               onChange={(e) => handleChange('gender', e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400"
+              disabled={readOnly}
+              className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -340,7 +343,8 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             <select
               value={data?.residentialStatus || 'RES'}
               onChange={(e) => handleChange('residentialStatus', e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400"
+              disabled={readOnly}
+              className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             >
               {RESIDENTIAL_STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -422,7 +426,8 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
             <select
               value={data?.state || ''}
               onChange={(e) => handleChange('state', e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400"
+              disabled={readOnly}
+              className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             >
               <option value="">Select State</option>
               {INDIAN_STATES.map(state => (
@@ -473,10 +478,10 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {} 
 
       {/* Data Source Legend */}
       {Object.keys(autoFilledFields).length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-info-50 border border-info-200 rounded-lg p-4">
           <div className="flex items-start">
-            <Info className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-blue-800">
+            <Info className="w-5 h-5 text-info-600 mr-2 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-info-800">
               <p className="font-medium">Data Source Legend</p>
               <p className="mt-1">
                 Fields highlighted in blue were auto-filled from your profile or verification data.

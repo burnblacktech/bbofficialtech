@@ -69,7 +69,7 @@ const FirmDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader className="w-8 h-8 animate-spin text-primary-600" />
       </div>
     );
   }
@@ -78,7 +78,7 @@ const FirmDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="p-6 text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-error-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">No Dashboard Data</h2>
           <p className="text-gray-600 mb-4">Unable to load firm dashboard data.</p>
           <Button variant="primary" onClick={() => navigate('/dashboard')}>
@@ -97,7 +97,7 @@ const FirmDashboard = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Building2 className="h-6 w-6 text-blue-600" />
+              <Building2 className="h-6 w-6 text-primary-600" />
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">{firm.name}</h1>
                 <p className="text-xs text-gray-500">Firm Dashboard</p>
@@ -124,7 +124,7 @@ const FirmDashboard = () => {
                 <p className="text-sm text-gray-600 mb-1">Total Staff</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.staff.total}</p>
               </div>
-              <Users className="w-8 h-8 text-blue-600" />
+              <Users className="w-8 h-8 text-primary-600" />
             </div>
             <div className="mt-4 text-xs text-gray-500">
               {Object.entries(stats.staff.byRole || {}).map(([role, count]) => (
@@ -161,7 +161,7 @@ const FirmDashboard = () => {
                 <p className="text-sm text-gray-600 mb-1">Active Filings</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.filings.active}</p>
               </div>
-              <FileText className="w-8 h-8 text-purple-600" />
+              <FileText className="w-8 h-8 text-primary-600" />
             </div>
           </Card>
 
@@ -227,11 +227,11 @@ const FirmDashboard = () => {
                 <p className="text-sm text-gray-600">Pending</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{queue.inReview}</p>
+                <p className="text-2xl font-bold text-primary-600">{queue.inReview}</p>
                 <p className="text-sm text-gray-600">In Review</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{queue.completed}</p>
+                <p className="text-2xl font-bold text-success-600">{queue.completed}</p>
                 <p className="text-sm text-gray-600">Completed</p>
               </div>
               <div className="text-center">

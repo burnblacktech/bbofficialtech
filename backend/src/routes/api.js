@@ -121,6 +121,13 @@ router.use('/ocr', generalLimiter, require('./ocr'));
 router.use('/public', require('./public'));
 
 // =====================================================
+// ANALYTICS ROUTES
+// =====================================================
+
+// Analytics routes (web vitals, performance tracking)
+router.use('/analytics', generalLimiter, require('./analytics'));
+
+// =====================================================
 // HELP ROUTES
 // =====================================================
 

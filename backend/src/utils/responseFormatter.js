@@ -100,6 +100,15 @@ const paginatedResponse = (res, data, pagination, message = 'Success') => {
   });
 };
 
+// Aliases for backward compatibility
+const sendSuccess = (res, message, data, statusCode = 200) => {
+  return successResponse(res, data, message, statusCode);
+};
+
+const sendError = (res, message, statusCode = 500, details = null) => {
+  return errorResponse(res, { message, details }, statusCode);
+};
+
 module.exports = {
   successResponse,
   errorResponse,
@@ -107,4 +116,7 @@ module.exports = {
   notFoundResponse,
   unauthorizedResponse,
   paginatedResponse,
+  // Aliases for convenience
+  sendSuccess,
+  sendError,
 };

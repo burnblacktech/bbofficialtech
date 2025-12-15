@@ -123,14 +123,9 @@ const FilingHistory = () => {
         return;
       }
 
-      // Download ITR-V/acknowledgment PDF
-      const response = await itrService.downloadAcknowledgment(filing.id);
-
-      if (response.success) {
-        toast.success('Acknowledgment downloaded successfully');
-      } else {
-        toast.error(response.error || 'Failed to download acknowledgment');
-      }
+      // Download ITR-V/acknowledgment PDF (downloadAcknowledgment handles download internally)
+      await itrService.downloadAcknowledgment(filing.id);
+      toast.success('Acknowledgment downloaded successfully');
     } catch (error) {
       enterpriseLogger.error('Error downloading acknowledgment', { error });
       toast.error(error.response?.data?.error || 'Failed to download acknowledgment');
@@ -171,23 +166,20 @@ const FilingHistory = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 p-4 lg:p-6">
-        <div className="max-w-6xl mx-auto">
-          <LoadingState message="Loading filing history..." fullScreen={false} />
-        </div>
+      <div>
+        <LoadingState message="Loading filing history..." fullScreen={false} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-4 lg:p-6">
-      <div className="max-w-6xl mx-auto">
+    <div>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Filing History
           </h1>
-          <p className="text-neutral-600">
+          <p className="text-sm sm:text-base text-gray-600">
             View and manage all your ITR filings
           </p>
         </div>
@@ -262,11 +254,11 @@ const FilingHistory = () => {
         {filteredFilings.length === 0 ? (
           <Card>
             <div className="p-12 text-center">
-              <FileText className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No filings found
               </h3>
-              <p className="text-neutral-600 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
                 {searchTerm || filter !== 'all'
                   ? 'No filings match your current filters'
                   : 'You haven\'t filed any ITR yet'
@@ -289,13 +281,13 @@ const FilingHistory = () => {
                     {/* Filing Info */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-neutral-900">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           {filing.itrType} - AY {filing.assessmentYear}
                         </h3>
                         <FilingStatusBadge filing={filing} showInvoice={false} />
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-600 mb-2">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-2">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>Created: {new Date(filing.createdAt).toLocaleDateString()}</span>
@@ -409,7 +401,6 @@ const FilingHistory = () => {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 };

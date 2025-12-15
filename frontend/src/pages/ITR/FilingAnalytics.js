@@ -33,12 +33,10 @@ const FilingAnalytics = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-12">
-            <BarChart3 className="w-8 h-8 animate-pulse text-primary-500 mx-auto mb-4" />
-            <p className="text-gray-600">Loading analytics...</p>
-          </div>
+      <div>
+        <div className="text-center py-12">
+          <BarChart3 className="w-8 h-8 animate-pulse text-primary-500 mx-auto mb-4" />
+          <p className="text-gray-600">Loading analytics...</p>
         </div>
       </div>
     );
@@ -46,11 +44,9 @@ const FilingAnalytics = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
-            <p className="text-error-600">Failed to load analytics: {error?.message}</p>
-          </div>
+      <div>
+        <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
+          <p className="text-error-600">Failed to load analytics: {error?.message}</p>
         </div>
       </div>
     );
@@ -58,15 +54,13 @@ const FilingAnalytics = () => {
 
   if (!analytics || analytics.summary.totalFilings === 0) {
     return (
-      <div className="min-h-screen bg-neutral-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Filing Data Available</h3>
-            <p className="text-sm text-gray-600">
-              You need to file at least one ITR to see analytics.
-            </p>
-          </div>
+      <div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Filing Data Available</h3>
+          <p className="text-sm text-gray-600">
+            You need to file at least one ITR to see analytics.
+          </p>
         </div>
       </div>
     );
@@ -96,12 +90,11 @@ const FilingAnalytics = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div>
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Filing Analytics</h1>
-          <p className="text-sm text-gray-600">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Filing Analytics</h1>
+          <p className="text-sm sm:text-base text-gray-600">
             Comprehensive insights into your tax filing history and trends
           </p>
         </div>
@@ -284,7 +277,6 @@ const FilingAnalytics = () => {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 };

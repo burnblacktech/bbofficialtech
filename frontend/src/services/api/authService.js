@@ -175,8 +175,15 @@ class AuthService {
 
   // Google OAuth login redirect
   googleLoginRedirect() {
-    // Get the base URL - use same logic as APIClient
-    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+    // Get the base URL - use centralized config
+    // Dynamic import to avoid circular dependency
+    const getApiBaseUrl = () => {
+      if (process.env.REACT_APP_API_URL) {
+        return process.env.REACT_APP_API_URL;
+      }
+      return process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api';
+    };
+    const baseURL = getApiBaseUrl();
     // Redirect to backend Google OAuth endpoint
     window.location.href = `${baseURL}/auth/google`;
   }

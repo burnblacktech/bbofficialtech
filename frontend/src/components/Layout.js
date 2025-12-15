@@ -32,7 +32,7 @@ const Layout = ({ children }) => {
         sidebarOpen={mobileSidebarOpen}
       />
 
-      {/* Main Container */}
+      {/* Main Container - flex-1 to push footer down */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <Sidebar
@@ -42,21 +42,21 @@ const Layout = ({ children }) => {
           onClose={handleMobileSidebarClose}
         />
 
-        {/* Main Content Area */}
+        {/* Main Content Area - flex-1 to fill available space */}
         <main
           className={`
-            flex-1 overflow-y-auto
+            flex-1 overflow-y-auto flex flex-col
             transition-all duration-300 ease-in-out
             ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}
           `}
         >
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 lg:py-5">
+          <div className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 lg:py-5">
             {children}
           </div>
         </main>
       </div>
 
-      {/* Footer */}
+      {/* Footer - will be pushed to bottom by flex layout */}
       <Footer />
     </div>
   );

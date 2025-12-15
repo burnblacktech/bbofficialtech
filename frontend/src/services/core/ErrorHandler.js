@@ -40,7 +40,17 @@ class ErrorHandler {
     }
 
     if (error.response?.data?.error) {
-      return error.response.data.error;
+      // Handle error object with {code, message, details, timestamp}
+      const errorObj = error.response.data.error;
+      if (typeof errorObj === 'object' && errorObj.message) {
+        return errorObj.message;
+      }
+      // If it's a string, return it
+      if (typeof errorObj === 'string') {
+        return errorObj;
+      }
+      // Fallback: stringify if it's an object
+      return JSON.stringify(errorObj);
     }
 
     if (error.message) {

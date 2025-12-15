@@ -5,10 +5,11 @@
 
 import axios from 'axios';
 import { enterpriseLogger } from '../utils/logger';
+import { getApiBaseUrl } from '../utils/apiConfig';
 
 class CABotService {
   constructor() {
-    this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+    this.baseURL = getApiBaseUrl();
     this.axiosInstance = axios.create({
       baseURL: this.baseURL,
       timeout: 30000,

@@ -28,7 +28,7 @@ const HelpCenter = () => {
       title: 'ITR Filing',
       description: 'Step-by-step filing guides',
       icon: FileText,
-      color: 'bg-royal-100 text-royal-600',
+      color: 'bg-primary-100 text-primary-600',
       articles: 25,
     },
     {
@@ -36,7 +36,7 @@ const HelpCenter = () => {
       title: 'Tax & Deductions',
       description: 'Understand tax calculations',
       icon: HelpCircle,
-      color: 'bg-green-100 text-green-600',
+      color: 'bg-success-100 text-success-600',
       articles: 18,
     },
     {
@@ -44,7 +44,7 @@ const HelpCenter = () => {
       title: 'Documents',
       description: 'Upload and manage documents',
       icon: FileText,
-      color: 'bg-purple-100 text-purple-600',
+      color: 'bg-primary-100 text-primary-600',
       articles: 15,
     },
     {
@@ -60,7 +60,7 @@ const HelpCenter = () => {
       title: 'Troubleshooting',
       description: 'Common issues and solutions',
       icon: HelpCircle,
-      color: 'bg-red-100 text-red-600',
+      color: 'bg-error-100 text-error-600',
       articles: 8,
     },
   ];
@@ -87,12 +87,11 @@ const HelpCenter = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div>
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-heading-2xl text-black mb-4">How can we help you?</h1>
-          <p className="text-body-lg text-gray-600 max-w-2xl mx-auto">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">How can we help you?</h1>
+          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
             Find answers to common questions, learn how to use BurnBlack, and get support when you need it.
           </p>
         </div>
@@ -151,8 +150,8 @@ const HelpCenter = () => {
           >
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="p-3 bg-red-100 rounded-lg">
-                  <Bug className="h-6 w-6 text-red-600" />
+                <div className="p-3 bg-error-100 rounded-lg">
+                  <Bug className="h-6 w-6 text-error-600" />
                 </div>
               </div>
               <div>
@@ -170,8 +169,8 @@ const HelpCenter = () => {
           >
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="p-3 bg-yellow-100 rounded-lg">
-                  <Lightbulb className="h-6 w-6 text-yellow-600" />
+                <div className="p-3 bg-warning-100 rounded-lg">
+                  <Lightbulb className="h-6 w-6 text-warning-600" />
                 </div>
               </div>
               <div>
@@ -183,7 +182,6 @@ const HelpCenter = () => {
             </div>
           </Link>
         </div>
-      </div>
     </div>
   );
 };

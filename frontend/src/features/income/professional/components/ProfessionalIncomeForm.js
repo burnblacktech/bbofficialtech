@@ -11,7 +11,12 @@ import SourceChip from '../../../../components/UI/SourceChip/SourceChip';
 import toast from 'react-hot-toast';
 
 const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploaded }) => {
-  const isITR3 = selectedITR === 'ITR-3' || selectedITR === 'ITR3';
+  // Professional income (detailed) is only applicable for ITR-3
+  if (selectedITR !== 'ITR-3' && selectedITR !== 'ITR3') {
+    return null;
+  }
+
+  const isITR3 = true; // This form is only for ITR-3
 
   const [expandedSections, setExpandedSections] = useState({});
   const [showAISPopup, setShowAISPopup] = useState(false);

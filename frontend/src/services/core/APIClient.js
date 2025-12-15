@@ -9,10 +9,11 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../../utils/logger';
+import { getApiBaseUrl } from '../../utils/apiConfig';
 
 class APIClient {
   constructor() {
-    this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+    this.baseURL = getApiBaseUrl();
     this.defaultTimeout = 30000;
     this.cache = new Map();
     this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
