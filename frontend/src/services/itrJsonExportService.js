@@ -296,6 +296,35 @@ class ITRJsonExportService {
         transformed.income.professionalIncome = presumptiveProfessionalIncome;
       }
 
+      // Store ITR-2 specific structured data
+      if (itrType === 'ITR-2' || itrType === 'ITR2') {
+        // Extract capital gains details
+        transformed.income.capitalGainsDetails = formData.income?.capitalGains || {
+          hasCapitalGains: false,
+          stcgDetails: [],
+          ltcgDetails: [],
+        };
+        // Extract house property details (multiple properties allowed)
+        transformed.income.housePropertyDetails = formData.income?.houseProperty || {
+          properties: [],
+        };
+        // Extract foreign income details
+        transformed.income.foreignIncomeDetails = formData.income?.foreignIncome || {
+          hasForeignIncome: false,
+          foreignIncomeDetails: [],
+        };
+        // Extract director/partner income details
+        transformed.income.directorPartnerDetails = formData.income?.directorPartner || {
+          isDirector: false,
+          directorIncome: 0,
+          isPartner: false,
+          partnerIncome: 0,
+        };
+        // Ensure business and professional income are 0 for ITR-2
+        transformed.income.businessIncome = 0;
+        transformed.income.professionalIncome = 0;
+      }
+
       // Store ITR-1 specific structured data
       if (itrType === 'ITR-1' || itrType === 'ITR1') {
         // Extract salary details from Form 16 or salary income
