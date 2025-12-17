@@ -57,5 +57,5 @@ export { default as Disclaimer, Disclaimer as DisclaimerComponent } from './Disc
 
 // Other UI Components (if they exist)
 export { default as InteractiveCard } from './InteractiveCard';
-export { default as Button } from './Button';
+export { default as Button } from '../DesignSystem/components/Button';
 export { default as Card } from './Card';

@@ -66,26 +66,26 @@ const ForgotPassword = () => {
 
   if (success && method === 'email') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-success-100 mb-4">
               <CheckCircle className="h-8 w-8 text-success-600" />
             </div>
-            <h2 className="text-heading-xl text-gray-900">
+            <h2 className="text-heading-xl text-slate-900">
               Check Your Email
             </h2>
-            <p className="mt-2 text-body-md text-gray-600">
+            <p className="mt-2 text-body-md text-slate-600">
               We've sent a password reset link to {email}
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
             <div className="space-y-4">
-              <p className="text-body-sm text-gray-600">
+              <p className="text-body-sm text-slate-600">
                 Click the link in the email to reset your password. The link will expire in 1 hour.
               </p>
-              <p className="text-body-sm text-gray-600">
+              <p className="text-body-sm text-slate-600">
                 Didn't receive the email? Check your spam folder or try again.
               </p>
             </div>
@@ -96,13 +96,13 @@ const ForgotPassword = () => {
                   setSuccess(false);
                   setError('');
                 }}
-                className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                className="w-full py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Try Again
               </button>
               <Link
                 to="/login"
-                className="block w-full py-2 px-4 text-center border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                className="block w-full py-2 px-4 text-center border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Back to Login
               </Link>
@@ -114,31 +114,31 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <button
             onClick={() => navigate('/login')}
-            className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-4"
+            className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to login
           </button>
-          <h2 className="text-center text-heading-xl text-gray-900">
+          <h2 className="text-center text-heading-xl text-slate-900">
             Forgot Password?
           </h2>
-          <p className="mt-2 text-center text-body-md text-gray-600">
+          <p className="mt-2 text-center text-body-md text-slate-600">
             No worries! Enter your email or mobile to reset your password
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="px-4 py-3 rounded-md bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
+            <div className="px-4 py-3 rounded-xl bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">Error</p>
-                <p className="text-sm mt-1">{error}</p>
+                <p className="text-body-regular mt-1">{error}</p>
               </div>
             </div>
           )}
@@ -151,10 +151,10 @@ const ForgotPassword = () => {
                 setMethod('email');
                 setError('');
               }}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium ${
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium ${
                 method === 'email'
                   ? 'bg-gold-500 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
               }`}
             >
               <Mail className="w-4 h-4 inline mr-2" />
@@ -166,10 +166,10 @@ const ForgotPassword = () => {
                 setMethod('mobile');
                 setError('');
               }}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium ${
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium ${
                 method === 'mobile'
                   ? 'bg-gold-500 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
               }`}
             >
               <Phone className="w-4 h-4 inline mr-2" />
@@ -180,18 +180,18 @@ const ForgotPassword = () => {
           {/* Email Input */}
           {method === 'email' && (
             <div>
-              <label htmlFor="email" className="block text-label-md text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-label-md text-slate-700 mb-1">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -203,17 +203,17 @@ const ForgotPassword = () => {
           {/* Mobile Input */}
           {method === 'mobile' && (
             <div>
-              <label htmlFor="phone" className="block text-label-md text-gray-700 mb-1">
+              <label htmlFor="phone" className="block text-label-md text-slate-700 mb-1">
                 Mobile Number
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <input
                   id="phone"
                   name="phone"
                   type="tel"
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="10-digit mobile number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -226,14 +226,14 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+              className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Sending...' : 'Send Reset Link'}
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-body-sm text-gray-600">
+            <p className="text-body-sm text-slate-600">
               Remember your password?{' '}
               <Link to="/login" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign in

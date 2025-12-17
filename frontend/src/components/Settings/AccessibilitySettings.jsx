@@ -67,22 +67,22 @@ const AccessibilitySettings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-heading-md font-semibold text-gray-900 mb-1">Accessibility Settings</h3>
-        <p className="text-body-sm text-gray-600">
+        <h3 className="text-heading-md font-semibold text-slate-900 mb-1">Accessibility Settings</h3>
+        <p className="text-body-sm text-slate-600">
           Customize the interface to suit your needs
         </p>
       </div>
 
       {/* High Contrast Mode */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
-            <Eye className="h-5 w-5 text-gray-600 mt-0.5" />
+            <Eye className="h-5 w-5 text-slate-600 mt-0.5" />
             <div>
-              <label className="block text-body-sm font-medium text-gray-700">
+              <label className="block text-body-sm font-medium text-slate-700">
                 High Contrast Mode
               </label>
-              <p className="text-body-xs text-gray-500 mt-1">
+              <p className="text-body-xs text-slate-500 mt-1">
                 Increase contrast for better visibility
               </p>
             </div>
@@ -96,21 +96,21 @@ const AccessibilitySettings = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Reduced Motion */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
-            <Zap className="h-5 w-5 text-gray-600 mt-0.5" />
+            <Zap className="h-5 w-5 text-slate-600 mt-0.5" />
             <div>
-              <label className="block text-body-sm font-medium text-gray-700">
+              <label className="block text-body-sm font-medium text-slate-700">
                 Reduced Motion
               </label>
-              <p className="text-body-xs text-gray-500 mt-1">
+              <p className="text-body-xs text-slate-500 mt-1">
                 Minimize animations and transitions
               </p>
             </div>
@@ -124,20 +124,20 @@ const AccessibilitySettings = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Font Size */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start gap-3 mb-3">
-          <Type className="h-5 w-5 text-gray-600 mt-0.5" />
+          <Type className="h-5 w-5 text-slate-600 mt-0.5" />
           <div className="flex-1">
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Font Size
             </label>
-            <p className="text-body-xs text-gray-500 mb-3">
+            <p className="text-body-xs text-slate-500 mb-3">
               Adjust the base font size for better readability
             </p>
             <div className="flex gap-2">
@@ -146,10 +146,10 @@ const AccessibilitySettings = () => {
                   key={size}
                   type="button"
                   onClick={() => setPreferences({ ...preferences, fontSize: size })}
-                  className={`px-4 py-2 border-2 rounded-lg text-body-sm font-medium transition-colors ${
+                  className={`px-4 py-2 border-2 rounded-xl text-body-sm font-medium transition-colors ${
                     preferences.fontSize === size
                       ? 'border-gold-500 bg-gold-50 text-gold-700'
-                      : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                      : 'border-slate-300 text-slate-700 hover:border-gray-400'
                   }`}
                 >
                   {size.charAt(0).toUpperCase() + size.slice(1)}
@@ -161,11 +161,11 @@ const AccessibilitySettings = () => {
       </div>
 
       {/* Language Preference */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <label className="block text-body-sm font-medium text-gray-700 mb-2">
+      <div className="border border-slate-200 rounded-xl p-4">
+        <label className="block text-body-sm font-medium text-slate-700 mb-2">
           Language Preference
         </label>
-        <p className="text-body-xs text-gray-500 mb-3">
+        <p className="text-body-xs text-slate-500 mb-3">
           Choose your preferred language (coming soon)
         </p>
         <select
@@ -173,23 +173,23 @@ const AccessibilitySettings = () => {
           onChange={(e) =>
             setPreferences({ ...preferences, language: e.target.value })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           disabled
         >
           <option value="en">English</option>
           <option value="hi">हिंदी (Hindi)</option>
         </select>
-        <p className="text-body-xs text-gray-500 mt-2">
+        <p className="text-body-xs text-slate-500 mt-2">
           Multi-language support is coming soon
         </p>
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-slate-200">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isSaving ? (
             <>

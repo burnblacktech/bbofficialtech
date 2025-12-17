@@ -62,7 +62,7 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
     <div className="space-y-6">
       <div>
         <h3 className="text-heading-lg text-gray-800 mb-2">Review Summary</h3>
-        <p className="text-body-md text-gray-600">
+        <p className="text-body-md text-slate-600">
           Please review all information before submitting your ITR
         </p>
       </div>
@@ -73,25 +73,25 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
           <h4 className="text-heading-md text-gray-800 mb-4">Tax Summary</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <p className="text-body-sm text-gray-600">Gross Total Income</p>
+              <p className="text-body-sm text-slate-600">Gross Total Income</p>
               <p className="text-heading-md font-semibold text-gray-800">
                 {formatCurrency(taxComputation.grossTotalIncome)}
               </p>
             </div>
             <div>
-              <p className="text-body-sm text-gray-600">Total Deductions</p>
+              <p className="text-body-sm text-slate-600">Total Deductions</p>
               <p className="text-heading-md font-semibold text-gray-800">
                 {formatCurrency(taxComputation.totalDeductions)}
               </p>
             </div>
             <div>
-              <p className="text-body-sm text-gray-600">Taxable Income</p>
+              <p className="text-body-sm text-slate-600">Taxable Income</p>
               <p className="text-heading-md font-semibold text-gray-800">
                 {formatCurrency(taxComputation.taxableIncome)}
               </p>
             </div>
             <div>
-              <p className="text-body-sm text-gray-600">
+              <p className="text-body-sm text-slate-600">
                 {taxComputation.refundAmount > 0 ? 'Refund' : 'Tax Payable'}
               </p>
               <p
@@ -115,7 +115,7 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
           return (
             <div
               key={section.id}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gold-300 transition-colors"
+              className="bg-white rounded-xl border border-slate-200 p-6 hover:border-gold-300 transition-colors"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
@@ -136,7 +136,7 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {section.fields.map((field) => (
                     <div key={field.key}>
-                      <p className="text-body-sm text-gray-600">{field.label}</p>
+                      <p className="text-body-sm text-slate-600">{field.label}</p>
                       <p className="text-body-md font-medium text-gray-800 mt-1">
                         {section.data?.[field.key] || 'Not provided'}
                       </p>
@@ -147,7 +147,7 @@ const ReviewSummary = ({ formData, taxComputation, onEditSection }) => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {Object.entries(section.data).map(([key, value]) => (
                     <div key={key}>
-                      <p className="text-body-sm text-gray-600 capitalize">
+                      <p className="text-body-sm text-slate-600 capitalize">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </p>
                       <p className="text-body-md font-medium text-gray-800 mt-1">

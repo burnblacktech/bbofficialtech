@@ -157,7 +157,7 @@ const ResetPassword = () => {
   };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength.score === 0) return 'bg-gray-200';
+    if (passwordStrength.score === 0) return 'bg-slate-200';
     if (passwordStrength.score === 1) return 'bg-error-500';
     if (passwordStrength.score === 2) return 'bg-warning-500';
     if (passwordStrength.score === 3) return 'bg-info-500';
@@ -166,23 +166,23 @@ const ResetPassword = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-success-100 mb-4">
               <CheckCircle className="h-8 w-8 text-success-600" />
             </div>
-            <h2 className="text-heading-xl text-gray-900">
+            <h2 className="text-heading-xl text-slate-900">
               Password Reset Successful!
             </h2>
-            <p className="mt-2 text-body-md text-gray-600">
+            <p className="mt-2 text-body-md text-slate-600">
               Your password has been reset. Redirecting to login...
             </p>
           </div>
 
           <Link
             to="/login"
-            className="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-center"
+            className="block w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-center"
           >
             Go to Login
           </Link>
@@ -192,24 +192,24 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="text-center text-heading-xl text-gray-900">
+          <h2 className="text-center text-heading-xl text-slate-900">
             Reset Password
           </h2>
-          <p className="mt-2 text-center text-body-md text-gray-600">
+          <p className="mt-2 text-center text-body-md text-slate-600">
             Enter your new password
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="px-4 py-3 rounded-md bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
+            <div className="px-4 py-3 rounded-xl bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">Error</p>
-                <p className="text-sm mt-1">{error}</p>
+                <p className="text-body-regular mt-1">{error}</p>
               </div>
             </div>
           )}
@@ -217,7 +217,7 @@ const ResetPassword = () => {
           {/* OTP Input for Mobile */}
           {method === 'mobile' && (
             <div>
-              <label htmlFor="otp" className="block text-label-md text-gray-700 mb-1">
+              <label htmlFor="otp" className="block text-label-md text-slate-700 mb-1">
                 Enter OTP
               </label>
               <input
@@ -226,13 +226,13 @@ const ResetPassword = () => {
                 type="text"
                 required
                 maxLength={6}
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 text-center text-heading-2 tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                 placeholder="000000"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               />
               {phone && (
-                <p className="mt-2 text-center text-body-sm text-gray-600">
+                <p className="mt-2 text-center text-body-sm text-slate-600">
                   OTP sent to +91 {phone}
                 </p>
               )}
@@ -241,7 +241,7 @@ const ResetPassword = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={countdown > 0 || isLoading}
-                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-slate-400 disabled:cursor-not-allowed"
                 >
                   {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
                 </button>
@@ -251,18 +251,18 @@ const ResetPassword = () => {
 
           {/* New Password */}
           <div>
-            <label htmlFor="password" className="block text-label-md text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-label-md text-slate-700 mb-1">
               New Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 required
-                className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                className="appearance-none block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                 placeholder="Enter new password"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
@@ -270,7 +270,7 @@ const ResetPassword = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -284,13 +284,13 @@ const ResetPassword = () => {
                       className={`h-1 flex-1 rounded ${
                         i < passwordStrength.score
                           ? getPasswordStrengthColor()
-                          : 'bg-gray-200'
+                          : 'bg-slate-200'
                       }`}
                     />
                   ))}
                 </div>
                 {passwordStrength.feedback.length > 0 && (
-                  <p className="text-xs text-gray-600">
+                  <p className="text-body-small text-slate-600">
                     {passwordStrength.feedback.join(', ')}
                   </p>
                 )}
@@ -300,18 +300,18 @@ const ResetPassword = () => {
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-label-md text-gray-700 mb-1">
+            <label htmlFor="confirmPassword" className="block text-label-md text-slate-700 mb-1">
               Confirm New Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
                 id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 autoComplete="new-password"
                 required
-                className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                className="appearance-none block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                 placeholder="Confirm new password"
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
@@ -319,13 +319,13 @@ const ResetPassword = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
             {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <p className="mt-1 text-xs text-error-600">Passwords do not match</p>
+              <p className="mt-1 text-body-small text-error-600">Passwords do not match</p>
             )}
           </div>
 
@@ -333,14 +333,14 @@ const ResetPassword = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+              className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Resetting...' : 'Reset Password'}
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-body-sm text-gray-600">
+            <p className="text-body-sm text-slate-600">
               Remember your password?{' '}
               <Link to="/login" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign in

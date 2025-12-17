@@ -26,49 +26,49 @@ const DeadlineCard = ({ deadline }) => {
   const getDeadlineTypeColor = (type) => {
     switch (type) {
       case 'itr_filing':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-error-100 text-red-800 border-red-200';
       case 'advance_tax':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'tds_deposit':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-slate-100 text-gray-800 border-slate-200';
     }
   };
 
   const getStatusBadge = () => {
     if (isPast) {
       return (
-        <span className="px-2 py-1 text-xs font-semibold rounded bg-gray-200 text-gray-700">
+        <span className="px-2 py-1 text-body-small font-semibold rounded bg-slate-200 text-slate-700">
           Past
         </span>
       );
     }
     if (isUrgent) {
       return (
-        <span className="px-2 py-1 text-xs font-semibold rounded bg-red-200 text-red-700 flex items-center gap-1">
+        <span className="px-2 py-1 text-body-small font-semibold rounded bg-red-200 text-error-700 flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" />
           Urgent ({daysUntilDeadline} days)
         </span>
       );
     }
     return (
-      <span className="px-2 py-1 text-xs font-semibold rounded bg-green-200 text-green-700">
+      <span className="px-2 py-1 text-body-small font-semibold rounded bg-green-200 text-green-700">
         {daysUntilDeadline} days remaining
       </span>
     );
   };
 
   return (
-    <div className={`border rounded-lg p-4 ${getDeadlineTypeColor(deadline.deadline_type)}`}>
+    <div className={`border rounded-xl p-4 ${getDeadlineTypeColor(deadline.deadline_type)}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-semibold text-gray-900">{deadline.title}</h4>
+            <h4 className="font-semibold text-slate-900">{deadline.title}</h4>
             {getStatusBadge()}
           </div>
-          <p className="text-sm text-gray-600 mb-2">{deadline.description}</p>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <p className="text-body-regular text-slate-600 mb-2">{deadline.description}</p>
+          <div className="flex items-center gap-4 text-body-small text-slate-500">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               {deadlineDate.toLocaleDateString('en-IN', {
@@ -89,7 +89,7 @@ const DeadlineCard = ({ deadline }) => {
           {deadline.reminder_enabled ? (
             <button
               onClick={() => setShowReminderSettings(!showReminderSettings)}
-              className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/50 rounded-xl transition-colors"
               title="Reminder settings"
             >
               <Bell className="w-5 h-5" />
@@ -102,7 +102,7 @@ const DeadlineCard = ({ deadline }) => {
                   reminderDays: [7, 3, 1],
                 });
               }}
-              className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/50 rounded-xl transition-colors"
               title="Enable reminder"
             >
               <BellOff className="w-5 h-5" />
@@ -112,7 +112,7 @@ const DeadlineCard = ({ deadline }) => {
       </div>
 
       {showReminderSettings && (
-        <div className="mt-4 pt-4 border-t border-gray-300">
+        <div className="mt-4 pt-4 border-t border-slate-300">
           <ReminderSettings
             deadlineId={deadline.id}
             onClose={() => setShowReminderSettings(false)}

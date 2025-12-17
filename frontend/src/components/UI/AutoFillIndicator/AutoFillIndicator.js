@@ -29,7 +29,7 @@ export const FieldAutoFillIndicator = ({
       <div className="flex-1">
         {uploadDate && (
           <p
-            className="text-body-sm text-gray-500 flex items-center gap-1"
+            className="text-body-sm text-slate-500 flex items-center gap-1"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             <Clock className="w-3 h-3" />
@@ -41,7 +41,7 @@ export const FieldAutoFillIndicator = ({
         )}
         {!uploadDate && (
           <p
-            className="text-body-sm text-gray-500"
+            className="text-body-sm text-slate-500"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             Auto-filled from {sourceDocument || source}
@@ -79,7 +79,7 @@ export const SectionAutoFillBanner = ({
   return (
     <div
       className={cn(
-        'bg-info-50 border border-info-200 rounded-lg p-4 flex items-start gap-3',
+        'bg-info-50 border border-info-200 rounded-xl p-4 flex items-start gap-3',
         className,
       )}
       {...props}
@@ -94,7 +94,7 @@ export const SectionAutoFillBanner = ({
         </p>
         {uploadDate && (
           <p
-            className="text-body-sm text-gray-600 flex items-center gap-1"
+            className="text-body-sm text-slate-600 flex items-center gap-1"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             <Clock className="w-3 h-3" />
@@ -132,7 +132,7 @@ export const MixedSourcesDisplay = ({
   return (
     <div className={cn('flex items-center gap-2 flex-wrap', className)} {...props}>
       <span
-        className="text-body-sm font-medium text-gray-700"
+        className="text-body-sm font-medium text-slate-700"
         style={{ fontSize: '13px', fontWeight: 500 }}
       >
         Sources:

@@ -82,7 +82,7 @@ const CAAnalytics = () => {
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
-          <p className="text-sm text-neutral-600">Loading analytics...</p>
+          <p className="text-body-regular text-neutral-600">Loading analytics...</p>
         </div>
       </div>
     );
@@ -93,7 +93,7 @@ const CAAnalytics = () => {
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="dashboard-card-burnblack text-center p-8">
           <BarChart3 className="h-12 w-12 text-error-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-burnblack-black mb-2">Error Loading Analytics</h3>
+          <h3 className="text-heading-4 font-semibold text-burnblack-black mb-2">Error Loading Analytics</h3>
           <p className="text-neutral-600 mb-4">Unable to load analytics data.</p>
           <button onClick={handleRefresh} className="btn-burnblack">
             <RefreshCw className="h-4 w-4 inline mr-2" />
@@ -113,24 +113,24 @@ const CAAnalytics = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => window.history.back()}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <ArrowLeft className="h-5 w-5 text-burnblack-black" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-burnblack-black">CA Analytics</h1>
-                <p className="text-xs text-neutral-500">Performance Insights</p>
+                <h1 className="text-heading-4 font-semibold text-burnblack-black">CA Analytics</h1>
+                <p className="text-body-small text-neutral-500">Performance Insights</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleRefresh}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <RefreshCw className="h-5 w-5 text-burnblack-black" />
               </button>
-              <button className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform">
+              <button className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform">
                 <Download className="h-5 w-5 text-burnblack-black" />
               </button>
             </div>
@@ -148,7 +148,7 @@ const CAAnalytics = () => {
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                   timeRange === range
                     ? 'bg-burnblack-gold text-white'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -165,7 +165,7 @@ const CAAnalytics = () => {
               <button
                 key={type}
                 onClick={() => setMetricType(type)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
                   metricType === type
                     ? 'bg-burnblack-gold text-white'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -187,8 +187,8 @@ const CAAnalytics = () => {
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Clients</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(overview.totalClients)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Total Clients</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatNumber(overview.totalClients)}</p>
                   <div className="flex items-center mt-1">
                     {overview.clientGrowth > 0 ? (
                       <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
@@ -207,8 +207,8 @@ const CAAnalytics = () => {
                   <FileText className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Filings</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(overview.totalFilings)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Total Filings</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatNumber(overview.totalFilings)}</p>
                   <div className="flex items-center mt-1">
                     {overview.filingGrowth > 0 ? (
                       <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
@@ -227,8 +227,8 @@ const CAAnalytics = () => {
                   <IndianRupee className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Revenue</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatCurrency(overview.revenue)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Total Revenue</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatCurrency(overview.revenue)}</p>
                   <div className="flex items-center mt-1">
                     {overview.revenueGrowth > 0 ? (
                       <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
@@ -247,10 +247,10 @@ const CAAnalytics = () => {
                   <Star className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Rating</p>
-                  <p className="text-lg font-bold text-burnblack-black">{overview.rating || '4.8'}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Rating</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{overview.rating || '4.8'}</p>
                   <div className="flex items-center mt-1">
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-body-small text-neutral-500">
                       {overview.reviews || 0} reviews
                     </span>
                   </div>
@@ -260,15 +260,15 @@ const CAAnalytics = () => {
 
             {/* Performance Summary */}
             <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Performance Summary</h2>
+              <h2 className="text-heading-4 font-semibold text-burnblack-black mb-4">Performance Summary</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-burnblack-black">{overview.completionRate || '95'}%</div>
-                  <div className="text-xs text-neutral-500">Completion Rate</div>
+                  <div className="text-heading-2 font-bold text-burnblack-black">{overview.completionRate || '95'}%</div>
+                  <div className="text-body-small text-neutral-500">Completion Rate</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-burnblack-black">{overview.avgProcessingTime || '2.5'} days</div>
-                  <div className="text-xs text-neutral-500">Avg Processing Time</div>
+                  <div className="text-heading-2 font-bold text-burnblack-black">{overview.avgProcessingTime || '2.5'} days</div>
+                  <div className="text-body-small text-neutral-500">Avg Processing Time</div>
                 </div>
               </div>
             </div>
@@ -284,8 +284,8 @@ const CAAnalytics = () => {
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">New Clients</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(clientMetrics.newClients)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">New Clients</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatNumber(clientMetrics.newClients)}</p>
                 </div>
               </div>
 
@@ -294,26 +294,26 @@ const CAAnalytics = () => {
                   <Target className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Retention Rate</p>
-                  <p className="text-lg font-bold text-burnblack-black">{clientMetrics.retentionRate || 0}%</p>
+                  <p className="text-body-small font-medium text-neutral-600">Retention Rate</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{clientMetrics.retentionRate || 0}%</p>
                 </div>
               </div>
             </div>
 
             <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Client Activity</h2>
+              <h2 className="text-heading-4 font-semibold text-burnblack-black mb-4">Client Activity</h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Active Clients</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(clientMetrics.activeClients)}</span>
+                  <span className="text-body-regular text-neutral-600">Active Clients</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{formatNumber(clientMetrics.activeClients)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">New This Month</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(clientMetrics.newThisMonth)}</span>
+                  <span className="text-body-regular text-neutral-600">New This Month</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{formatNumber(clientMetrics.newThisMonth)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Avg Filings per Client</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{clientMetrics.avgFilingsPerClient || 0}</span>
+                  <span className="text-body-regular text-neutral-600">Avg Filings per Client</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{clientMetrics.avgFilingsPerClient || 0}</span>
                 </div>
               </div>
             </div>
@@ -329,8 +329,8 @@ const CAAnalytics = () => {
                   <FileText className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Completed</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(filingMetrics.completed)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Completed</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatNumber(filingMetrics.completed)}</p>
                 </div>
               </div>
 
@@ -339,26 +339,26 @@ const CAAnalytics = () => {
                   <Clock3 className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">In Progress</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatNumber(filingMetrics.inProgress)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">In Progress</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatNumber(filingMetrics.inProgress)}</p>
                 </div>
               </div>
             </div>
 
             <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Filing Performance</h2>
+              <h2 className="text-heading-4 font-semibold text-burnblack-black mb-4">Filing Performance</h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Success Rate</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{filingMetrics.successRate || 0}%</span>
+                  <span className="text-body-regular text-neutral-600">Success Rate</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{filingMetrics.successRate || 0}%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Avg Processing Time</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{filingMetrics.avgProcessingTime || 0} days</span>
+                  <span className="text-body-regular text-neutral-600">Avg Processing Time</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{filingMetrics.avgProcessingTime || 0} days</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Pending Review</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatNumber(filingMetrics.pendingReview)}</span>
+                  <span className="text-body-regular text-neutral-600">Pending Review</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{formatNumber(filingMetrics.pendingReview)}</span>
                 </div>
               </div>
             </div>
@@ -374,8 +374,8 @@ const CAAnalytics = () => {
                   <IndianRupee className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Total Revenue</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatCurrency(revenueMetrics.total)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Total Revenue</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatCurrency(revenueMetrics.total)}</p>
                 </div>
               </div>
 
@@ -384,26 +384,26 @@ const CAAnalytics = () => {
                   <Zap className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Avg per Filing</p>
-                  <p className="text-lg font-bold text-burnblack-black">{formatCurrency(revenueMetrics.avgPerFiling)}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Avg per Filing</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{formatCurrency(revenueMetrics.avgPerFiling)}</p>
                 </div>
               </div>
             </div>
 
             <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Revenue Breakdown</h2>
+              <h2 className="text-heading-4 font-semibold text-burnblack-black mb-4">Revenue Breakdown</h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">ITR Filing Fees</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.itrFees)}</span>
+                  <span className="text-body-regular text-neutral-600">ITR Filing Fees</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.itrFees)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Consultation Fees</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.consultationFees)}</span>
+                  <span className="text-body-regular text-neutral-600">Consultation Fees</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.consultationFees)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Additional Services</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.additionalServices)}</span>
+                  <span className="text-body-regular text-neutral-600">Additional Services</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{formatCurrency(revenueMetrics.additionalServices)}</span>
                 </div>
               </div>
             </div>
@@ -419,8 +419,8 @@ const CAAnalytics = () => {
                   <Award className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Overall Rating</p>
-                  <p className="text-lg font-bold text-burnblack-black">{performanceMetrics.overallRating || '4.8'}</p>
+                  <p className="text-body-small font-medium text-neutral-600">Overall Rating</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{performanceMetrics.overallRating || '4.8'}</p>
                 </div>
               </div>
 
@@ -429,26 +429,26 @@ const CAAnalytics = () => {
                   <CheckCircle className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-neutral-600">Quality Score</p>
-                  <p className="text-lg font-bold text-burnblack-black">{performanceMetrics.qualityScore || '98'}%</p>
+                  <p className="text-body-small font-medium text-neutral-600">Quality Score</p>
+                  <p className="text-body-large font-bold text-burnblack-black">{performanceMetrics.qualityScore || '98'}%</p>
                 </div>
               </div>
             </div>
 
             <div className="dashboard-card-burnblack">
-              <h2 className="text-lg font-semibold text-burnblack-black mb-4">Performance Metrics</h2>
+              <h2 className="text-heading-4 font-semibold text-burnblack-black mb-4">Performance Metrics</h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Client Satisfaction</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{performanceMetrics.clientSatisfaction || 0}%</span>
+                  <span className="text-body-regular text-neutral-600">Client Satisfaction</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{performanceMetrics.clientSatisfaction || 0}%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">On-Time Delivery</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{performanceMetrics.onTimeDelivery || 0}%</span>
+                  <span className="text-body-regular text-neutral-600">On-Time Delivery</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{performanceMetrics.onTimeDelivery || 0}%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-neutral-600">Error Rate</span>
-                  <span className="text-sm font-semibold text-burnblack-black">{performanceMetrics.errorRate || 0}%</span>
+                  <span className="text-body-regular text-neutral-600">Error Rate</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{performanceMetrics.errorRate || 0}%</span>
                 </div>
               </div>
             </div>
@@ -457,23 +457,23 @@ const CAAnalytics = () => {
 
         {/* Top Metrics */}
         <div className="dashboard-card-burnblack">
-          <h2 className="text-lg font-semibold text-burnblack-black mb-4">Top Metrics</h2>
+          <h2 className="text-heading-4 font-semibold text-burnblack-black mb-4">Top Metrics</h2>
           <div className="space-y-3">
             {topMetrics.length === 0 ? (
               <div className="text-center py-4">
                 <BarChart3 className="h-8 w-8 text-neutral-300 mx-auto mb-2" />
-                <p className="text-sm text-neutral-500">No metrics available</p>
+                <p className="text-body-regular text-neutral-500">No metrics available</p>
               </div>
             ) : (
               topMetrics.map((metric, index) => (
-                <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-50">
+                <div key={index} className="flex items-center justify-between p-2 rounded-xl hover:bg-neutral-50">
                   <div className="flex items-center space-x-3">
                     <div className="w-6 h-6 bg-burnblack-gold bg-opacity-20 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-semibold text-burnblack-gold">{index + 1}</span>
+                      <span className="text-body-small font-semibold text-burnblack-gold">{index + 1}</span>
                     </div>
-                    <span className="text-sm font-medium text-burnblack-black">{metric.name}</span>
+                    <span className="text-body-regular font-medium text-burnblack-black">{metric.name}</span>
                   </div>
-                  <span className="text-sm font-semibold text-burnblack-black">{metric.value}</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">{metric.value}</span>
                 </div>
               ))
             )}

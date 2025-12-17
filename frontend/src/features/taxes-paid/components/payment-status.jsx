@@ -6,7 +6,7 @@
 import React from 'react';
 import { CheckCircle, Clock, XCircle, AlertCircle, FileText, Download, ExternalLink } from 'lucide-react';
 import { useTaxPayment, useVerifyVia26AS } from '../hooks/use-tax-payment';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const PaymentStatus = ({ paymentId, onRetry }) => {
   const { data: payment, isLoading, error } = useTaxPayment(paymentId);
@@ -77,7 +77,7 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
         </div>
@@ -87,7 +87,7 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
 
   if (error || !payment) {
     return (
-      <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+      <div className="bg-error-50 border border-error-200 rounded-xl p-6">
         <div className="flex items-center">
           <AlertCircle className="h-5 w-5 text-error-600 mr-2" />
           <p className="text-body-sm text-error-900">
@@ -110,15 +110,15 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       {/* Status Header */}
-      <div className={`${statusConfig.bgColor} ${statusConfig.borderColor} border rounded-lg p-4 mb-6`}>
+      <div className={`${statusConfig.bgColor} ${statusConfig.borderColor} border rounded-xl p-4 mb-6`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <StatusIcon className={`h-6 w-6 ${statusConfig.color} mr-3`} />
             <div>
-              <h3 className="text-heading-md text-gray-900">Payment {statusConfig.label}</h3>
-              <p className="text-body-sm text-gray-600">
+              <h3 className="text-heading-md text-slate-900">Payment {statusConfig.label}</h3>
+              <p className="text-body-sm text-slate-600">
                 {payment.challanNumber && `Challan: ${payment.challanNumber}`}
               </p>
             </div>
@@ -130,35 +130,35 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
       <div className="space-y-4 mb-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-body-xs text-gray-600 mb-1">Amount</p>
-            <p className="text-heading-md font-semibold text-gray-900">
+            <p className="text-body-xs text-slate-600 mb-1">Amount</p>
+            <p className="text-heading-md font-semibold text-slate-900">
               {formatCurrency(payment.amount)}
             </p>
           </div>
           <div>
-            <p className="text-body-xs text-gray-600 mb-1">Payment Method</p>
-            <p className="text-body-sm font-medium text-gray-900 capitalize">
+            <p className="text-body-xs text-slate-600 mb-1">Payment Method</p>
+            <p className="text-body-sm font-medium text-slate-900 capitalize">
               {payment.paymentMethod?.replace('_', ' ')}
             </p>
           </div>
           <div>
-            <p className="text-body-xs text-gray-600 mb-1">Type of Payment</p>
-            <p className="text-body-sm font-medium text-gray-900 capitalize">
+            <p className="text-body-xs text-slate-600 mb-1">Type of Payment</p>
+            <p className="text-body-sm font-medium text-slate-900 capitalize">
               {payment.typeOfPayment?.replace('_', ' ')}
             </p>
           </div>
           <div>
-            <p className="text-body-xs text-gray-600 mb-1">Assessment Year</p>
-            <p className="text-body-sm font-medium text-gray-900">{payment.assessmentYear}</p>
+            <p className="text-body-xs text-slate-600 mb-1">Assessment Year</p>
+            <p className="text-body-sm font-medium text-slate-900">{payment.assessmentYear}</p>
           </div>
         </div>
 
         {payment.verifiedAt && (
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-body-xs text-gray-600 mb-1">Verified At</p>
-            <p className="text-body-sm text-gray-900">{formatDate(payment.verifiedAt)}</p>
+          <div className="pt-4 border-t border-slate-200">
+            <p className="text-body-xs text-slate-600 mb-1">Verified At</p>
+            <p className="text-body-sm text-slate-900">{formatDate(payment.verifiedAt)}</p>
             {payment.verificationMethod && (
-              <p className="text-body-xs text-gray-500 mt-1">
+              <p className="text-body-xs text-slate-500 mt-1">
                 Verified via {payment.verificationMethod === 'auto_26as' ? 'Form 26AS' : 'Manual Upload'}
               </p>
             )}
@@ -166,8 +166,8 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
         )}
 
         {payment.paymentProofUrl && (
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-body-xs text-gray-600 mb-2">Payment Proof</p>
+          <div className="pt-4 border-t border-slate-200">
+            <p className="text-body-xs text-slate-600 mb-2">Payment Proof</p>
             <a
               href={payment.paymentProofUrl}
               target="_blank"
@@ -182,7 +182,7 @@ const PaymentStatus = ({ paymentId, onRetry }) => {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4 border-t border-slate-200">
         {payment.paymentStatus === 'failed' && onRetry && (
           <Button onClick={onRetry} variant="outline" className="flex-1">
             Retry Payment

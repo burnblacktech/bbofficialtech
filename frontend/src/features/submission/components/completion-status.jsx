@@ -40,12 +40,12 @@ const CompletionStatus = ({ sections, onSectionClick }) => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-heading-md text-gray-800 mb-1">Completion Status</h3>
-          <p className="text-body-md text-gray-600">
+          <p className="text-body-md text-slate-600">
             {completionPercentage}% complete ({sections.filter((s) => s.status === 'complete').length}/{sections.length} sections)
           </p>
         </div>
         <div className="flex items-center">
-          <div className="w-16 h-16 rounded-full border-4 border-gray-200 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full border-4 border-slate-200 flex items-center justify-center">
             <span className="text-heading-md font-semibold text-gray-800">
               {completionPercentage}%
             </span>
@@ -54,7 +54,7 @@ const CompletionStatus = ({ sections, onSectionClick }) => {
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-2">
+      <div className="w-full bg-slate-200 rounded-full h-2">
         <div
           className={`h-2 rounded-full transition-all ${
             completionPercentage === 100
@@ -85,7 +85,7 @@ const CompletionStatus = ({ sections, onSectionClick }) => {
               {getStatusIcon(section.status)}
               <div className="ml-3 text-left">
                 <p className="text-body-md font-medium text-gray-800">{section.name}</p>
-                <p className="text-body-sm text-gray-600">{section.description}</p>
+                <p className="text-body-sm text-slate-600">{section.description}</p>
               </div>
             </div>
             <div className="flex items-center">
@@ -105,7 +105,7 @@ const CompletionStatus = ({ sections, onSectionClick }) => {
                   : 'Incomplete'}
               </span>
               {onSectionClick && (
-                <ChevronRight className="h-5 w-5 text-gray-400 ml-2" />
+                <ChevronRight className="h-5 w-5 text-slate-400 ml-2" />
               )}
             </div>
           </button>

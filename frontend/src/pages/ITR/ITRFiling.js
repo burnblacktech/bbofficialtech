@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useITR } from '../../contexts/ITRContext';
 import { useAuth } from '../../contexts/AuthContext';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import Card from '../../components/common/Card';
 import {
   User,
@@ -235,9 +235,9 @@ const ITRFiling = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
@@ -251,10 +251,10 @@ const ITRFiling = () => {
                 <span>Back to Start</span>
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-heading-2 font-bold text-slate-900">
                   ITR Filing - {itrType || 'ITR-1'}
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-body-regular text-slate-600">
                   Assessment Year: {currentFiling?.assessmentYear || '2024-25'}
                 </p>
               </div>
@@ -291,7 +291,7 @@ const ITRFiling = () => {
                 {renderStepContent()}
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
                   <Button
                     onClick={handlePrevious}
                     disabled={currentStep === 0}

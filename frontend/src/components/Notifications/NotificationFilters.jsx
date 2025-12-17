@@ -17,21 +17,21 @@ const NotificationFilters = ({ filters, onFilterChange }) => {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+    <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4 mb-6">
       <div className="flex items-center gap-2 mb-4">
-        <Filter className="h-5 w-5 text-gray-600" />
-        <h3 className="text-heading-sm font-semibold text-gray-900">Filters</h3>
+        <Filter className="h-5 w-5 text-slate-600" />
+        <h3 className="text-heading-sm font-semibold text-slate-900">Filters</h3>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Type Filter */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Notification Type
           </label>
           <select
             value={filters.type}
             onChange={(e) => onFilterChange('type', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
           >
             {notificationTypes.map((type) => (
               <option key={type.value} value={type.value}>
@@ -43,13 +43,13 @@ const NotificationFilters = ({ filters, onFilterChange }) => {
 
         {/* Read Status Filter */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Status
           </label>
           <select
             value={filters.read}
             onChange={(e) => onFilterChange('read', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
           >
             <option value="all">All</option>
             <option value="unread">Unread Only</option>

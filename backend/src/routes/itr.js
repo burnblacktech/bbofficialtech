@@ -103,6 +103,27 @@ router.get('/drafts/:draftId', authenticateToken, async (req, res) => {
 });
 
 // =====================================================
+// ITEMIZED DEDUCTIONS ROUTES (Chapter VI-A)
+// Persisted inside itr_drafts.data JSONB
+// =====================================================
+
+router.get('/deductions/:section', authenticateToken, async (req, res) => {
+  await itrController.getDeductions(req, res);
+});
+
+router.post('/deductions/:section', authenticateToken, async (req, res) => {
+  await itrController.createDeduction(req, res);
+});
+
+router.put('/deductions/:section/:deductionId', authenticateToken, async (req, res) => {
+  await itrController.updateDeduction(req, res);
+});
+
+router.delete('/deductions/:section/:deductionId', authenticateToken, async (req, res) => {
+  await itrController.deleteDeduction(req, res);
+});
+
+// =====================================================
 // VALIDATION ROUTES
 // =====================================================
 

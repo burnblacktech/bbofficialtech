@@ -93,7 +93,7 @@ const AdminSecurityLogs = () => {
     !log.success && (log.action?.toLowerCase().includes('password') || log.action?.toLowerCase().includes('session'))).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -102,15 +102,15 @@ const AdminSecurityLogs = () => {
               <div className="flex items-center space-x-3">
                 <Shield className="w-8 h-8 text-error-600" />
                 <div>
-                  <h1 className="text-3xl font-bold text-black">Security Logs</h1>
-                  <p className="text-gray-700 mt-2">Monitor security events, failed logins, and suspicious activities</p>
+                  <h1 className="text-heading-1 font-bold text-black">Security Logs</h1>
+                  <p className="text-slate-700 mt-2">Monitor security events, failed logins, and suspicious activities</p>
                 </div>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => refetch()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 flex items-center space-x-2"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Refresh</span>
@@ -123,7 +123,7 @@ const AdminSecurityLogs = () => {
         {(failedLogins > 0 || suspiciousActivity > 0) && (
           <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             {failedLogins > 0 && (
-              <div className="bg-error-50 border border-error-200 rounded-lg p-4">
+              <div className="bg-error-50 border border-error-200 rounded-xl p-4">
                 <div className="flex items-center space-x-3">
                   <AlertTriangle className="w-5 h-5 text-error-600" />
                   <div>
@@ -134,7 +134,7 @@ const AdminSecurityLogs = () => {
               </div>
             )}
             {suspiciousActivity > 0 && (
-              <div className="bg-warning-50 border border-warning-200 rounded-lg p-4">
+              <div className="bg-warning-50 border border-warning-200 rounded-xl p-4">
                 <div className="flex items-center space-x-3">
                   <AlertTriangle className="w-5 h-5 text-warning-600" />
                   <div>

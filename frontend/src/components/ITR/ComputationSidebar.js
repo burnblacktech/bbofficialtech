@@ -65,7 +65,7 @@ const SectionNavItem = ({
     <motion.button
       onClick={onClick}
       className={cn(
-        'w-full flex items-center gap-2 px-2 py-2 rounded-lg transition-all text-left',
+        'w-full flex items-center gap-2 px-2 py-2 rounded-xl transition-all text-left',
         'hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-1',
         isActive
           ? 'bg-gold-50 border-l-2 border-gold-500 text-gold-900 font-medium'
@@ -75,13 +75,13 @@ const SectionNavItem = ({
       whileTap={{ scale: 0.98 }}
     >
       <div className={cn(
-        'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+        'w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0',
         isActive ? 'bg-gold-100 text-gold-700' : 'bg-neutral-100 text-neutral-600',
       )}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-xs font-medium truncate">{section.title}</div>
+        <div className="text-body-small font-medium truncate">{section.title}</div>
         {section.description && (
           <div className="text-[10px] text-neutral-500 truncate mt-0.5">
             {section.description}
@@ -160,7 +160,7 @@ const ComputationSidebar = ({
               setIsMobileOpen(false);
               onClose();
             }}
-            className="p-1 rounded-lg hover:bg-neutral-100 transition-colors touch-manipulation"
+            className="p-1 rounded-xl hover:bg-neutral-100 transition-colors touch-manipulation"
             style={{ minWidth: '44px', minHeight: '44px' }}
             aria-label="Close sidebar"
             aria-controls="computation-sidebar"
@@ -234,7 +234,7 @@ const ComputationSidebar = ({
       {/* Mobile Menu Button - Positioned to avoid conflicts with other floating elements */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-gold-500 text-white shadow-lg flex items-center justify-center hover:bg-gold-600 transition-colors touch-manipulation"
+        className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-gold-500 text-white shadow-elevation-3 flex items-center justify-center hover:bg-gold-600 transition-colors touch-manipulation"
         style={{
           // Account for safe-area-inset on iOS devices
           bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',

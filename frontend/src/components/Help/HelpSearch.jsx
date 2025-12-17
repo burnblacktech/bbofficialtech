@@ -98,7 +98,7 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
     <div className="relative w-full">
       <form onSubmit={handleSearch} className="relative">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
           <input
             ref={searchInputRef}
             type="text"
@@ -109,20 +109,20 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
             }}
             onFocus={() => setShowSuggestions(true)}
             placeholder={placeholder}
-            className="w-full pl-12 pr-12 py-4 text-body-md border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+            className="w-full pl-12 pr-12 py-4 text-body-md border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           />
           {query && (
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-12 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
               <X className="h-4 w-4" />
             </button>
           )}
           <button
             type="submit"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-body-sm font-medium"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-body-sm font-medium"
             disabled={isLoading || query.trim().length < 2}
           >
             {isLoading ? 'Searching...' : 'Search'}
@@ -134,12 +134,12 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
       {showSuggestionsList && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+          className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-elevation-3 max-h-96 overflow-y-auto"
         >
           {/* Search History */}
           {showHistory && (
-            <div className="p-2 border-b border-gray-200">
-              <div className="flex items-center gap-2 px-3 py-2 text-body-xs font-semibold text-gray-500">
+            <div className="p-2 border-b border-slate-200">
+              <div className="flex items-center gap-2 px-3 py-2 text-body-xs font-semibold text-slate-500">
                 <Clock className="h-4 w-4" />
                 Recent Searches
               </div>
@@ -148,7 +148,7 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(item)}
-                    className="w-full text-left px-3 py-2 text-body-sm text-gray-700 hover:bg-gray-50 rounded"
+                    className="w-full text-left px-3 py-2 text-body-sm text-slate-700 hover:bg-slate-50 rounded"
                   >
                     {item}
                   </button>
@@ -161,10 +161,10 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
           {query.length >= 2 && (
             <>
               {isLoading ? (
-                <div className="p-4 text-center text-body-sm text-gray-500">Searching...</div>
+                <div className="p-4 text-center text-body-sm text-slate-500">Searching...</div>
               ) : hasResults ? (
                 <div className="p-2">
-                  <div className="flex items-center gap-2 px-3 py-2 text-body-xs font-semibold text-gray-500">
+                  <div className="flex items-center gap-2 px-3 py-2 text-body-xs font-semibold text-slate-500">
                     <TrendingUp className="h-4 w-4" />
                     Search Results
                   </div>
@@ -179,11 +179,11 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
                             onResultClick(result);
                           }
                         }}
-                        className="block px-3 py-2 text-body-sm text-gray-700 hover:bg-gray-50 rounded"
+                        className="block px-3 py-2 text-body-sm text-slate-700 hover:bg-slate-50 rounded"
                       >
                         <div className="font-medium">{result.title}</div>
                         {result.snippet && (
-                          <div className="text-body-xs text-gray-500 mt-1 line-clamp-2">{result.snippet}</div>
+                          <div className="text-body-xs text-slate-500 mt-1 line-clamp-2">{result.snippet}</div>
                         )}
                         {result.category && (
                           <div className="text-body-xs text-gold-600 mt-1">{result.category}</div>
@@ -193,7 +193,7 @@ const HelpSearch = ({ onResultClick, placeholder = 'Search for help articles, FA
                   </div>
                 </div>
               ) : (
-                <div className="p-4 text-center text-body-sm text-gray-500">
+                <div className="p-4 text-center text-body-sm text-slate-500">
                   No results found for &quot;{query}&quot;
                 </div>
               )}

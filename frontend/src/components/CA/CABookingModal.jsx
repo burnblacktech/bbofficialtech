@@ -185,7 +185,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
               </div>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500 transition-colors"
+                className="text-slate-400 hover:text-slate-500 transition-colors"
                 aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
@@ -193,16 +193,16 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
             </div>
 
             {/* CA Firm Name */}
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-body-sm text-gray-600">With:</p>
-              <p className="text-body-md font-medium text-gray-900">{firmName}</p>
+            <div className="mb-4 p-3 bg-slate-50 rounded-xl">
+              <p className="text-body-sm text-slate-600">With:</p>
+              <p className="text-body-md font-medium text-slate-900">{firmName}</p>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Consultation Type */}
               <div>
-                <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-sm font-medium text-slate-700 mb-2">
                   Consultation Type
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -217,10 +217,10 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                         key={type.value}
                         type="button"
                         onClick={() => setConsultationType(type.value)}
-                        className={`p-3 border-2 rounded-lg transition-colors flex flex-col items-center gap-2 ${
+                        className={`p-3 border-2 rounded-xl transition-colors flex flex-col items-center gap-2 ${
                           consultationType === type.value
                             ? 'border-gold-500 bg-gold-50'
-                            : 'border-gray-300 hover:border-gray-400'
+                            : 'border-slate-300 hover:border-gray-400'
                         }`}
                       >
                         <Icon className="h-5 w-5" />
@@ -233,7 +233,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
 
               {/* Date Selection */}
               <div>
-                <label htmlFor="date" className="block text-body-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="date" className="block text-body-sm font-medium text-slate-700 mb-2">
                   Select Date <span className="text-error-500">*</span>
                 </label>
                 <input
@@ -243,7 +243,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={minDate}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 />
               </div>
@@ -251,7 +251,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
               {/* Time Selection */}
               {selectedDate && (
                 <div>
-                  <label htmlFor="time" className="block text-body-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="time" className="block text-body-sm font-medium text-slate-700 mb-2">
                     Select Time <span className="text-error-500">*</span>
                   </label>
                   {isLoadingSlots ? (
@@ -265,10 +265,10 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                           key={slot}
                           type="button"
                           onClick={() => setSelectedTime(slot)}
-                          className={`p-2 border-2 rounded-lg text-body-sm font-medium transition-colors ${
+                          className={`p-2 border-2 rounded-xl text-body-sm font-medium transition-colors ${
                             selectedTime === slot
                               ? 'border-gold-500 bg-gold-50 text-gold-700'
-                              : 'border-gray-300 hover:border-gray-400'
+                              : 'border-slate-300 hover:border-gray-400'
                           }`}
                         >
                           {slot}
@@ -281,7 +281,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
 
               {/* Notes */}
               <div>
-                <label htmlFor="notes" className="block text-body-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="notes" className="block text-body-sm font-medium text-slate-700 mb-2">
                   Additional Notes (Optional)
                 </label>
                 <textarea
@@ -290,7 +290,7 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any specific topics you'd like to discuss..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 />
               </div>
 
@@ -299,14 +299,14 @@ const CABookingModal = ({ firmId, firmName, isOpen, onClose }) => {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 text-body-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-body-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={bookConsultationMutation.isPending || !selectedDate || !selectedTime}
-                  className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-xl hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {bookConsultationMutation.isPending ? (
                     <>

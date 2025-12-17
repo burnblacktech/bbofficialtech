@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Card from '../UI/Card';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import { enterpriseLogger } from '../../utils/logger';
 
 const AdminNavigation = ({ className = '' }) => {

@@ -6,7 +6,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Loader, Download } from 'lucide-react';
 import { useUploadDocument } from '../hooks/use-foreign-assets';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 
 const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUploadSuccess }) => {
@@ -137,27 +137,27 @@ const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUplo
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-heading-md text-gray-900 mb-4">Supporting Documents</h3>
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <h3 className="text-heading-md text-slate-900 mb-4">Supporting Documents</h3>
 
       {/* Existing Documents */}
       {existingDocuments && existingDocuments.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-heading-sm text-gray-900 font-medium mb-3">Uploaded Documents</h4>
+          <h4 className="text-heading-sm text-slate-900 font-medium mb-3">Uploaded Documents</h4>
           <div className="space-y-2">
             {existingDocuments.map((doc, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200"
               >
                 <div className="flex items-center">
-                  <FileText className="h-5 w-5 text-gray-400 mr-3" />
+                  <FileText className="h-5 w-5 text-slate-400 mr-3" />
                   <div>
-                    <p className="text-body-sm font-medium text-gray-900">
+                    <p className="text-body-sm font-medium text-slate-900">
                       {getDocumentTypeLabel(doc.type)}
                     </p>
                     {doc.uploadedAt && (
-                      <p className="text-body-xs text-gray-500">
+                      <p className="text-body-xs text-slate-500">
                         Uploaded {new Date(doc.uploadedAt).toLocaleDateString('en-IN')}
                       </p>
                     )}
@@ -167,7 +167,7 @@ const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUplo
                   href={doc.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
+                  className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded"
                   title="View Document"
                 >
                   <Download className="h-4 w-4" />
@@ -180,17 +180,17 @@ const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUplo
 
       {/* Upload New Document */}
       <div className="space-y-4">
-        <h4 className="text-heading-sm text-gray-900 font-medium">Upload New Document</h4>
+        <h4 className="text-heading-sm text-slate-900 font-medium">Upload New Document</h4>
 
         {/* Document Type Selection */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Document Type
           </label>
           <select
             value={documentType}
             onChange={(e) => setDocumentType(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           >
             {documentTypes.map((type) => (
               <option key={type.value} value={type.value}>
@@ -202,10 +202,10 @@ const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUplo
 
         {/* File Input */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Document File
           </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+          <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-gray-400 transition-colors">
             <input
               ref={fileInputRef}
               type="file"
@@ -220,17 +220,17 @@ const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUplo
             >
               {selectedFile ? (
                 <div className="space-y-2">
-                  <FileText className="h-8 w-8 text-gray-400 mx-auto" />
-                  <p className="text-body-sm font-medium text-gray-900">{selectedFile.name}</p>
-                  <p className="text-body-xs text-gray-600">{formatFileSize(selectedFile.size)}</p>
+                  <FileText className="h-8 w-8 text-slate-400 mx-auto" />
+                  <p className="text-body-sm font-medium text-slate-900">{selectedFile.name}</p>
+                  <p className="text-body-xs text-slate-600">{formatFileSize(selectedFile.size)}</p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <Upload className="h-8 w-8 text-gray-400 mx-auto" />
-                  <p className="text-body-sm text-gray-600">
+                  <Upload className="h-8 w-8 text-slate-400 mx-auto" />
+                  <p className="text-body-sm text-slate-600">
                     Click to upload or drag and drop
                   </p>
-                  <p className="text-body-xs text-gray-500">
+                  <p className="text-body-xs text-slate-500">
                     PDF, JPEG, or PNG (max 5MB)
                   </p>
                 </div>
@@ -246,20 +246,20 @@ const AssetDocumentUpload = ({ filingId, assetId, existingDocuments = [], onUplo
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="max-w-full h-48 rounded-lg border border-gray-200"
+                className="max-w-full h-48 rounded-xl border border-slate-200"
               />
               <button
                 onClick={handleRemove}
-                className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-elevation-2 hover:bg-slate-100"
               >
-                <X className="h-4 w-4 text-gray-600" />
+                <X className="h-4 w-4 text-slate-600" />
               </button>
             </div>
           </div>
         )}
 
         {/* Info */}
-        <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+        <div className="bg-info-50 border border-info-200 rounded-xl p-4">
           <div className="flex items-start">
             <AlertCircle className="h-5 w-5 text-info-600 mt-0.5 mr-2" />
             <div>

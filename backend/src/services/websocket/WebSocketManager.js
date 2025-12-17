@@ -21,7 +21,7 @@ class WebSocketManager {
    * Initialize WebSocket server
    * @param {http.Server} httpServer - HTTP server instance
    */
-  initialize(httpServer) {
+  async initialize(httpServer) {
     if (this.isInitialized) {
       enterpriseLogger.warn('WebSocket server already initialized');
       return;
@@ -98,11 +98,18 @@ class WebSocketManager {
         try {
           this.redisSubscriber = redisService.getSubscriber();
           this.redisPublisher = redisService.getPublisher();
+          
+          if (!this.redisSubscriber || !this.redisPublisher) {
+            throw new Error('Redis subscriber/publisher not available');
+          }
 
           // Subscribe to user-specific channels
-          await this.redisSubscriber.psubscribe('ws:user:*');
-          await this.redisSubscriber.psubscribe('ws:admin:*');
-          await this.redisSubscriber.psubscribe('ws:all:*');
+          // Note: psubscribe returns a promise, but we'll handle it in the async context
+          await Promise.all([
+            this.redisSubscriber.psubscribe('ws:user:*'),
+            this.redisSubscriber.psubscribe('ws:admin:*'),
+            this.redisSubscriber.psubscribe('ws:all:*'),
+          ]);
 
           // Handle messages from other instances
           this.redisSubscriber.on('pmessage', (pattern, channel, message) => {

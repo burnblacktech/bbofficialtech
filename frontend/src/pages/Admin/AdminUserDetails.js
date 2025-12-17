@@ -387,7 +387,7 @@ const AdminUserDetails = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                     activeTab === tab.id
                       ? 'bg-primary-100 text-primary-700'
                       : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
@@ -415,38 +415,38 @@ const AdminUserDetails = () => {
                     <form onSubmit={handleUpdateUser} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-1">Name</label>
+                          <label className="block text-body-regular font-medium text-neutral-700 mb-1">Name</label>
                           <input
                             type="text"
                             value={editFormData.name}
                             onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                            className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-1">Email</label>
+                          <label className="block text-body-regular font-medium text-neutral-700 mb-1">Email</label>
                           <input
                             type="email"
                             value={editFormData.email}
                             onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                            className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-1">Mobile</label>
+                          <label className="block text-body-regular font-medium text-neutral-700 mb-1">Mobile</label>
                           <input
                             type="tel"
                             value={editFormData.mobile}
                             onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
-                            className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-neutral-700 mb-1">Role</label>
+                          <label className="block text-body-regular font-medium text-neutral-700 mb-1">Role</label>
                           <select
                             value={editFormData.role}
                             onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
-                            className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           >
                             <option value="user">User</option>
                             <option value="ca">CA</option>
@@ -462,7 +462,7 @@ const AdminUserDetails = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                             <Mail className="h-5 w-5 text-neutral-500" />
                           </div>
                           <div>
@@ -471,7 +471,7 @@ const AdminUserDetails = () => {
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                             <Phone className="h-5 w-5 text-neutral-500" />
                           </div>
                           <div>
@@ -480,7 +480,7 @@ const AdminUserDetails = () => {
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                             <Calendar className="h-5 w-5 text-neutral-500" />
                           </div>
                           <div>
@@ -494,7 +494,7 @@ const AdminUserDetails = () => {
 
                       <div className="space-y-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                             <MapPin className="h-5 w-5 text-neutral-500" />
                           </div>
                           <div>
@@ -508,7 +508,7 @@ const AdminUserDetails = () => {
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                             <Building2 className="h-5 w-5 text-neutral-500" />
                           </div>
                           <div>
@@ -517,7 +517,7 @@ const AdminUserDetails = () => {
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                             <Shield className="h-5 w-5 text-neutral-500" />
                           </div>
                           <div>
@@ -562,7 +562,7 @@ const AdminUserDetails = () => {
                           }
                         }}
                         placeholder="Add a tag..."
-                        className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="flex-1 px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       />
                       <Button
                         onClick={() => {
@@ -591,7 +591,7 @@ const AdminUserDetails = () => {
                         {tags.map((tag) => (
                           <span
                             key={tag}
-                            className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm"
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-body-regular"
                           >
                             <Tag className="h-3 w-3" />
                             {tag}
@@ -634,7 +634,7 @@ const AdminUserDetails = () => {
                       </span>
                     </div>
                     {userDetails.is_premium && (
-                      <span className="px-3 py-1 text-sm rounded-full bg-secondary-100 text-secondary-800 flex items-center space-x-1">
+                      <span className="px-3 py-1 text-body-regular rounded-full bg-secondary-100 text-secondary-800 flex items-center space-x-1">
                         <Star className="h-3 w-3" />
                         <span>Premium</span>
                       </span>
@@ -734,9 +734,9 @@ const AdminUserDetails = () => {
               ) : (
                 <div className="space-y-3">
                   {filings.slice(0, 10).map((filing) => (
-                    <div key={filing.filing_id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors">
+                    <div key={filing.filing_id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-info-100 rounded-lg flex items-center justify-center">
+                        <div className="w-10 h-10 bg-info-100 rounded-xl flex items-center justify-center">
                           <FileText className="h-5 w-5 text-info-600" />
                         </div>
                         <div>
@@ -792,8 +792,8 @@ const AdminUserDetails = () => {
               ) : (
                 <div className="space-y-3">
                   {activities.map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-3 p-4 bg-neutral-50 rounded-lg">
-                      <div className="w-8 h-8 bg-neutral-200 rounded-lg flex items-center justify-center">
+                    <div key={activity.id} className="flex items-start space-x-3 p-4 bg-neutral-50 rounded-xl">
+                      <div className="w-8 h-8 bg-neutral-200 rounded-xl flex items-center justify-center">
                         <Activity className="h-4 w-4 text-neutral-600" />
                       </div>
                       <div className="flex-1">
@@ -830,16 +830,16 @@ const AdminUserDetails = () => {
             <CardContent>
               {/* Note Form */}
               {showNoteForm && (
-                <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                <div className="mb-6 p-4 bg-neutral-50 rounded-xl border border-neutral-200">
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Note Content <span className="text-error-500">*</span>
                       </label>
                       <textarea
                         value={noteFormData.content}
                         onChange={(e) => setNoteFormData({ ...noteFormData, content: e.target.value })}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         rows={4}
                         placeholder="Enter note content..."
                       />
@@ -852,7 +852,7 @@ const AdminUserDetails = () => {
                         onChange={(e) => setNoteFormData({ ...noteFormData, isPrivate: e.target.checked })}
                         className="mr-2"
                       />
-                      <label htmlFor="isPrivate" className="text-sm text-neutral-600">
+                      <label htmlFor="isPrivate" className="text-body-regular text-neutral-600">
                         Private note (only visible to admins)
                       </label>
                     </div>
@@ -929,7 +929,7 @@ const AdminUserDetails = () => {
                   {notes.map((note) => (
                     <div
                       key={note.id}
-                      className={`p-4 rounded-lg border ${
+                      className={`p-4 rounded-xl border ${
                         note.isPrivate ? 'bg-warning-50 border-warning-200' : 'bg-neutral-50 border-neutral-200'
                       }`}
                     >
@@ -937,7 +937,7 @@ const AdminUserDetails = () => {
                         <div className="flex items-center gap-2">
                           <StickyNote className="h-4 w-4 text-neutral-500" />
                           {note.isPrivate && (
-                            <span className="px-2 py-0.5 text-xs bg-warning-100 text-warning-700 rounded">
+                            <span className="px-2 py-0.5 text-body-small bg-warning-100 text-warning-700 rounded">
                               Private
                             </span>
                           )}
@@ -1015,7 +1015,7 @@ const AdminUserDetails = () => {
                 <button
                   onClick={() => handleStatusUpdate('active')}
                   disabled={userDetails.status === 'active'}
-                  className="p-4 border border-success-300 rounded-lg hover:bg-success-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 border border-success-300 rounded-xl hover:bg-success-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle className="h-6 w-6 text-success-600 mx-auto mb-2" />
                   <Typography.Small className="font-medium text-success-700 block text-center">Activate</Typography.Small>
@@ -1024,7 +1024,7 @@ const AdminUserDetails = () => {
                 <button
                   onClick={() => handleStatusUpdate('suspended')}
                   disabled={userDetails.status === 'suspended'}
-                  className="p-4 border border-warning-300 rounded-lg hover:bg-warning-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 border border-warning-300 rounded-xl hover:bg-warning-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <AlertCircle className="h-6 w-6 text-warning-600 mx-auto mb-2" />
                   <Typography.Small className="font-medium text-warning-700 block text-center">Suspend</Typography.Small>
@@ -1033,7 +1033,7 @@ const AdminUserDetails = () => {
                 <button
                   onClick={() => handleStatusUpdate('inactive')}
                   disabled={userDetails.status === 'inactive'}
-                  className="p-4 border border-error-300 rounded-lg hover:bg-error-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 border border-error-300 rounded-xl hover:bg-error-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <UserX className="h-6 w-6 text-error-600 mx-auto mb-2" />
                   <Typography.Small className="font-medium text-error-700 block text-center">Deactivate</Typography.Small>
@@ -1042,7 +1042,7 @@ const AdminUserDetails = () => {
                 <button
                   onClick={() => handleStatusUpdate('pending')}
                   disabled={userDetails.status === 'pending'}
-                  className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-4 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Clock className="h-6 w-6 text-neutral-600 mx-auto mb-2" />
                   <Typography.Small className="font-medium text-neutral-700 block text-center">Set Pending</Typography.Small>

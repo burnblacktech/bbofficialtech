@@ -71,7 +71,7 @@ const ProgressBar = ({
       case 'current':
         return 'bg-orange-500 border-orange-500';
       default:
-        return 'bg-gray-300 border-gray-300';
+        return 'bg-gray-300 border-slate-300';
     }
   };
 
@@ -80,7 +80,7 @@ const ProgressBar = ({
       {/* Progress Bar */}
       <div className="relative">
         {/* Background */}
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-slate-200 rounded-full h-2">
           {/* Progress Fill */}
           <motion.div
             variants={progressVariants}
@@ -92,7 +92,7 @@ const ProgressBar = ({
 
         {/* Progress Percentage */}
         <div className="text-right mt-1">
-          <span className="text-xs text-gray-600">
+          <span className="text-body-small text-slate-600">
             {Math.round(progressPercentage)}% Complete
           </span>
         </div>
@@ -133,12 +133,12 @@ const ProgressBar = ({
                   <div className="text-center">
                     <p className={`text-xs font-medium ${
                       isCompleted ? 'text-success-600' :
-                      isCurrent ? 'text-orange-600' : 'text-gray-500'
+                      isCurrent ? 'text-orange-600' : 'text-slate-500'
                     }`}>
                       {step.title || `Step ${index + 1}`}
                     </p>
                     {step.description && (
-                      <p className="text-xs text-gray-400 mt-1 max-w-20">
+                      <p className="text-body-small text-slate-400 mt-1 max-w-20">
                         {step.description}
                       </p>
                     )}
@@ -173,7 +173,7 @@ const ProgressBar = ({
                   {/* Step Number */}
                   {!showIcons && (
                     <span className={`text-xs font-bold ${
-                      isCompleted || isCurrent ? 'text-white' : 'text-gray-600'
+                      isCompleted || isCurrent ? 'text-white' : 'text-slate-600'
                     }`}>
                       {index + 1}
                     </span>
@@ -193,7 +193,7 @@ const ProgressBar = ({
                 {showLabels && (
                   <p className={`text-xs font-medium ${
                     isCompleted ? 'text-success-600' :
-                    isCurrent ? 'text-orange-600' : 'text-gray-500'
+                    isCurrent ? 'text-orange-600' : 'text-slate-500'
                   }`}>
                     Step {index + 1}
                   </p>

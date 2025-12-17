@@ -26,7 +26,7 @@ const AutoPopulationProgress = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           className={cn(
-            'bg-white border border-neutral-200 rounded-lg shadow-sm p-4',
+            'bg-white border border-neutral-200 rounded-xl shadow-elevation-1 p-4',
             className,
           )}
         >
@@ -34,8 +34,8 @@ const AutoPopulationProgress = ({
             <div className="flex items-center gap-3">
               <Loader className="w-5 h-5 text-gold-600 animate-spin" />
               <div className="flex-1">
-                <div className="text-sm font-medium text-neutral-900">Auto-filling data...</div>
-                <div className="text-xs text-neutral-500 mt-0.5">
+                <div className="text-body-regular font-medium text-neutral-900">Auto-filling data...</div>
+                <div className="text-body-small text-neutral-500 mt-0.5">
                   Fetching from AIS/26AS, Form 16, and previous year data
                 </div>
               </div>
@@ -46,10 +46,10 @@ const AutoPopulationProgress = ({
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-emerald-600" />
                   <div>
-                    <div className="text-sm font-medium text-neutral-900">
+                    <div className="text-body-regular font-medium text-neutral-900">
                       Auto-filled {summary.autoFilledCount} field{summary.autoFilledCount !== 1 ? 's' : ''}
                     </div>
-                    <div className="text-xs text-neutral-500 mt-0.5">
+                    <div className="text-body-small text-neutral-500 mt-0.5">
                       From {Object.keys(summary.bySource).length} source{Object.keys(summary.bySource).length !== 1 ? 's' : ''}
                     </div>
                   </div>
@@ -58,7 +58,7 @@ const AutoPopulationProgress = ({
                   {onRefresh && (
                     <button
                       onClick={onRefresh}
-                      className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                      className="p-1.5 rounded-xl hover:bg-neutral-100 transition-colors"
                       title="Refresh from sources"
                     >
                       <RefreshCw className="w-4 h-4 text-neutral-600" />
@@ -67,7 +67,7 @@ const AutoPopulationProgress = ({
                   {onDismiss && (
                     <button
                       onClick={onDismiss}
-                      className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                      className="p-1.5 rounded-xl hover:bg-neutral-100 transition-colors"
                       title="Dismiss"
                     >
                       <X className="w-4 h-4 text-neutral-600" />
@@ -81,7 +81,7 @@ const AutoPopulationProgress = ({
                   {Object.entries(summary.bySource).map(([source, count]) => (
                     <div
                       key={source}
-                      className="px-2 py-1 bg-neutral-50 rounded-md text-xs font-medium text-neutral-700"
+                      className="px-2 py-1 bg-neutral-50 rounded-xl text-body-small font-medium text-neutral-700"
                     >
                       {DATA_SOURCE_LABELS[source] || source}: {count}
                     </div>

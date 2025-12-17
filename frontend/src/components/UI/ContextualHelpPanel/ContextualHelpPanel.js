@@ -72,7 +72,7 @@ export const ContextualHelpPanel = ({
             exit={{ x: isMobile ? 0 : 320, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className={cn(
-              'fixed z-50 bg-white shadow-xl',
+              'fixed z-50 bg-white shadow-elevation-4',
               isMobile
                 ? 'bottom-0 left-0 right-0 top-0 rounded-t-2xl'
                 : 'top-0 right-0 bottom-0 w-80',
@@ -83,20 +83,20 @@ export const ContextualHelpPanel = ({
             aria-labelledby="help-panel-title"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200">
               <h2
                 id="help-panel-title"
-                className="text-heading-md font-semibold text-gray-900"
+                className="text-heading-md font-semibold text-slate-900"
                 style={{ fontSize: '18px', fontWeight: 600 }}
               >
                 {title || 'Help'}
               </h2>
               <button
                 onClick={onClose}
-                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="p-1 rounded hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
                 aria-label="Close help panel"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
 
@@ -104,7 +104,7 @@ export const ContextualHelpPanel = ({
             <div className="overflow-y-auto p-4" style={{ maxHeight: 'calc(100vh - 80px)' }}>
               {content && (
                 <div
-                  className="text-body-md text-gray-700 space-y-4"
+                  className="text-body-md text-slate-700 space-y-4"
                   style={{ fontSize: '14px', lineHeight: '22px' }}
                 >
                   {typeof content === 'string' ? (
@@ -119,7 +119,7 @@ export const ContextualHelpPanel = ({
 
               {/* Download Link */}
               {downloadLink && (
-                <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="mt-6 pt-4 border-t border-slate-200">
                   <a
                     href={downloadLink.href}
                     target="_blank"
@@ -155,7 +155,7 @@ export const HelpLink = ({
     <button
       onClick={onClick}
       className={cn(
-        'text-body-sm text-gray-500 hover:text-gray-700 transition-colors',
+        'text-body-sm text-slate-500 hover:text-slate-700 transition-colors',
         'focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-1 rounded',
         className,
       )}

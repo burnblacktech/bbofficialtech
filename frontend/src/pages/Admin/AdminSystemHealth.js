@@ -161,7 +161,7 @@ const AdminSystemHealth = () => {
             <select
               value={selectedTimeRange}
               onChange={(e) => setSelectedTimeRange(e.target.value)}
-              className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              className="px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
             >
               <option value="1h">Last Hour</option>
               <option value="24h">Last 24 Hours</option>
@@ -180,7 +180,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center">
                     <Server className="w-5 h-5 text-info-600" />
                   </div>
                   <div className="ml-3">
@@ -202,7 +202,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center">
                     <Database className="w-5 h-5 text-success-600" />
                   </div>
                   <div className="ml-3">
@@ -224,7 +224,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center">
                     <Wifi className="w-5 h-5 text-info-600" />
                   </div>
                   <div className="ml-3">
@@ -246,7 +246,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-error-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-error-100 flex items-center justify-center">
                     <Shield className="w-5 h-5 text-error-600" />
                   </div>
                   <div className="ml-3">
@@ -327,7 +327,7 @@ const AdminSystemHealth = () => {
                   <Globe className="h-4 w-4 text-neutral-400" />
                 </div>
                 <Typography.H3 className="mb-1">{metrics.network?.io_rate || 0} MB/s</Typography.H3>
-                <div className="flex items-center space-x-1 text-sm text-neutral-500">
+                <div className="flex items-center space-x-1 text-body-regular text-neutral-500">
                   <TrendingUp className="h-3 w-3" />
                   <span>+{metrics.network?.io_growth || 0}%</span>
                 </div>
@@ -361,7 +361,7 @@ const AdminSystemHealth = () => {
             ) : (
               <div className="space-y-3">
                 {alerts.slice(0, 5).map((alert) => (
-                  <div key={alert.id} className={`p-4 border rounded-lg ${getAlertColor(alert.severity)}`}>
+                  <div key={alert.id} className={`p-4 border rounded-xl ${getAlertColor(alert.severity)}`}>
                     <div className="flex items-start space-x-3">
                       {getAlertIcon(alert.severity)}
                       <div className="flex-1">
@@ -390,7 +390,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
                     <Users className="w-5 h-5 text-primary-600" />
                   </div>
                   <div className="ml-3">
@@ -405,7 +405,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center">
                     <FileText className="w-5 h-5 text-success-600" />
                   </div>
                   <div className="ml-3">
@@ -420,7 +420,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center">
                     <IndianRupee className="w-5 h-5 text-info-600" />
                   </div>
                   <div className="ml-3">
@@ -435,7 +435,7 @@ const AdminSystemHealth = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center">
                     <Activity className="w-5 h-5 text-warning-600" />
                   </div>
                   <div className="ml-3">
@@ -481,9 +481,9 @@ const AdminSystemHealth = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+              <button className="p-4 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
                     <RefreshCw className="w-5 h-5 text-primary-600" />
                   </div>
                   <div>
@@ -492,9 +492,9 @@ const AdminSystemHealth = () => {
                   </div>
                 </div>
               </button>
-              <button className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+              <button className="p-4 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center">
                     <Database className="w-5 h-5 text-success-600" />
                   </div>
                   <div>
@@ -503,9 +503,9 @@ const AdminSystemHealth = () => {
                   </div>
                 </div>
               </button>
-              <button className="p-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+              <button className="p-4 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center">
                     <Settings className="w-5 h-5 text-info-600" />
                   </div>
                   <div>

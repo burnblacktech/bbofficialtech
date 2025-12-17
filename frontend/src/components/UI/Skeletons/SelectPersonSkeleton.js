@@ -29,7 +29,7 @@ const SelectPersonSkeleton = () => {
           {/* Person Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white rounded-lg border border-neutral-200 p-6">
+              <div key={i} className="bg-white rounded-xl border border-neutral-200 p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <Skeleton className="w-16 h-16 rounded-full" />
                   <div className="flex-1 space-y-2">

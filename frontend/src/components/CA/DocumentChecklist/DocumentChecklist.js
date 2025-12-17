@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { CheckCircle, XCircle, Upload, FileText, Eye } from 'lucide-react';
-import Button from '../../common/Button';
+import Button from '../../DesignSystem/components/Button';
 import FileUpload from '../../UI/FileUpload/FileUpload';
 import { cn } from '../../../lib/utils';
 
@@ -74,11 +74,11 @@ const DocumentChecklist = ({
           <div
             key={doc.id}
               className={cn(
-              'border rounded-lg p-4 transition-colors',
+              'border rounded-xl p-4 transition-colors',
               {
                 'border-success-200 bg-success-50': status === 'uploaded',
                 'border-error-200 bg-error-50': status === 'missing' && doc.required,
-                'border-gray-200 bg-white': status === 'missing' && !doc.required,
+                'border-slate-200 bg-white': status === 'missing' && !doc.required,
                 'border-warning-200 bg-warning-50': status === 'pending',
               },
             )}
@@ -92,7 +92,7 @@ const DocumentChecklist = ({
                 ) : (
                   <XCircle className={cn(
                     'w-5 h-5',
-                    doc.required ? 'text-error-500' : 'text-gray-400',
+                    doc.required ? 'text-error-500' : 'text-slate-400',
                   )} />
                 )}
 
@@ -108,7 +108,7 @@ const DocumentChecklist = ({
                     )}
                   </div>
                   {docData?.uploadedAt && (
-                    <span className="text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+                    <span className="text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
                       Uploaded {new Date(docData.uploadedAt).toLocaleDateString()}
                     </span>
                   )}
@@ -119,10 +119,10 @@ const DocumentChecklist = ({
                 {docData?.fileUrl && (
                   <button
                     onClick={() => window.open(docData.fileUrl, '_blank')}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                     aria-label={`View ${doc.label}`}
                   >
-                    <Eye className="w-4 h-4 text-gray-600" />
+                    <Eye className="w-4 h-4 text-slate-600" />
                   </button>
                 )}
                 {status !== 'uploaded' && (
@@ -149,7 +149,7 @@ const DocumentChecklist = ({
 
             {/* Upload Form */}
             {expandedDoc === doc.id && status !== 'uploaded' && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="mt-4 pt-4 border-t border-slate-200">
                 <FileUpload
                   label={`Upload ${doc.label}`}
                   accept=".pdf,.jpg,.jpeg,.png"

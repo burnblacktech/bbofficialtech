@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Card from '../common/Card';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import Modal from '../common/Modal';
 import StatusBadge from '../DesignSystem/StatusBadge';
 import { enterpriseLogger } from '../../utils/logger';

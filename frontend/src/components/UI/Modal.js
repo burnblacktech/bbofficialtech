@@ -66,7 +66,7 @@ const Modal = React.forwardRef(({
       <div
         ref={modalRef}
         className={cn(
-          'relative bg-white rounded-lg shadow-xl max-h-[90vh] overflow-auto',
+          'relative bg-white rounded-xl shadow-elevation-4 max-h-[90vh] overflow-auto',
           sizeClasses[size],
           contentClassName,
           className,
@@ -77,7 +77,7 @@ const Modal = React.forwardRef(({
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200"
+            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors duration-200"
             aria-label="Close modal"
           >
             <svg

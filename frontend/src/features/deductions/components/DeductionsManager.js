@@ -44,15 +44,15 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
     { id: '80U', label: '80U', component: Section80U, description: 'Self Disability' },
   ];
 
-  const handleDeductionUpdate = (section, amount) => {
-    if (onUpdate) {
-      onUpdate({
-        deductions: {
-          ...formData?.deductions,
-          [section]: amount,
-        },
-      });
-    }
+  // Standard: section components call onUpdate({ section80C: 12345, section80EEA: 50000, ... })
+  const handleDeductionPatch = (patch) => {
+    if (!onUpdate || !patch || typeof patch !== 'object') return;
+    onUpdate({
+      deductions: {
+        ...(formData?.deductions || {}),
+        ...patch,
+      },
+    });
   };
 
   // Calculate total deductions
@@ -87,9 +87,9 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-heading-xl text-gray-900 mb-2">Chapter VI-A Deductions</h2>
-        <p className="text-body-sm text-gray-600">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+        <h2 className="text-heading-xl text-slate-900 mb-2">Chapter VI-A Deductions</h2>
+        <p className="text-body-sm text-slate-600">
           Manage all tax-saving deductions under Chapter VI-A of the Income Tax Act
         </p>
       </div>
@@ -105,18 +105,18 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
       )}
 
       {/* Tabs Navigation */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200">
         <div className="w-full">
-          <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500 w-full overflow-x-auto">
+          <div className="inline-flex h-10 items-center justify-center rounded-xl bg-slate-100 p-1 text-slate-500 w-full overflow-x-auto">
             <div className="flex gap-2 w-full min-w-max">
               {deductionTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 ${
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 ${
                     activeTab === tab.id
-                      ? 'bg-gold-500 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-gold-500 text-white shadow-elevation-1'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {tab.label}
@@ -138,9 +138,9 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
                     <div key={tab.id}>
                       <Component
                         filingId={filingId}
-                        onUpdate={(data) =>
-                          handleDeductionUpdate(`section${tab.id}`, data[`section${tab.id}`] || 0)
-                        }
+                        onUpdate={handleDeductionPatch}
+                        userAge={formData?.userAge || 30}
+                        totalIncome={formData?.totalIncome || 0}
                       />
                     </div>
                   );
@@ -151,16 +151,23 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
       </div>
 
       {/* Summary Card */}
-      <div className="bg-gradient-to-r from-gold-50 to-gold-50 rounded-lg shadow-sm border border-gold-200 p-6">
-        <h3 className="text-heading-md text-gray-900 mb-4">Total Deductions Summary</h3>
+      <div className="bg-gradient-to-r from-gold-50 to-gold-50 rounded-xl shadow-elevation-1 border border-gold-200 p-6">
+        <h3 className="text-heading-md text-slate-900 mb-4">Total Deductions Summary</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {deductionTabs
             .filter((tab) => !tab.isOverview)
             .map((tab) => {
-              const amount = formData?.deductions?.[`section${tab.id}`] || 0;
+              let amount = 0;
+              if (tab.id === '80EE') {
+                amount = (parseFloat(formData?.deductions?.section80EE) || 0) + (parseFloat(formData?.deductions?.section80EEA) || 0);
+              } else if (tab.id === '80TTA') {
+                amount = (parseFloat(formData?.deductions?.section80TTA) || 0) + (parseFloat(formData?.deductions?.section80TTB) || 0);
+              } else {
+                amount = parseFloat(formData?.deductions?.[`section${tab.id}`]) || 0;
+              }
               return (
-                <div key={tab.id} className="bg-white rounded-lg p-3">
-                  <div className="text-body-xs text-gray-600 mb-1">{tab.label}</div>
+                <div key={tab.id} className="bg-white rounded-xl p-3">
+                  <div className="text-body-xs text-slate-600 mb-1">{tab.label}</div>
                   <div className="text-heading-sm font-bold text-gold-600">
                     ₹{amount.toLocaleString('en-IN')}
                   </div>
@@ -170,7 +177,7 @@ const DeductionsManager = ({ filingId, formData, onUpdate }) => {
         </div>
         <div className="mt-4 pt-4 border-t border-gold-200">
           <div className="flex justify-between items-center">
-            <span className="text-heading-md font-semibold text-gray-900">Total Deductions</span>
+            <span className="text-heading-md font-semibold text-slate-900">Total Deductions</span>
             <span className="text-heading-xl font-bold text-gold-600">
               ₹{totalDeductions.toLocaleString('en-IN')}
             </span>

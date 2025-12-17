@@ -139,15 +139,15 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
       {/* Upload Section */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-blue-100 rounded-lg">
+          <div className="p-3 bg-blue-100 rounded-xl">
             <Sparkles className="h-6 w-6 text-blue-600" />
           </div>
           <div className="flex-1">
-            <h4 className="text-heading-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+            <h4 className="text-heading-sm font-semibold text-slate-900 mb-1 flex items-center gap-2">
               Smart OCR Upload
               <SourceChip source="ocr" />
             </h4>
-            <p className="text-body-sm text-gray-600 mb-4">
+            <p className="text-body-sm text-slate-600 mb-4">
               Upload rent receipt images or PDFs to automatically extract rent amount, dates, and landlord details
             </p>
 
@@ -163,9 +163,9 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
               />
               <label
                 htmlFor="rent-receipt-ocr-input"
-                className={`inline-flex items-center px-4 py-2.5 border-2 rounded-lg font-medium transition-colors cursor-pointer ${
+                className={`inline-flex items-center px-4 py-2.5 border-2 rounded-xl font-medium transition-colors cursor-pointer ${
                   isProcessing
-                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                    ? 'bg-slate-100 text-slate-400 border-slate-300 cursor-not-allowed'
                     : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
                 }`}
               >
@@ -194,9 +194,9 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
               />
               <label
                 htmlFor="batch-rent-receipt-ocr-input"
-                className={`inline-flex items-center px-4 py-2.5 border-2 rounded-lg font-medium transition-colors cursor-pointer ${
+                className={`inline-flex items-center px-4 py-2.5 border-2 rounded-xl font-medium transition-colors cursor-pointer ${
                   isProcessing
-                    ? 'bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed'
+                    ? 'bg-slate-100 text-slate-400 border-slate-300 cursor-not-allowed'
                     : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50 hover:border-blue-400'
                 }`}
               >
@@ -219,16 +219,16 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
 
       {/* Extracted Data Display */}
       {extractedData && (
-        <div className="bg-white border-2 border-green-200 rounded-xl p-6 shadow-sm">
+        <div className="bg-white border-2 border-green-200 rounded-xl p-6 shadow-elevation-1">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
+              <div className="p-2 bg-green-100 rounded-xl">
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <h5 className="text-heading-sm font-semibold text-gray-900 mb-1">Extracted Data</h5>
+                <h5 className="text-heading-sm font-semibold text-slate-900 mb-1">Extracted Data</h5>
                 <div className="flex items-center gap-2">
-                  <span className="text-body-xs text-gray-500">
+                  <span className="text-body-xs text-slate-500">
                     Confidence: {Math.round((extractedData.confidence || 0) * 100)}%
                   </span>
                   <FieldAutoFillIndicator source="ocr" confidence={extractedData.confidence} />
@@ -238,14 +238,14 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowEdit(!showEdit)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100"
                 title="Edit extracted data"
               >
                 <Edit2 className="h-4 w-4" />
               </button>
               <button
                 onClick={handleClear}
-                className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+                className="p-2 text-slate-400 hover:text-error-600 rounded-xl hover:bg-error-50"
                 title="Clear"
               >
                 <X className="h-4 w-4" />
@@ -257,47 +257,47 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-body-xs font-medium text-gray-700 mb-1">Rent Amount (₹)</label>
+                  <label className="block text-body-xs font-medium text-slate-700 mb-1">Rent Amount (₹)</label>
                   <input
                     type="number"
                     value={editedData?.rentAmount || ''}
                     onChange={(e) => handleEditChange('rentAmount', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-body-xs font-medium text-gray-700 mb-1">Period</label>
+                  <label className="block text-body-xs font-medium text-slate-700 mb-1">Period</label>
                   <input
                     type="text"
                     value={editedData?.period || ''}
                     onChange={(e) => handleEditChange('period', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="e.g., January 2024"
                   />
                 </div>
                 <div>
-                  <label className="block text-body-xs font-medium text-gray-700 mb-1">Landlord Name</label>
+                  <label className="block text-body-xs font-medium text-slate-700 mb-1">Landlord Name</label>
                   <input
                     type="text"
                     value={editedData?.landlordName || ''}
                     onChange={(e) => handleEditChange('landlordName', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-body-xs font-medium text-gray-700 mb-1">TDS Deducted (₹)</label>
+                  <label className="block text-body-xs font-medium text-slate-700 mb-1">TDS Deducted (₹)</label>
                   <input
                     type="number"
                     value={editedData?.tdsDeducted || ''}
                     onChange={(e) => handleEditChange('tdsDeducted', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={handleSaveEdit}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-body-sm"
+                  className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium text-body-sm"
                 >
                   Save Changes
                 </button>
@@ -306,7 +306,7 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
                     setShowEdit(false);
                     setEditedData(extractedData);
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium text-body-sm"
+                  className="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-gray-300 font-medium text-body-sm"
                 >
                   Cancel
                 </button>
@@ -315,27 +315,27 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
           ) : (
             <>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <span className="text-body-xs text-gray-600 block mb-1">Rent Amount</span>
-                  <div className="text-heading-sm font-semibold text-gray-900">
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <span className="text-body-xs text-slate-600 block mb-1">Rent Amount</span>
+                  <div className="text-heading-sm font-semibold text-slate-900">
                     ₹{extractedData.rentAmount?.toLocaleString('en-IN') || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <span className="text-body-xs text-gray-600 block mb-1">Period</span>
-                  <div className="text-heading-sm font-semibold text-gray-900">
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <span className="text-body-xs text-slate-600 block mb-1">Period</span>
+                  <div className="text-heading-sm font-semibold text-slate-900">
                     {extractedData.period || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <span className="text-body-xs text-gray-600 block mb-1">Landlord Name</span>
-                  <div className="text-heading-sm font-semibold text-gray-900">
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <span className="text-body-xs text-slate-600 block mb-1">Landlord Name</span>
+                  <div className="text-heading-sm font-semibold text-slate-900">
                     {extractedData.landlordName || 'N/A'}
                   </div>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <span className="text-body-xs text-gray-600 block mb-1">TDS Deducted</span>
-                  <div className="text-heading-sm font-semibold text-gray-900">
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <span className="text-body-xs text-slate-600 block mb-1">TDS Deducted</span>
+                  <div className="text-heading-sm font-semibold text-slate-900">
                     {extractedData.tdsDeducted
                       ? `₹${extractedData.tdsDeducted.toLocaleString('en-IN')}`
                       : 'N/A'}
@@ -344,7 +344,7 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
               </div>
 
               {extractedData.validation?.warnings?.length > 0 && (
-                <div className="mb-4 bg-warning-50 border border-warning-200 rounded-lg p-3">
+                <div className="mb-4 bg-warning-50 border border-warning-200 rounded-xl p-3">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-4 w-4 text-warning-600 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
@@ -362,7 +362,7 @@ const RentReceiptOCRUpload = ({ onExtracted, propertyIndex = null, filingId = nu
               {onExtracted && (
                 <button
                   onClick={handleApply}
-                  className="w-full px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium flex items-center justify-center gap-2"
                 >
                   <CheckCircle className="h-4 w-4" />
                   Apply to Property

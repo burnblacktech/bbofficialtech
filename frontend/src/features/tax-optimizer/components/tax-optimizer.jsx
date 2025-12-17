@@ -71,20 +71,20 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
   ];
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
+    <div className="bg-white rounded-xl border border-slate-200">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-heading-lg text-gray-900">Tax Optimizer</h2>
-            <p className="text-body-sm text-gray-600 mt-1">
+            <h2 className="text-heading-lg text-slate-900">Tax Optimizer</h2>
+            <p className="text-body-sm text-slate-600 mt-1">
               Simulate tax-saving scenarios and optimize your tax liability
             </p>
           </div>
           {currentTaxComputation && (
             <div className="text-right">
-              <p className="text-body-xs text-gray-500">Current Tax Liability</p>
-              <p className="text-heading-md font-semibold text-gray-900">
+              <p className="text-body-xs text-slate-500">Current Tax Liability</p>
+              <p className="text-heading-md font-semibold text-slate-900">
                 ₹{parseFloat(currentTaxComputation.totalTaxLiability || 0).toLocaleString('en-IN')}
               </p>
             </div>
@@ -93,7 +93,7 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 px-6">
+      <div className="border-b border-slate-200 px-6">
         <div className="flex space-x-1 overflow-x-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -104,7 +104,7 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
                 className={`flex items-center px-4 py-3 text-body-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-gold-500 text-gold-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                    : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300'
                 }`}
               >
                 <Icon className="h-4 w-4 mr-2" />
@@ -124,10 +124,10 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
               </div>
             ) : opportunities.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
                 <CheckCircle className="h-12 w-12 text-success-400 mx-auto mb-4" />
-                <h3 className="text-heading-md text-gray-900 mb-2">No Optimization Opportunities</h3>
-                <p className="text-body-sm text-gray-600">
+                <h3 className="text-heading-md text-slate-900 mb-2">No Optimization Opportunities</h3>
+                <p className="text-body-sm text-slate-600">
                   Your tax planning looks optimal! You can still simulate scenarios manually.
                 </p>
               </div>
@@ -139,7 +139,7 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
                   summary={summary}
                 />
                 <div className="mt-6">
-                  <h3 className="text-heading-sm text-gray-900 font-medium mb-4">
+                  <h3 className="text-heading-sm text-slate-900 font-medium mb-4">
                     Or create a custom scenario
                   </h3>
                   <ScenarioBuilder
@@ -172,15 +172,15 @@ const TaxOptimizer = ({ filingId, currentTaxComputation, onUpdate }) => {
         )}
 
         {activeTab === 'results' && !simulationResult && (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-            <Calculator className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-heading-md text-gray-900 mb-2">No Simulation Results</h3>
-            <p className="text-body-sm text-gray-600 mb-4">
+          <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
+            <Calculator className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-heading-md text-slate-900 mb-2">No Simulation Results</h3>
+            <p className="text-body-sm text-slate-600 mb-4">
               Run a simulation to see results here.
             </p>
             <button
               onClick={() => setActiveTab('simulate')}
-              className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <Calculator className="h-4 w-4 mr-2" />
               Create Simulation

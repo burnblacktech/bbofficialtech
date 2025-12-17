@@ -188,11 +188,11 @@ export const Tooltip = ({
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className={cn(
               'fixed z-50 pointer-events-none',
-              'px-3 py-2 rounded-lg text-body-sm',
+              'px-3 py-2 rounded-xl text-body-sm',
               'max-w-[280px]',
               {
                 'bg-gray-900 text-white': variant === 'dark',
-                'bg-white text-gray-700 border border-gray-200 shadow-elevated': variant === 'light',
+                'bg-white text-slate-700 border border-slate-200 shadow-elevated': variant === 'light',
               },
               className,
             )}
@@ -207,7 +207,7 @@ export const Tooltip = ({
             <div
               className={cn('absolute w-2 h-2 rotate-45', {
                 'bg-gray-900': variant === 'dark',
-                'bg-white border border-gray-200': variant === 'light',
+                'bg-white border border-slate-200': variant === 'light',
               })}
               style={{
                 [actualSide === 'top' ? 'bottom' : actualSide === 'bottom' ? 'top' : 'top']: '-4px',
@@ -260,13 +260,13 @@ export const RichTooltip = ({
           <div
             className={cn('h-px', {
               'bg-gray-700': variant === 'dark',
-              'bg-gray-200': variant === 'light',
+              'bg-slate-200': variant === 'light',
             })}
           />
           <p
             className={cn('text-body-sm', {
-              'text-gray-300': variant === 'dark',
-              'text-gray-600': variant === 'light',
+              'text-slate-300': variant === 'dark',
+              'text-slate-600': variant === 'light',
             })}
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >

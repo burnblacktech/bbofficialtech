@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { FileText, Upload, CheckCircle, AlertCircle, TrendingUp, Download } from 'lucide-react';
 import { AISForm26ASService } from '../../../services/AISForm26ASService';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 
 const Form26ASReader = ({ onDataExtracted, filingId }) => {
@@ -66,13 +66,13 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center gap-3 mb-6">
         <FileText className="h-6 w-6 text-gold-600" />
         <h3 className="text-heading-md text-gray-800">Form 26AS Reader</h3>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
         <div className="flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-body-sm text-blue-800">
@@ -87,9 +87,9 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
 
       {!form26ASData && (
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-body-md text-gray-600 mb-4">
+          <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center">
+            <FileText className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+            <p className="text-body-md text-slate-600 mb-4">
               Upload Form 26AS file or fetch from Income Tax Portal
             </p>
             <div className="flex gap-3 justify-center">
@@ -104,10 +104,10 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
               />
               <label
                 htmlFor="form26as-file-input"
-                className={`inline-flex items-center px-4 py-2 border rounded-lg cursor-pointer ${
+                className={`inline-flex items-center px-4 py-2 border rounded-xl cursor-pointer ${
                   isLoading
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-300'
                 }`}
               >
                 <Upload className="w-4 h-4 mr-2" />
@@ -146,9 +146,9 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div className="bg-error-50 border border-red-200 rounded-xl p-4 mb-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 text-error-600 mt-0.5 flex-shrink-0" />
             <p className="text-body-sm text-red-800">{error}</p>
           </div>
         </div>
@@ -174,26 +174,26 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-body-sm text-gray-600 mb-1">Total TDS</p>
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+              <p className="text-body-sm text-slate-600 mb-1">Total TDS</p>
               <p className="text-heading-md font-semibold text-green-700">
                 {formatCurrency(form26ASData.totalTDS || 0)}
               </p>
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-body-sm text-gray-600 mb-1">Total TCS</p>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-body-sm text-slate-600 mb-1">Total TCS</p>
               <p className="text-heading-md font-semibold text-blue-700">
                 {formatCurrency(form26ASData.totalTCS || 0)}
               </p>
             </div>
-            <div className="bg-gold-50 border border-gold-200 rounded-lg p-4">
-              <p className="text-body-sm text-gray-600 mb-1">Advance Tax</p>
+            <div className="bg-gold-50 border border-gold-200 rounded-xl p-4">
+              <p className="text-body-sm text-slate-600 mb-1">Advance Tax</p>
               <p className="text-heading-md font-semibold text-gold-700">
                 {formatCurrency(form26ASData.advanceTax || 0)}
               </p>
             </div>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <p className="text-body-sm text-gray-600 mb-1">Self Assessment Tax</p>
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <p className="text-body-sm text-slate-600 mb-1">Self Assessment Tax</p>
               <p className="text-heading-md font-semibold text-purple-700">
                 {formatCurrency(form26ASData.selfAssessmentTax || 0)}
               </p>
@@ -208,14 +208,14 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
                 {form26ASData.tdsDetails.map((tds, index) => (
                   <div
                     key={index}
-                    className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                    className="bg-slate-50 border border-slate-200 rounded-xl p-4"
                   >
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-body-sm font-semibold text-gray-800">
                           {tds.deductorName || 'Deductor'}
                         </p>
-                        <p className="text-body-xs text-gray-600 mt-1">
+                        <p className="text-body-xs text-slate-600 mt-1">
                           TAN: {tds.tan || 'N/A'} | Section: {tds.section || 'N/A'} |
                           Amount: {formatCurrency(tds.amount || 0)}
                         </p>
@@ -225,7 +225,7 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
                           {formatCurrency(tds.tdsAmount || 0)}
                         </p>
                         {tds.date && (
-                          <p className="text-body-xs text-gray-500">{formatDate(tds.date)}</p>
+                          <p className="text-body-xs text-slate-500">{formatDate(tds.date)}</p>
                         )}
                       </div>
                     </div>
@@ -243,14 +243,14 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
                 {form26ASData.taxPaidDetails.map((tax, index) => (
                   <div
                     key={index}
-                    className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                    className="bg-slate-50 border border-slate-200 rounded-xl p-4"
                   >
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-body-sm font-semibold text-gray-800">
                           {tax.type || 'Tax Type'}
                         </p>
-                        <p className="text-body-xs text-gray-600 mt-1">
+                        <p className="text-body-xs text-slate-600 mt-1">
                           BSR Code: {tax.bsrCode || 'N/A'} | Challan No: {tax.challanNumber || 'N/A'}
                         </p>
                       </div>
@@ -259,7 +259,7 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
                           {formatCurrency(tax.amount || 0)}
                         </p>
                         {tax.date && (
-                          <p className="text-body-xs text-gray-500">{formatDate(tax.date)}</p>
+                          <p className="text-body-xs text-slate-500">{formatDate(tax.date)}</p>
                         )}
                       </div>
                     </div>
@@ -270,7 +270,7 @@ const Form26ASReader = ({ onDataExtracted, filingId }) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 pt-4 border-t border-slate-200">
             {onDataExtracted && (
               <Button
                 onClick={() => {

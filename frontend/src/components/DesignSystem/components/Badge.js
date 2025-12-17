@@ -17,7 +17,7 @@ const Badge = ({
   const baseClasses = 'inline-flex items-center font-medium rounded-full';
 
   const variantClasses = {
-    default: 'bg-gray-100 text-gray-800',
+    default: 'bg-slate-100 text-gray-800',
     primary: 'bg-primary-100 text-primary-800',
     secondary: 'bg-secondary-100 text-secondary-800',
     success: 'bg-success-100 text-success-800',

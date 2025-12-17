@@ -172,12 +172,12 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
   return (
     <div className="bg-white shadow-card rounded-xl">
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div className="px-6 py-4 border-b border-slate-200">
         <div className="flex items-center">
           <Shield className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
           <div>
-            <h2 className="text-heading-lg font-medium text-gray-900">Verification Details</h2>
-            <p className="text-body-md text-gray-600 mt-1">
+            <h2 className="text-heading-lg font-medium text-slate-900">Verification Details</h2>
+            <p className="text-body-md text-slate-600 mt-1">
               Select and complete verification method for ITR submission
             </p>
           </div>
@@ -189,7 +189,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
           {/* Verification Method Selection */}
           <div>
-            <h3 className="text-heading-sm font-medium text-gray-900 mb-4 flex items-center">
+            <h3 className="text-heading-sm font-medium text-slate-900 mb-4 flex items-center">
               <Shield className="h-5 w-5 text-gold-500 mr-2" aria-hidden="true" />
               Verification Method
             </h3>
@@ -209,14 +209,14 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   className={`block p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                     verificationMethod === 'AADHAAR_OTP'
                       ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-slate-200 hover:border-slate-300'
                   } ${isReadOnly ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div className="flex items-center">
                     <Smartphone className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
                     <div className="flex-1">
-                      <h4 className="text-body-md font-medium text-gray-900">Aadhaar OTP</h4>
-                      <p className="text-body-sm text-gray-600">Quick and secure</p>
+                      <h4 className="text-body-md font-medium text-slate-900">Aadhaar OTP</h4>
+                      <p className="text-body-sm text-slate-600">Quick and secure</p>
                     </div>
                   </div>
                 </label>
@@ -236,14 +236,14 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   className={`block p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                     verificationMethod === 'DSC'
                       ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-slate-200 hover:border-slate-300'
                   } ${isReadOnly ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div className="flex items-center">
                     <CreditCard className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
                     <div className="flex-1">
-                      <h4 className="text-body-md font-medium text-gray-900">Digital Signature</h4>
-                      <p className="text-body-sm text-gray-600">DSC certificate</p>
+                      <h4 className="text-body-md font-medium text-slate-900">Digital Signature</h4>
+                      <p className="text-body-sm text-slate-600">DSC certificate</p>
                     </div>
                   </div>
                 </label>
@@ -263,14 +263,14 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   className={`block p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                     verificationMethod === 'NETBANKING'
                       ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-slate-200 hover:border-slate-300'
                   } ${isReadOnly ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div className="flex items-center">
                     <Globe className="h-6 w-6 text-gold-500 mr-3" aria-hidden="true" />
                     <div className="flex-1">
-                      <h4 className="text-body-md font-medium text-gray-900">Net Banking</h4>
-                      <p className="text-body-sm text-gray-600">Bank credentials</p>
+                      <h4 className="text-body-md font-medium text-slate-900">Net Banking</h4>
+                      <p className="text-body-sm text-slate-600">Bank credentials</p>
                     </div>
                   </div>
                 </label>
@@ -287,7 +287,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
           {/* Verification Method Details */}
           <div>
-            <h3 className="text-heading-sm font-medium text-gray-900 mb-4 flex items-center">
+            <h3 className="text-heading-sm font-medium text-slate-900 mb-4 flex items-center">
               {getVerificationMethodIcon(verificationMethod)}
               <span className="ml-2">
                 {verificationMethod === 'AADHAAR_OTP' && 'Aadhaar OTP Verification'}
@@ -296,8 +296,8 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
               </span>
             </h3>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
-              <p className="text-body-md text-gray-700">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+              <p className="text-body-md text-slate-700">
                 {getVerificationMethodDescription(verificationMethod)}
               </p>
             </div>
@@ -306,16 +306,16 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
             {verificationMethod === 'AADHAAR_OTP' && (
               <div className="space-y-4">
                   <div>
-                  <label htmlFor="aadhaarOtp" className="block text-label-md font-medium text-gray-700 mb-1">
+                  <label htmlFor="aadhaarOtp" className="block text-label-md font-medium text-slate-700 mb-1">
                     Aadhaar OTP *
                   </label>
-                  <div className="mt-1 flex rounded-lg">
+                  <div className="mt-1 flex rounded-xl">
                     <input
                       type="text"
                       id="aadhaarOtp"
                       {...register('aadhaarOtp')}
                       disabled={isReadOnly || !otpSent}
-                      className="flex-1 block w-full border border-gray-200 rounded-l-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="flex-1 block w-full border border-slate-200 rounded-l-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       placeholder="Enter 6-digit OTP"
                       maxLength="6"
                       aria-label="Aadhaar OTP"
@@ -325,11 +325,11 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                         type="button"
                         onClick={sendAadhaarOTP}
                         disabled={isVerifying || otpSent}
-                        className="inline-flex items-center px-4 py-2 border border-l-0 border-gray-200 rounded-r-lg bg-gray-50 text-body-md text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gold-500"
+                        className="inline-flex items-center px-4 py-2 border border-l-0 border-slate-200 rounded-r-lg bg-slate-50 text-body-md text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gold-500"
                         aria-label={otpSent ? 'OTP already sent' : 'Send OTP'}
                       >
                         {isVerifying ? (
-                          <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gold-500 rounded-full" aria-hidden="true"></div>
+                          <div className="animate-spin h-4 w-4 border-2 border-slate-300 border-t-gold-500 rounded-full" aria-hidden="true"></div>
                         ) : otpSent ? (
                           'OTP Sent'
                         ) : (
@@ -359,7 +359,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="dscDetails.certificateName" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="dscDetails.certificateName" className="block text-label-md font-medium text-slate-700 mb-1">
                       Certificate Name *
                     </label>
                     <input
@@ -367,7 +367,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateName"
                       {...register('dscDetails.certificateName')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       placeholder="Enter certificate name"
                       aria-label="Certificate name"
                     />
@@ -380,7 +380,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
 
                   <div>
-                    <label htmlFor="dscDetails.certificateIssuer" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="dscDetails.certificateIssuer" className="block text-label-md font-medium text-slate-700 mb-1">
                       Certificate Issuer *
                     </label>
                     <input
@@ -388,7 +388,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateIssuer"
                       {...register('dscDetails.certificateIssuer')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       placeholder="Enter certificate issuer"
                       aria-label="Certificate issuer"
                     />
@@ -401,7 +401,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
 
                   <div>
-                    <label htmlFor="dscDetails.certificateValidFrom" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="dscDetails.certificateValidFrom" className="block text-label-md font-medium text-slate-700 mb-1">
                       Valid From *
                     </label>
                     <input
@@ -409,7 +409,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateValidFrom"
                       {...register('dscDetails.certificateValidFrom')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       aria-label="Certificate valid from date"
                     />
                     {errors.dscDetails?.certificateValidFrom && (
@@ -421,7 +421,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
 
                   <div>
-                    <label htmlFor="dscDetails.certificateValidTo" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="dscDetails.certificateValidTo" className="block text-label-md font-medium text-slate-700 mb-1">
                       Valid To *
                     </label>
                     <input
@@ -429,7 +429,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateValidTo"
                       {...register('dscDetails.certificateValidTo')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       aria-label="Certificate valid to date"
                     />
                     {errors.dscDetails?.certificateValidTo && (
@@ -441,7 +441,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label htmlFor="dscDetails.certificateSerialNumber" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="dscDetails.certificateSerialNumber" className="block text-label-md font-medium text-slate-700 mb-1">
                       Certificate Serial Number *
                     </label>
                     <input
@@ -449,7 +449,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="dscDetails.certificateSerialNumber"
                       {...register('dscDetails.certificateSerialNumber')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       placeholder="Enter certificate serial number"
                       aria-label="Certificate serial number"
                     />
@@ -469,7 +469,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="netbankingDetails.bankName" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="netbankingDetails.bankName" className="block text-label-md font-medium text-slate-700 mb-1">
                       Bank Name *
                     </label>
                     <input
@@ -477,7 +477,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="netbankingDetails.bankName"
                       {...register('netbankingDetails.bankName')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       placeholder="Enter bank name"
                       aria-label="Bank name"
                     />
@@ -490,7 +490,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
 
                   <div>
-                    <label htmlFor="netbankingDetails.userId" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="netbankingDetails.userId" className="block text-label-md font-medium text-slate-700 mb-1">
                       Net Banking User ID *
                     </label>
                     <input
@@ -498,7 +498,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                       id="netbankingDetails.userId"
                       {...register('netbankingDetails.userId')}
                       disabled={isReadOnly}
-                      className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                      className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                       placeholder="Enter net banking user ID"
                       aria-label="Net banking user ID"
                     />
@@ -511,16 +511,16 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label htmlFor="netbankingDetails.password" className="block text-label-md font-medium text-gray-700 mb-1">
+                    <label htmlFor="netbankingDetails.password" className="block text-label-md font-medium text-slate-700 mb-1">
                       Net Banking Password *
                     </label>
-                    <div className="mt-1 relative rounded-lg">
+                    <div className="mt-1 relative rounded-xl">
                       <input
                         type={showPassword ? 'text' : 'password'}
                         id="netbankingDetails.password"
                         {...register('netbankingDetails.password')}
                         disabled={isReadOnly}
-                        className="block w-full pr-10 border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                        className="block w-full pr-10 border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                         placeholder="Enter net banking password"
                         aria-label="Net banking password"
                       />
@@ -529,7 +529,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
+                            className="text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
                             aria-label={showPassword ? 'Hide password' : 'Show password'}
                           >
                             {showPassword ? (
@@ -555,20 +555,20 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
           {/* Verification Status */}
           <div>
-            <h3 className="text-heading-sm font-medium text-gray-900 mb-4 flex items-center">
+            <h3 className="text-heading-sm font-medium text-slate-900 mb-4 flex items-center">
               <CheckCircle className="h-5 w-5 text-success-500 mr-2" aria-hidden="true" />
               Verification Status
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="verification_status" className="block text-label-md font-medium text-gray-700 mb-1">
+                <label htmlFor="verification_status" className="block text-label-md font-medium text-slate-700 mb-1">
                   Status
                 </label>
                 <select
                   id="verificationStatus"
                   {...register('verificationStatus')}
                   disabled={isReadOnly}
-                  className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                  className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                   aria-label="Verification status"
                 >
                   <option value="pending">Pending</option>
@@ -585,7 +585,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
               {verificationStatus === 'verified' && (
                 <div>
-                  <label htmlFor="verificationDate" className="block text-label-md font-medium text-gray-700 mb-1">
+                  <label htmlFor="verificationDate" className="block text-label-md font-medium text-slate-700 mb-1">
                     Verification Date *
                   </label>
                   <input
@@ -593,7 +593,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                     id="verificationDate"
                     {...register('verificationDate')}
                     disabled={isReadOnly}
-                    className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+                    className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
                     aria-label="Verification date"
                   />
                   {errors.verificationDate && (
@@ -609,7 +609,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
 
           {/* Verification Notes */}
           <div>
-            <label htmlFor="verificationNotes" className="block text-label-md font-medium text-gray-700 mb-1">
+            <label htmlFor="verificationNotes" className="block text-label-md font-medium text-slate-700 mb-1">
               Verification Notes
             </label>
             <textarea
@@ -617,7 +617,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
               {...register('verificationNotes')}
               disabled={isReadOnly}
               rows={3}
-              className="mt-1 block w-full border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-gray-100"
+              className="mt-1 block w-full border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent disabled:bg-slate-100"
               placeholder="Add any additional notes about verification"
               aria-label="Verification notes"
             />
@@ -632,15 +632,15 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
                   type="checkbox"
                   {...register('isConsentGiven')}
                   disabled={isReadOnly}
-                  className="h-4 w-4 text-gold-500 focus:ring-2 focus:ring-gold-500 border-gray-200 rounded disabled:opacity-50"
+                  className="h-4 w-4 text-gold-500 focus:ring-2 focus:ring-gold-500 border-slate-200 rounded disabled:opacity-50"
                   aria-label="Consent for verification"
                 />
               </div>
               <div className="ml-3">
-                <label htmlFor="isConsentGiven" className="text-body-md font-medium text-gray-900">
+                <label htmlFor="isConsentGiven" className="text-body-md font-medium text-slate-900">
                   Consent for Verification *
                 </label>
-                <p className="text-body-sm text-gray-600 mt-1">
+                <p className="text-body-sm text-slate-600 mt-1">
                   I hereby give my consent for verification of my ITR using the selected method.
                   I understand that this verification is required for ITR submission and compliance.
                 </p>
@@ -662,7 +662,7 @@ const VerificationForm = ({ onSubmit, initialData = {}, isReadOnly = false }) =>
             <button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-label-md font-medium rounded-lg shadow-sm text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-label-md font-medium rounded-xl shadow-elevation-1 text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

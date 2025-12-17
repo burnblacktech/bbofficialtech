@@ -184,8 +184,11 @@ class AuthService {
       return process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api';
     };
     const baseURL = getApiBaseUrl();
-    // Redirect to backend Google OAuth endpoint
-    window.location.href = `${baseURL}/auth/google`;
+    // Redirect to backend Google OAuth endpoint.
+    // Pass the current frontend origin so backend can redirect back correctly even if FRONTEND_URL is misconfigured.
+    // Backend validates this against an allowlist to prevent open redirects.
+    const redirectBase = window.location.origin;
+    window.location.href = `${baseURL}/auth/google?redirectBase=${encodeURIComponent(redirectBase)}`;
   }
 
   // Handle OAuth login (sets tokens directly without calling login endpoint)

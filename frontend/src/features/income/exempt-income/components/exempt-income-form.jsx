@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Trash2, Info } from 'lucide-react';
-import Button from '../../../../components/common/Button';
+import Button from '../../../../components/DesignSystem/components/Button';
 
 const EXEMPT_INCOME_TYPES = [
   { id: 'agricultural', label: 'Agricultural Income (for rate purposes)', maxAmount: null },
@@ -70,7 +70,7 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-heading-md text-gray-800">Exempt Income</h3>
-          <p className="text-body-sm text-gray-600 mt-1">
+          <p className="text-body-sm text-slate-600 mt-1">
             Declare income that is exempt from tax
           </p>
         </div>
@@ -81,9 +81,9 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
       </div>
 
       {exemptIncomes.length === 0 ? (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
-          <Info className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-body-md text-gray-600 mb-4">No exempt income declared</p>
+        <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+          <Info className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <p className="text-body-md text-slate-600 mb-4">No exempt income declared</p>
           <Button onClick={handleAdd}>Add Exempt Income</Button>
         </div>
       ) : (
@@ -93,18 +93,18 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
             return (
               <div
                 key={item.id}
-                className="bg-white rounded-xl border border-gray-200 p-6"
+                className="bg-white rounded-xl border border-slate-200 p-6"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 space-y-4">
                     <div>
-                      <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-body-sm font-medium text-slate-700 mb-2">
                         Type of Exempt Income
                       </label>
                       <select
                         value={item.type}
                         onChange={(e) => handleChange(item.id, 'type', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       >
                         <option value="">Select type</option>
                         {EXEMPT_INCOME_TYPES.map((type) => (
@@ -116,10 +116,10 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
                     </div>
 
                     <div>
-                      <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-body-sm font-medium text-slate-700 mb-2">
                         Amount (₹)
                         {typeConfig?.maxAmount && (
-                          <span className="text-body-xs text-gray-500 ml-2">
+                          <span className="text-body-xs text-slate-500 ml-2">
                             (Max: {formatCurrency(typeConfig.maxAmount)})
                           </span>
                         )}
@@ -129,21 +129,21 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
                         value={item.amount}
                         onChange={(e) => handleChange(item.id, 'amount', e.target.value)}
                         max={typeConfig?.maxAmount || undefined}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                         placeholder="0"
                       />
                     </div>
 
                     {item.type && (
                       <div>
-                        <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-body-sm font-medium text-slate-700 mb-2">
                           Description (Optional)
                         </label>
                         <textarea
                           value={item.description}
                           onChange={(e) => handleChange(item.id, 'description', e.target.value)}
                           rows={2}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                          className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                           placeholder="Additional details..."
                         />
                       </div>
@@ -151,7 +151,7 @@ const ExemptIncomeForm = ({ data = [], onUpdate }) => {
                   </div>
                   <button
                     onClick={() => handleRemove(item.id)}
-                    className="ml-4 p-2 text-gray-400 hover:text-error-600 rounded-lg hover:bg-error-50"
+                    className="ml-4 p-2 text-slate-400 hover:text-error-600 rounded-xl hover:bg-error-50"
                     aria-label="Remove"
                   >
                     <Trash2 className="h-4 w-4" />

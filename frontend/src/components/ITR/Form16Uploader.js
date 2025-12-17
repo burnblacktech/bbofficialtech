@@ -178,7 +178,7 @@ const Form16Uploader = ({ onComplete, onSummaryUpdate }) => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: 100 }}
-              className="bg-white rounded-lg border border-slate-200 p-4"
+              className="bg-white rounded-xl border border-slate-200 p-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 flex-1">
@@ -198,7 +198,7 @@ const Form16Uploader = ({ onComplete, onSummaryUpdate }) => {
                       </span>
                     </div>
                     {fileEntry.status === 'success' && (
-                      <div className="grid grid-cols-3 gap-4 mt-2 text-sm">
+                      <div className="grid grid-cols-3 gap-4 mt-2 text-body-regular">
                         <div>
                           <span className="text-slate-500">Employer:</span>
                           <span className="ml-2 font-medium text-slate-900">{fileEntry.employer}</span>
@@ -214,7 +214,7 @@ const Form16Uploader = ({ onComplete, onSummaryUpdate }) => {
                       </div>
                     )}
                     {fileEntry.status === 'error' && (
-                      <p className="text-sm text-error-600 mt-1">{fileEntry.error}</p>
+                      <p className="text-body-regular text-error-600 mt-1">{fileEntry.error}</p>
                     )}
                   </div>
                 </div>
@@ -274,7 +274,7 @@ const Form16Uploader = ({ onComplete, onSummaryUpdate }) => {
               (Only salary income detected)
             </p>
 
-            <div className="bg-white/60 rounded-lg p-3 flex items-start gap-2">
+            <div className="bg-white/60 rounded-xl p-3 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <p className="text-body-sm text-blue-800">
                 Have capital gains, foreign income, or business income? You may need ITR-2 or ITR-3.

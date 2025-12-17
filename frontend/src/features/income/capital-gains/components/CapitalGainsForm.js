@@ -460,24 +460,24 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* AIS Integration */}
         {filingId && (
-          <div className="border border-gray-200 rounded-lg p-4 bg-blue-50">
+          <div className="border border-slate-200 rounded-xl p-4 bg-blue-50">
             <div className="flex items-start space-x-3">
               <TrendingUp className="w-5 h-5 text-blue-600 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-semibold text-gray-900 mb-1">AIS Capital Gains</h4>
-                <p className="text-sm text-gray-600 mb-3">
+                <h4 className="font-semibold text-slate-900 mb-1">AIS Capital Gains</h4>
+                <p className="text-body-regular text-slate-600 mb-3">
                   Auto-populate capital gains from Annual Information Statement (AIS)
                 </p>
                 <button
                   onClick={() => setShowAISPopup(true)}
                   disabled={isLoadingAIS}
-                  className="inline-flex items-center px-4 py-2 border border-blue-600 rounded-lg bg-white text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center px-4 py-2 border border-blue-600 rounded-xl bg-white text-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <TrendingUp className="w-4 h-4 mr-2" />
                   {isLoadingAIS ? 'Loading...' : 'Import from AIS'}
                 </button>
                 {aisData?.capitalGains && aisData.capitalGains.length > 0 && (
-                  <p className="text-xs text-blue-600 mt-2">
+                  <p className="text-body-small text-blue-600 mt-2">
                     {aisData.capitalGains.length} transaction{aisData.capitalGains.length !== 1 ? 's' : ''} found in AIS
                   </p>
                 )}
@@ -487,12 +487,12 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
         )}
 
         {/* Broker File Import */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-blue-50">
+        <div className="border border-slate-200 rounded-xl p-4 bg-blue-50">
           <div className="flex items-start space-x-3">
             <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-semibold text-gray-900 mb-1">Broker File Import</h4>
-              <p className="text-sm text-gray-600 mb-3">
+              <h4 className="font-semibold text-slate-900 mb-1">Broker File Import</h4>
+              <p className="text-body-regular text-slate-600 mb-3">
                 Upload broker statement files (Excel/CSV) to auto-populate capital gains
               </p>
               <BrokerFileUpload
@@ -521,12 +521,12 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       {/* OCR Upload Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {/* Sale Deed OCR Upload */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-green-50">
+        <div className="border border-slate-200 rounded-xl p-4 bg-green-50">
           <div className="flex items-start space-x-3">
             <FileText className="w-5 h-5 text-green-600 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-semibold text-gray-900 mb-1">Upload Sale Deed</h4>
-              <p className="text-sm text-gray-600 mb-3">
+              <h4 className="font-semibold text-slate-900 mb-1">Upload Sale Deed</h4>
+              <p className="text-body-regular text-slate-600 mb-3">
                 Upload sale deed images/PDFs to auto-populate property sale details
               </p>
               <input
@@ -540,10 +540,10 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               />
               <label
                 htmlFor="sale-deed-input"
-                className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer ${
+                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${
                   isProcessingSaleDeed
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : 'bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <Upload className="w-4 h-4 mr-2" />
@@ -554,13 +554,13 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
 
           {/* Sale Deed Preview */}
           {saleDeedPreview && (
-            <div className="mt-4 bg-white rounded-lg p-4 border border-green-200">
+            <div className="mt-4 bg-white rounded-xl p-4 border border-green-200">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-start">
                   <CheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5" />
                   <div>
-                    <h5 className="font-semibold text-gray-900">Extracted Data</h5>
-                    <p className="text-xs text-gray-500">
+                    <h5 className="font-semibold text-slate-900">Extracted Data</h5>
+                    <p className="text-body-small text-slate-500">
                       Confidence: {Math.round(saleDeedPreview.confidence * 100)}%
                     </p>
                   </div>
@@ -569,19 +569,19 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
 
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <span className="text-xs text-gray-600">Sale Value:</span>
+                  <span className="text-body-small text-slate-600">Sale Value:</span>
                   <div className="font-semibold">₹{saleDeedPreview.saleValue?.toLocaleString('en-IN') || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-600">Purchase Value:</span>
+                  <span className="text-body-small text-slate-600">Purchase Value:</span>
                   <div className="font-semibold">₹{saleDeedPreview.purchaseValue?.toLocaleString('en-IN') || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-600">Registration Date:</span>
+                  <span className="text-body-small text-slate-600">Registration Date:</span>
                   <div className="font-medium">{saleDeedPreview.registrationDate || 'N/A'}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-gray-600">Registration No:</span>
+                  <span className="text-body-small text-slate-600">Registration No:</span>
                   <div className="font-medium">{saleDeedPreview.registrationNumber || 'N/A'}</div>
                 </div>
               </div>
@@ -589,7 +589,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               {saleDeedPreview.validation?.warnings?.length > 0 && (
                 <div className="mb-3 bg-yellow-50 border border-yellow-200 rounded p-2">
                   {saleDeedPreview.validation.warnings.map((warning, idx) => (
-                    <div key={idx} className="text-xs text-yellow-800 flex items-start">
+                    <div key={idx} className="text-body-small text-yellow-800 flex items-start">
                       <AlertCircle className="w-3 h-3 mr-1 mt-0.5" />
                       {warning}
                     </div>
@@ -597,7 +597,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                 </div>
               )}
 
-              <p className="text-xs text-gray-600 mb-2">Apply to transaction:</p>
+              <p className="text-body-small text-slate-600 mb-2">Apply to transaction:</p>
               <div className="flex gap-2">
                 {stcgDetails.length > 0 && (
                   <select
@@ -606,7 +606,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                         applySaleDeedData(parseInt(e.target.value), false);
                       }
                     }}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-body-regular"
                     defaultValue=""
                   >
                     <option value="">Select STCG entry</option>
@@ -624,7 +624,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                         applySaleDeedData(parseInt(e.target.value), true);
                       }
                     }}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-body-regular"
                     defaultValue=""
                   >
                     <option value="">Select LTCG entry</option>
@@ -641,12 +641,12 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
         </div>
 
         {/* Broker Statement OCR Upload */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-green-50">
+        <div className="border border-slate-200 rounded-xl p-4 bg-green-50">
           <div className="flex items-start space-x-3">
             <FileText className="w-5 h-5 text-green-600 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-semibold text-gray-900 mb-1">Upload Broker Statement (OCR)</h4>
-              <p className="text-sm text-gray-600 mb-3">
+              <h4 className="font-semibold text-slate-900 mb-1">Upload Broker Statement (OCR)</h4>
+              <p className="text-body-regular text-slate-600 mb-3">
                 Upload broker statement images/PDFs to auto-populate capital gains
               </p>
               <input
@@ -660,10 +660,10 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               />
               <label
                 htmlFor="broker-statement-ocr-input"
-                className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer ${
+                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${
                   isProcessingBrokerStatement
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : 'bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <Upload className="w-4 h-4 mr-2" />
@@ -674,13 +674,13 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
 
           {/* Broker Statement Preview */}
           {brokerStatementPreview && (
-            <div className="mt-4 bg-white rounded-lg p-4 border border-green-200">
+            <div className="mt-4 bg-white rounded-xl p-4 border border-green-200">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-start">
                   <CheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5" />
                   <div>
-                    <h5 className="font-semibold text-gray-900">Extracted Data</h5>
-                    <p className="text-xs text-gray-500">
+                    <h5 className="font-semibold text-slate-900">Extracted Data</h5>
+                    <p className="text-body-small text-slate-500">
                       Confidence: {Math.round(brokerStatementPreview.confidence * 100)}%
                     </p>
                   </div>
@@ -688,13 +688,13 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               </div>
 
               <div className="mb-3">
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-body-regular text-slate-600 mb-2">
                   <span className="font-medium">Broker:</span> {brokerStatementPreview.brokerName || 'N/A'}
                 </div>
-                <div className="text-sm text-gray-600 mb-2">
+                <div className="text-body-regular text-slate-600 mb-2">
                   <span className="font-medium">Period:</span> {brokerStatementPreview.statementPeriod || 'N/A'}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-body-regular text-slate-600">
                   <span className="font-medium">Transactions:</span> {brokerStatementPreview.transactions?.length || 0}
                 </div>
               </div>
@@ -702,7 +702,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               {brokerStatementPreview.validation?.warnings?.length > 0 && (
                 <div className="mb-3 bg-yellow-50 border border-yellow-200 rounded p-2">
                   {brokerStatementPreview.validation.warnings.map((warning, idx) => (
-                    <div key={idx} className="text-xs text-yellow-800 flex items-start">
+                    <div key={idx} className="text-body-small text-yellow-800 flex items-start">
                       <AlertCircle className="w-3 h-3 mr-1 mt-0.5" />
                       {warning}
                     </div>
@@ -712,7 +712,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
 
               <button
                 onClick={applyBrokerStatementData}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                className="w-full px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 text-body-regular"
               >
                 Apply {brokerStatementPreview.transactions?.length || 0} Transaction(s)
               </button>
@@ -745,12 +745,12 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       </div>
 
       {/* Short-term Capital Gains */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-semibold text-gray-900">Short-term Capital Gains (STCG)</h4>
+          <h4 className="font-semibold text-slate-900">Short-term Capital Gains (STCG)</h4>
           <button
             onClick={addSTCGEntry}
-            className="flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center px-3 py-1.5 text-body-regular bg-blue-600 text-white rounded-xl hover:bg-blue-700"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Entry
@@ -758,20 +758,20 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
         </div>
 
         {stcgDetails.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-4">No STCG entries added yet</p>
+          <p className="text-body-regular text-slate-500 text-center py-4">No STCG entries added yet</p>
         ) : (
           <div className="space-y-4">
             {stcgDetails.map((entry, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div key={index} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-medium text-gray-700">Entry #{index + 1}</span>
+                  <span className="font-medium text-slate-700">Entry #{index + 1}</span>
                   <div className="flex items-center gap-2">
                     {entry.source && (
                       <SourceChip source={entry.source} size="sm" />
                     )}
                     <button
                       onClick={() => removeSTCGEntry(index)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-error-600 hover:text-error-700"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -792,11 +792,11 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Asset Type</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Asset Type</label>
                     <select
                       value={entry.assetType || ''}
                       onChange={(e) => updateSTCGEntry(index, 'assetType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="">Select Asset Type</option>
                       <option value="equity_shares">Equity Shares</option>
@@ -806,7 +806,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       Sale Value (₹)
                       {entry.source && (
                         <SourceChip source={entry.source} size="sm" className="ml-2" />
@@ -824,43 +824,43 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                           setStcgDetails(updated);
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Value (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Purchase Value (₹)</label>
                     <input
                       type="number"
                       value={entry.purchaseValue || 0}
                       onChange={(e) => updateSTCGEntry(index, 'purchaseValue', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Expenses on Transfer (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Expenses on Transfer (₹)</label>
                     <input
                       type="number"
                       value={entry.expenses || 0}
                       onChange={(e) => updateSTCGEntry(index, 'expenses', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Gain Amount (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Gain Amount (₹)</label>
                     <input
                       type="number"
                       value={entry.gainAmount || 0}
                       readOnly
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-slate-100"
                     />
                   </div>
                 </div>
               </div>
             ))}
-            <div className="border-t border-gray-300 pt-2">
+            <div className="border-t border-slate-300 pt-2">
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-900">Total STCG:</span>
-                <span className="text-lg font-bold text-gray-900">₹{calculateTotalSTCG().toLocaleString('en-IN')}</span>
+                <span className="font-semibold text-slate-900">Total STCG:</span>
+                <span className="text-body-large font-bold text-slate-900">₹{calculateTotalSTCG().toLocaleString('en-IN')}</span>
               </div>
             </div>
           </div>
@@ -868,12 +868,12 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       </div>
 
       {/* Long-term Capital Gains */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-semibold text-gray-900">Long-term Capital Gains (LTCG)</h4>
+          <h4 className="font-semibold text-slate-900">Long-term Capital Gains (LTCG)</h4>
           <button
             onClick={addLTCGEntry}
-            className="flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center px-3 py-1.5 text-body-regular bg-blue-600 text-white rounded-xl hover:bg-blue-700"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Entry
@@ -881,27 +881,27 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
         </div>
 
         {ltcgDetails.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-4">No LTCG entries added yet</p>
+          <p className="text-body-regular text-slate-500 text-center py-4">No LTCG entries added yet</p>
         ) : (
           <div className="space-y-4">
             {ltcgDetails.map((entry, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div key={index} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-medium text-gray-700">Entry #{index + 1}</span>
+                  <span className="font-medium text-slate-700">Entry #{index + 1}</span>
                   <button
                     onClick={() => removeLTCGEntry(index)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-error-600 hover:text-error-700"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Asset Type</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Asset Type</label>
                     <select
                       value={entry.assetType || ''}
                       onChange={(e) => updateLTCGEntry(index, 'assetType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="">Select Asset Type</option>
                       <option value="equity_shares">Equity Shares</option>
@@ -912,48 +912,48 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Sale Value (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Sale Value (₹)</label>
                     <input
                       type="number"
                       value={entry.saleValue || 0}
                       onChange={(e) => updateLTCGEntry(index, 'saleValue', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Indexed Cost of Acquisition (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Indexed Cost of Acquisition (₹)</label>
                     <input
                       type="number"
                       value={entry.indexedCost || 0}
                       onChange={(e) => updateLTCGEntry(index, 'indexedCost', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Expenses on Transfer (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Expenses on Transfer (₹)</label>
                     <input
                       type="number"
                       value={entry.expenses || 0}
                       onChange={(e) => updateLTCGEntry(index, 'expenses', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Gain Amount (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Gain Amount (₹)</label>
                     <input
                       type="number"
                       value={entry.gainAmount || 0}
                       readOnly
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-slate-100"
                     />
                   </div>
                 </div>
               </div>
             ))}
-            <div className="border-t border-gray-300 pt-2">
+            <div className="border-t border-slate-300 pt-2">
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-gray-900">Total LTCG:</span>
-                <span className="text-lg font-bold text-gray-900">₹{calculateTotalLTCG().toLocaleString('en-IN')}</span>
+                <span className="font-semibold text-slate-900">Total LTCG:</span>
+                <span className="text-body-large font-bold text-slate-900">₹{calculateTotalLTCG().toLocaleString('en-IN')}</span>
               </div>
             </div>
           </div>
@@ -1055,14 +1055,14 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       )}
 
       {/* Summary */}
-      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+      <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
         <div className="flex items-center justify-between">
-          <span className="font-semibold text-gray-900">Total Capital Gains:</span>
-          <span className="text-xl font-bold text-gray-900">
+          <span className="font-semibold text-slate-900">Total Capital Gains:</span>
+          <span className="text-heading-3 font-bold text-slate-900">
             ₹{(calculateTotalSTCG() + calculateTotalLTCG()).toLocaleString('en-IN')}
           </span>
         </div>
-        <div className="mt-2 text-sm text-gray-600">
+        <div className="mt-2 text-body-regular text-slate-600">
           STCG: ₹{calculateTotalSTCG().toLocaleString('en-IN')} | LTCG: ₹{calculateTotalLTCG().toLocaleString('en-IN')}
         </div>
       </div>

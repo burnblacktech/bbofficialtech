@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import StatusBadge from '../../components/DesignSystem/StatusBadge';
 import { LoadingState } from '../../components/DesignSystem';
 import Modal from '../../components/common/Modal';

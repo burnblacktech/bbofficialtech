@@ -37,9 +37,9 @@ const VerificationBadge = ({
     },
     manual: {
       icon: PenTool,
-      bg: 'bg-gray-100',
-      text: 'text-gray-600',
-      iconColor: 'text-gray-500',
+      bg: 'bg-slate-100',
+      text: 'text-slate-600',
+      iconColor: 'text-slate-500',
       label: 'Manual',
     },
   };

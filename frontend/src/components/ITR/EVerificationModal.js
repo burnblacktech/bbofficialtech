@@ -8,7 +8,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import VerificationForm from '../Forms/VerificationForm';
 import everificationService from '../../services/everificationService';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import { cn } from '../../lib/utils';
 
@@ -212,7 +212,7 @@ const EVerificationModal = ({
           aria-labelledby="everification-title"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between border-b border-slate-200 p-6">
             <h2 id="everification-title" className="text-heading-lg text-gray-800">
               E-Verification
             </h2>
@@ -220,7 +220,7 @@ const EVerificationModal = ({
               ref={firstFocusableRef}
               onClick={handleClose}
               disabled={isProcessing}
-              className="text-gray-400 hover:text-gray-600 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded"
+              className="text-slate-400 hover:text-slate-600 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded"
               aria-label="Close modal"
             >
               <X className="h-5 w-5" />
@@ -235,7 +235,7 @@ const EVerificationModal = ({
                 <h3 className="text-heading-md text-gray-800 mb-2">
                   Verification Successful
                 </h3>
-                <p className="text-body-md text-gray-600 mb-6">{verificationStatus.message}</p>
+                <p className="text-body-md text-slate-600 mb-6">{verificationStatus.message}</p>
                 <Button
                   onClick={handleClose}
                   className="bg-gold-500 hover:bg-gold-600 text-white"
@@ -246,7 +246,7 @@ const EVerificationModal = ({
             ) : (
               <>
                 <div className="mb-6">
-                  <p className="text-body-md text-gray-600">
+                  <p className="text-body-md text-slate-600">
                     Please complete E-verification to proceed with ITR submission. Choose your
                     preferred verification method below.
                   </p>
@@ -298,7 +298,7 @@ const EVerificationModal = ({
                 {isProcessing && (
                   <div className="mt-6 flex items-center justify-center py-4">
                     <Loader className="h-5 w-5 animate-spin text-gold-500 mr-2" aria-hidden="true" />
-                    <span className="text-body-md text-gray-600">Processing verification...</span>
+                    <span className="text-body-md text-slate-600">Processing verification...</span>
                   </div>
                 )}
               </>

@@ -167,33 +167,33 @@ const TaxPaymentModal = ({
         />
 
         {/* Modal */}
-        <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div className="relative bg-white rounded-xl shadow-elevation-4 max-w-md w-full p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-heading-lg text-gray-900">Pay Tax</h2>
+            <h2 className="text-heading-lg text-slate-900">Pay Tax</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-600"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
           {/* Payment Info */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <div className="bg-slate-50 rounded-xl p-4 mb-6">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-body-sm text-gray-600">Challan Number:</span>
-              <span className="text-body-sm font-medium text-gray-900">{challanNumber}</span>
+              <span className="text-body-sm text-slate-600">Challan Number:</span>
+              <span className="text-body-sm font-medium text-slate-900">{challanNumber}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-body-sm text-gray-600">Amount:</span>
-              <span className="text-heading-md font-bold text-gray-900">{formatCurrency(amount)}</span>
+              <span className="text-body-sm text-slate-600">Amount:</span>
+              <span className="text-heading-md font-bold text-slate-900">{formatCurrency(amount)}</span>
             </div>
           </div>
 
           {/* Payment Status */}
           {paymentStatus === 'completed' && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
                 <p className="text-body-sm text-green-900">Payment completed successfully!</p>
@@ -202,7 +202,7 @@ const TaxPaymentModal = ({
           )}
 
           {paymentStatus === 'failed' && (
-            <div className="bg-error-50 border border-error-200 rounded-lg p-4 mb-6">
+            <div className="bg-error-50 border border-error-200 rounded-xl p-4 mb-6">
               <div className="flex items-center">
                 <AlertCircle className="h-5 w-5 text-error-600 mr-2" />
                 <p className="text-body-sm text-error-900">Payment failed. Please try again.</p>
@@ -214,40 +214,40 @@ const TaxPaymentModal = ({
           {!paymentStatus || paymentStatus === 'pending' || paymentStatus === 'processing' ? (
             <>
               <div className="mb-6">
-                <label className="block text-body-sm font-medium text-gray-700 mb-3">
+                <label className="block text-body-sm font-medium text-slate-700 mb-3">
                   Select Payment Method
                 </label>
                 <div className="space-y-3">
                   <button
                     onClick={() => setSelectedMethod('razorpay')}
-                    className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
+                    className={`w-full p-4 border-2 rounded-xl text-left transition-all ${
                       selectedMethod === 'razorpay'
                         ? 'border-gold-500 bg-gold-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center">
                       <CreditCard className="h-5 w-5 mr-3 text-gold-600" />
                       <div>
-                        <div className="text-body-md font-medium text-gray-900">Razorpay</div>
-                        <div className="text-body-xs text-gray-600">Net Banking, UPI, Cards, Wallets</div>
+                        <div className="text-body-md font-medium text-slate-900">Razorpay</div>
+                        <div className="text-body-xs text-slate-600">Net Banking, UPI, Cards, Wallets</div>
                       </div>
                     </div>
                   </button>
 
                   <button
                     onClick={() => setSelectedMethod('itd_direct')}
-                    className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
+                    className={`w-full p-4 border-2 rounded-xl text-left transition-all ${
                       selectedMethod === 'itd_direct'
                         ? 'border-gold-500 bg-gold-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center">
                       <ExternalLink className="h-5 w-5 mr-3 text-blue-600" />
                       <div>
-                        <div className="text-body-md font-medium text-gray-900">ITD Direct Gateway</div>
-                        <div className="text-body-xs text-gray-600">Pay directly on Income Tax Portal</div>
+                        <div className="text-body-md font-medium text-slate-900">ITD Direct Gateway</div>
+                        <div className="text-body-xs text-slate-600">Pay directly on Income Tax Portal</div>
                       </div>
                     </div>
                   </button>
@@ -255,7 +255,7 @@ const TaxPaymentModal = ({
               </div>
 
               {/* Info Box */}
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4 mb-6">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4 mb-6">
                 <div className="flex items-start">
                   <Info className="h-5 w-5 text-info-600 mt-0.5 mr-2" />
                   <div>
@@ -277,14 +277,14 @@ const TaxPaymentModal = ({
               <div className="flex gap-3">
                 <button
                   onClick={onClose}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="flex-1 py-2 px-4 border border-slate-300 rounded-xl text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={selectedMethod === 'razorpay' ? handleRazorpayPayment : handleITDPayment}
                   disabled={createPaymentOrder.isPending || initiateITDPayment.isPending}
-                  className="flex-1 py-2 px-4 bg-gold-500 text-white rounded-lg text-sm font-medium hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
+                  className="flex-1 py-2 px-4 bg-gold-500 text-white rounded-xl text-body-regular font-medium hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
                 >
                   {createPaymentOrder.isPending || initiateITDPayment.isPending ? (
                     <>
@@ -313,7 +313,7 @@ const TaxPaymentModal = ({
             <div className="flex justify-end">
               <button
                 onClick={onClose}
-                className="py-2 px-4 bg-gold-500 text-white rounded-lg text-sm font-medium hover:bg-gold-600"
+                className="py-2 px-4 bg-gold-500 text-white rounded-xl text-body-regular font-medium hover:bg-gold-600"
               >
                 Close
               </button>

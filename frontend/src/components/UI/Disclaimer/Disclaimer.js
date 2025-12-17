@@ -21,15 +21,15 @@ export const Disclaimer = ({
   return (
     <div
       className={cn(
-        'bg-gray-50 rounded-lg p-3 flex items-start gap-3',
+        'bg-slate-50 rounded-xl p-3 flex items-start gap-3',
         className,
       )}
       {...props}
     >
-      <Info className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" style={{ width: '16px', height: '16px' }} />
+      <Info className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" style={{ width: '16px', height: '16px' }} />
       <div className="flex-1">
         <p
-          className="text-body-sm text-gray-600"
+          className="text-body-sm text-slate-600"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           <span className="font-medium" style={{ fontWeight: 500 }}>Disclaimer:</span> {text}

@@ -29,7 +29,7 @@ const Progress = ({
         {(label || showPercentage) && (
           <div className="flex justify-between items-center mb-2">
             {label && (
-              <span className="text-body-sm text-gray-600" style={{ fontSize: '13px', lineHeight: '20px' }}>
+              <span className="text-body-sm text-slate-600" style={{ fontSize: '13px', lineHeight: '20px' }}>
                 {label}
               </span>
             )}
@@ -40,7 +40,7 @@ const Progress = ({
             )}
           </div>
         )}
-        <div className="w-full bg-gray-200 rounded" style={{ height: '8px', borderRadius: '4px' }}>
+        <div className="w-full bg-slate-200 rounded" style={{ height: '8px', borderRadius: '4px' }}>
           {indeterminate ? (
             <div
               className="h-full rounded bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 bg-[length:200%_100%] animate-shimmer"
@@ -82,7 +82,7 @@ const Progress = ({
                       {
                         'bg-gold-500 border-gold-500': isCompleted,
                         'bg-white border-gold-500': isCurrent,
-                        'bg-white border-gray-300': isUpcoming,
+                        'bg-white border-slate-300': isUpcoming,
                       },
                     )}
                   >
@@ -98,7 +98,7 @@ const Progress = ({
                       'mt-2 text-body-sm text-center',
                       {
                         'text-gray-800 font-medium': isCompleted || isCurrent,
-                        'text-gray-500': isUpcoming,
+                        'text-slate-500': isUpcoming,
                       },
                     )}
                     style={{ fontSize: '13px', lineHeight: '20px' }}

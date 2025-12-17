@@ -63,7 +63,7 @@ const ITRComputationSkeleton = () => {
 
         {/* Main Content Skeleton */}
         <div className="flex-1 p-6">
-          <div className="bg-white rounded-lg border border-neutral-200 p-6 space-y-6">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6 space-y-6">
             {/* Section Title */}
             <div className="space-y-2">
               <Skeleton className="h-6 w-48" />

@@ -171,7 +171,7 @@ const AdminUserTemplates = () => {
                   placeholder="Search templates..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <Button variant="outline" onClick={loadTemplates}>
@@ -215,12 +215,12 @@ const AdminUserTemplates = () => {
                         )}
                         <div className="flex flex-wrap gap-2">
                           {template.config?.role && (
-                            <span className="px-2 py-1 bg-info-100 text-info-700 text-xs rounded">
+                            <span className="px-2 py-1 bg-info-100 text-info-700 text-body-small rounded">
                               Role: {template.config.role}
                             </span>
                           )}
                           {template.config?.status && (
-                            <span className="px-2 py-1 bg-success-100 text-success-700 text-xs rounded">
+                            <span className="px-2 py-1 bg-success-100 text-success-700 text-body-small rounded">
                               Status: {template.config.status}
                             </span>
                           )}
@@ -278,32 +278,32 @@ const AdminUserTemplates = () => {
                     setShowCreateModal(false);
                     resetForm();
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Template Name <span className="text-error-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="e.g., Standard CA User"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Description
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     rows={3}
                     placeholder="Describe the template..."
                   />
@@ -312,7 +312,7 @@ const AdminUserTemplates = () => {
                   <Typography.Small className="font-medium text-neutral-700 mb-3 block">Configuration</Typography.Small>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">Role</label>
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">Role</label>
                       <select
                         value={formData.config.role}
                         onChange={(e) =>
@@ -321,7 +321,7 @@ const AdminUserTemplates = () => {
                             config: { ...formData.config, role: e.target.value },
                           })
                         }
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="END_USER">End User</option>
                         <option value="CA">CA</option>
@@ -331,7 +331,7 @@ const AdminUserTemplates = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">Status</label>
                       <select
                         value={formData.config.status}
                         onChange={(e) =>
@@ -340,7 +340,7 @@ const AdminUserTemplates = () => {
                             config: { ...formData.config, status: e.target.value },
                           })
                         }
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -383,7 +383,7 @@ const AdminUserTemplates = () => {
                     setShowViewModal(false);
                     setSelectedTemplate(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -398,7 +398,7 @@ const AdminUserTemplates = () => {
                   )}
                   <div>
                     <Typography.Small className="font-medium text-neutral-700 mb-2 block">Configuration</Typography.Small>
-                    <pre className="bg-neutral-50 p-4 rounded-lg text-sm overflow-x-auto">
+                    <pre className="bg-neutral-50 p-4 rounded-xl text-body-regular overflow-x-auto">
                       {JSON.stringify(selectedTemplate.config || {}, null, 2)}
                     </pre>
                   </div>

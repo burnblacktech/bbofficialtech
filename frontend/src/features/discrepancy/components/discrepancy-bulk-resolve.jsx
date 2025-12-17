@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { CheckSquare, Square, AlertCircle } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyBulkResolve = ({
   discrepancies = [],
@@ -46,11 +46,11 @@ const DiscrepancyBulkResolve = ({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-heading-md text-gray-800">Bulk Resolve</h3>
-          <p className="text-body-sm text-gray-600 mt-1">
+          <p className="text-body-sm text-slate-600 mt-1">
             Select multiple discrepancies and resolve them at once
           </p>
         </div>
@@ -73,7 +73,7 @@ const DiscrepancyBulkResolve = ({
       </div>
 
       {selectedIds.length > 0 && (
-        <div className="bg-gold-50 border border-gold-200 rounded-lg p-4 mb-4">
+        <div className="bg-gold-50 border border-gold-200 rounded-xl p-4 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <CheckSquare className="h-5 w-5 text-gold-600 mr-2" />
@@ -86,7 +86,7 @@ const DiscrepancyBulkResolve = ({
       )}
 
       {similarDiscrepancies.length > 0 && (
-        <div className="bg-info-50 border border-info-200 rounded-lg p-4 mb-4">
+        <div className="bg-info-50 border border-info-200 rounded-xl p-4 mb-4">
           <div className="flex items-start">
             <AlertCircle className="h-5 w-5 text-info-600 mt-0.5 mr-2" />
             <div>
@@ -105,11 +105,11 @@ const DiscrepancyBulkResolve = ({
       {selectedIds.length > 0 && (
         <div className="space-y-4">
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Resolution Action
             </label>
             <div className="space-y-2">
-              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-gold-300 cursor-pointer">
+              <label className="flex items-center p-3 rounded-xl border-2 border-slate-200 hover:border-gold-300 cursor-pointer">
                 <input
                   type="radio"
                   name="resolutionAction"
@@ -122,7 +122,7 @@ const DiscrepancyBulkResolve = ({
                   Accept source value for all selected
                 </span>
               </label>
-              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-gold-300 cursor-pointer">
+              <label className="flex items-center p-3 rounded-xl border-2 border-slate-200 hover:border-gold-300 cursor-pointer">
                 <input
                   type="radio"
                   name="resolutionAction"
@@ -135,7 +135,7 @@ const DiscrepancyBulkResolve = ({
                   Keep manual value for all selected
                 </span>
               </label>
-              <label className="flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-gold-300 cursor-pointer">
+              <label className="flex items-center p-3 rounded-xl border-2 border-slate-200 hover:border-gold-300 cursor-pointer">
                 <input
                   type="radio"
                   name="resolutionAction"

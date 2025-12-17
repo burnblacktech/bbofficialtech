@@ -141,15 +141,15 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
       </div>
 
       {/* Foreign Income Details */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <Globe className="w-5 h-5 text-gold-600" />
-            <h4 className="font-semibold text-gray-900">Foreign Income Details</h4>
+            <h4 className="font-semibold text-slate-900">Foreign Income Details</h4>
           </div>
           <button
             onClick={addForeignIncomeEntry}
-            className="flex items-center px-3 py-1.5 text-sm bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+            className="flex items-center px-3 py-1.5 text-body-regular bg-gold-500 text-white rounded-xl hover:bg-gold-600"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Entry
@@ -157,11 +157,11 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
         </div>
 
         {foreignIncomeDetails.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-gray-500 mb-4">No foreign income entries added yet</p>
+          <div className="text-center py-8 bg-slate-50 rounded-xl border border-slate-200">
+            <p className="text-slate-500 mb-4">No foreign income entries added yet</p>
             <button
               onClick={addForeignIncomeEntry}
-              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               Add Foreign Income Entry
             </button>
@@ -169,12 +169,12 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
         ) : (
           <div className="space-y-4">
             {foreignIncomeDetails.map((entry, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div key={index} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-medium text-gray-700">Entry #{index + 1}</span>
+                  <span className="font-medium text-slate-700">Entry #{index + 1}</span>
                   <button
                     onClick={() => removeForeignIncomeEntry(index)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-error-600 hover:text-error-700"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -182,11 +182,11 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Country</label>
                     <select
                       value={entry.country || ''}
                       onChange={(e) => updateForeignIncomeEntry(index, 'country', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="">Select Country</option>
                       {commonCountries.map((country) => (
@@ -198,11 +198,11 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Income Type</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Income Type</label>
                     <select
                       value={entry.incomeType || 'salary'}
                       onChange={(e) => updateForeignIncomeEntry(index, 'incomeType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     >
                       <option value="salary">Salary</option>
                       <option value="business">Business</option>
@@ -212,49 +212,49 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       Amount (Foreign Currency)
                     </label>
                     <input
                       type="number"
                       value={entry.amount || 0}
                       onChange={(e) => updateForeignIncomeEntry(index, 'amount', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="0"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Exchange Rate</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Exchange Rate</label>
                     <input
                       type="number"
                       step="0.01"
                       value={entry.exchangeRate || 1}
                       onChange={(e) => updateForeignIncomeEntry(index, 'exchangeRate', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="1.00"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Rate to convert to INR</p>
+                    <p className="text-body-small text-slate-500 mt-1">Rate to convert to INR</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount in INR (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Amount in INR (₹)</label>
                     <input
                       type="number"
                       value={entry.amountInr || 0}
                       readOnly
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-slate-100"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Auto-calculated</p>
+                    <p className="text-body-small text-slate-500 mt-1">Auto-calculated</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tax Paid Abroad (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Tax Paid Abroad (₹)</label>
                     <input
                       type="number"
                       value={entry.taxPaidAbroad || 0}
                       onChange={(e) => updateForeignIncomeEntry(index, 'taxPaidAbroad', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="0"
                     />
                   </div>
@@ -265,15 +265,15 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
                         type="checkbox"
                         checked={entry.dtaaApplicable || false}
                         onChange={(e) => updateForeignIncomeEntry(index, 'dtaaApplicable', e.target.checked)}
-                        className="w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
+                        className="w-4 h-4 text-gold-600 border-slate-300 rounded focus:ring-gold-500"
                       />
-                      <span className="text-sm font-medium text-gray-700">DTAA (Double Taxation Avoidance Agreement) Applicable</span>
+                      <span className="text-body-regular font-medium text-slate-700">DTAA (Double Taxation Avoidance Agreement) Applicable</span>
                     </label>
                     {entry.dtaaApplicable && (
-                      <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="mt-2 bg-blue-50 border border-blue-200 rounded-xl p-3">
                         <div className="flex items-start">
                           <AlertCircle className="w-4 h-4 text-blue-600 mr-2 mt-0.5" />
-                          <p className="text-xs text-blue-800">
+                          <p className="text-body-small text-blue-800">
                             DTAA allows you to claim credit for tax paid abroad. Ensure you have the necessary documentation.
                           </p>
                         </div>
@@ -285,17 +285,17 @@ const ForeignIncomeForm = ({ data, onUpdate, selectedITR }) => {
             ))}
 
             {/* Summary */}
-            <div className="border-t border-gray-300 pt-4 mt-4">
+            <div className="border-t border-slate-300 pt-4 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <span className="text-sm font-medium text-gray-700">Total Foreign Income (INR):</span>
-                  <span className="ml-2 text-lg font-bold text-gray-900">
+                  <span className="text-body-regular font-medium text-slate-700">Total Foreign Income (INR):</span>
+                  <span className="ml-2 text-body-large font-bold text-slate-900">
                     ₹{calculateTotalForeignIncome().toLocaleString('en-IN')}
                   </span>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-700">Total Tax Paid Abroad:</span>
-                  <span className="ml-2 text-lg font-bold text-gray-900">
+                  <span className="text-body-regular font-medium text-slate-700">Total Tax Paid Abroad:</span>
+                  <span className="ml-2 text-body-large font-bold text-slate-900">
                     ₹{calculateTotalTaxPaidAbroad().toLocaleString('en-IN')}
                   </span>
                 </div>

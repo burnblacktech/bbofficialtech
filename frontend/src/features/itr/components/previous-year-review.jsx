@@ -43,11 +43,11 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
         {compatibilityWarnings.map((warning, index) => (
           <div
             key={index}
-            className="bg-warning-50 border border-warning-200 rounded-lg p-4"
+            className="bg-warning-50 border border-warning-200 rounded-xl p-4"
           >
             <div className="flex items-start">
               <AlertCircle className="h-5 w-5 text-warning-600 flex-shrink-0 mt-0.5 mr-3" />
-              <p className="text-sm text-warning-700">{warning}</p>
+              <p className="text-body-regular text-warning-700">{warning}</p>
             </div>
           </div>
         ))}
@@ -221,13 +221,13 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
     const sectionData = reviewData[sectionKey] || {};
 
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg mr-3">
+            <div className="p-2 bg-blue-100 rounded-xl mr-3">
               <Icon className="h-5 w-5 text-blue-600" />
             </div>
-            <h3 className="text-heading-md text-gray-900">{title}</h3>
+            <h3 className="text-heading-md text-slate-900">{title}</h3>
           </div>
           <CheckCircle className="h-5 w-5 text-green-600" />
         </div>
@@ -236,14 +236,14 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
             const value = sectionData[field.key] || '';
             return (
               <div key={field.key}>
-                <label className="block text-body-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-sm font-medium text-slate-700 mb-1">
                   {field.label}
                 </label>
                 <input
                   type={field.type || 'text'}
                   value={value}
                   onChange={(e) => handleFieldChange(sectionKey, field.key, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-sm focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-body-sm focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                 />
               </div>
@@ -256,9 +256,9 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
 
   if (!previousData) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
             <div className="flex items-start">
               <AlertCircle className="h-5 w-5 text-error-500 mt-0.5 mr-3" />
               <div>
@@ -268,7 +268,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
                 </p>
                 <button
                   onClick={() => navigate(-1)}
-                  className="text-sm font-medium text-error-600 hover:text-error-800"
+                  className="text-body-regular font-medium text-error-600 hover:text-error-800"
                 >
                   Go back
                 </button>
@@ -281,7 +281,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Compatibility Warnings */}
         {renderCompatibilityWarnings()}
@@ -290,33 +290,33 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-4"
+            className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </button>
-          <h1 className="text-heading-2xl text-gray-900 mb-2">Review & Edit Data</h1>
-          <p className="text-body-md text-gray-600">
+          <h1 className="text-heading-2xl text-slate-900 mb-2">Review & Edit Data</h1>
+          <p className="text-body-md text-slate-600">
             Select sections to copy and edit values before applying to your current filing
           </p>
         </div>
 
         {/* Section Selection */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h3 className="text-heading-md text-gray-900 mb-4">Select Sections to Copy</h3>
+        <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+          <h3 className="text-heading-md text-slate-900 mb-4">Select Sections to Copy</h3>
           <div className="grid grid-cols-2 gap-3">
             {availableSections.map((section) => (
               <label
                 key={section}
-                className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+                className="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"
               >
                 <input
                   type="checkbox"
                   checked={selectedSections[section]}
                   onChange={() => handleSectionToggle(section)}
-                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-slate-300 rounded"
                 />
-                <span className="ml-3 text-body-sm font-medium text-gray-900">
+                <span className="ml-3 text-body-sm font-medium text-slate-900">
                   {section.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim()}
                 </span>
               </label>
@@ -346,17 +346,17 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
 
           {/* Income - Simplified for editing */}
           {sections.income && selectedSections.income && reviewData.income && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="p-2 bg-green-100 rounded-lg mr-3">
+                  <div className="p-2 bg-green-100 rounded-xl mr-3">
                     <DollarSign className="h-5 w-5 text-green-600" />
                   </div>
-                  <h3 className="text-heading-md text-gray-900">Income</h3>
+                  <h3 className="text-heading-md text-slate-900">Income</h3>
                 </div>
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4">
                 <p className="text-body-sm text-info-700">
                   Income details will be copied as-is. You can edit them after applying the copy.
                 </p>
@@ -366,17 +366,17 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
 
           {/* Deductions - Simplified */}
           {sections.deductions && selectedSections.deductions && reviewData.deductions && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="p-2 bg-purple-100 rounded-lg mr-3">
+                  <div className="p-2 bg-purple-100 rounded-xl mr-3">
                     <Receipt className="h-5 w-5 text-purple-600" />
                   </div>
-                  <h3 className="text-heading-md text-gray-900">Deductions</h3>
+                  <h3 className="text-heading-md text-slate-900">Deductions</h3>
                 </div>
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4">
                 <p className="text-body-sm text-info-700">
                   Deduction details will be copied as-is. You can edit them after applying the copy.
                 </p>
@@ -386,17 +386,17 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
 
           {/* Taxes Paid - Simplified */}
           {(sections.taxes_paid || sections.taxesPaid) && selectedSections.taxesPaid && (reviewData.taxes_paid || reviewData.taxesPaid) && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="p-2 bg-gold-100 rounded-lg mr-3">
+                  <div className="p-2 bg-gold-100 rounded-xl mr-3">
                     <CreditCard className="h-5 w-5 text-gold-600" />
                   </div>
-                  <h3 className="text-heading-md text-gray-900">Taxes Paid</h3>
+                  <h3 className="text-heading-md text-slate-900">Taxes Paid</h3>
                 </div>
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4">
                 <p className="text-body-sm text-info-700">
                   Tax payment details will be copied as-is. You can edit them after applying the copy.
                 </p>
@@ -422,7 +422,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
         <div className="flex space-x-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex-1 py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="flex-1 py-3 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50"
             disabled={copyMutation.isPending}
           >
             Cancel
@@ -430,7 +430,7 @@ const PreviousYearReview = ({ targetFilingId, sourceFilingId, previousYearData, 
           <button
             onClick={handleApplyCopy}
             disabled={copyMutation.isPending || availableSections.filter(s => selectedSections[s]).length === 0}
-            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
+            className="flex-1 py-3 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 disabled:opacity-50 flex items-center justify-center"
           >
             {copyMutation.isPending ? (
               <>

@@ -14,7 +14,7 @@ import {
   Upload,
   AlertCircle,
 } from 'lucide-react';
-import apiClient from '../../../services/core/APIClient';
+import { deductionService } from '../services/deduction.service';
 import toast from 'react-hot-toast';
 import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
@@ -40,14 +40,7 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
   // Fetch deductions
   const { data: deductionsData, isLoading } = useQuery({
     queryKey: ['section80TTA', filingId],
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(`/api/itr/deductions/${section}?filingId=${filingId}`);
-        return response.data;
-      } catch (error) {
-        return { data: { deductions: [], totalAmount: 0, remainingLimit: limit } };
-      }
-    },
+    queryFn: () => deductionService.getDeductions(filingId, section),
     enabled: !!filingId,
   });
 
@@ -60,23 +53,22 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
   const addDeductionMutation = useMutation({
     mutationFn: async (data) => {
       try {
-        const response = await apiClient.post(`/api/itr/deductions/${section}`, {
-          filingId,
-          ...data,
-        });
-        return response.data;
+        return await deductionService.createDeduction(filingId, section, data);
       } catch (error) {
         if (onUpdate) {
-          onUpdate({ [section]: parseFloat(data.interestAmount) || 0 });
+          onUpdate({ [`section${section}`]: parseFloat(data.interestAmount) || 0 });
         }
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80TTA', filingId]);
       resetForm();
       setShowAddForm(false);
       toast.success(`${section} deduction added successfully`);
+      if (typeof onUpdate === 'function') {
+        onUpdate({ [`section${section}`]: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to add deduction');
@@ -87,23 +79,22 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
   const updateDeductionMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       try {
-        const response = await apiClient.put(`/api/itr/deductions/${section}/${id}`, {
-          filingId,
-          ...data,
-        });
-        return response.data;
+        return await deductionService.updateDeductionBySection(filingId, section, id, data);
       } catch (error) {
         if (onUpdate) {
-          onUpdate({ [section]: parseFloat(data.interestAmount) || 0 });
+          onUpdate({ [`section${section}`]: parseFloat(data.interestAmount) || 0 });
         }
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80TTA', filingId]);
       resetForm();
       setShowAddForm(false);
       toast.success(`${section} deduction updated successfully`);
+      if (typeof onUpdate === 'function') {
+        onUpdate({ [`section${section}`]: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to update deduction');
@@ -114,15 +105,17 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
   const deleteDeductionMutation = useMutation({
     mutationFn: async (id) => {
       try {
-        const response = await apiClient.delete(`/api/itr/deductions/${section}/${id}?filingId=${filingId}`);
-        return response.data;
+        return await deductionService.deleteDeductionBySection(filingId, section, id);
       } catch (error) {
         return { success: true };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80TTA', filingId]);
       toast.success(`${section} deduction deleted successfully`);
+      if (typeof onUpdate === 'function') {
+        onUpdate({ [`section${section}`]: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to delete deduction');
@@ -231,43 +224,43 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-heading-lg text-gray-900 mb-1">
+            <h3 className="text-heading-lg text-slate-900 mb-1">
               Section {section} - Savings Account Interest
             </h3>
-            <p className="text-body-sm text-gray-600">
+            <p className="text-body-sm text-slate-600">
               {isSeniorCitizen
                 ? 'Deduction for senior citizens (age 60+) - Limit: ₹50,000'
                 : 'Deduction for non-senior citizens - Limit: ₹10,000'}
             </p>
           </div>
           <div className="text-right">
-            <div className="text-body-xs text-gray-500 mb-1">Total Claimed</div>
+            <div className="text-body-xs text-slate-500 mb-1">Total Claimed</div>
             <div className="text-heading-xl font-bold text-gold-600">
               ₹{totalAmount.toLocaleString('en-IN')}
             </div>
-            <div className="text-body-xs text-gray-500 mt-1">Limit: ₹{limit.toLocaleString('en-IN')}</div>
+            <div className="text-body-xs text-slate-500 mt-1">Limit: ₹{limit.toLocaleString('en-IN')}</div>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-4 bg-gray-50 rounded-lg p-4">
+        <div className="mt-4 bg-slate-50 rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-body-sm font-medium text-gray-700">Utilization</span>
-            <span className="text-heading-sm font-bold text-gray-900">
+            <span className="text-body-sm font-medium text-slate-700">Utilization</span>
+            <span className="text-heading-sm font-bold text-slate-900">
               ₹{totalAmount.toLocaleString('en-IN')} / ₹{limit.toLocaleString('en-IN')}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 rounded-full h-2">
             <div
               className="bg-gold-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${utilizationPercentage}%` }}
             />
           </div>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-body-xs text-gray-600">{utilizationPercentage.toFixed(1)}% utilized</span>
+            <span className="text-body-xs text-slate-600">{utilizationPercentage.toFixed(1)}% utilized</span>
             <span className="text-body-xs text-green-600 font-medium">
               ₹{remainingLimit.toLocaleString('en-IN')} remaining
             </span>
@@ -277,9 +270,9 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-heading-md text-gray-900">
+            <h4 className="text-heading-md text-slate-900">
               {editingDeduction ? 'Edit Interest Entry' : 'Add Interest Entry'}
             </h4>
             <button
@@ -287,7 +280,7 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
                 resetForm();
                 setShowAddForm(false);
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-slate-500 hover:text-slate-700"
             >
               ✕
             </button>
@@ -296,57 +289,57 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Bank Name *</label>
                 <input
                   type="text"
                   value={formData.bankName}
                   onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.bankName ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.bankName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Bank name"
                 />
                 {formErrors.bankName && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.bankName}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.bankName}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Account Number *
                 </label>
                 <input
                   type="text"
                   value={formData.accountNumber}
                   onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.accountNumber ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.accountNumber ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Account number"
                 />
                 {formErrors.accountNumber && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.accountNumber}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.accountNumber}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Interest Amount (₹) *
                 </label>
                 <input
                   type="number"
                   value={formData.interestAmount}
                   onChange={(e) => setFormData({ ...formData, interestAmount: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.interestAmount ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.interestAmount ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="0"
                   max={remainingLimit}
                 />
                 {formErrors.interestAmount && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.interestAmount}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.interestAmount}</p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-body-small text-slate-500 mt-1">
                   Remaining limit: ₹{remainingLimit.toLocaleString('en-IN')}
                 </p>
               </div>
@@ -359,14 +352,14 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50"
               >
                 {editingDeduction ? 'Update' : 'Add'} Entry
               </button>
@@ -379,10 +372,10 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
       {!showAddForm && (
         <>
           <div className="flex justify-between items-center">
-            <h4 className="text-heading-md text-gray-900">Your Savings Accounts</h4>
+            <h4 className="text-heading-md text-slate-900">Your Savings Accounts</h4>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <Plus className="w-4 h-4" />
               Add Account
@@ -390,12 +383,12 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
           </div>
 
           {deductions.length === 0 ? (
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-              <PiggyBank className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 mb-4">No savings account interest added yet</p>
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+              <PiggyBank className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <p className="text-slate-600 mb-4">No savings account interest added yet</p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
               >
                 Add Your First Account
               </button>
@@ -405,16 +398,16 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
               {deductions.map((deduction) => (
                 <div
                   key={deduction.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                  className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h5 className="text-heading-sm font-semibold text-gray-900">
+                        <h5 className="text-heading-sm font-semibold text-slate-900">
                           {deduction.bankName}
                         </h5>
                       </div>
-                      <div className="text-body-sm text-gray-600 space-y-1">
+                      <div className="text-body-sm text-slate-600 space-y-1">
                         <p>Account: {deduction.accountNumber}</p>
                         <p>Interest: ₹{deduction.interestAmount?.toLocaleString('en-IN')}</p>
                       </div>
@@ -427,17 +420,17 @@ const Section80TTA = ({ filingId, onUpdate, userAge = 30 }) => {
                           onChange={(e) => handleProofUpload(e, deduction.id)}
                           className="hidden"
                         />
-                        <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
+                        <Upload className="w-5 h-5 text-slate-500 hover:text-gold-500" />
                       </label>
                       <button
                         onClick={() => handleEdit(deduction)}
-                        className="p-1 text-gray-500 hover:text-gold-500"
+                        className="p-1 text-slate-500 hover:text-gold-500"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(deduction.id)}
-                        className="p-1 text-gray-500 hover:text-red-500"
+                        className="p-1 text-slate-500 hover:text-error-500"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>

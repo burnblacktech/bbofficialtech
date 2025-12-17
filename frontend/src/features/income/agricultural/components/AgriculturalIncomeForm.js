@@ -4,7 +4,7 @@
 // Per ITD Rules: Agricultural income is exempt but aggregated for rate purposes
 // =====================================================
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Wheat,
@@ -64,15 +64,19 @@ const AgriculturalIncomeForm = ({
   filingId,
   readOnly = false,
 }) => {
+  // Keep latest onUpdate without making effects re-run on every render (parent passes inline callbacks)
+  const onUpdateRef = useRef(onUpdate);
+  const lastPushedRef = useRef(null);
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+
   // Initialize state from data
   const [hasAgriculturalIncome, setHasAgriculturalIncome] = useState(
     data?.hasAgriculturalIncome ?? false,
   );
   const [agriculturalIncomes, setAgriculturalIncomes] = useState(
     data?.agriculturalIncomes || [],
-  );
-  const [netAgriculturalIncome, setNetAgriculturalIncome] = useState(
-    data?.netAgriculturalIncome || 0,
   );
 
   // Calculate total agricultural income
@@ -85,19 +89,20 @@ const AgriculturalIncomeForm = ({
     return selectedITR === 'ITR-1' && totalAgriculturalIncome > ITR1_AGRI_LIMIT;
   }, [selectedITR, totalAgriculturalIncome]);
 
-  // Sync net income with total
+  // Propagate changes to parent (avoid infinite loops by not depending on onUpdate identity)
   useEffect(() => {
-    setNetAgriculturalIncome(totalAgriculturalIncome);
-  }, [totalAgriculturalIncome]);
-
-  // Propagate changes to parent
-  useEffect(() => {
-    onUpdate?.({
+    const payload = {
       hasAgriculturalIncome,
       agriculturalIncomes,
       netAgriculturalIncome: totalAgriculturalIncome,
-    });
-  }, [hasAgriculturalIncome, agriculturalIncomes, totalAgriculturalIncome, onUpdate]);
+    };
+
+    const serialized = JSON.stringify(payload);
+    if (serialized === lastPushedRef.current) return;
+    lastPushedRef.current = serialized;
+
+    onUpdateRef.current?.(payload);
+  }, [hasAgriculturalIncome, agriculturalIncomes, totalAgriculturalIncome]);
 
   const handleAddIncome = () => {
     const newIncome = {
@@ -142,8 +147,8 @@ const AgriculturalIncomeForm = ({
             <Wheat className="w-5 h-5 text-emerald-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Agricultural Income</h3>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <h3 className="text-heading-4 font-semibold text-slate-900">Agricultural Income</h3>
+            <p className="text-body-regular text-slate-500 mt-0.5">
               Income from agricultural activities (exempt but aggregated for rate purposes)
             </p>
           </div>
@@ -160,7 +165,7 @@ const AgriculturalIncomeForm = ({
             disabled={readOnly}
             className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
           />
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-body-regular font-medium text-slate-700">
             I have agricultural income to declare
           </span>
         </label>
@@ -174,13 +179,13 @@ const AgriculturalIncomeForm = ({
           className={cn(
             'rounded-xl p-4 border-2 flex items-start gap-3',
             exceedsITR1Limit
-              ? 'bg-red-50 border-red-300'
+              ? 'bg-error-50 border-error-300'
               : 'bg-amber-50 border-amber-300',
           )}
         >
           <AlertTriangle className={cn(
             'w-5 h-5 flex-shrink-0 mt-0.5',
-            exceedsITR1Limit ? 'text-red-600' : 'text-amber-600',
+            exceedsITR1Limit ? 'text-error-600' : 'text-amber-600',
           )} />
           <div className="flex-1">
             <p className={cn(
@@ -203,7 +208,7 @@ const AgriculturalIncomeForm = ({
               }
             </p>
             {exceedsITR1Limit && (
-              <p className="text-xs text-red-700 mt-2 font-medium">
+              <p className="text-body-small text-error-700 mt-2 font-medium">
                 This is a regulatory requirement - ITR-1 returns with agricultural income above ₹5,000 will be rejected by the Income Tax Department.
               </p>
             )}
@@ -225,11 +230,11 @@ const AgriculturalIncomeForm = ({
             {agriculturalIncomes.length === 0 ? (
               <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 p-8 text-center">
                 <Wheat className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm text-slate-600 mb-4">No agricultural income entries yet</p>
+                <p className="text-body-regular text-slate-600 mb-4">No agricultural income entries yet</p>
                 <button
                   onClick={handleAddIncome}
                   disabled={readOnly}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50"
                 >
                   <Plus className="w-4 h-4" />
                   Add Agricultural Income
@@ -247,13 +252,13 @@ const AgriculturalIncomeForm = ({
                     className="bg-white rounded-xl border-2 border-slate-200 p-5 hover:border-slate-300 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      <span className="text-body-small font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">
                         Entry #{index + 1}
                       </span>
                       {!readOnly && (
                         <button
                           onClick={() => handleRemoveIncome(income.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-error-500 hover:bg-error-50 rounded-xl transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -263,7 +268,7 @@ const AgriculturalIncomeForm = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Income Type */}
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           Type of Agricultural Income
                         </label>
                         <select
@@ -280,7 +285,7 @@ const AgriculturalIncomeForm = ({
                           ))}
                         </select>
                         {income.type && (
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-body-small text-slate-500 mt-1">
                             {AGRICULTURAL_INCOME_TYPES.find((t) => t.id === income.type)?.description}
                           </p>
                         )}
@@ -288,7 +293,7 @@ const AgriculturalIncomeForm = ({
 
                       {/* Amount */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           <IndianRupee className="w-3.5 h-3.5 inline mr-1" />
                           Amount
                         </label>
@@ -307,7 +312,7 @@ const AgriculturalIncomeForm = ({
 
                       {/* Financial Year */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           <Calendar className="w-3.5 h-3.5 inline mr-1" />
                           Financial Year
                         </label>
@@ -324,7 +329,7 @@ const AgriculturalIncomeForm = ({
 
                       {/* Land Location */}
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           <MapPin className="w-3.5 h-3.5 inline mr-1" />
                           Land Location (Optional)
                         </label>
@@ -340,7 +345,7 @@ const AgriculturalIncomeForm = ({
 
                       {/* Land Area */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           Land Area (Optional)
                         </label>
                         <div className="flex gap-2">
@@ -367,7 +372,7 @@ const AgriculturalIncomeForm = ({
 
                       {/* Description */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           Description (Optional)
                         </label>
                         <input
@@ -387,7 +392,7 @@ const AgriculturalIncomeForm = ({
                 {!readOnly && (
                   <button
                     onClick={handleAddIncome}
-                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-sm font-medium text-slate-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-body-regular font-medium text-slate-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     Add Another Agricultural Income
@@ -405,14 +410,14 @@ const AgriculturalIncomeForm = ({
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-emerald-800">
+                    <span className="text-body-regular font-medium text-emerald-800">
                       Total Agricultural Income
                     </span>
-                    <p className="text-xs text-emerald-600 mt-0.5">
+                    <p className="text-body-small text-emerald-600 mt-0.5">
                       Exempt from tax • Aggregated for rate calculation
                     </p>
                   </div>
-                  <span className="text-xl font-bold text-emerald-700 tabular-nums">
+                  <span className="text-heading-3 font-bold text-emerald-700 tabular-nums">
                     {formatCurrency(totalAgriculturalIncome)}
                   </span>
                 </div>
@@ -422,9 +427,9 @@ const AgriculturalIncomeForm = ({
             {/* Info Box */}
             <div className="bg-blue-50 rounded-xl border border-blue-200 p-4 flex items-start gap-3">
               <HelpCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-800">
+              <div className="text-body-regular text-blue-800">
                 <p className="font-medium mb-1">How Agricultural Income is Taxed</p>
-                <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
+                <ul className="text-body-small text-blue-700 space-y-1 list-disc list-inside">
                   <li>Agricultural income is exempt from income tax under Section 10(1)</li>
                   <li>However, if your total income exceeds ₹2.5 lakh, agricultural income is added for rate calculation</li>
                   <li>ITR-1 allows agricultural income up to ₹5,000 only; beyond that, use ITR-2 or ITR-3</li>

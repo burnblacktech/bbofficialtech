@@ -248,15 +248,15 @@ const IncomeSourceSelector = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className="p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-neutral-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-neutral-600" />
             </button>
             <div>
-              <h1 className="text-xl font-semibold text-neutral-900">
+              <h1 className="text-heading-3 font-semibold text-neutral-900">
                 {showResult ? 'Your Recommendation' : 'Select Income Sources'}
               </h1>
-              <p className="text-sm text-neutral-500">
+              <p className="text-body-regular text-neutral-500">
                 {showResult
                   ? 'Based on your income sources'
                   : 'We\'ll recommend the right ITR form for you'}
@@ -264,8 +264,8 @@ const IncomeSourceSelector = () => {
             </div>
           </div>
           {selectedPerson && (
-            <div className="hidden md:flex items-center gap-2 bg-neutral-50 px-3 py-1.5 rounded-lg">
-              <span className="text-sm text-neutral-700">{selectedPerson.name}</span>
+            <div className="hidden md:flex items-center gap-2 bg-neutral-50 px-3 py-1.5 rounded-xl">
+              <span className="text-body-regular text-neutral-700">{selectedPerson.name}</span>
             </div>
           )}
         </div>
@@ -284,7 +284,7 @@ const IncomeSourceSelector = () => {
               {/* Instructions */}
               <div className="bg-info-50 rounded-xl border border-info-200 p-4 mb-6 flex items-start gap-3">
                 <HelpCircle className="w-5 h-5 text-info-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-info-800">
+                <p className="text-body-regular text-info-800">
                   Select all the income sources that apply to you. We'll analyze your selections
                   and recommend the most suitable ITR form.
                 </p>
@@ -309,7 +309,7 @@ const IncomeSourceSelector = () => {
                         className={cn(
                           'rounded-xl border-2 overflow-hidden transition-all cursor-pointer',
                           isSelected
-                            ? 'border-gold-500 shadow-md'
+                            ? 'border-gold-500 shadow-elevation-2'
                             : 'border-neutral-200 hover:border-neutral-300',
                         )}
                         onClick={() => {
@@ -323,14 +323,14 @@ const IncomeSourceSelector = () => {
                         <div className={cn('p-4', isSelected ? source.bgColor : 'bg-white')}>
                           <div className="flex items-center gap-3">
                             <div className={cn(
-                              'w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br',
+                              'w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br',
                               source.color,
                             )}>
                               <Icon className="w-5 h-5 text-white" />
                             </div>
                             <div className="flex-1">
                               <h3 className="text-sm font-semibold text-neutral-900">{source.label}</h3>
-                              <p className="text-xs text-neutral-500">{source.description}</p>
+                              <p className="text-body-small text-neutral-500">{source.description}</p>
                             </div>
                             {isSelected && !hasSubOptions && (
                               <CheckCircle className="w-5 h-5 text-gold-500" />
@@ -362,7 +362,7 @@ const IncomeSourceSelector = () => {
                                       handleSubOptionSelect(source.id, sub.id);
                                     }}
                                     className={cn(
-                                      'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
+                                      'w-full text-left px-3 py-2 rounded-xl text-sm transition-colors',
                                       selectedSources[source.id] === sub.id
                                         ? 'bg-gold-100 text-gold-700 font-medium'
                                         : 'hover:bg-neutral-100 text-neutral-700',
@@ -383,7 +383,7 @@ const IncomeSourceSelector = () => {
 
               {/* Action Button */}
               <div className="flex items-center justify-between">
-                <p className="text-sm text-neutral-500">
+                <p className="text-body-regular text-neutral-500">
                   {selectedCount > 0
                     ? `${selectedCount} income source${selectedCount > 1 ? 's' : ''} selected`
                     : 'Select at least one income source'}
@@ -394,7 +394,7 @@ const IncomeSourceSelector = () => {
                   className={cn(
                     'inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all',
                     selectedCount > 0
-                      ? 'bg-gold-500 text-white hover:bg-gold-600 shadow-lg shadow-gold-500/25'
+                      ? 'bg-gold-500 text-white hover:bg-gold-600 shadow-elevation-3 shadow-gold-500/25'
                       : 'bg-neutral-200 text-neutral-400 cursor-not-allowed',
                   )}
                 >
@@ -423,18 +423,18 @@ const IncomeSourceSelector = () => {
                     <Sparkles className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gold-700 mb-1">Recommended for You</p>
-                    <h2 className="text-2xl font-bold text-neutral-900">
+                    <p className="text-body-regular font-medium text-gold-700 mb-1">Recommended for You</p>
+                    <h2 className="text-heading-2 font-bold text-neutral-900">
                       {ITR_RECOMMENDATIONS[recommendedITR]?.name}
                     </h2>
-                    <p className="text-sm text-neutral-600 mt-1">
+                    <p className="text-body-regular text-neutral-600 mt-1">
                       {ITR_RECOMMENDATIONS[recommendedITR]?.description}
                     </p>
                     <div className="flex items-center gap-4 mt-3">
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-white text-neutral-600">
+                      <span className="text-body-small font-medium px-2 py-1 rounded-full bg-white text-neutral-600">
                         {ITR_RECOMMENDATIONS[recommendedITR]?.complexity}
                       </span>
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-body-small text-neutral-500">
                         Estimated time: {ITR_RECOMMENDATIONS[recommendedITR]?.time}
                       </span>
                     </div>
@@ -447,7 +447,7 @@ const IncomeSourceSelector = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm"
+                className="bg-white rounded-xl border border-neutral-200 p-5 shadow-elevation-1"
               >
                 <h3 className="text-sm font-semibold text-neutral-700 mb-3">Your Income Sources</h3>
                 <div className="flex flex-wrap gap-2">
@@ -463,13 +463,13 @@ const IncomeSourceSelector = () => {
                         <span
                           key={sourceId}
                           className={cn(
-                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium',
+                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium',
                             source.bgColor,
                           )}
                         >
                           {source.label}
                           {subOption && (
-                            <span className="text-xs opacity-75">({subOption.label})</span>
+                            <span className="text-body-small opacity-75">({subOption.label})</span>
                           )}
                         </span>
                       );
@@ -486,13 +486,13 @@ const IncomeSourceSelector = () => {
               >
                 <button
                   onClick={() => setShowResult(false)}
-                  className="text-sm font-medium text-neutral-600 hover:text-neutral-800"
+                  className="text-body-regular font-medium text-neutral-600 hover:text-neutral-800"
                 >
                   ← Modify Selections
                 </button>
                 <button
                   onClick={handleProceed}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 text-white rounded-xl font-semibold hover:bg-gold-600 transition-colors shadow-lg shadow-gold-500/25"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 text-white rounded-xl font-semibold hover:bg-gold-600 transition-colors shadow-elevation-3 shadow-gold-500/25"
                 >
                   Continue with {recommendedITR}
                   <ArrowRight className="w-5 h-5" />

@@ -63,7 +63,7 @@ export function useUpdateDeduction(filingId) {
 
   return useMutation({
     mutationFn: ({ deductionId, section, data }) =>
-      deductionService.updateDeduction(filingId, deductionId, data),
+      deductionService.updateDeductionBySection(filingId, section, deductionId, data),
     onSuccess: (response, variables) => {
       queryClient.invalidateQueries(deductionKeys.detail(filingId, variables.section));
       queryClient.invalidateQueries(deductionKeys.limits(filingId));
@@ -83,7 +83,7 @@ export function useDeleteDeduction(filingId) {
 
   return useMutation({
     mutationFn: ({ deductionId, section }) =>
-      deductionService.deleteDeduction(filingId, deductionId),
+      deductionService.deleteDeductionBySection(filingId, section, deductionId),
     onSuccess: (response, variables) => {
       queryClient.invalidateQueries(deductionKeys.detail(filingId, variables.section));
       queryClient.invalidateQueries(deductionKeys.limits(filingId));

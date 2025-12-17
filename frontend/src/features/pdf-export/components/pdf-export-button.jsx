@@ -15,11 +15,11 @@ const PDFExportButton = ({
   size = 'medium',
   className = '',
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantClasses = {
     primary: 'bg-gold-500 text-white hover:bg-gold-600',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
+    secondary: 'bg-slate-200 text-slate-900 hover:bg-gray-300',
     outline: 'border-2 border-gold-500 text-gold-600 hover:bg-gold-50',
   };
 

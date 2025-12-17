@@ -65,9 +65,9 @@ const ValidationSummary = ({
           ) : (
             <XCircle className="h-5 w-5 text-error-500" aria-hidden="true" />
           )}
-          <h3 className="text-heading-sm text-gray-900">Validation Summary</h3>
+          <h3 className="text-heading-sm text-slate-900">Validation Summary</h3>
         </div>
-        <div className="text-body-md text-gray-600">
+        <div className="text-body-md text-slate-600">
           Score: <span className={cn('font-semibold tabular-nums', validationScore >= 80 ? 'text-success-600' : validationScore >= 50 ? 'text-warning-600' : 'text-error-600')}>
             {validationScore}%
           </span>
@@ -76,7 +76,7 @@ const ValidationSummary = ({
 
       {/* Progress Bar */}
       <div className="mb-4">
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-slate-200 rounded-full h-2">
           <div
             className={cn(
               'h-2 rounded-full transition-all',
@@ -94,7 +94,7 @@ const ValidationSummary = ({
       {/* Errors by Section */}
       {Object.keys(errorsBySection).length > 0 && (
         <div className="mb-4">
-          <h4 className="text-label-md font-semibold text-gray-900 mb-2">
+          <h4 className="text-label-md font-semibold text-slate-900 mb-2">
             Errors ({errorCount})
           </h4>
           <div className="space-y-2">
@@ -159,7 +159,7 @@ const ValidationSummary = ({
       {/* Warnings */}
       {warningCount > 0 && (
         <div>
-          <h4 className="text-label-md font-semibold text-gray-900 mb-2">
+          <h4 className="text-label-md font-semibold text-slate-900 mb-2">
             Warnings ({warningCount})
           </h4>
           <div className="space-y-2">

@@ -236,7 +236,7 @@ const AdminPricingPlans = () => {
                   placeholder="Search plans..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <select
@@ -245,7 +245,7 @@ const AdminPricingPlans = () => {
                   setActiveFilter(e.target.value);
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="all">All Plans</option>
                 <option value="active">Active Only</option>
@@ -324,7 +324,7 @@ const AdminPricingPlans = () => {
                       {plan.features && plan.features.length > 0 && (
                         <div>
                           <Typography.Small className="font-semibold text-neutral-700 mb-1 block">Features:</Typography.Small>
-                          <ul className="text-sm text-neutral-600 space-y-1">
+                          <ul className="text-body-regular text-neutral-600 space-y-1">
                             {plan.features.slice(0, 3).map((feature, idx) => (
                               <li key={idx}>• {feature}</li>
                             ))}
@@ -378,7 +378,7 @@ const AdminPricingPlans = () => {
                     resetForm();
                     setSelectedPlan(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -386,19 +386,19 @@ const AdminPricingPlans = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Plan Name <span className="text-error-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       placeholder="e.g., Basic Plan"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Price (INR) <span className="text-error-500">*</span>
                     </label>
                     <input
@@ -407,26 +407,26 @@ const AdminPricingPlans = () => {
                       step="0.01"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       placeholder="0.00"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Description
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     rows={3}
                     placeholder="Plan description..."
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Validity Period (days)
                     </label>
                     <input
@@ -434,24 +434,24 @@ const AdminPricingPlans = () => {
                       min="1"
                       value={formData.validityPeriod}
                       onChange={(e) => setFormData({ ...formData, validityPeriod: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Currency
                     </label>
                     <select
                       value={formData.currency}
                       onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="INR">INR</option>
                     </select>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Features
                   </label>
                   <div className="flex gap-2 mb-2">
@@ -460,7 +460,7 @@ const AdminPricingPlans = () => {
                       value={newFeature}
                       onChange={(e) => setNewFeature(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && addFeature()}
-                      className="flex-1 px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="flex-1 px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       placeholder="Add feature..."
                     />
                     <Button variant="outline" onClick={addFeature}>
@@ -482,7 +482,7 @@ const AdminPricingPlans = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     ITR Types Allowed
                   </label>
                   <div className="flex flex-wrap gap-4">
@@ -506,13 +506,13 @@ const AdminPricingPlans = () => {
                           }}
                           className="mr-2 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
                         />
-                        <span className="text-sm text-neutral-700">{type}</span>
+                        <span className="text-body-regular text-neutral-700">{type}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     User Type Restrictions
                   </label>
                   <div className="flex flex-wrap gap-4">
@@ -536,7 +536,7 @@ const AdminPricingPlans = () => {
                           }}
                           className="mr-2 rounded border-neutral-300 text-primary-500 focus:ring-primary-500"
                         />
-                        <span className="text-sm text-neutral-700 capitalize">{type}</span>
+                        <span className="text-body-regular text-neutral-700 capitalize">{type}</span>
                       </label>
                     ))}
                   </div>

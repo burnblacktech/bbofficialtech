@@ -349,7 +349,7 @@ const EVerification = () => {
             <PartyPopper className="w-10 h-10 text-success-600" />
           </motion.div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          <h2 className="text-heading-2 font-bold text-slate-900 mb-2">
             ITR Successfully Verified! 🎉
           </h2>
           <p className="text-slate-600 mb-6">
@@ -361,7 +361,7 @@ const EVerification = () => {
               <CheckCircle className="w-5 h-5" />
               <span className="font-semibold">Acknowledgment Number</span>
             </div>
-            <p className="text-lg font-mono font-bold text-success-800">
+            <p className="text-body-large font-mono font-bold text-success-800">
               {acknowledgmentNumber}
             </p>
           </div>
@@ -377,7 +377,7 @@ const EVerification = () => {
 
             <button
               onClick={handleGoToDashboard}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20"
             >
               Go to Dashboard
             </button>
@@ -390,18 +390,18 @@ const EVerification = () => {
   return (
     <div>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50 -mx-3 sm:-mx-4 lg:-mx-6 xl:-mx-8">
+      <header className="bg-white shadow-elevation-1 border-b sticky top-0 z-50 -mx-3 sm:-mx-4 lg:-mx-6 xl:-mx-8">
         <div className="px-3 sm:px-4 lg:px-6 xl:px-8 py-3 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
-              className="p-2 rounded-lg hover:bg-slate-100 active:scale-95 transition-all"
+              className="p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition-all"
             >
               <ArrowLeft className="h-5 w-5 text-slate-700" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">E-Verify Your ITR</h1>
-              <p className="text-xs text-slate-500">Complete verification within 30 days</p>
+              <h1 className="text-heading-4 font-semibold text-slate-900">E-Verify Your ITR</h1>
+              <p className="text-body-small text-slate-500">Complete verification within 30 days</p>
             </div>
           </div>
         </div>
@@ -417,11 +417,11 @@ const EVerification = () => {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-slate-900">ITR Submitted Successfully</h3>
-              <p className="text-sm text-slate-500">AY {assessmentYear} • {acknowledgmentNumber}</p>
+              <p className="text-body-regular text-slate-500">AY {assessmentYear} • {acknowledgmentNumber}</p>
             </div>
             <div className="flex items-center gap-1 text-warning-600 bg-warning-50 px-3 py-1 rounded-full">
               <Clock className="w-4 h-4" />
-              <span className="text-sm font-medium">Pending Verification</span>
+              <span className="text-body-regular font-medium">Pending Verification</span>
             </div>
           </div>
         </div>
@@ -432,7 +432,7 @@ const EVerification = () => {
             <Shield className="w-5 h-5 text-info-600 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-medium text-info-900 mb-1">Why E-Verify?</h4>
-              <p className="text-sm text-info-700">
+              <p className="text-body-regular text-info-700">
                 E-verification validates your identity and completes your ITR filing. Without verification, your return won't be processed.
               </p>
             </div>
@@ -447,7 +447,7 @@ const EVerification = () => {
             {/* Back to methods */}
             <button
               onClick={() => setSelectedMethod(null)}
-              className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 mb-4"
+              className="flex items-center gap-2 text-body-regular text-slate-500 hover:text-slate-700 mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Choose different method
@@ -462,7 +462,7 @@ const EVerification = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900">Aadhaar OTP Verification</h3>
-                    <p className="text-sm text-slate-500">OTP will be sent to Aadhaar-linked mobile</p>
+                    <p className="text-body-regular text-slate-500">OTP will be sent to Aadhaar-linked mobile</p>
                   </div>
                 </div>
 
@@ -470,7 +470,7 @@ const EVerification = () => {
                   <button
                     onClick={handleSendOtp}
                     disabled={isProcessing}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 disabled:opacity-50"
                   >
                     {isProcessing ? (
                       <Loader className="w-5 h-5 animate-spin" />
@@ -482,7 +482,7 @@ const EVerification = () => {
                 ) : (
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                      <label className="block text-body-regular font-medium text-slate-700 mb-2">
                         Enter 6-digit OTP
                       </label>
                       <div className="flex gap-2 justify-center">
@@ -503,19 +503,19 @@ const EVerification = () => {
                         ))}
                       </div>
                       {otpError && (
-                        <p className="text-sm text-error-600 mt-2 text-center">{otpError}</p>
+                        <p className="text-body-regular text-error-600 mt-2 text-center">{otpError}</p>
                       )}
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
                       {resendTimer > 0 ? (
-                        <span className="text-sm text-slate-500">
+                        <span className="text-body-regular text-slate-500">
                           Resend OTP in {resendTimer}s
                         </span>
                       ) : (
                         <button
                           onClick={handleSendOtp}
-                          className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                          className="flex items-center gap-1 text-body-regular text-primary-600 hover:text-primary-700 font-medium"
                         >
                           <RefreshCw className="w-4 h-4" />
                           Resend OTP
@@ -526,7 +526,7 @@ const EVerification = () => {
                     <button
                       onClick={handleVerifyOtp}
                       disabled={isProcessing || otp.join('').length !== 6}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 disabled:opacity-50"
                     >
                       {isProcessing ? (
                         <Loader className="w-5 h-5 animate-spin" />
@@ -549,12 +549,12 @@ const EVerification = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900">Net Banking Verification</h3>
-                    <p className="text-sm text-slate-500">Login to your bank to verify</p>
+                    <p className="text-body-regular text-slate-500">Login to your bank to verify</p>
                   </div>
                 </div>
 
                 <div className="bg-slate-50 rounded-xl p-4 mb-4">
-                  <p className="text-sm text-slate-600">
+                  <p className="text-body-regular text-slate-600">
                     You'll be redirected to your bank's website to login and authorize the verification.
                     Your bank details are not shared with us.
                   </p>
@@ -563,7 +563,7 @@ const EVerification = () => {
                 <button
                   onClick={handleNetBankingVerify}
                   disabled={isProcessing}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <Loader className="w-5 h-5 animate-spin" />
@@ -584,12 +584,12 @@ const EVerification = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900">Digital Signature (DSC)</h3>
-                    <p className="text-sm text-slate-500">Sign using your registered DSC</p>
+                    <p className="text-body-regular text-slate-500">Sign using your registered DSC</p>
                   </div>
                 </div>
 
                 <div className="bg-slate-50 rounded-xl p-4 mb-4">
-                  <p className="text-sm text-slate-600">
+                  <p className="text-body-regular text-slate-600">
                     Ensure your DSC token is connected to your computer.
                     You'll be prompted to select your certificate and enter the PIN.
                   </p>
@@ -598,7 +598,7 @@ const EVerification = () => {
                 <button
                   onClick={handleDscVerify}
                   disabled={isProcessing}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <Loader className="w-5 h-5 animate-spin" />
@@ -619,14 +619,14 @@ const EVerification = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900">Physical ITR-V Submission</h3>
-                    <p className="text-sm text-slate-500">Send signed ITR-V to CPC</p>
+                    <p className="text-body-regular text-slate-500">Send signed ITR-V to CPC</p>
                   </div>
                 </div>
 
                 <div className="bg-warning-50 border border-warning-200 rounded-xl p-4 mb-4">
                   <div className="flex gap-2">
                     <AlertCircle className="w-5 h-5 text-warning-600 flex-shrink-0" />
-                    <div className="text-sm text-warning-700">
+                    <div className="text-body-regular text-warning-700">
                       <p className="font-medium mb-1">Important Instructions:</p>
                       <ol className="list-decimal ml-4 space-y-1">
                         <li>Download and print the ITR-V</li>
@@ -638,8 +638,8 @@ const EVerification = () => {
                 </div>
 
                 <div className="bg-slate-50 rounded-xl p-4 mb-4">
-                  <p className="text-sm text-slate-700 font-medium mb-2">Send to:</p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-body-regular text-slate-700 font-medium mb-2">Send to:</p>
+                  <p className="text-body-regular text-slate-600">
                     Income Tax Department - CPC<br />
                     Post Bag No - 1<br />
                     Electronic City Post Office<br />
@@ -649,7 +649,7 @@ const EVerification = () => {
 
                 <button
                   onClick={handlePhysicalSend}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20"
                 >
                   <Download className="w-5 h-5" />
                   Download ITR-V

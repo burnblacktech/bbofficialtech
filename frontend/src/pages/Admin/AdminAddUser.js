@@ -190,7 +190,7 @@ const AdminAddUser = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Full Name <span className="text-error-500">*</span>
                   </label>
                   <input
@@ -198,7 +198,7 @@ const AdminAddUser = () => {
                     required
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                       errors.name ? 'border-error-500' : 'border-neutral-300'
                     }`}
                     placeholder="Enter full name"
@@ -209,7 +209,7 @@ const AdminAddUser = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Email Address <span className="text-error-500">*</span>
                   </label>
                   <div className="relative">
@@ -219,7 +219,7 @@ const AdminAddUser = () => {
                       required
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                      className={`w-full pl-10 border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                         errors.email ? 'border-error-500' : 'border-neutral-300'
                       }`}
                       placeholder="Enter email address"
@@ -231,7 +231,7 @@ const AdminAddUser = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Mobile Number
                   </label>
                   <div className="relative">
@@ -240,7 +240,7 @@ const AdminAddUser = () => {
                       type="tel"
                       value={formData.mobile}
                       onChange={(e) => handleInputChange('mobile', e.target.value)}
-                      className={`w-full pl-10 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                      className={`w-full pl-10 border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                         errors.mobile ? 'border-error-500' : 'border-neutral-300'
                       }`}
                       placeholder="Enter mobile number"
@@ -252,7 +252,7 @@ const AdminAddUser = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Date of Birth
                   </label>
                   <div className="relative">
@@ -261,19 +261,19 @@ const AdminAddUser = () => {
                       type="date"
                       value={formData.date_of_birth}
                       onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
-                      className="w-full pl-10 border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full pl-10 border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Gender
                   </label>
                   <select
                     value={formData.gender}
                     onChange={(e) => handleInputChange('gender', e.target.value)}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   >
                     <option value="">Select gender</option>
                     <option value="male">Male</option>
@@ -296,59 +296,59 @@ const AdminAddUser = () => {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Address Line 1
                   </label>
                   <input
                     type="text"
                     value={formData.address_line_1}
                     onChange={(e) => handleInputChange('address_line_1', e.target.value)}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter address line 1"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Address Line 2
                   </label>
                   <input
                     type="text"
                     value={formData.address_line_2}
                     onChange={(e) => handleInputChange('address_line_2', e.target.value)}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter address line 2"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">City</label>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">City</label>
                     <input
                       type="text"
                       value={formData.city}
                       onChange={(e) => handleInputChange('city', e.target.value)}
-                      className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter city"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">State</label>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">State</label>
                     <input
                       type="text"
                       value={formData.state}
                       onChange={(e) => handleInputChange('state', e.target.value)}
-                      className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter state"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">Pincode</label>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">Pincode</label>
                     <input
                       type="text"
                       value={formData.pincode}
                       onChange={(e) => handleInputChange('pincode', e.target.value)}
-                      className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter pincode"
                     />
                   </div>
@@ -368,32 +368,32 @@ const AdminAddUser = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">Occupation</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">Occupation</label>
                   <input
                     type="text"
                     value={formData.occupation}
                     onChange={(e) => handleInputChange('occupation', e.target.value)}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter occupation"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">Organization</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">Organization</label>
                   <input
                     type="text"
                     value={formData.organization}
                     onChange={(e) => handleInputChange('organization', e.target.value)}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter organization"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">Designation</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">Designation</label>
                   <input
                     type="text"
                     value={formData.designation}
                     onChange={(e) => handleInputChange('designation', e.target.value)}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter designation"
                   />
                 </div>
@@ -412,7 +412,7 @@ const AdminAddUser = () => {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Role <span className="text-error-500">*</span>
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -420,7 +420,7 @@ const AdminAddUser = () => {
                       <div
                         key={role.value}
                         onClick={() => handleInputChange('role', role.value)}
-                        className={`p-3 border-2 rounded-lg cursor-pointer transition-colors ${
+                        className={`p-3 border-2 rounded-xl cursor-pointer transition-colors ${
                           formData.role === role.value
                             ? 'border-primary-500 bg-primary-50'
                             : 'border-neutral-200 hover:border-neutral-300'
@@ -451,11 +451,11 @@ const AdminAddUser = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">Initial Status</label>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">Initial Status</label>
                     <select
                       value={formData.status}
                       onChange={(e) => handleInputChange('status', e.target.value)}
-                      className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="pending">Pending</option>
                       <option value="active">Active</option>
@@ -471,7 +471,7 @@ const AdminAddUser = () => {
                       onChange={(e) => handleInputChange('is_premium', e.target.checked)}
                       className="rounded border-neutral-300 text-primary-600 focus:ring-primary-500 mr-2"
                     />
-                    <label htmlFor="is_premium" className="text-sm font-medium text-neutral-700 flex items-center gap-1">
+                    <label htmlFor="is_premium" className="text-body-regular font-medium text-neutral-700 flex items-center gap-1">
                       <Star className="h-4 w-4 text-secondary-500" />
                       Premium User
                     </label>
@@ -492,12 +492,12 @@ const AdminAddUser = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">PAN Number</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">PAN Number</label>
                   <input
                     type="text"
                     value={formData.pan_number}
                     onChange={(e) => handleInputChange('pan_number', e.target.value.toUpperCase())}
-                    className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                       errors.pan_number ? 'border-error-500' : 'border-neutral-300'
                     }`}
                     placeholder="Enter PAN number"
@@ -509,12 +509,12 @@ const AdminAddUser = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">Aadhaar Number</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">Aadhaar Number</label>
                   <input
                     type="text"
                     value={formData.aadhaar_number}
                     onChange={(e) => handleInputChange('aadhaar_number', e.target.value)}
-                    className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                       errors.aadhaar_number ? 'border-error-500' : 'border-neutral-300'
                     }`}
                     placeholder="Enter Aadhaar number"
@@ -539,12 +539,12 @@ const AdminAddUser = () => {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">Notes</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">Notes</label>
                   <textarea
                     value={formData.notes}
                     onChange={(e) => handleInputChange('notes', e.target.value)}
                     rows={4}
-                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Add any additional notes about the user..."
                   />
                 </div>
@@ -558,7 +558,7 @@ const AdminAddUser = () => {
                       onChange={(e) => handleInputChange('send_welcome_email', e.target.checked)}
                       className="rounded border-neutral-300 text-primary-600 focus:ring-primary-500 mr-2"
                     />
-                    <label htmlFor="send_welcome_email" className="text-sm font-medium text-neutral-700">
+                    <label htmlFor="send_welcome_email" className="text-body-regular font-medium text-neutral-700">
                       Send Welcome Email
                     </label>
                   </div>
@@ -571,7 +571,7 @@ const AdminAddUser = () => {
                       onChange={(e) => handleInputChange('require_password_change', e.target.checked)}
                       className="rounded border-neutral-300 text-primary-600 focus:ring-primary-500 mr-2"
                     />
-                    <label htmlFor="require_password_change" className="text-sm font-medium text-neutral-700">
+                    <label htmlFor="require_password_change" className="text-body-regular font-medium text-neutral-700">
                       Require Password Change
                     </label>
                   </div>

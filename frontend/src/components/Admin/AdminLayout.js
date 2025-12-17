@@ -48,7 +48,7 @@ const NavGroup = ({ group, location, isOpen, onToggle, onNavClick }) => {
     <div className="mb-2">
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all ${
           hasActiveItem
             ? 'bg-secondary-50 text-secondary-700'
             : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
@@ -83,7 +83,7 @@ const NavGroup = ({ group, location, isOpen, onToggle, onNavClick }) => {
                     key={item.name}
                     to={item.href}
                     onClick={onNavClick}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-all ${
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-xl text-sm transition-all ${
                       isActive
                         ? 'bg-primary-100 text-primary-700 font-medium'
                         : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
@@ -322,7 +322,7 @@ const AdminLayout = ({ children }) => {
         </div>
         <div>
           <Typography.Small className="font-semibold text-neutral-900">BurnBlack</Typography.Small>
-          <Typography.Small className="text-xs text-neutral-500">Admin Panel</Typography.Small>
+          <Typography.Small className="text-body-small text-neutral-500">Admin Panel</Typography.Small>
         </div>
       </div>
 
@@ -344,7 +344,7 @@ const AdminLayout = ({ children }) => {
       <div className="p-4 border-t border-neutral-200">
         <div className="flex items-center space-x-3 mb-3">
           <div className="w-10 h-10 bg-secondary-100 rounded-full flex items-center justify-center">
-            <span className="text-secondary-600 font-semibold text-sm">
+            <span className="text-secondary-600 font-semibold text-body-regular">
               {user?.email?.charAt(0).toUpperCase() || 'A'}
             </span>
           </div>
@@ -352,14 +352,14 @@ const AdminLayout = ({ children }) => {
             <Typography.Small className="font-medium text-neutral-900 truncate block">
               {user?.email || 'Admin'}
             </Typography.Small>
-            <Typography.Small className="text-xs text-neutral-500">
+            <Typography.Small className="text-body-small text-neutral-500">
               {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Platform Admin'}
             </Typography.Small>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-sm font-medium text-neutral-700 transition-colors"
+          className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-xl text-body-regular font-medium text-neutral-700 transition-colors"
         >
           <LogOut className="w-4 h-4" />
           <span>Logout</span>
@@ -431,12 +431,12 @@ const AdminLayout = ({ children }) => {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-elevation-4 flex flex-col lg:hidden"
             >
               <div className="absolute top-4 right-4">
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -448,7 +448,7 @@ const AdminLayout = ({ children }) => {
       </AnimatePresence>
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-72 lg:bg-white lg:shadow-lg lg:flex lg:flex-col">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-72 lg:bg-white lg:shadow-elevation-3 lg:flex lg:flex-col">
         <SidebarContent onNavClick={() => {}} />
       </div>
 
@@ -461,7 +461,7 @@ const AdminLayout = ({ children }) => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 text-neutral-600"
+                className="lg:hidden p-2 rounded-xl hover:bg-neutral-100 text-neutral-600"
               >
                 <Menu className="w-5 h-5" />
               </button>
@@ -475,14 +475,14 @@ const AdminLayout = ({ children }) => {
 
             <div className="flex items-center space-x-3">
               {/* Search (placeholder) */}
-              <button className="hidden md:flex items-center space-x-2 px-3 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-neutral-500 transition-colors">
+              <button className="hidden md:flex items-center space-x-2 px-3 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-xl text-neutral-500 transition-colors">
                 <Search className="w-4 h-4" />
-                <span className="text-sm">Search...</span>
-                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 bg-white rounded text-xs text-neutral-400 border border-neutral-200">⌘K</kbd>
+                <span className="text-body-regular">Search...</span>
+                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 bg-white rounded text-body-small text-neutral-400 border border-neutral-200">⌘K</kbd>
               </button>
 
               {/* Notifications */}
-              <button className="relative p-2 rounded-lg hover:bg-neutral-100 text-neutral-600 transition-colors">
+              <button className="relative p-2 rounded-xl hover:bg-neutral-100 text-neutral-600 transition-colors">
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-error-500 rounded-full" />
               </button>
@@ -490,7 +490,7 @@ const AdminLayout = ({ children }) => {
               {/* User avatar (mobile only - desktop has it in sidebar) */}
               <div className="flex lg:hidden items-center space-x-2">
                 <div className="w-8 h-8 bg-secondary-100 rounded-full flex items-center justify-center">
-                  <span className="text-secondary-600 font-medium text-sm">
+                  <span className="text-secondary-600 font-medium text-body-regular">
                     {user?.email?.charAt(0).toUpperCase()}
                   </span>
                 </div>

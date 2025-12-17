@@ -115,20 +115,20 @@ const ITRModeSelection = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">Choose Filing Mode</h1>
-              <p className="text-sm text-slate-500">Select how you'd like to proceed</p>
+              <h1 className="text-heading-4 font-semibold text-slate-900">Choose Filing Mode</h1>
+              <p className="text-body-regular text-slate-500">Select how you'd like to proceed</p>
             </div>
           </div>
           {selectedPerson && (
-            <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg">
+            <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl">
               <Users className="w-4 h-4 text-slate-500" />
-              <span className="text-sm text-slate-700">{selectedPerson.name}</span>
-              <span className="text-xs text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
+              <span className="text-body-regular text-slate-700">{selectedPerson.name}</span>
+              <span className="text-body-small text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
                 {selectedPerson.panNumber}
               </span>
             </div>
@@ -144,11 +144,11 @@ const ITRModeSelection = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-body-regular font-medium mb-4">
             <Shield className="w-4 h-4" />
             AY 2025-26 Filing
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+          <h2 className="text-heading-2 md:text-heading-1 font-bold text-slate-900 mb-3">
             How would you like to file your ITR?
           </h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
@@ -174,14 +174,14 @@ const ITRModeSelection = () => {
                 className={cn(
                   'relative rounded-2xl border-2 overflow-hidden cursor-pointer transition-all',
                   isSelected
-                    ? 'border-primary-500 shadow-xl shadow-primary-500/20'
-                    : `${mode.borderColor} hover:shadow-lg`,
+                    ? 'border-primary-500 shadow-elevation-4 shadow-primary-500/20'
+                    : `${mode.borderColor} hover:shadow-elevation-3`,
                 )}
               >
                 {/* Recommended Badge */}
                 {mode.recommended && (
                   <div className="absolute top-3 right-3 z-10">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-500 text-white">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-body-small font-semibold bg-primary-500 text-white">
                       <Sparkles className="w-3 h-3" />
                       Recommended
                     </span>
@@ -196,7 +196,7 @@ const ITRModeSelection = () => {
                     transition={springs.bouncy}
                     className="absolute top-3 left-3 z-10"
                   >
-                    <div className="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center shadow-lg">
+                    <div className="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center shadow-elevation-3">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                   </motion.div>
@@ -210,16 +210,16 @@ const ITRModeSelection = () => {
                   )}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">{mode.title}</h3>
-                  <p className="text-sm font-medium text-slate-600 mt-1">{mode.subtitle}</p>
+                  <h3 className="text-heading-3 font-bold text-slate-900">{mode.title}</h3>
+                  <p className="text-body-regular font-medium text-slate-600 mt-1">{mode.subtitle}</p>
                 </div>
 
                 <div className="p-6 bg-white">
-                  <p className="text-sm text-slate-600 mb-4">{mode.description}</p>
+                  <p className="text-body-regular text-slate-600 mb-4">{mode.description}</p>
 
                   <ul className="space-y-2">
                     {mode.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-slate-700">
+                      <li key={i} className="flex items-center gap-2 text-body-regular text-slate-700">
                         <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                         {feature}
                       </li>
@@ -227,7 +227,7 @@ const ITRModeSelection = () => {
                   </ul>
 
                   {mode.requiresLogin && (
-                    <p className="mt-4 text-xs text-amber-600 flex items-center gap-1">
+                    <p className="mt-4 text-body-small text-amber-600 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       Requires IT portal login
                     </p>
@@ -251,7 +251,7 @@ const ITRModeSelection = () => {
             className={cn(
               'inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-lg transition-all',
               selectedMode
-                ? 'bg-gradient-to-r from-primary-500 to-amber-500 text-white hover:shadow-xl hover:shadow-primary-500/30 active:scale-[0.98]'
+                ? 'bg-gradient-to-r from-primary-500 to-amber-500 text-white hover:shadow-elevation-4 hover:shadow-primary-500/30 active:scale-[0.98]'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed',
             )}
           >
@@ -274,7 +274,7 @@ const ITRModeSelection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-sm text-slate-500 mt-6"
+          className="text-center text-body-regular text-slate-500 mt-6"
         >
           Not sure which mode to choose?{' '}
           <button

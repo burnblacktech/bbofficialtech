@@ -201,10 +201,10 @@ const FinancialProfilePage = () => {
   // Loading state
   if (profileLoading || historyLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your financial profile...</p>
+          <p className="text-slate-600">Loading your financial profile...</p>
         </div>
       </div>
     );
@@ -213,14 +213,14 @@ const FinancialProfilePage = () => {
   // Error state
   if (profileError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-black mb-2">Failed to Load Profile</h2>
-          <p className="text-gray-700 mb-4">{profileError.message}</p>
+          <AlertCircle className="w-12 h-12 text-error-600 mx-auto mb-4" />
+          <h2 className="text-heading-3 font-semibold text-black mb-2">Failed to Load Profile</h2>
+          <p className="text-slate-700 mb-4">{profileError.message}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
           >
             Retry
           </button>
@@ -232,14 +232,14 @@ const FinancialProfilePage = () => {
   // No data state
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">No Financial Profile Found</h2>
-          <p className="text-gray-600 mb-4">
+          <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <h2 className="text-heading-3 font-semibold text-slate-900 mb-2">No Financial Profile Found</h2>
+          <p className="text-slate-600 mb-4">
             We couldn't find any financial history for your PAN. This could be because:
           </p>
-          <ul className="text-left text-gray-600 mb-6 max-w-md mx-auto">
+          <ul className="text-left text-slate-600 mb-6 max-w-md mx-auto">
             <li>• You haven't filed any ITRs yet</li>
             <li>• Your PAN is not linked to any filings</li>
             <li>• There's an issue with data retrieval</li>
@@ -247,14 +247,14 @@ const FinancialProfilePage = () => {
           <div className="space-x-4">
             <button
               onClick={() => navigate('/itr-selection')}
-              className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
+              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               Start Filing
             </button>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50"
+              className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 disabled:opacity-50"
             >
               {isRefreshing ? 'Refreshing...' : 'Refresh from IT Portal'}
             </button>
@@ -265,14 +265,14 @@ const FinancialProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-elevation-1 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Financial Profile</h1>
-              <div className="ml-4 text-sm text-gray-500">
+              <h1 className="text-heading-2 font-bold text-slate-900">Financial Profile</h1>
+              <div className="ml-4 text-body-regular text-slate-500">
                 PAN: {profile.pan}
               </div>
             </div>
@@ -281,7 +281,7 @@ const FinancialProfilePage = () => {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="flex items-center px-3 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 disabled:opacity-50"
+                className="flex items-center px-3 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh'}
@@ -289,7 +289,7 @@ const FinancialProfilePage = () => {
 
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="px-3 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
               >
                 Back to Dashboard
               </button>
@@ -302,50 +302,50 @@ const FinancialProfilePage = () => {
         {/* Summary Stats */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
               <div className="flex items-center">
-                <div className="p-2 bg-royal-100 rounded-lg">
+                <div className="p-2 bg-royal-100 rounded-xl">
                   <FileText className="w-6 h-6 text-royal-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Filings</p>
-                  <p className="text-2xl font-bold text-black">{stats.totalFilings}</p>
+                  <p className="text-body-regular font-medium text-slate-600">Total Filings</p>
+                  <p className="text-heading-2 font-bold text-black">{stats.totalFilings}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
               <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg">
+                <div className="p-2 bg-green-100 rounded-xl">
                   <TrendingUp className="w-6 h-6 text-green-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Income</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{stats.totalIncome.toLocaleString()}</p>
+                  <p className="text-body-regular font-medium text-slate-600">Total Income</p>
+                  <p className="text-heading-2 font-bold text-slate-900">₹{stats.totalIncome.toLocaleString()}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
               <div className="flex items-center">
-                <div className="p-2 bg-purple-100 rounded-lg">
+                <div className="p-2 bg-purple-100 rounded-xl">
                   <Target className="w-6 h-6 text-purple-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Deductions</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{stats.totalDeductions.toLocaleString()}</p>
+                  <p className="text-body-regular font-medium text-slate-600">Total Deductions</p>
+                  <p className="text-heading-2 font-bold text-slate-900">₹{stats.totalDeductions.toLocaleString()}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
               <div className="flex items-center">
-                <div className="p-2 bg-gold-100 rounded-lg">
+                <div className="p-2 bg-gold-100 rounded-xl">
                   <IndianRupee className="w-6 h-6 text-gold-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Refund</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{stats.totalRefund.toLocaleString()}</p>
+                  <p className="text-body-regular font-medium text-slate-600">Total Refund</p>
+                  <p className="text-heading-2 font-bold text-slate-900">₹{stats.totalRefund.toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -355,39 +355,39 @@ const FinancialProfilePage = () => {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Income Trend Chart */}
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Income Trend</h3>
+              <h3 className="text-heading-4 font-semibold text-slate-900">Income Trend</h3>
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-5 h-5 text-green-600" />
-                <span className="text-sm text-green-600">+12.5%</span>
+                <span className="text-body-regular text-green-600">+12.5%</span>
               </div>
             </div>
 
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl">
               <div className="text-center">
-                <LineChart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600">Income trend chart will be displayed here</p>
-                <p className="text-sm text-gray-500">Integration with charting library pending</p>
+                <LineChart className="w-12 h-12 text-slate-400 mx-auto mb-2" />
+                <p className="text-slate-600">Income trend chart will be displayed here</p>
+                <p className="text-body-regular text-slate-500">Integration with charting library pending</p>
               </div>
             </div>
           </div>
 
           {/* Deductions Breakdown */}
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-black">Deductions Breakdown</h3>
+              <h3 className="text-heading-4 font-semibold text-black">Deductions Breakdown</h3>
               <div className="flex items-center space-x-2">
                 <PieChart className="w-5 h-5 text-royal-600" />
-                <span className="text-sm text-royal-600">80C: 65%</span>
+                <span className="text-body-regular text-royal-600">80C: 65%</span>
               </div>
             </div>
 
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl">
               <div className="text-center">
-                <PieChart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-600">Deductions breakdown chart will be displayed here</p>
-                <p className="text-sm text-gray-500">Integration with charting library pending</p>
+                <PieChart className="w-12 h-12 text-slate-400 mx-auto mb-2" />
+                <p className="text-slate-600">Deductions breakdown chart will be displayed here</p>
+                <p className="text-body-regular text-slate-500">Integration with charting library pending</p>
               </div>
             </div>
           </div>
@@ -397,10 +397,10 @@ const FinancialProfilePage = () => {
         {insights && insights.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Financial Insights</h3>
+              <h3 className="text-heading-4 font-semibold text-slate-900">Financial Insights</h3>
               <button
                 onClick={() => setShowInsights(!showInsights)}
-                className="flex items-center text-sm text-gray-600 hover:text-gray-800"
+                className="flex items-center text-body-regular text-slate-600 hover:text-gray-800"
               >
                 <Eye className="w-4 h-4 mr-1" />
                 {showInsights ? 'Hide' : 'Show'} Insights
@@ -410,15 +410,15 @@ const FinancialProfilePage = () => {
             {showInsights && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {insights.map((insight, index) => (
-                  <div key={index} className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                  <div key={index} className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
                     <div className="flex items-start">
-                      <div className="p-2 bg-gold-100 rounded-lg mr-3">
+                      <div className="p-2 bg-gold-100 rounded-xl mr-3">
                         <Lightbulb className="w-5 h-5 text-gold-600" />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-black mb-2">{insight.title}</h4>
-                        <p className="text-sm text-gray-600 mb-3">{insight.description}</p>
-                        <div className="flex items-center text-sm text-gray-500">
+                        <p className="text-body-regular text-slate-600 mb-3">{insight.description}</p>
+                        <div className="flex items-center text-body-regular text-slate-500">
                           <Calendar className="w-4 h-4 mr-1" />
                           {insight.assessment_year}
                         </div>
@@ -432,15 +432,15 @@ const FinancialProfilePage = () => {
         )}
 
         {/* Filing History Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200">
+          <div className="p-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Filing History</h3>
+              <h3 className="text-heading-4 font-semibold text-slate-900">Filing History</h3>
               <div className="flex items-center space-x-4">
                 <select
                   value={selectedTimeRange}
                   onChange={(e) => setSelectedTimeRange(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="1y">Last 1 Year</option>
                   <option value="3y">Last 3 Years</option>
@@ -448,7 +448,7 @@ const FinancialProfilePage = () => {
                   <option value="all">All Time</option>
                 </select>
 
-                <button className="flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                <button className="flex items-center px-3 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50">
                   <Download className="w-4 h-4 mr-1" />
                   Export
                 </button>
@@ -458,66 +458,66 @@ const FinancialProfilePage = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Assessment Year
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     ITR Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Gross Income
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Deductions
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Tax Paid
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Refund
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {history?.map((filing, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <tr key={index} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular font-medium text-slate-900">
                       {filing.assessment_year}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular text-slate-600">
                       {filing.itr_type || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular text-slate-600">
                       ₹{filing.gross_income.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular text-slate-600">
                       ₹{filing.deductions.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular text-slate-600">
                       ₹{filing.tax_paid.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular text-slate-600">
                       ₹{filing.refund.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                      <span className="inline-flex px-2 py-1 text-body-small font-semibold rounded-full bg-green-100 text-green-800">
                         Completed
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-body-regular text-slate-600">
                       <div className="flex items-center space-x-2">
                         <button className="text-gold-600 hover:text-gold-800">
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button className="text-gray-600 hover:text-gray-800">
+                        <button className="text-slate-600 hover:text-gray-800">
                           <Download className="w-4 h-4" />
                         </button>
                       </div>

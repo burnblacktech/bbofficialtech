@@ -18,7 +18,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
       case 'low':
         return 'bg-info-50 border-info-200 text-info-900';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-900';
+        return 'bg-slate-50 border-slate-200 text-slate-900';
     }
   };
 
@@ -83,12 +83,12 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <Sparkles className="h-5 w-5 text-gold-600 mr-2" />
-          <h3 className="text-heading-md text-gray-900">AI-Powered Recommendations</h3>
+          <h3 className="text-heading-md text-slate-900">AI-Powered Recommendations</h3>
         </div>
         <div className="flex items-center gap-3">
           {summary && (
             <div className="flex items-center gap-2 text-body-sm">
-              <span className="text-gray-600">Potential Savings:</span>
+              <span className="text-slate-600">Potential Savings:</span>
               <span className="font-semibold text-success-600">
                 ₹{summary.estimatedTotalSavings?.toLocaleString('en-IN') || 0}
               </span>
@@ -113,8 +113,8 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
           return (
             <div
               key={`${opportunity.type}-${index}`}
-              className={`border-2 rounded-lg p-5 transition-all ${getPriorityColor(opportunity.priority)} ${
-                isExpanded ? 'shadow-lg' : ''
+              className={`border-2 rounded-xl p-5 transition-all ${getPriorityColor(opportunity.priority)} ${
+                isExpanded ? 'shadow-elevation-3' : ''
               }`}
             >
               <div className="flex items-start justify-between mb-3">
@@ -140,7 +140,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
                   {/* Dismiss button - UI.md: Dismissible */}
                   <button
                     onClick={() => handleDismiss(index)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-gray-100"
+                    className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded hover:bg-slate-100"
                     aria-label="Dismiss suggestion"
                     title="Dismiss"
                   >
@@ -150,7 +150,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
               </div>
 
               {opportunity.potentialSavings > 0 && (
-                <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-lg">
+                <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-xl">
                   <div className="flex items-center justify-between">
                     <span className="text-body-sm font-medium">Potential Savings</span>
                     <span className="text-heading-md font-bold text-success-600">
@@ -164,7 +164,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
                     </div>
                   )}
                   {opportunity.impactScore && (
-                    <div className="mt-2 pt-2 border-t border-gray-200">
+                    <div className="mt-2 pt-2 border-t border-slate-200">
                       <div className="flex items-center justify-between text-body-xs">
                         <span className="opacity-75">Impact Score</span>
                         <span className="font-medium">{Math.round(opportunity.impactScore)}</span>
@@ -178,7 +178,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
                 <div className="mb-4">
                   <button
                     onClick={() => toggleExpand(index)}
-                    className="flex items-center w-full text-left text-body-sm text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center w-full text-left text-body-sm text-slate-700 hover:text-slate-900 transition-colors"
                   >
                     <Info className="h-4 w-4 mr-2" />
                     <span className="flex-1">Learn more about this recommendation</span>
@@ -189,7 +189,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
                     )}
                   </button>
                   {isExpanded && (
-                    <div className="mt-2 p-3 bg-white bg-opacity-70 rounded-lg text-body-sm text-gray-700">
+                    <div className="mt-2 p-3 bg-white bg-opacity-70 rounded-xl text-body-sm text-slate-700">
                       {opportunity.explanation}
                     </div>
                   )}
@@ -198,7 +198,7 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
 
               <button
                 onClick={() => handleSimulateOpportunity(opportunity)}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg hover:border-gold-500 hover:bg-gold-50 transition-colors flex items-center justify-center text-sm font-medium"
+                className="w-full px-4 py-2 border-2 border-slate-300 rounded-xl hover:border-gold-500 hover:bg-gold-50 transition-colors flex items-center justify-center text-body-regular font-medium"
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Simulate This
@@ -210,10 +210,10 @@ const AISuggestions = ({ opportunities, onSimulate, summary, onDismiss }) => {
       </div>
 
       {visibleOpportunities.length === 0 && (
-        <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="text-center py-8 bg-slate-50 rounded-xl border border-slate-200">
           <CheckCircle className="h-12 w-12 text-success-400 mx-auto mb-4" />
-          <h4 className="text-heading-sm text-gray-900 mb-2">No Optimization Opportunities</h4>
-          <p className="text-body-sm text-gray-600">
+          <h4 className="text-heading-sm text-slate-900 mb-2">No Optimization Opportunities</h4>
+          <p className="text-body-sm text-slate-600">
             Your tax planning appears optimal. You can still create custom scenarios.
           </p>
         </div>

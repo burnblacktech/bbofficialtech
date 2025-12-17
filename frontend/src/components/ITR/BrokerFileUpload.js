@@ -211,22 +211,22 @@ const BrokerFileUpload = ({ filingId, onImportComplete, className = '' }) => {
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="border border-gray-200 rounded-lg p-4 bg-blue-50">
+      <div className="border border-slate-200 rounded-xl p-4 bg-blue-50">
         <div className="flex items-start space-x-3">
           <FileSpreadsheet className="w-5 h-5 text-blue-600 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-semibold text-gray-900 mb-1">Import from Broker File</h4>
-            <p className="text-sm text-gray-600 mb-3">
+            <h4 className="font-semibold text-slate-900 mb-1">Import from Broker File</h4>
+            <p className="text-body-regular text-slate-600 mb-3">
               Upload your capital gains statement from your broker (Excel/CSV format)
             </p>
 
             {/* Broker Selection */}
             <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Select Broker</label>
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">Select Broker</label>
               <select
                 value={selectedBroker}
                 onChange={(e) => setSelectedBroker(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 disabled={isUploading}
               >
                 <option value="">Select Broker</option>
@@ -251,10 +251,10 @@ const BrokerFileUpload = ({ filingId, onImportComplete, className = '' }) => {
               />
               <label
                 htmlFor="broker-file-input"
-                className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg cursor-pointer ${
+                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${
                   !selectedBroker || isUploading
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : 'bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <Upload className="w-4 h-4 mr-2" />
@@ -265,11 +265,11 @@ const BrokerFileUpload = ({ filingId, onImportComplete, className = '' }) => {
             {/* Upload Progress */}
             {isUploading && uploadProgress > 0 && (
               <div className="mt-3">
-                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <div className="flex justify-between text-body-small text-slate-600 mb-1">
                   <span>Uploading...</span>
                   <span>{uploadProgress}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-slate-200 rounded-full h-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
@@ -280,10 +280,10 @@ const BrokerFileUpload = ({ filingId, onImportComplete, className = '' }) => {
 
             {/* Error Display */}
             {error && (
-              <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="mt-3 bg-error-50 border border-red-200 rounded-xl p-3">
                 <div className="flex items-start">
-                  <AlertCircle className="w-4 h-4 text-red-600 mr-2 mt-0.5" />
-                  <p className="text-sm text-red-800">{error}</p>
+                  <AlertCircle className="w-4 h-4 text-error-600 mr-2 mt-0.5" />
+                  <p className="text-body-regular text-red-800">{error}</p>
                 </div>
               </div>
             )}
@@ -293,53 +293,53 @@ const BrokerFileUpload = ({ filingId, onImportComplete, className = '' }) => {
 
       {/* Import Preview */}
       {importPreview && (
-        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+        <div className="border border-green-200 rounded-xl p-4 bg-green-50">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-start">
               <CheckCircle className="w-5 h-5 text-green-600 mr-2 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-gray-900">Import Preview</h4>
-                <p className="text-sm text-gray-600">
+                <h4 className="font-semibold text-slate-900">Import Preview</h4>
+                <p className="text-body-regular text-slate-600">
                   {importPreview.summary.transactionCount} transactions found
                 </p>
               </div>
             </div>
             <button
               onClick={handleCancelImport}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-600"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div className="bg-white rounded-lg p-2">
-              <div className="text-xs text-gray-600">STCG Entries</div>
-              <div className="text-lg font-semibold text-gray-900">
+            <div className="bg-white rounded-xl p-2">
+              <div className="text-body-small text-slate-600">STCG Entries</div>
+              <div className="text-body-large font-semibold text-slate-900">
                 {importPreview.stcgDetails.length}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-body-small text-slate-500">
                 {importPreview.summary.totalSTCG.toLocaleString('en-IN')}
               </div>
             </div>
-            <div className="bg-white rounded-lg p-2">
-              <div className="text-xs text-gray-600">LTCG Entries</div>
-              <div className="text-lg font-semibold text-gray-900">
+            <div className="bg-white rounded-xl p-2">
+              <div className="text-body-small text-slate-600">LTCG Entries</div>
+              <div className="text-body-large font-semibold text-slate-900">
                 {importPreview.ltcgDetails.length}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-body-small text-slate-500">
                 {importPreview.summary.totalLTCG.toLocaleString('en-IN')}
               </div>
             </div>
-            <div className="bg-white rounded-lg p-2">
-              <div className="text-xs text-gray-600">Total STCG</div>
-              <div className="text-lg font-semibold text-green-600">
+            <div className="bg-white rounded-xl p-2">
+              <div className="text-body-small text-slate-600">Total STCG</div>
+              <div className="text-body-large font-semibold text-green-600">
                 ₹{importPreview.summary.totalSTCG.toLocaleString('en-IN')}
               </div>
             </div>
-            <div className="bg-white rounded-lg p-2">
-              <div className="text-xs text-gray-600">Total LTCG</div>
-              <div className="text-lg font-semibold text-green-600">
+            <div className="bg-white rounded-xl p-2">
+              <div className="text-body-small text-slate-600">Total LTCG</div>
+              <div className="text-body-large font-semibold text-green-600">
                 ₹{importPreview.summary.totalLTCG.toLocaleString('en-IN')}
               </div>
             </div>
@@ -348,13 +348,13 @@ const BrokerFileUpload = ({ filingId, onImportComplete, className = '' }) => {
           <div className="flex space-x-2">
             <button
               onClick={handleApplyImport}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium"
             >
               Apply Import
             </button>
             <button
               onClick={handleCancelImport}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+              className="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-gray-300"
             >
               Cancel
             </button>

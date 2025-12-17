@@ -16,7 +16,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { enterpriseLogger } from '../../utils/logger';
@@ -94,19 +94,19 @@ const ClientOnboardingForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white shadow-elevation-1 border-b sticky top-0 z-50">
         <div className="px-4 py-3">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate(`/firm/${firmId}/clients`)}
-              className="p-2 rounded-lg hover:bg-gray-100"
+              className="p-2 rounded-xl hover:bg-slate-100"
             >
-              <ArrowLeft className="h-5 w-5 text-gray-700" />
+              <ArrowLeft className="h-5 w-5 text-slate-700" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">Onboard New Client</h1>
-              <p className="text-xs text-gray-500">Add a new client to your firm</p>
+              <h1 className="text-heading-4 font-semibold text-slate-900">Onboard New Client</h1>
+              <p className="text-body-small text-slate-500">Add a new client to your firm</p>
             </div>
           </div>
         </div>
@@ -117,13 +117,13 @@ const ClientOnboardingForm = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4 flex items-center">
                 <User className="w-5 h-5 mr-2" />
                 Personal Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="firstName" className="block text-body-regular font-medium text-slate-700 mb-1">
                     First Name *
                   </label>
                   <input
@@ -133,11 +133,11 @@ const ClientOnboardingForm = () => {
                     required
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="lastName" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Last Name *
                   </label>
                   <input
@@ -147,11 +147,11 @@ const ClientOnboardingForm = () => {
                     required
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="panNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="panNumber" className="block text-body-regular font-medium text-slate-700 mb-1">
                     PAN Number *
                   </label>
                   <input
@@ -163,11 +163,11 @@ const ClientOnboardingForm = () => {
                     value={formData.panNumber}
                     onChange={handleInputChange}
                     placeholder="ABCDE1234F"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
                   />
                 </div>
                 <div>
-                  <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="dateOfBirth" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Date of Birth *
                   </label>
                   <input
@@ -177,11 +177,11 @@ const ClientOnboardingForm = () => {
                     required
                     value={formData.dateOfBirth}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="gender" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Gender *
                   </label>
                   <select
@@ -190,7 +190,7 @@ const ClientOnboardingForm = () => {
                     required
                     value={formData.gender}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -198,7 +198,7 @@ const ClientOnboardingForm = () => {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="maritalStatus" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="maritalStatus" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Marital Status *
                   </label>
                   <select
@@ -207,7 +207,7 @@ const ClientOnboardingForm = () => {
                     required
                     value={formData.maritalStatus}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="single">Single</option>
                     <option value="married">Married</option>
@@ -220,13 +220,13 @@ const ClientOnboardingForm = () => {
 
             {/* Contact Information */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4 flex items-center">
                 <Phone className="w-5 h-5 mr-2" />
                 Contact Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="phone" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Phone Number
                   </label>
                   <input
@@ -235,11 +235,11 @@ const ClientOnboardingForm = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="email" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Email Address
                   </label>
                   <input
@@ -248,7 +248,7 @@ const ClientOnboardingForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -256,13 +256,13 @@ const ClientOnboardingForm = () => {
 
             {/* Address */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4 flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
                 Address
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label htmlFor="address.street" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="address.street" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Street Address
                   </label>
                   <input
@@ -271,11 +271,11 @@ const ClientOnboardingForm = () => {
                     name="address.street"
                     value={formData.address.street}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="address.city" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="address.city" className="block text-body-regular font-medium text-slate-700 mb-1">
                     City
                   </label>
                   <input
@@ -284,11 +284,11 @@ const ClientOnboardingForm = () => {
                     name="address.city"
                     value={formData.address.city}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="address.state" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="address.state" className="block text-body-regular font-medium text-slate-700 mb-1">
                     State
                   </label>
                   <input
@@ -297,11 +297,11 @@ const ClientOnboardingForm = () => {
                     name="address.state"
                     value={formData.address.state}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="address.pincode" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="address.pincode" className="block text-body-regular font-medium text-slate-700 mb-1">
                     Pincode
                   </label>
                   <input
@@ -310,7 +310,7 @@ const ClientOnboardingForm = () => {
                     name="address.pincode"
                     value={formData.address.pincode}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>

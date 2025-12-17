@@ -96,10 +96,10 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
         />
         <label
           htmlFor={`deduction-upload-${field}`}
-          className={`inline-flex items-center px-3 py-1.5 text-xs border rounded-lg cursor-pointer ${
+          className={`inline-flex items-center px-3 py-1.5 text-xs border rounded-xl cursor-pointer ${
             isUploading
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-300'
           }`}
         >
           <Upload className="w-3 h-3 mr-1" />
@@ -107,7 +107,7 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
         </label>
 
         {uploadedDoc && (
-          <div className="mt-2 flex items-center justify-between bg-green-50 border border-green-200 rounded p-2 text-xs">
+          <div className="mt-2 flex items-center justify-between bg-green-50 border border-green-200 rounded p-2 text-body-small">
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-3 h-3 text-green-600" />
               <span className="text-green-800">
@@ -125,7 +125,7 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
                   fileInputRefs.current[field].value = '';
                 }
               }}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-600"
             >
               <X className="w-3 h-3" />
             </button>
@@ -144,15 +144,15 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (typeof section80C === 'number') {
       const amount = Math.min(section80C, 150000);
       return (
-        <div className="border border-gray-200 rounded-lg p-4">
+        <div className="border border-slate-200 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Shield className="w-5 h-5 text-green-600" />
-              <h4 className="font-semibold text-gray-900">Section 80C</h4>
+              <h4 className="font-semibold text-slate-900">Section 80C</h4>
             </div>
             <div className="text-right">
-              <span className="font-semibold text-gray-900">{formatCurrency(amount)}</span>
-              <span className="text-xs text-gray-500 block">Limit: ₹1,50,000</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(amount)}</span>
+              <span className="text-body-small text-slate-500 block">Limit: ₹1,50,000</span>
             </div>
           </div>
         </div>
@@ -174,76 +174,76 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (total === 0) return null;
 
     return (
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <button
           onClick={() => toggleSection('section80C')}
           className="w-full flex items-center justify-between text-left"
         >
           <div className="flex items-center space-x-2">
             <Shield className="w-5 h-5 text-green-600" />
-            <h4 className="font-semibold text-gray-900">Section 80C</h4>
+            <h4 className="font-semibold text-slate-900">Section 80C</h4>
           </div>
           <div className="text-right mr-2">
-            <span className="font-semibold text-gray-900">{formatCurrency(capped)}</span>
-            <span className="text-xs text-gray-500 block">of ₹1,50,000 limit</span>
+            <span className="font-semibold text-slate-900">{formatCurrency(capped)}</span>
+            <span className="text-body-small text-slate-500 block">of ₹1,50,000 limit</span>
           </div>
           {expandedSections.section80C ? (
-            <ChevronUp className="w-5 h-5 text-gray-500" />
+            <ChevronUp className="w-5 h-5 text-slate-500" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500" />
+            <ChevronDown className="w-5 h-5 text-slate-500" />
           )}
         </button>
 
         {expandedSections.section80C && (
           <div className="mt-4 space-y-2">
             {elss > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">ELSS Mutual Funds:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">ELSS Mutual Funds:</span>
                 <span className="font-medium">{formatCurrency(elss)}</span>
               </div>
             )}
             {ppf > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">PPF:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">PPF:</span>
                 <span className="font-medium">{formatCurrency(ppf)}</span>
               </div>
             )}
             {lic > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">LIC Premium:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">LIC Premium:</span>
                 <span className="font-medium">{formatCurrency(lic)}</span>
               </div>
             )}
             {nsc > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">NSC:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">NSC:</span>
                 <span className="font-medium">{formatCurrency(nsc)}</span>
               </div>
             )}
             {fd > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Tax Saving FD:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Tax Saving FD:</span>
                 <span className="font-medium">{formatCurrency(fd)}</span>
               </div>
             )}
             {homeLoan > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Home Loan Principal:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Home Loan Principal:</span>
                 <span className="font-medium">{formatCurrency(homeLoan)}</span>
               </div>
             )}
             {other > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Other:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Other:</span>
                 <span className="font-medium">{formatCurrency(other)}</span>
               </div>
             )}
-            <div className="border-t border-gray-300 pt-2 flex justify-between">
-              <span className="font-medium text-gray-700">Total (before cap):</span>
-              <span className="font-semibold text-gray-900">{formatCurrency(total)}</span>
+            <div className="border-t border-slate-300 pt-2 flex justify-between">
+              <span className="font-medium text-slate-700">Total (before cap):</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(total)}</span>
             </div>
             {total > 150000 && (
-              <div className="text-xs text-yellow-600 bg-yellow-50 p-2 rounded">
+              <div className="text-body-small text-yellow-600 bg-yellow-50 p-2 rounded">
                 Amount capped at ₹1,50,000 limit
               </div>
             )}
@@ -264,15 +264,15 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (typeof section80D === 'number') {
       const amount = Math.min(section80D, 25000);
       return (
-        <div className="border border-gray-200 rounded-lg p-4">
+        <div className="border border-slate-200 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Heart className="w-5 h-5 text-green-600" />
-              <h4 className="font-semibold text-gray-900">Section 80D</h4>
+              <h4 className="font-semibold text-slate-900">Section 80D</h4>
             </div>
             <div className="text-right">
-              <span className="font-semibold text-gray-900">{formatCurrency(amount)}</span>
-              <span className="text-xs text-gray-500 block">Limit: ₹25,000</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(amount)}</span>
+              <span className="text-body-small text-slate-500 block">Limit: ₹25,000</span>
             </div>
           </div>
         </div>
@@ -290,52 +290,52 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (total === 0) return null;
 
     return (
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <button
           onClick={() => toggleSection('section80D')}
           className="w-full flex items-center justify-between text-left"
         >
           <div className="flex items-center space-x-2">
             <Heart className="w-5 h-5 text-green-600" />
-            <h4 className="font-semibold text-gray-900">Section 80D</h4>
+            <h4 className="font-semibold text-slate-900">Section 80D</h4>
           </div>
           <div className="text-right mr-2">
-            <span className="font-semibold text-gray-900">{formatCurrency(capped)}</span>
-            <span className="text-xs text-gray-500 block">of ₹25,000 limit</span>
+            <span className="font-semibold text-slate-900">{formatCurrency(capped)}</span>
+            <span className="text-body-small text-slate-500 block">of ₹25,000 limit</span>
           </div>
           {expandedSections.section80D ? (
-            <ChevronUp className="w-5 h-5 text-gray-500" />
+            <ChevronUp className="w-5 h-5 text-slate-500" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500" />
+            <ChevronDown className="w-5 h-5 text-slate-500" />
           )}
         </button>
 
         {expandedSections.section80D && (
           <div className="mt-4 space-y-2">
             {self > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Self & Family:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Self & Family:</span>
                 <span className="font-medium">{formatCurrency(self)}</span>
               </div>
             )}
             {parents > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Parents:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Parents:</span>
                 <span className="font-medium">{formatCurrency(parents)}</span>
               </div>
             )}
             {seniorCitizen > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Senior Citizen:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Senior Citizen:</span>
                 <span className="font-medium">{formatCurrency(seniorCitizen)}</span>
               </div>
             )}
-            <div className="border-t border-gray-300 pt-2 flex justify-between">
-              <span className="font-medium text-gray-700">Total (before cap):</span>
-              <span className="font-semibold text-gray-900">{formatCurrency(total)}</span>
+            <div className="border-t border-slate-300 pt-2 flex justify-between">
+              <span className="font-medium text-slate-700">Total (before cap):</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(total)}</span>
             </div>
             {total > 25000 && (
-              <div className="text-xs text-yellow-600 bg-yellow-50 p-2 rounded">
+              <div className="text-body-small text-yellow-600 bg-yellow-50 p-2 rounded">
                 Amount capped at ₹25,000 limit
               </div>
             )}
@@ -353,14 +353,14 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (!section80G || section80G === 0) return null;
 
     return (
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Gift className="w-5 h-5 text-green-600" />
-            <h4 className="font-semibold text-gray-900">Section 80G</h4>
-            <span className="text-xs text-gray-500">(Donations)</span>
+            <h4 className="font-semibold text-slate-900">Section 80G</h4>
+            <span className="text-body-small text-slate-500">(Donations)</span>
           </div>
-          <span className="font-semibold text-gray-900">{formatCurrency(section80G)}</span>
+          <span className="font-semibold text-slate-900">{formatCurrency(section80G)}</span>
         </div>
       </div>
     );
@@ -372,14 +372,14 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (!section80E || section80E === 0) return null;
 
     return (
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <GraduationCap className="w-5 h-5 text-green-600" />
-            <h4 className="font-semibold text-gray-900">Section 80E</h4>
-            <span className="text-xs text-gray-500">(Education Loan Interest)</span>
+            <h4 className="font-semibold text-slate-900">Section 80E</h4>
+            <span className="text-body-small text-slate-500">(Education Loan Interest)</span>
           </div>
-          <span className="font-semibold text-gray-900">{formatCurrency(section80E)}</span>
+          <span className="font-semibold text-slate-900">{formatCurrency(section80E)}</span>
         </div>
       </div>
     );
@@ -393,26 +393,26 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if ((!section80TTA || section80TTA === 0) && (!section80TTB || section80TTB === 0)) return null;
 
     return (
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="space-y-2">
           {section80TTA > 0 && (
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <FileText className="w-5 h-5 text-green-600" />
-                <h4 className="font-semibold text-gray-900">Section 80TTA</h4>
-                <span className="text-xs text-gray-500">(Savings Interest)</span>
+                <h4 className="font-semibold text-slate-900">Section 80TTA</h4>
+                <span className="text-body-small text-slate-500">(Savings Interest)</span>
               </div>
-              <span className="font-semibold text-gray-900">{formatCurrency(section80TTA)}</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(section80TTA)}</span>
             </div>
           )}
           {section80TTB > 0 && (
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <FileText className="w-5 h-5 text-green-600" />
-                <h4 className="font-semibold text-gray-900">Section 80TTB</h4>
-                <span className="text-xs text-gray-500">(Senior Citizen Interest)</span>
+                <h4 className="font-semibold text-slate-900">Section 80TTB</h4>
+                <span className="text-body-small text-slate-500">(Senior Citizen Interest)</span>
               </div>
-              <span className="font-semibold text-gray-900">{formatCurrency(section80TTB)}</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(section80TTB)}</span>
             </div>
           )}
         </div>
@@ -433,40 +433,40 @@ const DeductionBreakdown = ({ formData, onUpdate }) => {
     if (total === 0) return null;
 
     return (
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <button
           onClick={() => toggleSection('otherDeductions')}
           className="w-full flex items-center justify-between text-left"
         >
           <div className="flex items-center space-x-2">
             <FileText className="w-5 h-5 text-green-600" />
-            <h4 className="font-semibold text-gray-900">Other Deductions</h4>
+            <h4 className="font-semibold text-slate-900">Other Deductions</h4>
           </div>
-          <span className="font-semibold text-gray-900 mr-2">{formatCurrency(total)}</span>
+          <span className="font-semibold text-slate-900 mr-2">{formatCurrency(total)}</span>
           {expandedSections.otherDeductions ? (
-            <ChevronUp className="w-5 h-5 text-gray-500" />
+            <ChevronUp className="w-5 h-5 text-slate-500" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500" />
+            <ChevronDown className="w-5 h-5 text-slate-500" />
           )}
         </button>
 
         {expandedSections.otherDeductions && (
           <div className="mt-4 space-y-2">
             {standardDeduction > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Standard Deduction:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Standard Deduction:</span>
                 <span className="font-medium">{formatCurrency(standardDeduction)}</span>
               </div>
             )}
             {hra > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">HRA:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">HRA:</span>
                 <span className="font-medium">{formatCurrency(hra)}</span>
               </div>
             )}
             {other > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Other:</span>
+              <div className="flex justify-between text-body-regular">
+                <span className="text-slate-600">Other:</span>
                 <span className="font-medium">{formatCurrency(other)}</span>
               </div>
             )}

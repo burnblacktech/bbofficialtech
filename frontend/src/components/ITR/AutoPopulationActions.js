@@ -28,7 +28,7 @@ const AutoPopulationActions = ({
     <div className={cn('space-y-2', className)}>
       <button
         onClick={() => setShowActions(!showActions)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg transition-colors text-sm font-medium text-neutral-700"
+        className="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 hover:bg-neutral-100 rounded-xl transition-colors text-body-regular font-medium text-neutral-700"
       >
         <span>Bulk Actions ({totalAutoFilled} auto-filled fields)</span>
         <motion.div
@@ -52,7 +52,7 @@ const AutoPopulationActions = ({
                 onAcceptAll();
                 setShowActions(false);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-colors text-sm font-medium"
+              className="w-full flex items-center gap-2 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl transition-colors text-body-regular font-medium"
             >
               <CheckCircle className="w-4 h-4" />
               <span>Accept All Auto-filled Values</span>
@@ -65,7 +65,7 @@ const AutoPopulationActions = ({
                 onOverrideAll();
                 setShowActions(false);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg transition-colors text-sm font-medium"
+              className="w-full flex items-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl transition-colors text-body-regular font-medium"
             >
               <XCircle className="w-4 h-4" />
               <span>Override All with Manual Entry</span>
@@ -78,7 +78,7 @@ const AutoPopulationActions = ({
                 onVerifyAll();
                 setShowActions(false);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors text-sm font-medium"
+              className="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-colors text-body-regular font-medium"
             >
               <CheckCircle className="w-4 h-4" />
               <span>Verify All Fields</span>

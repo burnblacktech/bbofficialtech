@@ -17,13 +17,13 @@ const Card = React.forwardRef(({
   onClick,
   ...props
 }, ref) => {
-  const baseClasses = 'rounded-lg transition-all duration-300';
+  const baseClasses = 'rounded-xl transition-all duration-300';
 
   const variantClasses = {
-    default: 'bg-white border border-gray-200',
-    elevated: 'bg-white shadow-lg border-0',
-    outlined: 'bg-white border-2 border-gray-300',
-    filled: 'bg-gray-50 border-0',
+    default: 'bg-white border border-slate-200',
+    elevated: 'bg-white shadow-elevation-3 border-0',
+    outlined: 'bg-white border-2 border-slate-300',
+    filled: 'bg-slate-50 border-0',
     ghost: 'bg-transparent border-0',
   };
 
@@ -38,13 +38,13 @@ const Card = React.forwardRef(({
 
   const shadowClasses = {
     none: 'shadow-none',
-    sm: 'shadow-sm',
-    md: 'shadow-md',
-    lg: 'shadow-lg',
-    xl: 'shadow-xl',
+    sm: 'shadow-elevation-1',
+    md: 'shadow-elevation-2',
+    lg: 'shadow-elevation-3',
+    xl: 'shadow-elevation-4',
   };
 
-  const hoverClasses = hover ? 'hover:shadow-lg hover:scale-102 cursor-pointer' : '';
+  const hoverClasses = hover ? 'hover:shadow-elevation-3 hover:scale-102 cursor-pointer' : '';
   const clickableClasses = onClick ? 'cursor-pointer' : '';
 
   const classes = `
@@ -81,7 +81,7 @@ Card.displayName = 'Card';
 
 // Card sub-components
 export const CardHeader = ({ children, className = '', ...props }) => (
-  <div className={`px-6 pt-6 pb-4 border-b border-gray-200 ${className}`} {...props}>
+  <div className={`px-6 pt-6 pb-4 border-b border-slate-200 ${className}`} {...props}>
     {children}
   </div>
 );
@@ -93,7 +93,7 @@ export const CardBody = ({ children, className = '', ...props }) => (
 );
 
 export const CardFooter = ({ children, className = '', ...props }) => (
-  <div className={`px-6 py-4 border-t border-gray-200 ${className}`} {...props}>
+  <div className={`px-6 py-4 border-t border-slate-200 ${className}`} {...props}>
     {children}
   </div>
 );

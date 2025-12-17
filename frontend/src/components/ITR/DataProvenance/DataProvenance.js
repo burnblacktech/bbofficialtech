@@ -22,7 +22,7 @@ const DataProvenance = ({
       <SourceChip source={source} verified={verified} size="sm" />
 
       {lastUpdated && (
-        <div className="flex items-center space-x-1 text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+        <div className="flex items-center space-x-1 text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
           <Clock className="w-3 h-3" />
           <span>Updated {formatIndianDateTime(lastUpdated)}</span>
         </div>
@@ -36,7 +36,7 @@ const DataProvenance = ({
       )}
 
       {editedBy && (
-        <span className="text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+        <span className="text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
           by {editedBy}
         </span>
       )}

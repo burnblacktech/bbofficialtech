@@ -54,7 +54,7 @@ const ArticleView = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <LoadingSpinner message="Loading article..." />
         </div>
@@ -64,14 +64,14 @@ const ArticleView = () => {
 
   if (isError || !article) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <h2 className="text-heading-lg text-gray-900 mb-2">Article Not Found</h2>
-            <p className="text-body-md text-gray-600 mb-6">The article you're looking for doesn't exist.</p>
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+            <h2 className="text-heading-lg text-slate-900 mb-2">Article Not Found</h2>
+            <p className="text-body-md text-slate-600 mb-6">The article you're looking for doesn't exist.</p>
             <Link
               to="/help"
-              className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Help Center
@@ -83,18 +83,18 @@ const ArticleView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/help"
-          className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Help Center
         </Link>
 
         {/* Article Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-8 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               {article.category && (
@@ -102,8 +102,8 @@ const ArticleView = () => {
                   {article.category}
                 </span>
               )}
-              <h1 className="text-heading-2xl text-gray-900 mb-4">{article.title}</h1>
-              <div className="flex items-center gap-4 text-body-sm text-gray-500">
+              <h1 className="text-heading-2xl text-slate-900 mb-4">{article.title}</h1>
+              <div className="flex items-center gap-4 text-body-sm text-slate-500">
                 {article.readTime && (
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
@@ -129,7 +129,7 @@ const ArticleView = () => {
             </div>
             <button
               onClick={handleShare}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100"
               title="Share article"
             >
               <Share2 className="h-5 w-5" />
@@ -138,27 +138,27 @@ const ArticleView = () => {
         </div>
 
         {/* Article Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-8 mb-6">
           <div
             className="prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{ __html: article.content || article.body }}
           />
 
           {/* Feedback Section */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <h3 className="text-heading-sm text-gray-900 mb-4">Was this article helpful?</h3>
+          <div className="mt-8 pt-8 border-t border-slate-200">
+            <h3 className="text-heading-sm text-slate-900 mb-4">Was this article helpful?</h3>
             {!feedbackGiven ? (
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => handleFeedback(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-body-sm text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100"
+                  className="flex items-center gap-2 px-4 py-2 text-body-sm text-green-700 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100"
                 >
                   <ThumbsUp className="h-4 w-4" />
                   Yes
                 </button>
                 <button
                   onClick={() => handleFeedback(false)}
-                  className="flex items-center gap-2 px-4 py-2 text-body-sm text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100"
+                  className="flex items-center gap-2 px-4 py-2 text-body-sm text-error-700 bg-error-50 border border-red-200 rounded-xl hover:bg-error-100"
                 >
                   <ThumbsDown className="h-4 w-4" />
                   No
@@ -172,7 +172,7 @@ const ArticleView = () => {
                     Thank you for your feedback!
                   </span>
                 ) : (
-                  <span className="text-red-600 flex items-center gap-2">
+                  <span className="text-error-600 flex items-center gap-2">
                     <ThumbsDown className="h-4 w-4" />
                     We'll work on improving this article.
                   </span>
@@ -185,7 +185,7 @@ const ArticleView = () => {
         {/* Related Articles */}
         {(relatedArticles.length > 0 || (categoryArticles?.data?.articles?.length > 0)) && (
           <div className="mb-6">
-            <h2 className="text-heading-xl text-gray-900 mb-6 flex items-center gap-2">
+            <h2 className="text-heading-xl text-slate-900 mb-6 flex items-center gap-2">
               <BookOpen className="h-6 w-6 text-gold-600" />
               Related Articles
             </h2>
@@ -204,14 +204,14 @@ const ArticleView = () => {
         )}
 
         {/* Still Need Help */}
-        <div className="bg-gold-50 border border-gold-200 rounded-lg p-6">
-          <h3 className="text-heading-md text-gray-900 mb-2">Still need help?</h3>
-          <p className="text-body-sm text-gray-600 mb-4">
+        <div className="bg-gold-50 border border-gold-200 rounded-xl p-6">
+          <h3 className="text-heading-md text-slate-900 mb-2">Still need help?</h3>
+          <p className="text-body-sm text-slate-600 mb-4">
             Can't find what you're looking for? Our support team is here to help.
           </p>
           <Link
             to="/help/contact"
-            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors"
           >
             Contact Support
           </Link>

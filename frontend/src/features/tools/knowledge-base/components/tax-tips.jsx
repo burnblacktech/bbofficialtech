@@ -59,13 +59,13 @@ const TaxTips = () => {
       case 'filing':
         return 'bg-purple-100 text-purple-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
     }
   };
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+      <h3 className="font-semibold text-slate-900 flex items-center gap-2">
         <Lightbulb className="w-5 h-5 text-gold-600" />
         Tax Saving Tips
       </h3>
@@ -75,21 +75,21 @@ const TaxTips = () => {
           return (
             <div
               key={tip.id}
-              className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 hover:shadow-md transition-all"
+              className="border border-slate-200 rounded-xl p-4 hover:border-gold-300 hover:shadow-elevation-2 transition-all"
             >
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-gold-100 rounded-lg">
+                <div className="p-2 bg-gold-100 rounded-xl">
                   <Icon className="w-5 h-5 text-gold-600" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-semibold text-gray-900">{tip.title}</h4>
+                    <h4 className="font-semibold text-slate-900">{tip.title}</h4>
                     <span className={`px-2 py-1 text-xs rounded ${getCategoryColor(tip.category)}`}>
                       {tip.category}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{tip.summary}</p>
-                  <p className="text-sm text-gray-700">{tip.content}</p>
+                  <p className="text-body-regular text-slate-600 mb-2">{tip.summary}</p>
+                  <p className="text-body-regular text-slate-700">{tip.content}</p>
                 </div>
               </div>
             </div>

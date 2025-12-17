@@ -117,7 +117,7 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center gap-2">
           <FileText className="w-5 h-5" />
           Balance Sheet
         </h3>
@@ -129,24 +129,24 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
               onChange={(e) => updateBalanceSheet('hasBalanceSheet', e.target.checked)}
               className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
             />
-            <span className="text-sm text-gray-700">Maintain Balance Sheet</span>
+            <span className="text-body-regular text-slate-700">Maintain Balance Sheet</span>
           </label>
         </div>
       </div>
 
       {balanceSheet.hasBalanceSheet && (
-        <div className="border border-gray-200 rounded-lg p-6 bg-white">
+        <div className="border border-slate-200 rounded-xl p-6 bg-white">
           {/* Balance Validation Alert */}
           {!isBalanced && balanceSheet.assets.total > 0 && (
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl flex items-start gap-2">
               <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-yellow-800">Balance Sheet Not Balanced</p>
-                <p className="text-xs text-yellow-700 mt-1">
+                <p className="text-body-regular font-medium text-yellow-800">Balance Sheet Not Balanced</p>
+                <p className="text-body-small text-yellow-700 mt-1">
                   Assets (₹{balanceSheet.assets.total.toLocaleString('en-IN')}) ≠
                   Liabilities + Capital (₹{balanceSheet.liabilities.total.toLocaleString('en-IN')})
                 </p>
-                <p className="text-xs text-yellow-700 mt-1">
+                <p className="text-body-small text-yellow-700 mt-1">
                   Difference: ₹{balanceDifference.toLocaleString('en-IN')}
                 </p>
               </div>
@@ -154,9 +154,9 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
           )}
 
           {isBalanced && balanceSheet.assets.total > 0 && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-green-600" />
-              <p className="text-sm font-medium text-green-800">
+              <p className="text-body-regular font-medium text-green-800">
                 Balance Sheet is Balanced: ₹{balanceSheet.assets.total.toLocaleString('en-IN')}
               </p>
             </div>
@@ -166,61 +166,61 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Assets Column */}
             <div className="space-y-4">
-              <h4 className="font-semibold text-gray-900 text-lg border-b pb-2">Assets</h4>
+              <h4 className="font-semibold text-slate-900 text-heading-4 border-b pb-2">Assets</h4>
 
               {/* Current Assets */}
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h5 className="font-medium text-gray-700 mb-3">Current Assets</h5>
+              <div className="border border-slate-200 rounded-xl p-4">
+                <h5 className="font-medium text-slate-700 mb-3">Current Assets</h5>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cash (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Cash (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.currentAssets?.cash || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'cash', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bank Balance (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Bank Balance (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.currentAssets?.bank || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'bank', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Inventory/Stock (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Inventory/Stock (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.currentAssets?.inventory || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'inventory', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Receivables (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Receivables (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.currentAssets?.receivables || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'receivables', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Other Current Assets (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Current Assets (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.currentAssets?.other || 0}
                       onChange={(e) => updateAssetsCategory('currentAssets', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-slate-200">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total Current Assets:</span>
-                      <span className="font-bold text-gray-900">
+                      <span className="font-semibold text-slate-900">Total Current Assets:</span>
+                      <span className="font-bold text-slate-900">
                         ₹{(balanceSheet.assets.currentAssets?.total || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -229,58 +229,58 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
               </div>
 
               {/* Fixed Assets */}
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h5 className="font-medium text-gray-700 mb-3">Fixed Assets</h5>
+              <div className="border border-slate-200 rounded-xl p-4">
+                <h5 className="font-medium text-slate-700 mb-3">Fixed Assets</h5>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Building (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Building (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.building || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'building', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Machinery (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Machinery (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.machinery || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'machinery', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Vehicles (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Vehicles (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.vehicles || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'vehicles', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Furniture & Fixtures (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Furniture & Fixtures (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.furniture || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'furniture', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Other Fixed Assets (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Fixed Assets (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.fixedAssets?.other || 0}
                       onChange={(e) => updateAssetsCategory('fixedAssets', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-slate-200">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total Fixed Assets:</span>
-                      <span className="font-bold text-gray-900">
+                      <span className="font-semibold text-slate-900">Total Fixed Assets:</span>
+                      <span className="font-bold text-slate-900">
                         ₹{(balanceSheet.assets.fixedAssets?.total || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -289,10 +289,10 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
               </div>
 
               {/* Investments & Loans */}
-              <div className="border border-gray-200 rounded-lg p-4">
+              <div className="border border-slate-200 rounded-xl p-4">
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Investments (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Investments (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.investments || 0}
@@ -300,11 +300,11 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                         ...balanceSheet.assets,
                         investments: parseFloat(e.target.value) || 0,
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Loans & Advances (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Loans & Advances (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.assets.loansAdvances || 0}
@@ -312,17 +312,17 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                         ...balanceSheet.assets,
                         loansAdvances: parseFloat(e.target.value) || 0,
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Total Assets */}
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-900 text-lg">Total Assets:</span>
-                  <span className="font-bold text-blue-900 text-xl">
+                  <span className="font-bold text-slate-900 text-body-large">Total Assets:</span>
+                  <span className="font-bold text-blue-900 text-heading-3">
                     ₹{(balanceSheet.assets.total || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -331,52 +331,52 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
 
             {/* Liabilities Column */}
             <div className="space-y-4">
-              <h4 className="font-semibold text-gray-900 text-lg border-b pb-2">Liabilities & Capital</h4>
+              <h4 className="font-semibold text-slate-900 text-heading-4 border-b pb-2">Liabilities & Capital</h4>
 
               {/* Current Liabilities */}
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h5 className="font-medium text-gray-700 mb-3">Current Liabilities</h5>
+              <div className="border border-slate-200 rounded-xl p-4">
+                <h5 className="font-medium text-slate-700 mb-3">Current Liabilities</h5>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Creditors (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Creditors (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.creditors || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'creditors', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bank Overdraft (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Bank Overdraft (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.bankOverdraft || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'bankOverdraft', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Short-term Loans (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Short-term Loans (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.shortTermLoans || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'shortTermLoans', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Other Current Liabilities (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Current Liabilities (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.liabilities.currentLiabilities?.other || 0}
                       onChange={(e) => updateLiabilitiesCategory('currentLiabilities', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-slate-200">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total Current Liabilities:</span>
-                      <span className="font-bold text-gray-900">
+                      <span className="font-semibold text-slate-900">Total Current Liabilities:</span>
+                      <span className="font-bold text-slate-900">
                         ₹{(balanceSheet.liabilities.currentLiabilities?.total || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -385,31 +385,31 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
               </div>
 
               {/* Long-term Liabilities */}
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h5 className="font-medium text-gray-700 mb-3">Long-term Liabilities</h5>
+              <div className="border border-slate-200 rounded-xl p-4">
+                <h5 className="font-medium text-slate-700 mb-3">Long-term Liabilities</h5>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Long-term Loans (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Long-term Loans (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.liabilities.longTermLiabilities?.longTermLoans || 0}
                       onChange={(e) => updateLiabilitiesCategory('longTermLiabilities', 'longTermLoans', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Other Long-term Liabilities (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Long-term Liabilities (₹)</label>
                     <input
                       type="number"
                       value={balanceSheet.liabilities.longTermLiabilities?.other || 0}
                       onChange={(e) => updateLiabilitiesCategory('longTermLiabilities', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-slate-200">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-900">Total Long-term Liabilities:</span>
-                      <span className="font-bold text-gray-900">
+                      <span className="font-semibold text-slate-900">Total Long-term Liabilities:</span>
+                      <span className="font-bold text-slate-900">
                         ₹{(balanceSheet.liabilities.longTermLiabilities?.total || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -418,9 +418,9 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
               </div>
 
               {/* Capital */}
-              <div className="border border-gray-200 rounded-lg p-4">
+              <div className="border border-slate-200 rounded-xl p-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Capital (₹)</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Capital (₹)</label>
                   <input
                     type="number"
                     value={balanceSheet.liabilities.capital || 0}
@@ -428,16 +428,16 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
                       ...balanceSheet.liabilities,
                       capital: parseFloat(e.target.value) || 0,
                     })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
               </div>
 
               {/* Total Liabilities & Capital */}
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-900 text-lg">Total Liabilities & Capital:</span>
-                  <span className="font-bold text-blue-900 text-xl">
+                  <span className="font-bold text-slate-900 text-body-large">Total Liabilities & Capital:</span>
+                  <span className="font-bold text-blue-900 text-heading-3">
                     ₹{(balanceSheet.liabilities.total || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -448,9 +448,9 @@ const BalanceSheetForm = ({ data, onUpdate, selectedITR }) => {
       )}
 
       {!balanceSheet.hasBalanceSheet && (
-        <div className="text-center py-8 text-gray-500">
-          <p className="text-sm">Balance sheet is optional for ITR-3</p>
-          <p className="text-xs mt-1">Enable above to enter balance sheet details</p>
+        <div className="text-center py-8 text-slate-500">
+          <p className="text-body-regular">Balance sheet is optional for ITR-3</p>
+          <p className="text-body-small mt-1">Enable above to enter balance sheet details</p>
         </div>
       )}
     </div>

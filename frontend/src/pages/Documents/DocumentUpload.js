@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import StatusBadge from '../../components/DesignSystem/StatusBadge';
 import { LoadingState, InlineLoader } from '../../components/DesignSystem';
 import apiClient from '../../services';

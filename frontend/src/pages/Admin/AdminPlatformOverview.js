@@ -74,7 +74,7 @@ const AdminPlatformOverview = () => {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              className="px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
             >
               {timeRanges.map((range) => (
                 <option key={range.value} value={range.value}>
@@ -175,7 +175,7 @@ const AdminPlatformOverview = () => {
               <CardTitle>User Growth Trend</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64 flex items-center justify-center bg-neutral-50 rounded-lg">
+              <div className="h-64 flex items-center justify-center bg-neutral-50 rounded-xl">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-2">
                     <BarChart3 className="w-6 h-6 text-neutral-400" />
@@ -191,7 +191,7 @@ const AdminPlatformOverview = () => {
               <CardTitle>Revenue Analytics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64 flex items-center justify-center bg-neutral-50 rounded-lg">
+              <div className="h-64 flex items-center justify-center bg-neutral-50 rounded-xl">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-2">
                     <TrendingUp className="w-6 h-6 text-neutral-400" />
@@ -210,19 +210,19 @@ const AdminPlatformOverview = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-neutral-50 rounded-lg">
+              <div className="text-center p-6 bg-neutral-50 rounded-xl">
                 <Typography.H1 className="text-neutral-900 mb-1">
                   {platformStats.system?.responseTime || 0}ms
                 </Typography.H1>
                 <Typography.Small className="text-neutral-600">Avg Response Time</Typography.Small>
               </div>
-              <div className="text-center p-6 bg-neutral-50 rounded-lg">
+              <div className="text-center p-6 bg-neutral-50 rounded-xl">
                 <Typography.H1 className="text-neutral-900 mb-1">
                   {platformStats.system?.cpuUsage || 0}%
                 </Typography.H1>
                 <Typography.Small className="text-neutral-600">CPU Usage</Typography.Small>
               </div>
-              <div className="text-center p-6 bg-neutral-50 rounded-lg">
+              <div className="text-center p-6 bg-neutral-50 rounded-xl">
                 <Typography.H1 className="text-neutral-900 mb-1">
                   {platformStats.system?.memoryUsage || 0}%
                 </Typography.H1>

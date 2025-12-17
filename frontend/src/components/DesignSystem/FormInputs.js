@@ -65,10 +65,10 @@ export const TextInput = forwardRef(({
       {label && !floatingLabel && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700 mb-1.5"
+          className="block text-body-regular font-medium text-slate-700 mb-1.5"
         >
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="text-error-500 ml-0.5">*</span>}
         </label>
       )}
 
@@ -195,7 +195,7 @@ export const TextInput = forwardRef(({
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="mt-1.5 text-xs text-slate-500"
+            className="mt-1.5 text-body-small text-slate-500"
           >
             {hint}
           </motion.p>
@@ -274,7 +274,7 @@ export const CurrencyInput = forwardRef(({
   const isUnderLimit = min && parseValue(displayValue) < min;
 
   const borderColor = error || isOverLimit
-    ? 'border-red-400 focus:border-red-500'
+    ? 'border-red-400 focus:border-error-500'
     : success
     ? 'border-emerald-400 focus:border-emerald-500'
     : 'border-slate-200 focus:border-primary-500';
@@ -284,7 +284,7 @@ export const CurrencyInput = forwardRef(({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700 mb-1.5"
+          className="block text-body-regular font-medium text-slate-700 mb-1.5"
         >
           {label}
         </label>
@@ -329,20 +329,20 @@ export const CurrencyInput = forwardRef(({
             className="absolute right-3 top-1/2 -translate-y-1/2"
           >
             {success && !isOverLimit && <Check className="w-4 h-4 text-emerald-500" />}
-            {isOverLimit && <AlertCircle className="w-4 h-4 text-red-500" />}
+            {isOverLimit && <AlertCircle className="w-4 h-4 text-error-500" />}
           </motion.div>
         )}
       </div>
 
       {/* Limit indicator */}
       {showLimit && max && (
-        <div className="mt-1.5 flex justify-between items-center text-xs">
+        <div className="mt-1.5 flex justify-between items-center text-body-small">
           <span className="text-slate-500">
             {hint || 'Maximum limit'}
           </span>
           <span className={cn(
             'font-medium tabular-nums',
-            isOverLimit ? 'text-red-500' : 'text-slate-600',
+            isOverLimit ? 'text-error-500' : 'text-slate-600',
           )}>
             ₹{parseValue(displayValue).toLocaleString('en-IN')} / ₹{max.toLocaleString('en-IN')}
           </span>
@@ -356,7 +356,7 @@ export const CurrencyInput = forwardRef(({
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="mt-1.5 text-xs text-red-500"
+            className="mt-1.5 text-body-small text-error-500"
           >
             {error || `Exceeds maximum limit of ₹${max?.toLocaleString('en-IN')}`}
           </motion.p>
@@ -422,7 +422,7 @@ export const SelectInput = forwardRef(({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700 mb-1.5"
+          className="block text-body-regular font-medium text-slate-700 mb-1.5"
         >
           {label}
         </label>
@@ -439,7 +439,7 @@ export const SelectInput = forwardRef(({
           'text-left flex items-center justify-between',
           'focus:outline-none focus:ring-4 focus:ring-primary-500/20',
           error
-            ? 'border-red-400 focus:border-red-500'
+            ? 'border-red-400 focus:border-error-500'
             : 'border-slate-200 focus:border-primary-500',
           disabled && 'bg-slate-50 text-slate-500 cursor-not-allowed',
         )}
@@ -466,7 +466,7 @@ export const SelectInput = forwardRef(({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={springs.snappy}
-            className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-xl border-2 border-slate-200 shadow-lg overflow-hidden"
+            className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-xl border-2 border-slate-200 shadow-elevation-3 overflow-hidden"
           >
             {/* Search */}
             {searchable && (
@@ -478,7 +478,7 @@ export const SelectInput = forwardRef(({
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search..."
-                    className="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-slate-50 border border-slate-200 focus:outline-none focus:border-primary-500"
+                    className="w-full pl-9 pr-4 py-2 text-body-regular rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-primary-500"
                     autoFocus
                   />
                 </div>
@@ -488,7 +488,7 @@ export const SelectInput = forwardRef(({
             {/* Options */}
             <div className="max-h-60 overflow-y-auto">
               {filteredOptions.length === 0 ? (
-                <div className="px-4 py-3 text-sm text-slate-500 text-center">
+                <div className="px-4 py-3 text-body-regular text-slate-500 text-center">
                   No options found
                 </div>
               ) : (
@@ -513,7 +513,7 @@ export const SelectInput = forwardRef(({
                       )}
                     </div>
                     {opt.description && (
-                      <p className="text-xs text-slate-500 mt-0.5">{opt.description}</p>
+                      <p className="text-body-small text-slate-500 mt-0.5">{opt.description}</p>
                     )}
                   </motion.button>
                 ))
@@ -527,7 +527,7 @@ export const SelectInput = forwardRef(({
       {(error || hint) && (
         <p className={cn(
           'mt-1.5 text-xs',
-          error ? 'text-red-500' : 'text-slate-500',
+          error ? 'text-error-500' : 'text-slate-500',
         )}>
           {error || hint}
         </p>
@@ -555,7 +555,7 @@ export const FormSection = ({
   const statusColors = {
     complete: 'bg-emerald-50 border-emerald-200 text-emerald-700',
     warning: 'bg-amber-50 border-amber-200 text-amber-700',
-    error: 'bg-red-50 border-red-200 text-red-700',
+    error: 'bg-error-50 border-red-200 text-error-700',
     pending: 'bg-slate-50 border-slate-200 text-slate-600',
   };
 
@@ -579,14 +579,14 @@ export const FormSection = ({
       >
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-primary-50 flex items-center justify-center">
               <Icon className="w-4 h-4 text-primary-600" />
             </div>
           )}
           <div className="text-left">
             <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
             {description && (
-              <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+              <p className="text-body-small text-slate-500 mt-0.5">{description}</p>
             )}
           </div>
         </div>
@@ -698,7 +698,7 @@ export const TextArea = forwardRef(({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-slate-700 mb-1.5"
+          className="block text-body-regular font-medium text-slate-700 mb-1.5"
         >
           {label}
         </label>
@@ -715,14 +715,14 @@ export const TextArea = forwardRef(({
           'text-slate-900 placeholder:text-slate-400',
           'focus:outline-none focus:ring-4 focus:ring-primary-500/20',
           error
-            ? 'border-red-400 focus:border-red-500'
+            ? 'border-red-400 focus:border-error-500'
             : 'border-slate-200 focus:border-primary-500',
         )}
         {...props}
       />
 
-      <div className="mt-1.5 flex justify-between items-center text-xs">
-        <span className={error ? 'text-red-500' : 'text-slate-500'}>
+      <div className="mt-1.5 flex justify-between items-center text-body-small">
+        <span className={error ? 'text-error-500' : 'text-slate-500'}>
           {error || hint}
         </span>
         {showCount && maxLength && (
@@ -773,7 +773,7 @@ export const Checkbox = ({
         />
         <motion.div
           className={cn(
-            'w-5 h-5 rounded-md border-2 transition-colors',
+            'w-5 h-5 rounded-xl border-2 transition-colors',
             checked
               ? 'bg-primary-500 border-primary-500'
               : 'bg-white border-slate-300 group-hover:border-primary-400',
@@ -796,9 +796,9 @@ export const Checkbox = ({
         </motion.div>
       </div>
       <div>
-        <span className="text-sm font-medium text-slate-900">{label}</span>
+        <span className="text-body-regular font-medium text-slate-900">{label}</span>
         {description && (
-          <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+          <p className="text-body-small text-slate-500 mt-0.5">{description}</p>
         )}
       </div>
     </label>
@@ -819,7 +819,7 @@ export const RadioGroup = ({
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+        <label className="block text-body-regular font-medium text-slate-700 mb-2">
           {label}
         </label>
       )}
@@ -857,9 +857,9 @@ export const RadioGroup = ({
             </div>
           </div>
           <div>
-            <span className="text-sm font-medium text-slate-900">{option.label}</span>
+            <span className="text-body-regular font-medium text-slate-900">{option.label}</span>
             {option.description && (
-              <p className="text-xs text-slate-500 mt-0.5">{option.description}</p>
+              <p className="text-body-small text-slate-500 mt-0.5">{option.description}</p>
             )}
           </div>
         </label>

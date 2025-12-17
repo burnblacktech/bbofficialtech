@@ -32,7 +32,8 @@ import {
   Bell,
   Info,
 } from 'lucide-react';
-import { Button, Card, Alert } from '../UI';
+import Button from '../DesignSystem/components/Button';
+import { Card, Alert } from '../UI';
 import { ROLES, PERMISSION_MODULES, PERMISSION_ACTIONS, TIME_BASED_ACCESS, ACCESS_DURATIONS } from '../../constants/roles';
 import { permissionEngine } from '../../services/permissionEngine';
 import api from '../../services/api';
@@ -281,18 +282,18 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+        className="bg-white rounded-xl shadow-elevation-4 max-w-6xl w-full max-h-[90vh] overflow-hidden"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold mb-1">Permission Customizer</h2>
+              <h2 className="text-heading-2 font-bold mb-1">Permission Customizer</h2>
               <p className="text-blue-100">Configure advanced permissions and access controls</p>
             </div>
             <button
               onClick={onCancel}
-              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-xl transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -300,15 +301,15 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
         </div>
 
         {/* Staff Info */}
-        <div className="bg-gray-50 px-6 py-4 border-b">
+        <div className="bg-slate-50 px-6 py-4 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">{staffMember?.name || 'Staff Member'}</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="font-semibold text-slate-900">{staffMember?.name || 'Staff Member'}</h3>
+                <p className="text-body-regular text-slate-500">
                   Current Role: <span className="font-medium">{permissions.baseRole}</span>
                 </p>
               </div>
@@ -317,7 +318,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
               <select
                 value={permissions.baseRole}
                 onChange={(e) => handleRoleChange(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                className="px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               >
                 {availableRoles?.map(role => (
                   <option key={role.value} value={role.value}>
@@ -343,7 +344,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                 className={`flex items-center space-x-2 px-6 py-3 border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-blue-600 text-blue-600 bg-blue-50'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -367,13 +368,13 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                 <div className="space-y-6">
                   {/* Search Bar */}
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       type="text"
                       placeholder="Search modules..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                     />
                   </div>
 
@@ -382,12 +383,12 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                     {filteredModules.map(([module, definition]) => (
                       <Card key={module} className="p-4">
                         <div className="flex items-start space-x-3 mb-3">
-                          <div className={`p-2 bg-${definition.color}-100 rounded-lg`}>
+                          <div className={`p-2 bg-${definition.color}-100 rounded-xl`}>
                             <definition.icon className={`w-5 h-5 text-${definition.color}-600`} />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900">{definition.name}</h4>
-                            <p className="text-sm text-gray-500">{definition.description}</p>
+                            <h4 className="font-semibold text-slate-900">{definition.name}</h4>
+                            <p className="text-body-regular text-slate-500">{definition.description}</p>
                           </div>
                         </div>
 
@@ -397,15 +398,15 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                             return (
                               <label
                                 key={action}
-                                className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                                className="flex items-center space-x-2 cursor-pointer hover:bg-slate-50 p-2 rounded"
                               >
                                 <input
                                   type="checkbox"
                                   checked={isChecked || false}
                                   onChange={() => handleModulePermissionToggle(module, action)}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
+                                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-gold-500"
                                 />
-                                <span className="text-sm text-gray-700 capitalize">
+                                <span className="text-body-regular text-slate-700 capitalize">
                                   {action.replace('_', ' ')}
                                 </span>
                               </label>
@@ -422,7 +423,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                 <div className="space-y-6">
                   {/* Active Temporary Access */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Temporary Access</h3>
+                    <h3 className="text-heading-4 font-semibold text-slate-900 mb-4">Active Temporary Access</h3>
                     {permissions.temporaryAccess.length > 0 ? (
                       <div className="space-y-3">
                         {permissions.temporaryAccess.map(access => (
@@ -431,19 +432,19 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                               <div className="flex-1">
                                 <div className="flex items-center space-x-2 mb-2">
                                   <Clock className="w-4 h-4 text-yellow-600" />
-                                  <span className="font-medium text-gray-900">
+                                  <span className="font-medium text-slate-900">
                                     {access.modules.join(', ')}
                                   </span>
-                                  <span className="text-sm text-gray-500">
+                                  <span className="text-body-regular text-slate-500">
                                     • {permissionEngine.formatExpiryDate(access.expiresAt)}
                                   </span>
                                 </div>
-                                <p className="text-sm text-gray-600 mb-1">{access.reason}</p>
+                                <p className="text-body-regular text-slate-600 mb-1">{access.reason}</p>
                                 <div className="flex flex-wrap gap-2">
                                   {access.permissions.map(permission => (
                                     <span
                                       key={permission}
-                                      className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                      className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-blue-100 text-blue-800"
                                     >
                                       {permission}
                                     </span>
@@ -452,7 +453,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                               </div>
                               <button
                                 onClick={() => handleRevokeAccess(access.id)}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-error-600 hover:bg-error-50 rounded-xl transition-colors"
                               >
                                 <UserX className="w-4 h-4" />
                               </button>
@@ -462,8 +463,8 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                       </div>
                     ) : (
                       <Card className="p-8 text-center">
-                        <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-500">No active temporary access found</p>
+                        <Clock className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                        <p className="text-slate-500">No active temporary access found</p>
                       </Card>
                     )}
                   </div>
@@ -471,7 +472,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                   {/* Grant Temporary Access */}
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Grant Temporary Access</h3>
+                      <h3 className="text-heading-4 font-semibold text-slate-900">Grant Temporary Access</h3>
                       <Button
                         variant="outline"
                         onClick={() => setShowTemporaryForm(!showTemporaryForm)}
@@ -493,12 +494,12 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                         >
                           <Card className="p-6 space-y-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Modules</label>
+                              <label className="block text-body-regular font-medium text-slate-700 mb-2">Modules</label>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 {Object.entries(moduleDefinitions).map(([module, definition]) => (
                                   <label
                                     key={module}
-                                    className="flex items-center space-x-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50"
+                                    className="flex items-center space-x-2 p-2 border rounded-xl cursor-pointer hover:bg-slate-50"
                                   >
                                     <input
                                       type="checkbox"
@@ -511,21 +512,21 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                             : prev.modules.filter(m => m !== module),
                                         }));
                                       }}
-                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
+                                      className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-gold-500"
                                     />
-                                    <span className="text-sm">{definition.name}</span>
+                                    <span className="text-body-regular">{definition.name}</span>
                                   </label>
                                 ))}
                               </div>
                             </div>
 
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Actions</label>
+                              <label className="block text-body-regular font-medium text-slate-700 mb-2">Actions</label>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 {Object.values(PERMISSION_ACTIONS).map(action => (
                                   <label
                                     key={action}
-                                    className="flex items-center space-x-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50"
+                                    className="flex items-center space-x-2 p-2 border rounded-xl cursor-pointer hover:bg-slate-50"
                                   >
                                     <input
                                       type="checkbox"
@@ -538,9 +539,9 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                             : prev.actions.filter(a => a !== action),
                                         }));
                                       }}
-                                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
+                                      className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-gold-500"
                                     />
-                                    <span className="text-sm capitalize">{action.replace('_', ' ')}</span>
+                                    <span className="text-body-regular capitalize">{action.replace('_', ' ')}</span>
                                   </label>
                                 ))}
                               </div>
@@ -548,14 +549,14 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
 
                             <div className="grid md:grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                                <label className="block text-body-regular font-medium text-slate-700 mb-2">Duration</label>
                                 <select
                                   value={temporaryAccessForm.duration}
                                   onChange={(e) => setTemporaryAccessForm(prev => ({
                                     ...prev,
                                     duration: e.target.value,
                                   }))}
-                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                                  className="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                                 >
                                   <option value={ACCESS_DURATIONS.ONE_DAY}>1 Day</option>
                                   <option value={ACCESS_DURATIONS.ONE_WEEK}>1 Week</option>
@@ -569,7 +570,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
 
                               {temporaryAccessForm.duration === ACCESS_DURATIONS.CUSTOM && (
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">Custom Expiry Date</label>
+                                  <label className="block text-body-regular font-medium text-slate-700 mb-2">Custom Expiry Date</label>
                                   <input
                                     type="datetime-local"
                                     value={temporaryAccessForm.customExpiryDate}
@@ -577,14 +578,14 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                       ...prev,
                                       customExpiryDate: e.target.value,
                                     }))}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                                    className="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                                   />
                                 </div>
                               )}
                             </div>
 
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                              <label className="block text-body-regular font-medium text-slate-700 mb-2">Reason</label>
                               <input
                                 type="text"
                                 value={temporaryAccessForm.reason}
@@ -593,7 +594,7 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
                                   reason: e.target.value,
                                 }))}
                                 placeholder="Reason for temporary access"
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                                className="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                               />
                             </div>
 
@@ -622,9 +623,9 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
               {activeTab === 'custom' && (
                 <div className="space-y-6">
                   <Card className="p-8 text-center">
-                    <Settings className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Custom Rules</h3>
-                    <p className="text-gray-500">
+                    <Settings className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                    <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">Custom Rules</h3>
+                    <p className="text-slate-500">
                       Advanced custom permission rules are coming soon. This will allow you to create sophisticated access control patterns.
                     </p>
                   </Card>
@@ -635,8 +636,8 @@ const PermissionCustomizer = ({ user, staffMember, onSave, onCancel }) => {
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 border-t flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <div className="bg-slate-50 px-6 py-4 border-t flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-body-regular text-slate-600">
             <Info className="w-4 h-4" />
             <span>Changes will be applied immediately</span>
           </div>

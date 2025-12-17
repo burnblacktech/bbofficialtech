@@ -35,7 +35,7 @@ const KnowledgeBase = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+        <h2 className="text-heading-2 font-bold text-slate-900 flex items-center gap-2">
           <BookOpen className="w-6 h-6 text-gold-600" />
           Tax Knowledge Base
         </h2>
@@ -50,7 +50,7 @@ const KnowledgeBase = () => {
       />
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-slate-200">
         <nav className="flex space-x-8">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -63,7 +63,7 @@ const KnowledgeBase = () => {
                   ${
                     activeTab === tab.id
                       ? 'border-gold-500 text-gold-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                   }
                 `}
               >
@@ -84,7 +84,7 @@ const KnowledgeBase = () => {
                 {searchResults.results.map((result, index) => (
                   <div
                     key={index}
-                    className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 transition-colors cursor-pointer"
+                    className="border border-slate-200 rounded-xl p-4 hover:border-gold-300 transition-colors cursor-pointer"
                     onClick={() => {
                       if (result.type === 'topic') {
                         setSelectedTopic(result.id);
@@ -98,21 +98,21 @@ const KnowledgeBase = () => {
                       }
                     }}
                   >
-                    <h4 className="font-semibold text-gray-900 mb-1">{result.title}</h4>
-                    <p className="text-sm text-gray-600">{result.summary}</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs bg-gold-100 text-gold-800 rounded">
+                    <h4 className="font-semibold text-slate-900 mb-1">{result.title}</h4>
+                    <p className="text-body-regular text-slate-600">{result.summary}</p>
+                    <span className="inline-block mt-2 px-2 py-1 text-body-small bg-gold-100 text-gold-800 rounded">
                       {result.type}
                     </span>
                   </div>
                 ))}
               </div>
             ) : searchQuery ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-slate-500">
                 <p>No results found for "{searchQuery}"</p>
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <div className="text-center py-8 text-slate-500">
+                <Search className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                 <p>Enter a search query to find tax information</p>
               </div>
             )}

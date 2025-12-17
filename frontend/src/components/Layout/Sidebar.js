@@ -76,7 +76,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
   };
 
   const sidebarClasses = `
-    fixed top-14 sm:top-16 lg:top-20 left-0 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] bg-white border-r border-gray-200 z-40
+    fixed top-14 sm:top-16 lg:top-20 left-0 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] bg-white border-r border-slate-200 z-40
     transition-all duration-300 ease-in-out flex flex-col
     ${isMobile ? 'lg:hidden' : 'hidden lg:flex'}
     ${isCollapsed && !isMobile ? 'w-16' : 'w-64'}
@@ -96,10 +96,10 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
       {/* Sidebar */}
       <aside className={sidebarClasses}>
         {/* Header */}
-        <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 border-b border-gray-200">
+        <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 border-b border-slate-200">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-lg flex items-center justify-center shadow-card relative">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-xl flex items-center justify-center shadow-card relative">
                 <img
                   src="/bb-logo.svg"
                   alt="BurnBlack Logo"
@@ -111,13 +111,13 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                     if (fallback) fallback.style.display = 'block';
                   }}
                 />
-                <span className="text-white font-bold text-xs sm:text-sm hidden logo-fallback absolute inset-0 flex items-center justify-center">BB</span>
+                <span className="text-white font-bold text-body-small sm:text-body-regular hidden logo-fallback absolute inset-0 flex items-center justify-center">BB</span>
               </div>
-              <span className="text-base sm:text-lg font-semibold text-gray-900">BurnBlack</span>
+              <span className="text-body-large sm:text-body-large font-semibold text-slate-900">BurnBlack</span>
             </div>
           )}
           {isCollapsed && (
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-lg flex items-center justify-center mx-auto shadow-card">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-xl flex items-center justify-center mx-auto shadow-card">
               <img
                 src="/bb-logo.svg"
                 alt="BurnBlack Logo"
@@ -128,13 +128,13 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                   e.target.nextSibling.style.display = 'block';
                 }}
               />
-              <span className="text-white font-bold text-xs sm:text-sm hidden">BB</span>
+              <span className="text-white font-bold text-body-small sm:text-body-regular hidden">BB</span>
             </div>
           )}
           {!isMobile && (
             <button
               onClick={onToggle}
-              className="p-1 sm:p-1.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+              className="p-1 sm:p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isCollapsed ? (
@@ -157,19 +157,21 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                   <button
                     onClick={() => handleNavigation(item.path)}
                     className={`
-                      w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg
-                      transition-all duration-200 text-sm sm:text-base
+                      w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl
+                      transition-all duration-200 text-body-regular sm:text-body-large
                       ${
                         active
                           ? 'bg-gold-50 text-gold-700 font-medium'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                       }
                       ${isCollapsed ? 'justify-center' : ''}
                     `}
                     title={isCollapsed ? item.name : ''}
+                    aria-label={isCollapsed ? item.name : undefined}
+                    aria-current={active ? 'page' : undefined}
                   >
-                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-gold-600' : ''}`} />
-                    {!isCollapsed && <span className="text-sm sm:text-base">{item.name}</span>}
+                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-gold-600' : ''}`} aria-hidden="true" />
+                    {!isCollapsed && <span className="text-body-regular sm:text-body-large">{item.name}</span>}
                   </button>
                 </li>
               );
@@ -179,10 +181,10 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
 
         {/* User Info Footer */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-slate-200">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-aurora-gradient rounded-full flex items-center justify-center shadow-card">
-                <span className="text-white text-sm font-medium">
+                <span className="text-white text-body-regular font-medium">
                   {user?.fullName
                     ?.split(' ')
                     .map((n) => n[0])
@@ -192,10 +194,10 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-body-regular font-medium text-slate-900 truncate">
                   {user?.fullName || 'User'}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
+                <p className="text-body-small text-slate-500 truncate">{user?.email || ''}</p>
               </div>
             </div>
           </div>

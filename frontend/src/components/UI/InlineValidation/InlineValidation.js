@@ -48,7 +48,7 @@ export const InlineValidation = ({
         >
           {/* Format Hint (while typing) */}
           {showHint && formatHint && !error && (
-            <div className="flex items-center gap-1 text-body-sm text-gray-500">
+            <div className="flex items-center gap-1 text-body-sm text-slate-500">
               <Info className="w-3 h-3" />
               <span style={{ fontSize: '13px', lineHeight: '20px' }}>{formatHint}</span>
             </div>
@@ -56,7 +56,7 @@ export const InlineValidation = ({
 
           {/* Validating State */}
           {isValidating && (
-            <div className="flex items-center gap-1 text-body-sm text-gray-500">
+            <div className="flex items-center gap-1 text-body-sm text-slate-500">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -113,7 +113,7 @@ export const ValidationSummary = ({
   return (
     <div
       className={cn(
-        'bg-error-50 border border-error-200 rounded-lg p-4',
+        'bg-error-50 border border-error-200 rounded-xl p-4',
         className,
       )}
       {...props}
@@ -141,7 +141,7 @@ export const ValidationSummary = ({
               {sectionErrors.map((error, index) => (
                 <li
                   key={index}
-                  className="flex items-center justify-between text-body-sm text-gray-700"
+                  className="flex items-center justify-between text-body-sm text-slate-700"
                   style={{ fontSize: '13px', lineHeight: '20px' }}
                 >
                   <span>• {error.message}</span>
@@ -163,7 +163,7 @@ export const ValidationSummary = ({
 
       <div className="mt-4 pt-3 border-t border-error-200">
         <p
-          className="text-body-sm text-gray-600"
+          className="text-body-sm text-slate-600"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           {errors.length} error{errors.length !== 1 ? 's' : ''} found • Scroll up to see highlighted fields

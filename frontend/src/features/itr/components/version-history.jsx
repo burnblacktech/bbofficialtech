@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Clock, RotateCcw, Download, Share2, GitCompare } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import VersionComparison from './version-comparison';
 import { draftService } from '../services/draft.service';
 import toast from 'react-hot-toast';
@@ -54,18 +54,18 @@ const VersionHistory = ({ filingId, draftType = 'itr_filing' }) => {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+      <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500 mx-auto"></div>
-        <p className="text-body-md text-gray-600 mt-4">Loading version history...</p>
+        <p className="text-body-md text-slate-600 mt-4">Loading version history...</p>
       </div>
     );
   }
 
   if (!versions || versions.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-        <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-body-md text-gray-600">No version history available</p>
+      <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
+        <Clock className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+        <p className="text-body-md text-slate-600">No version history available</p>
       </div>
     );
   }
@@ -75,7 +75,7 @@ const VersionHistory = ({ filingId, draftType = 'itr_filing' }) => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-heading-md text-gray-800">Version History</h3>
-          <p className="text-body-sm text-gray-600 mt-1">
+          <p className="text-body-sm text-slate-600 mt-1">
             {versions.length} version(s) available
           </p>
         </div>
@@ -89,12 +89,12 @@ const VersionHistory = ({ filingId, draftType = 'itr_filing' }) => {
         <VersionComparison versions={versions} onRestore={restoreVersion.mutate} />
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="divide-y divide-gray-200">
           {versions.map((version, index) => (
             <div
               key={version.id}
-              className="p-6 hover:bg-gray-50 transition-colors"
+              className="p-6 hover:bg-slate-50 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -108,7 +108,7 @@ const VersionHistory = ({ filingId, draftType = 'itr_filing' }) => {
                       </span>
                     )}
                   </div>
-                  <p className="text-body-sm text-gray-600">
+                  <p className="text-body-sm text-slate-600">
                     {new Date(version.created_at).toLocaleString('en-IN', {
                       year: 'numeric',
                       month: 'long',
@@ -118,12 +118,12 @@ const VersionHistory = ({ filingId, draftType = 'itr_filing' }) => {
                     })}
                   </p>
                   {version.created_by && (
-                    <p className="text-body-sm text-gray-500 mt-1">
+                    <p className="text-body-sm text-slate-500 mt-1">
                       by {version.created_by}
                     </p>
                   )}
                   {version.description && (
-                    <p className="text-body-sm text-gray-700 mt-2">{version.description}</p>
+                    <p className="text-body-sm text-slate-700 mt-2">{version.description}</p>
                   )}
                 </div>
                 <div className="flex gap-2">

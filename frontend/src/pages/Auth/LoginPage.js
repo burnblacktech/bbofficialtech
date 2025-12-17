@@ -135,19 +135,19 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-black">
+          <h2 className="mt-6 text-center text-heading-1 font-extrabold text-black">
             Sign in to your account
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleManualLogin}>
           {error && (
-            <div className={`px-4 py-3 rounded-md flex items-start space-x-3 ${
+            <div className={`px-4 py-3 rounded-xl flex items-start space-x-3 ${
               error.includes('rate limit') || error.includes('too many requests')
                 ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
-                : 'bg-red-50 border border-red-200 text-red-600'
+                : 'bg-error-50 border border-red-200 text-error-600'
             }`}>
               {error.includes('rate limit') || error.includes('too many requests') ? (
                 <Clock className="h-5 w-5 mt-0.5 flex-shrink-0" />
@@ -156,16 +156,16 @@ const LoginPage = () => {
               )}
               <div className="flex-1">
                 <p className="font-medium">{error.includes('rate limit') || error.includes('too many requests') ? 'Rate Limit Exceeded' : 'Authentication Error'}</p>
-                <p className="text-sm mt-1">{error}</p>
+                <p className="text-body-regular mt-1">{error}</p>
                 {(error.includes('rate limit') || error.includes('too many requests')) && (
-                  <p className="text-xs mt-2 opacity-80">
+                  <p className="text-body-small mt-2 opacity-80">
                     This is a temporary restriction from Google. Please wait before trying again.
                   </p>
                 )}
               </div>
             </div>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-xl shadow-elevation-1 -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -177,15 +177,15 @@ const LoginPage = () => {
                 autoComplete="email"
                 required
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
-                  emailError ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
+                  emailError ? 'border-error-300' : 'border-slate-300'
+                } placeholder-gray-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
                 value={email}
                 onChange={handleEmailChange}
                 onBlur={() => validateEmail(email)}
               />
               {emailError && (
-                <p className="mt-1 text-sm text-red-600">{emailError}</p>
+                <p className="mt-1 text-body-regular text-error-600">{emailError}</p>
               )}
             </div>
             <div className="relative">
@@ -199,8 +199,8 @@ const LoginPage = () => {
                 autoComplete="current-password"
                 required
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border ${
-                  passwordError ? 'border-red-300' : 'border-gray-300'
-                } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
+                  passwordError ? 'border-error-300' : 'border-slate-300'
+                } placeholder-gray-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
@@ -213,13 +213,13 @@ const LoginPage = () => {
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
+                  <EyeOff className="h-5 w-5 text-slate-400" />
                 ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
+                  <Eye className="h-5 w-5 text-slate-400" />
                 )}
               </button>
               {passwordError && (
-                <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+                <p className="mt-1 text-body-regular text-error-600">{passwordError}</p>
               )}
             </div>
           </div>
@@ -229,11 +229,11 @@ const LoginPage = () => {
               id="remember-me"
               name="remember-me"
               type="checkbox"
-              className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-gray-300 rounded"
+              className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-slate-300 rounded"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+            <label htmlFor="remember-me" className="ml-2 block text-body-regular text-slate-900">
               Remember me
             </label>
           </div>
@@ -242,7 +242,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-body-regular font-medium rounded-xl text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -251,10 +251,10 @@ const LoginPage = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-slate-300" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+              <div className="relative flex justify-center text-body-regular">
+                <span className="px-2 bg-slate-50 text-slate-500">Or continue with</span>
               </div>
             </div>
 
@@ -262,7 +262,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="w-full inline-flex justify-center py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -288,7 +288,7 @@ const LoginPage = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="text-sm">
+            <div className="text-body-regular">
               <Link to="/forgot-password" className="font-medium text-gold-600 hover:text-gold-500">
                 Forgot password?
               </Link>
@@ -296,7 +296,7 @@ const LoginPage = () => {
           </div>
 
           <div className="text-center">
-            <p className="text-body-sm text-gray-600">
+            <p className="text-body-sm text-slate-600">
               Don't have an account?{' '}
               <Link to="/signup" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign up

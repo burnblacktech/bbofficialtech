@@ -26,6 +26,10 @@ class RedisRateLimitStore {
       }
 
       const client = redisService.getClient();
+      if (!client || !redisService.isReady()) {
+        return this._fallbackIncrement(key);
+      }
+      
       const now = Date.now();
       const windowMs = 15 * 60 * 1000; // 15 minutes default
       

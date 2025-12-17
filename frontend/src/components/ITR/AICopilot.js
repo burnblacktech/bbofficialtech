@@ -3,7 +3,7 @@
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import Card from '../common/Card';
 import Modal from '../common/Modal';
 import { enterpriseLogger } from '../../utils/logger';

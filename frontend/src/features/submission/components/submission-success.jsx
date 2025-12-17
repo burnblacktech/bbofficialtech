@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { CheckCircle, Download, FileText, Mail, Share2 } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useExportAcknowledgmentPDF } from '../../pdf-export/hooks/use-pdf-export';
 import PDFExportButton from '../../pdf-export/components/pdf-export-button';
@@ -35,35 +35,35 @@ const SubmissionSuccess = ({ submissionData, onDownloadITRV, onDownloadITR }) =>
         <h2 className="text-heading-xl text-gray-800 mb-2">
           ITR Submitted Successfully!
         </h2>
-        <p className="text-body-lg text-gray-600">
+        <p className="text-body-lg text-slate-600">
           Your Income Tax Return has been successfully filed and e-verified
         </p>
       </div>
 
       {/* Acknowledgment Details */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <h3 className="text-heading-md text-gray-800 mb-4">Submission Details</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b border-gray-100">
-            <span className="text-body-md text-gray-600">Acknowledgment Number</span>
+            <span className="text-body-md text-slate-600">Acknowledgment Number</span>
             <span className="text-body-md font-semibold text-gray-800 font-mono">
               {submissionData?.acknowledgmentNumber || 'N/A'}
             </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-gray-100">
-            <span className="text-body-md text-gray-600">Submission Date</span>
+            <span className="text-body-md text-slate-600">Submission Date</span>
             <span className="text-body-md font-medium text-gray-800">
               {formatDate(submissionData?.submittedAt)}
             </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-gray-100">
-            <span className="text-body-md text-gray-600">Verification Method</span>
+            <span className="text-body-md text-slate-600">Verification Method</span>
             <span className="text-body-md font-medium text-gray-800">
               {submissionData?.verificationMethod || 'Aadhaar OTP'}
             </span>
           </div>
           <div className="flex items-center justify-between py-3">
-            <span className="text-body-md text-gray-600">Assessment Year</span>
+            <span className="text-body-md text-slate-600">Assessment Year</span>
             <span className="text-body-md font-medium text-gray-800">
               {submissionData?.assessmentYear || '2024-25'}
             </span>

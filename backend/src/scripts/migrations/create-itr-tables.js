@@ -39,6 +39,7 @@ async function createITRTables() {
           assessment_year VARCHAR(10) NOT NULL,
           status VARCHAR(50) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'submitted', 'acknowledged', 'processed', 'rejected', 'paused')),
           json_payload JSONB DEFAULT '{}',
+          idempotency_key TEXT,
           submitted_at TIMESTAMP,
           acknowledgment_number VARCHAR(50),
           ack_number VARCHAR(50),
@@ -85,6 +86,7 @@ async function createITRTables() {
         { name: 'acknowledgment_number', type: 'VARCHAR(50)' },
         { name: 'ack_number', type: 'VARCHAR(50)' },
         { name: 'member_id', type: `UUID${familyMembersExists ? ' REFERENCES family_members(id) ON DELETE SET NULL' : ''}` },
+        { name: 'idempotency_key', type: 'TEXT' },
         { name: 'paused_at', type: 'TIMESTAMP' },
         { name: 'resumed_at', type: 'TIMESTAMP' },
         { name: 'pause_reason', type: 'TEXT' },
@@ -135,6 +137,8 @@ async function createITRTables() {
       CREATE INDEX IF NOT EXISTS idx_itr_filings_regime ON itr_filings(regime);
       CREATE INDEX IF NOT EXISTS idx_itr_filings_previous_year_filing_id ON itr_filings(previous_year_filing_id);
       CREATE INDEX IF NOT EXISTS idx_itr_filings_json_payload_gin ON itr_filings USING gin(json_payload);
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_itr_filings_user_idempotency_key_unique ON itr_filings(user_id, idempotency_key) WHERE idempotency_key IS NOT NULL;
+      CREATE INDEX IF NOT EXISTS idx_itr_filings_idempotency_key ON itr_filings(idempotency_key) WHERE idempotency_key IS NOT NULL;
       CREATE INDEX IF NOT EXISTS idx_itr_filings_tax_computation_gin ON itr_filings USING gin(tax_computation)
     `);
 

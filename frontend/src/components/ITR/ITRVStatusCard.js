@@ -6,7 +6,7 @@
 import React from 'react';
 import { CheckCircle, Clock, XCircle, AlertCircle, FileText, Download, RefreshCw, Calendar } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import StatusBadge from '../DesignSystem/StatusBadge';
 import { format } from 'date-fns';
 
@@ -80,9 +80,9 @@ const ITRVStatusCard = ({
       default:
         return {
           icon: Clock,
-          color: 'text-gray-600',
-          bgColor: 'bg-gray-50',
-          borderColor: 'border-gray-200',
+          color: 'text-slate-600',
+          bgColor: 'bg-slate-50',
+          borderColor: 'border-slate-200',
           label: 'Pending',
           description: 'ITR-V tracking has been initialized.',
         };
@@ -95,18 +95,18 @@ const ITRVStatusCard = ({
   const daysUntilExpiry = itrv.daysUntilExpiry;
 
   return (
-    <div className={cn('bg-white rounded-lg shadow-sm border', statusConfig.borderColor, className)}>
+    <div className={cn('bg-white rounded-xl shadow-elevation-1 border', statusConfig.borderColor, className)}>
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start gap-4">
-            <div className={cn('p-3 rounded-lg', statusConfig.bgColor)}>
+            <div className={cn('p-3 rounded-xl', statusConfig.bgColor)}>
               <StatusIcon className={cn('w-6 h-6', statusConfig.color)} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">ITR-V Status</h3>
+              <h3 className="text-heading-4 font-semibold text-slate-900 mb-1">ITR-V Status</h3>
               <StatusBadge status={itrv.status} size="md" />
-              <p className="text-sm text-gray-600 mt-2">{statusConfig.description}</p>
+              <p className="text-body-regular text-slate-600 mt-2">{statusConfig.description}</p>
             </div>
           </div>
           {onCheckStatus && (
@@ -124,49 +124,49 @@ const ITRVStatusCard = ({
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-xs text-gray-500 mb-1">Acknowledgement Number</p>
-            <p className="text-sm font-medium text-gray-900">{itrv.ackNumber || 'N/A'}</p>
+            <p className="text-body-small text-slate-500 mb-1">Acknowledgement Number</p>
+            <p className="text-body-regular font-medium text-slate-900">{itrv.ackNumber || 'N/A'}</p>
           </div>
           {itrv.filing && (
             <div>
-              <p className="text-xs text-gray-500 mb-1">Assessment Year</p>
-              <p className="text-sm font-medium text-gray-900">{itrv.filing.assessmentYear || 'N/A'}</p>
+              <p className="text-body-small text-slate-500 mb-1">Assessment Year</p>
+              <p className="text-body-regular font-medium text-slate-900">{itrv.filing.assessmentYear || 'N/A'}</p>
             </div>
           )}
           {itrv.generatedAt && (
             <div>
-              <p className="text-xs text-gray-500 mb-1">Generated On</p>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-body-small text-slate-500 mb-1">Generated On</p>
+              <p className="text-body-regular font-medium text-slate-900">
                 {format(new Date(itrv.generatedAt), 'dd MMM yyyy, hh:mm a')}
               </p>
             </div>
           )}
           {itrv.deliveredAt && (
             <div>
-              <p className="text-xs text-gray-500 mb-1">Delivered On</p>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-body-small text-slate-500 mb-1">Delivered On</p>
+              <p className="text-body-regular font-medium text-slate-900">
                 {format(new Date(itrv.deliveredAt), 'dd MMM yyyy, hh:mm a')}
               </p>
             </div>
           )}
           {itrv.deliveryMethod && (
             <div>
-              <p className="text-xs text-gray-500 mb-1">Delivery Method</p>
-              <p className="text-sm font-medium text-gray-900 capitalize">{itrv.deliveryMethod}</p>
+              <p className="text-body-small text-slate-500 mb-1">Delivery Method</p>
+              <p className="text-body-regular font-medium text-slate-900 capitalize">{itrv.deliveryMethod}</p>
             </div>
           )}
           {itrv.verifiedAt && (
             <div>
-              <p className="text-xs text-gray-500 mb-1">Verified On</p>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-body-small text-slate-500 mb-1">Verified On</p>
+              <p className="text-body-regular font-medium text-slate-900">
                 {format(new Date(itrv.verifiedAt), 'dd MMM yyyy, hh:mm a')}
               </p>
             </div>
           )}
           {itrv.verificationMethod && (
             <div>
-              <p className="text-xs text-gray-500 mb-1">Verification Method</p>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-body-small text-slate-500 mb-1">Verification Method</p>
+              <p className="text-body-regular font-medium text-slate-900">
                 {itrv.verificationMethod.replace(/_/g, ' ')}
               </p>
             </div>
@@ -175,7 +175,7 @@ const ITRVStatusCard = ({
 
         {/* Expiry Warning */}
         {itrv.expiryDate && !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 30 && (
-          <div className={cn('p-3 rounded-lg mb-4', daysUntilExpiry <= 7 ? 'bg-error-50 border border-error-200' : 'bg-warning-50 border border-warning-200')}>
+          <div className={cn('p-3 rounded-xl mb-4', daysUntilExpiry <= 7 ? 'bg-error-50 border border-error-200' : 'bg-warning-50 border border-warning-200')}>
             <div className="flex items-center gap-2">
               <AlertCircle className={cn('w-5 h-5', daysUntilExpiry <= 7 ? 'text-error-600' : 'text-warning-600')} />
               <div>
@@ -193,12 +193,12 @@ const ITRVStatusCard = ({
         )}
 
         {isExpired && (
-          <div className="bg-error-50 border border-error-200 p-3 rounded-lg mb-4">
+          <div className="bg-error-50 border border-error-200 p-3 rounded-xl mb-4">
             <div className="flex items-center gap-2">
               <XCircle className="w-5 h-5 text-error-600" />
               <div>
-                <p className="text-sm font-medium text-error-900">ITR-V Expired</p>
-                <p className="text-xs text-error-700 mt-1">
+                <p className="text-body-regular font-medium text-error-900">ITR-V Expired</p>
+                <p className="text-body-small text-error-700 mt-1">
                   Expired on {format(new Date(itrv.expiryDate), 'dd MMM yyyy')}. Please contact support.
                 </p>
               </div>

@@ -76,7 +76,7 @@ const CurrencyInput = forwardRef(({
       <div className="flex items-center justify-between mb-1.5">
         <label
           htmlFor={inputId}
-          className="text-label-lg text-gray-700"
+          className="text-label-lg text-slate-700"
           style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}
         >
           {label}
@@ -111,10 +111,10 @@ const CurrencyInput = forwardRef(({
           className={cn(
             'flex rounded-[10px] border overflow-hidden transition-all',
             {
-              'border-gray-300': !error && !isFocused && !hasSource,
+              'border-slate-300': !error && !isFocused && !hasSource,
               'border-gold-500 shadow-[0_0_0_3px_rgba(212,175,55,0.1)]': isFocused && !error,
               'border-2 border-error-500 bg-error-50': error,
-              'border-gray-200 bg-gray-100': disabled,
+              'border-slate-200 bg-slate-100': disabled,
               'border-info-200 bg-info-50': hasSource && !error && !isFocused,
             },
           )}
@@ -124,7 +124,7 @@ const CurrencyInput = forwardRef(({
             className={cn(
               'flex items-center justify-center w-12 border-r text-body-lg font-medium',
               {
-                'bg-gray-100 border-gray-300 text-gray-600': !error,
+                'bg-slate-100 border-slate-300 text-slate-600': !error,
                 'bg-error-100 border-error-300 text-error-600': error,
               },
             )}
@@ -151,7 +151,7 @@ const CurrencyInput = forwardRef(({
               'bg-transparent focus:outline-none',
               {
                 'text-gray-800': !disabled,
-                'text-gray-500 cursor-not-allowed': disabled,
+                'text-slate-500 cursor-not-allowed': disabled,
                 'pl-10': hasSource,
               },
             )}
@@ -189,7 +189,7 @@ const CurrencyInput = forwardRef(({
       {helperText && !error && (
         <p
           id={helperId}
-          className="mt-1.5 text-body-sm text-gray-500"
+          className="mt-1.5 text-body-sm text-slate-500"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           {helperText}

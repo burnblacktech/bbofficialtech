@@ -23,7 +23,7 @@ export const FieldVerification = ({
   const stateConfig = {
     unverified: {
       icon: Circle,
-      color: 'text-gray-400',
+      color: 'text-slate-400',
       label: null,
     },
     pending: {
@@ -49,7 +49,7 @@ export const FieldVerification = ({
     },
     manual: {
       icon: PenTool,
-      color: 'text-gray-500',
+      color: 'text-slate-500',
       label: 'Manual',
     },
   };
@@ -92,7 +92,7 @@ export const FieldVerification = ({
       {/* Helper Text */}
       {state === 'verified' && verificationSource && (
         <p
-          className="text-body-sm text-gray-600 mt-1"
+          className="text-body-sm text-slate-600 mt-1"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           Verified with {verificationSource}
@@ -100,7 +100,7 @@ export const FieldVerification = ({
       )}
       {state === 'pending' && (
         <p
-          className="text-body-sm text-gray-600 mt-1"
+          className="text-body-sm text-slate-600 mt-1"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           Checking with {verificationSource || 'Income Tax Department'}...
@@ -136,8 +136,8 @@ export const FieldVerificationBadge = ({
     pending: { icon: Clock, color: 'text-warning-500', label: 'Verifying' },
     failed: { icon: X, color: 'text-error-600', label: 'Failed' },
     mismatch: { icon: AlertTriangle, color: 'text-warning-600', label: 'Mismatch' },
-    manual: { icon: PenTool, color: 'text-gray-500', label: 'Manual' },
-    unverified: { icon: Circle, color: 'text-gray-400', label: 'Unverified' },
+    manual: { icon: PenTool, color: 'text-slate-500', label: 'Manual' },
+    unverified: { icon: Circle, color: 'text-slate-400', label: 'Unverified' },
   };
 
   const config = stateConfig[state] || stateConfig.unverified;

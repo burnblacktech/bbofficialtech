@@ -138,22 +138,22 @@ const Modal = ({
               aria-label={ariaLabel || (title ? undefined : 'Modal dialog')}
               tabIndex={-1}
               className={`
-                relative w-full ${sizeClasses[size]} bg-white rounded-lg shadow-elevation-4
+                relative w-full ${sizeClasses[size]} bg-white rounded-xl shadow-elevation-4
                 ${className}
               `}
               {...props}
             >
               {/* Header */}
               {(title || showCloseButton) && (
-                <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+                <div className="flex items-center justify-between p-6 border-b border-slate-200">
                   {title && (
-                    <h2 id={titleId} className="text-heading-2 font-semibold text-neutral-900">{title}</h2>
+                    <h2 id={titleId} className="text-heading-2 font-semibold text-slate-900">{title}</h2>
                   )}
                   {showCloseButton && !preventClose && (
                     <button
                       onClick={handleClose}
                       aria-label="Close modal"
-                      className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors duration-150 ease-smooth focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors duration-150 ease-smooth focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <X className="h-5 w-5" aria-hidden="true" />
                     </button>

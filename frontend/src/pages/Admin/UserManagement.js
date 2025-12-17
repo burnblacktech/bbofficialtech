@@ -183,10 +183,10 @@ const UserManagement = () => {
             </Typography.Body>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">
+            <button className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors">
               Export Users
             </button>
-            <button className="px-4 py-2 bg-secondary-500 text-white rounded-lg text-sm font-medium hover:bg-secondary-600 transition-colors">
+            <button className="px-4 py-2 bg-secondary-500 text-white rounded-xl text-body-regular font-medium hover:bg-secondary-600 transition-colors">
               Add User
             </button>
           </div>
@@ -204,7 +204,7 @@ const UserManagement = () => {
                     placeholder="Search users by name, email, or PAN..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -212,7 +212,7 @@ const UserManagement = () => {
                 <select
                   value={filterRole}
                   onChange={(e) => setFilterRole(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
                 >
                   <option value="all">All Roles</option>
                   <option value="user">End Users</option>
@@ -222,7 +222,7 @@ const UserManagement = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -374,7 +374,7 @@ const UserManagement = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
@@ -472,7 +472,7 @@ const UserManagement = () => {
                       <Typography.Small className="font-medium text-neutral-700 mb-3">
                         Suspension Information
                       </Typography.Small>
-                      <div className="p-3 bg-error-50 border border-error-200 rounded-lg">
+                      <div className="p-3 bg-error-50 border border-error-200 rounded-xl">
                         <Typography.Small className="text-error-700">
                           {selectedUser.suspensionReason}
                         </Typography.Small>
@@ -484,13 +484,13 @@ const UserManagement = () => {
                   <div className="flex items-center justify-end space-x-3 pt-4 border-t">
                     <button
                       onClick={() => setShowUserModal(false)}
-                      className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                      className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                     >
                       Close
                     </button>
                     <button
                       onClick={() => handleUserAction('edit', selectedUser)}
-                      className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                      className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors"
                     >
                       Edit User
                     </button>

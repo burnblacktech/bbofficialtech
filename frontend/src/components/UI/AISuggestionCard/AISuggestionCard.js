@@ -35,7 +35,7 @@ export const AISuggestionCard = ({
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        'bg-white rounded-lg border border-gray-200 shadow-card p-4',
+        'bg-white rounded-xl border border-slate-200 shadow-card p-4',
         'space-y-3',
         className,
       )}
@@ -48,7 +48,7 @@ export const AISuggestionCard = ({
           <h3
             className={cn('text-heading-sm font-semibold', {
               'text-gold-600': !isRecommended,
-              'text-gray-900': isRecommended,
+              'text-slate-900': isRecommended,
             })}
             style={{ fontSize: '16px', fontWeight: 600 }}
           >
@@ -58,10 +58,10 @@ export const AISuggestionCard = ({
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="p-1 rounded hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
             aria-label="Dismiss suggestion"
           >
-            <X className="w-4 h-4 text-gray-500" />
+            <X className="w-4 h-4 text-slate-500" />
           </button>
         )}
       </div>
@@ -69,7 +69,7 @@ export const AISuggestionCard = ({
       {/* Value Proposition */}
       {valueProposition && (
         <p
-          className="text-body-md font-semibold text-gray-900"
+          className="text-body-md font-semibold text-slate-900"
           style={{ fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}
         >
           {valueProposition}
@@ -79,7 +79,7 @@ export const AISuggestionCard = ({
       {/* Message */}
       {message && (
         <p
-          className="text-body-md text-gray-600"
+          className="text-body-md text-slate-600"
           style={{ fontSize: '14px', lineHeight: '22px' }}
         >
           {message}
@@ -90,13 +90,13 @@ export const AISuggestionCard = ({
       {explanation && (
         <div className="space-y-2">
           <p
-            className="text-body-sm font-medium text-gray-700"
+            className="text-body-sm font-medium text-slate-700"
             style={{ fontSize: '13px', fontWeight: 500 }}
           >
             Why?
           </p>
           <p
-            className="text-body-sm text-gray-600"
+            className="text-body-sm text-slate-600"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             {explanation}
@@ -110,10 +110,10 @@ export const AISuggestionCard = ({
           {factors.map((factor, index) => (
             <li
               key={index}
-              className="text-body-sm text-gray-600 flex items-start gap-2"
+              className="text-body-sm text-slate-600 flex items-start gap-2"
               style={{ fontSize: '13px', lineHeight: '20px' }}
             >
-              <span className="text-gray-400 mt-1">•</span>
+              <span className="text-slate-400 mt-1">•</span>
               <span>{factor}</span>
             </li>
           ))}
@@ -133,7 +133,7 @@ export const AISuggestionCard = ({
         {actionLabel && onAction && (
           <button
             onClick={onAction}
-            className="px-4 py-2 bg-gold-500 text-white rounded-lg font-semibold hover:bg-gold-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl font-semibold hover:bg-gold-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
             style={{ fontSize: '14px', fontWeight: 600 }}
           >
             {actionLabel}
@@ -142,7 +142,7 @@ export const AISuggestionCard = ({
         {comparisonLink && (
           <button
             onClick={comparisonLink.onClick}
-            className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
+            className="px-4 py-2 text-body-sm font-medium text-slate-700 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-xl"
             style={{ fontSize: '13px' }}
           >
             {comparisonLink.label || 'See Comparison'}

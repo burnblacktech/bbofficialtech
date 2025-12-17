@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { deductionService } from '../services/deduction.service';
 
-const Section80D = ({ filingId }) => {
+const Section80D = ({ filingId, onUpdate }) => {
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingDeduction, setEditingDeduction] = useState(null);
@@ -87,30 +87,39 @@ const Section80D = ({ filingId }) => {
   // Add deduction mutation
   const addDeductionMutation = useMutation({
     mutationFn: (data) => deductionService.createDeduction(filingId, '80D', data),
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80D', filingId]);
       resetForm();
       setShowAddForm(false);
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80D: result?.data?.totalAmount ?? 0 });
+      }
     },
   });
 
   // Update deduction mutation
   const updateDeductionMutation = useMutation({
-    mutationFn: ({ deductionId, data }) => deductionService.updateDeduction(deductionId, data),
-    onSuccess: () => {
+    mutationFn: ({ deductionId, data }) => deductionService.updateDeductionBySection(filingId, '80D', deductionId, data),
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80D', filingId]);
       resetForm();
       setEditingDeduction(null);
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80D: result?.data?.totalAmount ?? 0 });
+      }
     },
   });
 
   // Delete deduction mutation
   const deleteDeductionMutation = useMutation({
-    mutationFn: (deductionId) => deductionService.deleteDeduction(deductionId),
-    onSuccess: () => {
+    mutationFn: (deductionId) => deductionService.deleteDeductionBySection(filingId, '80D', deductionId),
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80D', filingId]);
       toast.success('Health insurance deduction deleted successfully');
       setDeletingId(null);
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80D: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to delete health insurance deduction');
@@ -190,7 +199,7 @@ const Section80D = ({ filingId }) => {
               deleteDeductionMutation.mutate(deductionId);
               toast.dismiss(t.id);
             }}
-            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+            className="px-3 py-1 bg-red-500 text-white rounded text-body-regular hover:bg-red-600"
           >
             Delete
           </button>
@@ -199,7 +208,7 @@ const Section80D = ({ filingId }) => {
               setDeletingId(null);
               toast.dismiss(t.id);
             }}
-            className="px-3 py-1 bg-gray-200 text-gray-800 rounded text-sm hover:bg-gray-300"
+            className="px-3 py-1 bg-slate-200 text-gray-800 rounded text-body-regular hover:bg-gray-300"
           >
             Cancel
           </button>
@@ -237,17 +246,17 @@ const Section80D = ({ filingId }) => {
       <div className="bg-gradient-burnblack-emerald rounded-2xl p-6 mb-6 shadow-emerald-glow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-emerald-500 rounded-xl shadow-lg">
+            <div className="p-3 bg-emerald-500 rounded-xl shadow-elevation-3">
               <Activity className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Section 80D Deductions</h1>
+              <h1 className="text-heading-2 font-bold text-white">Section 80D Deductions</h1>
               <p className="text-emerald-100">Health Insurance Premiums</p>
             </div>
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 flex items-center space-x-2"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold shadow-elevation-3 transition-all duration-200 flex items-center space-x-2"
           >
             <Plus className="h-5 w-5" />
             <span>Add Policy</span>
@@ -260,7 +269,7 @@ const Section80D = ({ filingId }) => {
             <span className="text-emerald-100 font-medium">Total Premium</span>
             <span className="text-white font-bold">₹{totalAmount.toLocaleString()}</span>
           </div>
-          <div className="text-sm text-emerald-200">
+          <div className="text-body-regular text-emerald-200">
             Maximum possible deduction: ₹{maxPossibleLimit.toLocaleString()}
           </div>
         </div>
@@ -279,27 +288,27 @@ const Section80D = ({ filingId }) => {
               className="bg-white rounded-2xl p-4 shadow-soft border border-neutral-200"
             >
               <div className="flex items-center space-x-3 mb-3">
-                <div className={`p-2 bg-${type.color}-100 rounded-lg`}>
+                <div className={`p-2 bg-${type.color}-100 rounded-xl`}>
                   <IconComponent className={`h-5 w-5 text-${type.color}-600`} />
                 </div>
                 <div>
                   <h3 className="font-semibold text-burnblack-800 text-sm">{type.name}</h3>
-                  <p className="text-xs text-neutral-600">Limit: ₹{type.limit.toLocaleString()}</p>
+                  <p className="text-body-small text-neutral-600">Limit: ₹{type.limit.toLocaleString()}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-body-regular">
                   <span className="text-neutral-600">Used</span>
                   <span className="font-medium">₹{limits.used.toLocaleString()}</span>
                 </div>
-                <div className="w-full bg-neutral-200 rounded-lg h-2">
+                <div className="w-full bg-neutral-200 rounded-xl h-2">
                   <div
-                    className={`bg-${type.color}-500 h-2 rounded-lg transition-all duration-500`}
+                    className={`bg-${type.color}-500 h-2 rounded-xl transition-all duration-500`}
                     style={{ width: `${Math.min(utilizationPercentage, 100)}%` }}
                   />
                 </div>
-                <div className="text-xs text-neutral-600 text-center">
+                <div className="text-body-small text-neutral-600 text-center">
                   {utilizationPercentage}% utilized
                 </div>
               </div>
@@ -326,13 +335,13 @@ const Section80D = ({ filingId }) => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(deduction)}
-                    className="p-2 text-royal-600 hover:bg-royal-50 rounded-lg transition-colors"
+                    className="p-2 text-royal-600 hover:bg-royal-50 rounded-xl transition-colors"
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(deduction.id)}
-                    className="p-2 text-crimson-600 hover:bg-crimson-50 rounded-lg transition-colors"
+                    className="p-2 text-crimson-600 hover:bg-crimson-50 rounded-xl transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -341,49 +350,49 @@ const Section80D = ({ filingId }) => {
 
               <div className="space-y-3">
                 <div>
-                  <h3 className="font-semibold text-burnblack-800 text-lg">
+                  <h3 className="font-semibold text-burnblack-800 text-heading-4">
                     {typeInfo.name}
                   </h3>
-                  <p className="text-neutral-600 text-sm">{typeInfo.description}</p>
+                  <p className="text-neutral-600 text-body-regular">{typeInfo.description}</p>
                 </div>
 
                 <div className="bg-neutral-50 rounded-xl p-3">
-                  <div className="text-2xl font-bold text-emerald-600">
+                  <div className="text-heading-2 font-bold text-emerald-600">
                     ₹{deduction.premiumAmount.toLocaleString()}
                   </div>
-                  <div className="text-sm text-neutral-600">Annual Premium</div>
+                  <div className="text-body-regular text-neutral-600">Annual Premium</div>
                 </div>
 
                 {deduction.policyName && (
                   <div>
-                    <div className="text-sm text-neutral-600">Policy Name</div>
+                    <div className="text-body-regular text-neutral-600">Policy Name</div>
                     <div className="font-medium text-burnblack-700">{deduction.policyName}</div>
                   </div>
                 )}
 
                 {deduction.insuranceCompany && (
                   <div>
-                    <div className="text-sm text-neutral-600">Insurance Company</div>
+                    <div className="text-body-regular text-neutral-600">Insurance Company</div>
                     <div className="font-medium text-burnblack-700">{deduction.insuranceCompany}</div>
                   </div>
                 )}
 
                 {deduction.policyNumber && (
                   <div>
-                    <div className="text-sm text-neutral-600">Policy Number</div>
-                    <div className="font-mono text-sm text-burnblack-700">{deduction.policyNumber}</div>
+                    <div className="text-body-regular text-neutral-600">Policy Number</div>
+                    <div className="font-mono text-body-regular text-burnblack-700">{deduction.policyNumber}</div>
                   </div>
                 )}
 
                 {deduction.isVerified ? (
                   <div className="flex items-center space-x-2 text-emerald-600">
                     <CheckCircle2 className="h-4 w-4" />
-                    <span className="text-sm font-medium">Verified</span>
+                    <span className="text-body-regular font-medium">Verified</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 text-sunset-600">
                     <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm font-medium">Pending Verification</span>
+                    <span className="text-body-regular font-medium">Pending Verification</span>
                   </div>
                 )}
               </div>
@@ -395,7 +404,7 @@ const Section80D = ({ filingId }) => {
       {/* Quick Add Options */}
       {!showAddForm && deductions.length === 0 && (
         <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-200">
-          <h3 className="text-lg font-semibold text-burnblack-800 mb-4">Quick Add Health Insurance</h3>
+          <h3 className="text-heading-4 font-semibold text-burnblack-800 mb-4">Quick Add Health Insurance</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {policyTypes.map((type) => {
               const IconComponent = type.icon;
@@ -409,7 +418,7 @@ const Section80D = ({ filingId }) => {
                   className={`p-4 border-2 border-dashed border-${type.color}-300 bg-${type.color}-50 hover:bg-${type.color}-100 rounded-xl transition-all duration-200 text-left`}
                 >
                   <IconComponent className={`h-6 w-6 text-${type.color}-600 mb-2`} />
-                  <div className="font-medium text-burnblack-700 text-sm">{type.name}</div>
+                  <div className="font-medium text-burnblack-700 text-body-regular">{type.name}</div>
                   <div className={`text-xs text-${type.color}-600 mt-1`}>
                     Limit: ₹{type.limit.toLocaleString()}
                   </div>
@@ -425,7 +434,7 @@ const Section80D = ({ filingId }) => {
         <div className="fixed inset-0 bg-burnblack-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-burnblack-800">
+              <h2 className="text-heading-3 font-bold text-burnblack-800">
                 {editingDeduction ? 'Edit' : 'Add'} Health Insurance Policy
               </h2>
               <button
@@ -433,7 +442,7 @@ const Section80D = ({ filingId }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg"
+                className="p-2 text-neutral-600 hover:bg-neutral-100 rounded-xl"
               >
                 <Plus className="h-5 w-5 rotate-45" />
               </button>
@@ -442,7 +451,7 @@ const Section80D = ({ filingId }) => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Policy Type */}
               <div>
-                <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                   Policy Type *
                 </label>
                 <select
@@ -459,13 +468,13 @@ const Section80D = ({ filingId }) => {
                   ))}
                 </select>
                 {formErrors.policyType && (
-                  <p className="text-crimson-600 text-sm mt-1">{formErrors.policyType}</p>
+                  <p className="text-crimson-600 text-body-regular mt-1">{formErrors.policyType}</p>
                 )}
               </div>
 
               {/* Premium Amount */}
               <div>
-                <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                   Premium Amount *
                 </label>
                 <div className="relative">
@@ -482,10 +491,10 @@ const Section80D = ({ filingId }) => {
                   />
                 </div>
                 {formErrors.premiumAmount && (
-                  <p className="text-crimson-600 text-sm mt-1">{formErrors.premiumAmount}</p>
+                  <p className="text-crimson-600 text-body-regular mt-1">{formErrors.premiumAmount}</p>
                 )}
                 {formData.policyType && (
-                  <p className="text-sm text-neutral-600 mt-1">
+                  <p className="text-body-regular text-neutral-600 mt-1">
                     Limit for {getPolicyTypeInfo(formData.policyType).name}: ₹{getPolicyTypeInfo(formData.policyType).limit.toLocaleString()}
                   </p>
                 )}
@@ -494,7 +503,7 @@ const Section80D = ({ filingId }) => {
               {/* Policy Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                  <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                     Policy Name
                   </label>
                   <input
@@ -506,7 +515,7 @@ const Section80D = ({ filingId }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                  <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                     Policy Number
                   </label>
                   <input
@@ -522,7 +531,7 @@ const Section80D = ({ filingId }) => {
               {/* Insurance Company */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                  <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                     Insurance Company
                   </label>
                   <input
@@ -534,7 +543,7 @@ const Section80D = ({ filingId }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                  <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                     Company PAN
                   </label>
                   <input
@@ -551,7 +560,7 @@ const Section80D = ({ filingId }) => {
               {/* Policy Period */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                  <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                     Policy Start Date
                   </label>
                   <input
@@ -562,7 +571,7 @@ const Section80D = ({ filingId }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                  <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                     Policy End Date
                   </label>
                   <input
@@ -576,7 +585,7 @@ const Section80D = ({ filingId }) => {
 
               {/* Premium Frequency */}
               <div>
-                <label className="block text-sm font-medium text-burnblack-700 mb-2">
+                <label className="block text-body-regular font-medium text-burnblack-700 mb-2">
                   Premium Frequency
                 </label>
                 <select

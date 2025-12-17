@@ -143,18 +143,18 @@ const ValidatedNumberInput = ({
   };
 
   const getInputClassName = () => {
-    const baseClasses = 'w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors';
+    const baseClasses = 'w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 transition-colors';
 
     if (disabled) {
-      return `${baseClasses} bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed`;
+      return `${baseClasses} bg-slate-100 border-slate-300 text-slate-500 cursor-not-allowed`;
     }
 
     if (!validationState.isTouched) {
-      return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
+      return `${baseClasses} border-slate-300 focus:ring-gold-500 focus:border-gold-500`;
     }
 
     if (validationState.errors.length > 0) {
-      return `${baseClasses} border-red-300 focus:ring-red-500 focus:border-red-500`;
+      return `${baseClasses} border-error-300 focus:ring-red-500 focus:border-error-500`;
     }
 
     if (validationState.warnings.length > 0) {
@@ -165,7 +165,7 @@ const ValidatedNumberInput = ({
       return `${baseClasses} border-green-300 focus:ring-green-500 focus:border-green-500`;
     }
 
-    return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
+    return `${baseClasses} border-slate-300 focus:ring-gold-500 focus:border-gold-500`;
   };
 
   const getValidationIcon = () => {
@@ -174,11 +174,11 @@ const ValidatedNumberInput = ({
     }
 
     if (!validationState.isTouched || !value) {
-      return showCurrencyIcon ? <IndianRupee className="w-4 h-4 text-gray-400" /> : null;
+      return showCurrencyIcon ? <IndianRupee className="w-4 h-4 text-slate-400" /> : null;
     }
 
     if (validationState.errors.length > 0) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
+      return <AlertCircle className="w-4 h-4 text-error-500" />;
     }
 
     if (validationState.warnings.length > 0) {
@@ -189,7 +189,7 @@ const ValidatedNumberInput = ({
       return <CheckCircle className="w-4 h-4 text-green-500" />;
     }
 
-    return showCurrencyIcon ? <IndianRupee className="w-4 h-4 text-gray-400" /> : null;
+    return showCurrencyIcon ? <IndianRupee className="w-4 h-4 text-slate-400" /> : null;
   };
 
   const getHelperText = () => {
@@ -211,13 +211,13 @@ const ValidatedNumberInput = ({
   };
 
   const getHelperTextColor = () => {
-    if (!validationState.isTouched) return 'text-gray-500';
+    if (!validationState.isTouched) return 'text-slate-500';
 
-    if (validationState.errors.length > 0) return 'text-red-600';
+    if (validationState.errors.length > 0) return 'text-error-600';
     if (validationState.warnings.length > 0) return 'text-yellow-600';
     if (validationState.isValid && value) return 'text-green-600';
 
-    return 'text-gray-500';
+    return 'text-slate-500';
   };
 
   const fieldId = `input-${name}`;
@@ -229,9 +229,9 @@ const ValidatedNumberInput = ({
   return (
     <div className={`space-y-1 ${className}`}>
       {label && (
-        <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
+        <label htmlFor={fieldId} className="block text-body-regular font-medium text-slate-700">
           {label}
-          {required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+          {required && <span className="text-error-500 ml-1" aria-label="required">*</span>}
         </label>
       )}
 
@@ -259,7 +259,7 @@ const ValidatedNumberInput = ({
         {/* Currency Icon */}
         {showCurrencyIcon && (
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <IndianRupee className="w-4 h-4 text-gray-400" />
+            <IndianRupee className="w-4 h-4 text-slate-400" />
           </div>
         )}
 
@@ -283,12 +283,12 @@ const ValidatedNumberInput = ({
 
       {/* Suggestions */}
       {showSuggestions && validationState.suggestions.length > 0 && (isFocused || validationState.errors.length > 0) && (
-        <div className="mt-2 p-3 bg-info-50 border border-info-200 rounded-lg">
+        <div className="mt-2 p-3 bg-info-50 border border-info-200 rounded-xl">
           <div className="flex items-start space-x-2">
             <Info className="w-4 h-4 text-info-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-info-900 mb-1">Suggestions:</p>
-              <ul className="text-xs text-info-800 space-y-1">
+              <p className="text-body-regular font-medium text-info-900 mb-1">Suggestions:</p>
+              <ul className="text-body-small text-info-800 space-y-1">
                 {validationState.suggestions.slice(0, 3).map((suggestion, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2">•</span>
@@ -303,12 +303,12 @@ const ValidatedNumberInput = ({
 
       {/* Warnings */}
       {validationState.warnings.length > 0 && validationState.isTouched && (
-        <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
           <div className="flex items-start space-x-2">
             <Info className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-yellow-900 mb-1">Please Note:</p>
-              <ul className="text-xs text-yellow-800 space-y-1">
+              <p className="text-body-regular font-medium text-yellow-900 mb-1">Please Note:</p>
+              <ul className="text-body-small text-yellow-800 space-y-1">
                 {validationState.warnings.map((warning, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2">•</span>
@@ -323,12 +323,12 @@ const ValidatedNumberInput = ({
 
       {/* Errors */}
       {validationState.errors.length > 0 && validationState.isTouched && (
-        <div id={errorId} role="alert" aria-live="polite" className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div id={errorId} role="alert" aria-live="polite" className="mt-2 p-3 bg-error-50 border border-red-200 rounded-xl">
           <div className="flex items-start space-x-2">
-            <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" aria-hidden="true" />
+            <AlertCircle className="w-4 h-4 text-error-600 mt-0.5 flex-shrink-0" aria-hidden="true" />
             <div>
-              <p className="text-sm font-medium text-red-900 mb-1">Please Fix:</p>
-              <ul className="text-xs text-red-800 space-y-1">
+              <p className="text-body-regular font-medium text-red-900 mb-1">Please Fix:</p>
+              <ul className="text-body-small text-red-800 space-y-1">
                 {validationState.errors.map((error, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2" aria-hidden="true">•</span>

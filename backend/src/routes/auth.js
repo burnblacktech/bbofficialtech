@@ -439,7 +439,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'email', 'fullName', 'phone', 'role', 'status', 'createdAt', 'dateOfBirth', 'metadata', 'authProvider', 'passwordHash', 'panNumber', 'panVerified', 'panVerifiedAt'],
+      attributes: ['id', 'email', 'fullName', 'phone', 'role', 'status', 'createdAt', 'dateOfBirth', 'gender', 'metadata', 'authProvider', 'passwordHash', 'panNumber', 'panVerified', 'panVerifiedAt'],
     });
 
     if (!user) {
@@ -466,6 +466,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
         status: user.status,
         createdAt: user.createdAt,
         dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
         metadata: user.metadata || {},
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
@@ -497,7 +498,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { fullName, phone, dateOfBirth, metadata } = req.body;
+    const { fullName, phone, dateOfBirth, gender, metadata } = req.body;
 
     const user = await User.findByPk(userId);
     if (!user) {
@@ -511,6 +512,16 @@ router.put('/profile', authenticateToken, async (req, res) => {
     if (fullName) {user.fullName = fullName;}
     if (phone) {user.phone = phone;}
     if (dateOfBirth !== undefined) {user.dateOfBirth = dateOfBirth;}
+    if (gender !== undefined) {
+      // Validate gender value
+      if (gender && !['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid gender value. Must be MALE, FEMALE, or OTHER',
+        });
+      }
+      user.gender = gender;
+    }
     if (metadata) {
       // Merge metadata with existing metadata
       user.metadata = { ...(user.metadata || {}), ...metadata };
@@ -533,6 +544,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
         role: user.role,
         status: user.status,
         dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
         metadata: user.metadata || {},
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
@@ -658,6 +670,58 @@ router.post('/verify-otp', authRateLimit, async (req, res) => {
 // GOOGLE OAUTH ROUTES
 // =====================================================
 
+// Determine which frontend base URL to use for OAuth redirects.
+// Prefer a validated per-session redirectBase (captured on /auth/google) to avoid env misconfig redirecting to marketing site.
+const getOAuthFrontendUrl = (req) => {
+  return req?.session?.oauthRedirectBase || process.env.FRONTEND_URL || 'http://localhost:3000';
+};
+
+// Validate redirect base to prevent open redirect vulnerabilities.
+// Allowed hosts can be configured via ALLOWED_OAUTH_REDIRECT_HOSTS (comma-separated).
+const validateOAuthRedirectBase = (redirectBase) => {
+  if (!redirectBase || typeof redirectBase !== 'string') {
+    return null;
+  }
+
+  try {
+    const url = new URL(redirectBase);
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      return null;
+    }
+
+    const configuredFrontend = process.env.FRONTEND_URL;
+    let configuredHost = null;
+    if (configuredFrontend) {
+      try {
+        configuredHost = new URL(configuredFrontend).host;
+      } catch {
+        configuredHost = null;
+      }
+    }
+
+    const allowedHosts = (process.env.ALLOWED_OAUTH_REDIRECT_HOSTS || '')
+      .split(',')
+      .map((h) => h.trim())
+      .filter(Boolean);
+
+    const hostAllowed =
+      (configuredHost && url.host === configuredHost) ||
+      allowedHosts.includes(url.host) ||
+      // Local dev convenience
+      url.host === 'localhost:3000' ||
+      url.host === '127.0.0.1:3000';
+
+    if (!hostAllowed) {
+      return null;
+    }
+
+    // Store only origin; do not allow arbitrary paths.
+    return url.origin;
+  } catch {
+    return null;
+  }
+};
+
 // Middleware to check if Google OAuth is configured
 const checkGoogleOAuthConfig = (req, res, next) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -681,10 +745,17 @@ router.get('/google', googleOAuthInitLimiter, checkGoogleOAuthConfig, (req, res,
   const state = require('crypto').randomBytes(32).toString('hex');
   req.session.oauthState = state;
 
+  // Capture requesting frontend origin so callback redirects back to correct app origin.
+  const redirectBase = validateOAuthRedirectBase(req.query.redirectBase);
+  if (redirectBase) {
+    req.session.oauthRedirectBase = redirectBase;
+  }
+
   enterpriseLogger.info('Google OAuth initiation', {
     state: state,
     sessionId: req.sessionID,
     ip: req.ip,
+    redirectBase: req.session.oauthRedirectBase,
   });
 
   passport.authenticate('google', {
@@ -707,8 +778,8 @@ router.get('/google/callback',
           query: req.query,
           ip: req.ip,
         });
-        
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+        const frontendUrl = getOAuthFrontendUrl(req);
         
         // Handle specific error types
         if (err.message === 'ACCOUNT_LINKING_REQUIRED') {
@@ -741,8 +812,8 @@ router.get('/google/callback',
           query: req.query,
           ip: req.ip,
         });
-        
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+        const frontendUrl = getOAuthFrontendUrl(req);
         const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
         return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
       }
@@ -757,7 +828,7 @@ router.get('/google/callback',
     try {
       // Check for account linking error
       if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') {
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const frontendUrl = getOAuthFrontendUrl(req);
         return res.redirect(`${frontendUrl}/auth/google/link-required?email=${encodeURIComponent(req.authInfo.email)}`);
       }
 
@@ -815,7 +886,7 @@ router.get('/google/callback',
       setRefreshTokenCookie(res, refreshToken);
 
       // Redirect to frontend with token
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const frontendUrl = getOAuthFrontendUrl(req);
       const userData = {
         id: user.id,
         email: user.email,
@@ -845,7 +916,7 @@ router.get('/google/callback',
         stack: error.stack,
       });
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const frontendUrl = getOAuthFrontendUrl(req);
       res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent(error.message)}`);
     }
   },

@@ -51,8 +51,8 @@ const legacyBadgeConfig = {
   pending: {
     icon: Clock,
     label: 'Pending',
-    bgClass: 'bg-gray-100',
-    textClass: 'text-gray-600',
+    bgClass: 'bg-slate-100',
+    textClass: 'text-slate-600',
   },
   'in-progress': {
     icon: Loader2,
@@ -70,8 +70,8 @@ const legacyBadgeConfig = {
   manual: {
     icon: PenTool,
     label: 'Manual',
-    bgClass: 'bg-gray-100',
-    textClass: 'text-gray-600',
+    bgClass: 'bg-slate-100',
+    textClass: 'text-slate-600',
   },
   draft: {
     icon: FileEdit,
@@ -118,8 +118,8 @@ const legacyBadgeConfig = {
   inactive: {
     icon: Clock,
     label: 'Inactive',
-    bgClass: 'bg-gray-100',
-    textClass: 'text-gray-600',
+    bgClass: 'bg-slate-100',
+    textClass: 'text-slate-600',
   },
 };
 
@@ -137,10 +137,10 @@ const STATUS_CONFIG = {
   error: {
     icon: XCircle,
     colors: {
-      bg: 'bg-red-50',
+      bg: 'bg-error-50',
       border: 'border-red-200',
-      text: 'text-red-700',
-      icon: 'text-red-600',
+      text: 'text-error-700',
+      icon: 'text-error-600',
     },
   },
   warning: {
@@ -198,8 +198,8 @@ const StatusBadge = ({
     const config = legacyBadgeConfig[normalizedStatus] || {
       icon: Clock,
       label: statusProp || 'Unknown',
-      bgClass: color === 'green' ? 'bg-success-100' : color === 'red' ? 'bg-error-100' : color === 'yellow' ? 'bg-warning-100' : color === 'blue' ? 'bg-info-100' : 'bg-gray-100',
-      textClass: color === 'green' ? 'text-success-700' : color === 'red' ? 'text-error-700' : color === 'yellow' ? 'text-warning-700' : color === 'blue' ? 'text-info-700' : 'text-gray-600',
+      bgClass: color === 'green' ? 'bg-success-100' : color === 'red' ? 'bg-error-100' : color === 'yellow' ? 'bg-warning-100' : color === 'blue' ? 'bg-info-100' : 'bg-slate-100',
+      textClass: color === 'green' ? 'text-success-700' : color === 'red' ? 'text-error-700' : color === 'yellow' ? 'text-warning-700' : color === 'blue' ? 'text-info-700' : 'text-slate-600',
     };
 
     const Icon = config.icon;
@@ -278,7 +278,7 @@ const StatusBadge = ({
         ${colors.bg}
         ${colors.border}
         ${colors.text}
-        border rounded-lg font-medium
+        border rounded-xl font-medium
         ${onClick ? 'cursor-pointer hover:opacity-80' : ''}
         ${className}
       `}
@@ -312,7 +312,7 @@ const StatusBadge = ({
     return (
       <div className="relative group">
         {badgeContent}
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-body-small rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
           {tooltip}
           <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900" />
         </div>

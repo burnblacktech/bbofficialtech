@@ -49,10 +49,10 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
   return (
     <div className="space-y-6">
       {/* Director Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center space-x-2 mb-4">
           <Briefcase className="w-5 h-5 text-blue-600" />
-          <h4 className="font-semibold text-gray-900">Director Income</h4>
+          <h4 className="font-semibold text-slate-900">Director Income</h4>
         </div>
 
         <div className="space-y-4">
@@ -62,23 +62,23 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
                 type="checkbox"
                 checked={isDirector}
                 onChange={(e) => handleDirectorChange(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
+                className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-gold-500"
               />
-              <span className="ml-2 text-sm font-medium text-gray-700">Are you a director of any company?</span>
+              <span className="ml-2 text-body-regular font-medium text-slate-700">Are you a director of any company?</span>
             </label>
           </div>
 
           {isDirector && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Director Income (₹)</label>
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">Director Income (₹)</label>
               <input
                 type="number"
                 value={directorIncome}
                 onChange={(e) => handleDirectorIncomeChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="0"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-body-small text-slate-500 mt-1">
                 Income received as director of a company (excluding salary if already included)
               </p>
             </div>
@@ -87,10 +87,10 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
       </div>
 
       {/* Partner Income Section */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center space-x-2 mb-4">
           <Users className="w-5 h-5 text-blue-600" />
-          <h4 className="font-semibold text-gray-900">Partner Income</h4>
+          <h4 className="font-semibold text-slate-900">Partner Income</h4>
         </div>
 
         <div className="space-y-4">
@@ -100,23 +100,23 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
                 type="checkbox"
                 checked={isPartner}
                 onChange={(e) => handlePartnerChange(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-gold-500"
+                className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-gold-500"
               />
-              <span className="ml-2 text-sm font-medium text-gray-700">Are you a partner in any firm?</span>
+              <span className="ml-2 text-body-regular font-medium text-slate-700">Are you a partner in any firm?</span>
             </label>
           </div>
 
           {isPartner && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Partner Income (₹)</label>
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">Partner Income (₹)</label>
               <input
                 type="number"
                 value={partnerIncome}
                 onChange={(e) => handlePartnerIncomeChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="0"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-body-small text-slate-500 mt-1">
                 Share of profit from partnership firm (excluding business income if already included)
               </p>
             </div>
@@ -126,15 +126,15 @@ const DirectorPartnerIncomeForm = ({ data, onUpdate, selectedITR }) => {
 
       {/* Summary */}
       {(isDirector || isPartner) && (
-        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-gray-900">Total Director/Partner Income:</span>
-            <span className="text-xl font-bold text-gray-900">
+            <span className="font-semibold text-slate-900">Total Director/Partner Income:</span>
+            <span className="text-heading-3 font-bold text-slate-900">
               ₹{(directorIncome + partnerIncome).toLocaleString('en-IN')}
             </span>
           </div>
           {(directorIncome > 0 || partnerIncome > 0) && (
-            <div className="mt-2 text-sm text-gray-600">
+            <div className="mt-2 text-body-regular text-slate-600">
               {directorIncome > 0 && `Director: ₹${directorIncome.toLocaleString('en-IN')}`}
               {directorIncome > 0 && partnerIncome > 0 && ' | '}
               {partnerIncome > 0 && `Partner: ₹${partnerIncome.toLocaleString('en-IN')}`}

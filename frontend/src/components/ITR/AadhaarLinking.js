@@ -177,7 +177,7 @@ const AadhaarLinking = ({ userId, onLinked, onUnlinked }) => {
     <div className="space-y-4">
       {/* Current Status */}
       {aadhaarStatus?.aadhaarLinked && (
-        <div className="bg-success-50 border border-success-200 rounded-lg p-4">
+        <div className="bg-success-50 border border-success-200 rounded-xl p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3">
               <CheckCircle className="w-5 h-5 text-success-600 mt-0.5" />
@@ -209,7 +209,7 @@ const AadhaarLinking = ({ userId, onLinked, onUnlinked }) => {
               type="button"
               onClick={handleUnlink}
               disabled={isUnlinking}
-              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-error-600 hover:text-error-700 hover:bg-error-50 rounded-md transition-colors disabled:opacity-50"
+              className="flex items-center space-x-2 px-3 py-2 text-body-regular font-medium text-error-600 hover:text-error-700 hover:bg-error-50 rounded-xl transition-colors disabled:opacity-50"
             >
               {isUnlinking ? (
                 <Loader className="w-4 h-4 animate-spin" />
@@ -226,26 +226,26 @@ const AadhaarLinking = ({ userId, onLinked, onUnlinked }) => {
       {!aadhaarStatus?.aadhaarLinked && (
         <div className="space-y-4">
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Aadhaar Number
             </label>
             <div className="flex space-x-2">
               <div className="flex-1 relative">
-                <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   value={aadhaarNumber}
                   onChange={handleAadhaarChange}
                   placeholder="XXXX XXXX XXXX"
                   maxLength={14} // 12 digits + 2 spaces
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 />
               </div>
               <button
                 type="button"
                 onClick={handleVerify}
                 disabled={isVerifying || !aadhaarNumber}
-                className="px-4 py-2 bg-gold-600 text-white rounded-lg hover:bg-gold-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                className="px-4 py-2 bg-gold-600 text-white rounded-xl hover:bg-gold-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 {isVerifying ? (
                   <>
@@ -263,14 +263,14 @@ const AadhaarLinking = ({ userId, onLinked, onUnlinked }) => {
                 <span>{error}</span>
               </p>
             )}
-            <p className="mt-2 text-body-xs text-gray-500">
+            <p className="mt-2 text-body-xs text-slate-500">
               Enter your 12-digit Aadhaar number. We'll verify it using SurePass API.
             </p>
           </div>
 
           {/* Verification Result */}
           {verificationResult && verificationResult.verified && (
-            <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+            <div className="bg-info-50 border border-info-200 rounded-xl p-4">
               <div className="flex items-start space-x-3">
                 <CheckCircle className="w-5 h-5 text-info-600 mt-0.5" />
                 <div className="flex-1">
@@ -284,7 +284,7 @@ const AadhaarLinking = ({ userId, onLinked, onUnlinked }) => {
                     type="button"
                     onClick={handleLink}
                     disabled={isLinking}
-                    className="mt-3 flex items-center space-x-2 px-4 py-2 bg-info-600 text-white rounded-lg hover:bg-info-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 flex items-center space-x-2 px-4 py-2 bg-info-600 text-white rounded-xl hover:bg-info-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLinking ? (
                       <>
@@ -306,10 +306,10 @@ const AadhaarLinking = ({ userId, onLinked, onUnlinked }) => {
       )}
 
       {/* Info Message */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
         <div className="flex items-start space-x-2">
-          <AlertCircle className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-          <div className="text-body-xs text-gray-600">
+          <AlertCircle className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
+          <div className="text-body-xs text-slate-600">
             <p className="font-medium mb-1">Why link Aadhaar?</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Faster ITR filing with pre-filled data</li>

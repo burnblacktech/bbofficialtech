@@ -173,31 +173,31 @@ const ITRFormRecommender = () => {
 
   if (isAnalyzing) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Analyzing your profile to recommend the best ITR form...</p>
+          <p className="text-slate-600">Analyzing your profile to recommend the best ITR form...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <header className="bg-white shadow-elevation-1 border-b sticky top-0 z-50">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/itr/pan-verification')}
-                className="p-2 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-700" />
+                <ArrowLeft className="h-5 w-5 text-slate-700" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">ITR Form Selection</h1>
-                <p className="text-xs text-gray-500">Step 3: Choose the right ITR form</p>
+                <h1 className="text-heading-4 font-semibold text-slate-900">ITR Form Selection</h1>
+                <p className="text-body-small text-slate-500">Step 3: Choose the right ITR form</p>
               </div>
             </div>
           </div>
@@ -208,16 +208,16 @@ const ITRFormRecommender = () => {
       <main className="px-4 py-6 space-y-6 max-w-4xl mx-auto">
         {/* Selected Person Info */}
         {selectedPerson && (
-          <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="bg-white rounded-xl p-4 border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-gray-900">{selectedPerson.name}</h3>
-                <p className="text-sm text-gray-500">PAN: {selectedPerson.panNumber}</p>
+                <h3 className="font-semibold text-slate-900">{selectedPerson.name}</h3>
+                <p className="text-body-regular text-slate-500">PAN: {selectedPerson.panNumber}</p>
               </div>
               {verificationResult?.isValid && (
                 <div className="flex items-center text-green-600">
                   <CheckCircle className="w-5 h-5 mr-1" />
-                  <span className="text-sm">PAN Verified</span>
+                  <span className="text-body-regular">PAN Verified</span>
                 </div>
               )}
             </div>
@@ -231,8 +231,8 @@ const ITRFormRecommender = () => {
               <Info className="h-5 w-5 text-blue-600 mt-0.5" />
               <div className="flex-1">
                 <h3 className="font-semibold text-blue-900 mb-1">Recommended: {recommendation.recommendedITR}</h3>
-                <p className="text-sm text-blue-700 mb-2">{recommendation.reason}</p>
-                <div className="flex items-center space-x-4 text-xs text-blue-600">
+                <p className="text-body-regular text-blue-700 mb-2">{recommendation.reason}</p>
+                <div className="flex items-center space-x-4 text-body-small text-blue-600">
                   <span>Confidence: {Math.round(recommendation.confidence * 100)}%</span>
                   {recommendation.triggeredRules?.[0]?.caReviewRequired && (
                     <span className="flex items-center">
@@ -248,12 +248,12 @@ const ITRFormRecommender = () => {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+          <div className="bg-error-50 rounded-xl p-4 border border-red-200">
             <div className="flex items-start space-x-3">
-              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-error-600 mt-0.5" />
               <div>
                 <h4 className="font-semibold text-red-900 mb-1">Analysis Error</h4>
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-body-regular text-error-700">{error}</p>
               </div>
             </div>
           </div>
@@ -261,7 +261,7 @@ const ITRFormRecommender = () => {
 
         {/* ITR Options */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Select ITR Form</h2>
+          <h2 className="text-heading-3 font-semibold text-slate-900">Select ITR Form</h2>
 
           {['ITR-1', 'ITR-2', 'ITR-3', 'ITR-4'].map((itrType) => {
             const Icon = getITRIcon(itrType);
@@ -276,20 +276,20 @@ const ITRFormRecommender = () => {
                 onClick={() => isEligible && handleITRSelect(itrType)}
                 className={`
                   bg-white rounded-xl border-2 p-4 cursor-pointer transition-all
-                  ${isSelected ? 'border-blue-500 shadow-md' : 'border-gray-200 hover:border-gray-300'}
+                  ${isSelected ? 'border-blue-500 shadow-elevation-2' : 'border-slate-200 hover:border-slate-300'}
                   ${!isEligible ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
               >
                 <div className="flex items-start space-x-4">
-                  <div className={`w-12 h-12 ${getITRColor(itrType)} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <div className={`w-12 h-12 ${getITRColor(itrType)} rounded-xl flex items-center justify-center flex-shrink-0`}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>
 
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-gray-900">{description.name}</h3>
+                      <h3 className="font-semibold text-slate-900">{description.name}</h3>
                       {isRecommended && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                        <span className="text-body-small bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
                           Recommended
                         </span>
                       )}
@@ -297,9 +297,9 @@ const ITRFormRecommender = () => {
                         <CheckCircle className="w-5 h-5 text-blue-600" />
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{description.description}</p>
+                    <p className="text-body-regular text-slate-600 mb-2">{description.description}</p>
 
-                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                    <div className="flex items-center space-x-4 text-body-small text-slate-500">
                       <span>⏱ {description.estimatedTime}</span>
                       {description.caRequired && (
                         <span className="flex items-center">
@@ -320,7 +320,7 @@ const ITRFormRecommender = () => {
           <div className="flex justify-end pt-4">
             <button
               onClick={handleProceed}
-              className="flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
             >
               <span>Continue with {selectedITR}</span>
               <ArrowRight className="w-5 h-5 ml-2" />

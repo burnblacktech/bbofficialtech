@@ -50,7 +50,7 @@ const FieldLockIndicator = ({
             <Lock className="w-4 h-4 text-slate-400" />
             {reason && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
-                <div className="bg-slate-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+                <div className="bg-slate-900 text-white text-body-small rounded-xl px-3 py-2 whitespace-nowrap shadow-elevation-3">
                   {reason}
                   <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                 </div>
@@ -60,7 +60,7 @@ const FieldLockIndicator = ({
         )}
 
         {isVerified && (
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md text-xs font-medium">
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-xl text-body-small font-medium">
             <CheckCircle className="w-3 h-3" />
             <span>Verified</span>
           </div>
@@ -69,7 +69,7 @@ const FieldLockIndicator = ({
         {allowAdd && onAddClick && (
           <button
             onClick={onAddClick}
-            className="text-xs text-gold-600 hover:text-gold-700 font-medium underline"
+            className="text-body-small text-gold-600 hover:text-gold-700 font-medium underline"
           >
             Add Another
           </button>
@@ -78,7 +78,7 @@ const FieldLockIndicator = ({
         {isLocked && section && field && (
           <button
             onClick={handleUnlockClick}
-            className="text-xs text-gold-600 hover:text-gold-700 font-medium underline flex items-center gap-1"
+            className="text-body-small text-gold-600 hover:text-gold-700 font-medium underline flex items-center gap-1"
             title="Unlock this field"
           >
             <Unlock className="w-3 h-3" />

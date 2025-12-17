@@ -204,19 +204,19 @@ const DataSourceSelector = ({ onProceed }) => {
     return (
       <div className="bg-gradient-to-b from-neutral-50 to-white min-h-screen">
         {/* Header with Back Navigation */}
-        <div className="bg-white border-b border-neutral-200 sticky top-0 z-40 shadow-sm">
+        <div className="bg-white border-b border-neutral-200 sticky top-0 z-40 shadow-elevation-1">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/itr/select-person')}
-                className="p-2 rounded-lg hover:bg-neutral-100 transition-colors flex-shrink-0 group"
+                className="p-2 rounded-xl hover:bg-neutral-100 transition-colors flex-shrink-0 group"
                 aria-label="Go back"
               >
                 <ArrowLeft className="h-5 w-5 text-neutral-600 group-hover:text-neutral-900 transition-colors" />
               </button>
               <div className="flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-neutral-900">Select Data Source</h1>
-                <p className="text-sm text-neutral-600 mt-0.5">Choose how to start your ITR filing</p>
+                <h1 className="text-heading-3 sm:text-heading-2 font-bold text-neutral-900">Select Data Source</h1>
+                <p className="text-body-regular text-neutral-600 mt-0.5">Choose how to start your ITR filing</p>
               </div>
             </div>
           </div>
@@ -231,32 +231,32 @@ const DataSourceSelector = ({ onProceed }) => {
             transition={springs.gentle}
             className="mb-6 sm:mb-8"
           >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6 p-4 bg-white rounded-xl border border-neutral-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6 p-4 bg-white rounded-xl border border-neutral-200 shadow-elevation-1">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center flex-shrink-0">
                   <CheckCircle className="w-5 h-5 text-success-600" />
                 </div>
                 <div>
-                  <span className="text-xs text-neutral-500 block">PAN Number</span>
-                  <span className="text-sm sm:text-base font-bold font-mono text-neutral-900">
+                  <span className="text-body-small text-neutral-500 block">PAN Number</span>
+                  <span className="text-body-regular sm:text-body-large font-bold font-mono text-neutral-900">
                     {panNumber || 'N/A'}
                   </span>
                 </div>
               </div>
-              <div className="px-4 py-2 bg-gradient-to-r from-gold-100 to-amber-100 rounded-lg border border-gold-200">
-                <span className="text-xs text-gold-700 font-medium block">Assessment Year</span>
-                <span className="text-sm font-bold text-gold-900">{assessmentYear}</span>
+              <div className="px-4 py-2 bg-gradient-to-r from-gold-100 to-amber-100 rounded-xl border border-gold-200">
+                <span className="text-body-small text-gold-700 font-medium block">Assessment Year</span>
+                <span className="text-body-regular font-bold text-gold-900">{assessmentYear}</span>
               </div>
             </div>
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-2xl sm:text-3xl font-bold text-neutral-900 text-center mb-2"
+              className="text-heading-2 sm:text-heading-1 font-bold text-neutral-900 text-center mb-2"
             >
               How would you like to start?
             </motion.h1>
-            <p className="text-sm sm:text-base text-neutral-600 text-center max-w-2xl mx-auto">
+            <p className="text-body-regular sm:text-body-large text-neutral-600 text-center max-w-2xl mx-auto">
               Choose the method that works best for you. We'll guide you through the rest.
             </p>
           </motion.div>
@@ -268,23 +268,23 @@ const DataSourceSelector = ({ onProceed }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={springs.gentle}
-              className="bg-white rounded-xl border-2 border-gold-300 shadow-md p-5 sm:p-6 relative overflow-hidden hover:border-gold-400 hover:shadow-lg transition-all duration-300 flex flex-col group"
+              className="bg-white rounded-xl border-2 border-gold-300 shadow-elevation-2 p-5 sm:p-6 relative overflow-hidden hover:border-gold-400 hover:shadow-elevation-3 transition-all duration-300 flex flex-col group"
             >
               <div className="absolute top-3 right-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gold-100 text-gold-900 shadow-sm">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-bold bg-gold-100 text-gold-900 shadow-elevation-1">
                   RECOMMENDED
                 </span>
               </div>
 
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400 to-gold-500 flex items-center justify-center flex-shrink-0 shadow-elevation-2 group-hover:scale-110 transition-transform">
                   <Upload className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-base sm:text-lg font-bold text-neutral-900 mb-1.5">
+                  <h3 className="text-base sm:text-heading-4 font-bold text-neutral-900 mb-1.5">
                     Upload Form 16
                   </h3>
-                  <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  <p className="text-body-small sm:text-body-regular text-neutral-600 leading-relaxed">
                     Auto-fill salary, TDS, and suggest ITR form. Fastest way to get started.
                   </p>
                 </div>
@@ -292,11 +292,11 @@ const DataSourceSelector = ({ onProceed }) => {
 
               <button
                 onClick={() => setCurrentView('form16')}
-                className="w-full py-3 px-4 border-2 border-dashed border-neutral-300 rounded-lg hover:border-gold-400 hover:bg-gold-50 transition-all text-center mt-auto group-hover:border-gold-500 group-hover:bg-gold-100/50"
+                className="w-full py-3 px-4 border-2 border-dashed border-neutral-300 rounded-xl hover:border-gold-400 hover:bg-gold-50 transition-all text-center mt-auto group-hover:border-gold-500 group-hover:bg-gold-100/50"
               >
                 <div className="flex items-center justify-center gap-2">
                   <Upload className="w-4 h-4 text-neutral-600" />
-                  <p className="text-sm font-semibold text-neutral-700">
+                  <p className="text-body-regular font-semibold text-neutral-700">
                     Drop files or click to upload
                   </p>
                 </div>
@@ -308,24 +308,24 @@ const DataSourceSelector = ({ onProceed }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...springs.gentle, delay: 0.1 }}
-              className="bg-white rounded-xl border-2 border-neutral-200 shadow-md p-5 sm:p-6 hover:border-primary-300 hover:shadow-lg transition-all duration-300 flex flex-col group"
+              className="bg-white rounded-xl border-2 border-neutral-200 shadow-elevation-2 p-5 sm:p-6 hover:border-primary-300 hover:shadow-elevation-3 transition-all duration-300 flex flex-col group"
             >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-elevation-2 group-hover:scale-110 transition-transform">
                   <Download className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-base sm:text-lg font-bold text-neutral-900 mb-1.5">
+                  <h3 className="text-base sm:text-heading-4 font-bold text-neutral-900 mb-1.5">
                     Fetch AIS/26AS
                   </h3>
-                  <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  <p className="text-body-small sm:text-body-regular text-neutral-600 leading-relaxed">
                     Auto-import from Income Tax Portal. Connect and fetch your tax data automatically.
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleAISFetch}
-                className="w-full py-3 px-4 bg-aurora-gradient text-white rounded-lg font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 text-sm mt-auto flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 text-body-regular mt-auto flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Fetch Now
@@ -337,24 +337,24 @@ const DataSourceSelector = ({ onProceed }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...springs.gentle, delay: 0.2 }}
-              className="bg-white rounded-xl border-2 border-neutral-200 shadow-md p-5 sm:p-6 hover:border-primary-300 hover:shadow-lg transition-all duration-300 flex flex-col group"
+              className="bg-white rounded-xl border-2 border-neutral-200 shadow-elevation-2 p-5 sm:p-6 hover:border-primary-300 hover:shadow-elevation-3 transition-all duration-300 flex flex-col group"
             >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-elevation-2 group-hover:scale-110 transition-transform">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-base sm:text-lg font-bold text-neutral-900 mb-1.5">
+                  <h3 className="text-base sm:text-heading-4 font-bold text-neutral-900 mb-1.5">
                     I Know My ITR
                   </h3>
-                  <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  <p className="text-body-small sm:text-body-regular text-neutral-600 leading-relaxed">
                     Directly select ITR-1, 2, 3, or 4. For users familiar with ITR forms.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setCurrentView('expert')}
-                className="w-full py-3 px-4 bg-aurora-gradient text-white rounded-lg font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 text-sm mt-auto flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 text-body-regular mt-auto flex items-center justify-center gap-2"
               >
                 <FileText className="w-4 h-4" />
                 Select Form
@@ -366,24 +366,24 @@ const DataSourceSelector = ({ onProceed }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...springs.gentle, delay: 0.3 }}
-              className="bg-white rounded-xl border-2 border-neutral-200 shadow-md p-5 sm:p-6 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 flex flex-col group"
+              className="bg-white rounded-xl border-2 border-neutral-200 shadow-elevation-2 p-5 sm:p-6 hover:border-emerald-300 hover:shadow-elevation-3 transition-all duration-300 flex flex-col group"
             >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-elevation-2 group-hover:scale-110 transition-transform">
                   <Compass className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-base sm:text-lg font-bold text-neutral-900 mb-1.5">
+                  <h3 className="text-base sm:text-heading-4 font-bold text-neutral-900 mb-1.5">
                     Guide Me
                   </h3>
-                  <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  <p className="text-body-small sm:text-body-regular text-neutral-600 leading-relaxed">
                     Answer 5 simple questions to find your form. Perfect for first-time filers.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setCurrentView('guided')}
-                className="w-full py-3 px-4 bg-aurora-gradient text-white rounded-lg font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 text-sm mt-auto flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 text-body-regular mt-auto flex items-center justify-center gap-2"
               >
                 <Compass className="w-4 h-4" />
                 Start Guide
@@ -394,7 +394,7 @@ const DataSourceSelector = ({ onProceed }) => {
           {/* Continue from Last Year & Revised Return - Enhanced */}
           {(previousYearFiling || existingFiling) && (
             <div className="mt-6 sm:mt-8">
-              <h2 className="text-lg font-semibold text-neutral-900 mb-4 text-center sm:text-left">
+              <h2 className="text-heading-4 font-semibold text-neutral-900 mb-4 text-center sm:text-left">
                 Quick Actions
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -404,16 +404,16 @@ const DataSourceSelector = ({ onProceed }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={springs.gentle}
                   >
-                    <div className="bg-white rounded-xl border-2 border-primary-200 shadow-md p-4 sm:p-5 hover:border-primary-300 hover:shadow-lg transition-all">
+                    <div className="bg-white rounded-xl border-2 border-primary-200 shadow-elevation-2 p-4 sm:p-5 hover:border-primary-300 hover:shadow-elevation-3 transition-all">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-md">
+                        <div className="w-10 h-10 rounded-xl bg-aurora-gradient flex items-center justify-center flex-shrink-0 shadow-elevation-2">
                           <Copy className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-sm sm:text-base font-bold text-neutral-900">
                             Continue from Last Year
                           </h3>
-                          <p className="text-xs text-neutral-600 mt-0.5">
+                          <p className="text-body-small text-neutral-600 mt-0.5">
                             {previousYearFiling.itrType || previousYearFiling.itrForm || 'ITR'} AY{' '}
                             {previousYearFiling.assessmentYear || '2024-25'}
                           </p>
@@ -421,7 +421,7 @@ const DataSourceSelector = ({ onProceed }) => {
                       </div>
                       <button
                         onClick={handleContinueFromLastYear}
-                        className="w-full py-2.5 px-4 bg-aurora-gradient text-white rounded-lg font-semibold hover:opacity-90 transition-all shadow-md shadow-primary-500/20 text-sm flex items-center justify-center gap-2"
+                        className="w-full py-2.5 px-4 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-2 shadow-primary-500/20 text-body-regular flex items-center justify-center gap-2"
                       >
                         <Copy className="w-4 h-4" />
                         Continue
@@ -436,23 +436,23 @@ const DataSourceSelector = ({ onProceed }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={springs.gentle}
                   >
-                    <div className="bg-white rounded-xl border-2 border-amber-200 shadow-md p-4 sm:p-5 hover:border-amber-300 hover:shadow-lg transition-all">
+                    <div className="bg-white rounded-xl border-2 border-amber-200 shadow-elevation-2 p-4 sm:p-5 hover:border-amber-300 hover:shadow-elevation-3 transition-all">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-gold-600 flex items-center justify-center flex-shrink-0 shadow-md">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-gold-600 flex items-center justify-center flex-shrink-0 shadow-elevation-2">
                           <RefreshCw className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-sm sm:text-base font-bold text-neutral-900">
                             Revised Return
                           </h3>
-                          <p className="text-xs text-neutral-600 mt-0.5">
+                          <p className="text-body-small text-neutral-600 mt-0.5">
                             {existingFiling.itrType || existingFiling.itrForm || 'ITR'} for {assessmentYear}
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={handleStartRevised}
-                        className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-gold-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-gold-700 transition-all shadow-md shadow-amber-500/20 text-sm flex items-center justify-center gap-2"
+                        className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-gold-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-gold-700 transition-all shadow-elevation-2 shadow-amber-500/20 text-body-regular flex items-center justify-center gap-2"
                       >
                         <RefreshCw className="w-4 h-4" />
                         Start Revised
@@ -473,7 +473,7 @@ const DataSourceSelector = ({ onProceed }) => {
     return (
       <div className="bg-gradient-to-b from-neutral-50 to-white min-h-screen flex flex-col">
         {/* Header with Back Navigation and Breadcrumb */}
-        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-sm">
+        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-elevation-1">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <button
@@ -481,21 +481,21 @@ const DataSourceSelector = ({ onProceed }) => {
                   setCurrentView(null);
                   setForm16Summary(null);
                 }}
-                className="p-2 rounded-lg hover:bg-neutral-100 transition-colors flex-shrink-0 group"
+                className="p-2 rounded-xl hover:bg-neutral-100 transition-colors flex-shrink-0 group"
                 aria-label="Go back"
               >
                 <ArrowLeft className="w-5 h-5 text-neutral-600 group-hover:text-neutral-900 transition-colors" />
               </button>
-              <div className="flex items-center gap-2 text-sm text-neutral-500">
+              <div className="flex items-center gap-2 text-body-regular text-neutral-500">
                 <span>Data Source</span>
                 <span>/</span>
                 <span className="text-neutral-900 font-medium">Upload Form 16</span>
               </div>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mt-3">
+            <h2 className="text-heading-3 sm:text-heading-2 font-bold text-neutral-900 mt-3">
               Upload Form 16
             </h2>
-            <p className="text-sm text-neutral-600 mt-1">
+            <p className="text-body-regular text-neutral-600 mt-1">
               Upload your Form 16 to automatically extract salary and TDS information
             </p>
           </div>
@@ -519,7 +519,7 @@ const DataSourceSelector = ({ onProceed }) => {
             >
               <button
                 onClick={() => handleProceed(form16Summary.suggestedITR, { form16Summary })}
-                className="w-full py-4 px-6 bg-gold-500 text-white rounded-lg font-semibold text-heading-md hover:bg-gold-700 transition-all shadow-lg shadow-gold-500/25 flex items-center justify-center gap-2"
+                className="w-full py-4 px-6 bg-gold-500 text-white rounded-xl font-semibold text-heading-md hover:bg-gold-700 transition-all shadow-elevation-3 shadow-gold-500/25 flex items-center justify-center gap-2"
               >
                 Proceed to Computation Sheet
                 <ArrowRight className="w-5 h-5" />
@@ -536,38 +536,38 @@ const DataSourceSelector = ({ onProceed }) => {
     return (
       <div className="bg-gradient-to-b from-neutral-50 to-white min-h-screen flex flex-col">
         {/* Header with Back Navigation and Breadcrumb */}
-        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-sm">
+        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-elevation-1">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setCurrentView(null)}
-                className="p-2 rounded-lg hover:bg-neutral-100 transition-colors flex-shrink-0 group"
+                className="p-2 rounded-xl hover:bg-neutral-100 transition-colors flex-shrink-0 group"
                 aria-label="Go back"
               >
                 <ArrowLeft className="w-5 h-5 text-neutral-600 group-hover:text-neutral-900 transition-colors" />
               </button>
-              <div className="flex items-center gap-2 text-sm text-neutral-500">
+              <div className="flex items-center gap-2 text-body-regular text-neutral-500">
                 <span>Data Source</span>
                 <span>/</span>
                 <span className="text-neutral-900 font-medium">Fetch AIS/26AS</span>
               </div>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mt-3">
+            <h2 className="text-heading-3 sm:text-heading-2 font-bold text-neutral-900 mt-3">
               Fetch AIS/26AS Data
             </h2>
-            <p className="text-sm text-neutral-600 mt-1">
+            <p className="text-body-regular text-neutral-600 mt-1">
               Connect to Income Tax Portal and automatically import your tax data
             </p>
           </div>
         </header>
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 overflow-y-auto py-6 sm:py-8">
 
-          <div className="bg-white rounded-xl border-2 border-neutral-200 shadow-lg p-6 sm:p-8">
+          <div className="bg-white rounded-xl border-2 border-neutral-200 shadow-elevation-3 p-6 sm:p-8">
             <div className="text-center mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2">
+              <h3 className="text-heading-3 sm:text-heading-2 font-bold text-neutral-900 mb-2">
                 Fetching AIS/26AS Data
               </h3>
-              <p className="text-sm sm:text-base text-neutral-600">
+              <p className="text-body-regular sm:text-body-large text-neutral-600">
                 Connecting to Income Tax Portal and fetching your data...
               </p>
             </div>
@@ -576,8 +576,8 @@ const DataSourceSelector = ({ onProceed }) => {
               <div className="flex flex-col items-center gap-6 py-8">
                 <div className="w-16 h-16 border-4 border-primary-100 border-t-primary-500 rounded-full animate-spin" />
                 <div className="text-center">
-                  <p className="text-base font-semibold text-neutral-900 mb-1">Fetching your data...</p>
-                  <p className="text-sm text-neutral-600">This may take a few moments</p>
+                  <p className="text-body-large font-semibold text-neutral-900 mb-1">Fetching your data...</p>
+                  <p className="text-body-regular text-neutral-600">This may take a few moments</p>
                 </div>
               </div>
             ) : prefetchStatus.overall === 'success' && itrRecommendation ? (
@@ -586,19 +586,19 @@ const DataSourceSelector = ({ onProceed }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="space-y-6"
               >
-                <div className="bg-gradient-to-br from-primary-50 to-amber-50 rounded-xl border-2 border-primary-300 p-6 sm:p-8 text-center shadow-md">
+                <div className="bg-gradient-to-br from-primary-50 to-amber-50 rounded-xl border-2 border-primary-300 p-6 sm:p-8 text-center shadow-elevation-2">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
                     <CheckCircle className="w-8 h-8 text-primary-600" />
                   </div>
-                  <div className="text-3xl sm:text-4xl font-bold text-primary-700 mb-3">{itrRecommendation}</div>
-                  <p className="text-base text-neutral-700 max-w-md mx-auto">
+                  <div className="text-heading-1 sm:text-heading-1 font-bold text-primary-700 mb-3">{itrRecommendation}</div>
+                  <p className="text-body-large text-neutral-700 max-w-md mx-auto">
                     Based on your AIS/26AS data, we recommend filing <strong>{itrRecommendation}</strong>
                   </p>
                 </div>
 
                 <button
                   onClick={() => handleProceed(itrRecommendation)}
-                  className="w-full py-4 px-6 bg-aurora-gradient text-white rounded-lg font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2 text-base"
+                  className="w-full py-4 px-6 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-3 shadow-primary-500/20 flex items-center justify-center gap-2 text-body-large"
                 >
                   Proceed with {itrRecommendation}
                   <ArrowRight className="w-5 h-5" />
@@ -609,15 +609,15 @@ const DataSourceSelector = ({ onProceed }) => {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-error-100 mb-4">
                   <X className="w-8 h-8 text-error-600" />
                 </div>
-                <p className="text-base font-semibold text-error-600 mb-2">
+                <p className="text-body-large font-semibold text-error-600 mb-2">
                   Failed to fetch data
                 </p>
-                <p className="text-sm text-neutral-600 mb-6">
+                <p className="text-body-regular text-neutral-600 mb-6">
                   Please check your connection and try again
                 </p>
                 <button
                   onClick={handleAISFetch}
-                  className="px-6 py-3 bg-aurora-gradient text-white rounded-lg font-semibold hover:opacity-90 transition-all shadow-md"
+                  className="px-6 py-3 bg-aurora-gradient text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-elevation-2"
                 >
                   Retry
                 </button>
@@ -634,7 +634,7 @@ const DataSourceSelector = ({ onProceed }) => {
     return (
       <div className="bg-gradient-to-b from-neutral-50 to-white min-h-screen flex flex-col">
         {/* Header with Back Navigation and Breadcrumb */}
-        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-sm">
+        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-elevation-1">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <button
@@ -642,21 +642,21 @@ const DataSourceSelector = ({ onProceed }) => {
                   setCurrentView(null);
                   setSelectedITR(null);
                 }}
-                className="p-2 rounded-lg hover:bg-neutral-100 transition-colors flex-shrink-0 group"
+                className="p-2 rounded-xl hover:bg-neutral-100 transition-colors flex-shrink-0 group"
                 aria-label="Go back"
               >
                 <ArrowLeft className="w-5 h-5 text-neutral-600 group-hover:text-neutral-900 transition-colors" />
               </button>
-              <div className="flex items-center gap-2 text-sm text-neutral-500">
+              <div className="flex items-center gap-2 text-body-regular text-neutral-500">
                 <span>Data Source</span>
                 <span>/</span>
                 <span className="text-neutral-900 font-medium">Select ITR Form</span>
               </div>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mt-3">
+            <h2 className="text-heading-3 sm:text-heading-2 font-bold text-neutral-900 mt-3">
               Select Your ITR Form
             </h2>
-            <p className="text-sm text-neutral-600 mt-1">
+            <p className="text-body-regular text-neutral-600 mt-1">
               Choose the ITR form that matches your income sources
             </p>
           </div>
@@ -682,26 +682,26 @@ const DataSourceSelector = ({ onProceed }) => {
     return (
       <div className="bg-gradient-to-b from-neutral-50 to-white min-h-screen flex flex-col">
         {/* Header with Back Navigation and Breadcrumb */}
-        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-sm">
+        <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0 shadow-elevation-1">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setCurrentView(null)}
-                className="p-2 rounded-lg hover:bg-neutral-100 transition-colors flex-shrink-0 group"
+                className="p-2 rounded-xl hover:bg-neutral-100 transition-colors flex-shrink-0 group"
                 aria-label="Go back"
               >
                 <ArrowLeft className="w-5 h-5 text-neutral-600 group-hover:text-neutral-900 transition-colors" />
               </button>
-              <div className="flex items-center gap-2 text-sm text-neutral-500">
+              <div className="flex items-center gap-2 text-body-regular text-neutral-500">
                 <span>Data Source</span>
                 <span>/</span>
                 <span className="text-neutral-900 font-medium">Guide Me</span>
               </div>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mt-3">
+            <h2 className="text-heading-3 sm:text-heading-2 font-bold text-neutral-900 mt-3">
               Find Your ITR Form
             </h2>
-            <p className="text-sm text-neutral-600 mt-1">
+            <p className="text-body-regular text-neutral-600 mt-1">
               Answer a few questions to determine the right ITR form for you
             </p>
           </div>

@@ -122,7 +122,7 @@ const AdminCAPerformance = () => {
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              className="px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
@@ -216,7 +216,7 @@ const AdminCAPerformance = () => {
               <CardTitle>Performance Metrics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-neutral-500" />
                   <Typography.Body>Average Completion Time</Typography.Body>
@@ -225,7 +225,7 @@ const AdminCAPerformance = () => {
                   {averageCompletionTime.toFixed(1)} hours
                 </Typography.Body>
               </div>
-              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-neutral-500" />
                   <Typography.Body>Average Response Time</Typography.Body>
@@ -234,7 +234,7 @@ const AdminCAPerformance = () => {
                   {averageResponseTime.toFixed(1)} hours
                 </Typography.Body>
               </div>
-              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                 <div className="flex items-center gap-3">
                   <AlertCircle className="w-5 h-5 text-neutral-500" />
                   <Typography.Body>Error Rate</Typography.Body>
@@ -245,7 +245,7 @@ const AdminCAPerformance = () => {
                   {errorRate}%
                 </Typography.Body>
               </div>
-              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                 <div className="flex items-center gap-3">
                   <FileText className="w-5 h-5 text-neutral-500" />
                   <Typography.Body>Total Filings</Typography.Body>
@@ -265,7 +265,7 @@ const AdminCAPerformance = () => {
               {Object.keys(revenueBreakdown || {}).length > 0 ? (
                 <>
                   {Object.entries(revenueBreakdown).map(([itrType, amount]) => (
-                    <div key={itrType} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+                    <div key={itrType} className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                       <Typography.Body>{itrType}</Typography.Body>
                       <Typography.Body className="font-semibold">
                         ₹{amount.toLocaleString('en-IN')}
@@ -297,15 +297,15 @@ const AdminCAPerformance = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-neutral-50 rounded-lg">
+              <div className="text-center p-6 bg-neutral-50 rounded-xl">
                 <Typography.H1 className="text-neutral-900">{completedFilings}</Typography.H1>
                 <Typography.Small className="text-neutral-600 mt-1">Completed Filings</Typography.Small>
               </div>
-              <div className="text-center p-6 bg-neutral-50 rounded-lg">
+              <div className="text-center p-6 bg-neutral-50 rounded-xl">
                 <Typography.H1 className="text-neutral-900">{totalClients}</Typography.H1>
                 <Typography.Small className="text-neutral-600 mt-1">Total Clients</Typography.Small>
               </div>
-              <div className="text-center p-6 bg-neutral-50 rounded-lg">
+              <div className="text-center p-6 bg-neutral-50 rounded-xl">
                 <Typography.H1 className="text-neutral-900">{reviewCount}</Typography.H1>
                 <Typography.Small className="text-neutral-600 mt-1">Reviews</Typography.Small>
               </div>

@@ -104,7 +104,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
   const updateDeductionMutation = useMutation({
     mutationFn: async ({ deductionId, data }) => {
       try {
-        const response = await apiClient.put(`/api/itr/deductions/80CCC/${deductionId}`, data);
+        const response = await apiClient.put(`/api/itr/deductions/80CCC/${deductionId}`, { filingId, ...data });
         return response.data;
       } catch (error) {
         // For now, just update local state
@@ -114,11 +114,14 @@ const Section80CCC = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80CCC', filingId]);
       resetForm();
       setEditingDeduction(null);
       toast.success('80CCC deduction updated successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80CCC: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to update deduction');
@@ -129,7 +132,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
   const deleteDeductionMutation = useMutation({
     mutationFn: async (deductionId) => {
       try {
-        const response = await apiClient.delete(`/api/itr/deductions/80CCC/${deductionId}`);
+        const response = await apiClient.delete(`/api/itr/deductions/80CCC/${deductionId}?filingId=${filingId}`);
         return response.data;
       } catch (error) {
         // For now, just update local state
@@ -139,9 +142,12 @@ const Section80CCC = ({ filingId, onUpdate }) => {
         return { success: true };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80CCC', filingId]);
       toast.success('80CCC deduction deleted successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80CCC: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to delete deduction');
@@ -269,20 +275,20 @@ const Section80CCC = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-gold-100 rounded-lg">
+            <div className="p-3 bg-gold-100 rounded-xl">
               <Shield className="h-6 w-6 text-gold-600" />
             </div>
             <div>
-              <h2 className="text-heading-lg text-gray-900">Section 80CCC</h2>
-              <p className="text-body-sm text-gray-600">Pension Fund Contributions (Limit: ₹1,50,000 combined with 80C)</p>
+              <h2 className="text-heading-lg text-slate-900">Section 80CCC</h2>
+              <p className="text-body-sm text-slate-600">Pension Fund Contributions (Limit: ₹1,50,000 combined with 80C)</p>
             </div>
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Add Contribution</span>
@@ -290,19 +296,19 @@ const Section80CCC = ({ filingId, onUpdate }) => {
         </div>
 
         {/* Progress Bar */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-slate-50 rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-body-sm font-medium text-gray-700">Utilization</span>
-            <span className="text-heading-sm font-bold text-gray-900">₹{totalAmount.toLocaleString('en-IN')} / ₹1,50,000</span>
+            <span className="text-body-sm font-medium text-slate-700">Utilization</span>
+            <span className="text-heading-sm font-bold text-slate-900">₹{totalAmount.toLocaleString('en-IN')} / ₹1,50,000</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 rounded-full h-2">
             <div
               className="bg-gold-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${Math.min(utilizationPercentage, 100)}%` }}
             />
           </div>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-body-xs text-gray-600">{utilizationPercentage}% utilized</span>
+            <span className="text-body-xs text-slate-600">{utilizationPercentage}% utilized</span>
             <span className="text-body-xs text-green-600 font-medium">₹{remainingLimit.toLocaleString('en-IN')} remaining</span>
           </div>
         </div>
@@ -318,37 +324,37 @@ const Section80CCC = ({ filingId, onUpdate }) => {
             return (
               <div
                 key={deduction.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+                className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
-                    <div className={`p-3 bg-${providerInfo.color}-100 rounded-lg`}>
+                    <div className={`p-3 bg-${providerInfo.color}-100 rounded-xl`}>
                       <IconComponent className={`h-6 w-6 text-${providerInfo.color}-600`} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="text-heading-md text-gray-900">{providerInfo.name}</h3>
+                        <h3 className="text-heading-md text-slate-900">{providerInfo.name}</h3>
                         {deduction.isVerified && (
                           <CheckCircle2 className="h-5 w-5 text-green-600" />
                         )}
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <span className="text-body-sm text-gray-600">Provider: </span>
-                          <span className="text-body-sm font-medium text-gray-900">{deduction.providerName}</span>
+                          <span className="text-body-sm text-slate-600">Provider: </span>
+                          <span className="text-body-sm font-medium text-slate-900">{deduction.providerName}</span>
                         </div>
                         <div>
-                          <span className="text-body-sm text-gray-600">Policy Number: </span>
-                          <span className="text-body-sm font-medium text-gray-900">{deduction.policyNumber}</span>
+                          <span className="text-body-sm text-slate-600">Policy Number: </span>
+                          <span className="text-body-sm font-medium text-slate-900">{deduction.policyNumber}</span>
                         </div>
                         <div className="mt-3">
                           <div className="text-heading-md font-bold text-gold-600">
                             ₹{parseFloat(deduction.contributionAmount || 0).toLocaleString('en-IN')}
                           </div>
-                          <div className="text-body-xs text-gray-600">Contribution Amount</div>
+                          <div className="text-body-xs text-slate-600">Contribution Amount</div>
                         </div>
                         {deduction.proofDocument && (
-                          <div className="flex items-center space-x-2 text-body-sm text-gray-600">
+                          <div className="flex items-center space-x-2 text-body-sm text-slate-600">
                             <FileText className="h-4 w-4" />
                             <span>Proof uploaded</span>
                           </div>
@@ -364,19 +370,19 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                         onChange={(e) => handleProofUpload(e, deduction.id)}
                         className="hidden"
                       />
-                      <div className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                      <div className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
                         <Upload className="h-4 w-4" />
                       </div>
                     </label>
                     <button
                       onClick={() => handleEdit(deduction)}
-                      className="p-2 text-gold-600 hover:bg-gold-50 rounded-md transition-colors"
+                      className="p-2 text-gold-600 hover:bg-gold-50 rounded-xl transition-colors"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(deduction.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      className="p-2 text-error-600 hover:bg-error-50 rounded-xl transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -387,15 +393,15 @@ const Section80CCC = ({ filingId, onUpdate }) => {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-heading-md text-gray-900 mb-2">No 80CCC Contributions</h3>
-          <p className="text-body-sm text-gray-600 mb-4">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Shield className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-heading-md text-slate-900 mb-2">No 80CCC Contributions</h3>
+          <p className="text-body-sm text-slate-600 mb-4">
             Add your pension fund contributions to claim deduction under Section 80CCC
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
           >
             Add First Contribution
           </button>
@@ -405,9 +411,9 @@ const Section80CCC = ({ filingId, onUpdate }) => {
       {/* Add/Edit Form Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-elevation-4 p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-heading-xl text-gray-900">
+              <h2 className="text-heading-xl text-slate-900">
                 {editingDeduction ? 'Edit' : 'Add'} 80CCC Contribution
               </h2>
               <button
@@ -415,7 +421,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
                 <AlertCircle className="h-6 w-6" />
               </button>
@@ -424,13 +430,13 @@ const Section80CCC = ({ filingId, onUpdate }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Provider Type */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Provider Type <span className="text-error-600">*</span>
                 </label>
                 <select
                   value={formData.providerType}
                   onChange={(e) => setFormData({ ...formData, providerType: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 >
                   {providerTypes.map((type) => (
                     <option key={type.id} value={type.id}>
@@ -442,15 +448,15 @@ const Section80CCC = ({ filingId, onUpdate }) => {
 
               {/* Provider Name */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Provider Name <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.providerName}
                   onChange={(e) => setFormData({ ...formData, providerName: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.providerName ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.providerName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter provider name"
                 />
@@ -461,15 +467,15 @@ const Section80CCC = ({ filingId, onUpdate }) => {
 
               {/* Policy Number */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Policy Number <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.policyNumber}
                   onChange={(e) => setFormData({ ...formData, policyNumber: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.policyNumber ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.policyNumber ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter policy number"
                 />
@@ -480,7 +486,7 @@ const Section80CCC = ({ filingId, onUpdate }) => {
 
               {/* Contribution Amount */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Contribution Amount (₹) <span className="text-error-600">*</span>
                 </label>
                 <input
@@ -488,15 +494,15 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                   value={formData.contributionAmount}
                   onChange={(e) => setFormData({ ...formData, contributionAmount: e.target.value })}
                   max={remainingLimit}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.contributionAmount ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.contributionAmount ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter contribution amount"
                 />
                 {formErrors.contributionAmount && (
                   <p className="mt-1 text-body-xs text-error-600">{formErrors.contributionAmount}</p>
                 )}
-                <p className="mt-1 text-body-xs text-gray-500">
+                <p className="mt-1 text-body-xs text-slate-500">
                   Remaining limit: ₹{remainingLimit.toLocaleString('en-IN')}
                 </p>
               </div>
@@ -504,31 +510,31 @@ const Section80CCC = ({ filingId, onUpdate }) => {
               {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-label-md text-gray-700 mb-1">
+                  <label className="block text-label-md text-slate-700 mb-1">
                     Start Date
                   </label>
                   <input
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-label-md text-gray-700 mb-1">
+                  <label className="block text-label-md text-slate-700 mb-1">
                     End Date
                   </label>
                   <input
                     type="date"
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
               </div>
 
               {/* Info Box */}
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4">
                 <div className="flex">
                   <AlertCircle className="h-5 w-5 text-info-600 flex-shrink-0 mt-0.5" />
                   <div className="ml-3">
@@ -548,14 +554,14 @@ const Section80CCC = ({ filingId, onUpdate }) => {
                     resetForm();
                     setShowAddForm(false);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                  className="flex-1 py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+                  className="flex-1 py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {addDeductionMutation.isPending || updateDeductionMutation.isPending
                     ? 'Saving...'

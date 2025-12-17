@@ -13,7 +13,7 @@ import {
   Download,
 } from 'lucide-react';
 import { useRefund } from '../hooks/use-refund';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
   const { data: refundStatus, isLoading, error } = useRefund(filingId);
@@ -36,7 +36,7 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
       case 'adjusted':
         return <AlertCircle className="h-8 w-8 text-gold-500" />;
       default:
-        return <Clock className="h-8 w-8 text-gray-500" />;
+        return <Clock className="h-8 w-8 text-slate-500" />;
     }
   };
 
@@ -53,16 +53,16 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
       case 'adjusted':
         return 'bg-gold-50 border-gold-200 text-gold-900';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-900';
+        return 'bg-slate-50 border-slate-200 text-slate-900';
     }
   };
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-8">
+      <div className="bg-white rounded-xl border border-slate-200 p-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-8 bg-slate-200 rounded w-1/3"></div>
+          <div className="h-4 bg-slate-200 rounded w-1/2"></div>
         </div>
       </div>
     );
@@ -70,9 +70,9 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
 
   if (error || !refundStatus) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+      <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
         <XCircle className="h-12 w-12 text-error-500 mx-auto mb-4" />
-        <p className="text-body-md text-gray-600">
+        <p className="text-body-md text-slate-600">
           {error?.message || 'Failed to load refund status'}
         </p>
       </div>
@@ -83,13 +83,13 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
     refundStatus;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center">
           {getStatusIcon(status)}
           <div className="ml-4">
             <h3 className="text-heading-md text-gray-800">Refund Status</h3>
-            <p className="text-body-sm text-gray-600 mt-1">
+            <p className="text-body-sm text-slate-600 mt-1">
               Last updated: {statusDate ? new Date(statusDate).toLocaleDateString('en-IN') : 'N/A'}
             </p>
           </div>
@@ -105,14 +105,14 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <p className="text-body-sm text-gray-600 mb-1">Expected Refund Amount</p>
+          <p className="text-body-sm text-slate-600 mb-1">Expected Refund Amount</p>
           <p className="text-heading-lg font-semibold text-gray-800">
             {formatCurrency(expectedAmount)}
           </p>
         </div>
         {interestAmount > 0 && (
           <div>
-            <p className="text-body-sm text-gray-600 mb-1">Interest on Refund</p>
+            <p className="text-body-sm text-slate-600 mb-1">Interest on Refund</p>
             <p className="text-heading-lg font-semibold text-success-600">
               +{formatCurrency(interestAmount)}
             </p>
@@ -120,15 +120,15 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
         )}
         {refundReference && (
           <div>
-            <p className="text-body-sm text-gray-600 mb-1">Refund Reference</p>
+            <p className="text-body-sm text-slate-600 mb-1">Refund Reference</p>
             <p className="text-body-md font-mono text-gray-800">{refundReference}</p>
           </div>
         )}
         {bankAccount && (
           <div>
-            <p className="text-body-sm text-gray-600 mb-1">Bank Account</p>
+            <p className="text-body-sm text-slate-600 mb-1">Bank Account</p>
             <div className="flex items-center">
-              <CreditCard className="h-4 w-4 text-gray-400 mr-2" />
+              <CreditCard className="h-4 w-4 text-slate-400 mr-2" />
               <p className="text-body-md text-gray-800">
                 {bankAccount.accountNumber
                   ? `****${bankAccount.accountNumber.slice(-4)}`
@@ -140,7 +140,7 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
       </div>
 
       {(status === 'failed' || status === 'adjusted') && (
-        <div className="bg-warning-50 border border-warning-200 rounded-lg p-4 mb-4">
+        <div className="bg-warning-50 border border-warning-200 rounded-xl p-4 mb-4">
           <div className="flex items-start">
             <AlertCircle className="h-5 w-5 text-warning-600 mt-0.5 mr-2" />
             <div>
@@ -157,7 +157,7 @@ const RefundStatus = ({ filingId, onUpdateAccount, onReissueRequest }) => {
         </div>
       )}
 
-      <div className="flex gap-3 pt-4 border-t border-gray-200">
+      <div className="flex gap-3 pt-4 border-t border-slate-200">
         {onUpdateAccount && (
           <Button variant="outline" onClick={onUpdateAccount}>
             Update Bank Account

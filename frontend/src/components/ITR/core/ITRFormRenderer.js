@@ -158,18 +158,18 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
       case 'textarea':
         return (
           <div key={field.id} className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-body-regular font-medium text-slate-700">
               {field.label} {field.required && <span className="text-error-500">*</span>}
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
               rows={4}
               value={value}
               required={field.required}
               onChange={(e) => handleFieldChange(section.id, field.id, e.target.value)}
             />
             {fieldErrors?.isValid === false && (
-              <p className="text-sm text-error-600">{fieldErrors.errors[0]}</p>
+              <p className="text-body-regular text-error-600">{fieldErrors.errors[0]}</p>
             )}
           </div>
         );
@@ -177,11 +177,11 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
       case 'select':
         return (
           <div key={field.id} className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-body-regular font-medium text-slate-700">
               {field.label} {field.required && <span className="text-error-500">*</span>}
             </label>
             <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
               value={value}
               required={field.required}
               onChange={(e) => handleFieldChange(section.id, field.id, e.target.value)}
@@ -194,7 +194,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
               ))}
             </select>
             {fieldErrors?.isValid === false && (
-              <p className="text-sm text-error-600">{fieldErrors.errors[0]}</p>
+              <p className="text-body-regular text-error-600">{fieldErrors.errors[0]}</p>
             )}
           </div>
         );
@@ -202,7 +202,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
       case 'radio':
         return (
           <div key={field.id} className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-body-regular font-medium text-slate-700">
               {field.label} {field.required && <span className="text-error-500">*</span>}
             </label>
             <div className="space-y-2">
@@ -222,7 +222,7 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
               ))}
             </div>
             {fieldErrors?.isValid === false && (
-              <p className="text-sm text-error-600">{fieldErrors.errors[0]}</p>
+              <p className="text-body-regular text-error-600">{fieldErrors.errors[0]}</p>
             )}
           </div>
         );
@@ -322,10 +322,10 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
           {/* Import Options Header */}
           <Card className="p-6 bg-gradient-to-r from-primary-50 to-amber-50 border-primary-200">
             <div className="text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-heading-3 font-semibold text-slate-900 mb-2">
                 🚀 Save Time with Smart Import
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-slate-600 mb-4">
                 Upload your documents and let AI do the work. Fill your ITR 90% faster!
               </p>
               <Button
@@ -391,10 +391,10 @@ const ITRFormRenderer = ({ itrType, initialData = null, onSubmit, onSaveDraft })
       >
         <Card className="p-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-heading-2 font-bold text-slate-900 mb-2">
               {currentSectionConfig.title}
             </h2>
-            <p className="text-gray-600">{currentSectionConfig.description}</p>
+            <p className="text-slate-600">{currentSectionConfig.description}</p>
           </div>
 
           <div className="space-y-6">

@@ -58,7 +58,7 @@ const UpgradeToProfessional = () => {
       icon: IndianRupee,
       title: 'Billing Management',
       description: 'Track invoices, payments, and client billing',
-      color: 'text-red-600',
+      color: 'text-error-600',
     },
     {
       icon: Zap,
@@ -122,10 +122,10 @@ const UpgradeToProfessional = () => {
               <Crown className="h-12 w-12 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-heading-1 font-bold text-slate-900 mb-4">
             Upgrade to Professional
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-heading-3 text-slate-600 max-w-2xl mx-auto">
             Transform your BurnBlack account into a professional CA firm platform.
             Manage clients, collaborate with your team, and grow your practice.
           </p>
@@ -134,32 +134,32 @@ const UpgradeToProfessional = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Benefits Section */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <div className="bg-white rounded-xl shadow-elevation-3 p-8">
+              <h2 className="text-heading-2 font-bold text-slate-900 mb-6 flex items-center">
                 <Star className="h-6 w-6 text-yellow-500 mr-2" />
                 Professional Features
               </h2>
 
               <div className="grid gap-4">
                 {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-gray-50">
-                    <div className={`p-2 rounded-lg bg-white ${benefit.color}`}>
+                  <div key={index} className="flex items-start space-x-3 p-4 rounded-xl bg-slate-50">
+                    <div className={`p-2 rounded-xl bg-white ${benefit.color}`}>
                       <benefit.icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{benefit.title}</h3>
-                      <p className="text-sm text-gray-600">{benefit.description}</p>
+                      <h3 className="font-semibold text-slate-900">{benefit.title}</h3>
+                      <p className="text-body-regular text-slate-600">{benefit.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+              <div className="mt-8 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200">
                 <div className="flex items-center space-x-2 text-purple-700">
                   <CheckCircle className="h-5 w-5" />
                   <span className="font-semibold">Free Upgrade</span>
                 </div>
-                <p className="text-sm text-purple-600 mt-1">
+                <p className="text-body-regular text-purple-600 mt-1">
                   No additional charges for upgrading to professional features
                 </p>
               </div>
@@ -167,14 +167,14 @@ const UpgradeToProfessional = () => {
           </div>
 
           {/* Form Section */}
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white rounded-xl shadow-elevation-3 p-8">
+            <h2 className="text-heading-2 font-bold text-slate-900 mb-6">
               Create Your CA Firm
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Firm Name *
                 </label>
                 <input
@@ -183,20 +183,20 @@ const UpgradeToProfessional = () => {
                   value={formData.firmName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Enter your firm name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Firm Type
                 </label>
                 <select
                   name="firmType"
                   value={formData.firmType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="CA_FIRM">Chartered Accountant Firm</option>
                   <option value="TAX_CONSULTANT">Tax Consultant</option>
@@ -206,7 +206,7 @@ const UpgradeToProfessional = () => {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     City *
                   </label>
                   <input
@@ -215,12 +215,12 @@ const UpgradeToProfessional = () => {
                     value={formData.city}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Enter city"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     State *
                   </label>
                   <input
@@ -229,14 +229,14 @@ const UpgradeToProfessional = () => {
                     value={formData.state}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Enter state"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Address
                 </label>
                 <textarea
@@ -244,14 +244,14 @@ const UpgradeToProfessional = () => {
                   value={formData.address}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Enter your firm address"
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     Phone Number
                   </label>
                   <input
@@ -259,12 +259,12 @@ const UpgradeToProfessional = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Enter phone number"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     Website
                   </label>
                   <input
@@ -272,14 +272,14 @@ const UpgradeToProfessional = () => {
                     name="website"
                     value={formData.website}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="https://your-website.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Firm Description
                 </label>
                 <textarea
@@ -287,7 +287,7 @@ const UpgradeToProfessional = () => {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Brief description of your firm and services"
                 />
               </div>
@@ -297,7 +297,7 @@ const UpgradeToProfessional = () => {
                 <button
                   type="button"
                   onClick={handleSkip}
-                  className="flex-1 px-6 py-3 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                  className="flex-1 px-6 py-3 text-slate-700 bg-slate-100 border border-slate-300 rounded-xl hover:bg-slate-200 transition-colors duration-200"
                 >
                   Skip for now
                 </button>
@@ -305,7 +305,7 @@ const UpgradeToProfessional = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 flex items-center justify-center px-6 py-3 text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="flex-1 flex items-center justify-center px-6 py-3 text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   {isLoading ? (
                     <div className="flex items-center">
@@ -325,7 +325,7 @@ const UpgradeToProfessional = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 text-sm text-gray-500">
+        <div className="text-center mt-12 text-body-regular text-slate-500">
           <p>
             By upgrading, you agree to our Terms of Service and Privacy Policy.
             You can always downgrade back to personal use if needed.

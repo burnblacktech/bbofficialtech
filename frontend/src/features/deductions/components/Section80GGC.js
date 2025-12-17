@@ -235,25 +235,25 @@ const Section80GGC = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-heading-lg text-gray-900 mb-1">Section 80GGC - Political Party Donations</h3>
-            <p className="text-body-sm text-gray-600">
+            <h3 className="text-heading-lg text-slate-900 mb-1">Section 80GGC - Political Party Donations</h3>
+            <p className="text-body-sm text-slate-600">
               Donations to registered political parties (100% deduction, no upper limit)
             </p>
           </div>
           <div className="text-right">
-            <div className="text-body-xs text-gray-500 mb-1">Total Claimed</div>
+            <div className="text-body-xs text-slate-500 mb-1">Total Claimed</div>
             <div className="text-heading-xl font-bold text-gold-600">
               ₹{totalAmount.toLocaleString('en-IN')}
             </div>
-            <div className="text-body-xs text-gray-500 mt-1">No upper limit</div>
+            <div className="text-body-xs text-slate-500 mt-1">No upper limit</div>
           </div>
         </div>
 
         {/* Important Note */}
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
           <div className="flex items-start gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
             <div className="text-body-xs text-yellow-800">
@@ -266,9 +266,9 @@ const Section80GGC = ({ filingId, onUpdate }) => {
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-heading-md text-gray-900">
+            <h4 className="text-heading-md text-slate-900">
               {editingDeduction ? 'Edit Donation' : 'Add New Donation'}
             </h4>
             <button
@@ -276,7 +276,7 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                 resetForm();
                 setShowAddForm(false);
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-slate-500 hover:text-slate-700"
             >
               ✕
             </button>
@@ -285,25 +285,25 @@ const Section80GGC = ({ filingId, onUpdate }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Political Party Name *
                 </label>
                 <input
                   type="text"
                   value={formData.partyName}
                   onChange={(e) => setFormData({ ...formData, partyName: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.partyName ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.partyName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Name of the registered political party"
                 />
                 {formErrors.partyName && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.partyName}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.partyName}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Party Registration Number *
                 </label>
                 <input
@@ -312,24 +312,24 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, partyRegistrationNumber: e.target.value })
                   }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.partyRegistrationNumber ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.partyRegistrationNumber ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Registration number"
                 />
                 {formErrors.partyRegistrationNumber && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.partyRegistrationNumber}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.partyRegistrationNumber}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Payment Mode *
                 </label>
                 <select
                   value={formData.paymentMode}
                   onChange={(e) => setFormData({ ...formData, paymentMode: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 >
                   <option value="online">Online/Bank Transfer</option>
                   <option value="cheque">Cheque</option>
@@ -338,46 +338,46 @@ const Section80GGC = ({ filingId, onUpdate }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Donation Amount (₹) *
                 </label>
                 <input
                   type="number"
                   value={formData.donationAmount}
                   onChange={(e) => setFormData({ ...formData, donationAmount: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.donationAmount ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.donationAmount ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="0"
                 />
                 {formErrors.donationAmount && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.donationAmount}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.donationAmount}</p>
                 )}
                 {formData.paymentMode === 'cash' && (
-                  <p className="text-xs text-yellow-600 mt-1">
+                  <p className="text-body-small text-yellow-600 mt-1">
                     Cash donations limited to ₹2,000
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Receipt Number</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Receipt Number</label>
                 <input
                   type="text"
                   value={formData.receiptNumber}
                   onChange={(e) => setFormData({ ...formData, receiptNumber: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Receipt number"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Receipt Date</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Receipt Date</label>
                 <input
                   type="date"
                   value={formData.receiptDate}
                   onChange={(e) => setFormData({ ...formData, receiptDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
               </div>
             </div>
@@ -389,14 +389,14 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50"
               >
                 {editingDeduction ? 'Update' : 'Add'} Donation
               </button>
@@ -409,10 +409,10 @@ const Section80GGC = ({ filingId, onUpdate }) => {
       {!showAddForm && (
         <>
           <div className="flex justify-between items-center">
-            <h4 className="text-heading-md text-gray-900">Your Donations</h4>
+            <h4 className="text-heading-md text-slate-900">Your Donations</h4>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <Plus className="w-4 h-4" />
               Add Donation
@@ -420,12 +420,12 @@ const Section80GGC = ({ filingId, onUpdate }) => {
           </div>
 
           {deductions.length === 0 ? (
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-              <Vote className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 mb-4">No political party donations added yet</p>
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+              <Vote className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <p className="text-slate-600 mb-4">No political party donations added yet</p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
               >
                 Add Your First Donation
               </button>
@@ -435,19 +435,19 @@ const Section80GGC = ({ filingId, onUpdate }) => {
               {deductions.map((deduction) => (
                 <div
                   key={deduction.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                  className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h5 className="text-heading-sm font-semibold text-gray-900">
+                        <h5 className="text-heading-sm font-semibold text-slate-900">
                           {deduction.partyName}
                         </h5>
-                        <span className="px-2 py-1 text-xs rounded bg-purple-100 text-purple-700">
+                        <span className="px-2 py-1 text-body-small rounded bg-purple-100 text-purple-700">
                           100% Deduction
                         </span>
                       </div>
-                      <div className="text-body-sm text-gray-600 space-y-1">
+                      <div className="text-body-sm text-slate-600 space-y-1">
                         <p>Amount: ₹{deduction.donationAmount?.toLocaleString('en-IN')}</p>
                         <p>Registration: {deduction.partyRegistrationNumber}</p>
                         <p>Payment Mode: {deduction.paymentMode?.toUpperCase()}</p>
@@ -462,17 +462,17 @@ const Section80GGC = ({ filingId, onUpdate }) => {
                           onChange={(e) => handleProofUpload(e, deduction.id)}
                           className="hidden"
                         />
-                        <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
+                        <Upload className="w-5 h-5 text-slate-500 hover:text-gold-500" />
                       </label>
                       <button
                         onClick={() => handleEdit(deduction)}
-                        className="p-1 text-gray-500 hover:text-gold-500"
+                        className="p-1 text-slate-500 hover:text-gold-500"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(deduction.id)}
-                        className="p-1 text-gray-500 hover:text-red-500"
+                        className="p-1 text-slate-500 hover:text-error-500"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>

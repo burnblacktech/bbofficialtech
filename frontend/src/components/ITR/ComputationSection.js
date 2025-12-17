@@ -55,7 +55,7 @@ const SubSection = ({ title, icon: Icon, children, defaultOpen = true, className
       >
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
               <Icon className="w-4 h-4 text-primary-600" />
             </div>
           )}
@@ -97,7 +97,7 @@ const StyledCurrencyField = ({ label, value, onChange, hint, max, className = ''
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>
+      <label className="block text-body-regular font-medium text-slate-700 mb-1.5">{label}</label>
       <div className="relative">
         <div className={cn(
           'absolute left-0 top-0 bottom-0 flex items-center justify-center w-10',
@@ -121,7 +121,7 @@ const StyledCurrencyField = ({ label, value, onChange, hint, max, className = ''
             'w-full pl-12 pr-4 py-2.5 rounded-xl bg-white border-2 transition-all duration-200',
             'text-slate-900 text-right tabular-nums font-medium',
             'focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500',
-            isOverMax ? 'border-red-400 focus:border-red-500' : 'border-slate-200',
+            isOverMax ? 'border-red-400 focus:border-error-500' : 'border-slate-200',
           )}
         />
       </div>
@@ -242,9 +242,9 @@ const ComputationSection = ({
             <motion.div variants={variants.staggerItem}>
               <SubSection title="House Property Income" icon={IndianRupee} defaultOpen={false}>
                 <div className="space-y-4">
-                  <div className="bg-amber-50 rounded-lg border border-amber-200 p-3 flex items-start gap-2">
+                  <div className="bg-amber-50 rounded-xl border border-amber-200 p-3 flex items-start gap-2">
                     <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-amber-700">
+                    <p className="text-body-small text-amber-700">
                       ITR-1 allows only one house property. For multiple properties, use ITR-2.
                     </p>
                   </div>
@@ -375,7 +375,7 @@ const ComputationSection = ({
               }}
               selectedITR={selectedITR}
               filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
-              readOnly={false}
+              readOnly={readOnly}
             />
 
             {/* Other Exempt Income */}
@@ -461,7 +461,7 @@ const ComputationSection = ({
         >
           <div className="text-center">
             <Info className="w-8 h-8 mx-auto mb-2 text-neutral-300" />
-            <p className="text-sm">This section is not applicable for {selectedITR || 'your selected ITR form'}.</p>
+            <p className="text-body-regular">This section is not applicable for {selectedITR || 'your selected ITR form'}.</p>
           </div>
         </motion.div>
       );
@@ -482,7 +482,7 @@ const ComputationSection = ({
 
   // Full card with header (legacy mode)
   return (
-    <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden shadow-elevation-1 hover:shadow-elevation-2 transition-shadow">
       {/* Section Header */}
       <button
         onClick={onToggle}
@@ -494,7 +494,7 @@ const ComputationSection = ({
           </div>
           <div className="text-left">
             <h3 className="font-semibold text-slate-900">{title}</h3>
-            <p className="text-sm text-slate-500">{description}</p>
+            <p className="text-body-regular text-slate-500">{description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

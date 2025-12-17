@@ -43,8 +43,8 @@ class FormDataService {
         };
       }
 
-      // Save to backend - backend expects { formData } structure
-      const response = await itrService.updateDraft(draftId, { formData: updatedData });
+      // Save to backend - itrService.updateDraft wraps payload as { formData }
+      const response = await itrService.updateDraft(draftId, updatedData);
       // Update cache
       this.cache.set(draftId, updatedData);
 

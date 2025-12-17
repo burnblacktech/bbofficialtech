@@ -13,11 +13,11 @@ const InvoiceBadge = ({ invoice, showNumber = true, className = '' }) => {
 
   const getStatusConfig = (status, paymentStatus) => {
     const statusMap = {
-      draft: { color: 'bg-gray-100 text-gray-700', icon: FileText, label: 'Draft' },
+      draft: { color: 'bg-slate-100 text-slate-700', icon: FileText, label: 'Draft' },
       sent: { color: 'bg-info-50 text-info-600', icon: Clock, label: 'Sent' },
       paid: { color: 'bg-success-50 text-success-600', icon: CheckCircle, label: 'Paid' },
       overdue: { color: 'bg-error-50 text-error-600', icon: AlertCircle, label: 'Overdue' },
-      cancelled: { color: 'bg-gray-100 text-gray-500', icon: XCircle, label: 'Cancelled' },
+      cancelled: { color: 'bg-slate-100 text-slate-500', icon: XCircle, label: 'Cancelled' },
       refunded: { color: 'bg-gold-50 text-gold-600', icon: IndianRupee, label: 'Refunded' },
     };
 
@@ -48,15 +48,15 @@ const InvoiceBadge = ({ invoice, showNumber = true, className = '' }) => {
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <div className={`flex items-center space-x-1 px-2 py-1 rounded-md text-xs font-medium ${config.color}`}>
+      <div className={`flex items-center space-x-1 px-2 py-1 rounded-xl text-xs font-medium ${config.color}`}>
         <Icon className="w-3 h-3" />
         <span>{config.label}</span>
       </div>
       {showNumber && invoice.invoiceNumber && (
-        <span className="text-xs text-gray-600">#{invoice.invoiceNumber}</span>
+        <span className="text-body-small text-slate-600">#{invoice.invoiceNumber}</span>
       )}
       {(invoice.totalAmount || invoice.amount) && (
-        <span className="text-xs text-gray-700 font-medium">{formatCurrency(invoice.totalAmount || invoice.amount)}</span>
+        <span className="text-body-small text-slate-700 font-medium">{formatCurrency(invoice.totalAmount || invoice.amount)}</span>
       )}
     </div>
   );

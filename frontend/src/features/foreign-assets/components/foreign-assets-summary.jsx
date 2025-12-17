@@ -104,10 +104,10 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
 
   if (assets.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-        <Globe className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-heading-md text-gray-900 mb-2">No Foreign Assets Declared</h3>
-        <p className="text-body-sm text-gray-600">
+      <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
+        <Globe className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+        <h3 className="text-heading-md text-slate-900 mb-2">No Foreign Assets Declared</h3>
+        <p className="text-body-sm text-slate-600">
           Add your foreign assets to get started with Schedule FA declaration.
         </p>
       </div>
@@ -117,13 +117,13 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
   return (
     <div className="space-y-6">
       {/* Total Summary */}
-      <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-lg p-6 border border-gold-200">
+      <div className="bg-gradient-to-r from-gold-50 to-gold-100 rounded-xl p-6 border border-gold-200">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-body-sm text-gray-600 mb-1">Total Foreign Assets Value</p>
-            <p className="text-heading-xl font-bold text-gray-900">{formatCurrency(totalValue)}</p>
+            <p className="text-body-sm text-slate-600 mb-1">Total Foreign Assets Value</p>
+            <p className="text-heading-xl font-bold text-slate-900">{formatCurrency(totalValue)}</p>
           </div>
-          <div className="p-4 bg-white rounded-lg">
+          <div className="p-4 bg-white rounded-xl">
             <DollarSign className="h-8 w-8 text-gold-600" />
           </div>
         </div>
@@ -131,22 +131,22 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
 
       {/* Breakdown by Type */}
       <div>
-        <h4 className="text-heading-sm text-gray-900 font-medium mb-4">Breakdown by Asset Type</h4>
+        <h4 className="text-heading-sm text-slate-900 font-medium mb-4">Breakdown by Asset Type</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Object.entries(breakdownByType).map(([type, data]) => {
             const Icon = getAssetIcon(type);
             return (
-              <div key={type} className="bg-white border border-gray-200 rounded-lg p-4">
+              <div key={type} className="bg-white border border-slate-200 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center">
                     <Icon className="h-5 w-5 text-gold-600 mr-2" />
-                    <span className="text-body-sm font-medium text-gray-700">
+                    <span className="text-body-sm font-medium text-slate-700">
                       {getAssetTypeLabel(type)}
                     </span>
                   </div>
-                  <span className="text-body-xs text-gray-500">{data.count}</span>
+                  <span className="text-body-xs text-slate-500">{data.count}</span>
                 </div>
-                <p className="text-heading-md font-semibold text-gray-900">
+                <p className="text-heading-md font-semibold text-slate-900">
                   {formatCurrency(data.value)}
                 </p>
               </div>
@@ -157,18 +157,18 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
 
       {/* Breakdown by Country */}
       <div>
-        <h4 className="text-heading-sm text-gray-900 font-medium mb-4">Breakdown by Country</h4>
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <h4 className="text-heading-sm text-slate-900 font-medium mb-4">Breakdown by Country</h4>
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
           <div className="divide-y divide-gray-200">
             {Object.entries(breakdownByCountry)
               .sort((a, b) => b[1].value - a[1].value)
               .map(([country, data]) => (
-                <div key={country} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div key={country} className="p-4 flex items-center justify-between hover:bg-slate-50">
                   <div>
-                    <p className="text-body-sm font-medium text-gray-900">{country}</p>
-                    <p className="text-body-xs text-gray-500">{data.count} asset(s)</p>
+                    <p className="text-body-sm font-medium text-slate-900">{country}</p>
+                    <p className="text-body-xs text-slate-500">{data.count} asset(s)</p>
                   </div>
-                  <p className="text-body-md font-semibold text-gray-900">
+                  <p className="text-body-md font-semibold text-slate-900">
                     {formatCurrency(data.value)}
                   </p>
                 </div>
@@ -179,7 +179,7 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
 
       {/* DTAA Summary */}
       {dtaaAssets.length > 0 && (
-        <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+        <div className="bg-info-50 border border-info-200 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-body-sm font-medium text-info-900 mb-1">
@@ -198,35 +198,35 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
 
       {/* Assets List */}
       <div>
-        <h4 className="text-heading-sm text-gray-900 font-medium mb-4">All Assets</h4>
+        <h4 className="text-heading-sm text-slate-900 font-medium mb-4">All Assets</h4>
         <div className="space-y-3">
           {assets.map((asset) => {
             const Icon = getAssetIcon(asset.assetType);
             return (
               <div
                 key={asset.id}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-elevation-2 transition-shadow"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <Icon className="h-5 w-5 text-gold-600" />
-                      <h5 className="text-heading-sm font-medium text-gray-900">
+                      <h5 className="text-heading-sm font-medium text-slate-900">
                         {asset.assetDetails?.bankName ||
                           asset.assetDetails?.companyName ||
                           asset.assetDetails?.address ||
                           getAssetTypeLabel(asset.assetType)}
                       </h5>
-                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                      <span className="px-2 py-1 text-body-small font-medium bg-blue-100 text-blue-800 rounded">
                         {asset.country}
                       </span>
                       {asset.dtaaApplicable && (
-                        <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+                        <span className="px-2 py-1 text-body-small font-medium bg-green-100 text-green-800 rounded">
                           DTAA
                         </span>
                       )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-body-sm text-gray-600">
+                    <div className="grid grid-cols-2 gap-4 text-body-sm text-slate-600">
                       <div>
                         <span className="font-medium">Type:</span> {getAssetTypeLabel(asset.assetType)}
                       </div>
@@ -248,7 +248,7 @@ const ForeignAssetsSummary = ({ filingId, assets, totalValue, onEdit }) => {
                   <div className="flex gap-2 ml-4">
                     <button
                       onClick={() => onEdit(asset)}
-                      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
+                      className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded"
                       title="Edit Asset"
                     >
                       <Edit className="h-4 w-4" />

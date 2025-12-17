@@ -148,12 +148,12 @@ const ProfileSettings = () => {
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-2">Manage your account information and preferences</p>
+              <h1 className="text-heading-2 sm:text-heading-1 font-bold text-slate-900">Profile Settings</h1>
+              <p className="text-body-regular sm:text-body-large text-slate-600 mt-2">Manage your account information and preferences</p>
             </div>
             <button
               onClick={() => navigate('/preferences')}
-              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 flex items-center gap-2 text-body-sm font-medium"
+              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 flex items-center gap-2 text-body-sm font-medium"
             >
               <Settings className="h-4 w-4" />
               Preferences
@@ -162,9 +162,9 @@ const ProfileSettings = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden">
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-slate-200">
             <nav className="flex space-x-8 px-6">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -175,7 +175,7 @@ const ProfileSettings = () => {
                     className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${
                       activeTab === tab.id
                         ? 'border-gold-500 text-gold-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     <Icon className="w-4 h-4 mr-2" />
@@ -613,13 +613,13 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
   if (isDataLoading) {
     return (
       <div>
-        <h2 className="text-xl font-semibold text-black mb-6">Personal Information</h2>
+        <h2 className="text-heading-3 font-semibold text-black mb-6">Personal Information</h2>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-slate-200 rounded w-24 mb-2"></div>
+                <div className="h-12 bg-slate-200 rounded"></div>
               </div>
             ))}
           </div>
@@ -631,14 +631,14 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-black">Personal Information</h2>
+        <h2 className="text-heading-3 font-semibold text-black">Personal Information</h2>
         {/* Profile Completion Indicator */}
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-sm font-medium text-gray-700">Profile Completion</div>
-            <div className="text-xs text-gray-500">{completionPercentage}%</div>
+            <div className="text-body-regular font-medium text-slate-700">Profile Completion</div>
+            <div className="text-body-small text-slate-500">{completionPercentage}%</div>
           </div>
-          <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-300 ${
                 completionPercentage === 100 ? 'bg-success-500' :
@@ -652,10 +652,10 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
 
       {/* Form Error Banner */}
       {formError && (
-        <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-lg flex items-start gap-3">
+        <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-xl flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-error-800">{formError}</p>
+            <p className="text-body-regular font-medium text-error-800">{formError}</p>
           </div>
           <button
             onClick={() => setFormError('')}
@@ -668,16 +668,16 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
 
       {/* Success Animation */}
       {showSuccessAnimation && (
-        <div className="mb-6 p-4 bg-success-50 border border-success-200 rounded-lg flex items-center gap-3 animate-pulse">
+        <div className="mb-6 p-4 bg-success-50 border border-success-200 rounded-xl flex items-center gap-3 animate-pulse">
           <CheckCircle className="w-5 h-5 text-success-600" />
-          <p className="text-sm font-medium text-success-800">Profile updated successfully!</p>
+          <p className="text-body-regular font-medium text-success-800">Profile updated successfully!</p>
         </div>
       )}
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               Full Name *
             </label>
             <div className="relative">
@@ -694,9 +694,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
                 disabled={isLoading || isDataLoading || (user?.emailVerified && fieldLockService.shouldLockField('personalInfo', 'name', VERIFICATION_STATUS.VERIFIED).locked)}
-                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                   fieldErrors.fullName ? 'border-error-300 focus:border-error-500' :
-                  fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-gray-300'
+                  fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-slate-300'
                 }`}
                 required
                 placeholder="Enter your full name"
@@ -709,28 +709,28 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
               )}
             </div>
             {fieldErrors.fullName && (
-              <p className="mt-1 text-xs text-error-600 flex items-center">
+              <p className="mt-1 text-body-small text-error-600 flex items-center">
                 <AlertCircle className="w-3 h-3 mr-1" />
                 {fieldErrors.fullName}
               </p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               Email Address
             </label>
             <input
               type="email"
               value={formData.email}
               disabled
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-500"
             />
-            <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+            <p className="text-body-small text-slate-500 mt-1">Email cannot be changed</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               Phone Number
-              <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+              <span className="text-body-small text-slate-500 ml-1">(Optional)</span>
             </label>
             <div className="relative">
               <input
@@ -749,9 +749,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
                 disabled={isLoading || isDataLoading}
-                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                   fieldErrors.phone ? 'border-error-300 focus:border-error-500' :
-                  fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-gray-300'
+                  fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-slate-300'
                 }`}
                 placeholder="10 digit phone number"
               />
@@ -763,25 +763,25 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
               )}
             </div>
             {fieldErrors.phone && (
-              <p className="mt-1 text-xs text-error-600 flex items-center">
+              <p className="mt-1 text-body-small text-error-600 flex items-center">
                 <AlertCircle className="w-3 h-3 mr-1" />
                 {fieldErrors.phone}
               </p>
             )}
             {formData.phone && !fieldErrors.phone && formData.phone.length === 10 && (
-              <p className="mt-1 text-xs text-success-600 flex items-center">
+              <p className="mt-1 text-body-small text-success-600 flex items-center">
                 <CheckCircle className="w-3 h-3 mr-1" />
                 Valid phone number
               </p>
             )}
             {!formData.phone && (
-              <p className="mt-1 text-xs text-gray-500">Phone number is optional but recommended</p>
+              <p className="mt-1 text-body-small text-slate-500">Phone number is optional but recommended</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               PAN Number
-              <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+              <span className="text-body-small text-slate-500 ml-1">(Optional)</span>
             </label>
             <div className="space-y-2">
               <div className="relative">
@@ -791,8 +791,8 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   onChange={handlePANChange}
                   maxLength={10}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 font-mono uppercase disabled:bg-gray-50 disabled:cursor-not-allowed ${
-                    panVerified && formData.panNumber ? 'border-success-300' : 'border-gray-300'
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 font-mono uppercase disabled:bg-slate-50 disabled:cursor-not-allowed ${
+                    panVerified && formData.panNumber ? 'border-success-300' : 'border-slate-300'
                   }`}
                   placeholder="ABCDE1234F"
                 />
@@ -800,15 +800,15 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-success-600" />
                 )}
               </div>
-              <p className="text-xs text-gray-500">Format: 5 letters, 4 digits, 1 letter (e.g., ABCDE1234F)</p>
+              <p className="text-body-small text-slate-500">Format: 5 letters, 4 digits, 1 letter (e.g., ABCDE1234F)</p>
               {panVerified && formData.panNumber && (
-                <p className="text-xs text-success-600 flex items-center">
+                <p className="text-body-small text-success-600 flex items-center">
                   <CheckCircle className="w-3 h-3 mr-1" />
                   PAN Verified
                 </p>
               )}
               {formData.panNumber && formData.panNumber.length === 10 && formData.panNumber !== originalPAN && !panVerified && (
-                <p className="text-xs text-warning-600 flex items-center">
+                <p className="text-body-small text-warning-600 flex items-center">
                   <AlertCircle className="w-3 h-3 mr-1" />
                   Please verify your PAN number before saving
                 </p>
@@ -817,7 +817,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
           </div>
           {/* PAN Verification Inline */}
           {showPANVerification && formData.panNumber && formData.panNumber.length === 10 && (
-            <div className="md:col-span-2 mt-4 p-4 bg-gold-50 border border-gold-200 rounded-lg">
+            <div className="md:col-span-2 mt-4 p-4 bg-gold-50 border border-gold-200 rounded-xl">
               <PANVerificationInline
                 panNumber={formData.panNumber}
                 onVerified={handlePANVerified}
@@ -828,9 +828,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               Date of Birth
-              <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+              <span className="text-body-small text-slate-500 ml-1">(Optional)</span>
             </label>
             <div className="relative">
               <input
@@ -846,9 +846,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 }}
                 disabled={isLoading || isDataLoading}
                 max={new Date().toISOString().split('T')[0]}
-                className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                   fieldErrors.dateOfBirth ? 'border-error-300 focus:border-error-500' :
-                  fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-gray-300'
+                  fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-slate-300'
                 }`}
               />
               {fieldValidations.dateOfBirth && formData.dateOfBirth && !fieldErrors.dateOfBirth && (
@@ -859,13 +859,13 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
               )}
             </div>
             {fieldErrors.dateOfBirth && (
-              <p className="mt-1 text-xs text-error-600 flex items-center">
+              <p className="mt-1 text-body-small text-error-600 flex items-center">
                 <AlertCircle className="w-3 h-3 mr-1" />
                 {fieldErrors.dateOfBirth}
               </p>
             )}
             {formData.dateOfBirth && !fieldErrors.dateOfBirth && (
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-body-small text-slate-500">
                 {Math.floor((new Date() - new Date(formData.dateOfBirth)) / (365.25 * 24 * 60 * 60 * 1000))} years old
               </p>
             )}
@@ -873,8 +873,8 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
         </div>
 
         {/* Aadhaar Linking Section */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <h3 className="text-lg font-semibold text-black mb-4">Aadhaar Linking</h3>
+        <div className="mt-8 pt-6 border-t border-slate-200">
+          <h3 className="text-heading-4 font-semibold text-black mb-4">Aadhaar Linking</h3>
           <AadhaarLinking
             userId={user?.id || user?.userId}
             onLinked={() => {
@@ -895,11 +895,11 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
         </div>
 
         {/* Address Section */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <h3 className="text-lg font-semibold text-black mb-4">Address Information</h3>
+        <div className="mt-8 pt-6 border-t border-slate-200">
+          <h3 className="text-heading-4 font-semibold text-black mb-4">Address Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Address Line 1 *
               </label>
               <div className="relative">
@@ -915,9 +915,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                     fieldErrors.addressLine1 ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-gray-300'
+                    fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-slate-300'
                   }`}
                   required
                   placeholder="Street address, P.O. box"
@@ -930,14 +930,14 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 )}
               </div>
               {fieldErrors.addressLine1 && (
-                <p className="mt-1 text-xs text-error-600 flex items-center">
+                <p className="mt-1 text-body-small text-error-600 flex items-center">
                   <AlertCircle className="w-3 h-3 mr-1" />
                   {fieldErrors.addressLine1}
                 </p>
               )}
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Address Line 2
               </label>
               <input
@@ -945,12 +945,12 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 value={formData.addressLine2}
                 onChange={(e) => setFormData(prev => ({ ...prev, addressLine2: e.target.value }))}
                 disabled={isLoading || isDataLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed"
                 placeholder="Apartment, suite, unit, building, floor, etc."
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 City *
               </label>
               <div className="relative">
@@ -966,9 +966,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                     fieldErrors.city ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.city && formData.city ? 'border-success-300' : 'border-gray-300'
+                    fieldValidations.city && formData.city ? 'border-success-300' : 'border-slate-300'
                   }`}
                   required
                   placeholder="City"
@@ -981,14 +981,14 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 )}
               </div>
               {fieldErrors.city && (
-                <p className="mt-1 text-xs text-error-600 flex items-center">
+                <p className="mt-1 text-body-small text-error-600 flex items-center">
                   <AlertCircle className="w-3 h-3 mr-1" />
                   {fieldErrors.city}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 State *
               </label>
               <div className="relative">
@@ -1004,9 +1004,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                     fieldErrors.state ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.state && formData.state ? 'border-success-300' : 'border-gray-300'
+                    fieldValidations.state && formData.state ? 'border-success-300' : 'border-slate-300'
                   }`}
                   required
                   placeholder="State"
@@ -1019,14 +1019,14 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 )}
               </div>
               {fieldErrors.state && (
-                <p className="mt-1 text-xs text-error-600 flex items-center">
+                <p className="mt-1 text-body-small text-error-600 flex items-center">
                   <AlertCircle className="w-3 h-3 mr-1" />
                   {fieldErrors.state}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Pincode *
               </label>
               <div className="relative">
@@ -1045,9 +1045,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-gray-50 disabled:cursor-not-allowed ${
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
                     fieldErrors.pincode ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-gray-300'
+                    fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-slate-300'
                   }`}
                   required
                   placeholder="6 digit pincode (e.g., 400001)"
@@ -1061,13 +1061,13 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 )}
               </div>
               {fieldErrors.pincode && (
-                <p className="mt-1 text-xs text-error-600 flex items-center">
+                <p className="mt-1 text-body-small text-error-600 flex items-center">
                   <AlertCircle className="w-3 h-3 mr-1" />
                   {fieldErrors.pincode}
                 </p>
               )}
               {formData.pincode && !fieldErrors.pincode && formData.pincode.length === 6 && (
-                <p className="mt-1 text-xs text-success-600 flex items-center">
+                <p className="mt-1 text-body-small text-success-600 flex items-center">
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Valid pincode
                 </p>
@@ -1076,24 +1076,24 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+        <div className="flex justify-between items-center pt-4 border-t border-slate-200">
           <button
             type="button"
             onClick={handleReset}
             disabled={isLoading || !hasUnsavedChanges.current}
-            className="inline-flex items-center px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-4 py-2 text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
           </button>
           <div className="flex items-center gap-3">
             {hasUnsavedChanges.current && (
-              <span className="text-xs text-gray-500">You have unsaved changes</span>
+              <span className="text-body-small text-slate-500">You have unsaved changes</span>
             )}
             <button
               type="submit"
               disabled={isSaveDisabled}
-              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-elevation-1"
             >
               {isLoading ? (
                 <>
@@ -1169,7 +1169,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
 
   // Get password strength color
   const getPasswordStrengthColor = () => {
-    if (passwordStrength.score === 0) return 'bg-gray-200';
+    if (passwordStrength.score === 0) return 'bg-slate-200';
     if (passwordStrength.score === 1) return 'bg-error-500';
     if (passwordStrength.score === 2) return 'bg-warning-500';
     if (passwordStrength.score === 3) return 'bg-info-500';
@@ -1286,10 +1286,10 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-black mb-6">Security Settings</h2>
+      <h2 className="text-heading-3 font-semibold text-black mb-6">Security Settings</h2>
 
       {showSuccessBanner && (
-        <div className="mb-6 p-4 bg-success-50 border border-success-200 rounded-lg fade-in">
+        <div className="mb-6 p-4 bg-success-50 border border-success-200 rounded-xl fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-success-600" />
             <p className="text-success-800 font-medium">Password updated successfully!</p>
@@ -1298,7 +1298,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
       )}
 
       {formError && (
-        <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-lg">
+        <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-xl">
           <div className="flex items-start gap-2">
             <AlertCircle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
             <p className="text-error-800">{formError}</p>
@@ -1307,8 +1307,8 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
       )}
 
       {!hasPassword && isOAuthUser && (
-        <div className="mb-6 p-4 bg-info-50 border border-info-200 rounded-lg">
-          <p className="text-sm text-info-800">
+        <div className="mb-6 p-4 bg-info-50 border border-info-200 rounded-xl">
+          <p className="text-body-regular text-info-800">
             You signed up with Google OAuth. Set a password to enable email/password login.
           </p>
         </div>
@@ -1317,7 +1317,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {hasPassword && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               Current Password *
             </label>
             <div className="relative">
@@ -1325,30 +1325,30 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                 type={showPasswords.current ? 'text' : 'password'}
                 value={formData.currentPassword}
                 onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
+                className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                   validationErrors.currentPassword
                     ? 'border-error-300'
-                    : 'border-gray-300'
+                    : 'border-slate-300'
                 }`}
                 required={hasPassword}
               />
               <button
                 type="button"
                 onClick={() => togglePasswordVisibility('current')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
                 title={showPasswords.current ? 'Hide password' : 'Show password'}
               >
                 {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
             {validationErrors.currentPassword && (
-              <p className="mt-1 text-xs text-error-600">{validationErrors.currentPassword}</p>
+              <p className="mt-1 text-body-small text-error-600">{validationErrors.currentPassword}</p>
             )}
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             {hasPassword ? 'New Password *' : 'Password *'}
           </label>
           <div className="relative">
@@ -1356,12 +1356,12 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               type={showPasswords.new ? 'text' : 'password'}
               value={formData.newPassword}
               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
+              className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 validationErrors.newPassword
                   ? 'border-error-300'
                   : formData.newPassword && passwordStrength.score >= 2
                   ? 'border-success-300'
-                  : 'border-gray-300'
+                  : 'border-slate-300'
               }`}
               required
               minLength={8}
@@ -1369,7 +1369,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
             <button
               type="button"
               onClick={() => togglePasswordVisibility('new')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
               title={showPasswords.new ? 'Hide password' : 'Show password'}
             >
               {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -1380,10 +1380,10 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
           {formData.newPassword && (
             <div className="mt-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-gray-700">
+                <span className="text-body-small font-medium text-slate-700">
                   Password Strength: <span className={getPasswordStrengthColor().replace('bg-', 'text-')}>{getPasswordStrengthLabel()}</span>
                 </span>
-                <span className="text-xs text-gray-500">{passwordStrength.score}/4</span>
+                <span className="text-body-small text-slate-500">{passwordStrength.score}/4</span>
               </div>
               <div className="flex space-x-1 mb-2">
                 {[0, 1, 2, 3].map((i) => (
@@ -1392,15 +1392,15 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                     className={`h-2 flex-1 rounded ${
                       i < passwordStrength.score
                         ? getPasswordStrengthColor()
-                        : 'bg-gray-200'
+                        : 'bg-slate-200'
                     }`}
                   />
                 ))}
               </div>
               {passwordStrength.feedback.length > 0 && (
                 <div className="mt-2 space-y-1">
-                  <p className="text-xs font-medium text-gray-700">Requirements:</p>
-                  <ul className="text-xs text-gray-600 space-y-1">
+                  <p className="text-body-small font-medium text-slate-700">Requirements:</p>
+                  <ul className="text-body-small text-slate-600 space-y-1">
                     {passwordStrength.feedback.map((req, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <X className="w-3 h-3 text-error-500" />
@@ -1411,7 +1411,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                 </div>
               )}
               {passwordStrength.score >= 2 && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-success-600">
+                <div className="mt-2 flex items-center gap-2 text-body-small text-success-600">
                   <CheckCircle className="w-4 h-4" />
                   <span>Password meets minimum requirements</span>
                 </div>
@@ -1419,12 +1419,12 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
             </div>
           )}
           {validationErrors.newPassword && (
-            <p className="mt-1 text-xs text-error-600">{validationErrors.newPassword}</p>
+            <p className="mt-1 text-body-small text-error-600">{validationErrors.newPassword}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             {hasPassword ? 'Confirm New Password *' : 'Confirm Password *'}
           </label>
           <div className="relative">
@@ -1432,12 +1432,12 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               type={showPasswords.confirm ? 'text' : 'password'}
               value={formData.confirmPassword}
               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
+              className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
                 validationErrors.confirmPassword
                   ? 'border-error-300'
                   : formData.confirmPassword && formData.newPassword === formData.confirmPassword
                   ? 'border-success-300'
-                  : 'border-gray-300'
+                  : 'border-slate-300'
               }`}
               required
               minLength={8}
@@ -1445,16 +1445,16 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
             <button
               type="button"
               onClick={() => togglePasswordVisibility('confirm')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
               title={showPasswords.confirm ? 'Hide password' : 'Show password'}
             >
               {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
           {validationErrors.confirmPassword ? (
-            <p className="mt-1 text-xs text-error-600">{validationErrors.confirmPassword}</p>
+            <p className="mt-1 text-body-small text-error-600">{validationErrors.confirmPassword}</p>
           ) : formData.confirmPassword && formData.newPassword === formData.confirmPassword ? (
-            <p className="mt-1 text-xs text-success-600 flex items-center gap-1">
+            <p className="mt-1 text-body-small text-success-600 flex items-center gap-1">
               <CheckCircle className="w-3 h-3" />
               Passwords match
             </p>
@@ -1465,7 +1465,7 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
           <button
             type="submit"
             disabled={isLoading || passwordStrength.score < 2 || Object.keys(validationErrors).length > 0}
-            className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
               <>
@@ -1854,7 +1854,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
   if (accountsLoading) {
     return (
       <div>
-        <h2 className="text-xl font-semibold text-black mb-6">Bank Accounts</h2>
+        <h2 className="text-heading-3 font-semibold text-black mb-6">Bank Accounts</h2>
         <div className="space-y-4">
           <FilingCardSkeleton />
           <FilingCardSkeleton />
@@ -1866,18 +1866,18 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
   if (accountsError) {
     return (
       <div>
-        <h2 className="text-xl font-semibold text-black mb-6">Bank Accounts</h2>
-        <div className="p-6 bg-error-50 border border-error-200 rounded-lg">
+        <h2 className="text-heading-3 font-semibold text-black mb-6">Bank Accounts</h2>
+        <div className="p-6 bg-error-50 border border-error-200 rounded-xl">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-error-800 font-medium mb-2">Failed to load bank accounts</p>
-              <p className="text-error-700 text-sm mb-4">
+              <p className="text-error-700 text-body-regular mb-4">
                 {accountsError.message || 'Unable to fetch your bank accounts. Please check your connection and try again.'}
               </p>
               <button
                 onClick={() => queryClient.invalidateQueries(['bankAccounts'])}
-                className="inline-flex items-center px-4 py-2 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-error-600 text-white rounded-xl hover:bg-error-700 transition-colors"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Retry
@@ -1892,11 +1892,11 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-black">Bank Accounts</h2>
+        <h2 className="text-heading-3 font-semibold text-black">Bank Accounts</h2>
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Account
@@ -1905,7 +1905,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
       </div>
 
       {showSuccessBanner && (
-        <div className="mb-4 p-4 bg-success-50 border border-success-200 rounded-lg fade-in">
+        <div className="mb-4 p-4 bg-success-50 border border-success-200 rounded-xl fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-5 h-5 text-success-600" />
             <p className="text-success-800 font-medium">Bank account saved successfully!</p>
@@ -1914,16 +1914,16 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
       )}
 
       {showAddForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-slate-50 border border-slate-200 rounded-xl">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-black">
+            <h3 className="text-heading-4 font-semibold text-black">
               {editingAccount ? 'Edit Bank Account' : 'Add Bank Account'}
             </h3>
             {editingAccount && (
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+                className="text-body-regular text-slate-600 hover:text-gray-800 flex items-center gap-1"
               >
                 <RotateCcw className="w-4 h-4" />
                 Reset
@@ -1931,8 +1931,8 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
             )}
           </div>
 
-          <div className="mb-4 p-3 bg-info-50 border border-info-200 rounded-lg">
-            <p className="text-sm text-info-800">
+          <div className="mb-4 p-3 bg-info-50 border border-info-200 rounded-xl">
+            <p className="text-body-regular text-info-800">
               <strong>Note:</strong> Bank account details are required for receiving tax refunds. Ensure all information is accurate.
             </p>
           </div>
@@ -1940,7 +1940,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* IFSC Code Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 IFSC Code *
               </label>
               <div className="relative">
@@ -1957,19 +1957,19 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-lg font-mono ${
+                  className={`w-full px-3 py-2 border rounded-xl font-mono ${
                     validationErrors.ifsc
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.ifsc && !validationErrors.ifsc && formData.ifsc.length === 11
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="HDFC0001234"
                   maxLength={11}
                 />
                 {isIFSCLookupLoading && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                    <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
                   </div>
                 )}
                 {formData.ifsc && !isIFSCLookupLoading && formData.ifsc.length === 11 && !validationErrors.ifsc && (
@@ -1979,15 +1979,15 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                 )}
               </div>
               {validationErrors.ifsc ? (
-                <p className="mt-1 text-xs text-error-600">{validationErrors.ifsc}</p>
+                <p className="mt-1 text-body-small text-error-600">{validationErrors.ifsc}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">Format: AAAA0XXXXXX (4 letters, 0, 6 alphanumeric)</p>
+                <p className="mt-1 text-body-small text-slate-500">Format: AAAA0XXXXXX (4 letters, 0, 6 alphanumeric)</p>
               )}
             </div>
 
             {/* Bank Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Bank Name *
               </label>
               <div className="relative">
@@ -2002,12 +2002,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-lg ${
+                  className={`w-full px-3 py-2 border rounded-xl ${
                     validationErrors.bankName
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.bankName && !validationErrors.bankName
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="Enter bank name"
                 />
@@ -2018,13 +2018,13 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                 )}
               </div>
               {validationErrors.bankName && (
-                <p className="mt-1 text-xs text-error-600">{validationErrors.bankName}</p>
+                <p className="mt-1 text-body-small text-error-600">{validationErrors.bankName}</p>
               )}
             </div>
 
             {/* Account Number Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Account Number *
               </label>
               <div className="relative">
@@ -2040,12 +2040,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-lg ${
+                  className={`w-full px-3 py-2 border rounded-xl ${
                     validationErrors.accountNumber
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.accountNumber && !validationErrors.accountNumber
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="Enter account number"
                   minLength={9}
@@ -2058,15 +2058,15 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                 )}
               </div>
               {validationErrors.accountNumber ? (
-                <p className="mt-1 text-xs text-error-600">{validationErrors.accountNumber}</p>
+                <p className="mt-1 text-body-small text-error-600">{validationErrors.accountNumber}</p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">9-18 digits</p>
+                <p className="mt-1 text-body-small text-slate-500">9-18 digits</p>
               )}
             </div>
 
             {/* Account Holder Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Account Holder Name *
               </label>
               <div className="relative">
@@ -2081,12 +2081,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-lg ${
+                  className={`w-full px-3 py-2 border rounded-xl ${
                     validationErrors.accountHolderName
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.accountHolderName && !validationErrors.accountHolderName
                       ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-gray-300 focus:ring-gold-500 focus:border-gold-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                   }`}
                   placeholder="Enter account holder name"
                 />
@@ -2097,19 +2097,19 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                 )}
               </div>
               {validationErrors.accountHolderName && (
-                <p className="mt-1 text-xs text-error-600">{validationErrors.accountHolderName}</p>
+                <p className="mt-1 text-body-small text-error-600">{validationErrors.accountHolderName}</p>
               )}
             </div>
 
             {/* Account Type Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Account Type *
               </label>
               <select
                 value={formData.accountType}
                 onChange={(e) => setFormData(prev => ({ ...prev, accountType: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 <option value="savings">Savings</option>
                 <option value="current">Current</option>
@@ -2125,7 +2125,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                 onChange={(e) => setFormData(prev => ({ ...prev, isPrimary: e.target.checked }))}
                 className="h-4 w-4 text-gold-500 focus:ring-gold-500"
               />
-              <label htmlFor="isPrimary" className="ml-2 text-sm text-gray-700">
+              <label htmlFor="isPrimary" className="ml-2 text-body-regular text-slate-700">
                 Set as primary account
               </label>
             </div>
@@ -2135,14 +2135,14 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={addAccountMutation.isLoading || updateAccountMutation.isLoading || Object.keys(validationErrors).length > 0}
-              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {addAccountMutation.isLoading || updateAccountMutation.isLoading ? (
                 <span className="flex items-center gap-2">
@@ -2159,15 +2159,15 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
 
       <div className="space-y-4">
         {bankAccounts.length === 0 && !showAddForm ? (
-          <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-            <CreditCard className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No bank accounts added yet</h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          <div className="text-center py-16 border-2 border-dashed border-slate-300 rounded-xl bg-slate-50">
+            <CreditCard className="w-16 h-16 mx-auto mb-4 text-slate-400" />
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No bank accounts added yet</h3>
+            <p className="text-slate-600 mb-6 max-w-md mx-auto">
               Add your bank account details to receive tax refunds directly to your account. Your information is secure and encrypted.
             </p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors font-medium"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors font-medium"
             >
               <Plus className="w-5 h-5 mr-2" />
               Add Bank Account
@@ -2180,28 +2180,28 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
             const displayNumber = isVisible ? accountNumber : maskAccountNumber(accountNumber);
 
             return (
-              <div key={account.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow bg-white">
+              <div key={account.id} className="border border-slate-200 rounded-xl p-5 hover:shadow-elevation-2 transition-shadow bg-white">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900">{account.bankName}</h3>
+                      <h3 className="text-heading-4 font-semibold text-slate-900">{account.bankName}</h3>
                       {account.isPrimary && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-success-100 text-success-800">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-body-small font-medium bg-success-100 text-success-800">
                           Primary
                         </span>
                       )}
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-body-small font-medium bg-slate-100 text-slate-700 capitalize">
                         {account.accountType}
                       </span>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">Account:</span>
-                        <span className="text-sm text-gray-900 font-mono">{displayNumber}</span>
+                        <span className="text-body-regular font-medium text-slate-700">Account:</span>
+                        <span className="text-body-regular text-slate-900 font-mono">{displayNumber}</span>
                         {accountNumber && (
                           <button
                             onClick={() => toggleAccountNumberVisibility(account.id)}
-                            className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                            className="text-body-small text-slate-500 hover:text-slate-700 flex items-center gap-1"
                             title={isVisible ? 'Hide account number' : 'Show account number'}
                           >
                             {isVisible ? (
@@ -2219,15 +2219,15 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">IFSC:</span>
-                        <span className="text-sm text-gray-900 font-mono">{account.ifsc}</span>
+                        <span className="text-body-regular font-medium text-slate-700">IFSC:</span>
+                        <span className="text-body-regular text-slate-900 font-mono">{account.ifsc}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">Holder:</span>
-                        <span className="text-sm text-gray-900">{account.accountHolderName}</span>
+                        <span className="text-body-regular font-medium text-slate-700">Holder:</span>
+                        <span className="text-body-regular text-slate-900">{account.accountHolderName}</span>
                       </div>
                       {account.updatedAt && (
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-body-small text-slate-500 mt-2">
                           Last updated: {new Date(account.updatedAt).toLocaleDateString('en-IN', {
                             day: 'numeric',
                             month: 'short',
@@ -2242,7 +2242,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                       <button
                         onClick={() => handleSetPrimary(account.id)}
                         disabled={setPrimaryMutation.isLoading}
-                        className="p-2 text-success-600 hover:bg-success-50 rounded-lg transition-colors"
+                        className="p-2 text-success-600 hover:bg-success-50 rounded-xl transition-colors"
                         title="Set as primary"
                       >
                         <CheckCircle className="w-5 h-5" />
@@ -2250,7 +2250,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     )}
                     <button
                       onClick={() => handleEdit(account)}
-                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
                       title="Edit"
                     >
                       <Edit2 className="w-5 h-5" />
@@ -2258,7 +2258,7 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     <button
                       onClick={() => handleDelete(account.id)}
                       disabled={deleteAccountMutation.isLoading}
-                      className="p-2 text-error-600 hover:bg-error-50 rounded-lg transition-colors"
+                      className="p-2 text-error-600 hover:bg-error-50 rounded-xl transition-colors"
                       title="Delete"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -2274,21 +2274,21 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Bank Account</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">Delete Bank Account</h3>
+            <p className="text-slate-600 mb-6">
               Are you sure you want to delete this bank account? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors"
+                className="px-4 py-2 bg-error-600 text-white rounded-xl hover:bg-error-700 transition-colors"
               >
                 Delete
               </button>
@@ -2300,21 +2300,21 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
       {/* Set Primary Confirmation Dialog */}
       {showPrimaryConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Set Primary Account</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">Set Primary Account</h3>
+            <p className="text-slate-600 mb-6">
               This account will be set as your primary account for tax refunds. Do you want to continue?
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowPrimaryConfirm(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmSetPrimary}
-                className="px-4 py-2 bg-success-600 text-white rounded-lg hover:bg-success-700 transition-colors"
+                className="px-4 py-2 bg-success-600 text-white rounded-xl hover:bg-success-700 transition-colors"
               >
                 Set Primary
               </button>
@@ -2442,7 +2442,7 @@ const FilingsTab = () => {
   const getStatusBadgeConfig = (status) => {
     const statusMap = {
       draft: {
-        color: 'bg-gray-100 text-gray-700 border-gray-300',
+        color: 'bg-slate-100 text-slate-700 border-slate-300',
         icon: FileText,
         label: 'Draft',
       },
@@ -2505,7 +2505,7 @@ const FilingsTab = () => {
   if (isLoading) {
     return (
       <div>
-        <h2 className="text-xl font-semibold text-black mb-6">My Filings</h2>
+        <h2 className="text-heading-3 font-semibold text-black mb-6">My Filings</h2>
         <div className="space-y-4">
           <FilingCardSkeleton />
           <FilingCardSkeleton />
@@ -2518,18 +2518,18 @@ const FilingsTab = () => {
   if (error) {
     return (
       <div>
-        <h2 className="text-xl font-semibold text-black mb-6">My Filings</h2>
-        <div className="p-6 bg-error-50 border border-error-200 rounded-lg">
+        <h2 className="text-heading-3 font-semibold text-black mb-6">My Filings</h2>
+        <div className="p-6 bg-error-50 border border-error-200 rounded-xl">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-error-800 font-medium mb-2">Failed to load filings</p>
-              <p className="text-error-700 text-sm mb-4">
+              <p className="text-error-700 text-body-regular mb-4">
                 {error.message || 'Unable to fetch your filings. Please check your connection and try again.'}
               </p>
               <button
                 onClick={() => refetch()}
-                className="inline-flex items-center px-4 py-2 bg-error-600 text-white rounded-lg hover:bg-error-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-error-600 text-white rounded-xl hover:bg-error-700 transition-colors"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Retry
@@ -2544,11 +2544,11 @@ const FilingsTab = () => {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h2 className="text-xl font-semibold text-black">My Filings</h2>
+        <h2 className="text-heading-3 font-semibold text-black">My Filings</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('/itr/select-person')}
-            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors text-sm font-medium"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors text-body-regular font-medium"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Filing
@@ -2561,28 +2561,28 @@ const FilingsTab = () => {
         <div className="mb-6 space-y-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
               placeholder="Search by ITR type, year, or acknowledgment number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Filters:</span>
+              <Filter className="w-4 h-4 text-slate-500" />
+              <span className="text-body-regular font-medium text-slate-700">Filters:</span>
             </div>
 
             {/* Status Filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+              className="px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
             >
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
@@ -2598,7 +2598,7 @@ const FilingsTab = () => {
               <select
                 value={yearFilter}
                 onChange={(e) => setYearFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                className="px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
               >
                 <option value="all">All Years</option>
                 {availableYears.map(year => (
@@ -2609,11 +2609,11 @@ const FilingsTab = () => {
 
             {/* Sort */}
             <div className="flex items-center gap-2 ml-auto">
-              <ArrowUpDown className="w-4 h-4 text-gray-500" />
+              <ArrowUpDown className="w-4 h-4 text-slate-500" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                className="px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
               >
                 <option value="date-desc">Newest First</option>
                 <option value="date-asc">Oldest First</option>
@@ -2626,7 +2626,7 @@ const FilingsTab = () => {
 
           {/* Active Filters Count */}
           {(statusFilter !== 'all' || yearFilter !== 'all' || searchTerm) && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-body-regular text-slate-600">
               <span>Showing {sortedFilings.length} of {allFilings.length} filings</span>
               {(statusFilter !== 'all' || yearFilter !== 'all' || searchTerm) && (
                 <button
@@ -2647,12 +2647,12 @@ const FilingsTab = () => {
 
       {/* Filings List */}
       {sortedFilings.length === 0 ? (
-        <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-          <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <div className="text-center py-16 border-2 border-dashed border-slate-300 rounded-xl bg-slate-50">
+          <FileText className="w-16 h-16 mx-auto mb-4 text-slate-400" />
+          <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
             {allFilings.length === 0 ? 'No filings yet' : 'No filings match your filters'}
           </h3>
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          <p className="text-slate-600 mb-6 max-w-md mx-auto">
             {allFilings.length === 0
               ? 'Start filing your income tax returns to see them here. Your filing history will appear once you create your first return.'
               : 'Try adjusting your filters or search terms to find what you\'re looking for.'}
@@ -2660,7 +2660,7 @@ const FilingsTab = () => {
           {allFilings.length === 0 ? (
             <button
               onClick={() => navigate('/itr/select-person')}
-              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors font-medium"
+              className="inline-flex items-center px-6 py-3 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors font-medium"
             >
               <Plus className="w-5 h-5 mr-2" />
               Start Your First Filing
@@ -2672,7 +2672,7 @@ const FilingsTab = () => {
                 setYearFilter('all');
                 setSearchTerm('');
               }}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
             >
               Clear Filters
             </button>
@@ -2683,14 +2683,14 @@ const FilingsTab = () => {
           {sortedFilings.map((filing) => (
             <div
               key={filing.id}
-              className="border border-gray-200 rounded-lg p-5 hover:shadow-lg transition-all cursor-pointer bg-white"
+              className="border border-slate-200 rounded-xl p-5 hover:shadow-elevation-3 transition-all cursor-pointer bg-white"
               onClick={() => handleFilingClick(filing)}
             >
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                         {filing.itrType || 'ITR'} - Assessment Year {filing.year}
                       </h3>
                       <div className="flex items-center gap-3 flex-wrap">
@@ -2698,24 +2698,24 @@ const FilingsTab = () => {
                           const statusConfig = getStatusBadgeConfig(filing.status);
                           const StatusIcon = statusConfig.icon;
                           return (
-                            <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium ${statusConfig.color}`}>
+                            <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-medium ${statusConfig.color}`}>
                               <StatusIcon className="w-4 h-4" />
                               <span>{statusConfig.label}</span>
                             </div>
                           );
                         })()}
-                        <span className="text-sm text-gray-500">
+                        <span className="text-body-regular text-slate-500">
                           Filed {formatDate(filing.date)}
                         </span>
                       </div>
                     </div>
                     {filing.refund > 0 && (
                       <div className="flex-shrink-0">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-success-50 border border-success-200 rounded-lg">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-success-50 border border-success-200 rounded-xl">
                           <CheckCircle className="w-5 h-5 text-success-600" />
                           <div>
-                            <p className="text-xs text-success-700 font-medium">Refund</p>
-                            <p className="text-lg font-bold text-success-800">
+                            <p className="text-body-small text-success-700 font-medium">Refund</p>
+                            <p className="text-body-large font-bold text-success-800">
                               {formatCurrency(filing.refund)}
                             </p>
                           </div>
@@ -2726,13 +2726,13 @@ const FilingsTab = () => {
 
                   <div className="space-y-2">
                     {filing.acknowledgementNumber && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-600 font-medium">Acknowledgment:</span>
-                        <span className="text-gray-900 font-mono">{filing.acknowledgementNumber}</span>
+                      <div className="flex items-center gap-2 text-body-regular">
+                        <span className="text-slate-600 font-medium">Acknowledgment:</span>
+                        <span className="text-slate-900 font-mono">{filing.acknowledgementNumber}</span>
                       </div>
                     )}
                     {filing.updatedAt && filing.updatedAt !== filing.date && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-body-small text-slate-500">
                         Last updated: {formatDate(filing.updatedAt)}
                       </p>
                     )}
@@ -2747,7 +2747,7 @@ const FilingsTab = () => {
                         e.stopPropagation();
                         handleFilingClick(filing);
                       }}
-                      className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors text-sm font-medium"
+                      className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors text-body-regular font-medium"
                     >
                       Continue
                       <ChevronRight className="w-4 h-4 ml-1" />
@@ -2759,7 +2759,7 @@ const FilingsTab = () => {
                           e.stopPropagation();
                           handleFilingClick(filing);
                         }}
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                        className="inline-flex items-center px-3 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors text-body-regular"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
@@ -2767,7 +2767,7 @@ const FilingsTab = () => {
                       {filing.acknowledgementNumber && (
                         <button
                           onClick={(e) => handleDownloadAcknowledgment(e, filing)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                          className="inline-flex items-center px-3 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors text-body-regular"
                           title="Download Acknowledgment"
                         >
                           <Download className="w-4 h-4" />

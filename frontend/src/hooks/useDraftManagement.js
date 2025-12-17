@@ -154,7 +154,7 @@ export const DraftStatus = ({
   lockedBy,
 }) => {
   return (
-    <div className="flex items-center space-x-4 text-sm">
+    <div className="flex items-center space-x-4 text-body-regular">
       {isSaving && (
         <div className="flex items-center text-blue-600">
           <Clock className="w-4 h-4 mr-1 animate-spin" />
@@ -285,19 +285,19 @@ export const DraftHistory = ({ filingId, draftType }) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Draft History</h3>
+      <h3 className="text-heading-4 font-semibold text-gray-900 mb-4">Draft History</h3>
 
       <div className="space-y-3">
         {history?.map((version) => (
           <div key={version.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-4">
-              <div className="text-sm font-medium text-gray-900">
+              <div className="text-body-regular font-medium text-gray-900">
                 Version {version.version}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-body-regular text-gray-600">
                 {new Date(version.created_at).toLocaleString()}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-body-regular text-gray-600">
                 by {version.created_by}
               </div>
             </div>
@@ -306,7 +306,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
               <button
                 onClick={() => restoreVersion.mutate(version.id)}
                 disabled={restoreVersion.isPending}
-                className="flex items-center px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+                className="flex items-center px-2 py-1 bg-blue-600 text-white rounded text-body-regular hover:bg-blue-700 disabled:opacity-50"
               >
                 <RotateCcw className="w-3 h-3 mr-1" />
                 Restore
@@ -323,7 +323,7 @@ export const DraftHistory = ({ filingId, draftType }) => {
                   link.click();
                   URL.revokeObjectURL(url);
                 }}
-                className="flex items-center px-2 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
+                className="flex items-center px-2 py-1 bg-gray-600 text-white rounded text-body-regular hover:bg-gray-700"
               >
                 <Download className="w-3 h-3 mr-1" />
                 Export

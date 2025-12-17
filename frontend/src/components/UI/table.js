@@ -10,7 +10,7 @@ export const Table = ({ children, className = '', ...props }) => (
 );
 
 export const TableHeader = ({ children, className = '', ...props }) => (
-  <thead className={`bg-gray-50 ${className}`} {...props}>
+  <thead className={`bg-slate-50 ${className}`} {...props}>
     {children}
   </thead>
 );
@@ -22,19 +22,19 @@ export const TableBody = ({ children, className = '', ...props }) => (
 );
 
 export const TableRow = ({ children, className = '', ...props }) => (
-  <tr className={`hover:bg-gray-50 ${className}`} {...props}>
+  <tr className={`hover:bg-slate-50 ${className}`} {...props}>
     {children}
   </tr>
 );
 
 export const TableHead = ({ children, className = '', ...props }) => (
-  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${className}`} {...props}>
+  <th className={`px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider ${className}`} {...props}>
     {children}
   </th>
 );
 
 export const TableCell = ({ children, className = '', ...props }) => (
-  <td className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${className}`} {...props}>
+  <td className={`px-6 py-4 whitespace-nowrap text-sm text-slate-900 ${className}`} {...props}>
     {children}
   </td>
 );

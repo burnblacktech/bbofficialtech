@@ -115,17 +115,17 @@ const AcceptInvite = () => {
   if (!invite) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md">
-          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="bg-white rounded-2xl shadow-elevation-4 p-8 text-center max-w-md">
+          <AlertTriangle className="w-16 h-16 text-error-500 mx-auto mb-4" />
+          <h1 className="text-heading-2 font-bold text-slate-900 mb-2">
             Invalid Invite
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-slate-600 mb-6">
             This invite link is invalid or has expired.
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors"
+            className="w-full bg-primary-600 text-white py-3 px-6 rounded-xl hover:bg-primary-700 transition-colors"
           >
             Go to Login
           </button>
@@ -159,35 +159,35 @@ const AcceptInvite = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-elevation-4 p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
               <UserPlus className="w-8 h-8 text-primary-600" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-heading-2 font-bold text-slate-900 mb-2">
               Accept Invitation
             </h1>
-            <p className="text-gray-600">
+            <p className="text-slate-600">
               You've been invited to join as {getRoleDisplayName(invite.role)}
             </p>
           </div>
 
           {/* Invite Details */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <div className="bg-slate-50 rounded-xl p-4 mb-6">
             <div className="flex items-center mb-3">
-              <Mail className="w-5 h-5 text-gray-500 mr-3" />
-              <span className="text-sm text-gray-600">Invited Email:</span>
+              <Mail className="w-5 h-5 text-slate-500 mr-3" />
+              <span className="text-body-regular text-slate-600">Invited Email:</span>
             </div>
-            <p className="text-lg font-medium text-gray-900 ml-8">
+            <p className="text-body-large font-medium text-slate-900 ml-8">
               {invite.email}
             </p>
 
             {invite.metadata?.firmName && (
               <div className="flex items-center mt-3">
-                <Building className="w-5 h-5 text-gray-500 mr-3" />
-                <span className="text-sm text-gray-600">Firm:</span>
-                <span className="text-lg font-medium text-gray-900 ml-2">
+                <Building className="w-5 h-5 text-slate-500 mr-3" />
+                <span className="text-body-regular text-slate-600">Firm:</span>
+                <span className="text-body-large font-medium text-slate-900 ml-2">
                   {invite.metadata.firmName}
                 </span>
               </div>
@@ -195,11 +195,11 @@ const AcceptInvite = () => {
           </div>
 
           {/* Role Description */}
-          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 rounded-xl p-4 mb-6">
             <h3 className="font-semibold text-blue-900 mb-2">
               {getRoleDisplayName(invite.role)} Responsibilities:
             </h3>
-            <p className="text-sm text-blue-800">
+            <p className="text-body-regular text-blue-800">
               {getRoleDescription(invite.role)}
             </p>
           </div>
@@ -207,7 +207,7 @@ const AcceptInvite = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Full Name *
               </label>
               <input
@@ -215,13 +215,13 @@ const AcceptInvite = () => {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Phone Number
               </label>
               <input
@@ -229,13 +229,13 @@ const AcceptInvite = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="+91 9876543210"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Password *
               </label>
               <input
@@ -243,14 +243,14 @@ const AcceptInvite = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required
                 minLength={8}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-regular font-medium text-slate-700 mb-2">
                 Confirm Password *
               </label>
               <input
@@ -258,7 +258,7 @@ const AcceptInvite = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required
                 minLength={8}
               />
@@ -267,7 +267,7 @@ const AcceptInvite = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -280,7 +280,7 @@ const AcceptInvite = () => {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-body-small text-slate-500">
               By accepting this invitation, you agree to our Terms of Service
               and Privacy Policy.
             </p>

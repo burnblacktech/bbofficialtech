@@ -23,8 +23,8 @@ const DeductionsTable = ({
 
   if (deductionSections.length === 0) {
     return (
-      <div className={cn('bg-white rounded-lg border border-neutral-200 p-4', className)}>
-        <div className="text-center text-sm text-neutral-500">
+      <div className={cn('bg-white rounded-xl border border-neutral-200 p-4', className)}>
+        <div className="text-center text-body-regular text-neutral-500">
           No deductions entered yet
         </div>
       </div>
@@ -35,7 +35,7 @@ const DeductionsTable = ({
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
         <div className="bg-neutral-50 border-b border-neutral-200 px-3 py-2 flex items-center gap-2">
           <Shield className="w-3.5 h-3.5 text-gold-600" />
           <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
@@ -50,10 +50,10 @@ const DeductionsTable = ({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
-                className="text-center p-2 bg-neutral-50 rounded-lg border border-neutral-200"
+                className="text-center p-2 bg-neutral-50 rounded-xl border border-neutral-200"
               >
                 <p className="text-[10px] text-neutral-500 mb-1 font-medium">{section.label}</p>
-                <p className="text-sm font-bold text-neutral-900 tabular-nums">
+                <p className="text-body-regular font-bold text-neutral-900 tabular-nums">
                   {formatIndianCurrency(section.value)}
                 </p>
                 {section.maxLimit && (
@@ -68,8 +68,8 @@ const DeductionsTable = ({
           {/* Total Deductions */}
           <div className="mt-3 pt-3 border-t border-neutral-200">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-neutral-700">Total Deductions</span>
-              <span className="text-base font-bold text-gold-900 tabular-nums">
+              <span className="text-body-small font-semibold text-neutral-700">Total Deductions</span>
+              <span className="text-body-large font-bold text-gold-900 tabular-nums">
                 {formatIndianCurrency(totalDeductions)}
               </span>
             </div>

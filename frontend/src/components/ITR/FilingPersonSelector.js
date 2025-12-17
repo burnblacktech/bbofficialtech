@@ -383,13 +383,13 @@ const FilingPersonSelector = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/itr/start')}
-              className="p-2 rounded-lg hover:bg-neutral-100 transition-colors flex-shrink-0"
+              className="p-2 rounded-xl hover:bg-neutral-100 transition-colors flex-shrink-0"
             >
               <ArrowLeft className="h-5 w-5 text-neutral-600" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-neutral-900">Select Person</h1>
-              <p className="text-xs text-neutral-500">Choose who you're filing for</p>
+              <h1 className="text-heading-4 font-semibold text-neutral-900">Select Person</h1>
+              <p className="text-body-small text-neutral-500">Choose who you're filing for</p>
             </div>
           </div>
         </div>
@@ -404,10 +404,10 @@ const FilingPersonSelector = () => {
           transition={springs.gentle}
           className="text-center mb-4"
         >
-          <h1 className="text-xl font-bold text-neutral-900 mb-1">
+          <h1 className="text-heading-3 font-bold text-neutral-900 mb-1">
             Who are you filing for?
           </h1>
-          <p className="text-xs text-neutral-600">
+          <p className="text-body-small text-neutral-600">
             Select the person for whom you want to file the Income Tax Return
           </p>
         </motion.div>
@@ -453,9 +453,9 @@ const FilingPersonSelector = () => {
                 } : {}}
                 onClick={() => !isDisabled && handlePersonTypeSelect(option.id)}
                 className={`
-                  bg-white rounded-xl shadow-sm border-2 p-4 cursor-pointer transition-all
+                  bg-white rounded-xl shadow-elevation-1 border-2 p-4 cursor-pointer transition-all
                   ${isSelected
-                    ? 'border-gold-500 shadow-md ring-2 ring-gold-300 ring-opacity-50'
+                    ? 'border-gold-500 shadow-elevation-2 ring-2 ring-gold-300 ring-opacity-50'
                     : 'border-neutral-200 hover:border-neutral-300'
                   }
                   ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
@@ -463,7 +463,7 @@ const FilingPersonSelector = () => {
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className={`
-                    w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
+                    w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
                     ${option.id === 'self'
                       ? 'bg-gradient-to-br from-gold-400 to-gold-600'
                       : 'bg-gradient-to-br from-info-400 to-info-600'
@@ -476,7 +476,7 @@ const FilingPersonSelector = () => {
                     <h3 className="text-base font-semibold text-neutral-900 mb-0.5">
                       {option.title}
                     </h3>
-                    <p className="text-xs text-neutral-600">
+                    <p className="text-body-small text-neutral-600">
                       {option.description}
                     </p>
                   </div>
@@ -491,7 +491,7 @@ const FilingPersonSelector = () => {
                       className="flex items-center justify-center text-gold-600 mt-2"
                     >
                       <CheckCircle className="w-4 h-4" />
-                      <span className="ml-1 text-xs font-medium">Selected</span>
+                      <span className="ml-1 text-body-small font-medium">Selected</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -510,14 +510,14 @@ const FilingPersonSelector = () => {
               transition={springs.gentle}
               className="mb-4"
             >
-              <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3">
+              <div className="bg-white rounded-xl shadow-elevation-1 border border-neutral-200 p-3">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold text-neutral-900">
                   Select Family Member
                 </h3>
                 <button
                   onClick={() => setShowAddMemberForm(!showAddMemberForm)}
-                  className="flex items-center px-2 py-1 bg-success-500 text-white text-xs font-medium rounded-lg hover:bg-success-600 transition-colors"
+                  className="flex items-center px-2 py-1 bg-success-500 text-white text-body-small font-medium rounded-xl hover:bg-success-600 transition-colors"
                 >
                   <Plus className="w-3 h-3 mr-1" />
                   {showAddMemberForm ? 'Cancel' : 'Add New'}
@@ -545,7 +545,7 @@ const FilingPersonSelector = () => {
                       placeholder="Search family members..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-xs"
+                      className="w-full pl-8 pr-3 py-1.5 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-body-small"
                     />
                   </div>
                 </div>
@@ -554,10 +554,10 @@ const FilingPersonSelector = () => {
               {familyMembers.length === 0 && !showAddMemberForm ? (
                 <div className="text-center py-4">
                   <Users className="w-8 h-8 text-neutral-400 mx-auto mb-2" />
-                  <p className="text-neutral-600 mb-2 text-xs">No family members added yet</p>
+                  <p className="text-neutral-600 mb-2 text-body-small">No family members added yet</p>
                   <button
                     onClick={() => setShowAddMemberForm(true)}
-                    className="inline-flex items-center px-3 py-1.5 bg-success-500 text-white text-xs font-medium rounded-lg hover:bg-success-600 transition-colors"
+                    className="inline-flex items-center px-3 py-1.5 bg-success-500 text-white text-body-small font-medium rounded-xl hover:bg-success-600 transition-colors"
                   >
                     <Plus className="w-3 h-3 mr-1" />
                     Add Your First Family Member
@@ -589,7 +589,7 @@ const FilingPersonSelector = () => {
                         <div
                           key={member.id}
                           className={`
-                            p-3 border-2 rounded-lg transition-all relative
+                            p-3 border-2 rounded-xl transition-all relative
                             ${isSelected ? 'border-gold-500 bg-gold-50' : 'border-neutral-200 hover:border-neutral-300'}
                           `}
                         >
@@ -613,15 +613,15 @@ const FilingPersonSelector = () => {
                                     <MoreVertical className="w-4 h-4 text-neutral-500" />
                                   </button>
                                 </div>
-                                <p className="text-xs text-neutral-600 capitalize mb-1">
+                                <p className="text-body-small text-neutral-600 capitalize mb-1">
                                   {member.relationship}
                                 </p>
                                 {hasPAN ? (
-                                  <p className="text-xs text-neutral-500 mb-1 font-mono">
+                                  <p className="text-body-small text-neutral-500 mb-1 font-mono">
                                     PAN: {member.panNumber}
                                   </p>
                                 ) : (
-                                  <p className="text-xs text-warning-600 mb-1">
+                                  <p className="text-body-small text-warning-600 mb-1">
                                     PAN: Not added
                                   </p>
                                 )}
@@ -629,7 +629,7 @@ const FilingPersonSelector = () => {
                                 {/* Filing History */}
                                 {filingStats.count > 0 && (
                                   <div className="mt-1.5 pt-1.5 border-t border-neutral-200">
-                                    <div className="flex items-center text-xs text-neutral-600">
+                                    <div className="flex items-center text-body-small text-neutral-600">
                                       <FileText className="w-3 h-3 mr-1" />
                                       <span>{filingStats.count} ITR{filingStats.count !== 1 ? 's' : ''} filed</span>
                                       {filingStats.lastFiling && (
@@ -645,17 +645,17 @@ const FilingPersonSelector = () => {
                                 {!hasPAN ? (
                                   <div className="flex items-center text-neutral-500">
                                     <AlertCircle className="w-4 h-4" />
-                                    <span className="ml-1 text-xs">Add PAN</span>
+                                    <span className="ml-1 text-body-small">Add PAN</span>
                                   </div>
                                 ) : isVerified ? (
                                   <div className="flex items-center text-success-600">
                                     <CheckCircle className="w-4 h-4" />
-                                    <span className="ml-1 text-xs">Verified</span>
+                                    <span className="ml-1 text-body-small">Verified</span>
                                   </div>
                                 ) : (
                                   <div className="flex items-center text-warning-600">
                                     <AlertCircle className="w-4 h-4" />
-                                    <span className="ml-1 text-xs">Verify</span>
+                                    <span className="ml-1 text-body-small">Verify</span>
                                   </div>
                                 )}
                               </div>
@@ -676,7 +676,7 @@ const FilingPersonSelector = () => {
                                   });
                                   setShowMemberActions(null);
                                 }}
-                                className="w-full flex items-center px-3 py-1.5 text-xs text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
+                                className="w-full flex items-center px-3 py-1.5 text-body-small text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
                               >
                                 <Edit className="w-3 h-3 mr-2" />
                                 Edit Member
@@ -697,7 +697,7 @@ const FilingPersonSelector = () => {
                                     setShowPANVerification(true);
                                     setShowMemberActions(null);
                                   }}
-                                  className="w-full flex items-center px-3 py-1.5 text-xs text-warning-700 hover:bg-warning-50 rounded transition-colors"
+                                  className="w-full flex items-center px-3 py-1.5 text-body-small text-warning-700 hover:bg-warning-50 rounded transition-colors"
                                 >
                                   <AlertCircle className="w-3 h-3 mr-2" />
                                   Verify PAN
@@ -715,7 +715,7 @@ const FilingPersonSelector = () => {
                                     });
                                     setShowMemberActions(null);
                                   }}
-                                  className="w-full flex items-center px-3 py-1.5 text-xs text-info-700 hover:bg-info-50 rounded transition-colors"
+                                  className="w-full flex items-center px-3 py-1.5 text-body-small text-info-700 hover:bg-info-50 rounded transition-colors"
                                 >
                                   <FileText className="w-3 h-3 mr-2" />
                                   View Filing History
@@ -734,7 +734,7 @@ const FilingPersonSelector = () => {
               <div className="text-center mt-2">
                 <button
                   onClick={() => navigate('/add-members', { state: { returnTo: '/itr/select-person' } })}
-                  className="text-xs text-neutral-600 hover:text-neutral-900 underline"
+                  className="text-body-small text-neutral-600 hover:text-neutral-900 underline"
                 >
                   Manage all family members
                 </button>
@@ -747,7 +747,7 @@ const FilingPersonSelector = () => {
 
         {/* Inline PAN Verification */}
         {showPANVerification && panVerificationPerson && (
-          <div className="bg-white rounded-xl shadow-sm border-2 border-warning-200 p-3 mb-3">
+          <div className="bg-white rounded-xl shadow-elevation-1 border-2 border-warning-200 p-3 mb-3">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-neutral-900">
                 PAN Verification Required
@@ -780,14 +780,14 @@ const FilingPersonSelector = () => {
 
         {/* PAN Input/Verification for Self when PAN is missing or unverified (only if not already showing inline verification) */}
         {personType === 'self' && !showPANVerification && (!user?.panNumber || !selectedPerson?.panNumber || !selectedPerson?.panVerified) && (
-          <div className="bg-white rounded-xl shadow-sm border-2 border-warning-200 p-3 mb-3">
+          <div className="bg-white rounded-xl shadow-elevation-1 border-2 border-warning-200 p-3 mb-3">
             <div className="mb-2">
               <h3 className="text-sm font-semibold text-neutral-900 mb-1">
                 {user?.panNumber && !selectedPerson?.panVerified
                   ? 'Verify Your PAN Number'
                   : 'Enter Your PAN Number'}
               </h3>
-              <p className="text-xs text-neutral-600">
+              <p className="text-body-small text-neutral-600">
                 {user?.panNumber && !selectedPerson?.panVerified
                   ? 'Your PAN number needs to be verified before filing'
                   : 'PAN is required to file your Income Tax Return'}
@@ -829,13 +829,13 @@ const FilingPersonSelector = () => {
 
         {/* Selected Person Summary & Proceed Button */}
         {selectedPerson && selectedPerson.panNumber && selectedPerson.panVerified && (
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3 mb-3">
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-neutral-200 p-3 mb-3">
             <div className="flex items-center justify-between mb-2">
               <div>
                 <h3 className="text-sm font-semibold text-neutral-900 mb-1">
                   Selected Person
                 </h3>
-                <div className="flex items-center gap-4 text-xs">
+                <div className="flex items-center gap-4 text-body-small">
                   <span className="text-neutral-600">
                     <span className="font-semibold text-neutral-900">{selectedPerson.name}</span>
                   </span>
@@ -850,7 +850,7 @@ const FilingPersonSelector = () => {
               </div>
               <button
                 onClick={handleProceed}
-                className="flex items-center px-4 py-2 bg-gold-500 text-white font-semibold rounded-lg hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gold-500/20 text-sm"
+                className="flex items-center px-4 py-2 bg-gold-500 text-white font-semibold rounded-xl hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-elevation-3 shadow-gold-500/20 text-body-regular"
                 disabled={!selectedPerson.panVerified}
               >
                 <span>Continue</span>

@@ -164,11 +164,11 @@ const AdminFilingDetails = () => {
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-error-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-neutral-900 mb-2">Filing not found</h3>
-          <p className="text-sm text-neutral-500 mb-4">The filing you're looking for doesn't exist.</p>
+          <h3 className="text-heading-4 font-semibold text-neutral-900 mb-2">Filing not found</h3>
+          <p className="text-body-regular text-neutral-500 mb-4">The filing you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate('/admin/filings')}
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+            className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors"
           >
             Back to Filings
           </button>
@@ -186,13 +186,13 @@ const AdminFilingDetails = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/admin/filings')}
-                className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-neutral-100 rounded-xl transition-colors"
               >
                 <ArrowLeft className="h-5 w-5 text-neutral-600" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-neutral-900">Filing Details</h1>
-                <p className="text-sm text-neutral-500 mt-1">
+                <h1 className="text-heading-2 font-bold text-neutral-900">Filing Details</h1>
+                <p className="text-body-regular text-neutral-500 mt-1">
                   ID: {filing.id} • {filing.acknowledgmentNumber || 'No Acknowledgment'}
                 </p>
               </div>
@@ -203,7 +203,7 @@ const AdminFilingDetails = () => {
               </span>
               <button
                 onClick={() => setShowOperations(!showOperations)}
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+                className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors"
               >
                 Operations
               </button>
@@ -217,7 +217,7 @@ const AdminFilingDetails = () => {
         <div className="bg-white border-b border-neutral-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-neutral-900">Admin Operations</h3>
+              <h3 className="text-heading-4 font-semibold text-neutral-900">Admin Operations</h3>
               <button
                 onClick={() => setShowOperations(false)}
                 className="text-neutral-500 hover:text-neutral-700"
@@ -229,7 +229,7 @@ const AdminFilingDetails = () => {
               <button
                 onClick={handleReprocess}
                 disabled={reprocessFilingMutation.isLoading}
-                className="flex items-center space-x-2 px-4 py-2 border border-primary-300 rounded-lg text-primary-700 hover:bg-primary-50 transition-colors disabled:opacity-50"
+                className="flex items-center space-x-2 px-4 py-2 border border-primary-300 rounded-xl text-primary-700 hover:bg-primary-50 transition-colors disabled:opacity-50"
               >
                 <RefreshCw className="h-4 w-4" />
                 <span>Reprocess</span>
@@ -237,7 +237,7 @@ const AdminFilingDetails = () => {
               <button
                 onClick={handleCancel}
                 disabled={cancelFilingMutation.isLoading}
-                className="flex items-center space-x-2 px-4 py-2 border border-error-300 rounded-lg text-error-700 hover:bg-error-50 transition-colors disabled:opacity-50"
+                className="flex items-center space-x-2 px-4 py-2 border border-error-300 rounded-xl text-error-700 hover:bg-error-50 transition-colors disabled:opacity-50"
               >
                 <X className="h-4 w-4" />
                 <span>Cancel</span>
@@ -245,7 +245,7 @@ const AdminFilingDetails = () => {
               <button
                 onClick={handleOverrideValidation}
                 disabled={overrideValidationMutation.isLoading}
-                className="flex items-center space-x-2 px-4 py-2 border border-warning-300 rounded-lg text-warning-700 hover:bg-warning-50 transition-colors disabled:opacity-50"
+                className="flex items-center space-x-2 px-4 py-2 border border-warning-300 rounded-xl text-warning-700 hover:bg-warning-50 transition-colors disabled:opacity-50"
               >
                 <CheckCircle className="h-4 w-4" />
                 <span>Override Validation</span>
@@ -253,7 +253,7 @@ const AdminFilingDetails = () => {
               <button
                 onClick={handleFlagForReview}
                 disabled={flagForReviewMutation.isLoading}
-                className="flex items-center space-x-2 px-4 py-2 border border-info-300 rounded-lg text-info-700 hover:bg-info-50 transition-colors disabled:opacity-50"
+                className="flex items-center space-x-2 px-4 py-2 border border-info-300 rounded-xl text-info-700 hover:bg-info-50 transition-colors disabled:opacity-50"
               >
                 <Flag className="h-4 w-4" />
                 <span>Flag for Review</span>
@@ -265,13 +265,13 @@ const AdminFilingDetails = () => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add admin notes..."
-                  className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="flex-1 px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                   rows={2}
                 />
                 <button
                   onClick={handleAddNotes}
                   disabled={addNotesMutation.isLoading || !notes.trim()}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <MessageSquare className="h-4 w-4" />
                 </button>
@@ -309,62 +309,62 @@ const AdminFilingDetails = () => {
       {/* Tab Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'overview' && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-6">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
-                <p className="text-sm text-neutral-500 mb-1">User</p>
+                <p className="text-body-regular text-neutral-500 mb-1">User</p>
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4 text-neutral-400" />
-                  <p className="text-sm font-medium text-neutral-900">
+                  <p className="text-body-regular font-medium text-neutral-900">
                     {filing.userName || filing.user?.fullName || 'N/A'}
                   </p>
                 </div>
-                <p className="text-xs text-neutral-500 mt-1">
+                <p className="text-body-small text-neutral-500 mt-1">
                   {filing.userEmail || filing.user?.email || ''}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">ITR Type</p>
-                <p className="text-sm font-medium text-neutral-900">
+                <p className="text-body-regular text-neutral-500 mb-1">ITR Type</p>
+                <p className="text-body-regular font-medium text-neutral-900">
                   {filing.itrType || 'N/A'}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Assessment Year</p>
-                <p className="text-sm font-medium text-neutral-900">
+                <p className="text-body-regular text-neutral-500 mb-1">Assessment Year</p>
+                <p className="text-body-regular font-medium text-neutral-900">
                   {filing.assessmentYear || 'N/A'}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Status</p>
+                <p className="text-body-regular text-neutral-500 mb-1">Status</p>
                 <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(filing.status)}`}>
                   {filing.status || 'Unknown'}
                 </span>
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Created</p>
+                <p className="text-body-regular text-neutral-500 mb-1">Created</p>
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4 text-neutral-400" />
-                  <p className="text-sm font-medium text-neutral-900">
+                  <p className="text-body-regular font-medium text-neutral-900">
                     {formatDate(filing.createdAt)}
                   </p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-neutral-500 mb-1">Last Updated</p>
+                <p className="text-body-regular text-neutral-500 mb-1">Last Updated</p>
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4 text-neutral-400" />
-                  <p className="text-sm font-medium text-neutral-900">
+                  <p className="text-body-regular font-medium text-neutral-900">
                     {formatDate(filing.updatedAt)}
                   </p>
                 </div>
               </div>
               {filing.totalIncome && (
                 <div>
-                  <p className="text-sm text-neutral-500 mb-1">Total Income</p>
+                  <p className="text-body-regular text-neutral-500 mb-1">Total Income</p>
                   <div className="flex items-center space-x-2">
                     <IndianRupee className="h-4 w-4 text-neutral-400" />
-                    <p className="text-sm font-medium text-neutral-900">
+                    <p className="text-body-regular font-medium text-neutral-900">
                       {formatCurrency(filing.totalIncome)}
                     </p>
                   </div>
@@ -372,10 +372,10 @@ const AdminFilingDetails = () => {
               )}
               {filing.totalTax && (
                 <div>
-                  <p className="text-sm text-neutral-500 mb-1">Total Tax</p>
+                  <p className="text-body-regular text-neutral-500 mb-1">Total Tax</p>
                   <div className="flex items-center space-x-2">
                     <IndianRupee className="h-4 w-4 text-neutral-400" />
-                    <p className="text-sm font-medium text-neutral-900">
+                    <p className="text-body-regular font-medium text-neutral-900">
                       {formatCurrency(filing.totalTax)}
                     </p>
                   </div>
@@ -386,15 +386,15 @@ const AdminFilingDetails = () => {
         )}
 
         {activeTab === 'data' && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-6">
-            <pre className="text-xs bg-neutral-50 p-4 rounded-lg overflow-x-auto">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+            <pre className="text-body-small bg-neutral-50 p-4 rounded-xl overflow-x-auto">
               {JSON.stringify(filing.data || filing, null, 2)}
             </pre>
           </div>
         )}
 
         {activeTab === 'documents' && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-6">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6">
             {documents.length === 0 ? (
               <div className="text-center py-12">
                 <File className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
@@ -405,15 +405,15 @@ const AdminFilingDetails = () => {
                 {documents.map((doc) => (
                   <div
                     key={doc.id}
-                    className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+                    className="flex items-center justify-between p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors"
                   >
                     <div className="flex items-center space-x-3">
                       <File className="h-5 w-5 text-primary-600" />
                       <div>
-                        <p className="text-sm font-medium text-neutral-900">
+                        <p className="text-body-regular font-medium text-neutral-900">
                           {doc.fileName || doc.name || `Document ${doc.id}`}
                         </p>
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-body-small text-neutral-500">
                           {doc.documentType || doc.type} • {formatDate(doc.createdAt)}
                         </p>
                       </div>
@@ -429,7 +429,7 @@ const AdminFilingDetails = () => {
         )}
 
         {activeTab === 'timeline' && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-6">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6">
             <div className="space-y-4">
               {auditLog.length === 0 ? (
                 <div className="text-center py-12">
@@ -446,14 +446,14 @@ const AdminFilingDetails = () => {
                       )}
                     </div>
                     <div className="flex-1 pb-4">
-                      <p className="text-sm font-medium text-neutral-900">
+                      <p className="text-body-regular font-medium text-neutral-900">
                         {event.action || event.description || 'Event'}
                       </p>
-                      <p className="text-xs text-neutral-500 mt-1">
+                      <p className="text-body-small text-neutral-500 mt-1">
                         {formatDate(event.timestamp || event.createdAt)}
                       </p>
                       {event.userName && (
-                        <p className="text-xs text-neutral-400 mt-1">
+                        <p className="text-body-small text-neutral-400 mt-1">
                           by {event.userName}
                         </p>
                       )}
@@ -466,7 +466,7 @@ const AdminFilingDetails = () => {
         )}
 
         {activeTab === 'discrepancies' && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-6">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6">
             <div className="text-center py-12">
               <AlertCircle className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
               <p className="text-neutral-500">No discrepancies found</p>
@@ -475,7 +475,7 @@ const AdminFilingDetails = () => {
         )}
 
         {activeTab === 'audit' && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-6">
+          <div className="bg-white rounded-xl border border-neutral-200 p-6">
             <div className="space-y-3">
               {auditLog.length === 0 ? (
                 <div className="text-center py-12">
@@ -487,19 +487,19 @@ const AdminFilingDetails = () => {
                   <table className="min-w-full divide-y divide-neutral-200">
                     <thead className="bg-neutral-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">
+                        <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase">
                           Timestamp
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">
+                        <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase">
                           Action
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">
+                        <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase">
                           User
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">
+                        <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase">
                           IP Address
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase">
+                        <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase">
                           Status
                         </th>
                       </tr>
@@ -507,16 +507,16 @@ const AdminFilingDetails = () => {
                     <tbody className="bg-white divide-y divide-neutral-200">
                       {auditLog.map((entry, index) => (
                         <tr key={entry.id || index}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-body-regular text-neutral-500">
                             {formatDate(entry.timestamp || entry.createdAt)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-body-regular text-neutral-900">
                             {entry.action || entry.description}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-body-regular text-neutral-500">
                             {entry.userName || entry.user?.fullName || 'System'}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-body-regular text-neutral-500">
                             {entry.ipAddress || 'N/A'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">

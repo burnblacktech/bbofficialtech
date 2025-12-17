@@ -200,12 +200,12 @@ const AdminDashboard = () => {
                 {isConnected ? (
                   <div className="flex items-center gap-1 text-success-600" title="Connected to live updates">
                     <Wifi className="w-4 h-4" />
-                    <span className="text-xs">Live</span>
+                    <span className="text-body-small">Live</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 text-warning-600" title="Using polling updates">
                     <WifiOff className="w-4 h-4" />
-                    <span className="text-xs">Polling</span>
+                    <span className="text-body-small">Polling</span>
                   </div>
                 )}
                 {lastUpdate && (
@@ -222,7 +222,7 @@ const AdminDashboard = () => {
             <Typography.Body className="text-neutral-600">
               Platform overview and management control center
               {lastUpdate && (
-                <span className="ml-2 text-xs text-neutral-400">
+                <span className="ml-2 text-body-small text-neutral-400">
                   Updated {formatLastUpdate()}
                 </span>
               )}
@@ -232,14 +232,14 @@ const AdminDashboard = () => {
             <select
               value={selectedTimeRange}
               onChange={(e) => setSelectedTimeRange(e.target.value)}
-              className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+              className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
             >
               <option value="1d">Last 24 Hours</option>
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
               <option value="90d">Last 90 Days</option>
             </select>
-            <button className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">
+            <button className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors">
               Export Report
             </button>
           </div>
@@ -255,14 +255,14 @@ const AdminDashboard = () => {
                     <Typography.Small className="text-neutral-600 mb-1">
                       New Users
                     </Typography.Small>
-                    <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                    <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                       {dashboardData.metrics.newUsers.today}
                     </Typography.H3>
                     <Typography.Small className="text-success-600">
                       +{dashboardData.metrics.newUsers.growth}% from last week
                     </Typography.Small>
                   </div>
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
                     <Users className="w-6 h-6 text-primary-600" />
                   </div>
                 </div>
@@ -278,14 +278,14 @@ const AdminDashboard = () => {
                     <Typography.Small className="text-neutral-600 mb-1">
                       ITR Filings
                     </Typography.Small>
-                    <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                    <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                       {dashboardData.metrics.itrFilings.completed}
                     </Typography.H3>
                     <Typography.Small className="text-success-600">
                       {dashboardData.metrics.itrFilings.completionRate}% completion rate
                     </Typography.Small>
                   </div>
-                  <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                     <FileText className="w-6 h-6 text-success-600" />
                   </div>
                 </div>
@@ -301,14 +301,14 @@ const AdminDashboard = () => {
                     <Typography.Small className="text-neutral-600 mb-1">
                       Open Tickets
                     </Typography.Small>
-                    <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                    <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                       {dashboardData.metrics.serviceTickets.open}
                     </Typography.H3>
                     <Typography.Small className="text-neutral-600">
                       Avg resolution: {dashboardData.metrics.serviceTickets.avgResolutionTime}
                     </Typography.Small>
                   </div>
-                  <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
                     <MessageSquare className="w-6 h-6 text-warning-600" />
                   </div>
                 </div>
@@ -324,14 +324,14 @@ const AdminDashboard = () => {
                     <Typography.Small className="text-neutral-600 mb-1">
                       Revenue
                     </Typography.Small>
-                    <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                    <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                       {formatCurrency(dashboardData.metrics.revenue.today)}
                     </Typography.H3>
                     <Typography.Small className="text-success-600">
                       +{dashboardData.metrics.revenue.growth}% from last week
                     </Typography.Small>
                   </div>
-                  <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
                     <IndianRupee className="w-6 h-6 text-secondary-600" />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="space-y-2">
                 {dashboardData.alerts.slice(0, 3).map((alert, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-3 bg-white rounded-lg">
+                  <div key={index} className="flex items-start space-x-3 p-3 bg-white rounded-xl">
                     <AlertCircle className={`w-5 h-5 mt-0.5 ${
                       alert.severity === 'critical' ? 'text-error-600' :
                       alert.severity === 'warning' ? 'text-warning-600' :
@@ -471,9 +471,9 @@ const AdminDashboard = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="flex items-start space-x-3 p-3 bg-neutral-50 rounded-lg"
+                        className="flex items-start space-x-3 p-3 bg-neutral-50 rounded-xl"
                       >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor(activity.status || 'success')}`}>
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${getStatusColor(activity.status || 'success')}`}>
                           {getActivityIcon(activity.type || activity.action)}
                         </div>
                         <div className="flex-1">
@@ -514,10 +514,10 @@ const AdminDashboard = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
+                    className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl"
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                         <span className="text-primary-600 font-medium">
                           {index + 1}
                         </span>
@@ -556,25 +556,25 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <button className="flex items-center space-x-3 p-4 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 transition-colors">
+              <button className="flex items-center space-x-3 p-4 bg-primary-50 border border-primary-200 rounded-xl hover:bg-primary-100 transition-colors">
                 <Users className="w-5 h-5 text-primary-600" />
                 <Typography.Small className="font-medium text-primary-700">
                   Manage Users
                 </Typography.Small>
               </button>
-              <button className="flex items-center space-x-3 p-4 bg-success-50 border border-success-200 rounded-lg hover:bg-success-100 transition-colors">
+              <button className="flex items-center space-x-3 p-4 bg-success-50 border border-success-200 rounded-xl hover:bg-success-100 transition-colors">
                 <MessageSquare className="w-5 h-5 text-success-600" />
                 <Typography.Small className="font-medium text-success-700">
                   Support Tickets
                 </Typography.Small>
               </button>
-              <button className="flex items-center space-x-3 p-4 bg-warning-50 border border-warning-200 rounded-lg hover:bg-warning-100 transition-colors">
+              <button className="flex items-center space-x-3 p-4 bg-warning-50 border border-warning-200 rounded-xl hover:bg-warning-100 transition-colors">
                 <IndianRupee className="w-5 h-5 text-warning-600" />
                 <Typography.Small className="font-medium text-warning-700">
                   Pricing Control
                 </Typography.Small>
               </button>
-              <button className="flex items-center space-x-3 p-4 bg-neutral-50 border border-neutral-200 rounded-lg hover:bg-neutral-100 transition-colors">
+              <button className="flex items-center space-x-3 p-4 bg-neutral-50 border border-neutral-200 rounded-xl hover:bg-neutral-100 transition-colors">
                 <Shield className="w-5 h-5 text-neutral-600" />
                 <Typography.Small className="font-medium text-neutral-700">
                   System Settings

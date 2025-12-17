@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Home, Plus, Trash2, Edit2, TrendingUp, TrendingDown } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty, onDeleteProperty }) => {
   const formatCurrency = (amount) => {
@@ -70,7 +70,7 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
           <div className="grid grid-cols-2 gap-4">
             {totalIncome > 0 && (
               <div>
-                <p className="text-body-sm text-gray-600">Total Income</p>
+                <p className="text-body-sm text-slate-600">Total Income</p>
                 <p className="text-heading-md font-semibold text-green-700 flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
                   {formatCurrency(totalIncome)}
@@ -79,8 +79,8 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
             )}
             {totalLoss > 0 && (
               <div>
-                <p className="text-body-sm text-gray-600">Total Loss</p>
-                <p className="text-heading-md font-semibold text-red-700 flex items-center gap-2">
+                <p className="text-body-sm text-slate-600">Total Loss</p>
+                <p className="text-heading-md font-semibold text-error-700 flex items-center gap-2">
                   <TrendingDown className="h-5 w-5" />
                   {formatCurrency(totalLoss)}
                 </p>
@@ -91,9 +91,9 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
       )}
 
       {properties.length === 0 ? (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
-          <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-body-md text-gray-600 mb-4">No properties added yet</p>
+        <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+          <Home className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <p className="text-body-md text-slate-600 mb-4">No properties added yet</p>
           {onAddProperty && (
             <Button onClick={onAddProperty}>Add First Property</Button>
           )}
@@ -107,25 +107,25 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
             return (
               <div
                 key={property.id || index}
-                className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gold-300 transition-colors"
+                className="bg-white rounded-xl border border-slate-200 p-6 hover:border-gold-300 transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h4 className="text-body-md font-semibold text-gray-800">
                       Property #{index + 1}
                     </h4>
-                    <p className="text-body-sm text-gray-600 mt-1">
+                    <p className="text-body-sm text-slate-600 mt-1">
                       {getPropertyTypeLabel(property.propertyType)}
                     </p>
                     {property.propertyAddress && (
-                      <p className="text-body-sm text-gray-500 mt-1">{property.propertyAddress}</p>
+                      <p className="text-body-sm text-slate-500 mt-1">{property.propertyAddress}</p>
                     )}
                   </div>
                   <div className="flex gap-2">
                     {onEditProperty && (
                       <button
                         onClick={() => onEditProperty(property, index)}
-                        className="p-2 text-gray-400 hover:text-gold-600 rounded-lg hover:bg-gold-50"
+                        className="p-2 text-slate-400 hover:text-gold-600 rounded-xl hover:bg-gold-50"
                         aria-label="Edit property"
                       >
                         <Edit2 className="h-4 w-4" />
@@ -134,7 +134,7 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
                     {onDeleteProperty && (
                       <button
                         onClick={() => onDeleteProperty(property.id || index)}
-                        className="p-2 text-gray-400 hover:text-error-600 rounded-lg hover:bg-error-50"
+                        className="p-2 text-slate-400 hover:text-error-600 rounded-xl hover:bg-error-50"
                         aria-label="Delete property"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -145,37 +145,37 @@ const HousePropertyBreakdown = ({ properties = [], onAddProperty, onEditProperty
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   <div>
-                    <p className="text-body-sm text-gray-600">Rental Income</p>
+                    <p className="text-body-sm text-slate-600">Rental Income</p>
                     <p className="text-body-md font-semibold text-gray-800">
                       {formatCurrency(property.annualRentalIncome || 0)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-body-sm text-gray-600">Municipal Taxes</p>
+                    <p className="text-body-sm text-slate-600">Municipal Taxes</p>
                     <p className="text-body-md font-semibold text-gray-800">
                       {formatCurrency(property.municipalTaxes || 0)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-body-sm text-gray-600">Interest on Loan</p>
+                    <p className="text-body-sm text-slate-600">Interest on Loan</p>
                     <p className="text-body-md font-semibold text-gray-800">
                       {formatCurrency(property.interestOnLoan || 0)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-body-sm text-gray-600">Pre-construction Interest</p>
+                    <p className="text-body-sm text-slate-600">Pre-construction Interest</p>
                     <p className="text-body-md font-semibold text-gray-800">
                       {formatCurrency(property.preConstructionInterest || 0)}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-slate-200">
                   <div className="flex items-center justify-between">
-                    <p className="text-body-sm text-gray-600">Net Income / Loss</p>
+                    <p className="text-body-sm text-slate-600">Net Income / Loss</p>
                     <p
                       className={`text-heading-md font-semibold flex items-center gap-2 ${
-                        isLoss ? 'text-red-700' : 'text-green-700'
+                        isLoss ? 'text-error-700' : 'text-green-700'
                       }`}
                     >
                       {isLoss ? <TrendingDown className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}

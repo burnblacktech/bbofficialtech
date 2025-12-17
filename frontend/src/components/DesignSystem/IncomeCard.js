@@ -133,7 +133,7 @@ export const IncomeCard = ({
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3 flex-1">
           {Icon && (
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-500 to-amber-500 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-500 to-amber-500 flex items-center justify-center flex-shrink-0">
               <Icon className="w-6 h-6 text-white" />
             </div>
           )}
@@ -163,7 +163,7 @@ export const IncomeCard = ({
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Status Badge - newUI.md Section 10.1.1 */}
           <div className={cn(
-            'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium',
+            'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-medium',
             statusConfig.bg,
             statusConfig.color
           )}>
@@ -179,7 +179,7 @@ export const IncomeCard = ({
           {/* Expand/Collapse Button */}
           <button
             onClick={toggleExpand}
-            className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+            className="p-1.5 rounded-xl hover:bg-neutral-100 transition-colors"
             aria-label={isExpanded ? 'Collapse card' : 'Expand card'}
           >
             {isExpanded ? (
@@ -221,7 +221,7 @@ export const IncomeCard = ({
             <div className="pt-4 mt-4 border-t border-neutral-200">
               {/* Data Source Banner - newUI.md Section 10.1.2 */}
               {dataSource && (
-                <div className="mb-6 p-3 rounded-lg bg-info-light border border-info-500/20 flex items-center justify-between">
+                <div className="mb-6 p-3 rounded-xl bg-info-light border border-info-500/20 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-info-base" />
                     <span className="text-body-regular text-info-base">
@@ -253,7 +253,7 @@ export const IncomeCard = ({
                       )}
 
                       {/* Data Table - newUI.md Section 10.1.2 */}
-                      <div className="bg-neutral-50 rounded-lg overflow-hidden">
+                      <div className="bg-neutral-50 rounded-xl overflow-hidden">
                         <div className="divide-y divide-neutral-200">
                           {section.rows.map((row, rowIndex) => (
                             <div
@@ -300,7 +300,7 @@ export const IncomeCard = ({
               {Object.keys(summary).length > 0 && (
                 <div className="mt-6 pt-6 border-t border-neutral-200">
                   <h4 className="text-heading-4 font-semibold text-neutral-900 mb-4">SUMMARY</h4>
-                  <div className="bg-neutral-50 rounded-lg p-4 space-y-3">
+                  <div className="bg-neutral-50 rounded-xl p-4 space-y-3">
                     {Object.entries(summary).map(([key, value]) => (
                       <div
                         key={key}
@@ -309,7 +309,7 @@ export const IncomeCard = ({
                         <span className="text-body-regular text-neutral-700">{key}</span>
                         <div className="flex items-center gap-2">
                           {value.locked && (
-                            <span className="text-sm" title="Auto-calculated">🔒</span>
+                            <span className="text-body-regular" title="Auto-calculated">🔒</span>
                           )}
                           <span className="text-body-regular font-semibold text-neutral-900 tabular-nums">
                             {formatAmount(value.amount || value)}

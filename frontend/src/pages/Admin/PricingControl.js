@@ -192,7 +192,7 @@ const PricingControl = () => {
             </Typography.Body>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">
+            <button className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors">
               Export Pricing Report
             </button>
           </div>
@@ -217,7 +217,7 @@ const PricingControl = () => {
                     type="number"
                     value={pricingData.endUserFilingFee}
                     onChange={(e) => handleSaveEndUserFee(parseInt(e.target.value))}
-                    className="w-32 px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-32 px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                   <Typography.Small className="text-neutral-600">
                     INR per filing
@@ -237,7 +237,7 @@ const PricingControl = () => {
                     type="number"
                     value={pricingData.expertReviewFee}
                     onChange={(e) => handleSaveExpertReviewFee(parseInt(e.target.value))}
-                    className="w-32 px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-32 px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                   <Typography.Small className="text-neutral-600">
                     INR per review
@@ -261,7 +261,7 @@ const PricingControl = () => {
               </CardTitle>
               <button
                 onClick={() => setShowAddPlan(true)}
-                className="px-4 py-2 bg-secondary-500 text-white rounded-lg text-sm font-medium hover:bg-secondary-600 transition-colors flex items-center space-x-2"
+                className="px-4 py-2 bg-secondary-500 text-white rounded-xl text-body-regular font-medium hover:bg-secondary-600 transition-colors flex items-center space-x-2"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Plan</span>
@@ -276,12 +276,12 @@ const PricingControl = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="border border-neutral-200 rounded-lg p-6"
+                  className="border border-neutral-200 rounded-xl p-6"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <Typography.H4 className="mb-2">{plan.name}</Typography.H4>
-                      <div className="flex items-center space-x-4 text-sm text-neutral-600">
+                      <div className="flex items-center space-x-4 text-body-regular text-neutral-600">
                         <span>Up to {plan.clientLimit} clients</span>
                         <span>•</span>
                         <span>{plan.activeSubscribers} active subscribers</span>
@@ -361,7 +361,7 @@ const PricingControl = () => {
           <CardContent>
             <div className="space-y-4">
               {pricingData.pricingHistory.map((entry, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                   <div>
                     <Typography.Small className="font-medium text-neutral-700">
                       {entry.date.toLocaleDateString()}
@@ -401,7 +401,7 @@ const PricingControl = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
@@ -424,7 +424,7 @@ const PricingControl = () => {
                       type="text"
                       value={newPlan.name}
                       onChange={(e) => setNewPlan(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter plan name"
                     />
                   </div>
@@ -438,7 +438,7 @@ const PricingControl = () => {
                         type="number"
                         value={newPlan.clientLimit}
                         onChange={(e) => setNewPlan(prev => ({ ...prev, clientLimit: e.target.value }))}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="50"
                       />
                     </div>
@@ -450,7 +450,7 @@ const PricingControl = () => {
                         type="number"
                         value={newPlan.monthlyPrice}
                         onChange={(e) => setNewPlan(prev => ({ ...prev, monthlyPrice: e.target.value }))}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="5000"
                       />
                     </div>
@@ -462,7 +462,7 @@ const PricingControl = () => {
                         type="number"
                         value={newPlan.annualPrice}
                         onChange={(e) => setNewPlan(prev => ({ ...prev, annualPrice: e.target.value }))}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="50000"
                       />
                     </div>
@@ -475,7 +475,7 @@ const PricingControl = () => {
                     <textarea
                       value={newPlan.features.join('\n')}
                       onChange={(e) => setNewPlan(prev => ({ ...prev, features: e.target.value.split('\n').filter(f => f.trim()) }))}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       rows={4}
                       placeholder="Enter features, one per line"
                     />
@@ -485,13 +485,13 @@ const PricingControl = () => {
                 <div className="flex items-center justify-end space-x-3 pt-6 border-t mt-6">
                   <button
                     onClick={() => setShowAddPlan(false)}
-                    className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                    className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleAddPlan}
-                    className="px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 bg-secondary-500 text-white rounded-xl hover:bg-secondary-600 transition-colors flex items-center space-x-2"
                   >
                     <Save className="w-4 h-4" />
                     <span>Add Plan</span>

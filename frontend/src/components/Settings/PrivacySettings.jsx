@@ -44,22 +44,22 @@ const PrivacySettings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-heading-md font-semibold text-gray-900 mb-1">Privacy Settings</h3>
-        <p className="text-body-sm text-gray-600">
+        <h3 className="text-heading-md font-semibold text-slate-900 mb-1">Privacy Settings</h3>
+        <p className="text-body-sm text-slate-600">
           Control how your data is used and shared
         </p>
       </div>
 
       {/* Data Sharing */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
-            <Shield className="h-5 w-5 text-gray-600 mt-0.5" />
+            <Shield className="h-5 w-5 text-slate-600 mt-0.5" />
             <div>
-              <label className="block text-body-sm font-medium text-gray-700">
+              <label className="block text-body-sm font-medium text-slate-700">
                 Data Sharing for Service Improvement
               </label>
-              <p className="text-body-xs text-gray-500 mt-1">
+              <p className="text-body-xs text-slate-500 mt-1">
                 Allow anonymized data to be used for improving our services. Your personal information is never shared.
               </p>
             </div>
@@ -73,21 +73,21 @@ const PrivacySettings = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Marketing Communications */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
-            <Mail className="h-5 w-5 text-gray-600 mt-0.5" />
+            <Mail className="h-5 w-5 text-slate-600 mt-0.5" />
             <div>
-              <label className="block text-body-sm font-medium text-gray-700">
+              <label className="block text-body-sm font-medium text-slate-700">
                 Marketing Communications
               </label>
-              <p className="text-body-xs text-gray-500 mt-1">
+              <p className="text-body-xs text-slate-500 mt-1">
                 Receive emails about new features, tax tips, and special offers
               </p>
             </div>
@@ -101,21 +101,21 @@ const PrivacySettings = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Analytics Opt-out */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
-            <Shield className="h-5 w-5 text-gray-600 mt-0.5" />
+            <Shield className="h-5 w-5 text-slate-600 mt-0.5" />
             <div>
-              <label className="block text-body-sm font-medium text-gray-700">
+              <label className="block text-body-sm font-medium text-slate-700">
                 Analytics Opt-out
               </label>
-              <p className="text-body-xs text-gray-500 mt-1">
+              <p className="text-body-xs text-slate-500 mt-1">
                 Opt out of usage analytics tracking
               </p>
             </div>
@@ -129,13 +129,13 @@ const PrivacySettings = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Privacy Notice */}
-      <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+      <div className="bg-info-50 border border-info-200 rounded-xl p-4">
         <p className="text-body-xs text-info-800">
           <strong>Note:</strong> Your tax data is always encrypted and secure. These settings only control
           how anonymized, aggregated data is used for service improvement. Your personal and financial
@@ -144,11 +144,11 @@ const PrivacySettings = () => {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-slate-200">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isSaving ? (
             <>

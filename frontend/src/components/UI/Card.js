@@ -26,28 +26,28 @@ const Card = React.forwardRef(({
 
   const shadowClasses = {
     none: '',
-    sm: 'shadow-sm',
-    md: 'shadow-md',
-    lg: 'shadow-lg',
-    xl: 'shadow-xl',
+    sm: 'shadow-elevation-1',
+    md: 'shadow-elevation-2',
+    lg: 'shadow-elevation-3',
+    xl: 'shadow-elevation-4',
   };
 
   const roundedClasses = {
     none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
+    sm: 'rounded-xl',
+    md: 'rounded-xl',
+    lg: 'rounded-xl',
     xl: 'rounded-xl',
     full: 'rounded-full',
   };
 
   const baseClasses = cn(
     'bg-white',
-    border && 'border border-gray-200',
+    border && 'border border-slate-200',
     paddingClasses[padding],
     shadowClasses[shadow],
     roundedClasses[rounded],
-    hover && 'hover:shadow-md transition-shadow duration-200',
+    hover && 'hover:shadow-elevation-2 transition-shadow duration-200',
     className,
   );
 

@@ -72,7 +72,7 @@ const DataProvenanceIndicator = ({
       <span className={`${config.color} font-medium`}>{config.label}</span>
 
       {confidence !== undefined && confidence !== null && (
-        <span className="text-slate-500 text-xs">
+        <span className="text-slate-500 text-body-small">
           ({Math.round(confidence * 100)}%)
         </span>
       )}
@@ -88,7 +88,7 @@ const DataProvenanceIndicator = ({
       )}
 
       {showDetails && lastUpdated && (
-        <span className="text-slate-400 text-xs ml-1">
+        <span className="text-slate-400 text-body-small ml-1">
           • {new Date(lastUpdated).toLocaleDateString()}
         </span>
       )}

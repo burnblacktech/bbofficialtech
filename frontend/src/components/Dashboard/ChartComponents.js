@@ -53,12 +53,12 @@ const chartVariants = {
 const CustomTooltip = ({ active, payload, label, labelFormatter }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-900">
+      <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-elevation-3">
+        <p className="font-medium text-slate-900">
           {labelFormatter ? labelFormatter(label) : label}
         </p>
         {payload.map((entry, index) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
+          <p key={index} className="text-body-regular" style={{ color: entry.color }}>
             {`${entry.name}: ${entry.value}`}
           </p>
         ))}
@@ -337,7 +337,7 @@ export const MetricCard = ({
       variants={chartVariants}
       initial="hidden"
       animate="visible"
-      className={`bg-white rounded-lg shadow-md border border-neutral-200 p-6 hover:shadow-lg transition-all duration-200 ${
+      className={`bg-white rounded-xl shadow-elevation-2 border border-neutral-200 p-6 hover:shadow-elevation-3 transition-all duration-200 ${
         onClick ? 'cursor-pointer' : ''
       }`}
       onClick={onClick}
@@ -345,8 +345,8 @@ export const MetricCard = ({
     >
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-neutral-600 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-neutral-900">{value}</p>
+          <p className="text-body-regular font-medium text-neutral-600 mb-1">{title}</p>
+          <p className="text-heading-2 font-bold text-neutral-900">{value}</p>
           {change && (
             <p className={`text-sm ${changeColor} flex items-center mt-1`}>
               <span className="mr-1">
@@ -357,7 +357,7 @@ export const MetricCard = ({
           )}
         </div>
         {Icon && (
-          <div className={'p-3 rounded-lg'} style={{ backgroundColor: `${color}20` }}>
+          <div className={'p-3 rounded-xl'} style={{ backgroundColor: `${color}20` }}>
             <Icon className="w-6 h-6" style={{ color }} />
           </div>
         )}

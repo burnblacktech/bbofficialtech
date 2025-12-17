@@ -265,7 +265,7 @@ export const LazyImage = React.memo(({
   if (hasError) {
     return (
       <div className={`bg-gray-200 flex items-center justify-center ${className}`} {...props}>
-        <span className="text-gray-500 text-sm">Failed to load image</span>
+        <span className="text-gray-500 text-body-regular">Failed to load image</span>
       </div>
     );
   }

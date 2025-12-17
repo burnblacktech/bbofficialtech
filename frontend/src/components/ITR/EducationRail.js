@@ -92,31 +92,31 @@ const EducationRail = ({ term, fieldPath }) => {
         onClick={() => setShowExplanation(!showExplanation)}
       >
         <HelpCircle className="w-4 h-4 mr-1" />
-        <span className="text-xs font-medium">{definition.title}</span>
+        <span className="text-body-small font-medium">{definition.title}</span>
       </button>
 
       {/* Explanation Tooltip/Modal */}
       {showExplanation && (
-        <div className="absolute bottom-full left-0 mb-2 w-80 p-4 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+        <div className="absolute bottom-full left-0 mb-2 w-80 p-4 bg-white border border-slate-200 rounded-xl shadow-elevation-4 z-50">
           <div className="flex items-start justify-between mb-2">
-            <h4 className="text-sm font-semibold text-gray-900">{definition.title}</h4>
+            <h4 className="text-sm font-semibold text-slate-900">{definition.title}</h4>
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-600"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          <p className="text-xs text-gray-700 mb-3">{definition.full}</p>
+          <p className="text-body-small text-slate-700 mb-3">{definition.full}</p>
 
           {definition.link && (
             <a
               href={definition.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-xs text-blue-600 hover:text-blue-700"
+              className="inline-flex items-center text-body-small text-blue-600 hover:text-blue-700"
             >
               <BookOpen className="w-3 h-3 mr-1" />
               <span>Learn More</span>
@@ -164,7 +164,7 @@ export const InlineEducation = ({ term, children }) => {
         <HelpCircle className="w-3 h-3" />
       </button>
       {showTooltip && (
-        <span className="absolute ml-2 mt-6 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg z-50">
+        <span className="absolute ml-2 mt-6 px-2 py-1 bg-gray-900 text-white text-body-small rounded shadow-elevation-3 z-50">
           {definition}
         </span>
       )}

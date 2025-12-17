@@ -126,6 +126,11 @@ const User = sequelize.define('User', {
     field: 'date_of_birth',
     comment: 'User date of birth for tax calculations',
   },
+  gender: {
+    type: DataTypes.ENUM('MALE', 'FEMALE', 'OTHER'),
+    allowNull: true,
+    comment: 'User gender for profile and tax calculations',
+  },
   metadata: {
     type: DataTypes.JSONB,
     allowNull: true,

@@ -136,7 +136,7 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center gap-2">
           <FileText className="w-5 h-5" />
           Tax Audit Information
         </h3>
@@ -144,17 +144,17 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
 
       {/* Audit Applicability Check */}
       {auditApplicability.applicable && (
-        <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+        <div className="border border-yellow-200 rounded-xl p-4 bg-yellow-50">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <h4 className="font-semibold text-yellow-900 mb-2">Tax Audit is Applicable (Section 44AB)</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm text-yellow-800">
+              <ul className="list-disc list-inside space-y-1 text-body-regular text-yellow-800">
                 {auditApplicability.reasons.map((reason, index) => (
                   <li key={index}>{reason}</li>
                 ))}
               </ul>
-              <p className="text-xs text-yellow-700 mt-2">
+              <p className="text-body-small text-yellow-700 mt-2">
                 You must get your accounts audited by a Chartered Accountant and file Form 3CD.
               </p>
             </div>
@@ -163,12 +163,12 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
       )}
 
       {!auditApplicability.applicable && (
-        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+        <div className="border border-green-200 rounded-xl p-4 bg-green-50">
           <div className="flex items-center gap-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
             <div>
               <h4 className="font-semibold text-green-900">Tax Audit Not Applicable</h4>
-              <p className="text-sm text-green-800 mt-1">
+              <p className="text-body-regular text-green-800 mt-1">
                 Based on your turnover/receipts and profit margins, tax audit is not required.
               </p>
             </div>
@@ -177,7 +177,7 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
       )}
 
       {/* Audit Information Form */}
-      <div className="border border-gray-200 rounded-lg p-6 bg-white">
+      <div className="border border-slate-200 rounded-xl p-6 bg-white">
         <div className="space-y-6">
           {/* Is Audit Applicable */}
           <div>
@@ -188,12 +188,12 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
                 onChange={(e) => handleChange('isAuditApplicable', e.target.checked)}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
               />
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-body-regular font-medium text-slate-700">
                 Tax audit is applicable (Section 44AB)
               </span>
             </label>
             {auditInfo.isAuditApplicable && auditInfo.auditReason && (
-              <p className="text-xs text-gray-600 mt-1 ml-6">{auditInfo.auditReason}</p>
+              <p className="text-body-small text-slate-600 mt-1 ml-6">{auditInfo.auditReason}</p>
             )}
           </div>
 
@@ -201,30 +201,30 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
             <>
               {/* Audit Report Details */}
               <div className="border-t pt-4">
-                <h4 className="font-semibold text-gray-900 mb-4">Audit Report Details</h4>
+                <h4 className="font-semibold text-slate-900 mb-4">Audit Report Details</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       Audit Report Number *
                     </label>
                     <input
                       type="text"
                       value={auditInfo.auditReportNumber || ''}
                       onChange={(e) => handleChange('auditReportNumber', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="Enter audit report number"
                       required={auditInfo.isAuditApplicable}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       Date of Audit Report *
                     </label>
                     <input
                       type="date"
                       value={auditInfo.auditReportDate || ''}
                       onChange={(e) => handleChange('auditReportDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       required={auditInfo.isAuditApplicable}
                       max={new Date().toISOString().split('T')[0]}
                     />
@@ -233,11 +233,11 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
 
                 {/* Audit Report Upload */}
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     Upload Audit Report (PDF)
                   </label>
                   <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer transition-colors">
                       <Upload className="w-4 h-4" />
                       <span>Choose File</span>
                       <input
@@ -248,64 +248,64 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
                       />
                     </label>
                     {auditInfo.auditReportFile && (
-                      <span className="text-sm text-gray-600 flex items-center gap-2">
+                      <span className="text-body-regular text-slate-600 flex items-center gap-2">
                         <FileText className="w-4 h-4" />
                         {auditInfo.auditReportFile}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Maximum file size: 5MB</p>
+                  <p className="text-body-small text-slate-500 mt-1">Maximum file size: 5MB</p>
                 </div>
               </div>
 
               {/* CA Details */}
               <div className="border-t pt-4">
-                <h4 className="font-semibold text-gray-900 mb-4">Chartered Accountant Details</h4>
+                <h4 className="font-semibold text-slate-900 mb-4">Chartered Accountant Details</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       CA Name *
                     </label>
                     <input
                       type="text"
                       value={auditInfo.caDetails?.caName || ''}
                       onChange={(e) => handleCAChange('caName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       required={auditInfo.isAuditApplicable}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       Membership Number *
                     </label>
                     <input
                       type="text"
                       value={auditInfo.caDetails?.membershipNumber || ''}
                       onChange={(e) => handleCAChange('membershipNumber', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="ICAI membership number"
                       required={auditInfo.isAuditApplicable}
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       CA Firm Name
                     </label>
                     <input
                       type="text"
                       value={auditInfo.caDetails?.firmName || ''}
                       onChange={(e) => handleCAChange('firmName', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-body-regular font-medium text-slate-700 mb-1">
                       CA Firm Address
                     </label>
                     <textarea
                       value={auditInfo.caDetails?.firmAddress || ''}
                       onChange={(e) => handleCAChange('firmAddress', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       rows={2}
                     />
                   </div>
@@ -314,7 +314,7 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
 
               {/* Additional Information */}
               <div className="border-t pt-4">
-                <h4 className="font-semibold text-gray-900 mb-4">Additional Information</h4>
+                <h4 className="font-semibold text-slate-900 mb-4">Additional Information</h4>
                 <div className="space-y-3">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -323,7 +323,7 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
                       onChange={(e) => handleChange('bookOfAccountsMaintained', e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-body-regular text-slate-700">
                       Book of accounts maintained as per Income Tax Act
                     </span>
                   </label>
@@ -334,7 +334,7 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
                       onChange={(e) => handleChange('form3CDFiled', e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-gold-500"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-body-regular text-slate-700">
                       Form 3CD has been filed
                     </span>
                   </label>
@@ -342,12 +342,12 @@ const AuditInformationForm = ({ data, onUpdate, selectedITR, businessIncome, pro
               </div>
 
               {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <div className="flex items-start gap-2">
                   <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-blue-800">
+                  <div className="text-body-regular text-blue-800">
                     <p className="font-medium mb-1">Important:</p>
-                    <ul className="list-disc list-inside space-y-1 text-xs">
+                    <ul className="list-disc list-inside space-y-1 text-body-small">
                       <li>Audit report must be obtained before the due date of filing return</li>
                       <li>Form 3CD must be filed along with the audit report</li>
                       <li>Failure to get accounts audited may result in penalty</li>

@@ -88,19 +88,19 @@ const AdminAuditLogs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-black">Audit Logs</h1>
-              <p className="text-gray-700 mt-2">View and filter all system audit logs</p>
+              <h1 className="text-heading-1 font-bold text-black">Audit Logs</h1>
+              <p className="text-slate-700 mt-2">View and filter all system audit logs</p>
             </div>
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => refetch()}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 flex items-center space-x-2"
               >
                 <RefreshCw className="w-4 h-4" />
                 <span>Refresh</span>

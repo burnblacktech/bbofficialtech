@@ -43,10 +43,10 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
         };
       case 'low':
         return {
-          bg: 'bg-gray-100',
-          border: 'border-gray-200',
+          bg: 'bg-slate-100',
+          border: 'border-slate-200',
           text: 'text-gray-800',
-          icon: 'text-gray-600',
+          icon: 'text-slate-600',
           button: 'bg-gray-600 hover:bg-gray-700',
         };
       default:
@@ -68,16 +68,16 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`inline-flex items-center space-x-2 px-3 py-2 rounded-lg border ${colors.bg} ${colors.border} ${colors.text} max-w-sm`}
+      className={`inline-flex items-center space-x-2 px-3 py-2 rounded-xl border ${colors.bg} ${colors.border} ${colors.text} max-w-sm`}
     >
       {/* Icon */}
       <Icon className={`h-4 w-4 ${colors.icon} flex-shrink-0`} />
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{suggestion.title}</p>
+        <p className="text-body-regular font-medium truncate">{suggestion.title}</p>
         {suggestion.estimatedSavings && (
-          <p className="text-xs opacity-75">
+          <p className="text-body-small opacity-75">
             Save ₹{suggestion.estimatedSavings.toLocaleString()}
           </p>
         )}
@@ -98,7 +98,7 @@ const AISuggestionChip = ({ suggestion, onClick, onDismiss }) => {
       {onDismiss && (
         <button
           onClick={onDismiss}
-          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
         >
           <X className="h-3 w-3" />
         </button>

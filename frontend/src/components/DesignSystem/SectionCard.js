@@ -286,7 +286,7 @@ const SectionCard = ({
               {Icon && (
                 <motion.div
                   className={cn(
-                    'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                    'w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0',
                     'bg-gradient-to-br from-neutral-100 to-neutral-50',
                     'transition-colors duration-200',
                     isHovered && 'from-gold-100 to-gold-100',
@@ -330,20 +330,20 @@ const SectionCard = ({
 
             {/* Secondary Value or Description */}
             {secondaryValue && (
-              <p className="text-xs text-neutral-500 mt-0.5">{secondaryValue}</p>
+              <p className="text-body-small text-neutral-500 mt-0.5">{secondaryValue}</p>
             )}
             {!primaryValue && description && (
-              <p className="text-xs text-neutral-500 line-clamp-2">{description}</p>
+              <p className="text-body-small text-neutral-500 line-clamp-2">{description}</p>
             )}
             {/* Meta Text (from summary) */}
             {props.metaText && (
-              <p className="text-xs text-neutral-400 mt-0.5">{props.metaText}</p>
+              <p className="text-body-small text-neutral-400 mt-0.5">{props.metaText}</p>
             )}
           </div>
 
           {/* Expand hint */}
           <motion.div
-            className="flex items-center justify-end mt-1 text-xs text-neutral-400"
+            className="flex items-center justify-end mt-1 text-body-small text-neutral-400"
             animate={{ x: isHovered ? 4 : 0, opacity: isHovered ? 1 : 0.6 }}
             transition={{ duration: 0.2 }}
           >
@@ -401,7 +401,7 @@ const SectionCard = ({
               )}
               <div>
                 <motion.h2
-                  className="text-xl font-bold text-neutral-900"
+                  className="text-heading-3 font-bold text-neutral-900"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
@@ -410,7 +410,7 @@ const SectionCard = ({
                 </motion.h2>
                 {description && (
                   <motion.p
-                    className="text-sm text-neutral-500 mt-0.5"
+                    className="text-body-regular text-neutral-500 mt-0.5"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15 }}
@@ -430,8 +430,8 @@ const SectionCard = ({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <p className="text-xs font-medium text-neutral-400 uppercase tracking-wide">Total</p>
-                  <p className="text-2xl font-bold text-neutral-900 tabular-nums">
+                  <p className="text-body-small font-medium text-neutral-400 uppercase tracking-wide">Total</p>
+                  <p className="text-heading-2 font-bold text-neutral-900 tabular-nums">
                     {formatCurrency(primaryValue)}
                   </p>
                 </motion.div>
@@ -491,7 +491,7 @@ const SectionCard = ({
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <p className="text-sm">No content available</p>
+                    <p className="text-body-regular">No content available</p>
                   </motion.div>
                 );
               }
@@ -514,7 +514,7 @@ const SectionCard = ({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.2 }}
               >
-                <p className="text-sm">No content available</p>
+                <p className="text-body-regular">No content available</p>
               </motion.div>
             )}
           </motion.div>

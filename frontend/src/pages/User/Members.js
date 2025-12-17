@@ -97,11 +97,11 @@ const Members = () => {
       case 'moderator':
         return <Shield className="h-4 w-4 text-blue-600" />;
       case 'member':
-        return <User className="h-4 w-4 text-gray-600" />;
+        return <User className="h-4 w-4 text-slate-600" />;
       case 'premium':
         return <Star className="h-4 w-4 text-purple-600" />;
       default:
-        return <User className="h-4 w-4 text-gray-600" />;
+        return <User className="h-4 w-4 text-slate-600" />;
     }
   };
 
@@ -112,11 +112,11 @@ const Members = () => {
       case 'moderator':
         return 'bg-blue-100 text-blue-800';
       case 'member':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
       case 'premium':
         return 'bg-purple-100 text-purple-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
     }
   };
 
@@ -125,13 +125,13 @@ const Members = () => {
       case 'active':
         return 'bg-green-100 text-green-800';
       case 'inactive':
-        return 'bg-red-100 text-red-800';
+        return 'bg-error-100 text-red-800';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'suspended':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
     }
   };
 
@@ -169,7 +169,7 @@ const Members = () => {
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
-          <p className="text-sm text-neutral-600">Loading members...</p>
+          <p className="text-body-regular text-neutral-600">Loading members...</p>
         </div>
       </div>
     );
@@ -184,22 +184,22 @@ const Members = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-700" />
+                <ArrowLeft className="h-5 w-5 text-slate-700" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">Members</h1>
-                <p className="text-xs text-gray-500">{filteredMembers.length} members</p>
+                <h1 className="text-heading-4 font-semibold text-slate-900">Members</h1>
+                <p className="text-body-small text-slate-500">{filteredMembers.length} members</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="p-2 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
               >
-                <Filter className="h-5 w-5 text-gray-700" />
+                <Filter className="h-5 w-5 text-slate-700" />
               </button>
             </div>
           </div>
@@ -210,26 +210,26 @@ const Members = () => {
       <main className="px-4 py-4 space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
             type="text"
             placeholder="Search members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+          <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
             {/* Role Filter */}
             <div>
-              <label className="text-xs font-medium text-gray-700 mb-2 block">Role</label>
+              <label className="text-body-small font-medium text-slate-700 mb-2 block">Role</label>
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-slate-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {roleOptions.map(role => (
                   <option key={role} value={role}>
@@ -241,11 +241,11 @@ const Members = () => {
 
             {/* Status Filter */}
             <div>
-              <label className="text-xs font-medium text-gray-700 mb-2 block">Status</label>
+              <label className="text-body-small font-medium text-slate-700 mb-2 block">Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-slate-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {statusOptions.map(status => (
                   <option key={status} value={status}>
@@ -260,10 +260,10 @@ const Members = () => {
         {/* Members List */}
         <div className="space-y-3">
           {filteredMembers.length === 0 ? (
-            <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No members found</h3>
-              <p className="text-sm text-gray-500">
+            <div className="bg-white rounded-xl p-8 text-center border border-slate-200">
+              <Users className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No members found</h3>
+              <p className="text-body-regular text-slate-500">
                 {searchTerm || filterRole !== 'all' || filterStatus !== 'all'
                   ? 'No members match your filters'
                   : 'No members available'}
@@ -273,16 +273,16 @@ const Members = () => {
             filteredMembers.map((member) => (
               <div
                 key={member.id}
-                className="bg-white rounded-xl p-4 border border-gray-100 hover:shadow-sm transition-shadow"
+                className="bg-white rounded-xl p-4 border border-gray-100 hover:shadow-elevation-1 transition-shadow"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start space-x-3 flex-1">
-                    <div className="p-2 rounded-lg bg-gray-50">
+                    <div className="p-2 rounded-xl bg-slate-50">
                       {getRoleIcon(member.role)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-gray-900">{member.name}</h3>
-                      <p className="text-xs text-gray-500">{member.email}</p>
+                      <h3 className="text-sm font-semibold text-slate-900">{member.name}</h3>
+                      <p className="text-body-small text-slate-500">{member.email}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className={`px-2 py-1 text-xs rounded-full font-medium ${getRoleColor(member.role)}`}>
                           {member.role}
@@ -298,39 +298,39 @@ const Members = () => {
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => setSelectedMember(member)}
-                      className="p-1 rounded hover:bg-gray-100 active:scale-95 transition-transform"
+                      className="p-1 rounded hover:bg-slate-100 active:scale-95 transition-transform"
                       title="More options"
                     >
-                      <MoreVertical className="h-4 w-4 text-gray-600" />
+                      <MoreVertical className="h-4 w-4 text-slate-600" />
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 gap-3 text-body-small">
                   {member.phone && (
                     <div className="flex items-center space-x-1">
-                      <Phone className="h-3 w-3 text-gray-400" />
-                      <span className="text-gray-600">{member.phone}</span>
+                      <Phone className="h-3 w-3 text-slate-400" />
+                      <span className="text-slate-600">{member.phone}</span>
                     </div>
                   )}
                   <div className="flex items-center space-x-1">
-                    <Calendar className="h-3 w-3 text-gray-400" />
-                    <span className="text-gray-600">
+                    <Calendar className="h-3 w-3 text-slate-400" />
+                    <span className="text-slate-600">
                       Joined {new Date(member.created_at).toLocaleDateString()}
                     </span>
                   </div>
                   {member.last_active && (
                     <div className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3 text-gray-400" />
-                      <span className="text-gray-600">
+                      <Clock className="h-3 w-3 text-slate-400" />
+                      <span className="text-slate-600">
                         Last active {new Date(member.last_active).toLocaleDateString()}
                       </span>
                     </div>
                   )}
                   {member.total_filings > 0 && (
                     <div className="flex items-center space-x-1">
-                      <FileText className="h-3 w-3 text-gray-400" />
-                      <span className="text-gray-600">{member.total_filings} filings</span>
+                      <FileText className="h-3 w-3 text-slate-400" />
+                      <span className="text-slate-600">{member.total_filings} filings</span>
                     </div>
                   )}
                 </div>
@@ -345,19 +345,19 @@ const Members = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 p-4">
           <div className="bg-white rounded-t-xl md:rounded-xl w-full max-w-md">
             <div className="sticky top-0 bg-white border-b px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Member Actions</h2>
+              <h2 className="text-heading-4 font-semibold text-slate-900">Member Actions</h2>
               <button
                 onClick={() => setSelectedMember(null)}
-                className="p-1 rounded-lg hover:bg-gray-100"
+                className="p-1 rounded-xl hover:bg-slate-100"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-slate-500" />
               </button>
             </div>
 
             <div className="p-4 space-y-3">
               {/* Status Actions */}
               <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-2">Change Status</h3>
+                <h3 className="text-sm font-medium text-slate-900 mb-2">Change Status</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {['active', 'inactive', 'pending', 'suspended'].map(status => (
                     <button
@@ -367,10 +367,10 @@ const Members = () => {
                         setSelectedMember(null);
                       }}
                       disabled={selectedMember.status === status}
-                      className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${
                         selectedMember.status === status
                           ? 'bg-blue-100 text-blue-700 cursor-not-allowed'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
                       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -386,7 +386,7 @@ const Members = () => {
                     handleDeleteMember(selectedMember.id);
                     setSelectedMember(null);
                   }}
-                  className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 active:scale-95 transition-transform"
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-xl hover:bg-red-700 active:scale-95 transition-transform"
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <Trash2 className="h-4 w-4" />
@@ -400,32 +400,32 @@ const Members = () => {
       )}
 
       {/* Bottom Navigation - Mobile Only */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <FileText className="h-5 w-5 mb-1" />
-            <span className="text-xs">Dashboard</span>
+            <span className="text-body-small">Dashboard</span>
           </button>
           <button className="flex flex-col items-center p-2 text-blue-600">
             <Users className="h-5 w-5 mb-1" />
-            <span className="text-xs font-medium">Members</span>
+            <span className="text-body-small font-medium">Members</span>
           </button>
           <button
             onClick={() => navigate('/profile')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
-            <span className="text-xs">Profile</span>
+            <span className="text-body-small">Profile</span>
           </button>
           <button
             onClick={() => navigate('/settings')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <Settings className="h-5 w-5 mb-1" />
-            <span className="text-xs">Settings</span>
+            <span className="text-body-small">Settings</span>
           </button>
         </div>
       </nav>

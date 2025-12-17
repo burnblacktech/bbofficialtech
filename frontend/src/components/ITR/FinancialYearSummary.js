@@ -66,22 +66,22 @@ const FinancialYearSummary = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
                 className={cn(
-                  'relative rounded-lg p-4 border-2 transition-all',
+                  'relative rounded-xl p-4 border-2 transition-all',
                   item.isHighlight
-                    ? 'border-gold-300 bg-gradient-to-br from-gold-50 to-white shadow-md'
+                    ? 'border-gold-300 bg-gradient-to-br from-gold-50 to-white shadow-elevation-2'
                     : 'border-neutral-200 bg-white hover:border-neutral-300',
                 )}
               >
                 {/* Icon - Compact */}
                 <div className={cn(
-                  'w-10 h-10 rounded-lg flex items-center justify-center mb-3',
+                  'w-10 h-10 rounded-xl flex items-center justify-center mb-3',
                   item.bgColor,
                 )}>
                   <Icon className={cn('w-5 h-5', item.color)} />
                 </div>
 
                 {/* Label - Compact */}
-                <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-1.5">
+                <p className="text-body-small font-medium text-neutral-500 uppercase tracking-wide mb-1.5">
                   {item.label}
                 </p>
 

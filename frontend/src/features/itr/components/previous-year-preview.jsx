@@ -28,12 +28,12 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
     if (!data) return null;
 
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center mb-4">
-          <div className="p-2 bg-blue-100 rounded-lg mr-3">
+          <div className="p-2 bg-blue-100 rounded-xl mr-3">
             <Icon className="h-5 w-5 text-blue-600" />
           </div>
-          <h3 className="text-heading-md text-gray-900">{title}</h3>
+          <h3 className="text-heading-md text-slate-900">{title}</h3>
         </div>
         <div className="space-y-2">
           {fields.map((field) => {
@@ -41,8 +41,8 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
             if (value === undefined || value === null || value === '') return null;
             return (
               <div key={field.key} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
-                <span className="text-body-sm text-gray-600">{field.label}:</span>
-                <span className="text-body-sm font-medium text-gray-900">
+                <span className="text-body-sm text-slate-600">{field.label}:</span>
+                <span className="text-body-sm font-medium text-slate-900">
                   {field.format ? field.format(value) : String(value)}
                 </span>
               </div>
@@ -55,11 +55,11 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
             <Loader className="h-8 w-8 animate-spin text-gold-500 mr-3" />
-            <span className="text-body-md text-gray-600">Loading previous year data...</span>
+            <span className="text-body-md text-slate-600">Loading previous year data...</span>
           </div>
         </div>
       </div>
@@ -68,9 +68,9 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+          <div className="bg-error-50 border border-error-200 rounded-xl p-6">
             <div className="flex items-start">
               <AlertCircle className="h-5 w-5 text-error-500 mt-0.5 mr-3" />
               <div>
@@ -80,7 +80,7 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
                 </p>
                 <button
                   onClick={() => navigate(-1)}
-                  className="text-sm font-medium text-error-600 hover:text-error-800"
+                  className="text-body-regular font-medium text-error-600 hover:text-error-800"
                 >
                   Go back
                 </button>
@@ -111,25 +111,25 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-4"
+            className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </button>
-          <h1 className="text-heading-2xl text-gray-900 mb-2">Preview Previous Year Data</h1>
-          <p className="text-body-md text-gray-600">
+          <h1 className="text-heading-2xl text-slate-900 mb-2">Preview Previous Year Data</h1>
+          <p className="text-body-md text-slate-600">
             Review the data that will be copied from Assessment Year {data.assessmentYear}
           </p>
         </div>
 
         {/* Info Box */}
-        <div className="mb-6 bg-info-50 border border-info-200 rounded-lg p-4">
+        <div className="mb-6 bg-info-50 border border-info-200 rounded-xl p-4">
           <div className="flex">
             <AlertCircle className="h-5 w-5 text-info-600 flex-shrink-0 mt-0.5" />
             <div className="ml-3">
@@ -165,18 +165,18 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
 
           {/* Income */}
           {sections.income && previousData.income && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center mb-4">
-                <div className="p-2 bg-green-100 rounded-lg mr-3">
+                <div className="p-2 bg-green-100 rounded-xl mr-3">
                   <DollarSign className="h-5 w-5 text-green-600" />
                 </div>
-                <h3 className="text-heading-md text-gray-900">Income</h3>
+                <h3 className="text-heading-md text-slate-900">Income</h3>
               </div>
               <div className="space-y-3">
                 {previousData.income.salary && (
-                  <div className="p-3 bg-gray-50 rounded">
-                    <div className="text-body-sm font-medium text-gray-700 mb-1">Salary Income</div>
-                    <div className="text-body-md font-semibold text-gray-900">
+                  <div className="p-3 bg-slate-50 rounded">
+                    <div className="text-body-sm font-medium text-slate-700 mb-1">Salary Income</div>
+                    <div className="text-body-md font-semibold text-slate-900">
                       {formatCurrency(
                         previousData.income.salary.totalSalary ||
                         previousData.income.salary.total ||
@@ -186,9 +186,9 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
                   </div>
                 )}
                 {previousData.income.houseProperty && (
-                  <div className="p-3 bg-gray-50 rounded">
-                    <div className="text-body-sm font-medium text-gray-700 mb-1">House Property</div>
-                    <div className="text-body-md font-semibold text-gray-900">
+                  <div className="p-3 bg-slate-50 rounded">
+                    <div className="text-body-sm font-medium text-slate-700 mb-1">House Property</div>
+                    <div className="text-body-md font-semibold text-slate-900">
                       {formatCurrency(
                         previousData.income.houseProperty.netRentalIncome ||
                         previousData.income.houseProperty,
@@ -197,18 +197,18 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
                   </div>
                 )}
                 {previousData.income.capitalGains && (
-                  <div className="p-3 bg-gray-50 rounded">
-                    <div className="text-body-sm font-medium text-gray-700 mb-1">Capital Gains</div>
-                    <div className="text-body-md font-semibold text-gray-900">
+                  <div className="p-3 bg-slate-50 rounded">
+                    <div className="text-body-sm font-medium text-slate-700 mb-1">Capital Gains</div>
+                    <div className="text-body-md font-semibold text-slate-900">
                       STCG: {formatCurrency(previousData.income.capitalGains.shortTerm || 0)} •
                       LTCG: {formatCurrency(previousData.income.capitalGains.longTerm || 0)}
                     </div>
                   </div>
                 )}
                 {previousData.income.otherSources && (
-                  <div className="p-3 bg-gray-50 rounded">
-                    <div className="text-body-sm font-medium text-gray-700 mb-1">Other Sources</div>
-                    <div className="text-body-md font-semibold text-gray-900">
+                  <div className="p-3 bg-slate-50 rounded">
+                    <div className="text-body-sm font-medium text-slate-700 mb-1">Other Sources</div>
+                    <div className="text-body-md font-semibold text-slate-900">
                       {formatCurrency(
                         previousData.income.otherSources.total ||
                         previousData.income.otherSources,
@@ -222,21 +222,21 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
 
           {/* Deductions */}
           {sections.deductions && previousData.deductions && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center mb-4">
-                <div className="p-2 bg-purple-100 rounded-lg mr-3">
+                <div className="p-2 bg-purple-100 rounded-xl mr-3">
                   <Receipt className="h-5 w-5 text-purple-600" />
                 </div>
-                <h3 className="text-heading-md text-gray-900">Deductions</h3>
+                <h3 className="text-heading-md text-slate-900">Deductions</h3>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {Object.entries(previousData.deductions).map(([key, value]) => {
                   if (!value || (typeof value === 'object' && !value.totalAmount)) return null;
                   const amount = typeof value === 'object' ? value.totalAmount : value;
                   return (
-                    <div key={key} className="p-3 bg-gray-50 rounded">
-                      <div className="text-body-xs text-gray-600 mb-1">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
-                      <div className="text-body-md font-semibold text-gray-900">{formatCurrency(amount)}</div>
+                    <div key={key} className="p-3 bg-slate-50 rounded">
+                      <div className="text-body-xs text-slate-600 mb-1">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                      <div className="text-body-md font-semibold text-slate-900">{formatCurrency(amount)}</div>
                     </div>
                   );
                 })}
@@ -246,18 +246,18 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
 
           {/* Taxes Paid */}
           {sections.taxes_paid && previousData.taxes_paid && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center mb-4">
-                <div className="p-2 bg-gold-100 rounded-lg mr-3">
+                <div className="p-2 bg-gold-100 rounded-xl mr-3">
                   <CreditCard className="h-5 w-5 text-gold-600" />
                 </div>
-                <h3 className="text-heading-md text-gray-900">Taxes Paid</h3>
+                <h3 className="text-heading-md text-slate-900">Taxes Paid</h3>
               </div>
               <div className="space-y-2">
                 {previousData.taxes_paid.tds && Array.isArray(previousData.taxes_paid.tds) && (
                   <div>
-                    <div className="text-body-sm font-medium text-gray-700 mb-1">TDS ({previousData.taxes_paid.tds.length} entries)</div>
-                    <div className="text-body-md font-semibold text-gray-900">
+                    <div className="text-body-sm font-medium text-slate-700 mb-1">TDS ({previousData.taxes_paid.tds.length} entries)</div>
+                    <div className="text-body-md font-semibold text-slate-900">
                       {formatCurrency(
                         previousData.taxes_paid.tds.reduce((sum, entry) => sum + (entry.amount || 0), 0),
                       )}
@@ -266,8 +266,8 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
                 )}
                 {previousData.taxes_paid.advanceTax && Array.isArray(previousData.taxes_paid.advanceTax) && (
                   <div>
-                    <div className="text-body-sm font-medium text-gray-700 mb-1">Advance Tax ({previousData.taxes_paid.advanceTax.length} entries)</div>
-                    <div className="text-body-md font-semibold text-gray-900">
+                    <div className="text-body-sm font-medium text-slate-700 mb-1">Advance Tax ({previousData.taxes_paid.advanceTax.length} entries)</div>
+                    <div className="text-body-md font-semibold text-slate-900">
                       {formatCurrency(
                         previousData.taxes_paid.advanceTax.reduce((sum, entry) => sum + (entry.amount || 0), 0),
                       )}
@@ -298,13 +298,13 @@ const PreviousYearPreview = ({ sourceFilingId, onProceed }) => {
         <div className="flex space-x-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex-1 py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="flex-1 py-3 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50"
           >
             Back
           </button>
           <button
             onClick={handleProceed}
-            className="flex-1 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 flex items-center justify-center"
+            className="flex-1 py-3 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 flex items-center justify-center"
           >
             Continue to Review
             <ArrowRight className="w-4 h-4 ml-2" />

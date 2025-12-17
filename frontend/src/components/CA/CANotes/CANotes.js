@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { FileText, Plus, Edit2, Trash2 } from 'lucide-react';
-import Button from '../../common/Button';
+import Button from '../../DesignSystem/components/Button';
 import { formatIndianDateTime } from '../../../lib/format';
 import { cn } from '../../../lib/utils';
 
@@ -52,32 +52,32 @@ const CANotes = ({
   };
 
   return (
-    <div className={cn('border border-gray-200 rounded-lg', className)}>
+    <div className={cn('border border-slate-200 rounded-xl', className)}>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center space-x-2">
-          <FileText className="w-5 h-5 text-gray-600" />
+          <FileText className="w-5 h-5 text-slate-600" />
           <span className="text-heading-sm font-semibold text-gray-800" style={{ fontSize: '16px', fontWeight: 600 }}>
             CA Notes
           </span>
           {notes.length > 0 && (
-            <span className="text-label-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full" style={{ fontSize: '11px', fontWeight: 500 }}>
+            <span className="text-label-sm text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full" style={{ fontSize: '11px', fontWeight: 500 }}>
               {notes.length}
             </span>
           )}
         </div>
-        <span className="text-label-sm text-gray-500" style={{ fontSize: '11px', fontWeight: 500 }}>
+        <span className="text-label-sm text-slate-500" style={{ fontSize: '11px', fontWeight: 500 }}>
           {isExpanded ? 'Collapse' : 'Expand'}
         </span>
       </button>
 
       {isExpanded && (
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-slate-200">
           {/* Notes List */}
           {notes.length === 0 && !isAdding && (
-            <p className="text-body-md text-gray-500 text-center py-4" style={{ fontSize: '14px', lineHeight: '22px' }}>
+            <p className="text-body-md text-slate-500 text-center py-4" style={{ fontSize: '14px', lineHeight: '22px' }}>
               No notes yet. Add your first note below.
             </p>
           )}
@@ -89,7 +89,7 @@ const CANotes = ({
                   <textarea
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-body-md focus:outline-none focus:border-gold-500"
                     style={{ fontSize: '14px', lineHeight: '22px', minHeight: '80px' }}
                     rows={3}
                   />
@@ -104,11 +104,11 @@ const CANotes = ({
                 </div>
               ) : (
                 <>
-                  <p className="text-body-md text-gray-700 mb-2" style={{ fontSize: '14px', lineHeight: '22px' }}>
+                  <p className="text-body-md text-slate-700 mb-2" style={{ fontSize: '14px', lineHeight: '22px' }}>
                     {note.text}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+                    <div className="flex items-center space-x-2 text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
                       <span>{note.createdBy?.name || 'CA'}</span>
                       <span>•</span>
                       <span>{formatIndianDateTime(note.createdAt)}</span>
@@ -122,10 +122,10 @@ const CANotes = ({
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => startEdit(note)}
-                        className="p-1 rounded hover:bg-gray-100 transition-colors"
+                        className="p-1 rounded hover:bg-slate-100 transition-colors"
                         aria-label="Edit note"
                       >
-                        <Edit2 className="w-4 h-4 text-gray-600" />
+                        <Edit2 className="w-4 h-4 text-slate-600" />
                       </button>
                       {onDelete && (
                         <button
@@ -150,7 +150,7 @@ const CANotes = ({
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Add a private note (not visible to client)..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-body-md focus:outline-none focus:border-gold-500"
                 style={{ fontSize: '14px', lineHeight: '22px', minHeight: '80px' }}
                 rows={3}
               />

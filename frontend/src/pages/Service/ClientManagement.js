@@ -131,18 +131,18 @@ const ClientManagement = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'inactive': return 'bg-error-100 text-red-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-slate-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-error-100 text-red-800';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
       case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-slate-100 text-gray-800';
     }
   };
 
@@ -152,17 +152,17 @@ const ClientManagement = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <h1 className="text-heading-1 font-bold text-slate-900 flex items-center gap-3">
               <Building2 className="h-8 w-8 text-blue-600" />
               Client Management
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-slate-600 mt-2">
               Manage your CA firm clients and their filing activities
             </p>
           </div>
           <button
             onClick={() => setShowAddClient(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 flex items-center gap-2"
           >
             <UserPlus className="h-5 w-5" />
             Add Client
@@ -172,67 +172,67 @@ const ClientManagement = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="p-2 bg-blue-100 rounded-xl">
               <Users className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Clients</p>
-              <p className="text-2xl font-bold text-gray-900">{statistics.total_clients || 0}</p>
+              <p className="text-body-regular font-medium text-slate-600">Total Clients</p>
+              <p className="text-heading-2 font-bold text-slate-900">{statistics.total_clients || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
+            <div className="p-2 bg-green-100 rounded-xl">
               <UserCheck className="h-6 w-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Clients</p>
-              <p className="text-2xl font-bold text-gray-900">{statistics.active_clients || 0}</p>
+              <p className="text-body-regular font-medium text-slate-600">Active Clients</p>
+              <p className="text-heading-2 font-bold text-slate-900">{statistics.active_clients || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
+            <div className="p-2 bg-purple-100 rounded-xl">
               <FileText className="h-6 w-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Assigned Clients</p>
-              <p className="text-2xl font-bold text-gray-900">{statistics.assigned_clients || 0}</p>
+              <p className="text-body-regular font-medium text-slate-600">Assigned Clients</p>
+              <p className="text-heading-2 font-bold text-slate-900">{statistics.assigned_clients || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-gold-100 rounded-lg">
+            <div className="p-2 bg-gold-100 rounded-xl">
               <TrendingUp className="h-6 w-6 text-gold-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Family Clients</p>
-              <p className="text-2xl font-bold text-gray-900">{statistics.family_clients || 0}</p>
+              <p className="text-body-regular font-medium text-slate-600">Family Clients</p>
+              <p className="text-heading-2 font-bold text-slate-900">{statistics.family_clients || 0}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
+      <div className="bg-white p-6 rounded-xl shadow-elevation-1 border mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search clients by name, PAN, or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -240,7 +240,7 @@ const ClientManagement = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Status</option>
               <option value="active">Active</option>
@@ -252,30 +252,30 @@ const ClientManagement = () => {
       </div>
 
       {/* Clients Table */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+      <div className="bg-white rounded-xl shadow-elevation-1 border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   PAN
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Assigned CA
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Filings
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -287,58 +287,58 @@ const ClientManagement = () => {
                     <div className="flex justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     </div>
-                    <p className="mt-2 text-gray-500">Loading clients...</p>
+                    <p className="mt-2 text-slate-500">Loading clients...</p>
                   </td>
                 </tr>
               ) : clients.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="px-6 py-12 text-center">
-                    <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">No clients found</p>
-                    <p className="text-gray-400 text-sm">Add your first client to get started</p>
+                    <Users className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                    <p className="text-slate-500">No clients found</p>
+                    <p className="text-slate-400 text-body-regular">Add your first client to get started</p>
                   </td>
                 </tr>
               ) : (
                 clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-gray-50">
+                  <tr key={client.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <span className="text-blue-600 font-medium text-sm">
+                          <span className="text-blue-600 font-medium text-body-regular">
                             {client.client_name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-body-regular font-medium text-slate-900">
                             {client.client_name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-body-regular text-slate-500">
                             {client.relationship_type}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-mono text-gray-900">
+                      <div className="text-body-regular font-mono text-slate-900">
                         {client.client_pan}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{client.client_email}</div>
-                      <div className="text-sm text-gray-500">{client.client_mobile}</div>
+                      <div className="text-body-regular text-slate-900">{client.client_email}</div>
+                      <div className="text-body-regular text-slate-500">{client.client_mobile}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {client.assigned_ca_name ? (
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-body-regular font-medium text-slate-900">
                             {client.assigned_ca_name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-body-regular text-slate-500">
                             {client.assigned_ca_email}
                           </div>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">Unassigned</span>
+                        <span className="text-body-regular text-slate-400">Unassigned</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -347,20 +347,20 @@ const ClientManagement = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-body-regular text-slate-900">
                         {client.completed_filings || 0} / {client.total_filings || 0}
                       </div>
-                      <div className="text-sm text-gray-500">completed</div>
+                      <div className="text-body-regular text-slate-500">completed</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-body-regular font-medium">
                       <div className="flex items-center gap-2">
                         <button className="text-blue-600 hover:text-blue-900">
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="text-gray-600 hover:text-gray-900">
+                        <button className="text-slate-600 hover:text-slate-900">
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900">
+                        <button className="text-error-600 hover:text-red-900">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -374,26 +374,26 @@ const ClientManagement = () => {
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-slate-200 sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => handlePageChange(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center px-4 py-2 border border-slate-300 text-body-regular font-medium rounded-xl text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
                 disabled={pagination.page === pagination.totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-slate-300 text-body-regular font-medium rounded-xl text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-gray-700">
+                <p className="text-body-regular text-slate-700">
                   Showing{' '}
                   <span className="font-medium">
                     {(pagination.page - 1) * pagination.limit + 1}
@@ -408,11 +408,11 @@ const ClientManagement = () => {
                 </p>
               </div>
               <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <nav className="relative z-0 inline-flex rounded-xl shadow-elevation-1 -space-x-px">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-slate-300 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
@@ -423,7 +423,7 @@ const ClientManagement = () => {
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === pagination.page
                           ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          : 'bg-white border-slate-300 text-slate-500 hover:bg-slate-50'
                       }`}
                     >
                       {page}
@@ -432,7 +432,7 @@ const ClientManagement = () => {
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page === pagination.totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-slate-300 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                   </button>
@@ -478,13 +478,13 @@ const AddClientModal = ({ onClose, onAdd }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div className="relative top-20 mx-auto p-5 border w-96 shadow-elevation-3 rounded-xl bg-white">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Add New Client</h3>
+            <h3 className="text-heading-4 font-medium text-slate-900">Add New Client</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-600"
             >
               <span className="sr-only">Close</span>
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -495,7 +495,7 @@ const AddClientModal = ({ onClose, onAdd }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Client PAN *
               </label>
               <input
@@ -504,14 +504,14 @@ const AddClientModal = ({ onClose, onAdd }) => {
                 value={formData.clientPan}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="ABCDE1234F"
                 maxLength={10}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Client Name *
               </label>
               <input
@@ -520,13 +520,13 @@ const AddClientModal = ({ onClose, onAdd }) => {
                 value={formData.clientName}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter client name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Email
               </label>
               <input
@@ -534,13 +534,13 @@ const AddClientModal = ({ onClose, onAdd }) => {
                 name="clientEmail"
                 value={formData.clientEmail}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="client@example.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Mobile
               </label>
               <input
@@ -548,20 +548,20 @@ const AddClientModal = ({ onClose, onAdd }) => {
                 name="clientMobile"
                 value={formData.clientMobile}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="+91 9876543210"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Relationship Type
               </label>
               <select
                 name="relationshipType"
                 value={formData.relationshipType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="client">Client</option>
                 <option value="family">Family</option>
@@ -573,13 +573,13 @@ const AddClientModal = ({ onClose, onAdd }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                className="px-4 py-2 text-body-regular font-medium text-slate-700 bg-slate-100 border border-slate-300 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                className="px-4 py-2 text-body-regular font-medium text-white bg-blue-600 border border-transparent rounded-xl hover:bg-blue-700"
               >
                 Add Client
               </button>

@@ -17,7 +17,7 @@ const ProfileSkeleton = () => {
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-lg border border-neutral-200 p-6 space-y-6">
+        <div className="bg-white rounded-xl border border-neutral-200 p-6 space-y-6">
           {/* Profile Picture Section */}
           <div className="flex items-center gap-4 pb-6 border-b border-neutral-200">
             <Skeleton className="w-20 h-20 rounded-full" />

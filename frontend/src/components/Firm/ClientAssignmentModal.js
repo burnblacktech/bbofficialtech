@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { enterpriseLogger } from '../../utils/logger';
 import { X, User, Save, Loader } from 'lucide-react';
 import Modal from '../common/Modal';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 
@@ -122,24 +122,24 @@ const ClientAssignmentModal = ({ isOpen, onClose, clientId, firmId, onAssignment
         {/* Existing Assignments */}
         {assignments.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Current Assignments</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">Current Assignments</h3>
             <div className="space-y-2">
               {assignments.map((assignment) => (
                 <div
                   key={assignment.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-slate-50 rounded-xl"
                 >
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-body-regular font-medium text-slate-900">
                       {assignment.user?.fullName || 'Unknown User'}
                     </p>
-                    <p className="text-xs text-gray-600 capitalize">{assignment.role}</p>
+                    <p className="text-body-small text-slate-600 capitalize">{assignment.role}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRevokeAssignment(assignment.id)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-error-600 hover:text-error-700"
                   >
                     Revoke
                   </Button>
@@ -152,7 +152,7 @@ const ClientAssignmentModal = ({ isOpen, onClose, clientId, firmId, onAssignment
         {/* New Assignment Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="role" className="block text-body-regular font-medium text-slate-700 mb-1">
               Assignment Role *
             </label>
             <select
@@ -161,7 +161,7 @@ const ClientAssignmentModal = ({ isOpen, onClose, clientId, firmId, onAssignment
               required
               value={formData.role}
               onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="preparer">Preparer</option>
               <option value="reviewer">Reviewer</option>
@@ -170,7 +170,7 @@ const ClientAssignmentModal = ({ isOpen, onClose, clientId, firmId, onAssignment
           </div>
 
           <div>
-            <label htmlFor="userId" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="userId" className="block text-body-regular font-medium text-slate-700 mb-1">
               Staff Member *
             </label>
             <select
@@ -179,7 +179,7 @@ const ClientAssignmentModal = ({ isOpen, onClose, clientId, firmId, onAssignment
               required
               value={formData.userId}
               onChange={(e) => setFormData((prev) => ({ ...prev, userId: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a staff member...</option>
               {eligibleStaff.map((member) => (

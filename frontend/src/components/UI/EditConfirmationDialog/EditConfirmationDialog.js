@@ -70,7 +70,7 @@ export const EditConfirmationDialog = ({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed z-50 bg-white rounded-xl shadow-xl max-w-md w-full mx-4',
+              'fixed z-50 bg-white rounded-xl shadow-elevation-4 max-w-md w-full mx-4',
               className,
             )}
             role="dialog"
@@ -78,22 +78,22 @@ export const EditConfirmationDialog = ({
             aria-labelledby="edit-confirmation-title"
           >
             {/* Header */}
-            <div className="flex items-start justify-between p-6 border-b border-gray-200">
+            <div className="flex items-start justify-between p-6 border-b border-slate-200">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-warning-100 rounded-lg">
+                <div className="p-2 bg-warning-100 rounded-xl">
                   <AlertTriangle className="w-5 h-5 text-warning-600" />
                 </div>
                 <div>
                   <h3
                     id="edit-confirmation-title"
-                    className="text-heading-md font-semibold text-gray-900"
+                    className="text-heading-md font-semibold text-slate-900"
                     style={{ fontSize: '18px', fontWeight: 600 }}
                   >
                     You're editing an auto-filled value
                   </h3>
                   {fieldLabel && (
                     <p
-                      className="text-body-sm text-gray-600 mt-1"
+                      className="text-body-sm text-slate-600 mt-1"
                       style={{ fontSize: '13px', lineHeight: '20px' }}
                     >
                       {fieldLabel}
@@ -103,10 +103,10 @@ export const EditConfirmationDialog = ({
               </div>
               <button
                 onClick={handleCancel}
-                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="p-1 rounded hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
                 aria-label="Close dialog"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
 
@@ -114,23 +114,23 @@ export const EditConfirmationDialog = ({
             <div className="p-6 space-y-4">
               {/* Value Comparison */}
               <div className="space-y-3">
-                <div className="bg-gray-50 rounded-lg p-3">
+                <div className="bg-slate-50 rounded-xl p-3">
                   <p
-                    className="text-body-sm text-gray-600 mb-1"
+                    className="text-body-sm text-slate-600 mb-1"
                     style={{ fontSize: '13px', lineHeight: '20px' }}
                   >
                     Original ({sourceDocument || source}):
                   </p>
                   <p
-                    className="text-body-md font-semibold text-gray-900"
+                    className="text-body-md font-semibold text-slate-900"
                     style={{ fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}
                   >
                     {valueFormatter(originalValue)}
                   </p>
                 </div>
-                <div className="bg-gold-50 rounded-lg p-3 border border-gold-200">
+                <div className="bg-gold-50 rounded-xl p-3 border border-gold-200">
                   <p
-                    className="text-body-sm text-gray-600 mb-1"
+                    className="text-body-sm text-slate-600 mb-1"
                     style={{ fontSize: '13px', lineHeight: '20px' }}
                   >
                     Your value:
@@ -148,7 +148,7 @@ export const EditConfirmationDialog = ({
               <div>
                 <label
                   htmlFor="edit-reason"
-                  className="block text-body-sm font-medium text-gray-700 mb-2"
+                  className="block text-body-sm font-medium text-slate-700 mb-2"
                   style={{ fontSize: '13px', fontWeight: 500 }}
                 >
                   Reason for change (recommended):
@@ -158,12 +158,12 @@ export const EditConfirmationDialog = ({
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="e.g., Corrected as per actual salary slip"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 resize-none"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 resize-none"
                   rows={3}
                   style={{ fontSize: '13px', lineHeight: '20px' }}
                 />
                 <p
-                  className="text-body-xs text-gray-500 mt-1"
+                  className="text-body-xs text-slate-500 mt-1"
                   style={{ fontSize: '12px', lineHeight: '18px' }}
                 >
                   This helps maintain an audit trail
@@ -172,10 +172,10 @@ export const EditConfirmationDialog = ({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200">
               <button
                 onClick={handleCancel}
-                className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
+                className="px-4 py-2 text-body-sm font-medium text-slate-700 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-xl"
                 style={{ fontSize: '13px' }}
               >
                 Cancel
@@ -183,7 +183,7 @@ export const EditConfirmationDialog = ({
               {onRevert && (
                 <button
                   onClick={handleRevert}
-                  className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
+                  className="px-4 py-2 text-body-sm font-medium text-slate-700 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-xl"
                   style={{ fontSize: '13px' }}
                 >
                   Revert to Original
@@ -191,7 +191,7 @@ export const EditConfirmationDialog = ({
               )}
               <button
                 onClick={handleConfirm}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg text-body-sm font-semibold hover:bg-gold-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl text-body-sm font-semibold hover:bg-gold-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2"
                 style={{ fontSize: '13px', fontWeight: 600 }}
               >
                 Save My Value

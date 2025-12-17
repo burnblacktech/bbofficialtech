@@ -24,7 +24,7 @@ export const HelpIcon = ({
   ...props
 }) => {
   const iconClasses = cn(
-    'inline-flex text-gray-400 hover:text-gray-600 transition-colors cursor-help',
+    'inline-flex text-slate-400 hover:text-slate-600 transition-colors cursor-help',
     'ml-1', // 4px gap from text
     className,
   );

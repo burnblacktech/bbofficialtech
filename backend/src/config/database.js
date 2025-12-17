@@ -2,6 +2,19 @@
 // DATABASE CONFIGURATION - POSTGRESQL (LOCAL OR SUPABASE)
 // =====================================================
 
+// Ensure environment variables are available even when running standalone scripts (migrations, audits, etc.)
+// Server entry (`src/server.js`) already loads dotenv; this is for direct script execution.
+const path = require('path');
+try {
+  // Prefer backend/.env when executing from repo root or elsewhere
+  // backend/src/config -> ../../.env
+  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+  // Fallback to default dotenv behavior
+  require('dotenv').config();
+} catch {
+  // dotenv may not be available in some environments; ignore
+}
+
 const { Sequelize } = require('sequelize');
 const enterpriseLogger = require('../utils/logger');
 

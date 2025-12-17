@@ -133,16 +133,16 @@ const ReportBuilder = () => {
   return (
     <div className="space-y-6">
       {/* Metrics Selection */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-heading-md font-medium text-gray-900 mb-4">Select Metrics</h3>
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <h3 className="text-heading-md font-medium text-slate-900 mb-4">Select Metrics</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {availableMetrics.map(metric => (
             <label
               key={metric.id}
-              className={`flex items-start space-x-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+              className={`flex items-start space-x-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                 metrics.includes(metric.id)
                   ? 'border-gold-500 bg-gold-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <input
@@ -152,8 +152,8 @@ const ReportBuilder = () => {
                 className="mt-1 w-4 h-4 text-gold-600 focus:ring-gold-500"
               />
               <div>
-                <div className="font-medium text-gray-900">{metric.label}</div>
-                <div className="text-sm text-gray-500">{metric.description}</div>
+                <div className="font-medium text-slate-900">{metric.label}</div>
+                <div className="text-body-regular text-slate-500">{metric.description}</div>
               </div>
             </label>
           ))}
@@ -161,16 +161,16 @@ const ReportBuilder = () => {
       </div>
 
       {/* Dimensions Selection */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-heading-md font-medium text-gray-900 mb-4">Select Dimensions (Optional)</h3>
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <h3 className="text-heading-md font-medium text-slate-900 mb-4">Select Dimensions (Optional)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {availableDimensions.map(dimension => (
             <label
               key={dimension.id}
-              className={`flex items-start space-x-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+              className={`flex items-start space-x-3 p-4 border rounded-xl cursor-pointer transition-colors ${
                 dimensions.includes(dimension.id)
                   ? 'border-gold-500 bg-gold-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <input
@@ -180,8 +180,8 @@ const ReportBuilder = () => {
                 className="mt-1 w-4 h-4 text-gold-600 focus:ring-gold-500"
               />
               <div>
-                <div className="font-medium text-gray-900">{dimension.label}</div>
-                <div className="text-sm text-gray-500">{dimension.description}</div>
+                <div className="font-medium text-slate-900">{dimension.label}</div>
+                <div className="text-body-regular text-slate-500">{dimension.description}</div>
               </div>
             </label>
           ))}
@@ -189,14 +189,14 @@ const ReportBuilder = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-heading-md font-medium text-gray-900 mb-4 flex items-center space-x-2">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <h3 className="text-heading-md font-medium text-slate-900 mb-4 flex items-center space-x-2">
           <Filter className="w-5 h-5" />
           <span>Filters</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">Start Date</label>
             <input
               type="date"
               value={filters.dateRange.startDate}
@@ -204,11 +204,11 @@ const ReportBuilder = () => {
                 ...prev,
                 dateRange: { ...prev.dateRange, startDate: e.target.value },
               }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">End Date</label>
             <input
               type="date"
               value={filters.dateRange.endDate}
@@ -216,25 +216,25 @@ const ReportBuilder = () => {
                 ...prev,
                 dateRange: { ...prev.dateRange, endDate: e.target.value },
               }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">Status</label>
             <input
               type="text"
               value={filters.status}
               onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
               placeholder="Filter by status"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Aggregation</label>
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">Aggregation</label>
             <select
               value={aggregation}
               onChange={(e) => setAggregation(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
             >
               <option value="count">Count</option>
               <option value="sum">Sum</option>
@@ -247,13 +247,13 @@ const ReportBuilder = () => {
       </div>
 
       {/* Actions */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
               onClick={handleGenerateReport}
               disabled={isGenerating || metrics.length === 0}
-              className="px-6 py-3 bg-gold-600 text-white rounded-lg hover:bg-gold-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="px-6 py-3 bg-gold-600 text-white rounded-xl hover:bg-gold-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {isGenerating ? (
                 <>
@@ -271,14 +271,14 @@ const ReportBuilder = () => {
               <>
                 <button
                   onClick={() => handleExport('csv')}
-                  className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+                  className="px-4 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 flex items-center space-x-2"
                 >
                   <Download className="w-4 h-4" />
                   <span>Export CSV</span>
                 </button>
                 <button
                   onClick={() => handleExport('excel')}
-                  className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+                  className="px-4 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 flex items-center space-x-2"
                 >
                   <Download className="w-4 h-4" />
                   <span>Export Excel</span>
@@ -292,12 +292,12 @@ const ReportBuilder = () => {
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
               placeholder="Template name"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+              className="px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
             />
             <button
               onClick={handleSaveTemplate}
               disabled={!templateName.trim() || metrics.length === 0}
-              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="px-4 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               <Save className="w-4 h-4" />
               <span>Save Template</span>
@@ -308,10 +308,10 @@ const ReportBuilder = () => {
 
       {/* Report Preview */}
       {reportData && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-heading-md font-medium text-gray-900 mb-4">Report Preview</h3>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <pre className="text-sm overflow-auto">
+        <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <h3 className="text-heading-md font-medium text-slate-900 mb-4">Report Preview</h3>
+          <div className="bg-slate-50 rounded-xl p-4">
+            <pre className="text-body-regular overflow-auto">
               {JSON.stringify(reportData, null, 2)}
             </pre>
           </div>

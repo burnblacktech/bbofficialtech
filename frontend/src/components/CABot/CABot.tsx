@@ -390,17 +390,17 @@ const CABot: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-gold-50 to-gold-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200 p-4">
+      <div className="bg-white shadow-elevation-1 border-b border-slate-200 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-burn-gradient rounded-full flex items-center justify-center">
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">
+              <h1 className="text-heading-4 font-semibold text-slate-900">
                 {filingState.language === 'hi' ? 'CA सहायक' : 'CA Assistant'}
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-body-regular text-slate-500">
                 {filingState.language === 'hi' ? 'आपका ITR फाइलिंग सहायक' : 'Your ITR Filing Assistant'}
               </p>
             </div>
@@ -410,19 +410,19 @@ const CABot: React.FC = () => {
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
               title={filingState.language === 'en' ? 'Switch to Hindi' : 'Switch to English'}
             >
-              <Globe className="w-5 h-5 text-gray-600" />
+              <Globe className="w-5 h-5 text-slate-600" />
             </button>
             
             {/* Voice Toggle */}
             <button
               onClick={toggleVoice}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-xl transition-colors ${
                 filingState.isVoiceEnabled 
                   ? 'bg-gold-100 text-gold-600' 
-                  : 'hover:bg-gray-100 text-gray-600'
+                  : 'hover:bg-slate-100 text-slate-600'
               }`}
               title={filingState.isVoiceEnabled ? 'Disable Voice' : 'Enable Voice'}
             >
@@ -436,26 +436,26 @@ const CABot: React.FC = () => {
             {/* Settings */}
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
               title="Settings"
             >
-              <Settings className="w-5 h-5 text-gray-600" />
+              <Settings className="w-5 h-5 text-slate-600" />
             </button>
             
             {/* Reset */}
             <button
               onClick={resetConversation}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
               title="Reset Conversation"
             >
-              <RotateCcw className="w-5 h-5 text-gray-600" />
+              <RotateCcw className="w-5 h-5 text-slate-600" />
             </button>
           </div>
         </div>
         
         {/* User Type Indicator */}
         <div className="mt-2 flex items-center space-x-2">
-          <span className="text-xs text-gray-500">
+          <span className="text-body-small text-slate-500">
             {filingState.language === 'hi' ? 'उपयोगकर्ता प्रकार:' : 'User Type:'}
           </span>
           <span className={`text-xs px-2 py-1 rounded-full ${
@@ -483,11 +483,11 @@ const CABot: React.FC = () => {
             className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${
                 message.type === 'user'
                   ? 'bg-gold-500 text-white'
                   : message.type === 'bot'
-                  ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                  ? 'bg-white text-slate-900 shadow-elevation-1 border border-slate-200'
                   : 'bg-yellow-50 text-yellow-800 border border-yellow-200'
               }`}
             >
@@ -499,8 +499,8 @@ const CABot: React.FC = () => {
                   <User className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
                 )}
                 <div className="flex-1">
-                  <p className="text-sm">{message.content}</p>
-                  <p className="text-xs opacity-70 mt-1">
+                  <p className="text-body-regular">{message.content}</p>
+                  <p className="text-body-small opacity-70 mt-1">
                     {message.timestamp.toLocaleTimeString()}
                   </p>
                 </div>
@@ -512,7 +512,7 @@ const CABot: React.FC = () => {
         {/* Typing Indicator */}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-white text-gray-900 shadow-sm border border-gray-200 px-4 py-2 rounded-lg">
+            <div className="bg-white text-slate-900 shadow-elevation-1 border border-slate-200 px-4 py-2 rounded-xl">
               <div className="flex items-center space-x-2">
                 <Bot className="w-5 h-5 text-blue-600" />
                 <div className="flex space-x-1">
@@ -529,7 +529,7 @@ const CABot: React.FC = () => {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200 p-4">
+      <div className="bg-white border-t border-slate-200 p-4">
         <form onSubmit={handleSubmit} className="flex items-center space-x-2">
           <div className="flex-1 relative">
             <input
@@ -542,7 +542,7 @@ const CABot: React.FC = () => {
                   ? 'अपना संदेश टाइप करें...' 
                   : 'Type your message...'
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               disabled={isTyping}
             />
           </div>
@@ -551,10 +551,10 @@ const CABot: React.FC = () => {
           <button
             type="button"
             onClick={handleVoiceInput}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-2 rounded-xl transition-colors ${
               isListening 
-                ? 'bg-red-100 text-red-600' 
-                : 'hover:bg-gray-100 text-gray-600'
+                ? 'bg-error-100 text-error-600' 
+                : 'hover:bg-slate-100 text-slate-600'
             }`}
             disabled={isTyping}
           >
@@ -569,7 +569,7 @@ const CABot: React.FC = () => {
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Send className="w-5 h-5" />
           </button>

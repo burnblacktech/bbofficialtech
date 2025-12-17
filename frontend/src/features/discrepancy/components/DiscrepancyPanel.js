@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import { formatIndianCurrency } from '../../../lib/format';
 import { cn } from '../../../lib/utils';
 import SourceChip from '../../../components/UI/SourceChip/SourceChip';
@@ -57,22 +57,22 @@ const DiscrepancyPanel = ({
       <div className="mb-4 overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="px-4 py-2 text-left text-label-md font-medium text-gray-700">YOUR ENTRY</th>
-              <th className="px-4 py-2 text-left text-label-md font-medium text-gray-700">AIS DATA</th>
-              <th className="px-4 py-2 text-left text-label-md font-medium text-gray-700">DIFFERENCE</th>
+            <tr className="border-b border-slate-200">
+              <th className="px-4 py-2 text-left text-label-md font-medium text-slate-700">YOUR ENTRY</th>
+              <th className="px-4 py-2 text-left text-label-md font-medium text-slate-700">AIS DATA</th>
+              <th className="px-4 py-2 text-left text-label-md font-medium text-slate-700">DIFFERENCE</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className="px-4 py-3">
-                <div className="text-number-md font-semibold tabular-nums text-gray-900">
+                <div className="text-number-md font-semibold tabular-nums text-slate-900">
                   {formatIndianCurrency(manualValue)}
                 </div>
                 <SourceChip source="manual" size="sm" className="mt-1" />
               </td>
               <td className="px-4 py-3">
-                <div className="text-number-md font-semibold tabular-nums text-gray-900">
+                <div className="text-number-md font-semibold tabular-nums text-slate-900">
                   {formatIndianCurrency(uploadedValue)}
                 </div>
                 <SourceChip source={source || 'ais'} size="sm" className="mt-1" />
@@ -89,14 +89,14 @@ const DiscrepancyPanel = ({
 
       {/* Resolution Options - Radio button group per UI.md */}
       <div className="mb-4">
-        <p className="text-body-md font-medium text-gray-900 mb-3">What would you like to do?</p>
+        <p className="text-body-md font-medium text-slate-900 mb-3">What would you like to do?</p>
         <div className="space-y-2">
           <label className={cn(
             'flex items-start p-3 rounded-xl border-2 cursor-pointer transition-colors',
             'hover:bg-gold-50',
             selectedResolution === 'accept_source'
               ? 'bg-gold-100 border-gold-500'
-              : 'border-gray-200 bg-white',
+              : 'border-slate-200 bg-white',
           )}>
             <input
               type="radio"
@@ -111,10 +111,10 @@ const DiscrepancyPanel = ({
               aria-label="Use AIS value"
             />
             <div className="flex-1">
-              <div className="text-body-md font-medium text-gray-900">
+              <div className="text-body-md font-medium text-slate-900">
                 ○ Use AIS value ({formatIndianCurrency(uploadedValue)})
               </div>
-              <div className="text-body-sm text-gray-600 mt-1">
+              <div className="text-body-sm text-slate-600 mt-1">
                 Recommended if you have no additional documentation
               </div>
             </div>
@@ -125,7 +125,7 @@ const DiscrepancyPanel = ({
             'hover:bg-gold-50',
             selectedResolution === 'accept_manual'
               ? 'bg-gold-100 border-gold-500'
-              : 'border-gray-200 bg-white',
+              : 'border-slate-200 bg-white',
           )}>
             <input
               type="radio"
@@ -140,10 +140,10 @@ const DiscrepancyPanel = ({
               aria-label="Keep my value"
             />
             <div className="flex-1">
-              <div className="text-body-md font-medium text-gray-900">
+              <div className="text-body-md font-medium text-slate-900">
                 ○ Keep my value ({formatIndianCurrency(manualValue)})
               </div>
-              <div className="text-body-sm text-gray-600 mt-1">
+              <div className="text-body-sm text-slate-600 mt-1">
                 You may need to provide explanation during assessment
               </div>
             </div>
@@ -154,14 +154,14 @@ const DiscrepancyPanel = ({
       {/* Explanation Field - Optional textarea per UI.md */}
       {onExplain && (
         <div className="mb-4">
-          <label className="block text-label-md font-medium text-gray-700 mb-2">
+          <label className="block text-label-md font-medium text-slate-700 mb-2">
             Add explanation (optional):
           </label>
           <textarea
             value={explanationText}
             onChange={(e) => setExplanationText(e.target.value)}
             placeholder="Difference is due to..."
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-body-md focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
             rows={3}
             aria-label="Explanation for discrepancy"
           />

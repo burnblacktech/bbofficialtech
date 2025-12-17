@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { IndianRupee, CreditCard, Building2, Wallet } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import { formatIndianCurrency } from '../../lib/format';
 
@@ -69,18 +69,18 @@ const DemandPaymentForm = ({
   return (
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)}>
       {/* Outstanding Amount Info */}
-      <div className="bg-info-50 border border-info-200 p-4 rounded-lg">
+      <div className="bg-info-50 border border-info-200 p-4 rounded-xl">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600">Outstanding Amount</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-body-regular text-slate-600">Outstanding Amount</p>
+            <p className="text-heading-2 font-bold text-slate-900">
               {formatIndianCurrency(demand?.outstandingAmount || 0)}
             </p>
           </div>
           {demand?.totalAmount && (
             <div className="text-right">
-              <p className="text-sm text-gray-600">Total Demand</p>
-              <p className="text-lg font-semibold text-gray-700">
+              <p className="text-body-regular text-slate-600">Total Demand</p>
+              <p className="text-body-large font-semibold text-slate-700">
                 {formatIndianCurrency(demand.totalAmount)}
               </p>
             </div>
@@ -90,12 +90,12 @@ const DemandPaymentForm = ({
 
       {/* Payment Amount */}
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="amount" className="block text-body-regular font-medium text-slate-700 mb-2">
           Payment Amount <span className="text-error-500">*</span>
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <IndianRupee className="h-5 w-5 text-gray-400" />
+            <IndianRupee className="h-5 w-5 text-slate-400" />
           </div>
           <input
             type="number"
@@ -105,29 +105,29 @@ const DemandPaymentForm = ({
             min="0"
             max={demand?.outstandingAmount || 0}
             step="0.01"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            className="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             placeholder="Enter payment amount"
             required
           />
         </div>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-body-small text-slate-500">
           Maximum: {formatIndianCurrency(demand?.outstandingAmount || 0)}
         </p>
         <div className="mt-2 flex gap-2">
           <button
             type="button"
             onClick={() => setAmount(demand?.outstandingAmount || 0)}
-            className="text-xs text-primary-600 hover:text-primary-700 underline"
+            className="text-body-small text-primary-600 hover:text-primary-700 underline"
           >
             Pay Full Amount
           </button>
           {demand?.outstandingAmount && demand.outstandingAmount > 0 && (
             <>
-              <span className="text-xs text-gray-400">|</span>
+              <span className="text-body-small text-slate-400">|</span>
               <button
                 type="button"
                 onClick={() => setAmount(Math.ceil(demand.outstandingAmount / 2))}
-                className="text-xs text-primary-600 hover:text-primary-700 underline"
+                className="text-body-small text-primary-600 hover:text-primary-700 underline"
               >
                 Pay Half
               </button>
@@ -138,7 +138,7 @@ const DemandPaymentForm = ({
 
       {/* Payment Method */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-body-regular font-medium text-slate-700 mb-2">
           Payment Method <span className="text-error-500">*</span>
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -150,14 +150,14 @@ const DemandPaymentForm = ({
                 type="button"
                 onClick={() => setPaymentMethod(method.value)}
                 className={cn(
-                  'flex items-center gap-2 p-3 border rounded-md text-left transition-colors',
+                  'flex items-center gap-2 p-3 border rounded-xl text-left transition-colors',
                   paymentMethod === method.value
                     ? 'border-primary-500 bg-primary-50 text-primary-700'
-                    : 'border-gray-300 hover:border-gray-400',
+                    : 'border-slate-300 hover:border-gray-400',
                 )}
               >
                 <Icon className="w-4 h-4" />
-                <span className="text-sm font-medium">{method.label}</span>
+                <span className="text-body-regular font-medium">{method.label}</span>
               </button>
             );
           })}
@@ -166,7 +166,7 @@ const DemandPaymentForm = ({
 
       {/* Transaction ID (Optional) */}
       <div>
-        <label htmlFor="transactionId" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="transactionId" className="block text-body-regular font-medium text-slate-700 mb-2">
           Transaction ID / Reference Number (Optional)
         </label>
         <input
@@ -174,14 +174,14 @@ const DemandPaymentForm = ({
           id="transactionId"
           value={transactionId}
           onChange={(e) => setTransactionId(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           placeholder="Enter transaction ID if available"
         />
       </div>
 
       {/* Payment Date */}
       <div>
-        <label htmlFor="paymentDate" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="paymentDate" className="block text-body-regular font-medium text-slate-700 mb-2">
           Payment Date
         </label>
         <input
@@ -190,7 +190,7 @@ const DemandPaymentForm = ({
           value={paymentDate}
           onChange={(e) => setPaymentDate(e.target.value)}
           max={new Date().toISOString().split('T')[0]}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
         />
       </div>
 

@@ -95,33 +95,33 @@ const CAFirmAdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-elevation-1 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <Building2 className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-heading-2 font-bold text-slate-900">
                   {firmData?.name || 'CA Firm Dashboard'}
                 </h1>
-                <p className="text-gray-600">Manage your CA firm and staff</p>
+                <p className="text-slate-600">Manage your CA firm and staff</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Staff
               </button>
-              <button className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+              <button className="flex items-center px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </button>
@@ -132,7 +132,7 @@ const CAFirmAdminDashboard = () => {
 
       {/* Navigation Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-b border-gray-200">
+        <div className="border-b border-slate-200">
           <nav className="-mb-px flex space-x-8">
             {[
               { id: 'overview', label: 'Overview', icon: TrendingUp },
@@ -147,7 +147,7 @@ const CAFirmAdminDashboard = () => {
                 className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                 }`}
               >
                 <tab.icon className="h-4 w-4 mr-2" />
@@ -164,63 +164,63 @@ const CAFirmAdminDashboard = () => {
           <div className="space-y-6">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white rounded-xl shadow p-6">
                 <div className="flex items-center">
                   <Users className="h-8 w-8 text-blue-600" />
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Staff</p>
-                    <p className="text-2xl font-bold text-gray-900">{staff.length}</p>
+                    <p className="text-body-regular font-medium text-slate-600">Total Staff</p>
+                    <p className="text-heading-2 font-bold text-slate-900">{staff.length}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white rounded-xl shadow p-6">
                 <div className="flex items-center">
                   <Building2 className="h-8 w-8 text-green-600" />
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Active Clients</p>
-                    <p className="text-2xl font-bold text-gray-900">{clients.length}</p>
+                    <p className="text-body-regular font-medium text-slate-600">Active Clients</p>
+                    <p className="text-heading-2 font-bold text-slate-900">{clients.length}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white rounded-xl shadow p-6">
                 <div className="flex items-center">
                   <FileText className="h-8 w-8 text-purple-600" />
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Filings</p>
-                    <p className="text-2xl font-bold text-gray-900">{filings.length}</p>
+                    <p className="text-body-regular font-medium text-slate-600">Total Filings</p>
+                    <p className="text-heading-2 font-bold text-slate-900">{filings.length}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white rounded-xl shadow p-6">
                 <div className="flex items-center">
                   <IndianRupee className="h-8 w-8 text-yellow-600" />
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Revenue</p>
-                    <p className="text-2xl font-bold text-gray-900">₹0</p>
+                    <p className="text-body-regular font-medium text-slate-600">Revenue</p>
+                    <p className="text-heading-2 font-bold text-slate-900">₹0</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
+            <div className="bg-white rounded-xl shadow">
+              <div className="px-6 py-4 border-b border-slate-200">
+                <h3 className="text-heading-4 font-medium text-slate-900">Recent Activity</h3>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
                   {filings.slice(0, 5).map((filing) => (
                     <div key={filing.id} className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <FileText className="h-5 w-5 text-gray-400 mr-3" />
+                        <FileText className="h-5 w-5 text-slate-400 mr-3" />
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-body-regular font-medium text-slate-900">
                             ITR-{filing.itrType} Filing
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-body-regular text-slate-500">
                             {filing.user?.fullName || 'Unknown User'}
                           </p>
                         </div>
@@ -229,7 +229,7 @@ const CAFirmAdminDashboard = () => {
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           filing.status === 'completed' ? 'bg-green-100 text-green-800' :
                           filing.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
+                          'bg-slate-100 text-gray-800'
                         }`}>
                           {filing.status}
                         </span>
@@ -243,11 +243,11 @@ const CAFirmAdminDashboard = () => {
         )}
 
         {activeTab === 'staff' && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-white rounded-xl shadow">
+            <div className="px-6 py-4 border-b border-slate-200">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-gray-900">Staff Members</h3>
-                <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <h3 className="text-heading-4 font-medium text-slate-900">Staff Members</h3>
+                <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Staff
                 </button>
@@ -255,21 +255,21 @@ const CAFirmAdminDashboard = () => {
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Role
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -278,29 +278,29 @@ const CAFirmAdminDashboard = () => {
                   {staff.map((member) => (
                     <tr key={member.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-body-regular font-medium text-slate-900">
                           {member.fullName}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{member.email}</div>
+                        <div className="text-body-regular text-slate-500">{member.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-body-small font-medium bg-blue-100 text-blue-800">
                           {member.role}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-error-100 text-red-800'
                         }`}>
                           {member.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-body-regular font-medium">
                         <button
                           onClick={() => handleRemoveStaff(member.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-error-600 hover:text-red-900"
                         >
                           Remove
                         </button>
@@ -314,17 +314,17 @@ const CAFirmAdminDashboard = () => {
         )}
 
         {activeTab === 'clients' && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Clients</h3>
+          <div className="bg-white rounded-xl shadow">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <h3 className="text-heading-4 font-medium text-slate-900">Clients</h3>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {clients.map((client) => (
-                  <div key={client.id} className="border rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900">{client.fullName}</h4>
-                    <p className="text-sm text-gray-500">{client.email}</p>
-                    <p className="text-sm text-gray-500">Status: {client.status}</p>
+                  <div key={client.id} className="border rounded-xl p-4">
+                    <h4 className="font-medium text-slate-900">{client.fullName}</h4>
+                    <p className="text-body-regular text-slate-500">{client.email}</p>
+                    <p className="text-body-regular text-slate-500">Status: {client.status}</p>
                   </div>
                 ))}
               </div>
@@ -333,24 +333,24 @@ const CAFirmAdminDashboard = () => {
         )}
 
         {activeTab === 'filings' && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Recent Filings</h3>
+          <div className="bg-white rounded-xl shadow">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <h3 className="text-heading-4 font-medium text-slate-900">Recent Filings</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Client
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       ITR Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                       Created
                     </th>
                   </tr>
@@ -359,24 +359,24 @@ const CAFirmAdminDashboard = () => {
                   {filings.map((filing) => (
                     <tr key={filing.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-body-regular font-medium text-slate-900">
                           {filing.user?.fullName || 'Unknown'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">ITR-{filing.itrType}</div>
+                        <div className="text-body-regular text-slate-500">ITR-{filing.itrType}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           filing.status === 'completed' ? 'bg-green-100 text-green-800' :
                           filing.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
+                          'bg-slate-100 text-gray-800'
                         }`}>
                           {filing.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
+                        <div className="text-body-regular text-slate-500">
                           {new Date(filing.createdAt).toLocaleDateString()}
                         </div>
                       </td>
@@ -389,15 +389,15 @@ const CAFirmAdminDashboard = () => {
         )}
 
         {activeTab === 'billing' && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Billing & Invoices</h3>
+          <div className="bg-white rounded-xl shadow">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <h3 className="text-heading-4 font-medium text-slate-900">Billing & Invoices</h3>
             </div>
             <div className="p-6">
               <div className="text-center py-12">
-                <IndianRupee className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Billing Coming Soon</h3>
-                <p className="text-gray-500">Billing and invoice management will be available in the next update.</p>
+                <IndianRupee className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                <h3 className="text-heading-4 font-medium text-slate-900 mb-2">Billing Coming Soon</h3>
+                <p className="text-slate-500">Billing and invoice management will be available in the next update.</p>
               </div>
             </div>
           </div>

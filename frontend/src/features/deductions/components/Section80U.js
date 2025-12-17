@@ -13,7 +13,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from 'lucide-react';
-import apiClient from '../../../services/core/APIClient';
+import { deductionService } from '../services/deduction.service';
 import toast from 'react-hot-toast';
 
 const Section80U = ({ filingId, onUpdate }) => {
@@ -40,18 +40,12 @@ const Section80U = ({ filingId, onUpdate }) => {
   // Fetch 80U deduction
   const { data: deductionData, isLoading } = useQuery({
     queryKey: ['section80U', filingId],
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(`/api/itr/deductions/80U?filingId=${filingId}`);
-        return response.data;
-      } catch (error) {
-        return { data: { deduction: null, amount: 0 } };
-      }
-    },
+    queryFn: () => deductionService.getDeductions(filingId, '80U'),
     enabled: !!filingId,
   });
 
-  const deduction = deductionData?.data?.deduction;
+  // Backend returns a list; this section treats it as single-entry (latest)
+  const deduction = deductionData?.data?.deductions?.[0] || null;
   const deductionAmount = deduction
     ? calculateDeductionAmount(deduction.disabilityPercentage)
     : 0;
@@ -60,16 +54,10 @@ const Section80U = ({ filingId, onUpdate }) => {
   const saveDeductionMutation = useMutation({
     mutationFn: async (data) => {
       try {
-        const response = deduction
-          ? await apiClient.put(`/api/itr/deductions/80U/${deduction.id}`, {
-              filingId,
-              ...data,
-            })
-          : await apiClient.post('/api/itr/deductions/80U', {
-              filingId,
-              ...data,
-            });
-        return response.data;
+        if (deduction?.id) {
+          return await deductionService.updateDeductionBySection(filingId, '80U', deduction.id, data);
+        }
+        return await deductionService.createDeduction(filingId, '80U', data);
       } catch (error) {
         if (onUpdate) {
           onUpdate({ section80U: calculateDeductionAmount(data.disabilityPercentage) });
@@ -77,11 +65,14 @@ const Section80U = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80U', filingId]);
       resetForm();
       setShowEditForm(false);
       toast.success('80U deduction saved successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80U: result?.data?.totalAmount ?? deductionAmount });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to save deduction');
@@ -182,20 +173,20 @@ const Section80U = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-heading-lg text-gray-900 mb-1">Section 80U - Person with Disability</h3>
-            <p className="text-body-sm text-gray-600">
+            <h3 className="text-heading-lg text-slate-900 mb-1">Section 80U - Person with Disability</h3>
+            <p className="text-body-sm text-slate-600">
               Fixed deduction for self-disability (not for dependent)
             </p>
           </div>
           <div className="text-right">
-            <div className="text-body-xs text-gray-500 mb-1">Deduction Amount</div>
+            <div className="text-body-xs text-slate-500 mb-1">Deduction Amount</div>
             <div className="text-heading-xl font-bold text-gold-600">
               ₹{deductionAmount.toLocaleString('en-IN')}
             </div>
-            <div className="text-body-xs text-gray-500 mt-1">
+            <div className="text-body-xs text-slate-500 mt-1">
               {formData.disabilityPercentage === '40-80%' ? '₹75,000' : '₹1,25,000'}
             </div>
           </div>
@@ -204,15 +195,15 @@ const Section80U = ({ filingId, onUpdate }) => {
 
       {/* Edit Form */}
       {showEditForm && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-heading-md text-gray-900">Disability Details</h4>
+            <h4 className="text-heading-md text-slate-900">Disability Details</h4>
             <button
               onClick={() => {
                 resetForm();
                 setShowEditForm(false);
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-slate-500 hover:text-slate-700"
             >
               ✕
             </button>
@@ -221,7 +212,7 @@ const Section80U = ({ filingId, onUpdate }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Disability Percentage *
                 </label>
                 <select
@@ -229,8 +220,8 @@ const Section80U = ({ filingId, onUpdate }) => {
                   onChange={(e) => {
                     setFormData({ ...formData, disabilityPercentage: e.target.value });
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.disabilityPercentage ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.disabilityPercentage ? 'border-error-500' : 'border-slate-300'
                   }`}
                 >
                   <option value="">Select disability percentage</option>
@@ -241,10 +232,10 @@ const Section80U = ({ filingId, onUpdate }) => {
                   ))}
                 </select>
                 {formErrors.disabilityPercentage && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.disabilityPercentage}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.disabilityPercentage}</p>
                 )}
                 {formData.disabilityPercentage && (
-                  <p className="text-xs text-green-600 mt-1">
+                  <p className="text-body-small text-green-600 mt-1">
                     Fixed deduction: ₹
                     {calculateDeductionAmount(formData.disabilityPercentage).toLocaleString('en-IN')}
                   </p>
@@ -252,42 +243,42 @@ const Section80U = ({ filingId, onUpdate }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Certificate Number *
                 </label>
                 <input
                   type="text"
                   value={formData.certificateNumber}
                   onChange={(e) => setFormData({ ...formData, certificateNumber: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.certificateNumber ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.certificateNumber ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Certificate number"
                 />
                 {formErrors.certificateNumber && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.certificateNumber}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.certificateNumber}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Certificate Date *
                 </label>
                 <input
                   type="date"
                   value={formData.certificateDate}
                   onChange={(e) => setFormData({ ...formData, certificateDate: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.certificateDate ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.certificateDate ? 'border-error-500' : 'border-slate-300'
                   }`}
                 />
                 {formErrors.certificateDate && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.certificateDate}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.certificateDate}</p>
                 )}
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Certificate Issuing Authority *
                 </label>
                 <input
@@ -296,13 +287,13 @@ const Section80U = ({ filingId, onUpdate }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, certificateIssuingAuthority: e.target.value })
                   }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.certificateIssuingAuthority ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.certificateIssuingAuthority ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Name of the issuing authority"
                 />
                 {formErrors.certificateIssuingAuthority && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.certificateIssuingAuthority}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.certificateIssuingAuthority}</p>
                 )}
               </div>
             </div>
@@ -314,14 +305,14 @@ const Section80U = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowEditForm(false);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saveDeductionMutation.isPending}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50"
               >
                 Save Details
               </button>
@@ -334,45 +325,45 @@ const Section80U = ({ filingId, onUpdate }) => {
       {!showEditForm && (
         <>
           {deduction ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
-                    <h4 className="text-heading-md text-gray-900">Disability Details</h4>
+                    <h4 className="text-heading-md text-slate-900">Disability Details</h4>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-body-sm font-medium text-gray-700">
+                      <span className="text-body-sm font-medium text-slate-700">
                         Disability Percentage:
                       </span>
-                      <span className="text-body-sm text-gray-900">
+                      <span className="text-body-sm text-slate-900">
                         {deduction.disabilityPercentage}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-body-sm font-medium text-gray-700">
+                      <span className="text-body-sm font-medium text-slate-700">
                         Certificate Number:
                       </span>
-                      <span className="text-body-sm text-gray-900">
+                      <span className="text-body-sm text-slate-900">
                         {deduction.certificateNumber}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-body-sm font-medium text-gray-700">
+                      <span className="text-body-sm font-medium text-slate-700">
                         Certificate Date:
                       </span>
-                      <span className="text-body-sm text-gray-900">{deduction.certificateDate}</span>
+                      <span className="text-body-sm text-slate-900">{deduction.certificateDate}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-body-sm font-medium text-gray-700">
+                      <span className="text-body-sm font-medium text-slate-700">
                         Issuing Authority:
                       </span>
-                      <span className="text-body-sm text-gray-900">
+                      <span className="text-body-sm text-slate-900">
                         {deduction.certificateIssuingAuthority}
                       </span>
                     </div>
-                    <div className="mt-4 p-3 bg-gold-50 rounded-lg">
+                    <div className="mt-4 p-3 bg-gold-50 rounded-xl">
                       <div className="text-body-sm font-semibold text-gold-900">
                         Fixed Deduction: ₹{deductionAmount.toLocaleString('en-IN')}
                       </div>
@@ -387,11 +378,11 @@ const Section80U = ({ filingId, onUpdate }) => {
                       onChange={handleProofUpload}
                       className="hidden"
                     />
-                    <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
+                    <Upload className="w-5 h-5 text-slate-500 hover:text-gold-500" />
                   </label>
                   <button
                     onClick={handleEdit}
-                    className="p-1 text-gray-500 hover:text-gold-500"
+                    className="p-1 text-slate-500 hover:text-gold-500"
                   >
                     <Edit className="w-5 h-5" />
                   </button>
@@ -399,12 +390,12 @@ const Section80U = ({ filingId, onUpdate }) => {
               </div>
             </div>
           ) : (
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-              <Heart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 mb-4">No disability details added yet</p>
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+              <Heart className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <p className="text-slate-600 mb-4">No disability details added yet</p>
               <button
                 onClick={() => setShowEditForm(true)}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
               >
                 Add Disability Details
               </button>
@@ -412,7 +403,7 @@ const Section80U = ({ filingId, onUpdate }) => {
           )}
 
           {/* Important Note */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <div className="flex items-start gap-2">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
               <div className="text-body-xs text-blue-800">

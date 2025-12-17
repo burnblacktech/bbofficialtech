@@ -48,7 +48,7 @@ export const SmartHelpTooltip = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             className={`
-              absolute z-50 bg-gray-900 text-white text-sm rounded-lg p-4 shadow-xl max-w-sm
+              absolute z-50 bg-gray-900 text-white text-sm rounded-xl p-4 shadow-elevation-4 max-w-sm
               ${placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'}
               ${placement === 'left' ? 'right-full mr-2' : 'left-0'}
             `}
@@ -58,7 +58,7 @@ export const SmartHelpTooltip = ({
                 <Lightbulb className="w-4 h-4 text-yellow-400 mt-0.5 mr-2 flex-shrink-0" />
                 <button
                   onClick={() => setIsVisible(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-slate-400 hover:text-white transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -70,7 +70,7 @@ export const SmartHelpTooltip = ({
                 <div className="mb-3">
                   <button
                     onClick={() => setShowDetailed(!showDetailed)}
-                    className="flex items-center text-blue-400 hover:text-blue-300 text-xs"
+                    className="flex items-center text-blue-400 hover:text-blue-300 text-body-small"
                   >
                     {showDetailed ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
                     {showDetailed ? 'Show less' : 'Learn more'}
@@ -82,7 +82,7 @@ export const SmartHelpTooltip = ({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mt-2 text-xs text-gray-300"
+                        className="mt-2 text-body-small text-slate-300"
                       >
                         {detailedHelp}
                       </motion.div>
@@ -93,7 +93,7 @@ export const SmartHelpTooltip = ({
 
               {showAIAssistant && (
                 <div className="border-t border-gray-700 pt-2">
-                  <button className="flex items-center text-xs text-blue-400 hover:text-blue-300 transition-colors">
+                  <button className="flex items-center text-body-small text-blue-400 hover:text-blue-300 transition-colors">
                     <Bot className="w-3 h-3 mr-1" />
                     Ask AI Assistant
                   </button>
@@ -125,12 +125,12 @@ export const InlineHelp = ({
   return (
     <div className="space-y-2" {...props}>
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-body-regular font-medium text-slate-700">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-error-500 ml-1">*</span>}
         </label>
         <SmartHelpTooltip helpText={helpText}>
-          <HelpCircle className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help" />
+          <HelpCircle className="w-4 h-4 text-slate-400 hover:text-slate-600 cursor-help" />
         </SmartHelpTooltip>
       </div>
       {children}
@@ -155,19 +155,19 @@ export const ProgressiveDisclosure = ({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg" {...props}>
+    <div className="border border-slate-200 rounded-xl" {...props}>
       <button
         onClick={handleToggle}
-        className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
+        className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors flex items-center justify-between"
       >
         <div>
-          <h3 className="font-medium text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600 mt-1">{summary}</p>
+          <h3 className="font-medium text-slate-900">{title}</h3>
+          <p className="text-body-regular text-slate-600 mt-1">{summary}</p>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-400" />
+          <ChevronUp className="w-5 h-5 text-slate-400" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
+          <ChevronDown className="w-5 h-5 text-slate-400" />
         )}
       </button>
 
@@ -177,7 +177,7 @@ export const ProgressiveDisclosure = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border-t border-gray-200"
+            className="border-t border-slate-200"
           >
             <div className="px-4 py-3">
               {details}
@@ -214,7 +214,7 @@ export const SmartDefaults = ({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4"
+      className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4"
       {...props}
     >
       <div className="flex items-start justify-between mb-3">
@@ -234,12 +234,12 @@ export const SmartDefaults = ({
         {suggestions.map((suggestion, index) => (
           <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">{suggestion.title}</p>
-              <p className="text-xs text-gray-600">{suggestion.description}</p>
+              <p className="text-body-regular font-medium text-slate-900">{suggestion.title}</p>
+              <p className="text-body-small text-slate-600">{suggestion.description}</p>
             </div>
             <button
               onClick={() => handleApply(suggestion)}
-              className="ml-3 bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-blue-700 transition-colors"
+              className="ml-3 bg-blue-600 text-white px-3 py-1 rounded text-body-small font-medium hover:bg-blue-700 transition-colors"
             >
               Apply
             </button>
@@ -273,18 +273,18 @@ export const ContextualHelpPanel = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+            className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full max-h-[80vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             {...props}
           >
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200">
               <div className="flex items-center">
                 <BookOpen className="w-5 h-5 text-blue-600 mr-2" />
-                <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                <h2 className="text-heading-4 font-semibold text-slate-900">{title}</h2>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -296,13 +296,13 @@ export const ContextualHelpPanel = ({
               </div>
 
               {relatedTopics.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <h3 className="font-medium text-gray-900 mb-3">Related Topics</h3>
+                <div className="mt-6 pt-4 border-t border-slate-200">
+                  <h3 className="font-medium text-slate-900 mb-3">Related Topics</h3>
                   <div className="space-y-2">
                     {relatedTopics.map((topic, index) => (
                       <button
                         key={index}
-                        className="block w-full text-left p-2 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        className="block w-full text-left p-2 text-body-regular text-blue-600 hover:bg-blue-50 rounded transition-colors"
                       >
                         {topic}
                       </button>
@@ -312,12 +312,12 @@ export const ContextualHelpPanel = ({
               )}
             </div>
 
-            <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50">
-              <button className="flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <div className="flex items-center justify-between p-4 border-t border-slate-200 bg-slate-50">
+              <button className="flex items-center text-body-regular text-blue-600 hover:text-blue-700 transition-colors">
                 <MessageCircle className="w-4 h-4 mr-1" />
                 Contact Support
               </button>
-              <button className="flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors">
+              <button className="flex items-center text-body-regular text-blue-600 hover:text-blue-700 transition-colors">
                 <Bot className="w-4 h-4 mr-1" />
                 Ask AI Assistant
               </button>

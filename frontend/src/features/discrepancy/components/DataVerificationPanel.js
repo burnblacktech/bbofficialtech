@@ -113,7 +113,7 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
   }
 
   return (
-    <div className={`bg-white border border-gray-200 rounded-xl ${className}`}>
+    <div className={`bg-white border border-slate-200 rounded-xl ${className}`}>
       {/* Discrepancy Banner - UI.md pattern */}
       {discrepancies.length > 0 && (
         <div className="bg-warning-50 border border-warning-200 rounded-t-xl p-4">
@@ -136,7 +136,7 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
 
       {/* Header */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-200"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition-colors border-b border-slate-200"
         onClick={() => setIsExpanded(!isExpanded)}
         role="button"
         tabIndex={0}
@@ -150,10 +150,10 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
       >
         <div className="flex items-center gap-2">
           {getSeverityIcon(discrepancies[0]?.severity || 'info')}
-          <h3 className="text-heading-sm font-semibold text-gray-900">
+          <h3 className="text-heading-sm font-semibold text-slate-900">
             Data Verification
             {discrepancies.length > 0 && (
-              <span className="ml-2 text-body-md font-normal text-gray-600">
+              <span className="ml-2 text-body-md font-normal text-slate-600">
                 ({discrepancies.length} discrepancy{discrepancies.length !== 1 ? 'ies' : ''})
               </span>
             )}
@@ -166,26 +166,26 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
                 e.stopPropagation();
                 setShowHistory(!showHistory);
               }}
-              className="text-body-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
+              className="text-body-sm text-slate-600 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
               aria-label={showHistory ? 'Hide history' : 'Show history'}
             >
               {showHistory ? 'Hide' : 'Show'} History
             </button>
           )}
           {isExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" aria-hidden="true" />
+            <ChevronUp className="w-5 h-5 text-slate-400" aria-hidden="true" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400" aria-hidden="true" />
+            <ChevronDown className="w-5 h-5 text-slate-400" aria-hidden="true" />
           )}
         </div>
       </div>
 
       {/* Content */}
       {isExpanded && (
-        <div className="border-t border-gray-200 p-4 space-y-4">
+        <div className="border-t border-slate-200 p-4 space-y-4">
           {isLoading ? (
             <div className="text-center py-8">
-              <p className="text-body-md text-gray-600">Checking for discrepancies...</p>
+              <p className="text-body-md text-slate-600">Checking for discrepancies...</p>
             </div>
           ) : (
             <>
@@ -220,7 +220,7 @@ const DataVerificationPanel = ({ formData, uploadedData, onResolve, filingId, cl
 
               {/* Resolution History */}
               {showHistory && filingId && history.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="mt-6 pt-6 border-t border-slate-200">
                   <DiscrepancyHistory
                     history={history}
                     onExport={() => {

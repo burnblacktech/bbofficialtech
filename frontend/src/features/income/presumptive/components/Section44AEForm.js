@@ -127,10 +127,10 @@ const Section44AEForm = ({
             <Truck className="w-5 h-5 text-gold-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-heading-4 font-semibold text-slate-900">
               Section 44AE - Goods Carriage
             </h3>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <p className="text-body-regular text-slate-500 mt-0.5">
               Presumptive income for plying, hiring, or leasing goods carriages
             </p>
           </div>
@@ -148,10 +148,10 @@ const Section44AEForm = ({
             className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
           />
           <div>
-            <span className="text-sm font-medium text-slate-700">
+            <span className="text-body-regular font-medium text-slate-700">
               I have income from goods carriage business
             </span>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-body-small text-slate-500 mt-0.5">
               Eligible if you own not more than 10 goods carriages
             </p>
           </div>
@@ -163,14 +163,14 @@ const Section44AEForm = ({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-50 rounded-xl border border-red-200 p-4 flex items-start gap-3"
+          className="bg-error-50 rounded-xl border border-red-200 p-4 flex items-start gap-3"
         >
-          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-error-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-800">
+            <p className="text-body-regular font-medium text-red-800">
               44AE limit reached! You can only have up to {MAX_VEHICLES} vehicles.
             </p>
-            <p className="text-xs text-red-600 mt-1">
+            <p className="text-body-small text-error-600 mt-1">
               If you own more than 10 vehicles, you cannot use presumptive taxation and must use ITR-3.
             </p>
           </div>
@@ -191,11 +191,11 @@ const Section44AEForm = ({
             {vehicles.length === 0 ? (
               <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 p-8 text-center">
                 <Truck className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm text-slate-600 mb-4">No vehicles added yet</p>
+                <p className="text-body-regular text-slate-600 mb-4">No vehicles added yet</p>
                 <button
                   onClick={handleAddVehicle}
                   disabled={readOnly}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50"
                 >
                   <Plus className="w-4 h-4" />
                   Add Vehicle
@@ -213,13 +213,13 @@ const Section44AEForm = ({
                     className="bg-white rounded-xl border-2 border-slate-200 p-5 hover:border-slate-300 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      <span className="text-body-small font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">
                         Vehicle #{index + 1}
                       </span>
                       {!readOnly && (
                         <button
                           onClick={() => handleRemoveVehicle(vehicle.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-error-500 hover:bg-error-50 rounded-xl transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -229,7 +229,7 @@ const Section44AEForm = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {/* Vehicle Type */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           Vehicle Type
                         </label>
                         <select
@@ -248,7 +248,7 @@ const Section44AEForm = ({
 
                       {/* Registration Number */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           Registration No.
                         </label>
                         <input
@@ -264,7 +264,7 @@ const Section44AEForm = ({
                       {/* GVW (for heavy vehicles) */}
                       {vehicle.type === 'heavy_goods' && (
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                          <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                             GVW (Metric Tons)
                           </label>
                           <input
@@ -281,7 +281,7 @@ const Section44AEForm = ({
 
                       {/* Months Owned */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           <Calendar className="w-3.5 h-3.5 inline mr-1" />
                           Months Owned
                         </label>
@@ -301,7 +301,7 @@ const Section44AEForm = ({
 
                       {/* Ownership */}
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        <label className="block text-body-regular font-medium text-slate-700 mb-1.5">
                           Ownership
                         </label>
                         <select
@@ -318,10 +318,10 @@ const Section44AEForm = ({
 
                     {/* Calculated Income */}
                     <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-sm text-slate-600">
+                      <span className="text-body-regular text-slate-600">
                         Presumptive Income for this vehicle:
                       </span>
-                      <span className="text-lg font-semibold text-primary-600">
+                      <span className="text-body-large font-semibold text-primary-600">
                         {formatCurrency(calculateVehicleIncome(vehicle))}
                       </span>
                     </div>
@@ -332,7 +332,7 @@ const Section44AEForm = ({
                 {!readOnly && !exceedsVehicleLimit && (
                   <button
                     onClick={handleAddVehicle}
-                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-sm font-medium text-slate-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-body-regular font-medium text-slate-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     Add Another Vehicle ({vehicles.length}/{MAX_VEHICLES})
@@ -350,14 +350,14 @@ const Section44AEForm = ({
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-gold-800">
+                    <span className="text-body-regular font-medium text-gold-800">
                       Total Presumptive Income (44AE)
                     </span>
-                    <p className="text-xs text-gold-600 mt-0.5">
+                    <p className="text-body-small text-gold-600 mt-0.5">
                       {vehicles.length} vehicle{vehicles.length > 1 ? 's' : ''} • Based on ownership months
                     </p>
                   </div>
-                  <span className="text-xl font-bold text-gold-700 tabular-nums">
+                  <span className="text-heading-3 font-bold text-gold-700 tabular-nums">
                     {formatCurrency(totalPresumptiveIncome)}
                   </span>
                 </div>
@@ -367,9 +367,9 @@ const Section44AEForm = ({
             {/* Info Box */}
             <div className="bg-blue-50 rounded-xl border border-blue-200 p-4 flex items-start gap-3">
               <HelpCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-800">
+              <div className="text-body-regular text-blue-800">
                 <p className="font-medium mb-1">Section 44AE Rates (FY 2024-25)</p>
-                <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
+                <ul className="text-body-small text-blue-700 space-y-1 list-disc list-inside">
                   <li>Heavy Goods Vehicle (&gt;12MT): ₹1,000 per ton of GVW per month</li>
                   <li>Other Goods Vehicle (≤12MT): ₹7,500 per vehicle per month</li>
                   <li>Maximum 10 vehicles allowed under this section</li>

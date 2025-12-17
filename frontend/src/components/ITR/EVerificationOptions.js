@@ -64,7 +64,7 @@ const VERIFICATION_METHODS = [
 const EVerificationOptions = ({ onSelect }) => {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-slate-900 mb-4">
+      <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">
         Choose Verification Method
       </h2>
 
@@ -94,16 +94,16 @@ const EVerificationOptions = ({ onSelect }) => {
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-semibold text-slate-900">{method.title}</h3>
                     {method.recommended && (
-                      <span className="flex items-center gap-1 text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
+                      <span className="flex items-center gap-1 text-body-small bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full font-medium">
                         <Star className="w-3 h-3" />
                         Recommended
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-slate-500 mb-2 line-clamp-2">
+                  <p className="text-body-regular text-slate-500 mb-2 line-clamp-2">
                     {method.description}
                   </p>
-                  <div className="flex items-center gap-3 text-xs text-slate-400">
+                  <div className="flex items-center gap-3 text-body-small text-slate-400">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       {method.estimatedTime}
@@ -128,7 +128,7 @@ const EVerificationOptions = ({ onSelect }) => {
       </div>
 
       {/* Help text */}
-      <p className="text-xs text-slate-500 text-center mt-4">
+      <p className="text-body-small text-slate-500 text-center mt-4">
         E-verification is mandatory. Choose the method that works best for you.
       </p>
     </div>

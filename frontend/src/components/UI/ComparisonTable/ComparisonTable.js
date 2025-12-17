@@ -39,7 +39,7 @@ const ComparisonTable = ({
       <div className={cn('flex items-center justify-center py-12', className)}>
         <div className="flex flex-col items-center gap-3">
           <Loader className="w-6 h-6 text-gold-500 animate-spin" />
-          <p className="text-body-md text-gray-600">Loading comparison...</p>
+          <p className="text-body-md text-slate-600">Loading comparison...</p>
         </div>
       </div>
     );
@@ -58,14 +58,14 @@ const ComparisonTable = ({
   }
 
   return (
-    <div className={cn('border border-gray-200 rounded-xl overflow-hidden', className)}>
+    <div className={cn('border border-slate-200 rounded-xl overflow-hidden', className)}>
       {/* Header */}
-      <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-200">
-        <div className="p-3 text-label-sm text-gray-500 uppercase" style={{ fontSize: '11px', fontWeight: 500 }}></div>
-        <div className="p-3 text-label-sm text-gray-500 uppercase text-right" style={{ fontSize: '11px', fontWeight: 500 }}>
+      <div className="grid grid-cols-3 bg-slate-50 border-b border-slate-200">
+        <div className="p-3 text-label-sm text-slate-500 uppercase" style={{ fontSize: '11px', fontWeight: 500 }}></div>
+        <div className="p-3 text-label-sm text-slate-500 uppercase text-right" style={{ fontSize: '11px', fontWeight: 500 }}>
           {oldLabel}
         </div>
-        <div className="p-3 text-label-sm text-gray-500 uppercase text-right" style={{ fontSize: '11px', fontWeight: 500 }}>
+        <div className="p-3 text-label-sm text-slate-500 uppercase text-right" style={{ fontSize: '11px', fontWeight: 500 }}>
           {newLabel}
         </div>
       </div>
@@ -87,16 +87,16 @@ const ComparisonTable = ({
                 'grid grid-cols-3 transition-colors',
                 {
                   'pl-8': row.isSubItem,
-                  'bg-gray-50 border-y-2 border-gray-200': row.isSectionTotal,
+                  'bg-slate-50 border-y-2 border-slate-200': row.isSectionTotal,
                   'bg-success-50': oldWinner || newWinner,
-                  'hover:bg-gray-50': !row.isSectionTotal && !row.isFinalResult,
+                  'hover:bg-slate-50': !row.isSectionTotal && !row.isFinalResult,
                 },
               )}
               role="row"
             >
               <div className={cn(
                 'p-3',
-                row.isSubItem ? 'text-body-sm text-gray-500' : 'text-body-md text-gray-700',
+                row.isSubItem ? 'text-body-sm text-slate-500' : 'text-body-md text-slate-700',
                 row.isSectionTotal && 'text-heading-sm text-gray-800',
                 row.isFinalResult && 'text-heading-md text-gray-800',
               )}
@@ -113,13 +113,13 @@ const ComparisonTable = ({
               <motion.div
                 className={cn(
                   'p-3 text-right tabular-nums',
-                  row.isSubItem ? 'text-body-sm text-gray-500' : 'text-number-sm',
+                  row.isSubItem ? 'text-body-sm text-slate-500' : 'text-number-sm',
                   row.isSectionTotal && 'text-number-md font-semibold',
                   row.isFinalResult && 'text-number-lg font-semibold',
                   row.isFinalResult && row.oldValue !== null && row.oldValue >= 0 && 'text-success-600',
                   row.isFinalResult && row.oldValue !== null && row.oldValue < 0 && 'text-error-600',
                   oldWinner && 'bg-success-50',
-                  row.oldValue === null && 'text-gray-400',
+                  row.oldValue === null && 'text-slate-400',
                 )}
                 style={{
                   fontSize: row.isSubItem ? '13px' : row.isSectionTotal ? '18px' : row.isFinalResult ? '20px' : '14px',
@@ -139,13 +139,13 @@ const ComparisonTable = ({
               <motion.div
                 className={cn(
                   'p-3 text-right tabular-nums',
-                  row.isSubItem ? 'text-body-sm text-gray-500' : 'text-number-sm',
+                  row.isSubItem ? 'text-body-sm text-slate-500' : 'text-number-sm',
                   row.isSectionTotal && 'text-number-md font-semibold',
                   row.isFinalResult && 'text-number-lg font-semibold',
                   row.isFinalResult && row.newValue !== null && row.newValue >= 0 && 'text-success-600',
                   row.isFinalResult && row.newValue !== null && row.newValue < 0 && 'text-error-600',
                   newWinner && 'bg-success-50',
-                  row.newValue === null && 'text-gray-400',
+                  row.newValue === null && 'text-slate-400',
                 )}
                 style={{
                   fontSize: row.isSubItem ? '13px' : row.isSectionTotal ? '18px' : row.isFinalResult ? '20px' : '14px',
@@ -172,9 +172,9 @@ const ComparisonTable = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: rows.length * 0.03 }}
-          className="p-4 bg-gray-50 border-t border-gray-200 text-center"
+          className="p-4 bg-slate-50 border-t border-slate-200 text-center"
         >
-          <span className="inline-block bg-gradient-to-r from-gold-500 to-gold-600 text-white text-label-md uppercase px-4 py-2 rounded-lg font-semibold" style={{ fontSize: '13px', fontWeight: 500 }}>
+          <span className="inline-block bg-gradient-to-r from-gold-500 to-gold-600 text-white text-label-md uppercase px-4 py-2 rounded-xl font-semibold" style={{ fontSize: '13px', fontWeight: 500 }}>
             {recommendedRegime.toUpperCase()} REGIME RECOMMENDED • Save {formatIndianCurrency(savings)}
           </span>
         </motion.div>

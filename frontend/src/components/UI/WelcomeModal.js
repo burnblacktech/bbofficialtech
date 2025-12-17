@@ -45,12 +45,12 @@ const WelcomeModal = ({ isOpen, onClose, user }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+          className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-elevation-4"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -63,11 +63,11 @@ const WelcomeModal = ({ isOpen, onClose, user }) => {
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              <h1 className="text-heading-1 font-bold text-slate-900 mb-4">
                 Welcome to BurnBlack, {user?.fullName?.split(' ')[0] || 'there'}! 👋
               </h1>
 
-              <p className="text-lg text-gray-600 max-w-lg mx-auto">
+              <p className="text-body-large text-slate-600 max-w-lg mx-auto">
                 Get ready for the simplest, most intelligent ITR filing experience.
                 Our AI will help you file your taxes in minutes, not hours.
               </p>
@@ -83,14 +83,14 @@ const WelcomeModal = ({ isOpen, onClose, user }) => {
                   transition={{ delay: index * 0.1 }}
                   className="flex items-start space-x-4"
                 >
-                  <div className="w-12 h-12 bg-gold-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gold-50 rounded-xl flex items-center justify-center flex-shrink-0">
                     <feature.icon className="w-6 h-6 text-gold-500" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3 className="text-heading-4 font-semibold text-slate-900 mb-1">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-slate-600">
                       {feature.description}
                     </p>
                   </div>
@@ -102,21 +102,21 @@ const WelcomeModal = ({ isOpen, onClose, user }) => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={onClose}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
               >
                 Get Started
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-200"
+                className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-colors duration-200"
               >
                 Maybe Later
               </button>
             </div>
 
             {/* Trust Indicators */}
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
+            <div className="mt-8 pt-8 border-t border-slate-200">
+              <div className="flex items-center justify-center space-x-8 text-body-regular text-slate-500">
                 <div className="flex items-center space-x-1">
                   <Shield className="w-4 h-4" />
                   <span>Secure</span>

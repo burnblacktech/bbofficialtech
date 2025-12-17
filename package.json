@@ -151,7 +151,10 @@
     "redis_port": 6379
   },
   "dependencies": {
+    "bull": "^4.16.5",
+    "connect-redis": "^9.0.0",
     "framer-motion": "^12.23.16",
+    "ioredis": "^5.8.2",
     "styled-components": "^6.1.19"
   }
 }

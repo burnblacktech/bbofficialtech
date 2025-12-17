@@ -113,7 +113,7 @@ const DropdownMenu = ({
         <div
           ref={menuRef}
           className={cn(
-            'absolute z-50 bg-white border border-gray-200 rounded-lg shadow-floating min-w-[200px] py-1',
+            'absolute z-50 bg-white border border-slate-200 rounded-xl shadow-floating min-w-[200px] py-1',
             positionClasses[position],
             alignClasses[align],
           )}
@@ -121,7 +121,7 @@ const DropdownMenu = ({
         >
           {items.map((item, index) => {
             if (item.separator) {
-              return <div key={index} className="my-1 border-t border-gray-200" />;
+              return <div key={index} className="my-1 border-t border-slate-200" />;
             }
 
             const hasSubmenu = item.items && item.items.length > 0;
@@ -133,10 +133,10 @@ const DropdownMenu = ({
                   onMouseEnter={() => setFocusedIndex(index)}
                   className={cn(
                     'w-full flex items-center justify-between px-4 py-2 text-left text-body-md transition-colors',
-                    'hover:bg-gray-50 focus:bg-gray-50 focus:outline-none',
+                    'hover:bg-slate-50 focus:bg-slate-50 focus:outline-none',
                     {
-                      'bg-gray-50': focusedIndex === index,
-                      'text-gray-500 cursor-not-allowed': item.disabled,
+                      'bg-slate-50': focusedIndex === index,
+                      'text-slate-500 cursor-not-allowed': item.disabled,
                       'text-gray-800': !item.disabled,
                     },
                   )}
@@ -148,17 +148,17 @@ const DropdownMenu = ({
                     {item.icon && <item.icon className="w-4 h-4" />}
                     <span>{item.label}</span>
                   </div>
-                  {hasSubmenu && <ChevronRight className="w-4 h-4 text-gray-400" />}
+                  {hasSubmenu && <ChevronRight className="w-4 h-4 text-slate-400" />}
                 </button>
 
                 {/* Submenu */}
                 {hasSubmenu && (
-                  <div className="absolute left-full top-0 ml-1 bg-white border border-gray-200 rounded-lg shadow-floating min-w-[200px] py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  <div className="absolute left-full top-0 ml-1 bg-white border border-slate-200 rounded-xl shadow-floating min-w-[200px] py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                     {item.items.map((subItem, subIndex) => (
                       <button
                         key={subIndex}
                         onClick={() => handleItemClick(subItem)}
-                        className="w-full flex items-center space-x-3 px-4 py-2 text-left text-body-md text-gray-800 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center space-x-3 px-4 py-2 text-left text-body-md text-gray-800 hover:bg-slate-50 transition-colors"
                         style={{ fontSize: '14px', lineHeight: '22px' }}
                         role="menuitem"
                       >

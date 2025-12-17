@@ -121,7 +121,7 @@ const FileUpload = ({
     } else if (file.type === 'application/pdf') {
       return <FileText className="w-8 h-8 text-error-500" />;
     }
-    return <File className="w-8 h-8 text-gray-500" />;
+    return <File className="w-8 h-8 text-slate-500" />;
   };
 
   const formatFileSize = (bytes) => {
@@ -136,7 +136,7 @@ const FileUpload = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-label-lg text-gray-700 mb-1.5"
+          className="block text-label-lg text-slate-700 mb-1.5"
           style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}
         >
           {label}
@@ -153,10 +153,10 @@ const FileUpload = ({
         className={cn(
           'border-2 border-dashed rounded-[10px] p-6 text-center transition-all cursor-pointer',
           {
-            'border-gray-300 bg-gray-50 hover:border-gold-400 hover:bg-gold-50': !isDragging && !error && !disabled,
+            'border-slate-300 bg-slate-50 hover:border-gold-400 hover:bg-gold-50': !isDragging && !error && !disabled,
             'border-gold-500 bg-gold-100': isDragging && !error && !disabled,
             'border-error-500 bg-error-50': error,
-            'border-gray-200 bg-gray-100 cursor-not-allowed': disabled,
+            'border-slate-200 bg-slate-100 cursor-not-allowed': disabled,
           },
         )}
       >
@@ -178,15 +178,15 @@ const FileUpload = ({
         <Upload className={cn(
           'w-10 h-10 mx-auto mb-2',
           {
-            'text-gray-400': !isDragging && !error,
+            'text-slate-400': !isDragging && !error,
             'text-gold-500': isDragging,
             'text-error-500': error,
           },
         )} />
-        <p className="text-body-md text-gray-600 mb-1" style={{ fontSize: '14px', lineHeight: '22px' }}>
+        <p className="text-body-md text-slate-600 mb-1" style={{ fontSize: '14px', lineHeight: '22px' }}>
           {isDragging ? 'Drop files here' : 'Click to upload or drag and drop'}
         </p>
-        <p className="text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+        <p className="text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
           {accept && `Accepted: ${accept}`}
           {maxSize && ` • Max size: ${(maxSize / 1024 / 1024).toFixed(0)}MB`}
         </p>
@@ -198,7 +198,7 @@ const FileUpload = ({
           {value.map((file, index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+              className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200"
             >
               <div className="flex items-center space-x-3 flex-1 min-w-0">
                 {getFileIcon(file)}
@@ -206,7 +206,7 @@ const FileUpload = ({
                   <p className="text-body-md text-gray-800 truncate" style={{ fontSize: '14px', lineHeight: '22px' }}>
                     {file.name}
                   </p>
-                  <p className="text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+                  <p className="text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
                     {formatFileSize(file.size)}
                   </p>
                 </div>
@@ -218,10 +218,10 @@ const FileUpload = ({
                     e.stopPropagation();
                     removeFile(index);
                   }}
-                  className="p-1 rounded hover:bg-gray-200 transition-colors"
+                  className="p-1 rounded hover:bg-slate-200 transition-colors"
                   aria-label={`Remove ${file.name}`}
                 >
-                  <X className="w-4 h-4 text-gray-600" />
+                  <X className="w-4 h-4 text-slate-600" />
                 </button>
               )}
             </div>
@@ -233,11 +233,11 @@ const FileUpload = ({
       {showPreview && previews.length > 0 && (
         <div className="mt-4 grid grid-cols-4 gap-2">
           {previews.map((item, index) => (
-            <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+            <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200">
               {item.preview ? (
                 <img src={item.preview} alt={item.file.name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                <div className="w-full h-full flex items-center justify-center bg-slate-100">
                   {getFileIcon(item.file)}
                 </div>
               )}
@@ -272,7 +272,7 @@ const FileUpload = ({
       {helperText && !error && (
         <p
           id={helperId}
-          className="mt-1.5 text-body-sm text-gray-500"
+          className="mt-1.5 text-body-sm text-slate-500"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           {helperText}

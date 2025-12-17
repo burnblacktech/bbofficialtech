@@ -23,8 +23,8 @@ export const VerificationState = ({
   const stateConfig = {
     unverified: {
       icon: Circle,
-      color: 'text-gray-400',
-      bgColor: 'bg-gray-50',
+      color: 'text-slate-400',
+      bgColor: 'bg-slate-50',
       label: 'Unverified',
       animate: false,
     },
@@ -58,8 +58,8 @@ export const VerificationState = ({
     },
     manual: {
       icon: PenTool,
-      color: 'text-gray-500',
-      bgColor: 'bg-gray-50',
+      color: 'text-slate-500',
+      bgColor: 'bg-slate-50',
       label: 'Manual',
       animate: false,
     },

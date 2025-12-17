@@ -4,9 +4,19 @@
 // Supports async processing for tax computation, OCR, document processing
 // =====================================================
 
-const Bull = require('bull');
-const redisService = require('./RedisService');
 const enterpriseLogger = require('../../utils/logger');
+const redisService = require('./RedisService');
+
+let Bull;
+try {
+  Bull = require('bull');
+} catch (error) {
+  // Bull not installed - Job queue functionality will be disabled
+  enterpriseLogger.warn('bull not found - Job queue features will be disabled', {
+    error: error.message,
+  });
+  Bull = null;
+}
 
 class JobQueueService {
   constructor() {
@@ -22,8 +32,15 @@ class JobQueueService {
       return;
     }
 
+    if (!Bull) {
+      enterpriseLogger.warn('Job queue not initialized: Bull package not available');
+      this.isInitialized = false;
+      return false;
+    }
+
     if (!redisService.isReady()) {
       enterpriseLogger.warn('Job queue not initialized: Redis not available');
+      this.isInitialized = false;
       return false;
     }
 
@@ -241,14 +258,19 @@ class JobQueueService {
    * Close all queues
    */
   async close() {
-    if (!this.isInitialized) {
+    if (!this.isInitialized || this.queues.size === 0) {
+      enterpriseLogger.info('Job queue service not initialized, skipping close');
       return;
     }
 
+    enterpriseLogger.info('Closing job queue service...');
+
     for (const [name, queue] of this.queues.entries()) {
       try {
-        await queue.close();
-        enterpriseLogger.info(`Queue closed: ${name}`);
+        if (queue) {
+          await queue.close();
+          enterpriseLogger.info(`Queue closed: ${name}`);
+        }
       } catch (error) {
         enterpriseLogger.error(`Error closing queue: ${name}`, {
           error: error.message,

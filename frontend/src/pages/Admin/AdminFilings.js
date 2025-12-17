@@ -157,7 +157,7 @@ const AdminFilings = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                     selectedTab === tab.id
                       ? 'bg-primary-100 text-primary-700'
                       : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
@@ -290,7 +290,7 @@ const AdminFilings = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {filings.slice(0, 5).map((filing) => (
-                  <div key={filing.filing_id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                  <div key={filing.filing_id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                     <div className="flex items-center space-x-3">
                       {getStatusIcon(filing.status)}
                       <div>
@@ -333,7 +333,7 @@ const AdminFilings = () => {
                       placeholder="Search filings..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -341,7 +341,7 @@ const AdminFilings = () => {
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="all">All Status</option>
                       <option value="pending">Pending</option>
@@ -354,7 +354,7 @@ const AdminFilings = () => {
                   <select
                     value={itrTypeFilter}
                     onChange={(e) => setItrTypeFilter(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="all">All ITR Types</option>
                     <option value="itr1">ITR-1</option>
@@ -365,7 +365,7 @@ const AdminFilings = () => {
                   <select
                     value={dateRange}
                     onChange={(e) => setDateRange(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="all">All Time</option>
                     <option value="today">Today</option>
@@ -405,7 +405,7 @@ const AdminFilings = () => {
                       <StaggerItem key={filing.filing_id} className="p-4 sm:p-6 hover:bg-neutral-50 transition-colors">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-neutral-100 rounded-xl flex items-center justify-center">
                               {getStatusIcon(filing.status)}
                             </div>
                             <div>
@@ -536,9 +536,9 @@ const AdminFilings = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-info-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-info-100 rounded-xl flex items-center justify-center">
                       <FileText className="h-5 w-5 text-info-600" />
                     </div>
                     <div>
@@ -548,9 +548,9 @@ const AdminFilings = () => {
                   </div>
                 </button>
 
-                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-success-100 rounded-xl flex items-center justify-center">
                       <TrendingUp className="h-5 w-5 text-success-600" />
                     </div>
                     <div>
@@ -560,9 +560,9 @@ const AdminFilings = () => {
                   </div>
                 </button>
 
-                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-secondary-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-secondary-100 rounded-xl flex items-center justify-center">
                       <IndianRupee className="h-5 w-5 text-secondary-600" />
                     </div>
                     <div>
@@ -572,9 +572,9 @@ const AdminFilings = () => {
                   </div>
                 </button>
 
-                <button className="p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors text-left">
+                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-warning-100 rounded-xl flex items-center justify-center">
                       <Calendar className="h-5 w-5 text-warning-600" />
                     </div>
                     <div>

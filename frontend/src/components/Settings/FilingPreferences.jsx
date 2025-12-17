@@ -45,18 +45,18 @@ const FilingPreferences = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-heading-md font-semibold text-gray-900 mb-1">Filing Preferences</h3>
-        <p className="text-body-sm text-gray-600">
+        <h3 className="text-heading-md font-semibold text-slate-900 mb-1">Filing Preferences</h3>
+        <p className="text-body-sm text-slate-600">
           Customize your default settings for ITR filing
         </p>
       </div>
 
       {/* Default Tax Regime */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <label className="block text-body-sm font-medium text-gray-700 mb-2">
+      <div className="border border-slate-200 rounded-xl p-4">
+        <label className="block text-body-sm font-medium text-slate-700 mb-2">
           Default Tax Regime
         </label>
-        <p className="text-body-xs text-gray-500 mb-3">
+        <p className="text-body-xs text-slate-500 mb-3">
           Choose your preferred tax regime. You can always change this for individual filings.
         </p>
         <div className="flex gap-4">
@@ -86,13 +86,13 @@ const FilingPreferences = () => {
       </div>
 
       {/* Auto-copy from Previous Year */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <label className="block text-body-sm font-medium text-gray-700 mb-1">
+            <label className="block text-body-sm font-medium text-slate-700 mb-1">
               Auto-copy from Previous Year
             </label>
-            <p className="text-body-xs text-gray-500">
+            <p className="text-body-xs text-slate-500">
               Automatically suggest copying data from your previous year's filing
             </p>
           </div>
@@ -105,19 +105,19 @@ const FilingPreferences = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Skip Onboarding Tour */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <label className="block text-body-sm font-medium text-gray-700 mb-1">
+            <label className="block text-body-sm font-medium text-slate-700 mb-1">
               Skip Onboarding Tour
             </label>
-            <p className="text-body-xs text-gray-500">
+            <p className="text-body-xs text-slate-500">
               Skip the guided tour when starting a new filing
             </p>
           </div>
@@ -130,19 +130,19 @@ const FilingPreferences = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Expert Mode */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <label className="block text-body-sm font-medium text-gray-700 mb-1">
+            <label className="block text-body-sm font-medium text-slate-700 mb-1">
               Expert Mode
             </label>
-            <p className="text-body-xs text-gray-500">
+            <p className="text-body-xs text-slate-500">
               Enable advanced features and skip simplified explanations
             </p>
           </div>
@@ -155,17 +155,17 @@ const FilingPreferences = () => {
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
           </label>
         </div>
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-slate-200">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isSaving ? (
             <>

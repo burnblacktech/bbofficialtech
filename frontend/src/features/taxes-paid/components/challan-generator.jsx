@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { FileText, Download, CreditCard, Info, ExternalLink } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import { useTaxesPaid } from '../hooks/use-taxes-paid';
 import taxPaymentService from '../services/tax-payment.service';
 import { useCreatePaymentOrder, useInitiateITDPayment } from '../hooks/use-tax-payment';
@@ -155,14 +155,14 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center mb-6">
         <FileText className="h-6 w-6 text-gold-600 mr-3" />
         <h3 className="text-heading-md text-gray-800">Generate Tax Payment Challan</h3>
       </div>
 
       <div className="space-y-4">
-        <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+        <div className="bg-info-50 border border-info-200 rounded-xl p-4">
           <div className="flex items-start">
             <Info className="h-5 w-5 text-info-600 mt-0.5 mr-2" />
             <div>
@@ -179,25 +179,25 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Assessment Year
             </label>
             <input
               type="text"
               value={challanData.assessmentYear}
               onChange={(e) => setChallanData({ ...challanData, assessmentYear: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Type of Payment
             </label>
             <select
               value={challanData.typeOfPayment}
               onChange={(e) => setChallanData({ ...challanData, typeOfPayment: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="100">Advance Tax (100)</option>
               <option value="300">Self-Assessment Tax (300)</option>
@@ -206,26 +206,26 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Amount (₹)
             </label>
             <input
               type="number"
               value={challanData.amount}
               onChange={(e) => setChallanData({ ...challanData, amount: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0"
             />
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Mode of Payment
             </label>
             <select
               value={challanData.modeOfPayment}
               onChange={(e) => setChallanData({ ...challanData, modeOfPayment: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="online">Online Payment</option>
               <option value="offline">Offline Payment</option>
@@ -234,13 +234,13 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
 
           {challanData.modeOfPayment === 'online' && (
             <div>
-              <label className="block text-body-sm font-medium text-gray-700 mb-2">
+              <label className="block text-body-sm font-medium text-slate-700 mb-2">
                 Payment Gateway
               </label>
               <select
                 value={challanData.paymentMethod}
                 onChange={(e) => setChallanData({ ...challanData, paymentMethod: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 <option value="razorpay">Razorpay (Seamless)</option>
                 <option value="itd_direct">ITD Direct Gateway</option>
@@ -250,7 +250,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
         </div>
 
         {challanData.modeOfPayment === 'online' && (
-          <div className="bg-success-50 border border-success-200 rounded-lg p-4">
+          <div className="bg-success-50 border border-success-200 rounded-xl p-4">
             <div className="flex items-center">
               <CreditCard className="h-5 w-5 text-success-600 mr-2" />
               <p className="text-body-sm text-success-900">
@@ -263,7 +263,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
         )}
 
         {generatedChallan && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-body-sm font-semibold text-green-900">Challan Generated</p>
@@ -296,7 +296,7 @@ const ChallanGenerator = ({ filingId, taxPayable, onChallanGenerated, onPaymentI
           </div>
         )}
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
           <Button variant="outline" onClick={handleGenerate} loading={isPending} disabled={!!generatedChallan}>
             <Download className="h-4 w-4 mr-2" />
             {generatedChallan ? 'Regenerate Challan' : 'Generate Challan'}

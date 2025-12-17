@@ -15,7 +15,7 @@ const FilingStatusBadge = ({ filing, showInvoice = true, showLastUpdated = false
   const getStatusConfig = (status) => {
     const statusMap = {
       draft: {
-        color: 'bg-gray-100 text-gray-700 border-gray-300',
+        color: 'bg-slate-100 text-slate-700 border-slate-300',
         icon: FileText,
         label: 'Draft',
       },
@@ -64,17 +64,17 @@ const FilingStatusBadge = ({ filing, showInvoice = true, showLastUpdated = false
 
   return (
     <div className={`flex flex-col space-y-2 ${className}`}>
-      <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border text-sm font-medium ${config.color}`}>
+      <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-sm font-medium ${config.color}`}>
         <Icon className="w-4 h-4" />
         <span>{config.label}</span>
         {filing.status === 'paused' && filing.pausedAt && (
-          <span className="text-xs opacity-75">
+          <span className="text-body-small opacity-75">
             ({formatDate(filing.pausedAt)})
           </span>
         )}
       </div>
       {showLastUpdated && filing.updatedAt && (
-        <span className="text-xs text-gray-500">
+        <span className="text-body-small text-slate-500">
           Last updated: {formatDate(filing.updatedAt)}
         </span>
       )}

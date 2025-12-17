@@ -217,7 +217,7 @@ const ServiceTicketManagement = () => {
             </Typography.Body>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">
+            <button className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors">
               Export Tickets
             </button>
           </div>
@@ -235,7 +235,7 @@ const ServiceTicketManagement = () => {
                     placeholder="Search tickets by ID, title, or description..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -243,7 +243,7 @@ const ServiceTicketManagement = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
                 >
                   <option value="all">All Status</option>
                   <option value="open">Open</option>
@@ -254,7 +254,7 @@ const ServiceTicketManagement = () => {
                 <select
                   value={filterPriority}
                   onChange={(e) => setFilterPriority(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
                 >
                   <option value="all">All Priority</option>
                   <option value="high">High</option>
@@ -282,7 +282,7 @@ const ServiceTicketManagement = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="border border-neutral-200 rounded-lg p-6 hover:bg-neutral-50 transition-colors"
+                  className="border border-neutral-200 rounded-xl p-6 hover:bg-neutral-50 transition-colors"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
@@ -304,7 +304,7 @@ const ServiceTicketManagement = () => {
                       <Typography.Small className="text-neutral-600 mb-3">
                         {ticket.description}
                       </Typography.Small>
-                      <div className="flex items-center space-x-4 text-sm text-neutral-500">
+                      <div className="flex items-center space-x-4 text-body-regular text-neutral-500">
                         <div className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
                           <span>{ticket.user.name} ({ticket.user.role})</span>
@@ -366,7 +366,7 @@ const ServiceTicketManagement = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-elevation-4 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
@@ -433,7 +433,7 @@ const ServiceTicketManagement = () => {
                           className={`flex ${message.sender === 'user' ? 'justify-start' : 'justify-end'}`}
                         >
                           <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${
                               message.sender === 'user'
                                 ? 'bg-neutral-100 text-neutral-800'
                                 : 'bg-primary-500 text-white'
@@ -460,21 +460,21 @@ const ServiceTicketManagement = () => {
                       <textarea
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         rows={4}
                         placeholder="Type your reply here..."
                       />
                       <div className="flex items-center justify-end space-x-3">
                         <button
                           onClick={() => setShowTicketModal(false)}
-                          className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                          className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                         >
                           Close
                         </button>
                         <button
                           onClick={handleSendReply}
                           disabled={!replyText.trim()}
-                          className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                          className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
                         >
                           <Send className="w-4 h-4" />
                           <span>Send Reply</span>

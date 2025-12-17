@@ -10,7 +10,7 @@ import ITRVStatusCard from '../../components/ITR/ITRVStatusCard';
 import ITRVTimeline from '../../components/ITR/ITRVTimeline';
 import apiClient from '../../services/core/APIClient';
 import toast from 'react-hot-toast';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import { cn } from '../../lib/utils';
 import { enterpriseLogger } from '../../utils/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -114,7 +114,7 @@ const ITRVTracking = () => {
       <div>
         <div className="text-center py-12">
           <RefreshCw className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
-          <p className="text-gray-600">Loading ITR-V status...</p>
+          <p className="text-slate-600">Loading ITR-V status...</p>
         </div>
       </div>
     );
@@ -123,12 +123,12 @@ const ITRVTracking = () => {
   if (isError) {
     return (
       <div>
-        <div className="bg-white rounded-lg shadow-sm border border-error-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-error-200 p-6">
           <div className="flex items-center gap-3 mb-4">
             <AlertCircle className="w-6 h-6 text-error-600" />
-            <h3 className="text-lg font-semibold text-error-900">Error Loading ITR-V Status</h3>
+            <h3 className="text-heading-4 font-semibold text-error-900">Error Loading ITR-V Status</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-body-regular text-slate-600 mb-4">
             {error?.response?.data?.message || error?.message || 'An unexpected error occurred.'}
           </p>
           <div className="flex gap-2">
@@ -147,10 +147,10 @@ const ITRVTracking = () => {
   if (!itrvData && !filingId) {
     return (
       <div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-          <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Filing Selected</h3>
-          <p className="text-sm text-gray-600 mb-4">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 text-center">
+          <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No Filing Selected</h3>
+          <p className="text-body-regular text-slate-600 mb-4">
             Please select a filing to view ITR-V tracking information.
           </p>
           <Button variant="primary" onClick={() => navigate('/itr/filings')}>
@@ -173,10 +173,10 @@ const ITRVTracking = () => {
             Back
           </Button>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
-          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">ITR-V Tracking Not Initialized</h3>
-          <p className="text-sm text-gray-600 mb-4">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 text-center">
+          <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">ITR-V Tracking Not Initialized</h3>
+          <p className="text-body-regular text-slate-600 mb-4">
             ITR-V tracking has not been initialized for this filing. Initialize it to start tracking.
           </p>
           <Button
@@ -204,8 +204,8 @@ const ITRVTracking = () => {
           >
             Back
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">ITR-V Tracking</h1>
-          <p className="text-sm text-gray-600">
+          <h1 className="text-heading-2 font-bold text-slate-900 mb-2">ITR-V Tracking</h1>
+          <p className="text-body-regular text-slate-600">
             Track the status of your ITR-V processing and verification
           </p>
         </div>
@@ -222,8 +222,8 @@ const ITRVTracking = () => {
 
         {/* Timeline */}
         {itrvData.timeline && itrvData.timeline.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Processing Timeline</h2>
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
+            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Processing Timeline</h2>
             <ITRVTimeline timeline={itrvData.timeline} />
           </div>
         )}
@@ -239,7 +239,7 @@ const ITRVTracking = () => {
             title="Verify ITR-V"
           >
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-body-regular text-slate-600">
                 Select the verification method you used to verify your ITR-V:
               </p>
               <Select

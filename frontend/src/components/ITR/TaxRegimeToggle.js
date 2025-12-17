@@ -8,13 +8,13 @@ import { RefreshCw, TrendingUp, TrendingDown } from 'lucide-react';
 
 const TaxRegimeToggle = ({ regime, onRegimeChange, isComparing = false, comparisonData = null }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Tax Regime</h3>
+        <h3 className="text-heading-4 font-semibold text-slate-900">Tax Regime</h3>
         {comparisonData && (
           <div className="flex items-center space-x-2">
             {comparisonData.comparison.recommendedRegime === regime && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-gold-100 text-gold-700">
                 <TrendingDown className="w-3 h-3 mr-1" />
                 Recommended
               </span>
@@ -33,24 +33,24 @@ const TaxRegimeToggle = ({ regime, onRegimeChange, isComparing = false, comparis
             onChange={(e) => onRegimeChange(e.target.value)}
             className="sr-only"
           />
-          <div className={`px-4 py-3 rounded-lg border-2 transition-all ${
+          <div className={`px-4 py-3 rounded-xl border-2 transition-all ${
             regime === 'old'
               ? 'border-regime-old bg-regime-old/10'
-              : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+              : 'border-slate-200 bg-slate-50 hover:border-slate-300'
           }`}>
             <div className="flex items-center space-x-2">
               <div className={`w-4 h-4 rounded-full border-2 ${
                 regime === 'old'
                   ? 'border-regime-old bg-regime-old'
-                  : 'border-gray-300'
+                  : 'border-slate-300'
               }`}>
                 {regime === 'old' && (
                   <div className="w-full h-full rounded-full bg-white scale-50"></div>
                 )}
               </div>
               <div>
-                <div className="font-semibold text-gray-900">Old Regime</div>
-                <div className="text-xs text-gray-500">With all deductions</div>
+                <div className="font-semibold text-slate-900">Old Regime</div>
+                <div className="text-body-small text-slate-500">With all deductions</div>
               </div>
             </div>
           </div>
@@ -65,24 +65,24 @@ const TaxRegimeToggle = ({ regime, onRegimeChange, isComparing = false, comparis
             onChange={(e) => onRegimeChange(e.target.value)}
             className="sr-only"
           />
-          <div className={`px-4 py-3 rounded-lg border-2 transition-all ${
+          <div className={`px-4 py-3 rounded-xl border-2 transition-all ${
             regime === 'new'
               ? 'border-regime-new bg-regime-new/10'
-              : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+              : 'border-slate-200 bg-slate-50 hover:border-slate-300'
           }`}>
             <div className="flex items-center space-x-2">
               <div className={`w-4 h-4 rounded-full border-2 ${
                 regime === 'new'
                   ? 'border-regime-new bg-regime-new'
-                  : 'border-gray-300'
+                  : 'border-slate-300'
               }`}>
                 {regime === 'new' && (
                   <div className="w-full h-full rounded-full bg-white scale-50"></div>
                 )}
               </div>
               <div>
-                <div className="font-semibold text-gray-900">New Regime</div>
-                <div className="text-xs text-gray-500">Section 115BAC</div>
+                <div className="font-semibold text-slate-900">New Regime</div>
+                <div className="text-body-small text-slate-500">Section 115BAC</div>
               </div>
             </div>
           </div>
@@ -90,9 +90,9 @@ const TaxRegimeToggle = ({ regime, onRegimeChange, isComparing = false, comparis
       </div>
 
       {comparisonData && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Tax Savings:</span>
+        <div className="mt-4 pt-4 border-t border-slate-200">
+          <div className="flex items-center justify-between text-body-regular">
+            <span className="text-slate-600">Tax Savings:</span>
             <span className={`font-semibold ${
               comparisonData.comparison.savingsType === 'new_regime'
                 ? 'text-gold-600'

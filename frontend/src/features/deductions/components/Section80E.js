@@ -18,7 +18,7 @@ import {
   Calendar,
   BookOpen,
 } from 'lucide-react';
-import apiClient from '../../../services/core/APIClient';
+import { deductionService } from '../services/deduction.service';
 import toast from 'react-hot-toast';
 import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
@@ -51,14 +51,7 @@ const Section80E = ({ filingId, onUpdate }) => {
   // Fetch 80E deductions
   const { data: deductionsData, isLoading } = useQuery({
     queryKey: ['section80E', filingId],
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(`/api/itr/deductions/80E?filingId=${filingId}`);
-        return response.data;
-      } catch (error) {
-        return { data: { deductions: [], totalAmount: 0 } };
-      }
-    },
+    queryFn: () => deductionService.getDeductions(filingId, '80E'),
     enabled: !!filingId,
   });
 
@@ -66,11 +59,7 @@ const Section80E = ({ filingId, onUpdate }) => {
   const addDeductionMutation = useMutation({
     mutationFn: async (data) => {
       try {
-        const response = await apiClient.post('/api/itr/deductions/80E', {
-          filingId,
-          ...data,
-        });
-        return response.data;
+        return await deductionService.createDeduction(filingId, '80E', data);
       } catch (error) {
         const amount = parseFloat(data.interestPaid) || 0;
         if (onUpdate) {
@@ -79,11 +68,14 @@ const Section80E = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80E', filingId]);
       resetForm();
       setShowAddForm(false);
       toast.success('80E deduction added successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80E: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to add deduction');
@@ -94,8 +86,7 @@ const Section80E = ({ filingId, onUpdate }) => {
   const updateDeductionMutation = useMutation({
     mutationFn: async ({ deductionId, data }) => {
       try {
-        const response = await apiClient.put(`/api/itr/deductions/80E/${deductionId}`, data);
-        return response.data;
+        return await deductionService.updateDeductionBySection(filingId, '80E', deductionId, data);
       } catch (error) {
         const amount = parseFloat(data.interestPaid) || 0;
         if (onUpdate) {
@@ -104,11 +95,14 @@ const Section80E = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80E', filingId]);
       resetForm();
       setEditingDeduction(null);
       toast.success('80E deduction updated successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80E: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to update deduction');
@@ -119,8 +113,7 @@ const Section80E = ({ filingId, onUpdate }) => {
   const deleteDeductionMutation = useMutation({
     mutationFn: async (deductionId) => {
       try {
-        const response = await apiClient.delete(`/api/itr/deductions/80E/${deductionId}`);
-        return response.data;
+        return await deductionService.deleteDeductionBySection(filingId, '80E', deductionId);
       } catch (error) {
         if (onUpdate) {
           onUpdate({ section80E: 0 });
@@ -128,9 +121,12 @@ const Section80E = ({ filingId, onUpdate }) => {
         return { success: true };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80E', filingId]);
       toast.success('80E deduction deleted successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80E: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to delete deduction');
@@ -260,20 +256,20 @@ const Section80E = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-gold-100 rounded-lg">
+            <div className="p-3 bg-gold-100 rounded-xl">
               <GraduationCap className="h-6 w-6 text-gold-600" />
             </div>
             <div>
-              <h2 className="text-heading-lg text-gray-900">Section 80E</h2>
-              <p className="text-body-sm text-gray-600">Education Loan Interest (No upper limit)</p>
+              <h2 className="text-heading-lg text-slate-900">Section 80E</h2>
+              <p className="text-body-sm text-slate-600">Education Loan Interest (No upper limit)</p>
             </div>
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Add Loan</span>
@@ -281,9 +277,9 @@ const Section80E = ({ filingId, onUpdate }) => {
         </div>
 
         {/* Summary */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-slate-50 rounded-xl p-4">
           <div className="flex justify-between items-center">
-            <span className="text-body-sm font-medium text-gray-700">Total Interest Deduction</span>
+            <span className="text-body-sm font-medium text-slate-700">Total Interest Deduction</span>
             <span className="text-heading-lg font-bold text-gold-600">₹{totalAmount.toLocaleString('en-IN')}</span>
           </div>
         </div>
@@ -295,47 +291,47 @@ const Section80E = ({ filingId, onUpdate }) => {
           {deductions.map((deduction) => (
             <div
               key={deduction.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+              className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4 flex-1">
-                  <div className="p-3 bg-gold-100 rounded-lg">
+                  <div className="p-3 bg-gold-100 rounded-xl">
                     <GraduationCap className="h-6 w-6 text-gold-600" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
-                      <h3 className="text-heading-md text-gray-900">{deduction.studentName}</h3>
+                      <h3 className="text-heading-md text-slate-900">{deduction.studentName}</h3>
                       {deduction.isVerified && (
                         <CheckCircle2 className="h-5 w-5 text-green-600" />
                       )}
                     </div>
                     <div className="space-y-2">
                       <div>
-                        <span className="text-body-sm text-gray-600">Lender: </span>
-                        <span className="text-body-sm font-medium text-gray-900">{deduction.lenderName}</span>
+                        <span className="text-body-sm text-slate-600">Lender: </span>
+                        <span className="text-body-sm font-medium text-slate-900">{deduction.lenderName}</span>
                       </div>
                       <div>
-                        <span className="text-body-sm text-gray-600">Loan Account: </span>
-                        <span className="text-body-sm font-medium text-gray-900">{deduction.loanAccountNumber}</span>
+                        <span className="text-body-sm text-slate-600">Loan Account: </span>
+                        <span className="text-body-sm font-medium text-slate-900">{deduction.loanAccountNumber}</span>
                       </div>
                       <div>
-                        <span className="text-body-sm text-gray-600">Purpose: </span>
-                        <span className="text-body-sm font-medium text-gray-900">{deduction.loanPurpose}</span>
+                        <span className="text-body-sm text-slate-600">Purpose: </span>
+                        <span className="text-body-sm font-medium text-slate-900">{deduction.loanPurpose}</span>
                       </div>
                       {deduction.courseName && (
                         <div>
-                          <span className="text-body-sm text-gray-600">Course: </span>
-                          <span className="text-body-sm font-medium text-gray-900">{deduction.courseName}</span>
+                          <span className="text-body-sm text-slate-600">Course: </span>
+                          <span className="text-body-sm font-medium text-slate-900">{deduction.courseName}</span>
                         </div>
                       )}
                       <div className="mt-3">
                         <div className="text-heading-md font-bold text-gold-600">
                           ₹{parseFloat(deduction.interestPaid || 0).toLocaleString('en-IN')}
                         </div>
-                        <div className="text-body-xs text-gray-600">Interest Paid</div>
+                        <div className="text-body-xs text-slate-600">Interest Paid</div>
                       </div>
                       {deduction.proofDocument && (
-                        <div className="flex items-center space-x-2 text-body-sm text-gray-600">
+                        <div className="flex items-center space-x-2 text-body-sm text-slate-600">
                           <FileText className="h-4 w-4" />
                           <span>Interest certificate uploaded</span>
                         </div>
@@ -351,19 +347,19 @@ const Section80E = ({ filingId, onUpdate }) => {
                       onChange={(e) => handleProofUpload(e, deduction.id)}
                       className="hidden"
                     />
-                    <div className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                    <div className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
                       <Upload className="h-4 w-4" />
                     </div>
                   </label>
                   <button
                     onClick={() => handleEdit(deduction)}
-                    className="p-2 text-gold-600 hover:bg-gold-50 rounded-md transition-colors"
+                    className="p-2 text-gold-600 hover:bg-gold-50 rounded-xl transition-colors"
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(deduction.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    className="p-2 text-error-600 hover:bg-error-50 rounded-xl transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -373,15 +369,15 @@ const Section80E = ({ filingId, onUpdate }) => {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-heading-md text-gray-900 mb-2">No Education Loans</h3>
-          <p className="text-body-sm text-gray-600 mb-4">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <GraduationCap className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-heading-md text-slate-900 mb-2">No Education Loans</h3>
+          <p className="text-body-sm text-slate-600 mb-4">
             Add education loan interest details to claim deduction under Section 80E
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
           >
             Add Loan
           </button>
@@ -391,9 +387,9 @@ const Section80E = ({ filingId, onUpdate }) => {
       {/* Add/Edit Form Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-elevation-4 p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-heading-xl text-gray-900">
+              <h2 className="text-heading-xl text-slate-900">
                 {editingDeduction ? 'Edit' : 'Add'} 80E Deduction
               </h2>
               <button
@@ -401,7 +397,7 @@ const Section80E = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
                 <AlertCircle className="h-6 w-6" />
               </button>
@@ -410,15 +406,15 @@ const Section80E = ({ filingId, onUpdate }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Lender Name */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Lender Name <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.lenderName}
                   onChange={(e) => setFormData({ ...formData, lenderName: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.lenderName ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.lenderName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter lender/bank name"
                 />
@@ -429,15 +425,15 @@ const Section80E = ({ filingId, onUpdate }) => {
 
               {/* Loan Account Number */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Loan Account Number <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.loanAccountNumber}
                   onChange={(e) => setFormData({ ...formData, loanAccountNumber: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.loanAccountNumber ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.loanAccountNumber ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter loan account number"
                 />
@@ -448,36 +444,36 @@ const Section80E = ({ filingId, onUpdate }) => {
 
               {/* Interest Paid */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Interest Paid (₹) <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="number"
                   value={formData.interestPaid}
                   onChange={(e) => setFormData({ ...formData, interestPaid: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.interestPaid ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.interestPaid ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter interest paid during the year"
                 />
                 {formErrors.interestPaid && (
                   <p className="mt-1 text-body-xs text-error-600">{formErrors.interestPaid}</p>
                 )}
-                <p className="mt-1 text-body-xs text-gray-500">
+                <p className="mt-1 text-body-xs text-slate-500">
                   Full interest amount is deductible (no upper limit)
                 </p>
               </div>
 
               {/* Loan Purpose */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Loan Purpose <span className="text-error-600">*</span>
                 </label>
                 <select
                   value={formData.loanPurpose}
                   onChange={(e) => setFormData({ ...formData, loanPurpose: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.loanPurpose ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.loanPurpose ? 'border-error-500' : 'border-slate-300'
                   }`}
                 >
                   <option value="">Select loan purpose</option>
@@ -494,15 +490,15 @@ const Section80E = ({ filingId, onUpdate }) => {
 
               {/* Student Name */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Student Name <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.studentName}
                   onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.studentName ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.studentName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter student name"
                 />
@@ -513,47 +509,47 @@ const Section80E = ({ filingId, onUpdate }) => {
 
               {/* Course Name */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Course Name
                 </label>
                 <input
                   type="text"
                   value={formData.courseName}
                   onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Enter course name"
                 />
               </div>
 
               {/* Institution Name */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Institution Name
                 </label>
                 <input
                   type="text"
                   value={formData.institutionName}
                   onChange={(e) => setFormData({ ...formData, institutionName: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Enter institution name"
                 />
               </div>
 
               {/* Loan Start Date */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Loan Start Date
                 </label>
                 <input
                   type="date"
                   value={formData.loanStartDate}
                   onChange={(e) => setFormData({ ...formData, loanStartDate: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
               </div>
 
               {/* Info Box */}
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4">
                 <div className="flex">
                   <AlertCircle className="h-5 w-5 text-info-600 flex-shrink-0 mt-0.5" />
                   <div className="ml-3">
@@ -576,14 +572,14 @@ const Section80E = ({ filingId, onUpdate }) => {
                     resetForm();
                     setShowAddForm(false);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                  className="flex-1 py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+                  className="flex-1 py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {addDeductionMutation.isPending || updateDeductionMutation.isPending
                     ? 'Saving...'

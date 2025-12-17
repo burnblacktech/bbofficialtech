@@ -11,9 +11,9 @@ import { format } from 'date-fns';
 const ITRVTimeline = ({ timeline = [], className = '' }) => {
   if (!timeline || timeline.length === 0) {
     return (
-      <div className={cn('text-center py-8 text-gray-500', className)}>
-        <Clock className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-        <p className="text-sm">No timeline events yet</p>
+      <div className={cn('text-center py-8 text-slate-500', className)}>
+        <Clock className="w-8 h-8 mx-auto mb-2 text-slate-400" />
+        <p className="text-body-regular">No timeline events yet</p>
       </div>
     );
   }
@@ -32,7 +32,7 @@ const ITRVTimeline = ({ timeline = [], className = '' }) => {
       case 'failed':
         return <XCircle className="w-5 h-5 text-error-600" />;
       default:
-        return <Clock className="w-5 h-5 text-gray-400" />;
+        return <Clock className="w-5 h-5 text-slate-400" />;
     }
   };
 
@@ -50,14 +50,14 @@ const ITRVTimeline = ({ timeline = [], className = '' }) => {
       case 'failed':
         return 'border-error-500 bg-error-50';
       default:
-        return 'border-gray-300 bg-gray-50';
+        return 'border-slate-300 bg-slate-50';
     }
   };
 
   return (
     <div className={cn('relative', className)}>
       {/* Timeline Line */}
-      <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gray-200" />
+      <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-200" />
 
       {/* Timeline Items */}
       <div className="relative space-y-6">
@@ -78,18 +78,18 @@ const ITRVTimeline = ({ timeline = [], className = '' }) => {
               {/* Content */}
               <div className="flex-1 pb-6">
                 <div className="flex items-center justify-between mb-1">
-                  <h4 className="text-sm font-semibold text-gray-900 capitalize">
+                  <h4 className="text-sm font-semibold text-slate-900 capitalize">
                     {event.status.replace(/_/g, ' ')}
                   </h4>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-body-small text-slate-500">
                     {format(new Date(event.date), 'dd MMM yyyy, hh:mm a')}
                   </span>
                 </div>
                 {event.message && (
-                  <p className="text-sm text-gray-600">{event.message}</p>
+                  <p className="text-body-regular text-slate-600">{event.message}</p>
                 )}
                 {event.source && (
-                  <p className="text-xs text-gray-500 mt-1">Source: {event.source}</p>
+                  <p className="text-body-small text-slate-500 mt-1">Source: {event.source}</p>
                 )}
               </div>
             </div>

@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Upload, X, FileText } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 
 const NoticeResponseForm = ({
@@ -76,7 +76,7 @@ const NoticeResponseForm = ({
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)}>
       {/* Response Text */}
       <div>
-        <label htmlFor="responseText" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="responseText" className="block text-body-regular font-medium text-slate-700 mb-2">
           Response Text <span className="text-error-500">*</span>
         </label>
         <textarea
@@ -84,21 +84,21 @@ const NoticeResponseForm = ({
           value={responseText}
           onChange={(e) => setResponseText(e.target.value)}
           rows={6}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           placeholder="Enter your response to the assessment notice..."
           required={responseDocuments.length === 0}
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-body-small text-slate-500">
           Provide a detailed response explaining your position regarding this notice
         </p>
       </div>
 
       {/* Document Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-body-regular font-medium text-slate-700 mb-2">
           Supporting Documents
         </label>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+        <div className="border-2 border-dashed border-slate-300 rounded-xl p-4">
           <input
             type="file"
             id="fileUpload"
@@ -114,11 +114,11 @@ const NoticeResponseForm = ({
               uploading && 'opacity-50 cursor-not-allowed',
             )}
           >
-            <Upload className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-600">
+            <Upload className="w-8 h-8 text-slate-400 mb-2" />
+            <span className="text-body-regular text-slate-600">
               {uploading ? 'Uploading...' : 'Click to upload or drag and drop'}
             </span>
-            <span className="text-xs text-gray-500 mt-1">
+            <span className="text-body-small text-slate-500 mt-1">
               PDF, DOC, DOCX, JPG, PNG (Max 10MB each)
             </span>
           </label>
@@ -130,13 +130,13 @@ const NoticeResponseForm = ({
             {responseDocuments.map((doc, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200"
+                className="flex items-center justify-between p-2 bg-slate-50 rounded border border-slate-200"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-sm text-gray-700 truncate">{doc.name}</span>
+                  <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="text-body-regular text-slate-700 truncate">{doc.name}</span>
                   {doc.size && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-body-small text-slate-500">
                       ({(doc.size / 1024 / 1024).toFixed(2)} MB)
                     </span>
                   )}
@@ -144,7 +144,7 @@ const NoticeResponseForm = ({
                 <button
                   type="button"
                   onClick={() => handleRemoveDocument(index)}
-                  className="ml-2 p-1 text-gray-400 hover:text-error-600 transition-colors"
+                  className="ml-2 p-1 text-slate-400 hover:text-error-600 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>

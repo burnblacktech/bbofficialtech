@@ -29,10 +29,10 @@ const CompactFlowItem = ({ label, value, isLast = false, highlight = false, isLo
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
-          <span className="text-xs text-slate-500">Calculating...</span>
+          <span className="text-body-small text-slate-500">Calculating...</span>
         </div>
       ) : (
-        <span className="text-base font-bold text-slate-900 tabular-nums">
+        <span className="text-body-large font-bold text-slate-900 tabular-nums">
           <AnimatedNumber value={value} format="currency" compact />
         </span>
       )}
@@ -109,11 +109,11 @@ const RegimeBadge = ({ regime, isRecommended, savings, onClick, isOpen }) => (
         <Sparkles className="w-4 h-4 text-emerald-500" />
       </motion.div>
     )}
-    <span className="text-sm font-semibold">
+    <span className="text-body-regular font-semibold">
       {regime === 'old' ? 'Old Regime' : 'New Regime'}
     </span>
     {isRecommended && savings > 0 && (
-      <span className="text-xs font-medium bg-emerald-500 text-white px-2 py-0.5 rounded-full">
+      <span className="text-body-small font-medium bg-emerald-500 text-white px-2 py-0.5 rounded-full">
         Save {formatIndianCurrency(savings, true)}
       </span>
     )}
@@ -142,7 +142,7 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
       className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 z-[70] ${isMobile ? 'w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)]' : 'w-[560px] max-w-[95vw]'}`}
     >
       {/* Backdrop blur container */}
-      <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200 shadow-2xl shadow-slate-900/10 overflow-hidden overflow-y-auto"
+      <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200 shadow-elevation-4 shadow-slate-900/10 overflow-hidden overflow-y-auto"
         style={{
           maxHeight: isMobile ? 'calc(100vh - 200px)' : '80vh',
         }}
@@ -150,14 +150,14 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-primary-100 flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-primary-600" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900">Regime Comparison</h3>
+            <h3 className="text-heading-4 font-semibold text-slate-900">Regime Comparison</h3>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
           >
             <ChevronUp className="w-5 h-5 text-slate-600" />
           </button>
@@ -178,14 +178,14 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
               whileHover={{ scale: 1.02 }}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-700">Old Regime</span>
+                <span className="text-body-regular font-semibold text-slate-700">Old Regime</span>
                 {recommendedRegime === 'old' && (
                   <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">
                     Best
                   </span>
                 )}
               </div>
-              <div className="text-2xl font-bold text-slate-900 tabular-nums mb-2">
+              <div className="text-heading-2 font-bold text-slate-900 tabular-nums mb-2">
                 <AnimatedNumber value={computedValues.taxPayableOld} format="currency" />
               </div>
               <div className={`text-sm font-medium ${oldRefund > 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
@@ -205,14 +205,14 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
               whileHover={{ scale: 1.02 }}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-700">New Regime</span>
+                <span className="text-body-regular font-semibold text-slate-700">New Regime</span>
                 {recommendedRegime === 'new' && (
                   <span className="text-[10px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">
                     Best
                   </span>
                 )}
               </div>
-              <div className="text-2xl font-bold text-slate-900 tabular-nums mb-2">
+              <div className="text-heading-2 font-bold text-slate-900 tabular-nums mb-2">
                 <AnimatedNumber value={computedValues.taxPayableNew} format="currency" />
               </div>
               <div className={`text-sm font-medium ${newRefund > 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
@@ -235,10 +235,10 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
                     <CheckCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-emerald-100">
+                    <p className="text-body-regular font-medium text-emerald-100">
                       {recommendedRegime === 'old' ? 'Old' : 'New'} Regime saves you
                     </p>
-                    <p className="text-xl font-bold">{formatIndianCurrency(savings)}</p>
+                    <p className="text-heading-3 font-bold">{formatIndianCurrency(savings)}</p>
                   </div>
                 </div>
               </div>
@@ -246,7 +246,7 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
           )}
 
           {/* Breakdown Table */}
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-body-regular">
             <div className="grid grid-cols-3 gap-4 py-2 border-b border-slate-100">
               <span className="font-medium text-slate-500">Breakdown</span>
               <span className="text-center font-medium text-slate-500">Old</span>
@@ -259,7 +259,7 @@ const RegimeComparisonDropdown = ({ computedValues, recommendedRegime, savings, 
             </div>
             {computedValues.agriculturalIncome > 0 && (
               <div className="grid grid-cols-3 gap-4 py-2">
-                <span className="text-slate-600">Agricultural Income <span className="text-xs text-slate-400">(exempt)</span></span>
+                <span className="text-slate-600">Agricultural Income <span className="text-body-small text-slate-400">(exempt)</span></span>
                 <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.agriculturalIncome)}</span>
                 <span className="text-center text-slate-900 tabular-nums">{formatIndianCurrency(computedValues.agriculturalIncome)}</span>
               </div>
@@ -493,7 +493,7 @@ const TaxComputationBar = ({
         aria-label="Tax computation summary"
       >
         {/* Background with subtle border */}
-        <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="bg-white border-b border-slate-200 shadow-elevation-1">
           <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12">
             <div className="flex items-center justify-center h-16 gap-8">
               {/* Horizontal format: TOTAL INCOME | DEDUCTIONS | TAX */}
@@ -504,27 +504,27 @@ const TaxComputationBar = ({
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   />
-                  <span className="text-sm">Calculating tax...</span>
+                  <span className="text-body-regular">Calculating tax...</span>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-slate-600">TOTAL INCOME:</span>
-                    <span className="text-base font-bold text-slate-900 tabular-nums">
+                    <span className="text-body-regular font-medium text-slate-600">TOTAL INCOME:</span>
+                    <span className="text-body-large font-bold text-slate-900 tabular-nums">
                       {formatIndianCurrency(computedValues.grossIncome)}
                     </span>
                   </div>
                   <span className="text-slate-300">|</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-slate-600">DEDUCTIONS:</span>
-                    <span className="text-base font-bold text-slate-900 tabular-nums">
+                    <span className="text-body-regular font-medium text-slate-600">DEDUCTIONS:</span>
+                    <span className="text-body-large font-bold text-slate-900 tabular-nums">
                       {formatIndianCurrency(currentRegime === 'old' ? computedValues.deductionsOld : computedValues.deductionsNew)}
                     </span>
                   </div>
                   <span className="text-slate-300">|</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-slate-600">TAX:</span>
-                    <span className="text-base font-bold text-slate-900 tabular-nums">
+                    <span className="text-body-regular font-medium text-slate-600">TAX:</span>
+                    <span className="text-body-large font-bold text-slate-900 tabular-nums">
                       {formatIndianCurrency(netTax)}
                     </span>
                   </div>
@@ -558,7 +558,7 @@ const TaxComputationBar = ({
       aria-label="Tax computation summary"
     >
       {/* Background with border */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
+      <div className="bg-white border-b border-slate-200 shadow-elevation-1">
         <div className="px-4 py-3">
           {isComputingTax && !taxComputation?.isClientSide ? (
             <div className="flex items-center justify-center gap-2 text-slate-600">
@@ -567,10 +567,10 @@ const TaxComputationBar = ({
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               />
-              <span className="text-sm">Calculating tax...</span>
+              <span className="text-body-regular">Calculating tax...</span>
             </div>
           ) : (
-            <div className="flex items-center justify-center gap-4 text-sm">
+            <div className="flex items-center justify-center gap-4 text-body-regular">
               <div className="flex items-center gap-1.5">
                 <span className="font-medium text-slate-600">TOTAL:</span>
                 <span className="font-bold text-slate-900 tabular-nums">

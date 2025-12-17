@@ -79,7 +79,7 @@ const Toast = ({
       <div className="flex items-start gap-3 p-4">
         <Icon className={cn('w-5 h-5 flex-shrink-0 mt-0.5', toastConfig.iconColor)} />
 
-        <p className="flex-1 text-body-md text-gray-700" style={{ fontSize: '14px', lineHeight: '22px' }}>
+        <p className="flex-1 text-body-md text-slate-700" style={{ fontSize: '14px', lineHeight: '22px' }}>
           {message}
         </p>
 
@@ -95,7 +95,7 @@ const Toast = ({
 
         <button
           onClick={() => onDismiss(id)}
-          className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+          className="text-slate-400 hover:text-slate-600 flex-shrink-0"
           aria-label="Dismiss"
         >
           <X className="w-4 h-4" />
@@ -104,7 +104,7 @@ const Toast = ({
 
       {/* Progress Bar */}
       {autoDismiss && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-100">
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-100">
           <div
             className={cn('h-full transition-all', {
               'bg-success-500': type === 'success',

@@ -65,7 +65,7 @@ const ComplianceAlerts = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10, height: 0 }}
               className={cn(
-                'rounded-lg border-2 p-3 flex items-start gap-2.5',
+                'rounded-xl border-2 p-3 flex items-start gap-2.5',
                 config.bg,
                 config.border,
               )}

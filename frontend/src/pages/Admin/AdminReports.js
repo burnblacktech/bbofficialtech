@@ -184,13 +184,13 @@ const AdminReports = () => {
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between space-y-4 md:space-y-0 md:space-x-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                   Report Type
                 </label>
                 <select
                   value={selectedReport}
                   onChange={(e) => setSelectedReport(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 >
                   {reportTypes.map((type) => (
                     <option key={type.id} value={type.id}>{type.name}</option>
@@ -198,13 +198,13 @@ const AdminReports = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                   Date Range
                 </label>
                 <select
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
-                  className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 >
                   {dateRanges.map((range) => (
                     <option key={range.value} value={range.value}>{range.label}</option>
@@ -212,13 +212,13 @@ const AdminReports = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                   Format
                 </label>
                 <select
                   value={reportFormat}
                   onChange={(e) => setReportFormat(e.target.value)}
-                  className="px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 >
                   {formats.map((format) => (
                     <option key={format.value} value={format.value}>{format.label}</option>
@@ -239,14 +239,14 @@ const AdminReports = () => {
             <StaggerItem key={type.id}>
               <div
                 onClick={() => setSelectedReport(type.id)}
-                className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                className={`p-4 border-2 rounded-xl cursor-pointer transition-colors ${
                   selectedReport === type.id
                     ? 'border-primary-500 bg-primary-50'
                     : 'border-neutral-200 hover:border-neutral-300 bg-white'
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(type.color)}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getColorClasses(type.color)}`}>
                     <type.icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -274,9 +274,9 @@ const AdminReports = () => {
             {/* Report Summary */}
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <StaggerItem>
-                <div className="bg-neutral-50 rounded-lg p-4">
+                <div className="bg-neutral-50 rounded-xl p-4">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
                       <Users className="w-5 h-5 text-primary-600" />
                     </div>
                     <div className="ml-3">
@@ -287,9 +287,9 @@ const AdminReports = () => {
                 </div>
               </StaggerItem>
               <StaggerItem>
-                <div className="bg-neutral-50 rounded-lg p-4">
+                <div className="bg-neutral-50 rounded-xl p-4">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-lg bg-success-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center">
                       <FileText className="w-5 h-5 text-success-600" />
                     </div>
                     <div className="ml-3">
@@ -300,9 +300,9 @@ const AdminReports = () => {
                 </div>
               </StaggerItem>
               <StaggerItem>
-                <div className="bg-neutral-50 rounded-lg p-4">
+                <div className="bg-neutral-50 rounded-xl p-4">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-lg bg-info-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center">
                       <IndianRupee className="w-5 h-5 text-info-600" />
                     </div>
                     <div className="ml-3">
@@ -313,9 +313,9 @@ const AdminReports = () => {
                 </div>
               </StaggerItem>
               <StaggerItem>
-                <div className="bg-neutral-50 rounded-lg p-4">
+                <div className="bg-neutral-50 rounded-xl p-4">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 rounded-lg bg-warning-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center">
                       <Building2 className="w-5 h-5 text-warning-600" />
                     </div>
                     <div className="ml-3">
@@ -329,14 +329,14 @@ const AdminReports = () => {
 
             {/* Charts Placeholder */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <div className="bg-neutral-50 rounded-lg p-6">
+              <div className="bg-neutral-50 rounded-xl p-6">
                 <Typography.H3 className="mb-4">Trend Analysis</Typography.H3>
                 <div className="text-center py-8">
                   <TrendingUp className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
                   <Typography.Body className="text-neutral-500">Trend chart visualization</Typography.Body>
                 </div>
               </div>
-              <div className="bg-neutral-50 rounded-lg p-6">
+              <div className="bg-neutral-50 rounded-xl p-6">
                 <Typography.H3 className="mb-4">Distribution</Typography.H3>
                 <div className="text-center py-8">
                   <PieChart className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
@@ -352,11 +352,11 @@ const AdminReports = () => {
                 <CardContent className="p-4">
                   <Typography.Body className="font-medium mb-2">User Growth</Typography.Body>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-body-regular">
                       <Typography.Small className="text-neutral-600">New Users (30d)</Typography.Small>
                       <Typography.Small className="font-medium">{report.new_users_30d || 0}</Typography.Small>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-body-regular">
                       <Typography.Small className="text-neutral-600">Growth Rate</Typography.Small>
                       <Typography.Small className="font-medium text-success-600">+{report.user_growth_rate || 0}%</Typography.Small>
                     </div>
@@ -367,11 +367,11 @@ const AdminReports = () => {
                 <CardContent className="p-4">
                   <Typography.Body className="font-medium mb-2">Filing Performance</Typography.Body>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-body-regular">
                       <Typography.Small className="text-neutral-600">Completion Rate</Typography.Small>
                       <Typography.Small className="font-medium">{report.filing_completion_rate || 0}%</Typography.Small>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-body-regular">
                       <Typography.Small className="text-neutral-600">Avg Processing Time</Typography.Small>
                       <Typography.Small className="font-medium">{report.avg_processing_time || 0} days</Typography.Small>
                     </div>
@@ -382,11 +382,11 @@ const AdminReports = () => {
                 <CardContent className="p-4">
                   <Typography.Body className="font-medium mb-2">Revenue Metrics</Typography.Body>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-body-regular">
                       <Typography.Small className="text-neutral-600">Monthly Revenue</Typography.Small>
                       <Typography.Small className="font-medium">₹{report.monthly_revenue || 0}</Typography.Small>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-body-regular">
                       <Typography.Small className="text-neutral-600">Growth Rate</Typography.Small>
                       <Typography.Small className="font-medium text-success-600">+{report.revenue_growth_rate || 0}%</Typography.Small>
                     </div>
@@ -415,9 +415,9 @@ const AdminReports = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {templates.map((template) => (
-                <div key={template.id} className="border border-neutral-200 rounded-lg p-4 hover:bg-neutral-50 transition-colors">
+                <div key={template.id} className="border border-neutral-200 rounded-xl p-4 hover:bg-neutral-50 transition-colors">
                   <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
                       <FileText className="w-5 h-5 text-primary-600" />
                     </div>
                     <Typography.Body className="font-medium">{template.name}</Typography.Body>

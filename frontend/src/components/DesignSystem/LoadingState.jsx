@@ -30,7 +30,8 @@ export const LoadingState = ({
 
   const spinner = (
     <Loader2
-      className={`${sizeClasses[size]} animate-spin text-blue-600 ${className}`}
+      className={`${sizeClasses[size]} animate-spin text-primary-500 ${className}`}
+      aria-label="Loading"
     />
   );
 
@@ -38,9 +39,9 @@ export const LoadingState = ({
     return (
       <div className={`animate-pulse ${fullScreen ? 'fixed inset-0 bg-white/80 z-50 flex items-center justify-center' : ''}`}>
         <div className="space-y-4 w-full">
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded"></div>
-          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+          <div className="h-4 bg-slate-200 rounded-xl w-3/4"></div>
+          <div className="h-4 bg-slate-200 rounded-xl"></div>
+          <div className="h-4 bg-slate-200 rounded-xl w-5/6"></div>
         </div>
       </div>
     );
@@ -52,7 +53,7 @@ export const LoadingState = ({
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="w-2 h-2 bg-blue-600 rounded-full"
+            className="w-2 h-2 bg-primary-500 rounded-full"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.5, 1, 0.5],
@@ -64,7 +65,7 @@ export const LoadingState = ({
             }}
           />
         ))}
-        {message && <span className="ml-2 text-sm text-gray-600">{message}</span>}
+        {message && <span className="ml-2 text-body-regular text-slate-600">{message}</span>}
       </div>
     );
   }
@@ -73,7 +74,7 @@ export const LoadingState = ({
   const content = (
     <div className={`flex flex-col items-center justify-center gap-2 ${fullScreen ? 'fixed inset-0 bg-white/80 z-50' : ''}`}>
       {spinner}
-      {message && <p className="text-sm text-gray-600">{message}</p>}
+      {message && <p className="text-body-regular text-slate-600">{message}</p>}
     </div>
   );
 
@@ -89,7 +90,7 @@ export const SkeletonLoader = ({ lines = 3, className = '' }) => {
       {Array.from({ length: lines }).map((_, i) => (
         <div
           key={i}
-          className="h-4 bg-gray-200 rounded"
+          className="h-4 bg-slate-200 rounded-xl"
           style={{ width: i === lines - 1 ? '75%' : '100%' }}
         />
       ))}
@@ -109,7 +110,8 @@ export const InlineLoader = ({ size = 'sm', className = '' }) => {
 
   return (
     <Loader2
-      className={`${sizeClasses[size]} animate-spin text-blue-600 inline-block ${className}`}
+      className={`${sizeClasses[size]} animate-spin text-primary-500 inline-block ${className}`}
+      aria-label="Loading"
     />
   );
 };

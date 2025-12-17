@@ -7,7 +7,7 @@ import React from 'react';
 import { CheckCircle, Clock, XCircle, AlertCircle, TrendingUp, Building2 } from 'lucide-react';
 import { formatIndianCurrency } from '../../lib/format';
 import { cn } from '../../lib/utils';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 
 const RefundStatusCard = ({
   refund,
@@ -32,24 +32,24 @@ const RefundStatusCard = ({
       case 'adjusted':
         return <AlertCircle className="h-6 w-6 text-gold-500" aria-hidden="true" />;
       default:
-        return <Clock className="h-6 w-6 text-gray-600" aria-hidden="true" />;
+        return <Clock className="h-6 w-6 text-slate-600" aria-hidden="true" />;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'credited':
-        return 'bg-success-50 border-success-200 text-gray-900';
+        return 'bg-success-50 border-success-200 text-slate-900';
       case 'issued':
-        return 'bg-info-50 border-info-200 text-gray-900';
+        return 'bg-info-50 border-info-200 text-slate-900';
       case 'processing':
-        return 'bg-warning-50 border-warning-200 text-gray-900';
+        return 'bg-warning-50 border-warning-200 text-slate-900';
       case 'failed':
-        return 'bg-error-50 border-error-200 text-gray-900';
+        return 'bg-error-50 border-error-200 text-slate-900';
       case 'adjusted':
-        return 'bg-gold-50 border-gold-200 text-gray-900';
+        return 'bg-gold-50 border-gold-200 text-slate-900';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-900';
+        return 'bg-slate-50 border-slate-200 text-slate-900';
     }
   };
 
@@ -78,14 +78,14 @@ const RefundStatusCard = ({
           {getStatusIcon(refund.status)}
           <div>
             <h3 className="text-heading-sm font-semibold">{getStatusLabel(refund.status)}</h3>
-            <p className="text-body-md text-gray-600 mt-1">
+            <p className="text-body-md text-slate-600 mt-1">
               Expected Amount: <span className="text-number-md tabular-nums">{formatIndianCurrency(refund.expectedAmount)}</span>
             </p>
           </div>
         </div>
         {refund.refundReference && (
           <div className="text-right">
-            <p className="text-label-sm text-gray-500">Reference</p>
+            <p className="text-label-sm text-slate-500">Reference</p>
             <p className="text-body-md font-medium">{refund.refundReference}</p>
           </div>
         )}
@@ -101,7 +101,7 @@ const RefundStatusCard = ({
                 <div className="w-2 h-2 rounded-full bg-current mt-1.5 opacity-50" aria-hidden="true" />
                 <div className="flex-1">
                   <p className="text-body-md font-medium">{entry.message || entry.status}</p>
-                  <p className="text-body-sm text-gray-600 mt-1">
+                  <p className="text-body-sm text-slate-600 mt-1">
                     {new Date(entry.date).toLocaleDateString('en-IN', {
                       day: 'numeric',
                       month: 'short',
@@ -119,7 +119,7 @@ const RefundStatusCard = ({
 
       {/* Bank Account */}
       {refund.bankAccount && (
-        <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-lg">
+        <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-xl">
           <div className="flex items-center gap-2 mb-1">
             <Building2 className="h-4 w-4" aria-hidden="true" />
             <p className="text-label-md font-semibold">Refund Account</p>
@@ -127,13 +127,13 @@ const RefundStatusCard = ({
           <p className="text-body-md">
             {refund.bankAccount.bankName} - {refund.bankAccount.accountNumber?.slice(-4)}
           </p>
-          <p className="text-body-sm text-gray-600 mt-1">IFSC: {refund.bankAccount.ifscCode}</p>
+          <p className="text-body-sm text-slate-600 mt-1">IFSC: {refund.bankAccount.ifscCode}</p>
         </div>
       )}
 
       {/* Interest */}
       {refund.interestAmount > 0 && (
-        <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-lg">
+        <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-xl">
           <p className="text-label-md font-semibold mb-1">Interest on Refund</p>
           <p className="text-number-lg font-bold tabular-nums">{formatIndianCurrency(refund.interestAmount)}</p>
         </div>

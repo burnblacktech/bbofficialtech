@@ -110,7 +110,7 @@ export const FirstTimeTooltip = ({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
-                className="absolute border-2 border-gold-500 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
+                className="absolute border-2 border-gold-500 rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]"
                 style={getSpotlightStyle()}
               />
             )}
@@ -132,7 +132,7 @@ export const FirstTimeTooltip = ({
                       </h3>
                       {step.subtitle && (
                         <p
-                          className="text-body-sm text-gray-300"
+                          className="text-body-sm text-slate-300"
                           style={{ fontSize: '13px' }}
                         >
                           {step.subtitle}
@@ -144,7 +144,7 @@ export const FirstTimeTooltip = ({
                       className="p-1 rounded hover:bg-gray-800 transition-colors"
                       aria-label="Skip tour"
                     >
-                      <X className="w-4 h-4 text-gray-400" />
+                      <X className="w-4 h-4 text-slate-400" />
                     </button>
                   </div>
 
@@ -163,7 +163,7 @@ export const FirstTimeTooltip = ({
                     {/* Progress */}
                     <div className="flex items-center gap-2">
                       <span
-                        className="text-body-xs text-gray-400"
+                        className="text-body-xs text-slate-400"
                         style={{ fontSize: '12px' }}
                       >
                         {currentStep + 1} of {steps.length}
@@ -189,12 +189,12 @@ export const FirstTimeTooltip = ({
                           className="p-1 rounded hover:bg-gray-800 transition-colors"
                           aria-label="Previous step"
                         >
-                          <ChevronLeft className="w-4 h-4 text-gray-400" />
+                          <ChevronLeft className="w-4 h-4 text-slate-400" />
                         </button>
                       )}
                       <button
                         onClick={handleNext}
-                        className="px-3 py-1.5 bg-gold-500 text-white rounded-lg text-body-sm font-semibold hover:bg-gold-600 transition-colors"
+                        className="px-3 py-1.5 bg-gold-500 text-white rounded-xl text-body-sm font-semibold hover:bg-gold-600 transition-colors"
                         style={{ fontSize: '13px', fontWeight: 600 }}
                       >
                         {currentStep < steps.length - 1 ? 'Next' : 'Got it'}

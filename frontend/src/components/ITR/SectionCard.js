@@ -43,8 +43,8 @@ const SectionCard = ({
     },
     incomplete: {
       icon: Clock,
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-100',
+      color: 'text-slate-600',
+      bgColor: 'bg-slate-100',
       label: 'Incomplete',
     },
   };
@@ -82,19 +82,19 @@ const SectionCard = ({
       case 'taxesPaid':
         return <TaxesPaidContent data={data} onUpdate={onUpdate} onAdd={handleAddItem} onEdit={handleEditItem} onDelete={handleDeleteItem} />;
       default:
-        return <div className="p-4 text-gray-500">Section content not implemented yet</div>;
+        return <div className="p-4 text-slate-500">Section content not implemented yet</div>;
     }
   };
 
   return (
     <motion.div
       layout
-      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+      className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden"
     >
       {/* Collapsed State - Clickable Header */}
       <button
         onClick={onToggle}
-        className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center space-x-3">
           {/* Status Icon */}
@@ -104,8 +104,8 @@ const SectionCard = ({
 
           {/* Title and Summary */}
           <div className="text-left">
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-600">{summary}</p>
+            <h3 className="text-heading-4 font-semibold text-slate-900">{title}</h3>
+            <p className="text-body-regular text-slate-600">{summary}</p>
           </div>
         </div>
 
@@ -115,9 +115,9 @@ const SectionCard = ({
             {currentStatus.label}
           </span>
           {isExpanded ? (
-            <ChevronUp className="h-5 w-5 text-gray-400" />
+            <ChevronUp className="h-5 w-5 text-slate-400" />
           ) : (
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-slate-400" />
           )}
         </div>
       </button>
@@ -130,7 +130,7 @@ const SectionCard = ({
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="border-t border-gray-200"
+            className="border-t border-slate-200"
           >
             {renderSectionContent()}
           </motion.div>
@@ -146,48 +146,48 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
     <div className="p-6 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <label className="block text-body-regular font-medium text-slate-700 mb-1">Full Name</label>
           <input
             type="text"
             value={data?.fullName || ''}
             onChange={(e) => onUpdate({ fullName: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+          <label className="block text-body-regular font-medium text-slate-700 mb-1">Father's Name</label>
           <input
             type="text"
             value={data?.fatherName || ''}
             onChange={(e) => onUpdate({ fatherName: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label className="block text-body-regular font-medium text-slate-700 mb-1">Email</label>
           <input
             type="email"
             value={data?.email || ''}
             onChange={(e) => onUpdate({ email: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <label className="block text-body-regular font-medium text-slate-700 mb-1">Phone</label>
           <input
             type="tel"
             value={data?.phone || ''}
             onChange={(e) => onUpdate({ phone: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+        <label className="block text-body-regular font-medium text-slate-700 mb-1">Address</label>
         <textarea
           value={`${data?.address?.line1 || ''}, ${data?.address?.line2 || ''}, ${data?.address?.city || ''}, ${data?.address?.state || ''} - ${data?.address?.pincode || ''}`}
           onChange={(e) => {
@@ -204,7 +204,7 @@ const PersonalInfoContent = ({ data, onUpdate }) => {
             });
           }}
           rows={2}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
         />
       </div>
     </div>
@@ -218,10 +218,10 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
       {/* Salary Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-md font-semibold text-gray-900">Salary Income</h4>
+          <h4 className="text-md font-semibold text-slate-900">Salary Income</h4>
           <button
             onClick={() => onAdd('salary')}
-            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Add Salary</span>
@@ -229,13 +229,13 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
         </div>
 
         {data?.salary?.map((salary) => (
-          <div key={salary.id} className="bg-gray-50 rounded-lg p-4 mb-3">
+          <div key={salary.id} className="bg-slate-50 rounded-xl p-4 mb-3">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-gray-900">{salary.employerName}</h5>
-                <p className="text-sm text-gray-600">₹{salary.grossSalary?.toLocaleString()} • TDS: ₹{salary.tds?.toLocaleString()}</p>
+                <h5 className="font-medium text-slate-900">{salary.employerName}</h5>
+                <p className="text-body-regular text-slate-600">₹{salary.grossSalary?.toLocaleString()} • TDS: ₹{salary.tds?.toLocaleString()}</p>
                 {salary.form16Uploaded && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 mt-1">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small bg-green-100 text-green-800 mt-1">
                     <Upload className="h-3 w-3 mr-1" />
                     Form 16 Uploaded
                   </span>
@@ -244,13 +244,13 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => onEdit(salary.id)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => onDelete(salary.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-error-600 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -263,10 +263,10 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
       {/* Other Sources Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-md font-semibold text-gray-900">Other Sources</h4>
+          <h4 className="text-md font-semibold text-slate-900">Other Sources</h4>
           <button
             onClick={() => onAdd('otherSource')}
-            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Add Source</span>
@@ -274,22 +274,22 @@ const IncomeDetailsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
         </div>
 
         {data?.otherSources?.map((source) => (
-          <div key={source.id} className="bg-gray-50 rounded-lg p-4 mb-3">
+          <div key={source.id} className="bg-slate-50 rounded-xl p-4 mb-3">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-gray-900">{source.source}</h5>
-                <p className="text-sm text-gray-600">₹{source.amount?.toLocaleString()} • TDS: ₹{source.tds?.toLocaleString()}</p>
+                <h5 className="font-medium text-slate-900">{source.source}</h5>
+                <p className="text-body-regular text-slate-600">₹{source.amount?.toLocaleString()} • TDS: ₹{source.tds?.toLocaleString()}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => onEdit(source.id)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => onDelete(source.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-error-600 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -310,12 +310,12 @@ const DeductionsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h4 className="text-md font-semibold text-gray-900">Section 80C</h4>
-            <p className="text-sm text-gray-600">Limit: ₹1,50,000 • Claimed: ₹{data?.section80C?.claimed?.toLocaleString() || 0}</p>
+            <h4 className="text-md font-semibold text-slate-900">Section 80C</h4>
+            <p className="text-body-regular text-slate-600">Limit: ₹1,50,000 • Claimed: ₹{data?.section80C?.claimed?.toLocaleString() || 0}</p>
           </div>
           <button
             onClick={() => onAdd('80C')}
-            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Add Investment</span>
@@ -323,22 +323,22 @@ const DeductionsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
         </div>
 
         {data?.section80C?.items?.map((item) => (
-          <div key={item.id} className="bg-gray-50 rounded-lg p-4 mb-3">
+          <div key={item.id} className="bg-slate-50 rounded-xl p-4 mb-3">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-gray-900">{item.description}</h5>
-                <p className="text-sm text-gray-600">₹{item.amount?.toLocaleString() || 0}</p>
+                <h5 className="font-medium text-slate-900">{item.description}</h5>
+                <p className="text-body-regular text-slate-600">₹{item.amount?.toLocaleString() || 0}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => onEdit(item.id)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => onDelete(item.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-error-600 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -350,15 +350,15 @@ const DeductionsContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
 
       {/* Other Deductions */}
       <div>
-        <h4 className="text-md font-semibold text-gray-900 mb-4">Other Deductions</h4>
+        <h4 className="text-md font-semibold text-slate-900 mb-4">Other Deductions</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h5 className="font-medium text-gray-900">Section 80D (Health Insurance)</h5>
-            <p className="text-sm text-gray-600">₹{data?.section80D?.claimed?.toLocaleString() || 0} / ₹25,000</p>
+          <div className="bg-slate-50 rounded-xl p-4">
+            <h5 className="font-medium text-slate-900">Section 80D (Health Insurance)</h5>
+            <p className="text-body-regular text-slate-600">₹{data?.section80D?.claimed?.toLocaleString() || 0} / ₹25,000</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h5 className="font-medium text-gray-900">Section 80TTA (Savings Interest)</h5>
-            <p className="text-sm text-gray-600">₹{data?.section80TTA?.claimed?.toLocaleString() || 0} / ₹10,000</p>
+          <div className="bg-slate-50 rounded-xl p-4">
+            <h5 className="font-medium text-slate-900">Section 80TTA (Savings Interest)</h5>
+            <p className="text-body-regular text-slate-600">₹{data?.section80TTA?.claimed?.toLocaleString() || 0} / ₹10,000</p>
           </div>
         </div>
       </div>
@@ -373,10 +373,10 @@ const TaxesPaidContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
       {/* TDS Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-md font-semibold text-gray-900">Tax Deducted at Source (TDS)</h4>
+          <h4 className="text-md font-semibold text-slate-900">Tax Deducted at Source (TDS)</h4>
           <button
             onClick={() => onAdd('tds')}
-            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Add TDS</span>
@@ -384,13 +384,13 @@ const TaxesPaidContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
         </div>
 
         {data?.tds?.map((tds) => (
-          <div key={tds.id} className="bg-gray-50 rounded-lg p-4 mb-3">
+          <div key={tds.id} className="bg-slate-50 rounded-xl p-4 mb-3">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-gray-900">{tds.source}</h5>
-                <p className="text-sm text-gray-600">Section {tds.section} • ₹{tds.amount?.toLocaleString()}</p>
+                <h5 className="font-medium text-slate-900">{tds.source}</h5>
+                <p className="text-body-regular text-slate-600">Section {tds.section} • ₹{tds.amount?.toLocaleString()}</p>
                 {tds.verified && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 mt-1">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small bg-green-100 text-green-800 mt-1">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Verified from Form 26AS
                   </span>
@@ -399,13 +399,13 @@ const TaxesPaidContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => onEdit(tds.id)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => onDelete(tds.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                  className="p-2 text-slate-400 hover:text-error-600 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -417,12 +417,12 @@ const TaxesPaidContent = ({ data, onUpdate, onAdd, onEdit, onDelete }) => {
 
       {/* Advance Tax Section */}
       <div>
-        <h4 className="text-md font-semibold text-gray-900 mb-4">Advance Tax</h4>
-        <div className="bg-gray-50 rounded-lg p-4">
-          <p className="text-sm text-gray-600">No advance tax payments recorded</p>
+        <h4 className="text-md font-semibold text-slate-900 mb-4">Advance Tax</h4>
+        <div className="bg-slate-50 rounded-xl p-4">
+          <p className="text-body-regular text-slate-600">No advance tax payments recorded</p>
           <button
             onClick={() => onAdd('advanceTax')}
-            className="mt-2 text-blue-600 hover:text-blue-700 text-sm font-medium"
+            className="mt-2 text-blue-600 hover:text-blue-700 text-body-regular font-medium"
           >
             + Add Advance Tax Payment
           </button>

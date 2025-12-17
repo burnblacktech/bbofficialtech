@@ -132,7 +132,7 @@ const CAClientManagement = () => {
       case 'huf':
         return <User className="h-4 w-4 text-purple-600" />;
       default:
-        return <User className="h-4 w-4 text-gray-600" />;
+        return <User className="h-4 w-4 text-slate-600" />;
     }
   };
 
@@ -145,7 +145,7 @@ const CAClientManagement = () => {
       case 'huf':
         return 'bg-purple-100 text-purple-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
     }
   };
 
@@ -168,7 +168,7 @@ const CAClientManagement = () => {
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
-          <p className="text-sm text-neutral-600">Loading clients...</p>
+          <p className="text-body-regular text-neutral-600">Loading clients...</p>
         </div>
       </div>
     );
@@ -183,26 +183,26 @@ const CAClientManagement = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/ca/dashboard')}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <ArrowLeft className="h-5 w-5 text-burnblack-black" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-burnblack-black">Client Management</h1>
-                <p className="text-xs text-neutral-500">{filteredClients.length} clients</p>
+                <h1 className="text-heading-4 font-semibold text-burnblack-black">Client Management</h1>
+                <p className="text-body-small text-neutral-500">{filteredClients.length} clients</p>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <Filter className="h-5 w-5 text-burnblack-black" />
               </button>
               <button
                 onClick={() => navigate('/ca/clients/new')}
-                className="btn-burnblack p-2 rounded-lg active:scale-95 transition-transform"
+                className="btn-burnblack p-2 rounded-xl active:scale-95 transition-transform"
               >
                 <Plus className="h-5 w-5" />
               </button>
@@ -230,11 +230,11 @@ const CAClientManagement = () => {
           <div className="dashboard-card-burnblack p-4 space-y-3">
             {/* Status Filter */}
             <div>
-              <label className="text-xs font-medium text-neutral-700 mb-2 block">Status</label>
+              <label className="text-body-small font-medium text-neutral-700 mb-2 block">Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold"
+                className="w-full p-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-burnblack-gold"
               >
                 {statusOptions.map(status => (
                   <option key={status} value={status}>
@@ -246,11 +246,11 @@ const CAClientManagement = () => {
 
             {/* Type Filter */}
             <div>
-              <label className="text-xs font-medium text-neutral-700 mb-2 block">Client Type</label>
+              <label className="text-body-small font-medium text-neutral-700 mb-2 block">Client Type</label>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full p-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold"
+                className="w-full p-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-burnblack-gold"
               >
                 {typeOptions.map(type => (
                   <option key={type} value={type}>
@@ -267,15 +267,15 @@ const CAClientManagement = () => {
           {filteredClients.length === 0 ? (
             <div className="dashboard-card-burnblack p-8 text-center">
               <User className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-burnblack-black mb-2">No clients found</h3>
-              <p className="text-sm text-neutral-500 mb-4">
+              <h3 className="text-heading-4 font-semibold text-burnblack-black mb-2">No clients found</h3>
+              <p className="text-body-regular text-neutral-500 mb-4">
                 {searchTerm || filterStatus !== 'all' || filterType !== 'all'
                   ? 'No clients match your filters'
                   : 'Add your first client to get started'}
               </p>
               <button
                 onClick={() => navigate('/ca/clients/new')}
-                className="btn-burnblack px-4 py-2 rounded-lg active:scale-95 transition-transform"
+                className="btn-burnblack px-4 py-2 rounded-xl active:scale-95 transition-transform"
               >
                 <UserPlus className="h-4 w-4 inline mr-2" />
                 Add Client
@@ -285,16 +285,16 @@ const CAClientManagement = () => {
             filteredClients.map((client) => (
               <div
                 key={client.id}
-                className="dashboard-card-burnblack hover:shadow-sm transition-shadow"
+                className="dashboard-card-burnblack hover:shadow-elevation-1 transition-shadow"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start space-x-3 flex-1">
-                    <div className="p-2 rounded-lg bg-neutral-50">
+                    <div className="p-2 rounded-xl bg-neutral-50">
                       {getClientTypeIcon(client.client_type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-semibold text-burnblack-black">{client.name}</h3>
-                      <p className="text-xs text-neutral-500">{client.email}</p>
+                      <p className="text-body-small text-neutral-500">{client.email}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className={`px-2 py-1 text-xs rounded-full font-medium ${getClientTypeColor(client.client_type)}`}>
                           {client.client_type}
@@ -321,7 +321,7 @@ const CAClientManagement = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 gap-3 text-body-small">
                   {client.pan && (
                     <div className="flex items-center space-x-1">
                       <FileText className="h-3 w-3 text-neutral-400" />
@@ -354,15 +354,15 @@ const CAClientManagement = () => {
                     <div className="grid grid-cols-3 gap-3 text-center">
                       <div>
                         <div className="text-sm font-semibold text-burnblack-black">{client.completed_filings || 0}</div>
-                        <div className="text-xs text-neutral-500">Completed</div>
+                        <div className="text-body-small text-neutral-500">Completed</div>
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-burnblack-black">{client.pending_filings || 0}</div>
-                        <div className="text-xs text-neutral-500">Pending</div>
+                        <div className="text-body-small text-neutral-500">Pending</div>
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-burnblack-black">₹{client.total_revenue?.toLocaleString() || 0}</div>
-                        <div className="text-xs text-neutral-500">Revenue</div>
+                        <div className="text-body-small text-neutral-500">Revenue</div>
                       </div>
                     </div>
                   </div>
@@ -378,13 +378,13 @@ const CAClientManagement = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 p-4">
           <div className="dashboard-card-burnblack w-full max-w-md">
             <div className="sticky top-0 bg-burnblack-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-burnblack-black">Client Actions</h2>
+              <h2 className="text-heading-4 font-semibold text-burnblack-black">Client Actions</h2>
               <button
                 onClick={() => {
                   setSelectedClient(null);
                   setShowClientModal(false);
                 }}
-                className="p-1 rounded-lg hover:bg-neutral-100"
+                className="p-1 rounded-xl hover:bg-neutral-100"
               >
                 <X className="h-5 w-5 text-neutral-500" />
               </button>
@@ -397,7 +397,7 @@ const CAClientManagement = () => {
                   navigate(`/ca/clients/${selectedClient.id}`);
                   setShowClientModal(false);
                 }}
-                className="w-full flex items-center justify-center space-x-2 p-3 bg-neutral-50 text-neutral-700 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="w-full flex items-center justify-center space-x-2 p-3 bg-neutral-50 text-neutral-700 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <Eye className="h-4 w-4" />
                 <span>View Profile</span>
@@ -409,7 +409,7 @@ const CAClientManagement = () => {
                   navigate(`/ca/messages/${selectedClient.id}`);
                   setShowClientModal(false);
                 }}
-                className="w-full flex items-center justify-center space-x-2 p-3 bg-neutral-50 text-neutral-700 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="w-full flex items-center justify-center space-x-2 p-3 bg-neutral-50 text-neutral-700 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span>Send Message</span>
@@ -427,7 +427,7 @@ const CAClientManagement = () => {
                         setShowClientModal(false);
                       }}
                       disabled={selectedClient.status === status}
-                      className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${
                         selectedClient.status === status
                           ? 'bg-burnblack-gold bg-opacity-20 text-burnblack-gold cursor-not-allowed'
                           : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
@@ -446,7 +446,7 @@ const CAClientManagement = () => {
                     handleDeleteClient(selectedClient.id);
                     setShowClientModal(false);
                   }}
-                  className="w-full bg-error-600 text-white py-2 px-4 rounded-lg hover:bg-error-700 active:scale-95 transition-transform"
+                  className="w-full bg-error-600 text-white py-2 px-4 rounded-xl hover:bg-error-700 active:scale-95 transition-transform"
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <Trash2 className="h-4 w-4" />

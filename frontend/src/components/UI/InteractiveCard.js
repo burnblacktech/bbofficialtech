@@ -59,13 +59,13 @@ const InteractiveCard = ({
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high':
-        return 'border-l-red-500';
+        return 'border-l-error-500';
       case 'medium':
-        return 'border-l-yellow-500';
+        return 'border-l-warning-500';
       case 'low':
-        return 'border-l-green-500';
+        return 'border-l-success-500';
       default:
-        return 'border-l-gray-300';
+        return 'border-l-slate-300';
     }
   };
 
@@ -149,15 +149,24 @@ const InteractiveCard = ({
       onTapStart={() => setIsPressed(true)}
       onTapEnd={() => setIsPressed(false)}
       className={`
-        relative bg-white rounded-xl border border-gray-200 shadow-sm cursor-pointer
+        relative bg-white rounded-xl border border-slate-200 shadow-elevation-1 cursor-pointer
         transition-all duration-200 overflow-hidden
-        ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
+        ${isSelected ? 'ring-2 ring-primary-500 ring-opacity-50' : ''}
         ${getPriorityColor(priority)}
         ${className}
       `}
       onClick={handleCardClick}
       style={{
         borderLeftWidth: '4px',
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${title}${description ? `: ${description}` : ''}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
       }}
     >
       {/* Drag Handle */}
@@ -168,7 +177,7 @@ const InteractiveCard = ({
           transition={{ duration: 0.2 }}
           onPointerDown={(e) => dragControls.start(e)}
         >
-          <GripVertical className="h-4 w-4 text-gray-400 cursor-grab active:cursor-grabbing" />
+          <GripVertical className="h-4 w-4 text-slate-400 cursor-grab active:cursor-grabbing" />
         </motion.div>
       )}
 
@@ -177,11 +186,11 @@ const InteractiveCard = ({
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-1">
+            <h3 className="text-sm font-semibold text-slate-900 mb-1">
               {title}
             </h3>
             {description && (
-              <p className="text-xs text-gray-600 line-clamp-2">
+              <p className="text-body-small text-slate-600 line-clamp-2">
                 {description}
               </p>
             )}
@@ -197,12 +206,14 @@ const InteractiveCard = ({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleFavoriteClick}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-1 rounded-full hover:bg-slate-100 transition-colors"
+              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
               <Heart
                 className={`h-4 w-4 ${
-                  isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'
+                  isFavorite ? 'text-error-500 fill-current' : 'text-slate-400'
                 }`}
+                aria-hidden="true"
               />
             </motion.button>
 
@@ -210,18 +221,20 @@ const InteractiveCard = ({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleShareClick}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-1 rounded-full hover:bg-slate-100 transition-colors"
+              aria-label="Share"
             >
-              <Share2 className="h-4 w-4 text-gray-400" />
+              <Share2 className="h-4 w-4 text-slate-400" aria-hidden="true" />
             </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleMoreClick}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-1 rounded-full hover:bg-slate-100 transition-colors"
+              aria-label="More options"
             >
-              <MoreVertical className="h-4 w-4 text-gray-400" />
+              <MoreVertical className="h-4 w-4 text-slate-400" aria-hidden="true" />
             </motion.button>
           </motion.div>
         </div>
@@ -238,14 +251,14 @@ const InteractiveCard = ({
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Star className="h-4 w-4 text-red-500 fill-current" />
+              <Star className="h-4 w-4 text-error-500 fill-current" />
             </motion.div>
           )}
         </div>
 
         {/* Children Content */}
         {children && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-slate-100">
             {children}
           </div>
         )}
@@ -253,7 +266,7 @@ const InteractiveCard = ({
 
       {/* Hover Overlay */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none"
+        className="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-ember-500/5 pointer-events-none"
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.2 }}
       />

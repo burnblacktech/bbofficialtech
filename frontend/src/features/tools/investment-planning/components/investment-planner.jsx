@@ -31,13 +31,13 @@ const InvestmentPlanner = ({ userId, currentDeductions = {}, availableAmount = n
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Investment Planning</h2>
+        <h2 className="text-heading-2 font-bold text-slate-900">Investment Planning</h2>
         <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700">Risk Profile:</label>
+          <label className="text-body-regular font-medium text-slate-700">Risk Profile:</label>
           <select
             value={riskProfile}
             onChange={(e) => setRiskProfile(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
           >
             <option value="low">Low</option>
             <option value="moderate">Moderate</option>
@@ -47,7 +47,7 @@ const InvestmentPlanner = ({ userId, currentDeductions = {}, availableAmount = n
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-slate-200">
         <nav className="flex space-x-8">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -60,7 +60,7 @@ const InvestmentPlanner = ({ userId, currentDeductions = {}, availableAmount = n
                   ${
                     activeTab === tab.id
                       ? 'border-gold-500 text-gold-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                   }
                 `}
               >

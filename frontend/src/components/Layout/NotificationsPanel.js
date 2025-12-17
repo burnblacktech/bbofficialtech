@@ -49,19 +49,19 @@ const NotificationsPanel = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
+    <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-elevation-3 border border-slate-200 z-50 max-h-96 overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
         <div className="flex items-center space-x-2">
-          <Bell className="h-5 w-5 text-gray-600" />
-          <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+          <Bell className="h-5 w-5 text-slate-600" />
+          <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 bg-info-50 text-info-600 text-xs font-medium rounded-full">
+            <span className="px-2 py-0.5 bg-info-50 text-info-600 text-body-small font-medium rounded-full">
               {unreadCount}
             </span>
           )}
         </div>
-        <button className="text-gray-400 hover:text-gray-600">
+        <button className="text-slate-400 hover:text-slate-600">
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -70,15 +70,15 @@ const NotificationsPanel = () => {
       <div className="overflow-y-auto flex-1">
         {notifications.length === 0 ? (
           <div className="p-8 text-center">
-            <Bell className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">No notifications</p>
+            <Bell className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-body-regular text-slate-500">No notifications</p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
             {notifications.map((notification) => (
               <li
                 key={notification.id}
-                className={`px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer ${
+                className={`px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer ${
                   !notification.read ? 'bg-info-50' : ''
                 }`}
               >
@@ -87,13 +87,13 @@ const NotificationsPanel = () => {
                     {getIcon(notification.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-body-regular font-medium text-slate-900">
                       {notification.title}
                     </p>
-                    <p className="text-sm text-gray-600 mt-0.5">
+                    <p className="text-body-regular text-slate-600 mt-0.5">
                       {notification.message}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                    <p className="text-body-small text-slate-500 mt-1">{notification.time}</p>
                   </div>
                   {!notification.read && (
                     <div className="flex-shrink-0">
@@ -109,8 +109,8 @@ const NotificationsPanel = () => {
 
       {/* Footer */}
       {notifications.length > 0 && (
-        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-          <button className="w-full text-sm text-gold-600 hover:text-gold-700 font-medium">
+        <div className="px-4 py-3 border-t border-slate-200 bg-slate-50">
+          <button className="w-full text-body-regular text-gold-600 hover:text-gold-700 font-medium">
             View All Notifications
           </button>
         </div>

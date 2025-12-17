@@ -20,13 +20,13 @@ const SearchBar = ({ query, onQueryChange, results, isLoading }) => {
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
         <input
           type="text"
           value={localQuery}
           onChange={(e) => setLocalQuery(e.target.value)}
           placeholder="Search tax topics, sections, ITR guides..."
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+          className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
         />
         {localQuery && (
           <button
@@ -34,9 +34,9 @@ const SearchBar = ({ query, onQueryChange, results, isLoading }) => {
               setLocalQuery('');
               onQueryChange('');
             }}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-slate-100 rounded-xl transition-colors"
           >
-            <X className="w-4 h-4 text-gray-400" />
+            <X className="w-4 h-4 text-slate-400" />
           </button>
         )}
       </div>
@@ -46,7 +46,7 @@ const SearchBar = ({ query, onQueryChange, results, isLoading }) => {
         </div>
       )}
       {results && results.length > 0 && (
-        <div className="mt-2 text-sm text-gray-600">
+        <div className="mt-2 text-body-regular text-slate-600">
           Found {results.length} result{results.length !== 1 ? 's' : ''}
         </div>
       )}

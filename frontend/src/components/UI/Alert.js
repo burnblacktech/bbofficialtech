@@ -56,7 +56,7 @@ const Alert = ({
   return (
     <div
       className={cn(
-        'rounded-lg border p-4',
+        'rounded-xl border p-4',
         alertConfig.bg,
         alertConfig.border,
         variant === 'banner' && 'mb-4',

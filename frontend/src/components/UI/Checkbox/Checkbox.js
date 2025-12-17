@@ -55,8 +55,8 @@ const Checkbox = ({
           'w-5 h-5 rounded border-2 flex items-center justify-center transition-all cursor-pointer',
           {
             'bg-gold-500 border-gold-500': checked && !indeterminate && !disabled,
-            'bg-white border-gray-300': !checked && !indeterminate && !disabled,
-            'bg-gray-100 border-gray-300 cursor-not-allowed': disabled,
+            'bg-white border-slate-300': !checked && !indeterminate && !disabled,
+            'bg-slate-100 border-slate-300 cursor-not-allowed': disabled,
             'bg-gold-500 border-gold-500': indeterminate && !disabled,
             'border-error-500': error && !disabled,
           },
@@ -90,9 +90,9 @@ const Checkbox = ({
           <label
             htmlFor={inputId}
             className={cn(
-              'text-label-lg text-gray-700 cursor-pointer',
+              'text-label-lg text-slate-700 cursor-pointer',
               {
-                'cursor-not-allowed text-gray-400': disabled,
+                'cursor-not-allowed text-slate-400': disabled,
               },
             )}
             style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}
@@ -120,7 +120,7 @@ const Checkbox = ({
       {helperText && !error && (
         <p
           id={helperId}
-          className="mt-1.5 text-body-sm text-gray-500"
+          className="mt-1.5 text-body-sm text-slate-500"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           {helperText}

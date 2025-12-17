@@ -54,7 +54,7 @@ const BreakdownList = ({
       <div className={cn('flex items-center justify-center py-12', className)}>
         <div className="flex flex-col items-center gap-3">
           <Loader className="w-6 h-6 text-gold-500 animate-spin" />
-          <p className="text-body-md text-gray-600">Loading breakdown...</p>
+          <p className="text-body-md text-slate-600">Loading breakdown...</p>
         </div>
       </div>
     );
@@ -92,11 +92,11 @@ const BreakdownList = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center justify-between p-4 bg-gray-50 border-t-2 border-gray-300"
+          className="flex items-center justify-between p-4 bg-slate-50 border-t-2 border-slate-300"
           role="row"
         >
           <span className="text-heading-sm font-semibold text-gray-800" style={{ fontSize: '16px', fontWeight: 600 }}>Total</span>
-          <span className="text-number-md font-semibold text-gray-900" style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+          <span className="text-number-md font-semibold text-slate-900" style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {formatIndianCurrency(total)}
           </span>
         </motion.div>
@@ -127,7 +127,7 @@ const BreakdownCategory = ({
         }}
         className={cn(
           'w-full flex items-center justify-between p-4 text-left transition-colors',
-          'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2',
+          'hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2',
           item.hasWarning && 'bg-warning-50',
         )}
         aria-expanded={hasChildren ? isExpanded : undefined}
@@ -141,7 +141,7 @@ const BreakdownCategory = ({
               animate={{ rotate: isExpanded ? 90 : 0 }}
               transition={{ duration: 0.2, ease: 'easeInOut' }}
             >
-              <ChevronRight className="w-4 h-4 text-gray-400" aria-hidden="true" />
+              <ChevronRight className="w-4 h-4 text-slate-400" aria-hidden="true" />
             </motion.div>
           )}
           <span className="text-heading-sm text-gray-800" style={{ fontSize: '16px', fontWeight: 600 }}>{item.label}</span>
@@ -151,7 +151,7 @@ const BreakdownCategory = ({
         <div className="flex items-center gap-3">
           <span className={cn(
             'text-number-md',
-            item.amount < 0 ? 'text-gray-500' : 'text-gray-800',
+            item.amount < 0 ? 'text-slate-500' : 'text-gray-800',
           )}
           style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}
           >
@@ -191,17 +191,17 @@ const BreakdownCategory = ({
                 role="listitem"
               >
                 {/* Tree Lines */}
-                <div className="absolute left-6 top-0 bottom-0 w-px bg-gray-200" />
-                <div className="absolute left-6 top-1/2 w-3 h-px bg-gray-200" />
+                <div className="absolute left-6 top-0 bottom-0 w-px bg-slate-200" />
+                <div className="absolute left-6 top-1/2 w-3 h-px bg-slate-200" />
                 {index === item.children.length - 1 && (
                   <div className="absolute left-6 top-1/2 bottom-0 w-px bg-white" />
                 )}
 
                 <div className="flex items-center justify-between">
-                  <span className="text-body-md text-gray-600" style={{ fontSize: '14px', lineHeight: '22px' }}>{child.label}</span>
+                  <span className="text-body-md text-slate-600" style={{ fontSize: '14px', lineHeight: '22px' }}>{child.label}</span>
                   <span className={cn(
                     'text-number-sm',
-                    child.amount < 0 ? 'text-gray-500' : 'text-gray-600',
+                    child.amount < 0 ? 'text-slate-500' : 'text-slate-600',
                     child.hasWarning && 'text-warning-600',
                   )}
                   style={{ fontSize: '14px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}

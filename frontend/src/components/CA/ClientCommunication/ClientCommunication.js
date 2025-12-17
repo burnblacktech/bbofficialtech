@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Send, Mail, FileText, CheckCircle, Clock } from 'lucide-react';
-import Button from '../../common/Button';
+import Button from '../../DesignSystem/components/Button';
 import { formatIndianDateTime } from '../../../lib/format';
 import { cn } from '../../../lib/utils';
 
@@ -49,7 +49,7 @@ const ClientCommunication = ({
       {/* Messages List */}
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {messages.length === 0 ? (
-          <p className="text-body-md text-gray-500 text-center py-8" style={{ fontSize: '14px', lineHeight: '22px' }}>
+          <p className="text-body-md text-slate-500 text-center py-8" style={{ fontSize: '14px', lineHeight: '22px' }}>
             No messages yet. Send a message to the client below.
           </p>
         ) : (
@@ -57,8 +57,8 @@ const ClientCommunication = ({
             <div
               key={message.id}
               className={cn(
-                'border rounded-lg p-4',
-                message.type === 'document-request' ? 'border-info-200 bg-info-50' : 'border-gray-200 bg-white',
+                'border rounded-xl p-4',
+                message.type === 'document-request' ? 'border-info-200 bg-info-50' : 'border-slate-200 bg-white',
               )}
             >
               <div className="flex items-start justify-between mb-2">
@@ -66,9 +66,9 @@ const ClientCommunication = ({
                   {message.type === 'document-request' ? (
                     <FileText className="w-4 h-4 text-info-500" />
                   ) : (
-                    <Mail className="w-4 h-4 text-gray-500" />
+                    <Mail className="w-4 h-4 text-slate-500" />
                   )}
-                  <span className="text-label-md font-medium text-gray-700" style={{ fontSize: '13px', fontWeight: 500 }}>
+                  <span className="text-label-md font-medium text-slate-700" style={{ fontSize: '13px', fontWeight: 500 }}>
                     {message.type === 'document-request' ? 'Document Request' : 'Message'}
                   </span>
                 </div>
@@ -78,13 +78,13 @@ const ClientCommunication = ({
                   ) : (
                     <Clock className="w-4 h-4 text-warning-500" />
                   )}
-                  <span className="text-body-sm text-gray-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
+                  <span className="text-body-sm text-slate-500" style={{ fontSize: '13px', lineHeight: '20px' }}>
                     {formatIndianDateTime(message.createdAt)}
                   </span>
                 </div>
               </div>
 
-              <p className="text-body-md text-gray-700 mb-2" style={{ fontSize: '14px', lineHeight: '22px' }}>
+              <p className="text-body-md text-slate-700 mb-2" style={{ fontSize: '14px', lineHeight: '22px' }}>
                 {message.text}
               </p>
 
@@ -101,13 +101,13 @@ const ClientCommunication = ({
       </div>
 
       {/* Message Composer */}
-      <div className="border-t border-gray-200 pt-4">
+      <div className="border-t border-slate-200 pt-4">
         <div className="space-y-3">
           <textarea
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             placeholder="Type your message to the client..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-body-md focus:outline-none focus:border-gold-500"
             style={{ fontSize: '14px', lineHeight: '22px', minHeight: '100px' }}
             rows={4}
           />
@@ -118,9 +118,9 @@ const ClientCommunication = ({
                 type="checkbox"
                 checked={emailNotification}
                 onChange={(e) => setEmailNotification(e.target.checked)}
-                className="w-4 h-4 text-gold-500 border-gray-300 rounded focus:ring-gold-500"
+                className="w-4 h-4 text-gold-500 border-slate-300 rounded focus:ring-gold-500"
               />
-              <span className="text-body-sm text-gray-600" style={{ fontSize: '13px', lineHeight: '20px' }}>
+              <span className="text-body-sm text-slate-600" style={{ fontSize: '13px', lineHeight: '20px' }}>
                 Send email notification
               </span>
             </label>

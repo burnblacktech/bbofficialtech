@@ -281,13 +281,13 @@ const PaymentModal = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+          className="relative bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         >
           <div className="p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                   <CreditCard className="w-5 h-5 text-primary-600" />
                 </div>
                 <div>
@@ -356,7 +356,7 @@ const PaymentModal = ({
                           className="mt-1 w-4 h-4 text-primary-600 border-neutral-300 rounded focus:ring-primary-500"
                         />
                         <div className="flex-1">
-                          <label htmlFor="expertReview" className="text-sm font-medium text-neutral-700 cursor-pointer">
+                          <label htmlFor="expertReview" className="text-body-regular font-medium text-neutral-700 cursor-pointer">
                             Add Expert Review Service
                           </label>
                           <Typography.Small className="text-neutral-600 mt-1">
@@ -410,7 +410,7 @@ const PaymentModal = ({
                           <Typography.Small className="font-medium text-neutral-700">
                             Total Amount
                           </Typography.Small>
-                          <Typography.Small className="font-bold text-lg">
+                          <Typography.Small className="font-bold text-body-large">
                             {formatCurrency(paymentData.totalAmount)}
                           </Typography.Small>
                         </div>
@@ -420,7 +420,7 @@ const PaymentModal = ({
                 </Card>
 
                 {/* Security Notice */}
-                <div className="flex items-start space-x-3 p-4 bg-primary-50 border border-primary-200 rounded-lg">
+                <div className="flex items-start space-x-3 p-4 bg-primary-50 border border-primary-200 rounded-xl">
                   <Shield className="w-5 h-5 text-primary-600 mt-0.5" />
                   <div>
                     <Typography.Small className="font-medium text-primary-700 mb-1">
@@ -436,13 +436,13 @@ const PaymentModal = ({
                 <div className="flex items-center justify-end space-x-3">
                   <button
                     onClick={onClose}
-                    className="px-6 py-3 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                    className="px-6 py-3 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleProceedToPayment}
-                    className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center space-x-2"
+                    className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors flex items-center space-x-2"
                   >
                     <Lock className="w-4 h-4" />
                     <span>Proceed to Payment</span>
@@ -509,7 +509,7 @@ const PaymentModal = ({
                           <Typography.Small className="font-medium text-neutral-700">
                             Total Amount
                           </Typography.Small>
-                          <Typography.Small className="font-bold text-lg">
+                          <Typography.Small className="font-bold text-body-large">
                             {formatCurrency(paymentData.totalAmount)}
                           </Typography.Small>
                         </div>
@@ -522,14 +522,14 @@ const PaymentModal = ({
                 <div className="flex items-center justify-end space-x-3">
                   <button
                     onClick={() => setShowPaymentForm(false)}
-                    className="px-6 py-3 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                    className="px-6 py-3 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                   >
                     Back
                   </button>
                   <button
                     onClick={handlePayment}
                     disabled={loading}
-                    className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                    className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
                   >
                     {loading ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

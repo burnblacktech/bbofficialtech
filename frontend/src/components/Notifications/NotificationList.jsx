@@ -57,7 +57,7 @@ const NotificationList = ({
       case 'system_announcement':
         return 'bg-info-50 border-info-200';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-slate-50 border-slate-200';
     }
   };
 
@@ -71,18 +71,18 @@ const NotificationList = ({
         return (
           <div
             key={notification.id}
-            className={`bg-white rounded-lg border-2 p-4 transition-all hover:shadow-md cursor-pointer ${
-              isUnread ? 'border-gold-300 bg-gold-50' : 'border-gray-200'
+            className={`bg-white rounded-xl border-2 p-4 transition-all hover:shadow-elevation-2 cursor-pointer ${
+              isUnread ? 'border-gold-300 bg-gold-50' : 'border-slate-200'
             } ${getNotificationColor(notification.type)}`}
             onClick={() => onClick && onClick(notification)}
           >
             <div className="flex items-start gap-3">
               {/* Icon */}
-              <div className={`p-2 rounded-lg ${
-                isUnread ? 'bg-gold-100' : 'bg-gray-100'
+              <div className={`p-2 rounded-xl ${
+                isUnread ? 'bg-gold-100' : 'bg-slate-100'
               }`}>
                 <Icon className={`h-5 w-5 ${
-                  isUnread ? 'text-gold-600' : 'text-gray-600'
+                  isUnread ? 'text-gold-600' : 'text-slate-600'
                 }`} />
               </div>
 
@@ -91,14 +91,14 @@ const NotificationList = ({
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
                     <h4 className={`text-heading-sm font-semibold mb-1 ${
-                      isUnread ? 'text-gray-900' : 'text-gray-700'
+                      isUnread ? 'text-slate-900' : 'text-slate-700'
                     }`}>
                       {notification.title}
                     </h4>
-                    <p className="text-body-sm text-gray-600 mb-2">
+                    <p className="text-body-sm text-slate-600 mb-2">
                       {notification.message}
                     </p>
-                    <div className="flex items-center gap-2 text-body-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-body-xs text-slate-500">
                       <Clock className="h-3 w-3" />
                       <span>{timeAgo}</span>
                     </div>
@@ -119,7 +119,7 @@ const NotificationList = ({
                       e.stopPropagation();
                       onMarkAsRead(notification.id);
                     }}
-                    className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                    className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100"
                     title="Mark as read"
                   >
                     <CheckCircle className="h-4 w-4" />
@@ -130,7 +130,7 @@ const NotificationList = ({
                       e.stopPropagation();
                       onMarkAsUnread(notification.id);
                     }}
-                    className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                    className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100"
                     title="Mark as unread"
                   >
                     <X className="h-4 w-4" />
@@ -141,7 +141,7 @@ const NotificationList = ({
                     e.stopPropagation();
                     onDelete(notification.id);
                   }}
-                  className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+                  className="p-2 text-slate-400 hover:text-error-600 rounded-xl hover:bg-error-50"
                   title="Delete"
                 >
                   <Trash2 className="h-4 w-4" />

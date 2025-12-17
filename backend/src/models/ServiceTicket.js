@@ -2,7 +2,7 @@
 // SERVICE TICKET MODEL
 // =====================================================
 
-const { DataTypes } = require('sequelize');
+const { DataTypes, Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 
@@ -431,22 +431,36 @@ ServiceTicket.getStatusLabel = function(status) {
 };
 
 ServiceTicket.generateTicketNumber = async function() {
+  // Preferred: use a DB sequence if available (concurrency-safe)
+  try {
+    const [rows] = await sequelize.query(`SELECT nextval('public.service_ticket_number_seq') AS seq`);
+    const seq = rows?.[0]?.seq;
+    if (seq !== undefined && seq !== null) {
+      return `TK${String(seq).padStart(6, '0')}`;
+    }
+  } catch (e) {
+    // Sequence may not exist yet (migration not run) or permissions may block it.
+    // Fall back to best-effort last-row increment below.
+  }
+
+  // Fallback: last-row increment (not perfectly concurrency-safe, but better than failing)
   const lastTicket = await ServiceTicket.findOne({
     where: {
       ticketNumber: {
-        [sequelize.Op.like]: 'TK%',
+        [Op.like]: 'TK%',
       },
     },
     order: [['createdAt', 'DESC']],
   });
 
   let counter = 1;
-  if (lastTicket) {
+  if (lastTicket?.ticketNumber) {
     const lastNumber = lastTicket.ticketNumber.substring(2);
-    counter = parseInt(lastNumber) + 1;
+    const parsed = parseInt(lastNumber, 10);
+    counter = Number.isFinite(parsed) ? parsed + 1 : 1;
   }
 
-  return `TK${counter.toString().padStart(6, '0')}`;
+  return `TK${String(counter).padStart(6, '0')}`;
 };
 
 ServiceTicket.getTicketStats = async function(userId = null) {
@@ -488,10 +502,10 @@ ServiceTicket.getOverdueTickets = async function() {
     where: {
       isDeleted: false,
       status: {
-        [sequelize.Op.in]: ['OPEN', 'IN_PROGRESS', 'PENDING_USER', 'PENDING_CA'],
+        [Op.in]: ['OPEN', 'IN_PROGRESS', 'PENDING_USER', 'PENDING_CA'],
       },
       createdAt: {
-        [sequelize.Op.lt]: overdueThreshold,
+        [Op.lt]: overdueThreshold,
       },
     },
     order: [['createdAt', 'ASC']],
@@ -499,7 +513,7 @@ ServiceTicket.getOverdueTickets = async function() {
 };
 
 // Hooks
-ServiceTicket.beforeCreate(async (ticket) => {
+ServiceTicket.beforeValidate(async (ticket) => {
   if (!ticket.ticketNumber) {
     ticket.ticketNumber = await ServiceTicket.generateTicketNumber();
   }

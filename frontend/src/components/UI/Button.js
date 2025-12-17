@@ -8,13 +8,13 @@ import { cn } from '../../utils/cn';
 
 const buttonVariants = {
   variant: {
-    primary: 'bg-gold-500 hover:bg-gold-600 text-white shadow-sm',
-    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300',
-    outline: 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700',
-    ghost: 'hover:bg-gray-100 text-gray-700',
-    success: 'bg-success-500 hover:bg-success-600 text-white shadow-sm',
-    warning: 'bg-warning-500 hover:bg-warning-600 text-white shadow-sm',
-    danger: 'bg-error-500 hover:bg-error-600 text-white shadow-sm',
+    primary: 'bg-gold-500 hover:bg-gold-600 text-white shadow-elevation-1',
+    secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-300',
+    outline: 'border border-slate-300 bg-white hover:bg-slate-50 text-slate-700',
+    ghost: 'hover:bg-slate-100 text-slate-700',
+    success: 'bg-success-500 hover:bg-success-600 text-white shadow-elevation-1',
+    warning: 'bg-warning-500 hover:bg-warning-600 text-white shadow-elevation-1',
+    danger: 'bg-error-500 hover:bg-error-600 text-white shadow-elevation-1',
     link: 'text-gold-600 hover:text-gold-700 underline-offset-4 hover:underline p-0 h-auto',
   },
   size: {
@@ -32,9 +32,9 @@ const buttonVariants = {
   },
   rounded: {
     none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
+    sm: 'rounded-xl',
+    md: 'rounded-xl',
+    lg: 'rounded-xl',
     xl: 'rounded-xl',
     full: 'rounded-full',
   },

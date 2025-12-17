@@ -148,7 +148,7 @@ const AdminCAVerificationQueue = () => {
                   placeholder="Search by name, email, or GST number..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <select
@@ -157,7 +157,7 @@ const AdminCAVerificationQueue = () => {
                   setStatusFilter(e.target.value);
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -191,11 +191,11 @@ const AdminCAVerificationQueue = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
                           <Typography.Body className="font-semibold">{firm.name}</Typography.Body>
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-warning-100 text-warning-700">
+                          <span className="px-2 py-0.5 text-body-small rounded-full bg-warning-100 text-warning-700">
                             {firm.verificationStatus || 'pending'}
                           </span>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-neutral-600">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-body-regular text-neutral-600">
                           <div>
                             <span className="text-neutral-500">Email:</span> {firm.email}
                           </div>
@@ -288,7 +288,7 @@ const AdminCAVerificationQueue = () => {
                     setRejectNotes('');
                     setSelectedFirm(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -298,25 +298,25 @@ const AdminCAVerificationQueue = () => {
                   Please provide a reason for rejecting this CA firm verification.
                 </Typography.Body>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Rejection Reason <span className="text-error-500">*</span>
                   </label>
                   <textarea
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     rows={3}
                     placeholder="Enter rejection reason..."
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Additional Notes (Optional)
                   </label>
                   <textarea
                     value={rejectNotes}
                     onChange={(e) => setRejectNotes(e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     rows={2}
                     placeholder="Enter additional notes..."
                   />

@@ -33,9 +33,9 @@ export const Skeleton = ({
 }) => {
   const roundedClasses = {
     none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
+    sm: 'rounded-xl',
+    md: 'rounded-xl',
+    lg: 'rounded-xl',
     xl: 'rounded-xl',
     '2xl': 'rounded-2xl',
     full: 'rounded-full',
@@ -451,7 +451,7 @@ export const LoadingOverlay = ({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mt-4 text-sm font-medium text-slate-600"
+          className="mt-4 text-body-regular font-medium text-slate-600"
         >
           {message}
         </motion.p>

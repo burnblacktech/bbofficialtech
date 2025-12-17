@@ -64,10 +64,10 @@ const SecuritySettings = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">Require Email Verification</label>
-            <p className="text-xs text-gray-500 mt-1">Users must verify their email before accessing the platform</p>
+            <label className="text-body-regular font-medium text-slate-700">Require Email Verification</label>
+            <p className="text-body-small text-slate-500 mt-1">Users must verify their email before accessing the platform</p>
           </div>
           <input
             type="checkbox"
@@ -77,10 +77,10 @@ const SecuritySettings = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">Require Phone Verification</label>
-            <p className="text-xs text-gray-500 mt-1">Users must verify their phone number</p>
+            <label className="text-body-regular font-medium text-slate-700">Require Phone Verification</label>
+            <p className="text-body-small text-slate-500 mt-1">Users must verify their phone number</p>
           </div>
           <input
             type="checkbox"
@@ -90,10 +90,10 @@ const SecuritySettings = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">Require 2FA</label>
-            <p className="text-xs text-gray-500 mt-1">Enable two-factor authentication for all users</p>
+            <label className="text-body-regular font-medium text-slate-700">Require 2FA</label>
+            <p className="text-body-small text-slate-500 mt-1">Enable two-factor authentication for all users</p>
           </div>
           <input
             type="checkbox"
@@ -103,10 +103,10 @@ const SecuritySettings = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">Enable Rate Limiting</label>
-            <p className="text-xs text-gray-500 mt-1">Protect against brute force attacks</p>
+            <label className="text-body-regular font-medium text-slate-700">Enable Rate Limiting</label>
+            <p className="text-body-small text-slate-500 mt-1">Protect against brute force attacks</p>
           </div>
           <input
             type="checkbox"
@@ -119,7 +119,7 @@ const SecuritySettings = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             Session Timeout (minutes)
           </label>
           <input
@@ -128,11 +128,11 @@ const SecuritySettings = () => {
             onChange={(e) => setFormData(prev => ({ ...prev, sessionTimeout: parseInt(e.target.value) }))}
             min="5"
             max="1440"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             Max Login Attempts
           </label>
           <input
@@ -141,11 +141,11 @@ const SecuritySettings = () => {
             onChange={(e) => setFormData(prev => ({ ...prev, maxLoginAttempts: parseInt(e.target.value) }))}
             min="3"
             max="10"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             Password Min Length
           </label>
           <input
@@ -154,7 +154,7 @@ const SecuritySettings = () => {
             onChange={(e) => setFormData(prev => ({ ...prev, passwordMinLength: parseInt(e.target.value) }))}
             min="6"
             max="32"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500"
           />
         </div>
       </div>
@@ -163,7 +163,7 @@ const SecuritySettings = () => {
         <button
           type="submit"
           disabled={mutation.isLoading}
-          className="px-6 py-3 bg-gold-600 text-white rounded-lg hover:bg-gold-700 disabled:opacity-50 flex items-center space-x-2"
+          className="px-6 py-3 bg-gold-600 text-white rounded-xl hover:bg-gold-700 disabled:opacity-50 flex items-center space-x-2"
         >
           {mutation.isLoading ? (
             <>

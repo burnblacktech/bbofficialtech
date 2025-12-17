@@ -168,9 +168,9 @@ const BillingInvoicing = () => {
     switch (status) {
       case 'paid': return 'bg-green-100 text-green-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'overdue': return 'bg-red-100 text-red-800';
-      case 'cancelled': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'overdue': return 'bg-error-100 text-red-800';
+      case 'cancelled': return 'bg-slate-100 text-gray-800';
+      default: return 'bg-slate-100 text-gray-800';
     }
   };
 
@@ -206,22 +206,22 @@ const BillingInvoicing = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <h1 className="text-heading-1 font-bold text-slate-900 flex items-center gap-3">
               <IndianRupee className="h-8 w-8 text-green-600" />
               Billing & Invoicing
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-slate-600 mt-2">
               Manage invoices, payments, and billing configuration
             </p>
           </div>
           <div className="flex gap-3">
-            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center gap-2">
+            <button className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-200 flex items-center gap-2">
               <Settings className="h-5 w-5" />
               Billing Settings
             </button>
             <button
               onClick={() => setShowAddInvoice(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+              className="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 flex items-center gap-2"
             >
               <Plus className="h-5 w-5" />
               Create Invoice
@@ -232,54 +232,54 @@ const BillingInvoicing = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
+            <div className="p-2 bg-green-100 rounded-xl">
               <IndianRupee className="h-6 w-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-body-regular font-medium text-slate-600">Total Revenue</p>
+              <p className="text-heading-2 font-bold text-slate-900">
                 {formatCurrency(statistics.total_revenue || 0)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="p-2 bg-blue-100 rounded-xl">
               <FileText className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900">{statistics.total_invoices || 0}</p>
+              <p className="text-body-regular font-medium text-slate-600">Total Invoices</p>
+              <p className="text-heading-2 font-bold text-slate-900">{statistics.total_invoices || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
+            <div className="p-2 bg-yellow-100 rounded-xl">
               <Clock className="h-6 w-6 text-yellow-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending Amount</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-body-regular font-medium text-slate-600">Pending Amount</p>
+              <p className="text-heading-2 font-bold text-slate-900">
                 {formatCurrency(statistics.pending_amount || 0)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
           <div className="flex items-center">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-red-600" />
+            <div className="p-2 bg-error-100 rounded-xl">
+              <TrendingUp className="h-6 w-6 text-error-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Overdue Amount</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-body-regular font-medium text-slate-600">Overdue Amount</p>
+              <p className="text-heading-2 font-bold text-slate-900">
                 {formatCurrency(statistics.overdue_amount || 0)}
               </p>
             </div>
@@ -288,18 +288,18 @@ const BillingInvoicing = () => {
       </div>
 
       {/* Billing Configuration Summary */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Billing Configuration</h3>
+      <div className="bg-white p-6 rounded-xl shadow-elevation-1 border mb-6">
+        <h3 className="text-heading-4 font-medium text-slate-900 mb-4">Billing Configuration</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-600">Billing Mode</p>
-            <p className="text-lg font-semibold text-gray-900 capitalize">
+            <p className="text-body-regular font-medium text-slate-600">Billing Mode</p>
+            <p className="text-body-large font-semibold text-slate-900 capitalize">
               {billingConfig.billing_mode || 'per_filing'}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-600">ITR Rates</p>
-            <div className="text-sm text-gray-900">
+            <p className="text-body-regular font-medium text-slate-600">ITR Rates</p>
+            <div className="text-body-regular text-slate-900">
               <p>ITR-1: {formatCurrency(billingConfig.itr_1_rate || 500)}</p>
               <p>ITR-2: {formatCurrency(billingConfig.itr_2_rate || 800)}</p>
               <p>ITR-3: {formatCurrency(billingConfig.itr_3_rate || 1200)}</p>
@@ -307,8 +307,8 @@ const BillingInvoicing = () => {
             </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-600">Monthly Subscription</p>
-            <p className="text-lg font-semibold text-gray-900">
+            <p className="text-body-regular font-medium text-slate-600">Monthly Subscription</p>
+            <p className="text-body-large font-semibold text-slate-900">
               {formatCurrency(billingConfig.monthly_subscription || 0)}
             </p>
           </div>
@@ -316,17 +316,17 @@ const BillingInvoicing = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
+      <div className="bg-white p-6 rounded-xl shadow-elevation-1 border mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search invoices by number, client name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -334,7 +334,7 @@ const BillingInvoicing = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
             >
               <option value="">All Status</option>
               <option value="pending">Pending</option>
@@ -347,30 +347,30 @@ const BillingInvoicing = () => {
       </div>
 
       {/* Invoices Table */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+      <div className="bg-white rounded-xl shadow-elevation-1 border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Invoice
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Due Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Created
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-body-small font-medium text-slate-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -382,54 +382,54 @@ const BillingInvoicing = () => {
                     <div className="flex justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
                     </div>
-                    <p className="mt-2 text-gray-500">Loading invoices...</p>
+                    <p className="mt-2 text-slate-500">Loading invoices...</p>
                   </td>
                 </tr>
               ) : invoices.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="px-6 py-12 text-center">
-                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">No invoices found</p>
-                    <p className="text-gray-400 text-sm">Create your first invoice to get started</p>
+                    <FileText className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                    <p className="text-slate-500">No invoices found</p>
+                    <p className="text-slate-400 text-body-regular">Create your first invoice to get started</p>
                   </td>
                 </tr>
               ) : (
                 invoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50">
+                  <tr key={invoice.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-body-regular font-medium text-slate-900">
                           {invoice.invoice_number}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-body-regular text-slate-500">
                           {invoice.filing_id ? `Filing: ${invoice.filing_id.slice(0, 8)}...` : 'Manual Invoice'}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-body-regular font-medium text-slate-900">
                           {invoice.client_name || 'N/A'}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-body-regular text-slate-500">
                           {invoice.client_email || 'N/A'}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-body-regular font-medium text-slate-900">
                           {formatCurrency(invoice.total_amount)}
                         </div>
                         {invoice.tax_amount > 0 && (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-body-regular text-slate-500">
                             Tax: {formatCurrency(invoice.tax_amount)}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-body-regular text-slate-900">
                         {invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}
                       </div>
                     </td>
@@ -440,11 +440,11 @@ const BillingInvoicing = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-body-regular text-slate-900">
                         {formatDate(invoice.created_at)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-body-regular font-medium">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleDownloadInvoice(invoice.id)}
@@ -453,7 +453,7 @@ const BillingInvoicing = () => {
                         >
                           <Download className="h-4 w-4" />
                         </button>
-                        <button className="text-gray-600 hover:text-gray-900" title="View Invoice">
+                        <button className="text-slate-600 hover:text-slate-900" title="View Invoice">
                           <Eye className="h-4 w-4" />
                         </button>
                         {invoice.status === 'pending' && (
@@ -465,7 +465,7 @@ const BillingInvoicing = () => {
                             <CheckCircle className="h-4 w-4" />
                           </button>
                         )}
-                        <button className="text-gray-600 hover:text-gray-900" title="Edit Invoice">
+                        <button className="text-slate-600 hover:text-slate-900" title="Edit Invoice">
                           <Edit className="h-4 w-4" />
                         </button>
                       </div>
@@ -479,26 +479,26 @@ const BillingInvoicing = () => {
 
         {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-slate-200 sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
               <button
                 onClick={() => handlePageChange(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center px-4 py-2 border border-slate-300 text-body-regular font-medium rounded-xl text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
                 disabled={pagination.page === pagination.totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-slate-300 text-body-regular font-medium rounded-xl text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-gray-700">
+                <p className="text-body-regular text-slate-700">
                   Showing{' '}
                   <span className="font-medium">
                     {(pagination.page - 1) * pagination.limit + 1}
@@ -513,11 +513,11 @@ const BillingInvoicing = () => {
                 </p>
               </div>
               <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <nav className="relative z-0 inline-flex rounded-xl shadow-elevation-1 -space-x-px">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
                     disabled={pagination.page === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-slate-300 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
@@ -528,7 +528,7 @@ const BillingInvoicing = () => {
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         page === pagination.page
                           ? 'z-10 bg-green-50 border-green-500 text-green-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          : 'bg-white border-slate-300 text-slate-500 hover:bg-slate-50'
                       }`}
                     >
                       {page}
@@ -537,7 +537,7 @@ const BillingInvoicing = () => {
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page === pagination.totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-slate-300 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                   </button>
@@ -585,13 +585,13 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div className="relative top-20 mx-auto p-5 border w-96 shadow-elevation-3 rounded-xl bg-white">
         <div className="mt-3">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Create Invoice</h3>
+            <h3 className="text-heading-4 font-medium text-slate-900">Create Invoice</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-slate-600"
             >
               <span className="sr-only">Close</span>
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -602,7 +602,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Client *
               </label>
               <select
@@ -610,7 +610,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
                 value={formData.clientId}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select Client</option>
                 {/* Client options would be populated from API */}
@@ -618,14 +618,14 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Filing (Optional)
               </label>
               <select
                 name="filingId"
                 value={formData.filingId}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select Filing</option>
                 {/* Filing options would be populated from API */}
@@ -633,7 +633,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Amount *
               </label>
               <input
@@ -644,13 +644,13 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
                 required
                 min="0"
                 step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="0.00"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Tax Amount
               </label>
               <input
@@ -660,13 +660,13 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
                 onChange={handleChange}
                 min="0"
                 step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="0.00"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Description
               </label>
               <textarea
@@ -674,13 +674,13 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="Invoice description..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 Due Date
               </label>
               <input
@@ -688,7 +688,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
                 name="dueDate"
                 value={formData.dueDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
@@ -696,13 +696,13 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                className="px-4 py-2 text-body-regular font-medium text-slate-700 bg-slate-100 border border-slate-300 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
+                className="px-4 py-2 text-body-regular font-medium text-white bg-green-600 border border-transparent rounded-xl hover:bg-green-700"
               >
                 Create Invoice
               </button>

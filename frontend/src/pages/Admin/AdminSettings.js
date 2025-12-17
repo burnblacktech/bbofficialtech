@@ -48,17 +48,17 @@ const AdminSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black">System Settings</h1>
-          <p className="text-gray-700 mt-2">Configure platform settings and preferences</p>
+          <h1 className="text-heading-1 font-bold text-black">System Settings</h1>
+          <p className="text-slate-700 mt-2">Configure platform settings and preferences</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden">
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-slate-200">
             <nav className="flex space-x-8 px-6">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -69,7 +69,7 @@ const AdminSettings = () => {
                     className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${
                       activeTab === tab.id
                         ? 'border-gold-500 text-gold-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     <Icon className="w-4 h-4 mr-2" />

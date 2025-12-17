@@ -25,15 +25,15 @@ export const DocumentVerification = ({
 }) => {
   return (
     <div
-      className={cn('bg-white rounded-lg border border-gray-200 p-4', className)}
+      className={cn('bg-white rounded-xl border border-slate-200 p-4', className)}
       {...props}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-gray-500" />
+          <FileText className="w-5 h-5 text-slate-500" />
           <h3
-            className="text-heading-sm font-semibold text-gray-900"
+            className="text-heading-sm font-semibold text-slate-900"
             style={{ fontSize: '16px', fontWeight: 600 }}
           >
             {documentName}
@@ -71,10 +71,10 @@ export const DocumentVerification = ({
 
       {/* Divider */}
       {(extractedFieldsCount !== undefined || lastUpdated) && (
-        <div className="border-t border-gray-200 pt-3 mt-3">
+        <div className="border-t border-slate-200 pt-3 mt-3">
           {extractedFieldsCount !== undefined && (
             <p
-              className="text-body-sm text-gray-600"
+              className="text-body-sm text-slate-600"
               style={{ fontSize: '13px', lineHeight: '20px' }}
             >
               {extractedFieldsCount} fields extracted
@@ -82,7 +82,7 @@ export const DocumentVerification = ({
           )}
           {lastUpdated && (
             <p
-              className="text-body-sm text-gray-600"
+              className="text-body-sm text-slate-600"
               style={{ fontSize: '13px', lineHeight: '20px' }}
             >
               Last updated {formatIndianDateTime(lastUpdated)}

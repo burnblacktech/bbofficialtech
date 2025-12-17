@@ -158,7 +158,7 @@ export const Toast = ({
               <button
                 onClick={onClose}
                 className={cn(
-                  'p-1 rounded-lg hover:bg-black/5 transition-colors duration-150 flex-shrink-0',
+                  'p-1 rounded-xl hover:bg-black/5 transition-colors duration-150 flex-shrink-0',
                   toastConfig.text
                 )}
                 aria-label="Close toast"

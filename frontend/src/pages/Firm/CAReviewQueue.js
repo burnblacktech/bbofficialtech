@@ -15,7 +15,7 @@ import {
   Loader,
 } from 'lucide-react';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { enterpriseLogger } from '../../utils/logger';
@@ -91,7 +91,7 @@ const CAReviewQueue = () => {
       case 'LOW':
         return 'bg-info-100 text-info-700';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-slate-100 text-slate-700';
     }
   };
 
@@ -105,33 +105,33 @@ const CAReviewQueue = () => {
       case 'RESOLVED':
         return <CheckCircle className="w-5 h-5 text-success-600" />;
       default:
-        return <Clock className="w-5 h-5 text-gray-600" />;
+        return <Clock className="w-5 h-5 text-slate-600" />;
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <Loader className="w-8 h-8 animate-spin text-primary-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white shadow-elevation-1 border-b sticky top-0 z-50">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate(`/firm/${firmId}/dashboard`)}
-                className="p-2 rounded-lg hover:bg-gray-100"
+                className="p-2 rounded-xl hover:bg-slate-100"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-700" />
+                <ArrowLeft className="h-5 w-5 text-slate-700" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">CA Review Queue</h1>
-                <p className="text-xs text-gray-500">Manage review requests</p>
+                <h1 className="text-heading-4 font-semibold text-slate-900">CA Review Queue</h1>
+                <p className="text-body-small text-slate-500">Manage review requests</p>
               </div>
             </div>
           </div>
@@ -142,16 +142,16 @@ const CAReviewQueue = () => {
         {/* Filters */}
         <Card className="p-4 mb-6">
           <div className="flex items-center space-x-4">
-            <Filter className="w-5 h-5 text-gray-600" />
+            <Filter className="w-5 h-5 text-slate-600" />
             <div className="flex space-x-2">
               {['all', 'pending', 'in_review', 'completed'].map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                     filter === f
                       ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1).replace('_', ' ')}
@@ -165,9 +165,9 @@ const CAReviewQueue = () => {
         <div className="space-y-4">
           {queueItems.length === 0 ? (
             <Card className="p-12 text-center">
-              <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Review Items</h3>
-              <p className="text-gray-600">No items match the selected filter.</p>
+              <Clock className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No Review Items</h3>
+              <p className="text-slate-600">No items match the selected filter.</p>
             </Card>
           ) : (
             queueItems.map((ticket) => (
@@ -176,21 +176,21 @@ const CAReviewQueue = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       {getStatusIcon(ticket.status)}
-                      <h3 className="text-lg font-semibold text-gray-900">{ticket.subject}</h3>
+                      <h3 className="text-heading-4 font-semibold text-slate-900">{ticket.subject}</h3>
                       <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
                         {ticket.priority}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{ticket.description}</p>
+                    <p className="text-body-regular text-slate-600 mb-2">{ticket.description}</p>
                     {ticket.filing && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-body-small text-slate-500">
                         <span>ITR: {ticket.filing.itrType}</span>
                         <span className="mx-2">•</span>
                         <span>AY: {ticket.filing.assessmentYear}</span>
                       </div>
                     )}
                     {ticket.assignedTo && (
-                      <p className="text-xs text-gray-500 mt-2">Assigned to: {ticket.assignedUser?.fullName || 'N/A'}</p>
+                      <p className="text-body-small text-slate-500 mt-2">Assigned to: {ticket.assignedUser?.fullName || 'N/A'}</p>
                     )}
                   </div>
                   <div className="flex items-center space-x-2">

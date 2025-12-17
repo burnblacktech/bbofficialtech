@@ -187,7 +187,7 @@ const SubscriptionPlans = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <Typography.H1 className="mb-4">Choose Your Subscription Plan</Typography.H1>
-          <Typography.Body className="text-lg text-neutral-600 max-w-3xl mx-auto">
+          <Typography.Body className="text-body-large text-neutral-600 max-w-3xl mx-auto">
             Select the perfect plan for your CA firm. All plans include secure ITR filing,
             client management, and dedicated support.
           </Typography.Body>
@@ -195,10 +195,10 @@ const SubscriptionPlans = () => {
 
         {/* Billing Cycle Toggle */}
         <div className="flex items-center justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 border border-neutral-200">
+          <div className="bg-white rounded-xl p-1 border border-neutral-200">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 billingCycle === 'monthly'
                   ? 'bg-primary-500 text-white'
                   : 'text-neutral-600 hover:text-neutral-900'
@@ -208,14 +208,14 @@ const SubscriptionPlans = () => {
             </button>
             <button
               onClick={() => setBillingCycle('annual')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 billingCycle === 'annual'
                   ? 'bg-primary-500 text-white'
                   : 'text-neutral-600 hover:text-neutral-900'
               }`}
             >
               Annual
-              <span className="ml-1 px-2 py-0.5 bg-success-100 text-success-600 text-xs rounded-full">
+              <span className="ml-1 px-2 py-0.5 bg-success-100 text-success-600 text-body-small rounded-full">
                 Save 20%
               </span>
             </button>
@@ -228,7 +228,7 @@ const SubscriptionPlans = () => {
             <StaggerItem key={plan.id}>
               <motion.div
                 whileHover={{ y: -5 }}
-                className={`relative bg-white rounded-xl shadow-lg border-2 transition-all duration-200 ${
+                className={`relative bg-white rounded-xl shadow-elevation-3 border-2 transition-all duration-200 ${
                   selectedPlan?.id === plan.id
                     ? 'border-primary-500 shadow-primary-200'
                     : plan.popular
@@ -239,7 +239,7 @@ const SubscriptionPlans = () => {
                 {/* Popular Badge */}
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-secondary-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
+                    <div className="bg-secondary-500 text-white px-4 py-1 rounded-full text-body-regular font-medium flex items-center space-x-1">
                       <Star className="w-3 h-3" />
                       <span>Most Popular</span>
                     </div>
@@ -249,7 +249,7 @@ const SubscriptionPlans = () => {
                 {/* Recommended Badge */}
                 {plan.recommended && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-warning-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
+                    <div className="bg-warning-500 text-white px-4 py-1 rounded-full text-body-regular font-medium flex items-center space-x-1">
                       <TrendingUp className="w-3 h-3" />
                       <span>Recommended</span>
                     </div>
@@ -259,7 +259,7 @@ const SubscriptionPlans = () => {
                 <div className="p-6">
                   {/* Plan Header */}
                   <div className="text-center mb-6">
-                    <div className={`w-12 h-12 ${getPlanColor(plan.name)} rounded-lg flex items-center justify-center mx-auto mb-4`}>
+                    <div className={`w-12 h-12 ${getPlanColor(plan.name)} rounded-xl flex items-center justify-center mx-auto mb-4`}>
                       {getPlanIcon(plan.name)}
                     </div>
                     <Typography.H3 className="mb-2">{plan.name}</Typography.H3>
@@ -271,7 +271,7 @@ const SubscriptionPlans = () => {
                   {/* Pricing */}
                   <div className="text-center mb-6">
                     <div className="flex items-center justify-center space-x-1">
-                      <Typography.H2 className="text-3xl font-bold">
+                      <Typography.H2 className="text-heading-1 font-bold">
                         {formatCurrency(billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice)}
                       </Typography.H2>
                       <Typography.Small className="text-neutral-600">
@@ -302,7 +302,7 @@ const SubscriptionPlans = () => {
                   {/* Select Button */}
                   <button
                     onClick={() => handleSelectPlan(plan)}
-                    className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                    className={`w-full py-3 px-4 rounded-xl font-medium transition-colors ${
                       selectedPlan?.id === plan.id
                         ? 'bg-primary-500 text-white'
                         : plan.popular
@@ -336,7 +336,7 @@ const SubscriptionPlans = () => {
                     </Typography.Small>
                     <Typography.H4>
                       {formatCurrency(billingCycle === 'monthly' ? selectedPlan.monthlyPrice : selectedPlan.annualPrice)}
-                      <span className="text-sm font-normal text-neutral-600">
+                      <span className="text-body-regular font-normal text-neutral-600">
                         /{billingCycle === 'monthly' ? 'month' : 'year'}
                       </span>
                     </Typography.H4>
@@ -378,7 +378,7 @@ const SubscriptionPlans = () => {
           <button
             onClick={handleProceedToCheckout}
             disabled={!selectedPlan}
-            className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 mx-auto"
+            className="px-8 py-4 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 mx-auto"
           >
             <span>Proceed to Checkout</span>
             <ArrowRight className="w-4 h-4" />

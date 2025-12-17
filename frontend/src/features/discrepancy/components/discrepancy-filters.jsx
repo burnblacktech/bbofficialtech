@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Filter, X } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
   const severityOptions = [
@@ -27,10 +27,10 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
     filters.severity !== 'all' || filters.source !== 'all';
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <Filter className="h-5 w-5 text-gray-600 mr-2" />
+          <Filter className="h-5 w-5 text-slate-600 mr-2" />
           <h3 className="text-heading-sm text-gray-800">Filter Discrepancies</h3>
         </div>
         {hasActiveFilters && (
@@ -44,7 +44,7 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Severity Filter */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Severity
           </label>
           <div className="flex flex-wrap gap-2">
@@ -52,10 +52,10 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
               <button
                 key={option.id}
                 onClick={() => onFilterChange({ ...filters, severity: option.id })}
-                className={`px-3 py-1.5 rounded-lg text-body-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-xl text-body-sm font-medium transition-colors ${
                   filters.severity === option.id
                     ? 'bg-gold-100 text-gold-700 border-2 border-gold-500'
-                    : 'bg-gray-100 text-gray-700 border-2 border-transparent hover:bg-gray-200'
+                    : 'bg-slate-100 text-slate-700 border-2 border-transparent hover:bg-slate-200'
                 }`}
               >
                 {option.label}
@@ -66,7 +66,7 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
 
         {/* Source Filter */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Source
           </label>
           <div className="flex flex-wrap gap-2">
@@ -74,10 +74,10 @@ const DiscrepancyFilters = ({ filters, onFilterChange, onClearFilters }) => {
               <button
                 key={option.id}
                 onClick={() => onFilterChange({ ...filters, source: option.id })}
-                className={`px-3 py-1.5 rounded-lg text-body-sm font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-xl text-body-sm font-medium transition-colors ${
                   filters.source === option.id
                     ? 'bg-gold-100 text-gold-700 border-2 border-gold-500'
-                    : 'bg-gray-100 text-gray-700 border-2 border-transparent hover:bg-gray-200'
+                    : 'bg-slate-100 text-slate-700 border-2 border-transparent hover:bg-slate-200'
                 }`}
               >
                 {option.label}

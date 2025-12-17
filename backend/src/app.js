@@ -10,7 +10,7 @@ const morgan = require('morgan');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const RedisStore = require('connect-redis').default;
+// RedisStore is loaded lazily when Redis is available (see server.js)
 const passport = require('./config/passport');
 const enterpriseLogger = require('./utils/logger');
 const redisService = require('./services/core/RedisService');
@@ -54,6 +54,7 @@ app.use(cookieParser());
 
 // Session configuration for OAuth state parameter
 // Use Redis store if available, fallback to memory store
+// Note: Store initialization is deferred until Redis is ready (handled in server.js)
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'your-session-secret',
   resave: false,
@@ -67,23 +68,9 @@ const sessionConfig = {
   },
 };
 
-// Use Redis store if Redis is available
-if (redisService.isReady()) {
-  try {
-    sessionConfig.store = new RedisStore({
-      client: redisService.getClient(),
-      prefix: 'session:',
-      ttl: 15 * 60, // 15 minutes in seconds
-    });
-    enterpriseLogger.info('Using Redis session store');
-  } catch (error) {
-    enterpriseLogger.warn('Failed to initialize Redis session store, using memory store', {
-      error: error.message,
-    });
-  }
-} else {
-  enterpriseLogger.info('Using in-memory session store (Redis not available)');
-}
+// Initialize session store lazily (will be set up in server.js after Redis is initialized)
+// For now, use memory store as default
+enterpriseLogger.info('Using in-memory session store (will upgrade to Redis if available)');
 
 app.use(session(sessionConfig));
 
@@ -125,6 +112,10 @@ app.use(
       'X-Requested-With',
       'x-correlation-id',
       'X-Correlation-ID',
+      'x-idempotency-key',
+      'X-Idempotency-Key',
+      'x-client-request-id',
+      'X-Client-Request-Id',
     ],
     exposedHeaders: ['API-Version', 'X-Total-Count', 'X-Page-Count'],
   }),

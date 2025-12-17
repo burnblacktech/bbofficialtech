@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { GitCompare, ArrowLeft, ArrowRight } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const VersionComparison = ({ versions = [], onRestore }) => {
   const [version1, setVersion1] = useState(null);
@@ -61,7 +61,7 @@ const VersionComparison = ({ versions = [], onRestore }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center mb-6">
         <GitCompare className="h-6 w-6 text-gold-600 mr-3" />
         <h3 className="text-heading-md text-gray-800">Compare Versions</h3>
@@ -69,13 +69,13 @@ const VersionComparison = ({ versions = [], onRestore }) => {
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Version 1
           </label>
           <select
             value={version1 || ''}
             onChange={(e) => setVersion1(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           >
             <option value="">Select version</option>
             {versions.map((v) => (
@@ -86,13 +86,13 @@ const VersionComparison = ({ versions = [], onRestore }) => {
           </select>
         </div>
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Version 2
           </label>
           <select
             value={version2 || ''}
             onChange={(e) => setVersion2(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
           >
             <option value="">Select version</option>
             {versions.map((v) => (
@@ -110,7 +110,7 @@ const VersionComparison = ({ versions = [], onRestore }) => {
 
       {comparison && (
         <div className="space-y-4">
-          <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+          <div className="bg-info-50 border border-info-200 rounded-xl p-4">
             <p className="text-body-md font-semibold text-info-900">
               {comparison.totalChanges} difference(s) found
             </p>
@@ -119,30 +119,30 @@ const VersionComparison = ({ versions = [], onRestore }) => {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-left text-body-sm font-semibold text-gray-700 border border-gray-200">
+                <tr className="bg-slate-50">
+                  <th className="px-4 py-3 text-left text-body-sm font-semibold text-slate-700 border border-slate-200">
                     Field
                   </th>
-                  <th className="px-4 py-3 text-left text-body-sm font-semibold text-gray-700 border border-gray-200">
+                  <th className="px-4 py-3 text-left text-body-sm font-semibold text-slate-700 border border-slate-200">
                     Version 1
                   </th>
-                  <th className="px-4 py-3 text-left text-body-sm font-semibold text-gray-700 border border-gray-200">
+                  <th className="px-4 py-3 text-left text-body-sm font-semibold text-slate-700 border border-slate-200">
                     Version 2
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {comparison.differences.map((diff, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 border border-gray-200 font-medium text-gray-800">
+                  <tr key={index} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 border border-slate-200 font-medium text-gray-800">
                       {diff.field}
                     </td>
-                    <td className="px-4 py-3 border border-gray-200">
+                    <td className="px-4 py-3 border border-slate-200">
                       <div className="bg-error-50 text-error-900 p-2 rounded text-body-sm font-mono">
                         {formatValue(diff.version1)}
                       </div>
                     </td>
-                    <td className="px-4 py-3 border border-gray-200">
+                    <td className="px-4 py-3 border border-slate-200">
                       <div className="bg-success-50 text-success-900 p-2 rounded text-body-sm font-mono">
                         {formatValue(diff.version2)}
                       </div>

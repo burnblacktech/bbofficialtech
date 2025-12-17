@@ -29,7 +29,7 @@ const DataSourceSkeleton = () => {
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-lg border border-neutral-200 p-6">
+              <div key={i} className="bg-white rounded-xl border border-neutral-200 p-6">
                 <div className="flex items-start gap-4 mb-4">
                   <Skeleton className="w-12 h-12 rounded" />
                   <div className="flex-1 space-y-2">

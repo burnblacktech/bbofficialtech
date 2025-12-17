@@ -237,7 +237,7 @@ const AdminUserSegments = () => {
                   placeholder="Search segments..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <select
@@ -246,7 +246,7 @@ const AdminUserSegments = () => {
                   setActiveFilter(e.target.value);
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="all">All Segments</option>
                 <option value="active">Active Only</option>
@@ -295,16 +295,16 @@ const AdminUserSegments = () => {
                           {segment.description || 'No description'}
                         </Typography.Small>
                         <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded">
+                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-body-small rounded">
                             {segment.memberCount || 0} members
                           </span>
                           {segment.criteria?.userType && (
-                            <span className="px-2 py-1 bg-info-100 text-info-700 text-xs rounded">
+                            <span className="px-2 py-1 bg-info-100 text-info-700 text-body-small rounded">
                               {segment.criteria.userType}
                             </span>
                           )}
                           {segment.criteria?.status && (
-                            <span className="px-2 py-1 bg-secondary-100 text-secondary-700 text-xs rounded">
+                            <span className="px-2 py-1 bg-secondary-100 text-secondary-700 text-body-small rounded">
                               {segment.criteria.status}
                             </span>
                           )}
@@ -386,32 +386,32 @@ const AdminUserSegments = () => {
                     resetForm();
                     setSelectedSegment(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Segment Name <span className="text-error-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="e.g., Active CA Users"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Description
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     rows={3}
                     placeholder="Describe the segment..."
                   />
@@ -421,7 +421,7 @@ const AdminUserSegments = () => {
                   <Typography.Small className="font-medium text-neutral-700 mb-3 block">Criteria</Typography.Small>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                         User Type
                       </label>
                       <select
@@ -432,7 +432,7 @@ const AdminUserSegments = () => {
                             criteria: { ...formData.criteria, userType: e.target.value },
                           })
                         }
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="">All User Types</option>
                         {userTypes.map((type) => (
@@ -441,7 +441,7 @@ const AdminUserSegments = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                         User Status
                       </label>
                       <select
@@ -452,7 +452,7 @@ const AdminUserSegments = () => {
                             criteria: { ...formData.criteria, status: e.target.value },
                           })
                         }
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="">All Statuses</option>
                         {userStatuses.map((status) => (
@@ -461,7 +461,7 @@ const AdminUserSegments = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Registration Date From
                       </label>
                       <input
@@ -479,11 +479,11 @@ const AdminUserSegments = () => {
                             },
                           })
                         }
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Registration Date To
                       </label>
                       <input
@@ -501,7 +501,7 @@ const AdminUserSegments = () => {
                             },
                           })
                         }
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                   </div>
@@ -543,7 +543,7 @@ const AdminUserSegments = () => {
                     setMembers([]);
                     setSelectedSegment(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -562,13 +562,13 @@ const AdminUserSegments = () => {
                 ) : (
                   <div className="space-y-2">
                     {members.map((member) => (
-                      <div key={member.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                      <div key={member.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                         <div>
                           <Typography.Body className="font-medium">{member.fullName || 'N/A'}</Typography.Body>
                           <Typography.Small className="text-neutral-500">{member.email}</Typography.Small>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded">
+                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-body-small rounded">
                             {member.role}
                           </span>
                           <span className={`px-2 py-1 text-xs rounded ${

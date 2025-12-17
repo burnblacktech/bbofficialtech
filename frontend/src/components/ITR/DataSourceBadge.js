@@ -52,7 +52,7 @@ const DataSourceBadge = ({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-md border',
+        'inline-flex items-center gap-1.5 rounded-xl border',
         colorClass,
         sizeClasses[size],
         className,

@@ -33,6 +33,9 @@ const progressiveRateLimit = (options = {}) => {
     if (redisService.isReady()) {
       try {
         const client = redisService.getClient();
+        if (!client) {
+          throw new Error('Redis client not available');
+        }
         const lockoutKey = `rate_limit:lockout:${key}`;
         const lockoutValue = await client.get(lockoutKey);
         if (lockoutValue) {

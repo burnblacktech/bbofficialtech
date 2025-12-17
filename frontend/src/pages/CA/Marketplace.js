@@ -61,9 +61,9 @@ const CAMarketplace = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-error-50 border border-error-200 rounded-lg p-6 text-center">
+          <div className="bg-error-50 border border-error-200 rounded-xl p-6 text-center">
             <p className="text-error-800">Failed to load CA firms. Please try again later.</p>
           </div>
         </div>
@@ -72,40 +72,40 @@ const CAMarketplace = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-display-md text-gray-900 font-bold mb-2">CA Marketplace</h1>
-          <p className="text-body-lg text-gray-600">
+          <h1 className="text-display-md text-slate-900 font-bold mb-2">CA Marketplace</h1>
+          <p className="text-body-lg text-slate-600">
             Find the right Chartered Accountant for your tax filing needs
           </p>
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search by CA name, specialization, or location..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
             </div>
 
             {/* Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-body-sm font-medium"
+              className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 flex items-center gap-2 text-body-sm font-medium"
             >
               <Filter className="h-4 w-4" />
               Filters
               {(filters.location || filters.specialization || filters.minRating || filters.minPrice || filters.maxPrice) && (
-                <span className="bg-gold-500 text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-gold-500 text-white text-body-small px-2 py-0.5 rounded-full">
                   {[
                     filters.location,
                     filters.specialization,
@@ -120,11 +120,11 @@ const CAMarketplace = () => {
 
           {/* Filter Panel */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-slate-200">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {/* Location */}
                 <div>
-                  <label className="block text-body-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-sm font-medium text-slate-700 mb-1">
                     Location
                   </label>
                   <input
@@ -132,19 +132,19 @@ const CAMarketplace = () => {
                     placeholder="City, State"
                     value={filters.location}
                     onChange={(e) => handleFilterChange('location', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   />
                 </div>
 
                 {/* Specialization */}
                 <div>
-                  <label className="block text-body-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-sm font-medium text-slate-700 mb-1">
                     Specialization
                   </label>
                   <select
                     value={filters.specialization}
                     onChange={(e) => handleFilterChange('specialization', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   >
                     <option value="">All Specializations</option>
                     <option value="individual">Individual ITR</option>
@@ -157,13 +157,13 @@ const CAMarketplace = () => {
 
                 {/* Min Rating */}
                 <div>
-                  <label className="block text-body-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-sm font-medium text-slate-700 mb-1">
                     Min Rating
                   </label>
                   <select
                     value={filters.minRating}
                     onChange={(e) => handleFilterChange('minRating', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   >
                     <option value="">Any Rating</option>
                     <option value="4.5">4.5+ Stars</option>
@@ -175,7 +175,7 @@ const CAMarketplace = () => {
 
                 {/* Price Range */}
                 <div>
-                  <label className="block text-body-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-sm font-medium text-slate-700 mb-1">
                     Min Price (₹)
                   </label>
                   <input
@@ -183,12 +183,12 @@ const CAMarketplace = () => {
                     placeholder="0"
                     value={filters.minPrice}
                     onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-body-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-sm font-medium text-slate-700 mb-1">
                     Max Price (₹)
                   </label>
                   <input
@@ -196,7 +196,7 @@ const CAMarketplace = () => {
                     placeholder="No limit"
                     value={filters.maxPrice}
                     onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-sm"
                   />
                 </div>
               </div>
@@ -206,7 +206,7 @@ const CAMarketplace = () => {
                 <div className="mt-4 flex justify-end">
                   <button
                     onClick={clearFilters}
-                    className="text-body-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                    className="text-body-sm text-slate-600 hover:text-slate-900 flex items-center gap-1"
                   >
                     <X className="h-4 w-4" />
                     Clear Filters
@@ -221,18 +221,18 @@ const CAMarketplace = () => {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500 mx-auto mb-4"></div>
-            <p className="text-body-md text-gray-600">Loading CA firms...</p>
+            <p className="text-body-md text-slate-600">Loading CA firms...</p>
           </div>
         ) : firms.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-heading-md text-gray-900 mb-2">No CA firms found</h3>
-            <p className="text-body-md text-gray-600 mb-4">
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+            <Briefcase className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-heading-md text-slate-900 mb-2">No CA firms found</h3>
+            <p className="text-body-md text-slate-600 mb-4">
               Try adjusting your filters or search terms
             </p>
             <button
               onClick={clearFilters}
-              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               Clear All Filters
             </button>
@@ -240,7 +240,7 @@ const CAMarketplace = () => {
         ) : (
           <>
             {/* Results Count */}
-            <div className="mb-4 text-body-sm text-gray-600">
+            <div className="mb-4 text-body-sm text-slate-600">
               Showing {firms.length} of {paginationInfo.total || 0} CA firms
             </div>
 
@@ -257,17 +257,17 @@ const CAMarketplace = () => {
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
-                <span className="text-body-sm text-gray-600">
+                <span className="text-body-sm text-slate-600">
                   Page {pagination.page} of {paginationInfo.totalPages}
                 </span>
                 <button
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page >= paginationInfo.totalPages}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
@@ -289,12 +289,12 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
   const location = firm.address?.split(',')[0] || 'Location not specified';
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+    <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 hover:shadow-elevation-2 transition-shadow cursor-pointer"
          onClick={() => onViewProfile(firm.id)}>
       {/* Header */}
       <div className="mb-4">
-        <h3 className="text-heading-md font-semibold text-gray-900 mb-2">{firm.name}</h3>
-        <div className="flex items-center gap-2 text-body-sm text-gray-600">
+        <h3 className="text-heading-md font-semibold text-slate-900 mb-2">{firm.name}</h3>
+        <div className="flex items-center gap-2 text-body-sm text-slate-600">
           <MapPin className="h-4 w-4" />
           <span>{location}</span>
         </div>
@@ -309,19 +309,19 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
               className={`h-4 w-4 ${
                 star <= Math.round(rating)
                   ? 'text-gold-500 fill-current'
-                  : 'text-gray-300'
+                  : 'text-slate-300'
               }`}
             />
           ))}
         </div>
-        <span className="text-body-sm text-gray-600">
+        <span className="text-body-sm text-slate-600">
           {rating.toFixed(1)} ({reviewCount} reviews)
         </span>
       </div>
 
       {/* Specialization */}
       <div className="mb-4">
-        <div className="flex items-center gap-2 text-body-sm text-gray-600 mb-1">
+        <div className="flex items-center gap-2 text-body-sm text-slate-600 mb-1">
           <Briefcase className="h-4 w-4" />
           <span>{specialization}</span>
         </div>
@@ -329,7 +329,7 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
 
       {/* Stats */}
       {firm.stats && (
-        <div className="flex items-center gap-4 mb-4 text-body-sm text-gray-600">
+        <div className="flex items-center gap-4 mb-4 text-body-sm text-slate-600">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
             <span>{firm.stats.clientCount || 0} clients</span>
@@ -338,10 +338,10 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
       )}
 
       {/* Price */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200">
         <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-gray-600" />
-          <span className="text-heading-sm font-semibold text-gray-900">
+          <DollarSign className="h-4 w-4 text-slate-600" />
+          <span className="text-heading-sm font-semibold text-slate-900">
             {typeof price === 'number' ? `₹${price.toLocaleString('en-IN')}` : price}
           </span>
         </div>
@@ -350,7 +350,7 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
             e.stopPropagation();
             onViewProfile(firm.id);
           }}
-          className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 text-body-sm font-medium"
+          className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 text-body-sm font-medium"
         >
           View Profile
         </button>

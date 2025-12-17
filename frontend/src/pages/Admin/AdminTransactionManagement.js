@@ -316,7 +316,7 @@ const AdminTransactionManagement = () => {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm"
+              className="px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 text-body-regular"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
@@ -432,7 +432,7 @@ const AdminTransactionManagement = () => {
                   placeholder="Search by invoice, user..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <select
@@ -441,7 +441,7 @@ const AdminTransactionManagement = () => {
                   setFilters({ ...filters, paymentStatus: e.target.value });
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Payment Status</option>
                 <option value="paid">Paid</option>
@@ -455,7 +455,7 @@ const AdminTransactionManagement = () => {
                   setFilters({ ...filters, paymentMethod: e.target.value });
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Payment Methods</option>
                 <option value="razorpay">Razorpay</option>
@@ -470,7 +470,7 @@ const AdminTransactionManagement = () => {
                   setFilters({ ...filters, startDate: e.target.value });
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 placeholder="Start Date"
               />
               <input
@@ -480,7 +480,7 @@ const AdminTransactionManagement = () => {
                   setFilters({ ...filters, endDate: e.target.value });
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 placeholder="End Date"
               />
             </div>
@@ -551,13 +551,13 @@ const AdminTransactionManagement = () => {
                 <table className="w-full">
                   <thead className="bg-neutral-50 border-b border-neutral-200">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Invoice</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">User</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Amount</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Method</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Date</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-neutral-600 uppercase tracking-wider">Actions</th>
+                      <th className="px-4 py-3 text-left text-body-small font-semibold text-neutral-600 uppercase tracking-wider">Invoice</th>
+                      <th className="px-4 py-3 text-left text-body-small font-semibold text-neutral-600 uppercase tracking-wider">User</th>
+                      <th className="px-4 py-3 text-left text-body-small font-semibold text-neutral-600 uppercase tracking-wider">Amount</th>
+                      <th className="px-4 py-3 text-left text-body-small font-semibold text-neutral-600 uppercase tracking-wider">Status</th>
+                      <th className="px-4 py-3 text-left text-body-small font-semibold text-neutral-600 uppercase tracking-wider">Method</th>
+                      <th className="px-4 py-3 text-left text-body-small font-semibold text-neutral-600 uppercase tracking-wider">Date</th>
+                      <th className="px-4 py-3 text-right text-body-small font-semibold text-neutral-600 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-200">
@@ -666,7 +666,7 @@ const AdminTransactionManagement = () => {
                     <Badge variant="error">Disputed</Badge>
                   )}
                 </CardTitle>
-                <button onClick={() => setSelectedTransaction(null)} className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500">
+                <button onClick={() => setSelectedTransaction(null)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
@@ -707,7 +707,7 @@ const AdminTransactionManagement = () => {
 
                 {/* Filing Info */}
                 {selectedTransaction.filing && (
-                  <div className="p-4 bg-neutral-50 rounded-lg">
+                  <div className="p-4 bg-neutral-50 rounded-xl">
                     <Typography.Small className="text-neutral-500 font-medium mb-2 block">Related Filing</Typography.Small>
                     <div className="flex items-center gap-4">
                       <Typography.Body>{selectedTransaction.filing.itrType}</Typography.Body>
@@ -721,7 +721,7 @@ const AdminTransactionManagement = () => {
 
                 {/* Dispute Info */}
                 {selectedTransaction.metadata?.disputed && (
-                  <div className="p-4 bg-error-50 rounded-lg border border-error-200">
+                  <div className="p-4 bg-error-50 rounded-xl border border-error-200">
                     <div className="flex items-center gap-2 mb-2">
                       <AlertTriangle className="w-5 h-5 text-error-600" />
                       <Typography.Body className="font-medium text-error-700">Dispute Information</Typography.Body>
@@ -755,7 +755,7 @@ const AdminTransactionManagement = () => {
                   {selectedTransaction.metadata?.adminNotes?.length > 0 ? (
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {selectedTransaction.metadata.adminNotes.map((note) => (
-                        <div key={note.id} className="p-3 bg-neutral-50 rounded-lg">
+                        <div key={note.id} className="p-3 bg-neutral-50 rounded-xl">
                           <Typography.Body>{note.content}</Typography.Body>
                           <Typography.Small className="text-neutral-500">
                             {note.addedByName} • {new Date(note.addedAt).toLocaleString()}
@@ -774,7 +774,7 @@ const AdminTransactionManagement = () => {
                     <Typography.Body className="font-medium mb-3">Related Transactions</Typography.Body>
                     <div className="space-y-2">
                       {selectedTransaction.relatedTransactions.map((related) => (
-                        <div key={related.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                        <div key={related.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                           <div>
                             <Typography.Body className="font-medium">{related.invoiceNumber}</Typography.Body>
                             <Typography.Small className="text-neutral-500">
@@ -824,17 +824,17 @@ const AdminTransactionManagement = () => {
             <Card className="w-full max-w-md">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Add Note</CardTitle>
-                <button onClick={() => setShowNotesModal(false)} className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500">
+                <button onClick={() => setShowNotesModal(false)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Note</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">Note</label>
                   <textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     rows={4}
                     placeholder="Enter your note..."
                   />
@@ -858,19 +858,19 @@ const AdminTransactionManagement = () => {
             <Card className="w-full max-w-md">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Mark as Disputed</CardTitle>
-                <button onClick={() => setShowDisputeModal(false)} className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500">
+                <button onClick={() => setShowDisputeModal(false)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Dispute Reason <span className="text-error-500">*</span>
                   </label>
                   <select
                     value={disputeData.reason}
                     onChange={(e) => setDisputeData({ ...disputeData, reason: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="">Select a reason</option>
                     <option value="unauthorized_transaction">Unauthorized Transaction</option>
@@ -882,11 +882,11 @@ const AdminTransactionManagement = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Additional Details</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">Additional Details</label>
                   <textarea
                     value={disputeData.details}
                     onChange={(e) => setDisputeData({ ...disputeData, details: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     rows={3}
                     placeholder="Enter additional details..."
                   />
@@ -915,18 +915,18 @@ const AdminTransactionManagement = () => {
                     setShowRefundModal(false);
                     setRefundData({ amount: '', reason: '', refundType: 'full' });
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-4 bg-neutral-50 rounded-lg">
+                <div className="p-4 bg-neutral-50 rounded-xl">
                   <Typography.Small className="text-neutral-500">Transaction Amount</Typography.Small>
                   <Typography.H3>{formatCurrency(selectedTransaction.totalAmount)}</Typography.H3>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Refund Type</label>
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">Refund Type</label>
                   <select
                     value={refundData.refundType}
                     onChange={(e) => {
@@ -937,7 +937,7 @@ const AdminTransactionManagement = () => {
                         amount: type === 'full' ? selectedTransaction.totalAmount : '',
                       });
                     }}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="full">Full Refund</option>
                     <option value="partial">Partial Refund</option>
@@ -945,7 +945,7 @@ const AdminTransactionManagement = () => {
                 </div>
                 {refundData.refundType === 'partial' && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Refund Amount <span className="text-error-500">*</span>
                     </label>
                     <input
@@ -954,19 +954,19 @@ const AdminTransactionManagement = () => {
                       max={selectedTransaction.totalAmount}
                       value={refundData.amount}
                       onChange={(e) => setRefundData({ ...refundData, amount: e.target.value })}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                       placeholder={`Max: ₹${selectedTransaction.totalAmount}`}
                     />
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Refund Reason <span className="text-error-500">*</span>
                   </label>
                   <textarea
                     value={refundData.reason}
                     onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     rows={3}
                     placeholder="Enter refund reason..."
                   />

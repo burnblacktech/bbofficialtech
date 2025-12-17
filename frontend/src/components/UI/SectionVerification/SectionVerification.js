@@ -41,19 +41,19 @@ export const SectionVerification = ({
       <div className="space-y-1">
         <div className="flex items-center justify-between">
           <span
-            className="text-body-sm text-gray-700"
+            className="text-body-sm text-slate-700"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             Verification: {verifiedCount}/{totalCount} complete
           </span>
           <span
-            className="text-body-sm text-gray-600"
+            className="text-body-sm text-slate-600"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             {Math.round(progress)}%
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full" style={{ height: '8px' }}>
+        <div className="w-full bg-slate-200 rounded-full" style={{ height: '8px' }}>
           <div
             className="bg-success-500 rounded-full transition-all duration-300"
             style={{

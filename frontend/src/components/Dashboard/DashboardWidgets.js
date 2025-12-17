@@ -66,7 +66,7 @@ const DashboardWidgets = ({ stats }) => {
             className={`bg-white rounded-xl shadow-card border ${widget.borderColor} p-4 hover:shadow-card-hover hover:border-slate-300 transition-all duration-200 group cursor-pointer`}
           >
             <div className="flex items-start justify-between mb-3">
-              <div className={`p-2.5 rounded-xl ${widget.bgGradient} shadow-sm group-hover:scale-105 transition-transform duration-200`}>
+              <div className={`p-2.5 rounded-xl ${widget.bgGradient} shadow-elevation-1 group-hover:scale-105 transition-transform duration-200`}>
                 <Icon className="h-4 w-4 text-white" />
               </div>
               <ArrowUpRight className={`h-3.5 w-3.5 ${widget.textColor} opacity-40 group-hover:opacity-70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all`} />

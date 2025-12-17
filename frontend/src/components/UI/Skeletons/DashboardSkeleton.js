@@ -19,7 +19,7 @@ const DashboardSkeleton = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white rounded-lg border border-neutral-200 p-6">
+            <div key={i} className="bg-white rounded-xl border border-neutral-200 p-6">
               <Skeleton className="h-4 w-24 mb-3" />
               <Skeleton className="h-8 w-32 mb-2" />
               <Skeleton className="h-3 w-20" />
@@ -28,7 +28,7 @@ const DashboardSkeleton = () => {
         </div>
 
         {/* Recent Filings */}
-        <div className="bg-white rounded-lg border border-neutral-200 p-6">
+        <div className="bg-white rounded-xl border border-neutral-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="h-6 w-32" />
             <Skeleton className="h-8 w-24 rounded" />
@@ -55,7 +55,7 @@ const DashboardSkeleton = () => {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-lg border border-neutral-200 p-6">
+            <div key={i} className="bg-white rounded-xl border border-neutral-200 p-6">
               <Skeleton className="h-6 w-32 mb-3" />
               <Skeleton className="h-4 w-full mb-2" />
               <Skeleton className="h-4 w-3/4" />

@@ -25,13 +25,13 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-50 border-red-200 text-red-800';
+        return 'bg-error-50 border-red-200 text-red-800';
       case 'medium':
         return 'bg-yellow-50 border-yellow-200 text-yellow-800';
       case 'low':
         return 'bg-blue-50 border-blue-200 text-blue-800';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-800';
+        return 'bg-slate-50 border-slate-200 text-gray-800';
     }
   };
 
@@ -49,12 +49,12 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-6 h-6 text-gold-600" />
-          <h3 className="text-heading-md text-gray-900">AI-Powered Deduction Suggestions</h3>
-          <span className="px-2 py-1 text-xs rounded bg-gold-100 text-gold-700 font-medium">
+          <h3 className="text-heading-md text-slate-900">AI-Powered Deduction Suggestions</h3>
+          <span className="px-2 py-1 text-body-small rounded bg-gold-100 text-gold-700 font-medium">
             {suggestions.length} suggestions
           </span>
         </div>
@@ -68,28 +68,28 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
           return (
             <div
               key={suggestion.id}
-              className={`p-4 rounded-lg border-2 ${priorityColor} transition-all hover:shadow-md`}
+              className={`p-4 rounded-xl border-2 ${priorityColor} transition-all hover:shadow-elevation-2`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     {PriorityIcon}
                     <h4 className="text-heading-sm font-semibold">{suggestion.title}</h4>
-                    <span className="px-2 py-1 text-xs rounded bg-white/50 font-medium">
+                    <span className="px-2 py-1 text-body-small rounded bg-white/50 font-medium">
                       {suggestion.priority.toUpperCase()}
                     </span>
                   </div>
                   <p className="text-body-sm mb-3">{suggestion.description}</p>
                   <div className="flex items-center gap-4">
                     <div>
-                      <div className="text-body-xs text-gray-600">Estimated Tax Savings</div>
+                      <div className="text-body-xs text-slate-600">Estimated Tax Savings</div>
                       <div className="text-heading-sm font-bold">
                         ₹{suggestion.estimatedSavings?.toLocaleString('en-IN')}
                       </div>
                     </div>
                     {suggestion.currentAmount !== undefined && (
                       <div>
-                        <div className="text-body-xs text-gray-600">Current</div>
+                        <div className="text-body-xs text-slate-600">Current</div>
                         <div className="text-heading-sm font-semibold">
                           ₹{suggestion.currentAmount.toLocaleString('en-IN')}
                         </div>
@@ -97,7 +97,7 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
                     )}
                     {suggestion.suggestedAmount !== undefined && (
                       <div>
-                        <div className="text-body-xs text-gray-600">Suggested</div>
+                        <div className="text-body-xs text-slate-600">Suggested</div>
                         <div className="text-heading-sm font-semibold">
                           ₹{suggestion.suggestedAmount.toLocaleString('en-IN')}
                         </div>
@@ -109,7 +109,7 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
                   {suggestion.actionable && onApplySuggestion && (
                     <button
                       onClick={() => onApplySuggestion(suggestion)}
-                      className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 text-sm font-medium"
+                      className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 text-body-regular font-medium"
                     >
                       Apply
                     </button>
@@ -117,7 +117,7 @@ const AIDeductionSuggestions = ({ filingId, formData, onApplySuggestion, onDismi
                   {onDismiss && (
                     <button
                       onClick={() => onDismiss(suggestion.id)}
-                      className="p-2 text-gray-500 hover:text-gray-700"
+                      className="p-2 text-slate-500 hover:text-slate-700"
                     >
                       <X className="w-5 h-5" />
                     </button>

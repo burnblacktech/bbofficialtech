@@ -203,7 +203,7 @@ const AdminAnalytics = () => {
           <div className="flex items-center justify-center min-h-[400px]">
             <Card className="text-center p-8 max-w-md">
               <CardContent className="pt-6">
-                <div className="w-12 h-12 bg-error-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <div className="w-12 h-12 bg-error-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="h-6 w-6 text-error-600" />
                 </div>
                 <Typography.H3 className="mb-2">Error Loading Analytics</Typography.H3>
@@ -230,7 +230,7 @@ const AdminAnalytics = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-all"
+              className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-all"
             >
               <ArrowLeft className="h-5 w-5 text-neutral-700" />
             </button>
@@ -242,16 +242,16 @@ const AdminAnalytics = () => {
                   {isConnected ? (
                     <div className="flex items-center gap-1 text-success-600" title="Connected to live updates">
                       <Wifi className="w-4 h-4" />
-                      <span className="text-xs">Live</span>
+                      <span className="text-body-small">Live</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-1 text-warning-600" title="Using polling updates">
                       <WifiOff className="w-4 h-4" />
-                      <span className="text-xs">Polling</span>
+                      <span className="text-body-small">Polling</span>
                     </div>
                   )}
                   {lastUpdate && (
-                    <span className="text-xs text-neutral-400">
+                    <span className="text-body-small text-neutral-400">
                       Updated {formatLastUpdate()}
                     </span>
                   )}
@@ -286,9 +286,9 @@ const AdminAnalytics = () => {
                   setTimeRange(range);
                   setShowCustomDate(false);
                 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   timeRange === range && !showCustomDate
-                    ? 'bg-primary-500 text-white shadow-sm'
+                    ? 'bg-primary-500 text-white shadow-elevation-1'
                     : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                 }`}
               >
@@ -297,9 +297,9 @@ const AdminAnalytics = () => {
             ))}
             <button
               onClick={() => setShowCustomDate(!showCustomDate)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                 showCustomDate
-                  ? 'bg-primary-500 text-white shadow-sm'
+                  ? 'bg-primary-500 text-white shadow-elevation-1'
                   : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
               }`}
             >
@@ -315,14 +315,14 @@ const AdminAnalytics = () => {
                   type="date"
                   value={customDateFrom}
                   onChange={(e) => setCustomDateFrom(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
                 <Typography.Small className="text-neutral-500">to</Typography.Small>
                 <input
                   type="date"
                   value={customDateTo}
                   onChange={(e) => setCustomDateTo(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
                 <Button
                   onClick={() => {
@@ -346,9 +346,9 @@ const AdminAnalytics = () => {
               <button
                 key={type}
                 onClick={() => setMetricType(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   metricType === type
-                    ? 'bg-secondary-500 text-white shadow-sm'
+                    ? 'bg-secondary-500 text-white shadow-elevation-1'
                     : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                 }`}
               >
@@ -371,7 +371,7 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Total Users
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(overview.totalUsers)}
                         </Typography.H3>
                         <div className="flex items-center mt-1">
@@ -385,7 +385,7 @@ const AdminAnalytics = () => {
                           </Typography.Small>
                         </div>
                       </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
                         <Users className="w-6 h-6 text-primary-600" />
                       </div>
                     </div>
@@ -401,7 +401,7 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Total Filings
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(overview.totalFilings)}
                         </Typography.H3>
                         <div className="flex items-center mt-1">
@@ -415,7 +415,7 @@ const AdminAnalytics = () => {
                           </Typography.Small>
                         </div>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                         <FileText className="w-6 h-6 text-success-600" />
                       </div>
                     </div>
@@ -431,7 +431,7 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Revenue
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatCurrency(overview.revenue)}
                         </Typography.H3>
                         <div className="flex items-center mt-1">
@@ -445,7 +445,7 @@ const AdminAnalytics = () => {
                           </Typography.Small>
                         </div>
                       </div>
-                      <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
                         <IndianRupee className="w-6 h-6 text-secondary-600" />
                       </div>
                     </div>
@@ -461,7 +461,7 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Active Users
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(overview.activeUsers)}
                         </Typography.H3>
                         <div className="flex items-center mt-1">
@@ -470,7 +470,7 @@ const AdminAnalytics = () => {
                           </Typography.Small>
                         </div>
                       </div>
-                      <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
                         <Activity className="w-6 h-6 text-warning-600" />
                       </div>
                     </div>
@@ -522,9 +522,9 @@ const AdminAnalytics = () => {
                   <CardContent>
                     <div className="space-y-3">
                       {topMetrics.map((metric, index) => (
-                        <div key={metric.name || index} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <div key={metric.name || index} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors">
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-secondary-100 rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-secondary-100 rounded-xl flex items-center justify-center">
                               <Typography.Small className="font-semibold text-secondary-600">{index + 1}</Typography.Small>
                             </div>
                             <Typography.Small className="font-medium text-neutral-700">{metric.name}</Typography.Small>
@@ -552,11 +552,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           New Users
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(userMetrics.newUsers)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
                         <Users className="w-6 h-6 text-primary-600" />
                       </div>
                     </div>
@@ -572,11 +572,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Retention Rate
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {(userMetrics.retentionRate || 0).toFixed(1)}%
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                         <Target className="w-6 h-6 text-success-600" />
                       </div>
                     </div>
@@ -620,15 +620,15 @@ const AdminAnalytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Daily Active Users</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.dailyActive)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Weekly Active Users</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.weeklyActive)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Monthly Active Users</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.monthlyActive)}</Typography.Small>
                     </div>
@@ -686,11 +686,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Completed
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(filingMetrics.completed)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                         <FileText className="w-6 h-6 text-success-600" />
                       </div>
                     </div>
@@ -706,11 +706,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           In Progress
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(filingMetrics.inProgress)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
                         <Clock className="w-6 h-6 text-warning-600" />
                       </div>
                     </div>
@@ -754,15 +754,15 @@ const AdminAnalytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Pending</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatNumber(filingMetrics.pending)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Success Rate</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{(filingMetrics.successRate || 0).toFixed(1)}%</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Average Processing Time</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{filingMetrics.averageCompletionTime || 0} days</Typography.Small>
                     </div>
@@ -820,11 +820,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Total Revenue
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatCurrency(revenueMetrics.total)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
                         <IndianRupee className="w-6 h-6 text-secondary-600" />
                       </div>
                     </div>
@@ -840,11 +840,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           ARPU
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatCurrency(revenueMetrics.arpu)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                         <Zap className="w-6 h-6 text-success-600" />
                       </div>
                     </div>
@@ -888,19 +888,19 @@ const AdminAnalytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">ITR Filing Fees</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.itrFees)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Consultation Fees</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.consultationFees)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Premium Services</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.premiumServices)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">LTV (Lifetime Value)</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.ltv)}</Typography.Small>
                     </div>
@@ -958,11 +958,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Total CAs
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(caAnalytics.totalCAs)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
                         <Building2 className="w-6 h-6 text-primary-600" />
                       </div>
                     </div>
@@ -978,11 +978,11 @@ const AdminAnalytics = () => {
                         <Typography.Small className="text-neutral-600 mb-1">
                           Verified CAs
                         </Typography.Small>
-                        <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                           {formatNumber(caAnalytics.verifiedCAs)}
                         </Typography.H3>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                         <Target className="w-6 h-6 text-success-600" />
                       </div>
                     </div>
@@ -1001,19 +1001,19 @@ const AdminAnalytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Active CAs</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.activeCAs)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">New Registrations</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.newRegistrations)}</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">Verification Rate</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{(caAnalytics.verificationRate || 0).toFixed(1)}%</Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
                       <Typography.Small className="text-neutral-600">B2B Revenue</Typography.Small>
                       <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(caAnalytics.b2bRevenue)}</Typography.Small>
                     </div>

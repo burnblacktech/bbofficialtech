@@ -239,12 +239,12 @@ const ITRFormSelection = () => {
       exit={{ opacity: 0, y: -20 }}
       className="text-center space-y-6"
     >
-      <div className="w-20 h-20 bg-aurora-gradient rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+      <div className="w-20 h-20 bg-aurora-gradient rounded-2xl flex items-center justify-center mx-auto shadow-elevation-3">
         <Sparkles className="w-10 h-10 text-white" />
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+        <h2 className="text-heading-2 font-bold text-slate-900 mb-2">
           Let's find the right ITR form
         </h2>
         <p className="text-slate-600 max-w-md mx-auto">
@@ -255,7 +255,7 @@ const ITRFormSelection = () => {
       <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
         <button
           onClick={handleStartQuestionnaire}
-          className="flex items-center justify-center px-6 py-3 bg-gold-500 text-white font-semibold rounded-xl hover:bg-gold-600 transition-colors shadow-lg shadow-gold-500/20"
+          className="flex items-center justify-center px-6 py-3 bg-gold-500 text-white font-semibold rounded-xl hover:bg-gold-600 transition-colors shadow-elevation-3 shadow-gold-500/20"
         >
           <span>Start Questionnaire</span>
           <ArrowRight className="w-5 h-5 ml-2" />
@@ -287,7 +287,7 @@ const ITRFormSelection = () => {
       >
         {/* Progress indicator */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-slate-500">
+          <span className="text-body-regular font-medium text-slate-500">
             Question {questionIndex + 1} of {QUESTIONNAIRE.length}
           </span>
           <div className="flex gap-1">
@@ -309,10 +309,10 @@ const ITRFormSelection = () => {
             <Icon className="w-6 h-6 text-gold-600" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-neutral-900 mb-1">
+            <h3 className="text-heading-3 font-semibold text-neutral-900 mb-1">
               {question.question}
             </h3>
-            <p className="text-sm text-neutral-600">
+            <p className="text-body-regular text-neutral-600">
               {question.description}
             </p>
           </div>
@@ -329,8 +329,8 @@ const ITRFormSelection = () => {
                 className={`
                   flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left
                   ${isSelected
-                    ? 'border-gold-500 bg-gold-50 shadow-md'
-                    : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm'
+                    ? 'border-gold-500 bg-gold-50 shadow-elevation-2'
+                    : 'border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-elevation-1'
                   }
                 `}
               >
@@ -384,10 +384,10 @@ const ITRFormSelection = () => {
       <div className="w-16 h-16 bg-gold-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
         <Loader className="w-8 h-8 text-gold-500 animate-spin" />
       </div>
-      <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+      <h3 className="text-heading-3 font-semibold text-neutral-900 mb-2">
         Analyzing your profile...
       </h3>
-      <p className="text-sm text-neutral-600">
+      <p className="text-body-regular text-neutral-600">
         Finding the best ITR form based on your income sources
       </p>
     </motion.div>
@@ -420,11 +420,11 @@ const ITRFormSelection = () => {
                     {Math.round(recommendation.confidence * 100)}% match
                   </span>
                 </div>
-                <p className="text-slate-600 text-sm mb-3">
+                <p className="text-slate-600 text-body-regular mb-3">
                   {recommendation.reason}
                 </p>
                 {recommendation.triggeredRules?.[0]?.caReviewRequired && (
-                  <div className="flex items-center gap-1 text-amber-600 text-xs">
+                  <div className="flex items-center gap-1 text-amber-600 text-body-small">
                     <Shield className="w-3.5 h-3.5" />
                     <span>CA review recommended for this form</span>
                   </div>
@@ -437,12 +437,12 @@ const ITRFormSelection = () => {
         {/* ITR Form Options */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-heading-4 font-semibold text-slate-900">
               {showAllForms ? 'Select ITR Form' : 'All ITR Forms'}
             </h2>
             <button
               onClick={handleToggleAllForms}
-              className="text-sm text-gold-600 hover:text-gold-700 font-medium"
+              className="text-body-regular text-gold-600 hover:text-gold-700 font-medium"
             >
               {showAllForms ? 'Show recommendation' : 'Show all forms'}
             </button>
@@ -463,7 +463,7 @@ const ITRFormSelection = () => {
                   className={`
                     flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left
                     ${isSelected
-                      ? `${colors.border} ${colors.light} shadow-md`
+                      ? `${colors.border} ${colors.light} shadow-elevation-2`
                       : 'border-slate-200 bg-white hover:border-slate-300'
                     }
                   `}
@@ -476,15 +476,15 @@ const ITRFormSelection = () => {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold text-neutral-900">{description.name}</h3>
                       {isRecommended && !showAllForms && (
-                        <span className="text-xs bg-gold-100 text-gold-700 px-2 py-0.5 rounded-full">
+                        <span className="text-body-small bg-gold-100 text-gold-700 px-2 py-0.5 rounded-full">
                           Recommended
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-slate-600 mb-2 line-clamp-2">
+                    <p className="text-body-regular text-slate-600 mb-2 line-clamp-2">
                       {description.description}
                     </p>
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <div className="flex items-center gap-4 text-body-small text-slate-500">
                       <span>⏱ {description.estimatedTime}</span>
                       {description.caRequired && (
                         <span className="flex items-center gap-1">
@@ -507,7 +507,7 @@ const ITRFormSelection = () => {
         {/* Help text */}
         <div className="flex items-start gap-3 p-4 bg-neutral-50 rounded-xl">
           <HelpCircle className="w-5 h-5 text-neutral-400 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-neutral-600">
+          <div className="text-body-regular text-neutral-600">
             <p className="font-medium text-neutral-700 mb-1">Not sure which form to choose?</p>
             <p>
               ITR-1 is for simple salaried individuals. ITR-2 adds capital gains and multiple properties.
@@ -524,7 +524,7 @@ const ITRFormSelection = () => {
             className={`
               flex items-center px-6 py-3 rounded-xl font-semibold transition-all
               ${selectedITR
-                ? 'bg-gold-500 text-white hover:bg-gold-600 shadow-lg shadow-gold-500/20'
+                ? 'bg-gold-500 text-white hover:bg-gold-600 shadow-elevation-3 shadow-gold-500/20'
                 : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
               }
             `}
@@ -540,24 +540,24 @@ const ITRFormSelection = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50">
+      <header className="bg-white shadow-elevation-1 border-b border-neutral-200 sticky top-0 z-50">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 onClick={handleNavigateBack}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-all"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-all"
               >
                 <ArrowLeft className="h-5 w-5 text-neutral-700" />
               </button>
               <div>
-                <h1 className="text-xl font-semibold text-neutral-900">ITR Form Selection</h1>
-                <p className="text-xs text-neutral-500">Choose the right ITR form for your filing</p>
+                <h1 className="text-heading-3 font-semibold text-neutral-900">ITR Form Selection</h1>
+                <p className="text-body-small text-neutral-500">Choose the right ITR form for your filing</p>
               </div>
             </div>
 
             {selectedPerson && (
-              <div className="hidden sm:flex items-center gap-2 text-sm text-neutral-600">
+              <div className="hidden sm:flex items-center gap-2 text-body-regular text-neutral-600">
                 <span>{selectedPerson.name}</span>
                 <span className="text-neutral-300">|</span>
                 <span className="font-mono">{selectedPerson.panNumber}</span>
@@ -569,7 +569,7 @@ const ITRFormSelection = () => {
 
       {/* Main Content */}
       <main className="max-w-[1200px] mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 sm:p-8">
+        <div className="bg-white rounded-2xl shadow-elevation-1 border border-neutral-200 p-6 sm:p-8">
           <AnimatePresence mode="wait">
             {currentStep === 0 && renderIntro()}
             {currentStep > 0 && currentStep <= QUESTIONNAIRE.length && !isAnalyzing && (

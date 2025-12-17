@@ -88,21 +88,21 @@ const EmailVerification = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gold-100 mb-4">
             <Mail className="h-8 w-8 text-gold-600" />
           </div>
-          <h2 className="text-heading-xl text-gray-900">
+          <h2 className="text-heading-xl text-slate-900">
             Verify Your Email
           </h2>
-          <p className="mt-2 text-body-md text-gray-600">
+          <p className="mt-2 text-body-md text-slate-600">
             {email ? `We've sent a verification link to ${email}` : 'Please verify your email address to continue'}
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
           {/* Pending State */}
           {status === 'pending' && (
             <div className="text-center space-y-4">
@@ -110,13 +110,13 @@ const EmailVerification = () => {
                 <Mail className="h-6 w-6 text-info-600" />
               </div>
               <div>
-                <h3 className="text-heading-md text-gray-900 mb-2">
+                <h3 className="text-heading-md text-slate-900 mb-2">
                   Check Your Email
                 </h3>
-                <p className="text-body-sm text-gray-600 mb-4">
+                <p className="text-body-sm text-slate-600 mb-4">
                   We've sent a verification link to your email address. Click the link in the email to verify your account.
                 </p>
-                <p className="text-body-sm text-gray-600 mb-6">
+                <p className="text-body-sm text-slate-600 mb-6">
                   Didn't receive the email? Check your spam folder or click below to resend.
                 </p>
               </div>
@@ -124,7 +124,7 @@ const EmailVerification = () => {
                 <button
                   onClick={handleResendVerification}
                   disabled={isLoading}
-                  className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+                  className="w-full py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center">
@@ -137,7 +137,7 @@ const EmailVerification = () => {
                 </button>
                 <Link
                   to="/login"
-                  className="block w-full py-2 px-4 text-center text-sm font-medium text-gold-600 hover:text-gold-500"
+                  className="block w-full py-2 px-4 text-center text-body-regular font-medium text-gold-600 hover:text-gold-500"
                 >
                   Back to Login
                 </Link>
@@ -152,10 +152,10 @@ const EmailVerification = () => {
                 <RefreshCw className="h-6 w-6 text-info-600 animate-spin" />
               </div>
               <div>
-                <h3 className="text-heading-md text-gray-900 mb-2">
+                <h3 className="text-heading-md text-slate-900 mb-2">
                   Verifying Email...
                 </h3>
-                <p className="text-body-sm text-gray-600">
+                <p className="text-body-sm text-slate-600">
                   Please wait while we verify your email address.
                 </p>
               </div>
@@ -169,16 +169,16 @@ const EmailVerification = () => {
                 <CheckCircle className="h-6 w-6 text-success-600" />
               </div>
               <div>
-                <h3 className="text-heading-md text-gray-900 mb-2">
+                <h3 className="text-heading-md text-slate-900 mb-2">
                   Email Verified!
                 </h3>
-                <p className="text-body-sm text-gray-600 mb-4">
+                <p className="text-body-sm text-slate-600 mb-4">
                   Your email has been successfully verified. Redirecting to dashboard...
                 </p>
               </div>
               <Link
                 to="/dashboard"
-                className="block w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                className="block w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Go to Dashboard
               </Link>
@@ -192,10 +192,10 @@ const EmailVerification = () => {
                 <AlertCircle className="h-6 w-6 text-error-600" />
               </div>
               <div>
-                <h3 className="text-heading-md text-gray-900 mb-2">
+                <h3 className="text-heading-md text-slate-900 mb-2">
                   Verification Failed
                 </h3>
-                <p className="text-body-sm text-gray-600 mb-4">
+                <p className="text-body-sm text-slate-600 mb-4">
                   We couldn't verify your email. The link may be invalid or expired.
                 </p>
               </div>
@@ -203,7 +203,7 @@ const EmailVerification = () => {
                 <button
                   onClick={handleResendVerification}
                   disabled={isLoading}
-                  className="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+                  className="w-full py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center">
@@ -216,7 +216,7 @@ const EmailVerification = () => {
                 </button>
                 <Link
                   to="/login"
-                  className="block w-full py-2 px-4 text-center text-sm font-medium text-gold-600 hover:text-gold-500"
+                  className="block w-full py-2 px-4 text-center text-body-regular font-medium text-gold-600 hover:text-gold-500"
                 >
                   Back to Login
                 </Link>
@@ -231,10 +231,10 @@ const EmailVerification = () => {
                 <AlertCircle className="h-6 w-6 text-warning-600" />
               </div>
               <div>
-                <h3 className="text-heading-md text-gray-900 mb-2">
+                <h3 className="text-heading-md text-slate-900 mb-2">
                   Link Expired
                 </h3>
-                <p className="text-body-sm text-gray-600 mb-4">
+                <p className="text-body-sm text-slate-600 mb-4">
                   This verification link has expired. Please request a new one.
                 </p>
               </div>
@@ -242,7 +242,7 @@ const EmailVerification = () => {
                 <button
                   onClick={handleResendVerification}
                   disabled={isLoading}
-                  className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+                  className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center">
@@ -255,7 +255,7 @@ const EmailVerification = () => {
                 </button>
                 <Link
                   to="/login"
-                  className="block w-full py-2 px-4 text-center text-sm font-medium text-gray-600 hover:text-gray-900"
+                  className="block w-full py-2 px-4 text-center text-body-regular font-medium text-slate-600 hover:text-slate-900"
                 >
                   Back to Login
                 </Link>
@@ -265,7 +265,7 @@ const EmailVerification = () => {
         </div>
 
         <div className="text-center">
-          <p className="text-body-sm text-gray-600">
+          <p className="text-body-sm text-slate-600">
             Need help?{' '}
             <Link to="/help/contact" className="font-medium text-gold-600 hover:text-gold-500">
               Contact Support

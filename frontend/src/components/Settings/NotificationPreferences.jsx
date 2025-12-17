@@ -58,22 +58,22 @@ const NotificationPreferences = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-heading-md font-semibold text-gray-900 mb-1">Notification Preferences</h3>
-        <p className="text-body-sm text-gray-600">
+        <h3 className="text-heading-md font-semibold text-slate-900 mb-1">Notification Preferences</h3>
+        <p className="text-body-sm text-slate-600">
           Choose how you want to receive notifications
         </p>
       </div>
 
       {/* Notification Channels */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h4 className="text-heading-sm font-medium text-gray-900 mb-4">Notification Channels</h4>
+      <div className="border border-slate-200 rounded-xl p-4">
+        <h4 className="text-heading-sm font-medium text-slate-900 mb-4">Notification Channels</h4>
         <div className="space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1">
-              <Mail className="h-5 w-5 text-gray-600 mt-0.5" />
+              <Mail className="h-5 w-5 text-slate-600 mt-0.5" />
               <div>
-                <label className="block text-body-sm font-medium text-gray-700">Email Notifications</label>
-                <p className="text-body-xs text-gray-500">Receive notifications via email</p>
+                <label className="block text-body-sm font-medium text-slate-700">Email Notifications</label>
+                <p className="text-body-xs text-slate-500">Receive notifications via email</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">
@@ -85,16 +85,16 @@ const NotificationPreferences = () => {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
             </label>
           </div>
 
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1">
-              <MessageSquare className="h-5 w-5 text-gray-600 mt-0.5" />
+              <MessageSquare className="h-5 w-5 text-slate-600 mt-0.5" />
               <div>
-                <label className="block text-body-sm font-medium text-gray-700">SMS Notifications</label>
-                <p className="text-body-xs text-gray-500">Receive notifications via SMS</p>
+                <label className="block text-body-sm font-medium text-slate-700">SMS Notifications</label>
+                <p className="text-body-xs text-slate-500">Receive notifications via SMS</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">
@@ -106,16 +106,16 @@ const NotificationPreferences = () => {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
             </label>
           </div>
 
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3 flex-1">
-              <Bell className="h-5 w-5 text-gray-600 mt-0.5" />
+              <Bell className="h-5 w-5 text-slate-600 mt-0.5" />
               <div>
-                <label className="block text-body-sm font-medium text-gray-700">Push Notifications</label>
-                <p className="text-body-xs text-gray-500">Receive push notifications in browser</p>
+                <label className="block text-body-sm font-medium text-slate-700">Push Notifications</label>
+                <p className="text-body-xs text-slate-500">Receive push notifications in browser</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">
@@ -127,18 +127,18 @@ const NotificationPreferences = () => {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
             </label>
           </div>
         </div>
       </div>
 
       {/* Reminder Frequency */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <label className="block text-body-sm font-medium text-gray-700 mb-2">
+      <div className="border border-slate-200 rounded-xl p-4">
+        <label className="block text-body-sm font-medium text-slate-700 mb-2">
           Reminder Frequency
         </label>
-        <p className="text-body-xs text-gray-500 mb-3">
+        <p className="text-body-xs text-slate-500 mb-3">
           How often you want to receive reminder notifications
         </p>
         <select
@@ -146,7 +146,7 @@ const NotificationPreferences = () => {
           onChange={(e) =>
             setPreferences({ ...preferences, reminderFrequency: e.target.value })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
         >
           <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
@@ -157,16 +157,16 @@ const NotificationPreferences = () => {
       </div>
 
       {/* Notification Types */}
-      <div className="border border-gray-200 rounded-lg p-4">
-        <h4 className="text-heading-sm font-medium text-gray-900 mb-4">Notification Types</h4>
+      <div className="border border-slate-200 rounded-xl p-4">
+        <h4 className="text-heading-sm font-medium text-slate-900 mb-4">Notification Types</h4>
         <div className="space-y-3">
           {notificationTypes.map((type) => (
             <div key={type.key} className="flex items-start justify-between">
               <div className="flex-1">
-                <label className="block text-body-sm font-medium text-gray-700">
+                <label className="block text-body-sm font-medium text-slate-700">
                   {type.label}
                 </label>
-                <p className="text-body-xs text-gray-500">{type.description}</p>
+                <p className="text-body-xs text-slate-500">{type.description}</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer ml-4">
                 <input
@@ -177,7 +177,7 @@ const NotificationPreferences = () => {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold-500"></div>
               </label>
             </div>
           ))}
@@ -185,11 +185,11 @@ const NotificationPreferences = () => {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="flex justify-end pt-4 border-t border-slate-200">
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isSaving ? (
             <>

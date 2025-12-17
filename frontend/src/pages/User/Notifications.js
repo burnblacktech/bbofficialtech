@@ -107,11 +107,11 @@ const Notifications = () => {
       case 'warning':
         return <AlertCircle className="h-4 w-4 text-yellow-600" />;
       case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <AlertCircle className="h-4 w-4 text-error-600" />;
       case 'info':
         return <Info className="h-4 w-4 text-blue-600" />;
       default:
-        return <Bell className="h-4 w-4 text-gray-600" />;
+        return <Bell className="h-4 w-4 text-slate-600" />;
     }
   };
 
@@ -149,7 +149,7 @@ const Notifications = () => {
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
-          <p className="text-sm text-neutral-600">Loading notifications...</p>
+          <p className="text-body-regular text-neutral-600">Loading notifications...</p>
         </div>
       </div>
     );
@@ -164,13 +164,13 @@ const Notifications = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <ArrowLeft className="h-5 w-5 text-burnblack-black" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-burnblack-black">Notifications</h1>
-                <p className="text-xs text-neutral-500">
+                <h1 className="text-heading-4 font-semibold text-burnblack-black">Notifications</h1>
+                <p className="text-body-small text-neutral-500">
                   {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
                 </p>
               </div>
@@ -181,7 +181,7 @@ const Notifications = () => {
                 <button
                   onClick={handleMarkAllAsRead}
                   disabled={markAllAsReadMutation.isPending}
-                  className="btn-burnblack p-2 rounded-lg active:scale-95 transition-transform disabled:opacity-50"
+                  className="btn-burnblack p-2 rounded-xl active:scale-95 transition-transform disabled:opacity-50"
                 >
                   {markAllAsReadMutation.isPending ? (
                     <div className="loading-spinner"></div>
@@ -192,7 +192,7 @@ const Notifications = () => {
               )}
               <button
                 onClick={() => navigate('/settings')}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <Settings className="h-5 w-5 text-burnblack-black" />
               </button>
@@ -207,38 +207,38 @@ const Notifications = () => {
         <div className="space-y-3">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search notifications..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="w-full flex items-center justify-between p-3 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 active:scale-95 transition-transform"
+            className="w-full flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 hover:bg-slate-50 active:scale-95 transition-transform"
           >
             <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-medium text-gray-900">Filters</span>
+              <Filter className="h-4 w-4 text-slate-600" />
+              <span className="text-body-regular font-medium text-slate-900">Filters</span>
             </div>
-            <ChevronRight className={`h-4 w-4 text-gray-400 transition-transform ${showFilters ? 'rotate-90' : ''}`} />
+            <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform ${showFilters ? 'rotate-90' : ''}`} />
           </button>
 
           {/* Filter Options */}
           {showFilters && (
-            <div className="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
+            <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
               {/* Type Filter */}
               <div>
-                <label className="text-xs font-medium text-gray-700 mb-2 block">Type</label>
+                <label className="text-body-small font-medium text-slate-700 mb-2 block">Type</label>
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-slate-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Types</option>
                   <option value="info">Information</option>
@@ -250,11 +250,11 @@ const Notifications = () => {
 
               {/* Status Filter */}
               <div>
-                <label className="text-xs font-medium text-gray-700 mb-2 block">Status</label>
+                <label className="text-body-small font-medium text-slate-700 mb-2 block">Status</label>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-slate-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Status</option>
                   <option value="unread">Unread</option>
@@ -270,8 +270,8 @@ const Notifications = () => {
           {filteredNotifications.length === 0 ? (
             <div className="dashboard-card-burnblack p-8 text-center">
               <Bell className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-burnblack-black mb-2">No notifications</h3>
-              <p className="text-sm text-neutral-500">
+              <h3 className="text-heading-4 font-semibold text-burnblack-black mb-2">No notifications</h3>
+              <p className="text-body-regular text-neutral-500">
                 {searchTerm || filterType !== 'all' || filterStatus !== 'all'
                   ? 'No notifications match your filters'
                   : 'You\'re all caught up!'}
@@ -282,7 +282,7 @@ const Notifications = () => {
               <div
                 key={notification.id}
                 className={`dashboard-card-burnblack border-l-4 ${getNotificationColor(notification.type)} ${
-                  !notification.is_read ? 'shadow-sm' : ''
+                  !notification.is_read ? 'shadow-elevation-1' : ''
                 }`}
               >
                 <div className="p-4">
@@ -292,13 +292,13 @@ const Notifications = () => {
                         {getNotificationIcon(notification.type)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className={`text-sm font-semibold text-gray-900 ${!notification.is_read ? 'font-bold' : ''}`}>
+                        <h3 className={`text-sm font-semibold text-slate-900 ${!notification.is_read ? 'font-bold' : ''}`}>
                           {notification.title}
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        <p className="text-body-regular text-slate-600 mt-1 line-clamp-2">
                           {notification.message}
                         </p>
-                        <div className="flex items-center space-x-3 mt-2 text-xs text-gray-500">
+                        <div className="flex items-center space-x-3 mt-2 text-body-small text-slate-500">
                           <div className="flex items-center space-x-1">
                             <Calendar className="h-3 w-3" />
                             <span>
@@ -322,18 +322,18 @@ const Notifications = () => {
                       {!notification.is_read && (
                         <button
                           onClick={() => handleMarkAsRead(notification.id)}
-                          className="p-1 rounded hover:bg-gray-100 active:scale-95 transition-transform"
+                          className="p-1 rounded hover:bg-slate-100 active:scale-95 transition-transform"
                           title="Mark as read"
                         >
-                          <Check className="h-4 w-4 text-gray-600" />
+                          <Check className="h-4 w-4 text-slate-600" />
                         </button>
                       )}
                       <button
                         onClick={() => handleDeleteNotification(notification.id)}
-                        className="p-1 rounded hover:bg-red-100 active:scale-95 transition-transform"
+                        className="p-1 rounded hover:bg-error-100 active:scale-95 transition-transform"
                         title="Delete"
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" />
+                        <Trash2 className="h-4 w-4 text-error-600" />
                       </button>
                     </div>
                   </div>
@@ -345,37 +345,37 @@ const Notifications = () => {
       </main>
 
       {/* Bottom Navigation - Mobile Only */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <FileText className="h-5 w-5 mb-1" />
-            <span className="text-xs">Dashboard</span>
+            <span className="text-body-small">Dashboard</span>
           </button>
           <button className="flex flex-col items-center p-2 text-blue-600">
             <Bell className="h-5 w-5 mb-1" />
-            <span className="text-xs font-medium">Notifications</span>
+            <span className="text-body-small font-medium">Notifications</span>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-body-small rounded-full h-5 w-5 flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
           </button>
           <button
             onClick={() => navigate('/profile')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
-            <span className="text-xs">Profile</span>
+            <span className="text-body-small">Profile</span>
           </button>
           <button
             onClick={() => navigate('/settings')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <Settings className="h-5 w-5 mb-1" />
-            <span className="text-xs">Settings</span>
+            <span className="text-body-small">Settings</span>
           </button>
         </div>
       </nav>

@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { usePreSubmissionValidation } from '../hooks/use-pre-submission-validation';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
   const [isRunning, setIsRunning] = useState(false);
@@ -85,7 +85,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
             <h3 className="text-heading-md text-gray-800 mb-1">
               Pre-Submission Validation
             </h3>
-            <p className="text-body-md text-gray-600">
+            <p className="text-body-md text-slate-600">
               Run validation checks before submitting your ITR
             </p>
           </div>
@@ -102,7 +102,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
       <div className="space-y-4">
         <div className="flex items-center justify-center py-8">
           <Loader className="h-6 w-6 animate-spin text-gold-500 mr-3" />
-          <span className="text-body-md text-gray-600">Running validation checks...</span>
+          <span className="text-body-md text-slate-600">Running validation checks...</span>
         </div>
       </div>
     );
@@ -117,7 +117,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
           <h3 className="text-heading-md text-gray-800 mb-1">
             Validation Results
           </h3>
-          <p className="text-body-md text-gray-600">
+          <p className="text-body-md text-slate-600">
             {errors.length === 0 && warnings.length === 0
               ? 'All validations passed!'
               : `${errors.length} error(s), ${warnings.length} warning(s)`}
@@ -130,37 +130,37 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-body-sm text-gray-600">Errors</p>
+              <p className="text-body-sm text-slate-600">Errors</p>
               <p className="text-heading-lg text-error-600">{errors.length}</p>
             </div>
             <XCircle className="h-8 w-8 text-error-500" />
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-body-sm text-gray-600">Warnings</p>
+              <p className="text-body-sm text-slate-600">Warnings</p>
               <p className="text-heading-lg text-warning-600">{warnings.length}</p>
             </div>
             <AlertTriangle className="h-8 w-8 text-warning-500" />
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-body-sm text-gray-600">Info</p>
+              <p className="text-body-sm text-slate-600">Info</p>
               <p className="text-heading-lg text-info-600">{info.length}</p>
             </div>
             <AlertCircle className="h-8 w-8 text-info-500" />
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-body-sm text-gray-600">Sections</p>
+              <p className="text-body-sm text-slate-600">Sections</p>
               <p className="text-heading-lg text-success-600">
                 {sections.filter((s) => s.status === 'complete').length}/{sections.length}
               </p>
@@ -225,7 +225,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
                 key={warning.id}
                 className={`rounded-xl border p-4 ${
                   acknowledgedWarnings.has(warning.id)
-                    ? 'bg-gray-50 border-gray-200 opacity-60'
+                    ? 'bg-slate-50 border-slate-200 opacity-60'
                     : 'bg-warning-50 border-warning-200'
                 }`}
               >
@@ -303,7 +303,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
             {sections.map((section) => (
               <div
                 key={section.id}
-                className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200"
+                className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200"
               >
                 <div className="flex items-center">
                   {section.status === 'complete' ? (
@@ -317,7 +317,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
                     <p className="text-body-md font-medium text-gray-800">
                       {section.name}
                     </p>
-                    <p className="text-body-sm text-gray-600">{section.description}</p>
+                    <p className="text-body-sm text-slate-600">{section.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center">
@@ -336,7 +336,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
                       ? 'Partial'
                       : 'Incomplete'}
                   </span>
-                  <ChevronRight className="h-5 w-5 text-gray-400 ml-2" />
+                  <ChevronRight className="h-5 w-5 text-slate-400 ml-2" />
                 </div>
               </div>
             ))}
@@ -345,7 +345,7 @@ const ValidationRunner = ({ filingId, formData, onValidationComplete }) => {
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
         {canProceed() && (
           <Button onClick={() => onValidationComplete && onValidationComplete(validationResults)}>
             Proceed to Submission

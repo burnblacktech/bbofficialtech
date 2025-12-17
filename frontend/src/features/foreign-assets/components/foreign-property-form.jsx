@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, AlertCircle, Plus, Trash2 } from 'lucide-react';
 import { useAddForeignAsset, useUpdateForeignAsset } from '../hooks/use-foreign-assets';
 import { immovablePropertyAssetSchema } from '../schema/foreign-assets.schema';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -184,13 +184,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-heading-md text-gray-900">
+        <h3 className="text-heading-md text-slate-900">
           {asset ? 'Edit Foreign Immovable Property' : 'Add Foreign Immovable Property'}
         </h3>
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-slate-400 hover:text-slate-600"
         >
           <X className="h-5 w-5" />
         </button>
@@ -198,19 +198,19 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
 
       {/* Property Details */}
       <div className="space-y-4">
-        <h4 className="text-heading-sm text-gray-900 font-medium">Property Details</h4>
+        <h4 className="text-heading-sm text-slate-900 font-medium">Property Details</h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Property Address <span className="text-error-600">*</span>
             </label>
             <textarea
               value={formData.assetDetails.address}
               onChange={(e) => handleChange('assetDetails.address', e.target.value)}
               rows={3}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
-                errors['assetDetails.address'] ? 'border-error-500' : 'border-gray-300'
+              className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
+                errors['assetDetails.address'] ? 'border-error-500' : 'border-slate-300'
               }`}
               placeholder="Enter complete property address"
             />
@@ -220,14 +220,14 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Country <span className="text-error-600">*</span>
             </label>
             <select
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
-                errors.country ? 'border-error-500' : 'border-gray-300'
+              className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
+                errors.country ? 'border-error-500' : 'border-slate-300'
               }`}
             >
               <option value="">Select Country</option>
@@ -243,13 +243,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Property Type <span className="text-error-600">*</span>
             </label>
             <select
               value={formData.assetDetails.propertyType}
               onChange={(e) => handleChange('assetDetails.propertyType', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               <option value="residential">Residential</option>
               <option value="commercial">Commercial</option>
@@ -258,7 +258,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Area
             </label>
             <div className="flex gap-2">
@@ -267,13 +267,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
                 step="0.01"
                 value={formData.assetDetails.area}
                 onChange={(e) => handleChange('assetDetails.area', e.target.value)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 placeholder="0.00"
               />
               <select
                 value={formData.assetDetails.areaUnit}
                 onChange={(e) => handleChange('assetDetails.areaUnit', e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 <option value="sqft">Sq Ft</option>
                 <option value="sqm">Sq M</option>
@@ -282,19 +282,19 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Purchase Date
             </label>
             <input
               type="date"
               value={formData.assetDetails.purchaseDate}
               onChange={(e) => handleChange('assetDetails.purchaseDate', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Currency
             </label>
             <select
@@ -303,7 +303,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
                 handleChange('currency', e.target.value);
                 handleChange('assetDetails.currency', e.target.value);
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
               {currencies.map((curr) => (
                 <option key={curr} value={curr}>
@@ -314,7 +314,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Purchase Price (Foreign Currency)
             </label>
             <input
@@ -322,13 +322,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.assetDetails.purchasePrice}
               onChange={(e) => handleChange('assetDetails.purchasePrice', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0.00"
             />
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Current Market Value (Foreign Currency)
             </label>
             <input
@@ -339,7 +339,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
                 handleChange('assetDetails.currentMarketValue', e.target.value);
                 handleChange('valuationAmountForeign', e.target.value);
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0.00"
             />
           </div>
@@ -347,7 +347,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
 
         {/* Co-owners */}
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">
             Co-owners (Optional)
           </label>
           <div className="flex gap-2 mb-2">
@@ -361,13 +361,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
                   handleAddCoOwner();
                 }
               }}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="Enter co-owner name"
             />
             <button
               type="button"
               onClick={handleAddCoOwner}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -377,13 +377,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
               {formData.assetDetails.coOwners.map((owner, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-body-sm"
+                  className="inline-flex items-center px-3 py-1 bg-slate-100 text-slate-700 rounded-xl text-body-sm"
                 >
                   {owner}
                   <button
                     type="button"
                     onClick={() => handleRemoveCoOwner(index)}
-                    className="ml-2 text-gray-500 hover:text-gray-700"
+                    className="ml-2 text-slate-500 hover:text-slate-700"
                   >
                     <Trash2 className="h-3 w-3" />
                   </button>
@@ -395,12 +395,12 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
       </div>
 
       {/* Valuation Details */}
-      <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h4 className="text-heading-sm text-gray-900 font-medium">Valuation Details</h4>
+      <div className="space-y-4 pt-4 border-t border-slate-200">
+        <h4 className="text-heading-sm text-slate-900 font-medium">Valuation Details</h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Valuation Amount (Foreign Currency)
             </label>
             <input
@@ -408,13 +408,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.valuationAmountForeign}
               onChange={(e) => handleChange('valuationAmountForeign', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="0.00"
             />
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Exchange Rate
             </label>
             <input
@@ -422,14 +422,14 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.0001"
               value={formData.exchangeRate}
               onChange={(e) => handleChange('exchangeRate', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="e.g., 83.25"
             />
-            <p className="mt-1 text-body-xs text-gray-500">RBI reference rate for valuation date</p>
+            <p className="mt-1 text-body-xs text-slate-500">RBI reference rate for valuation date</p>
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Valuation Amount (INR)
             </label>
             <input
@@ -437,7 +437,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
               step="0.01"
               value={formData.valuationAmountInr || calculatedInr}
               onChange={(e) => handleChange('valuationAmountInr', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               placeholder="Auto-calculated"
             />
             {calculatedInr > 0 && !formData.valuationAmountInr && (
@@ -448,22 +448,22 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               Valuation Date
             </label>
             <input
               type="date"
               value={formData.valuationDate}
               onChange={(e) => handleChange('valuationDate', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
         </div>
       </div>
 
       {/* DTAA */}
-      <div className="space-y-4 pt-4 border-t border-gray-200">
-        <h4 className="text-heading-sm text-gray-900 font-medium">DTAA Benefits</h4>
+      <div className="space-y-4 pt-4 border-t border-slate-200">
+        <h4 className="text-heading-sm text-slate-900 font-medium">DTAA Benefits</h4>
 
         <div className="flex items-start">
           <input
@@ -471,23 +471,23 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
             id="dtaaApplicable"
             checked={formData.dtaaApplicable}
             onChange={(e) => handleChange('dtaaApplicable', e.target.checked)}
-            className="mt-1 w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
+            className="mt-1 w-4 h-4 text-gold-600 border-slate-300 rounded focus:ring-gold-500"
           />
-          <label htmlFor="dtaaApplicable" className="ml-2 text-body-sm text-gray-700">
+          <label htmlFor="dtaaApplicable" className="ml-2 text-body-sm text-slate-700">
             DTAA (Double Taxation Avoidance Agreement) Applicable
           </label>
         </div>
 
         {formData.dtaaApplicable && (
           <div>
-            <label className="block text-body-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-sm font-medium text-slate-700 mb-2">
               DTAA Country <span className="text-error-600">*</span>
             </label>
             <select
               value={formData.dtaaCountry}
               onChange={(e) => handleChange('dtaaCountry', e.target.value)}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
-                errors.dtaaCountry ? 'border-error-500' : 'border-gray-300'
+              className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
+                errors.dtaaCountry ? 'border-error-500' : 'border-slate-300'
               }`}
             >
               <option value="">Select DTAA Country</option>
@@ -500,7 +500,7 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
             {errors.dtaaCountry && (
               <p className="mt-1 text-body-xs text-error-600">{errors.dtaaCountry}</p>
             )}
-            <div className="mt-2 bg-info-50 border border-info-200 rounded-lg p-3">
+            <div className="mt-2 bg-info-50 border border-info-200 rounded-xl p-3">
               <div className="flex items-start">
                 <AlertCircle className="h-4 w-4 text-info-600 mr-2 mt-0.5" />
                 <p className="text-body-xs text-info-800">
@@ -514,13 +514,13 @@ const ForeignPropertyForm = ({ filingId, asset, onClose, onSuccess }) => {
 
       {/* Error Message */}
       {errors.submit && (
-        <div className="bg-error-50 border border-error-200 rounded-lg p-4">
+        <div className="bg-error-50 border border-error-200 rounded-xl p-4">
           <p className="text-body-sm text-error-900">{errors.submit}</p>
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
         <Button type="button" variant="outline" onClick={onClose}>
           Cancel
         </Button>

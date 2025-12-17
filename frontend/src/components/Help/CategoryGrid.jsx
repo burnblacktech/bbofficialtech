@@ -24,8 +24,8 @@ const categoryColors = {
   'filing': 'bg-royal-100 text-royal-600',
   'tax-deductions': 'bg-green-100 text-green-600',
   'documents': 'bg-purple-100 text-purple-600',
-  'account': 'bg-gray-100 text-gray-600',
-  'troubleshooting': 'bg-red-100 text-red-600',
+  'account': 'bg-slate-100 text-slate-600',
+  'troubleshooting': 'bg-error-100 text-error-600',
   'feature-request': 'bg-blue-100 text-blue-600',
   'video-tutorials': 'bg-indigo-100 text-indigo-600',
   'contact': 'bg-pink-100 text-pink-600',
@@ -42,22 +42,22 @@ const CategoryGrid = ({ categories, onCategoryClick }) => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {categories.map((category) => {
         const Icon = categoryIcons[category.id] || FileText;
-        const colorClass = categoryColors[category.id] || 'bg-gray-100 text-gray-600';
+        const colorClass = categoryColors[category.id] || 'bg-slate-100 text-slate-600';
 
         return (
           <Link
             key={category.id}
             to={`/help/category/${category.id}`}
             onClick={() => handleCategoryClick(category)}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow hover:border-gold-300"
+            className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 hover:shadow-elevation-2 transition-shadow hover:border-gold-300"
           >
-            <div className={`inline-flex p-3 rounded-lg mb-4 ${colorClass}`}>
+            <div className={`inline-flex p-3 rounded-xl mb-4 ${colorClass}`}>
               <Icon className="h-6 w-6" />
             </div>
-            <h3 className="text-heading-sm font-semibold text-gray-900 mb-2">{category.title}</h3>
-            <p className="text-body-sm text-gray-600 mb-3">{category.description}</p>
+            <h3 className="text-heading-sm font-semibold text-slate-900 mb-2">{category.title}</h3>
+            <p className="text-body-sm text-slate-600 mb-3">{category.description}</p>
             {category.articles !== undefined && (
-              <div className="flex items-center text-body-xs text-gray-500">
+              <div className="flex items-center text-body-xs text-slate-500">
                 <span>{category.articles} articles</span>
               </div>
             )}

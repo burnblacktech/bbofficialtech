@@ -123,27 +123,27 @@ const Acknowledgment = () => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Success Header - Justification: Clear confirmation of successful filing */}
-      <div className="bg-white shadow rounded-lg mb-6">
+      <div className="bg-white shadow rounded-xl mb-6">
         <div className="px-6 py-8 text-center">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-success-100 mb-4">
             <CheckCircle className="h-8 w-8 text-success-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-heading-2 font-bold text-slate-900 mb-2">
             Filing Submitted Successfully!
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-slate-600 mb-6">
             Your ITR has been successfully submitted to the Income Tax Department.
           </p>
 
           {/* Acknowledgment Number - Justification: Most important information prominently displayed */}
-          <div className="bg-success-50 border border-success-200 rounded-lg p-4 mb-6">
-            <h2 className="text-lg font-semibold text-success-800 mb-2">
+          <div className="bg-success-50 border border-success-200 rounded-xl p-4 mb-6">
+            <h2 className="text-heading-4 font-semibold text-success-800 mb-2">
               Acknowledgment Number
             </h2>
-            <p className="text-2xl font-mono font-bold text-success-900">
+            <p className="text-heading-2 font-mono font-bold text-success-900">
               {ackNumber || 'ACK' + Date.now().toString().slice(-8)}
             </p>
-            <p className="text-sm text-success-700 mt-1">
+            <p className="text-body-regular text-success-700 mt-1">
               Please save this number for future reference
             </p>
           </div>
@@ -151,44 +151,44 @@ const Acknowledgment = () => {
       </div>
 
       {/* Filing Details - Justification: Complete filing summary for user reference */}
-      <div className="bg-white shadow rounded-lg mb-6">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Filing Details</h2>
+      <div className="bg-white shadow rounded-xl mb-6">
+        <div className="px-6 py-4 border-b border-slate-200">
+          <h2 className="text-heading-4 font-medium text-slate-900">Filing Details</h2>
         </div>
         <div className="px-6 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-center">
-                <User className="h-5 w-5 text-gray-400 mr-3" />
+                <User className="h-5 w-5 text-slate-400 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Taxpayer Name</p>
-                  <p className="text-sm text-gray-600">{filing?.filing?.user_name || 'N/A'}</p>
+                  <p className="text-body-regular font-medium text-slate-900">Taxpayer Name</p>
+                  <p className="text-body-regular text-slate-600">{filing?.filing?.user_name || 'N/A'}</p>
                 </div>
               </div>
 
               <div className="flex items-center">
-                <FileText className="h-5 w-5 text-gray-400 mr-3" />
+                <FileText className="h-5 w-5 text-slate-400 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">ITR Type</p>
-                  <p className="text-sm text-gray-600">{filing?.filing?.itr_type}</p>
+                  <p className="text-body-regular font-medium text-slate-900">ITR Type</p>
+                  <p className="text-body-regular text-slate-600">{filing?.filing?.itr_type}</p>
                 </div>
               </div>
 
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-gray-400 mr-3" />
+                <Calendar className="h-5 w-5 text-slate-400 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Assessment Year</p>
-                  <p className="text-sm text-gray-600">{filing?.filing?.assessment_year}</p>
+                  <p className="text-body-regular font-medium text-slate-900">Assessment Year</p>
+                  <p className="text-body-regular text-slate-600">{filing?.filing?.assessment_year}</p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-gray-400 mr-3" />
+                <Calendar className="h-5 w-5 text-slate-400 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Submission Date</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-body-regular font-medium text-slate-900">Submission Date</p>
+                  <p className="text-body-regular text-slate-600">
                     {submission?.submission?.submitted_at
                       ? new Date(submission.submission.submitted_at).toLocaleDateString()
                       : new Date().toLocaleDateString()
@@ -198,20 +198,20 @@ const Acknowledgment = () => {
               </div>
 
               <div className="flex items-center">
-                <Shield className="h-5 w-5 text-gray-400 mr-3" />
+                <Shield className="h-5 w-5 text-slate-400 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Verification Method</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-body-regular font-medium text-slate-900">Verification Method</p>
+                  <p className="text-body-regular text-slate-600">
                     {submission?.submission?.verification_method || 'Aadhaar OTP'}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-gray-400 mr-3" />
+                <CheckCircle className="h-5 w-5 text-slate-400 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Status</p>
-                  <p className="text-sm text-success-600 font-medium">Submitted</p>
+                  <p className="text-body-regular font-medium text-slate-900">Status</p>
+                  <p className="text-body-regular text-success-600 font-medium">Submitted</p>
                 </div>
               </div>
             </div>
@@ -220,9 +220,9 @@ const Acknowledgment = () => {
       </div>
 
       {/* Important Information - Justification: Legal and procedural information */}
-      <div className="bg-info-50 border border-info-200 rounded-lg p-6 mb-6">
-        <h3 className="text-lg font-medium text-info-900 mb-3">Important Information</h3>
-        <div className="space-y-3 text-sm text-info-800">
+      <div className="bg-info-50 border border-info-200 rounded-xl p-6 mb-6">
+        <h3 className="text-heading-4 font-medium text-info-900 mb-3">Important Information</h3>
+        <div className="space-y-3 text-body-regular text-info-800">
           <div className="flex items-start">
             <div className="w-2 h-2 bg-info-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
             <p>
@@ -251,65 +251,65 @@ const Acknowledgment = () => {
       </div>
 
       {/* Action Buttons - Justification: Allow users to download, print, and share acknowledgment */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">What would you like to do next?</h3>
+      <div className="bg-white shadow rounded-xl p-6">
+        <h3 className="text-heading-4 font-medium text-slate-900 mb-4">What would you like to do next?</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Download Acknowledgment */}
           <button
             onClick={handleDownloadAcknowledgment}
             disabled={isDownloading}
-            className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex flex-col items-center p-4 border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download className="h-6 w-6 text-gray-600 mb-2" />
-            <span className="text-sm font-medium text-gray-900">
+            <Download className="h-6 w-6 text-slate-600 mb-2" />
+            <span className="text-body-regular font-medium text-slate-900">
               {isDownloading ? 'Downloading...' : 'Download'}
             </span>
-            <span className="text-xs text-gray-500">Save as PDF</span>
+            <span className="text-body-small text-slate-500">Save as PDF</span>
           </button>
 
           {/* Print Acknowledgment */}
           <button
             onClick={handlePrintAcknowledgment}
             disabled={isPrinting}
-            className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex flex-col items-center p-4 border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Printer className="h-6 w-6 text-gray-600 mb-2" />
-            <span className="text-sm font-medium text-gray-900">
+            <Printer className="h-6 w-6 text-slate-600 mb-2" />
+            <span className="text-body-regular font-medium text-slate-900">
               {isPrinting ? 'Printing...' : 'Print'}
             </span>
-            <span className="text-xs text-gray-500">Print copy</span>
+            <span className="text-body-small text-slate-500">Print copy</span>
           </button>
 
           {/* Share Acknowledgment */}
           <button
             onClick={handleShareAcknowledgment}
             disabled={isSharing}
-            className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex flex-col items-center p-4 border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Mail className="h-6 w-6 text-gray-600 mb-2" />
-            <span className="text-sm font-medium text-gray-900">
+            <Mail className="h-6 w-6 text-slate-600 mb-2" />
+            <span className="text-body-regular font-medium text-slate-900">
               {isSharing ? 'Opening...' : 'Share'}
             </span>
-            <span className="text-xs text-gray-500">Send via email</span>
+            <span className="text-body-small text-slate-500">Send via email</span>
           </button>
 
           {/* Back to Dashboard */}
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+            className="flex flex-col items-center p-4 border border-slate-200 rounded-xl hover:bg-slate-50"
           >
-            <ArrowLeft className="h-6 w-6 text-gray-600 mb-2" />
-            <span className="text-sm font-medium text-gray-900">Dashboard</span>
-            <span className="text-xs text-gray-500">View all filings</span>
+            <ArrowLeft className="h-6 w-6 text-slate-600 mb-2" />
+            <span className="text-body-regular font-medium text-slate-900">Dashboard</span>
+            <span className="text-body-small text-slate-500">View all filings</span>
           </button>
         </div>
       </div>
 
       {/* Next Steps - Justification: Guide users on what to expect next */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-3">What happens next?</h3>
-        <div className="space-y-3 text-sm text-gray-700">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
+        <h3 className="text-heading-4 font-medium text-slate-900 mb-3">What happens next?</h3>
+        <div className="space-y-3 text-body-regular text-slate-700">
           <div className="flex items-start">
             <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
             <p>

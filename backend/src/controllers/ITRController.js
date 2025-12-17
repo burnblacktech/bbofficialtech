@@ -5,6 +5,7 @@
 
 const { sequelize } = require('../config/database');
 const { QueryTypes } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 const { query: dbQuery } = require('../utils/dbQuery');
 const enterpriseLogger = require('../utils/logger');
 const {
@@ -60,6 +61,9 @@ class ITRController {
       }
 
       const userId = req.user.userId;
+      const correlationId = req.get('x-correlation-id') || req.get('X-Correlation-ID') || null;
+      const clientRequestId = req.headers['x-client-request-id'] || null;
+      const idempotencyKey = req.headers['x-idempotency-key'] || null;
       const { itrType, formData, assessmentYear, filingId: providedFilingId, taxRegime } = req.body;
 
       // Log incoming request for debugging
@@ -69,6 +73,9 @@ class ITRController {
         hasFormData: !!formData,
         assessmentYear,
         providedFilingId,
+        idempotencyKey,
+        correlationId,
+        clientRequestId,
         requestBody: {
           itrType,
           hasFormData: !!formData,
@@ -119,8 +126,9 @@ class ITRController {
           SELECT id FROM itr_filings 
           WHERE id = $1 AND user_id = $2
         `;
+        // NOTE: When using $1/$2 placeholders with Sequelize, use `bind` (not `replacements`).
         const existingFiling = await sequelize.query(verifyFilingQuery, {
-          replacements: [providedFilingId, userId],
+          bind: [providedFilingId, userId],
           type: QueryTypes.SELECT,
           transaction,
         });
@@ -132,10 +140,42 @@ class ITRController {
         
         filingId = providedFilingId;
       } else {
+        // Idempotency guard (belt-and-suspenders): if client retries POST /itr/drafts, return the existing draft.
+        // Only applies when creating a new filing (no providedFilingId).
+        if (idempotencyKey) {
+          const existingByKeyQuery = `
+            SELECT d.id AS draft_id, d.step, f.id AS filing_id, f.itr_type, f.assessment_year
+            FROM itr_filings f
+            JOIN itr_drafts d ON d.filing_id = f.id
+            WHERE f.user_id = $1 AND f.idempotency_key = $2
+            ORDER BY d.created_at DESC
+            LIMIT 1
+          `;
+
+          const existing = await sequelize.query(existingByKeyQuery, {
+            bind: [userId, idempotencyKey],
+            type: QueryTypes.SELECT,
+            transaction,
+          });
+
+          if (existing && existing.length > 0) {
+            await transaction.rollback();
+            return successResponse(res, {
+              draft: {
+                id: existing[0].draft_id,
+                filingId: existing[0].filing_id,
+                step: existing[0].step,
+                itrType: existing[0].itr_type,
+                status: 'draft',
+              },
+            }, 'Draft already exists for this idempotency key', 200);
+          }
+        }
+
         // Create filing first
         const createFilingQuery = `
-          INSERT INTO itr_filings (user_id, itr_type, assessment_year, status, created_at)
-          VALUES ($1, $2, $3, 'draft', NOW())
+          INSERT INTO itr_filings (id, user_id, itr_type, assessment_year, status, json_payload, idempotency_key, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, 'draft', '{}'::jsonb, $5, NOW(), NOW())
           RETURNING id
         `;
 
@@ -163,19 +203,25 @@ class ITRController {
           return errorResponse(res, new Error('Assessment year is required'), 400);
         }
 
-        // Use userId directly (it's a UUID string)
-        const filingReplacements = [userId, itrTypeStr, assessmentYearStr];
+        // Some DBs may not have a default UUID generator on itr_filings.id.
+        // Generate the UUID in app code to avoid NULL id inserts.
+        const newFilingId = uuidv4();
+        const filingReplacements = [newFilingId, userId, itrTypeStr, assessmentYearStr, idempotencyKey];
         
         // Log before query execution for debugging
         enterpriseLogger.info('Creating filing', {
           userId,
           itrType: itrTypeStr,
           assessmentYear: assessmentYearStr,
-          replacements: filingReplacements,
+          idempotencyKey,
+          correlationId,
+          clientRequestId,
+          bind: filingReplacements,
         });
 
+        // NOTE: When using $1/$2 placeholders with Sequelize, use `bind` (not `replacements`).
         const filing = await sequelize.query(createFilingQuery, {
-          replacements: filingReplacements,
+          bind: filingReplacements,
           type: QueryTypes.SELECT,
           transaction,
         });
@@ -185,7 +231,7 @@ class ITRController {
           return errorResponse(res, new Error('Failed to create filing'), 500);
         }
         
-        filingId = filing[0].id;
+        filingId = filing[0].id || newFilingId;
       }
 
       // Create draft
@@ -223,14 +269,16 @@ class ITRController {
       }
 
       const createDraftQuery = `
-        INSERT INTO itr_drafts (filing_id, step, data, created_at)
-        VALUES ($1, $2, $3, NOW())
-        RETURNING id, step, created_at
+        INSERT INTO itr_drafts (id, filing_id, step, data, is_completed, last_saved_at, created_at, updated_at)
+        VALUES ($1, $2, $3, $4::jsonb, false, NOW(), NOW(), NOW())
+        RETURNING id, step, created_at, updated_at, last_saved_at
       `;
 
       // Ensure all replacement values are defined and valid
       // Use filingId directly (it's a UUID string)
-      const draftReplacements = [filingId, 'personal_info', stringifiedData];
+      // Same issue can exist for itr_drafts.id on some DBs; generate it in code.
+      const newDraftId = uuidv4();
+      const draftReplacements = [newDraftId, filingId, 'personal_info', stringifiedData];
       if (draftReplacements.some(val => val === undefined || val === null)) {
         await transaction.rollback();
         return errorResponse(res, new Error('Missing required parameters for draft creation'), 400);
@@ -242,10 +290,13 @@ class ITRController {
         filingId,
         step: 'personal_info',
         dataLength: stringifiedData.length,
+        correlationId,
+        clientRequestId,
       });
 
+      // NOTE: When using $1/$2 placeholders with Sequelize, use `bind` (not `replacements`).
       const draft = await sequelize.query(createDraftQuery, {
-        replacements: draftReplacements,
+        bind: draftReplacements,
         type: QueryTypes.SELECT,
         transaction,
       });
@@ -263,6 +314,8 @@ class ITRController {
         itrType,
         draftId: draft[0].id,
         filingId: filingId,
+        correlationId,
+        clientRequestId,
       });
 
       // Auto-create service ticket for filing support (outside transaction - non-critical)
@@ -287,6 +340,8 @@ class ITRController {
           error: ticketError.message,
           filingId: filingId,
           userId,
+          correlationId,
+          clientRequestId,
         });
       }
 
@@ -326,8 +381,18 @@ class ITRController {
   async updateDraft(req, res) {
     try {
       const userId = req.user.userId;
+      const correlationId = req.get('x-correlation-id') || req.get('X-Correlation-ID') || null;
+      const clientRequestId = req.headers['x-client-request-id'] || null;
       const { draftId } = req.params;
       const { formData } = req.body;
+
+      enterpriseLogger.info('updateDraft called', {
+        userId,
+        draftId,
+        hasFormData: !!formData,
+        correlationId,
+        clientRequestId,
+      });
 
       // Validate formData is provided
       if (!formData || typeof formData !== 'object') {
@@ -389,6 +454,361 @@ class ITRController {
         itrType: result.rows[0].itr_type,
         updatedAt: result.rows[0].updated_at,
       }, 'Draft updated successfully');
+    } catch (error) {
+      return errorResponse(res, error, 500);
+    }
+  }
+
+  // =====================================================
+  // ITEMIZED DEDUCTIONS (Chapter VI-A) - JSONB-backed
+  // =====================================================
+
+  _normalizeDeductionSection(section) {
+    const s = String(section || '').trim().toUpperCase();
+    // Allow common 80* sections (80C, 80D, 80G, 80TTA, 80TTB, etc.)
+    if (!s || s.length > 10 || !/^[0-9A-Z]+$/.test(s)) return null;
+    return s;
+  }
+
+  _deductionKeyForSection(section) {
+    // Store totals in formData.deductions.section80C, section80D, ...
+    return `section${section}`;
+  }
+
+  _getDeductionLimit(section) {
+    const limits = {
+      '80C': 150000,
+      '80TTA': 10000,
+      '80TTB': 50000,
+      // 80D is more complex (age/self/parents). We return a conservative default for now.
+      '80D': 25000,
+    };
+    return limits[section] ?? null;
+  }
+
+  _extractDeductionAmount(item) {
+    if (!item || typeof item !== 'object') return 0;
+    const fields = [
+      'amount',
+      'premiumAmount',
+      'donationAmount',
+      'interestAmount',
+      'rentPaid',
+      'contributionAmount',
+      'investmentAmount',
+      'medicalExpenses',
+      'deductionAmount',
+    ];
+    for (const f of fields) {
+      if (item[f] !== undefined && item[f] !== null && item[f] !== '') {
+        const n = parseFloat(item[f]);
+        if (!Number.isNaN(n)) return Math.max(0, n);
+      }
+    }
+    return 0;
+  }
+
+  _extractDeductionAmountForSection(section, item) {
+    const s = String(section || '').trim().toUpperCase();
+    if (!item || typeof item !== 'object') return 0;
+
+    // Section-specific rules (so totals are meaningful for UI + tax compute)
+    if (s === '80CCD') {
+      const self = parseFloat(item.selfContribution || 0) || 0;
+      const employer = parseFloat(item.employerContribution || 0) || 0;
+      return Math.max(0, self + employer);
+    }
+
+    if (s === '80E' || s === '80EE' || s === '80EEA') {
+      const interest = parseFloat(item.interestPaid || 0) || 0;
+      return Math.max(0, interest);
+    }
+
+    if (s === '80CCC') {
+      const c = parseFloat(item.contributionAmount || 0) || 0;
+      return Math.max(0, c);
+    }
+
+    if (s === '80GG') {
+      const rent = parseFloat(item.rentPaid || item.rentAmount || 0) || 0;
+      return Math.max(0, rent);
+    }
+
+    if (s === '80DD') {
+      const pct = parseFloat(item.disabilityPercentage || 0) || 0;
+      if (pct >= 80) return 125000;
+      if (pct >= 40) return 75000;
+      return 0;
+    }
+
+    if (s === '80U') {
+      const raw = String(item.disabilityPercentage || '').trim();
+      if (raw.includes('80') || raw.includes('80-100')) return 125000;
+      if (raw.includes('40') || raw.includes('40-80')) return 75000;
+      return 0;
+    }
+
+    // Default heuristic
+    return this._extractDeductionAmount(item);
+  }
+
+  async _getLatestDraftByFilingId(userId, filingId) {
+    const q = `
+      SELECT d.id, d.data, f.status, f.itr_type
+      FROM itr_filings f
+      JOIN itr_drafts d ON d.filing_id = f.id
+      WHERE f.id = $1 AND f.user_id = $2
+      ORDER BY d.updated_at DESC NULLS LAST, d.created_at DESC
+      LIMIT 1
+    `;
+    const result = await dbQuery(q, [filingId, userId]);
+    return result.rows?.[0] || null;
+  }
+
+  async getDeductions(req, res) {
+    try {
+      const userId = req.user.userId;
+      const section = this._normalizeDeductionSection(req.params.section);
+      const filingId = req.query.filingId;
+
+      if (!section) {
+        return validationErrorResponse(res, { section: 'Invalid deduction section' });
+      }
+      if (!filingId) {
+        return validationErrorResponse(res, { filingId: 'filingId is required' });
+      }
+
+      const draftRow = await this._getLatestDraftByFilingId(userId, filingId);
+      if (!draftRow) return notFoundResponse(res, 'Draft');
+
+      const formData = draftRow.data ? (typeof draftRow.data === 'string' ? JSON.parse(draftRow.data) : draftRow.data) : {};
+      const items = formData?.deductionsItems?.[section] || [];
+      const totalAmount = Array.isArray(items) ? items.reduce((sum, it) => sum + this._extractDeductionAmountForSection(String(it?.sectionType || section), it), 0) : 0;
+
+      const limit = this._getDeductionLimit(section);
+      const remainingLimit = typeof limit === 'number' ? Math.max(0, limit - totalAmount) : 0;
+
+      return successResponse(res, {
+        deductions: Array.isArray(items) ? items : [],
+        totalAmount,
+        remainingLimit,
+        section,
+        filingId,
+        draftId: draftRow.id,
+      }, 'Deductions fetched');
+    } catch (error) {
+      return errorResponse(res, error, 500);
+    }
+  }
+
+  async createDeduction(req, res) {
+    try {
+      const userId = req.user.userId;
+      const section = this._normalizeDeductionSection(req.params.section);
+      const { filingId, ...payload } = req.body || {};
+
+      if (!section) {
+        return validationErrorResponse(res, { section: 'Invalid deduction section' });
+      }
+      if (!filingId) {
+        return validationErrorResponse(res, { filingId: 'filingId is required' });
+      }
+
+      const draftRow = await this._getLatestDraftByFilingId(userId, filingId);
+      if (!draftRow) return notFoundResponse(res, 'Draft');
+
+      if (draftRow.status && ['submitted', 'acknowledged', 'processed'].includes(String(draftRow.status).toLowerCase())) {
+        return unauthorizedResponse(res, 'Filing is read-only');
+      }
+
+      const formData = draftRow.data ? (typeof draftRow.data === 'string' ? JSON.parse(draftRow.data) : draftRow.data) : {};
+      formData.deductionsItems = formData.deductionsItems || {};
+      formData.deductions = formData.deductions || {};
+      const list = Array.isArray(formData.deductionsItems[section]) ? formData.deductionsItems[section] : [];
+
+      const item = {
+        id: uuidv4(),
+        section,
+        ...payload,
+        proofs: payload.proofs || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const nextList = [...list, item];
+      formData.deductionsItems[section] = nextList;
+
+      const totalsByType = nextList.reduce((acc, it) => {
+        const t = String(it?.sectionType || section).trim().toUpperCase();
+        acc[t] = (acc[t] || 0) + this._extractDeductionAmountForSection(t, it);
+        return acc;
+      }, {});
+      const totalAmount = nextList.reduce((sum, it) => sum + this._extractDeductionAmountForSection(String(it?.sectionType || section), it), 0);
+      // Store combined total under the route section, and per-variant totals when sectionType is used (e.g., 80EE/80EEA)
+      formData.deductions[this._deductionKeyForSection(section)] = totalAmount;
+      Object.entries(totalsByType).forEach(([t, amt]) => {
+        formData.deductions[this._deductionKeyForSection(t)] = amt;
+      });
+
+      await dbQuery(
+        `UPDATE itr_drafts d
+         SET data = $1, updated_at = NOW(), last_saved_at = NOW()
+         FROM itr_filings f
+         WHERE d.filing_id = f.id AND d.id = $2 AND f.user_id = $3
+         RETURNING d.id`,
+        [JSON.stringify(formData), draftRow.id, userId],
+      );
+
+      const limit = this._getDeductionLimit(section);
+      const remainingLimit = typeof limit === 'number' ? Math.max(0, limit - totalAmount) : 0;
+
+      return successResponse(res, {
+        deduction: item,
+        deductions: nextList,
+        totalAmount,
+        remainingLimit,
+        section,
+        filingId,
+        draftId: draftRow.id,
+      }, 'Deduction created', 201);
+    } catch (error) {
+      return errorResponse(res, error, 500);
+    }
+  }
+
+  async updateDeduction(req, res) {
+    try {
+      const userId = req.user.userId;
+      const section = this._normalizeDeductionSection(req.params.section);
+      const { deductionId } = req.params;
+      const { filingId, ...payload } = req.body || {};
+
+      if (!section) return validationErrorResponse(res, { section: 'Invalid deduction section' });
+      if (!filingId) return validationErrorResponse(res, { filingId: 'filingId is required' });
+      if (!deductionId) return validationErrorResponse(res, { deductionId: 'deductionId is required' });
+
+      const draftRow = await this._getLatestDraftByFilingId(userId, filingId);
+      if (!draftRow) return notFoundResponse(res, 'Draft');
+
+      if (draftRow.status && ['submitted', 'acknowledged', 'processed'].includes(String(draftRow.status).toLowerCase())) {
+        return unauthorizedResponse(res, 'Filing is read-only');
+      }
+
+      const formData = draftRow.data ? (typeof draftRow.data === 'string' ? JSON.parse(draftRow.data) : draftRow.data) : {};
+      formData.deductionsItems = formData.deductionsItems || {};
+      formData.deductions = formData.deductions || {};
+      const list = Array.isArray(formData.deductionsItems[section]) ? formData.deductionsItems[section] : [];
+
+      const idx = list.findIndex(it => String(it.id) === String(deductionId));
+      if (idx === -1) return notFoundResponse(res, 'Deduction');
+
+      const updated = {
+        ...list[idx],
+        ...payload,
+        id: list[idx].id,
+        section,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const nextList = [...list];
+      nextList[idx] = updated;
+      formData.deductionsItems[section] = nextList;
+
+      const totalsByType = nextList.reduce((acc, it) => {
+        const t = String(it?.sectionType || section).trim().toUpperCase();
+        acc[t] = (acc[t] || 0) + this._extractDeductionAmountForSection(t, it);
+        return acc;
+      }, {});
+      const totalAmount = nextList.reduce((sum, it) => sum + this._extractDeductionAmountForSection(String(it?.sectionType || section), it), 0);
+      formData.deductions[this._deductionKeyForSection(section)] = totalAmount;
+      Object.entries(totalsByType).forEach(([t, amt]) => {
+        formData.deductions[this._deductionKeyForSection(t)] = amt;
+      });
+
+      await dbQuery(
+        `UPDATE itr_drafts d
+         SET data = $1, updated_at = NOW(), last_saved_at = NOW()
+         FROM itr_filings f
+         WHERE d.filing_id = f.id AND d.id = $2 AND f.user_id = $3
+         RETURNING d.id`,
+        [JSON.stringify(formData), draftRow.id, userId],
+      );
+
+      const limit = this._getDeductionLimit(section);
+      const remainingLimit = typeof limit === 'number' ? Math.max(0, limit - totalAmount) : 0;
+
+      return successResponse(res, {
+        deduction: updated,
+        deductions: nextList,
+        totalAmount,
+        remainingLimit,
+        section,
+        filingId,
+        draftId: draftRow.id,
+      }, 'Deduction updated');
+    } catch (error) {
+      return errorResponse(res, error, 500);
+    }
+  }
+
+  async deleteDeduction(req, res) {
+    try {
+      const userId = req.user.userId;
+      const section = this._normalizeDeductionSection(req.params.section);
+      const { deductionId } = req.params;
+      const filingId = req.query.filingId || req.body?.filingId;
+
+      if (!section) return validationErrorResponse(res, { section: 'Invalid deduction section' });
+      if (!filingId) return validationErrorResponse(res, { filingId: 'filingId is required' });
+      if (!deductionId) return validationErrorResponse(res, { deductionId: 'deductionId is required' });
+
+      const draftRow = await this._getLatestDraftByFilingId(userId, filingId);
+      if (!draftRow) return notFoundResponse(res, 'Draft');
+
+      if (draftRow.status && ['submitted', 'acknowledged', 'processed'].includes(String(draftRow.status).toLowerCase())) {
+        return unauthorizedResponse(res, 'Filing is read-only');
+      }
+
+      const formData = draftRow.data ? (typeof draftRow.data === 'string' ? JSON.parse(draftRow.data) : draftRow.data) : {};
+      formData.deductionsItems = formData.deductionsItems || {};
+      formData.deductions = formData.deductions || {};
+      const list = Array.isArray(formData.deductionsItems[section]) ? formData.deductionsItems[section] : [];
+
+      const nextList = list.filter(it => String(it.id) !== String(deductionId));
+      if (nextList.length === list.length) return notFoundResponse(res, 'Deduction');
+
+      formData.deductionsItems[section] = nextList;
+      const totalsByType = nextList.reduce((acc, it) => {
+        const t = String(it?.sectionType || section).trim().toUpperCase();
+        acc[t] = (acc[t] || 0) + this._extractDeductionAmountForSection(t, it);
+        return acc;
+      }, {});
+      const totalAmount = nextList.reduce((sum, it) => sum + this._extractDeductionAmountForSection(String(it?.sectionType || section), it), 0);
+      formData.deductions[this._deductionKeyForSection(section)] = totalAmount;
+      Object.entries(totalsByType).forEach(([t, amt]) => {
+        formData.deductions[this._deductionKeyForSection(t)] = amt;
+      });
+
+      await dbQuery(
+        `UPDATE itr_drafts d
+         SET data = $1, updated_at = NOW(), last_saved_at = NOW()
+         FROM itr_filings f
+         WHERE d.filing_id = f.id AND d.id = $2 AND f.user_id = $3
+         RETURNING d.id`,
+        [JSON.stringify(formData), draftRow.id, userId],
+      );
+
+      const limit = this._getDeductionLimit(section);
+      const remainingLimit = typeof limit === 'number' ? Math.max(0, limit - totalAmount) : 0;
+
+      return successResponse(res, {
+        deductions: nextList,
+        totalAmount,
+        remainingLimit,
+        section,
+        filingId,
+        draftId: draftRow.id,
+      }, 'Deduction deleted');
     } catch (error) {
       return errorResponse(res, error, 500);
     }

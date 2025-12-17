@@ -92,7 +92,7 @@ const BottomSheet = ({
 
         {/* Header */}
         {(title || onClose) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
             {title && (
               <h2 id="bottom-sheet-title" className="text-heading-lg font-semibold text-gray-800" style={{ fontSize: '20px', fontWeight: 600 }}>
                 {title}
@@ -101,10 +101,10 @@ const BottomSheet = ({
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                 aria-label="Close"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-5 h-5 text-slate-600" />
               </button>
             )}
           </div>

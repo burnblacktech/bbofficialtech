@@ -62,10 +62,10 @@ const Card = ({
   // Shadow classes
   const shadowClasses = {
     none: 'card-shadow-none',
-    small: 'card-shadow-sm',
-    medium: 'card-shadow-md',
-    large: 'card-shadow-lg',
-    xlarge: 'card-shadow-xl',
+    small: 'card-shadow-elevation-1',
+    medium: 'card-shadow-elevation-2',
+    large: 'card-shadow-elevation-3',
+    xlarge: 'card-shadow-elevation-4',
   };
 
   // State classes

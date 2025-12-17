@@ -3,7 +3,7 @@
 // =====================================================
 
 import React from 'react';
-import Button from '../UI/Button';
+import Button from '../DesignSystem/components/Button';
 import Card from '../common/Card';
 import { enterpriseLogger } from '../../utils/logger';
 

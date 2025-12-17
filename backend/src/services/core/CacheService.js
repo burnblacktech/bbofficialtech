@@ -24,6 +24,10 @@ class CacheService {
       const cacheKey = this._buildKey(key);
       const serialized = JSON.stringify(data);
       const client = redisService.getClient();
+      
+      if (!client) {
+        return false; // Cache unavailable
+      }
 
       await client.setex(cacheKey, ttl, serialized);
 
@@ -54,6 +58,11 @@ class CacheService {
 
       const cacheKey = this._buildKey(key);
       const client = redisService.getClient();
+      
+      if (!client) {
+        return null; // Cache unavailable
+      }
+      
       const cached = await client.get(cacheKey);
 
       if (!cached) {
@@ -87,6 +96,11 @@ class CacheService {
 
       const cacheKey = this._buildKey(key);
       const client = redisService.getClient();
+      
+      if (!client) {
+        return false; // Cache unavailable
+      }
+      
       const deleted = await client.del(cacheKey);
 
       enterpriseLogger.debug('Cache deleted', {
@@ -114,6 +128,11 @@ class CacheService {
       }
 
       const client = redisService.getClient();
+      
+      if (!client) {
+        return 0; // Cache unavailable
+      }
+      
       const searchPattern = this._buildKey(pattern);
       const keys = await client.keys(searchPattern);
 
@@ -149,6 +168,11 @@ class CacheService {
 
       const cacheKey = this._buildKey(key);
       const client = redisService.getClient();
+      
+      if (!client) {
+        return false; // Cache unavailable
+      }
+      
       const exists = await client.exists(cacheKey);
 
       return exists === 1;
@@ -247,6 +271,11 @@ class CacheService {
       }
 
       const client = redisService.getClient();
+      
+      if (!client) {
+        return false; // Cache unavailable
+      }
+      
       const keys = await client.keys(this._buildKey('*'));
 
       if (keys.length === 0) {
@@ -281,6 +310,11 @@ class CacheService {
       }
 
       const client = redisService.getClient();
+      
+      if (!client) {
+        return false; // Cache unavailable
+      }
+      
       const keys = await client.keys(this._buildKey('*'));
 
       return {

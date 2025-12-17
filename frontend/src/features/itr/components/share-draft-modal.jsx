@@ -177,7 +177,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
               </div>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500 transition-colors"
+                className="text-slate-400 hover:text-slate-500 transition-colors"
                 aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
@@ -187,7 +187,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
             {!shareLink ? (
               <form onSubmit={handleShare} className="space-y-4">
                 <div>
-                  <label htmlFor="recipientEmail" className="block text-body-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="recipientEmail" className="block text-body-sm font-medium text-slate-700 mb-2">
                     <Mail className="h-4 w-4 inline mr-1" />
                     Recipient Email
                   </label>
@@ -198,17 +198,17 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
                     placeholder="ca@example.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     required
                     disabled={isSharing}
                   />
-                  <p className="mt-1 text-body-xs text-gray-500">
+                  <p className="mt-1 text-body-xs text-slate-500">
                     Enter the email address of the CA or reviewer
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-body-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-body-sm font-medium text-slate-700 mb-2">
                     <MessageSquare className="h-4 w-4 inline mr-1" />
                     Optional Message
                   </label>
@@ -218,12 +218,12 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Please review this draft and provide feedback..."
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     disabled={isSharing}
                   />
                 </div>
 
-                <div className="bg-info-50 border border-info-200 rounded-lg p-3">
+                <div className="bg-info-50 border border-info-200 rounded-xl p-3">
                   <div className="flex items-start">
                     <AlertCircle className="h-4 w-4 text-info-600 mt-0.5 mr-2 flex-shrink-0" />
                     <div className="text-body-xs text-info-800">
@@ -242,14 +242,14 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="px-4 py-2 text-body-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-body-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
                     disabled={isSharing}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-xl hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isSharing || !recipientEmail}
                   >
                     {isSharing ? (
@@ -268,7 +268,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="bg-success-50 border border-success-200 rounded-lg p-4">
+                <div className="bg-success-50 border border-success-200 rounded-xl p-4">
                   <div className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-success-600 mr-3 flex-shrink-0 mt-0.5" />
                     <div>
@@ -283,7 +283,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                  <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-sm font-medium text-slate-700 mb-2">
                     Share Link
                   </label>
                   <div className="flex items-center gap-2">
@@ -291,21 +291,21 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                       type="text"
                       value={shareLink}
                       readOnly
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-body-sm"
+                      className="flex-1 px-4 py-2 border border-slate-300 rounded-xl bg-slate-50 text-body-sm"
                     />
                     <button
                       onClick={handleCopyLink}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center"
+                      className="px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors flex items-center"
                       title="Copy link"
                     >
                       {copied ? (
                         <CheckCircle className="h-4 w-4 text-success-600" />
                       ) : (
-                        <Copy className="h-4 w-4 text-gray-600" />
+                        <Copy className="h-4 w-4 text-slate-600" />
                       )}
                     </button>
                   </div>
-                  <p className="mt-1 text-body-xs text-gray-500">
+                  <p className="mt-1 text-body-xs text-slate-500">
                     You can also copy and share this link directly
                   </p>
                 </div>
@@ -313,7 +313,7 @@ const ShareDraftModal = ({ filingId, isOpen, onClose, onSuccess }) => {
                 <div className="flex items-center justify-end pt-4">
                   <button
                     onClick={handleClose}
-                    className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors"
+                    className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-xl hover:bg-gold-600 transition-colors"
                   >
                     Done
                   </button>

@@ -96,18 +96,18 @@ const ComputationSheet = ({
   const taxableIncome = Math.max(0, grossTotalIncome - totalDeductions);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Computation Sheet</h2>
-          <p className="text-sm text-gray-500 mt-1">FY 2024-25 - Complete Summary</p>
+          <h2 className="text-heading-3 font-bold text-slate-900">Computation Sheet</h2>
+          <p className="text-body-regular text-slate-500 mt-1">FY 2024-25 - Complete Summary</p>
         </div>
         {onRefresh && (
           <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="flex items-center px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
+            className="flex items-center px-3 py-2 text-body-regular text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 disabled:opacity-50 transition-colors"
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh
@@ -117,34 +117,34 @@ const ComputationSheet = ({
 
       {/* Income Summary */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+        <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center">
           <IndianRupee className="w-5 h-5 mr-2 text-blue-600" />
           Income Summary
         </h3>
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+        <div className="bg-slate-50 rounded-xl p-4 space-y-2">
           {formData.income?.salary > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Salary</span>
+              <span className="text-slate-700">Salary</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.income.salary)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.income.salary)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('income', 'salary')} fieldPath="income.salary" />
               </div>
             </div>
           )}
           {formData.income?.businessIncome > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Business Income</span>
+              <span className="text-slate-700">Business Income</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.income.businessIncome)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.income.businessIncome)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('income', 'businessIncome')} fieldPath="income.businessIncome" />
               </div>
             </div>
           )}
           {formData.income?.professionalIncome > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Professional Income</span>
+              <span className="text-slate-700">Professional Income</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.income.professionalIncome)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.income.professionalIncome)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('income', 'professionalIncome')} fieldPath="income.professionalIncome" />
               </div>
             </div>
@@ -169,9 +169,9 @@ const ComputationSheet = ({
             }
             return capitalGainsAmount > 0 ? (
               <div className="flex items-center justify-between">
-                <span className="text-gray-700">Capital Gains</span>
+                <span className="text-slate-700">Capital Gains</span>
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-gray-900">{formatCurrency(capitalGainsAmount)}</span>
+                  <span className="font-semibold text-slate-900">{formatCurrency(capitalGainsAmount)}</span>
                   <ProvenanceChip {...getFieldSourceInfo('income', 'capitalGains')} fieldPath="income.capitalGains" />
                 </div>
               </div>
@@ -197,9 +197,9 @@ const ComputationSheet = ({
             }
             return housePropertyAmount > 0 ? (
               <div className="flex items-center justify-between">
-                <span className="text-gray-700">House Property</span>
+                <span className="text-slate-700">House Property</span>
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-gray-900">{formatCurrency(housePropertyAmount)}</span>
+                  <span className="font-semibold text-slate-900">{formatCurrency(housePropertyAmount)}</span>
                   <ProvenanceChip {...getFieldSourceInfo('income', 'houseProperty')} fieldPath="income.houseProperty" />
                 </div>
               </div>
@@ -216,9 +216,9 @@ const ComputationSheet = ({
             }
             return foreignIncomeAmount > 0 ? (
               <div className="flex items-center justify-between">
-                <span className="text-gray-700">Foreign Income</span>
+                <span className="text-slate-700">Foreign Income</span>
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-gray-900">{formatCurrency(foreignIncomeAmount)}</span>
+                  <span className="font-semibold text-slate-900">{formatCurrency(foreignIncomeAmount)}</span>
                   <ProvenanceChip {...getFieldSourceInfo('income', 'foreignIncome')} fieldPath="income.foreignIncome" />
                 </div>
               </div>
@@ -231,9 +231,9 @@ const ComputationSheet = ({
               (formData.income?.directorPartner?.partnerIncome || 0);
             return directorPartnerAmount > 0 ? (
               <div className="flex items-center justify-between">
-                <span className="text-gray-700">Director/Partner Income</span>
+                <span className="text-slate-700">Director/Partner Income</span>
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-gray-900">{formatCurrency(directorPartnerAmount)}</span>
+                  <span className="font-semibold text-slate-900">{formatCurrency(directorPartnerAmount)}</span>
                   <ProvenanceChip {...getFieldSourceInfo('income', 'directorPartner')} fieldPath="income.directorPartner" />
                 </div>
               </div>
@@ -241,34 +241,34 @@ const ComputationSheet = ({
           })()}
           {formData.income?.interestIncome > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Interest Income</span>
+              <span className="text-slate-700">Interest Income</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.income.interestIncome)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.income.interestIncome)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('income', 'interestIncome')} fieldPath="income.interestIncome" />
               </div>
             </div>
           )}
           {formData.income?.dividendIncome > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Dividend Income</span>
+              <span className="text-slate-700">Dividend Income</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.income.dividendIncome)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.income.dividendIncome)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('income', 'dividendIncome')} fieldPath="income.dividendIncome" />
               </div>
             </div>
           )}
           {formData.income?.otherIncome > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Other Income</span>
+              <span className="text-slate-700">Other Income</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.income.otherIncome)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.income.otherIncome)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('income', 'otherIncome')} fieldPath="income.otherIncome" />
               </div>
             </div>
           )}
-          <div className="border-t border-gray-300 pt-2 mt-2 flex items-center justify-between">
-            <span className="font-semibold text-gray-900">Gross Total Income</span>
-            <span className="text-xl font-bold text-gray-900">{formatCurrency(grossTotalIncome)}</span>
+          <div className="border-t border-slate-300 pt-2 mt-2 flex items-center justify-between">
+            <span className="font-semibold text-slate-900">Gross Total Income</span>
+            <span className="text-heading-3 font-bold text-slate-900">{formatCurrency(grossTotalIncome)}</span>
           </div>
         </div>
 
@@ -280,34 +280,34 @@ const ComputationSheet = ({
 
       {/* Deductions Summary */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+        <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center">
           <TrendingDown className="w-5 h-5 mr-2 text-green-600" />
           Deductions Summary
         </h3>
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+        <div className="bg-slate-50 rounded-xl p-4 space-y-2">
           {formData.deductions?.section80C > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Section 80C</span>
+              <span className="text-slate-700">Section 80C</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.deductions.section80C)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.deductions.section80C)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('deductions', 'section80C')} fieldPath="deductions.section80C" />
               </div>
             </div>
           )}
           {formData.deductions?.section80D > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Section 80D</span>
+              <span className="text-slate-700">Section 80D</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.deductions.section80D)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.deductions.section80D)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('deductions', 'section80D')} fieldPath="deductions.section80D" />
               </div>
             </div>
           )}
           {formData.deductions?.section80G > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Section 80G</span>
+              <span className="text-slate-700">Section 80G</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.deductions.section80G)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.deductions.section80G)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('deductions', 'section80G')} fieldPath="deductions.section80G" />
               </div>
             </div>
@@ -316,18 +316,18 @@ const ComputationSheet = ({
             <>
               {formData.deductions?.section80TTA > 0 && (
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">Section 80TTA</span>
+                  <span className="text-slate-700">Section 80TTA</span>
                   <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-gray-900">{formatCurrency(formData.deductions.section80TTA)}</span>
+                    <span className="font-semibold text-slate-900">{formatCurrency(formData.deductions.section80TTA)}</span>
                     <ProvenanceChip {...getFieldSourceInfo('deductions', 'section80TTA')} fieldPath="deductions.section80TTA" />
                   </div>
                 </div>
               )}
               {formData.deductions?.section80TTB > 0 && (
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">Section 80TTB</span>
+                  <span className="text-slate-700">Section 80TTB</span>
                   <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-gray-900">{formatCurrency(formData.deductions.section80TTB)}</span>
+                    <span className="font-semibold text-slate-900">{formatCurrency(formData.deductions.section80TTB)}</span>
                     <ProvenanceChip {...getFieldSourceInfo('deductions', 'section80TTB')} fieldPath="deductions.section80TTB" />
                   </div>
                 </div>
@@ -336,16 +336,16 @@ const ComputationSheet = ({
           )}
           {formData.deductions?.otherDeductions > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Other Deductions</span>
+              <span className="text-slate-700">Other Deductions</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.deductions.otherDeductions)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.deductions.otherDeductions)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('deductions', 'otherDeductions')} fieldPath="deductions.otherDeductions" />
               </div>
             </div>
           )}
-          <div className="border-t border-gray-300 pt-2 mt-2 flex items-center justify-between">
-            <span className="font-semibold text-gray-900">Total Deductions</span>
-            <span className="text-xl font-bold text-gray-900">{formatCurrency(totalDeductions)}</span>
+          <div className="border-t border-slate-300 pt-2 mt-2 flex items-center justify-between">
+            <span className="font-semibold text-slate-900">Total Deductions</span>
+            <span className="text-heading-3 font-bold text-slate-900">{formatCurrency(totalDeductions)}</span>
           </div>
         </div>
 
@@ -358,26 +358,26 @@ const ComputationSheet = ({
       {/* Tax Computation */}
       {taxComputation && (
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center">
             <Calculator className="w-5 h-5 mr-2 text-purple-600" />
             Tax Computation
           </h3>
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+          <div className="bg-slate-50 rounded-xl p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Taxable Income</span>
-              <span className="font-semibold text-gray-900">{formatCurrency(taxableIncome)}</span>
+              <span className="text-slate-700">Taxable Income</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(taxableIncome)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Tax on Income</span>
-              <span className="font-semibold text-gray-900">{formatCurrency(taxComputation.taxLiability || 0)}</span>
+              <span className="text-slate-700">Tax on Income</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(taxComputation.taxLiability || 0)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Cess (4%)</span>
-              <span className="font-semibold text-gray-900">{formatCurrency(taxComputation.cess || 0)}</span>
+              <span className="text-slate-700">Cess (4%)</span>
+              <span className="font-semibold text-slate-900">{formatCurrency(taxComputation.cess || 0)}</span>
             </div>
-            <div className="border-t border-gray-300 pt-2 flex items-center justify-between">
-              <span className="font-semibold text-gray-900">Total Tax Liability</span>
-              <span className="text-xl font-bold text-gray-900">{formatCurrency(taxComputation.totalTaxLiability || 0)}</span>
+            <div className="border-t border-slate-300 pt-2 flex items-center justify-between">
+              <span className="font-semibold text-slate-900">Total Tax Liability</span>
+              <span className="text-heading-3 font-bold text-slate-900">{formatCurrency(taxComputation.totalTaxLiability || 0)}</span>
             </div>
           </div>
         </div>
@@ -385,41 +385,41 @@ const ComputationSheet = ({
 
       {/* Taxes Paid */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+        <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center">
           <CreditCard className="w-5 h-5 mr-2 text-orange-600" />
           Taxes Paid
         </h3>
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+        <div className="bg-slate-50 rounded-xl p-4 space-y-2">
           {formData.taxesPaid?.tds > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">TDS</span>
+              <span className="text-slate-700">TDS</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.taxesPaid.tds)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.taxesPaid.tds)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('taxesPaid', 'tds')} fieldPath="taxesPaid.tds" />
               </div>
             </div>
           )}
           {formData.taxesPaid?.advanceTax > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Advance Tax</span>
+              <span className="text-slate-700">Advance Tax</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.taxesPaid.advanceTax)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.taxesPaid.advanceTax)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('taxesPaid', 'advanceTax')} fieldPath="taxesPaid.advanceTax" />
               </div>
             </div>
           )}
           {formData.taxesPaid?.selfAssessmentTax > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-gray-700">Self Assessment Tax</span>
+              <span className="text-slate-700">Self Assessment Tax</span>
               <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{formatCurrency(formData.taxesPaid.selfAssessmentTax)}</span>
+                <span className="font-semibold text-slate-900">{formatCurrency(formData.taxesPaid.selfAssessmentTax)}</span>
                 <ProvenanceChip {...getFieldSourceInfo('taxesPaid', 'selfAssessmentTax')} fieldPath="taxesPaid.selfAssessmentTax" />
               </div>
             </div>
           )}
-          <div className="border-t border-gray-300 pt-2 mt-2 flex items-center justify-between">
-            <span className="font-semibold text-gray-900">Total Taxes Paid</span>
-            <span className="text-xl font-bold text-gray-900">
+          <div className="border-t border-slate-300 pt-2 mt-2 flex items-center justify-between">
+            <span className="font-semibold text-slate-900">Total Taxes Paid</span>
+            <span className="text-heading-3 font-bold text-slate-900">
               {formatCurrency(
                 (formData.taxesPaid?.tds || 0) +
                 (formData.taxesPaid?.advanceTax || 0) +
@@ -432,24 +432,24 @@ const ComputationSheet = ({
 
       {/* Final Result */}
       {taxComputation && (
-        <div className={`rounded-lg p-4 border-2 ${
+        <div className={`rounded-xl p-4 border-2 ${
           taxComputation.isRefund
             ? 'bg-green-50 border-green-200'
-            : 'bg-red-50 border-red-200'
+            : 'bg-error-50 border-red-200'
         }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {taxComputation.isRefund ? (
                 <TrendingUp className="w-6 h-6 text-green-600" />
               ) : (
-                <TrendingDown className="w-6 h-6 text-red-600" />
+                <TrendingDown className="w-6 h-6 text-error-600" />
               )}
-              <span className="text-lg font-semibold text-gray-900">
+              <span className="text-body-large font-semibold text-slate-900">
                 {taxComputation.isRefund ? 'Refund Due' : 'Tax Payable'}
               </span>
             </div>
             <span className={`text-2xl font-bold ${
-              taxComputation.isRefund ? 'text-green-700' : 'text-red-700'
+              taxComputation.isRefund ? 'text-green-700' : 'text-error-700'
             }`}>
               {taxComputation.isRefund ? '+' : '-'}{formatCurrency(Math.abs(taxComputation.refundOrPayable || 0))}
             </span>

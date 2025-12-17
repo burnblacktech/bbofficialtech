@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import { Settings, User, Bell, Shield, Key, Mail, Phone, Save, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -140,7 +140,7 @@ const UserSettings = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-heading-1 font-bold text-neutral-900 mb-2">
             Settings
           </h1>
           <p className="text-neutral-600">
@@ -174,14 +174,14 @@ const UserSettings = () => {
         {activeTab === 'profile' && (
           <Card>
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+              <h3 className="text-heading-4 font-semibold text-neutral-900 mb-4">
                 Profile Information
               </h3>
 
               <form onSubmit={handleProfileUpdate} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Full Name *
                     </label>
                     <input
@@ -189,12 +189,12 @@ const UserSettings = () => {
                       value={profileData.fullName}
                       onChange={(e) => setProfileData(prev => ({ ...prev, fullName: e.target.value }))}
                       required
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Email Address *
                     </label>
                     <input
@@ -202,19 +202,19 @@ const UserSettings = () => {
                       value={profileData.email}
                       onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
                       required
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Phone Number
                     </label>
                     <input
                       type="tel"
                       value={profileData.phone}
                       onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -239,13 +239,13 @@ const UserSettings = () => {
         {activeTab === 'security' && (
           <Card>
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+              <h3 className="text-heading-4 font-semibold text-neutral-900 mb-4">
                 Change Password
               </h3>
 
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Current Password *
                   </label>
                   <div className="relative">
@@ -254,7 +254,7 @@ const UserSettings = () => {
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
                       required
-                      className="w-full px-3 py-2 pr-10 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 pr-10 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                     <button
                       type="button"
@@ -267,7 +267,7 @@ const UserSettings = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     New Password *
                   </label>
                   <input
@@ -276,12 +276,12 @@ const UserSettings = () => {
                     onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
                     required
                     minLength="8"
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                     Confirm New Password *
                   </label>
                   <input
@@ -290,7 +290,7 @@ const UserSettings = () => {
                     onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                     required
                     minLength="8"
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
@@ -314,7 +314,7 @@ const UserSettings = () => {
         {activeTab === 'notifications' && (
           <Card>
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+              <h3 className="text-heading-4 font-semibold text-neutral-900 mb-4">
                 Notification Preferences
               </h3>
 
@@ -325,7 +325,7 @@ const UserSettings = () => {
                       <h4 className="text-sm font-medium text-neutral-900 capitalize">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </h4>
-                      <p className="text-xs text-neutral-600">
+                      <p className="text-body-small text-neutral-600">
                         {key === 'emailNotifications' && 'Receive notifications via email'}
                         {key === 'pushNotifications' && 'Receive push notifications in browser'}
                         {key === 'filingReminders' && 'Get reminders for filing deadlines'}

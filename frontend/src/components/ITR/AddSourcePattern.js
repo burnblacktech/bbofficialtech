@@ -52,15 +52,15 @@ const AddSourcePattern = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-heading-3 font-semibold text-slate-900">{title}</h3>
           {subtitle && (
-            <p className="text-gray-600 mt-1">{subtitle}</p>
+            <p className="text-slate-600 mt-1">{subtitle}</p>
           )}
         </div>
         {!showAddForm && (
           <button
             onClick={handleAddClick}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add {title.split(' ')[0]}
@@ -70,11 +70,11 @@ const AddSourcePattern = ({
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
           {!selectedType ? (
             // Type Selection
             <div>
-              <h4 className="text-lg font-medium text-gray-900 mb-4">
+              <h4 className="text-heading-4 font-medium text-slate-900 mb-4">
                 Select {title.split(' ')[0]} Type
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -82,14 +82,14 @@ const AddSourcePattern = ({
                   <button
                     key={type.value}
                     onClick={() => handleTypeSelect(type.value)}
-                    className="p-4 text-left bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                    className="p-4 text-left bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
                   >
                     <div className="flex items-center">
                       {type.icon && <type.icon className="w-5 h-5 text-blue-600 mr-3" />}
                       <div>
-                        <div className="font-medium text-gray-900">{type.label}</div>
+                        <div className="font-medium text-slate-900">{type.label}</div>
                         {type.description && (
-                          <div className="text-sm text-gray-600">{type.description}</div>
+                          <div className="text-body-regular text-slate-600">{type.description}</div>
                         )}
                       </div>
                     </div>
@@ -99,7 +99,7 @@ const AddSourcePattern = ({
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  className="px-4 py-2 text-slate-600 hover:text-gray-800 transition-colors"
                 >
                   Cancel
                 </button>
@@ -110,7 +110,7 @@ const AddSourcePattern = ({
             <form onSubmit={handleFormSubmit}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     {selectedType} Amount *
                   </label>
                   <input
@@ -118,13 +118,13 @@ const AddSourcePattern = ({
                     value={formData.amount || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                     placeholder="Enter amount"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-2">
                     Description
                   </label>
                   <input
@@ -132,7 +132,7 @@ const AddSourcePattern = ({
                     value={formData.description || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Brief description (optional)"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -141,13 +141,13 @@ const AddSourcePattern = ({
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  className="px-4 py-2 text-slate-600 hover:text-gray-800 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
                 >
                   Add {selectedType}
                 </button>
@@ -160,31 +160,31 @@ const AddSourcePattern = ({
       {/* Sources List */}
       <div className="space-y-3">
         {sources.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="text-gray-400 mb-2">
+          <div className="text-center py-8 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="text-slate-400 mb-2">
               <Plus className="w-12 h-12 mx-auto" />
             </div>
-            <p className="text-gray-600">{emptyStateMessage}</p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-slate-600">{emptyStateMessage}</p>
+            <p className="text-body-regular text-slate-500 mt-1">
               Click "Add {title.split(' ')[0]}" to get started
             </p>
           </div>
         ) : (
           sources.map((source, index) => (
-            <div key={index} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow">
+            <div key={index} className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-elevation-1 transition-shadow">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center">
-                    <h4 className="font-medium text-gray-900 capitalize">
+                    <h4 className="font-medium text-slate-900 capitalize">
                       {source.type || 'Unknown Type'}
                     </h4>
                     {source.description && (
-                      <span className="ml-2 text-sm text-gray-600">
+                      <span className="ml-2 text-body-regular text-slate-600">
                         - {source.description}
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 text-lg font-semibold text-gray-900">
+                  <div className="mt-1 text-body-large font-semibold text-slate-900">
                     ₹{parseInt(source.amount || 0).toLocaleString()}
                   </div>
                 </div>
@@ -192,13 +192,13 @@ const AddSourcePattern = ({
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => onEditSource && onEditSource(index, source)}
-                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                    className="p-2 text-slate-400 hover:text-blue-600 transition-colors"
                   >
                     <Edit2 className="w-4名 h-4" />
                   </button>
                   <button
                     onClick={() => onDeleteSource && onDeleteSource(index)}
-                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    className="p-2 text-slate-400 hover:text-error-600 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -211,10 +211,10 @@ const AddSourcePattern = ({
 
       {/* Summary */}
       {sources.length > 0 && (
-        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
           <div className="flex items-center justify-between">
             <span className="font-medium text-blue-900">Total {title}</span>
-            <span className="text-xl font-bold text-blue-900">
+            <span className="text-heading-3 font-bold text-blue-900">
               ₹{sources.reduce((sum, source) => sum + (parseInt(source.amount) || 0), 0).toLocaleString()}
             </span>
           </div>

@@ -69,13 +69,13 @@ const QuickActionCard = ({
       <div className="p-4">
         {/* Icon + Title Row */}
         <div className="flex items-center gap-3 mb-2">
-          <div className={`w-10 h-10 ${colors.icon} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200 shadow-sm`}>
+          <div className={`w-10 h-10 ${colors.icon} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200 shadow-elevation-1`}>
             <Icon className="w-5 h-5 text-white" />
           </div>
           <h3 className="text-sm font-semibold text-slate-900 group-hover:text-slate-700 transition-colors flex items-center gap-2 flex-1 min-w-0">
             <span className="truncate">{title}</span>
             {isComingSoon && (
-              <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+              <span className="text-body-small bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
                 Soon
               </span>
             )}
@@ -83,7 +83,7 @@ const QuickActionCard = ({
         </div>
 
         {/* Description */}
-        <p className="text-xs text-slate-500 mb-3 leading-relaxed line-clamp-2">
+        <p className="text-body-small text-slate-500 mb-3 leading-relaxed line-clamp-2">
           {description}
         </p>
 

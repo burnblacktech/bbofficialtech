@@ -128,10 +128,10 @@ const DocumentUploader = ({
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
           dragActive
             ? 'border-gold-500 bg-gold-50'
-            : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+            : 'border-slate-300 hover:border-gray-400 bg-slate-50'
         } ${uploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <input
@@ -144,14 +144,14 @@ const DocumentUploader = ({
           className="hidden"
         />
         <label htmlFor="file-upload" className="cursor-pointer">
-          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-heading-sm font-medium text-gray-700 mb-1">
+          <Upload className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+          <p className="text-heading-sm font-medium text-slate-700 mb-1">
             {uploading ? 'Uploading...' : 'Drag and drop files here'}
           </p>
-          <p className="text-body-sm text-gray-500">
+          <p className="text-body-sm text-slate-500">
             or <span className="text-gold-600 font-medium">browse</span> to upload
           </p>
-          <p className="text-body-xs text-gray-400 mt-2">
+          <p className="text-body-xs text-slate-400 mt-2">
             Supported: {accept} (Max {maxSizeMB}MB per file, {maxFiles} files max)
           </p>
         </label>
@@ -159,7 +159,7 @@ const DocumentUploader = ({
 
       {/* Error Messages */}
       {errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+        <div className="bg-error-50 border border-red-200 rounded-xl p-3">
           {errors.map((error, index) => (
             <div key={index} className="flex items-center gap-2 text-red-800 text-body-sm">
               <AlertCircle className="w-4 h-4" />
@@ -172,22 +172,22 @@ const DocumentUploader = ({
       {/* Uploaded Files List */}
       {existingFiles.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-heading-sm font-medium text-gray-900">Uploaded Files</h4>
+          <h4 className="text-heading-sm font-medium text-slate-900">Uploaded Files</h4>
           {existingFiles.map((file, index) => {
             const FileIcon = getFileIcon(file.name || file.fileName || 'file');
             return (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg"
+                className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl"
               >
                 <div className="flex items-center gap-3">
-                  <FileIcon className="w-5 h-5 text-gray-500" />
+                  <FileIcon className="w-5 h-5 text-slate-500" />
                   <div>
-                    <div className="text-body-sm font-medium text-gray-900">
+                    <div className="text-body-sm font-medium text-slate-900">
                       {file.name || file.fileName || `File ${index + 1}`}
                     </div>
                     {file.size && (
-                      <div className="text-body-xs text-gray-500">
+                      <div className="text-body-xs text-slate-500">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
                       </div>
                     )}
@@ -200,7 +200,7 @@ const DocumentUploader = ({
                   {onDelete && (
                     <button
                       onClick={() => onDelete(index)}
-                      className="p-1 text-gray-500 hover:text-red-500"
+                      className="p-1 text-slate-500 hover:text-error-500"
                     >
                       <X className="w-5 h-5" />
                     </button>

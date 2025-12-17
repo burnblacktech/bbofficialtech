@@ -49,7 +49,7 @@ const DeadlineList = ({ year = null, type = null }) => {
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-600 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Loading deadlines...</p>
+        <p className="mt-2 text-slate-600">Loading deadlines...</p>
       </div>
     );
   }
@@ -57,18 +57,18 @@ const DeadlineList = ({ year = null, type = null }) => {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Filters</h3>
+          <Filter className="w-5 h-5 text-slate-600" />
+          <h3 className="font-semibold text-slate-900">Filters</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Deadline Type</label>
+            <label className="block text-body-regular font-medium text-slate-700 mb-1">Deadline Type</label>
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
             >
               {deadlineTypes.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -78,11 +78,11 @@ const DeadlineList = ({ year = null, type = null }) => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-body-regular font-medium text-slate-700 mb-1">Status</label>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
             >
               <option value="all">All</option>
               <option value="upcoming">Upcoming</option>
@@ -99,8 +99,8 @@ const DeadlineList = ({ year = null, type = null }) => {
             <DeadlineCard key={deadline.id} deadline={deadline} />
           ))
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <div className="text-center py-8 text-slate-500">
+            <Calendar className="w-12 h-12 text-slate-400 mx-auto mb-4" />
             <p>No deadlines found</p>
           </div>
         )}

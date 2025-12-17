@@ -53,6 +53,20 @@ class APIClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
+        // Normalize paths to avoid accidental /api/api duplication when callers pass '/api/...'
+        // Example: baseURL = 'http://localhost:3002/api' and url = '/api/itr/...' -> should become '/itr/...'
+        try {
+          const base = (config.baseURL || this.baseURL || '').toString();
+          if (typeof config.url === 'string') {
+            const baseEndsWithApi = base.endsWith('/api') || base.endsWith('/api/');
+            if (baseEndsWithApi && config.url.startsWith('/api/')) {
+              config.url = config.url.replace(/^\/api/, '');
+            }
+          }
+        } catch {
+          // ignore normalization errors
+        }
+
         // Add correlation ID for tracking
         config.headers['X-Correlation-ID'] = this.generateCorrelationId();
 
@@ -284,7 +298,7 @@ class APIClient {
   async get(url, config = {}) {
     // Build cache key with user context if available
     const userId = this.getUserIdFromToken();
-    const cacheKey = userId 
+    const cacheKey = userId
       ? `GET:${url}:user:${userId}` // User-specific cache key
       : `GET:${url}`; // Global cache key
 
@@ -316,7 +330,6 @@ class APIClient {
     try {
       const token = localStorage.getItem('token');
       if (!token) return null;
-      
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.userId || null;
     } catch (error) {

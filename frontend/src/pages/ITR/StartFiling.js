@@ -16,9 +16,9 @@ const StartFiling = () => {
 
   // Show loading state while redirecting
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <div className="text-center">
-        <p className="text-gray-600">Redirecting...</p>
+        <p className="text-slate-600">Redirecting...</p>
       </div>
     </div>
   );

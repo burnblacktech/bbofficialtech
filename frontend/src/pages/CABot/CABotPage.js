@@ -135,10 +135,10 @@ const CABotPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-heading-2 font-semibold text-slate-900 mb-2">
             Initializing CA Bot
           </h2>
-          <p className="text-gray-600">
+          <p className="text-slate-600">
             Setting up your conversational ITR filing experience...
           </p>
         </div>
@@ -149,17 +149,17 @@ const CABotPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white shadow-elevation-1 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left side */}
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleBack}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                 title="Back to Dashboard"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <ArrowLeft className="w-5 h-5 text-slate-600" />
               </button>
 
               <div className="flex items-center space-x-3">
@@ -167,10 +167,10 @@ const CABotPage = () => {
                   <Bot className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-semibold text-gray-900">
+                  <h1 className="text-heading-4 font-semibold text-slate-900">
                     CA Bot - Conversational ITR Filing
                   </h1>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-body-regular text-slate-500">
                     {language === 'hi' ? 'आपका ITR फाइलिंग सहायक' : 'Your AI-powered ITR filing assistant'}
                   </p>
                 </div>
@@ -182,14 +182,14 @@ const CABotPage = () => {
               {isActive && (
                 <div className="text-center">
                   <div className="flex items-center justify-center space-x-2 mb-2">
-                    <span className="text-sm text-gray-600">
+                    <span className="text-body-regular text-slate-600">
                       Step {getStepProgress().current} of {getStepProgress().total}
                     </span>
                     <span className={`text-xs px-2 py-1 rounded-full ${getUserTypeDisplay().color}`}>
                       {getUserTypeDisplay().label}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${getStepProgress().percentage}%` }}
@@ -202,14 +202,14 @@ const CABotPage = () => {
             {/* Right side */}
             <div className="flex items-center space-x-2">
               {/* Language indicator */}
-              <div className="flex items-center space-x-1 text-sm text-gray-600">
+              <div className="flex items-center space-x-1 text-body-regular text-slate-600">
                 <Globe className="w-4 h-4" />
                 <span className="uppercase">{language}</span>
               </div>
 
               {/* Voice indicator */}
               {isVoiceEnabled && (
-                <div className="flex items-center space-x-1 text-sm text-green-600">
+                <div className="flex items-center space-x-1 text-body-regular text-green-600">
                   <Volume2 className="w-4 h-4" />
                   <span>Voice</span>
                 </div>
@@ -219,20 +219,20 @@ const CABotPage = () => {
               {isActive && (
                 <button
                   onClick={handleReset}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                   title="Reset Conversation"
                 >
-                  <RotateCcw className="w-5 h-5 text-gray-600" />
+                  <RotateCcw className="w-5 h-5 text-slate-600" />
                 </button>
               )}
 
               {/* Settings button */}
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
                 title="Settings"
               >
-                <Settings className="w-5 h-5 text-gray-600" />
+                <Settings className="w-5 h-5 text-slate-600" />
               </button>
             </div>
           </div>
@@ -251,18 +251,18 @@ const CABotPage = () => {
                 <Bot className="w-12 h-12 text-white" />
               </div>
 
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-heading-1 font-bold text-slate-900 mb-4">
                 Welcome to CA Bot
               </h1>
 
-              <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              <p className="text-heading-3 text-slate-600 mb-8 max-w-2xl mx-auto">
                 Experience the future of ITR filing with our conversational AI assistant.
                 Get personalized guidance, real-time tax computation, and expert-level accuracy.
               </p>
 
               <button
                 onClick={initializeBotSession}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                className="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
               >
                 Start Conversation
               </button>
@@ -270,130 +270,130 @@ const CABotPage = () => {
 
             {/* Features grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                   Adaptive Experience
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   Automatically adapts to your knowledge level - from simple explanations to advanced tax planning.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
                   <Globe className="w-6 h-6 text-green-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                   Hindi Support
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   Full Hindi language support with natural conversation flow and technical term explanations.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
                   <Volume2 className="w-6 h-6 text-purple-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                   Voice Interface
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   Speak naturally and get voice responses. Perfect for hands-free filing experience.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-gold-100 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+                <div className="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mb-4">
                   <Calculator className="w-6 h-6 text-gold-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                   Real-time Computation
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   Get instant tax calculations and optimization suggestions as you provide information.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-red-600" />
+              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+                <div className="w-12 h-12 bg-error-100 rounded-xl flex items-center justify-center mb-4">
+                  <FileText className="w-6 h-6 text-error-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                   Smart Guidance
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   AI-powered suggestions for deductions, exemptions, and tax optimization strategies.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
                   <Bot className="w-6 h-6 text-indigo-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                   CA-like Experience
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-slate-600">
                   Mimics real CA consultation with professional guidance and personalized attention.
                 </p>
               </div>
             </div>
 
             {/* How it works */}
-            <div className="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            <div className="bg-white rounded-xl p-8 shadow-elevation-1 border border-slate-200">
+              <h2 className="text-heading-2 font-bold text-slate-900 mb-6 text-center">
                 How It Works
               </h2>
 
               <div className="grid md:grid-cols-4 gap-6">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">1</span>
+                    <span className="text-heading-2 font-bold text-white">1</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                     Start Conversation
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-slate-600 text-body-regular">
                     Begin with a simple greeting and let the AI guide you through the process.
                   </p>
                 </div>
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">2</span>
+                    <span className="text-heading-2 font-bold text-white">2</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                     Provide Information
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-slate-600 text-body-regular">
                     Answer questions naturally - the AI adapts to your communication style.
                   </p>
                 </div>
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">3</span>
+                    <span className="text-heading-2 font-bold text-white">3</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                     Get Real-time Updates
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-slate-600 text-body-regular">
                     See tax calculations and suggestions update as you provide information.
                   </p>
                 </div>
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-white">4</span>
+                    <span className="text-heading-2 font-bold text-white">4</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                     Submit & Track
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-slate-600 text-body-regular">
                     Submit your ITR and track the status with real-time updates.
                   </p>
                 </div>
@@ -406,21 +406,21 @@ const CABotPage = () => {
       {/* Settings modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <h2 className="text-heading-3 font-semibold text-slate-900 mb-4">
               CA Bot Settings
             </h2>
 
             <div className="space-y-4">
               {/* User Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   User Type
                 </label>
                 <select
                   value={settings.userType}
                   onChange={(e) => setSettings({ ...settings, userType: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="non_educated">Simple - Easy explanations</option>
                   <option value="educated">Balanced - Professional language</option>
@@ -430,13 +430,13 @@ const CABotPage = () => {
 
               {/* Language */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Language
                 </label>
                 <select
                   value={settings.language}
                   onChange={(e) => setSettings({ ...settings, language: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="en">English</option>
                   <option value="hi">Hindi</option>
@@ -450,9 +450,9 @@ const CABotPage = () => {
                     type="checkbox"
                     checked={settings.voiceEnabled}
                     onChange={(e) => setSettings({ ...settings, voiceEnabled: e.target.checked })}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-body-regular font-medium text-slate-700">
                     Enable Voice Interface
                   </span>
                 </label>
@@ -462,13 +462,13 @@ const CABotPage = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowSettings(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="px-4 py-2 text-slate-600 hover:text-gray-800 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleSettingsChange(settings)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
               >
                 Apply Settings
               </button>

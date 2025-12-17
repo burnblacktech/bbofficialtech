@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Download, Calendar, Filter } from 'lucide-react';
 import { formatIndianCurrency } from '../../lib/format';
 import { cn } from '../../lib/utils';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 
 const RefundHistoryTable = ({ refunds = [] }) => {
   const [filterYear, setFilterYear] = useState('all');
@@ -33,7 +33,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
     };
 
     return (
-      <span className={cn('px-2 py-1 rounded-full text-label-sm font-medium', styles[status] || 'bg-gray-100 text-gray-800')}>
+      <span className={cn('px-2 py-1 rounded-full text-label-sm font-medium', styles[status] || 'bg-slate-100 text-gray-800')}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -41,25 +41,25 @@ const RefundHistoryTable = ({ refunds = [] }) => {
 
   if (refunds.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-        <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" aria-hidden="true" />
-        <p className="text-body-md text-gray-600">No refund history found</p>
+      <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
+        <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <p className="text-body-md text-slate-600">No refund history found</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       {/* Filters */}
-      <div className="p-4 border-b border-gray-200 flex items-center gap-4">
+      <div className="p-4 border-b border-slate-200 flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500" aria-hidden="true" />
-          <span className="text-label-md font-medium text-gray-700">Filter:</span>
+          <Filter className="h-4 w-4 text-slate-500" aria-hidden="true" />
+          <span className="text-label-md font-medium text-slate-700">Filter:</span>
         </div>
         <select
           value={filterYear}
           onChange={(e) => setFilterYear(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+          className="border border-slate-200 rounded-xl px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by assessment year"
         >
           <option value="all">All Years</option>
@@ -70,7 +70,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+          className="border border-slate-200 rounded-xl px-3 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by status"
         >
           <option value="all">All Status</option>
@@ -85,43 +85,43 @@ const RefundHistoryTable = ({ refunds = [] }) => {
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-slate-50">
             <tr>
-              <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-label-sm font-medium text-slate-500 uppercase tracking-wider">
                 Assessment Year
               </th>
-              <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-label-sm font-medium text-slate-500 uppercase tracking-wider">
                 ITR Type
               </th>
-              <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-label-sm font-medium text-slate-500 uppercase tracking-wider">
                 Amount
               </th>
-              <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-label-sm font-medium text-slate-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-label-sm font-medium text-slate-500 uppercase tracking-wider">
                 Status Date
               </th>
-              <th className="px-6 py-3 text-left text-label-sm font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-label-sm font-medium text-slate-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredRefunds.map((refund) => (
-              <tr key={refund.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
+              <tr key={refund.id} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap text-body-md text-slate-900">
                   {refund.assessmentYear}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-body-md text-slate-900">
                   {refund.itrType}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-number-md font-medium tabular-nums text-gray-900">
+                  <span className="text-number-md font-medium tabular-nums text-slate-900">
                     {formatIndianCurrency(refund.expectedAmount)}
                   </span>
                   {refund.interestAmount > 0 && (
-                    <span className="text-body-sm text-gray-600 ml-2">
+                    <span className="text-body-sm text-slate-600 ml-2">
                       (+ {formatIndianCurrency(refund.interestAmount)} interest)
                     </span>
                   )}
@@ -129,7 +129,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   {getStatusBadge(refund.status)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-body-md text-gray-600">
+                <td className="px-6 py-4 whitespace-nowrap text-body-md text-slate-600">
                   {refund.statusDate
                     ? new Date(refund.statusDate).toLocaleDateString('en-IN', {
                         day: 'numeric',
@@ -159,7 +159,7 @@ const RefundHistoryTable = ({ refunds = [] }) => {
 
       {filteredRefunds.length === 0 && (
         <div className="p-8 text-center">
-          <p className="text-body-md text-gray-600">No refunds found matching the selected filters</p>
+          <p className="text-body-md text-slate-600">No refunds found matching the selected filters</p>
         </div>
       )}
     </div>

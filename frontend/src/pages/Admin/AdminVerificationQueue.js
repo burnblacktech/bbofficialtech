@@ -142,7 +142,7 @@ const AdminVerificationQueue = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilterType('all')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   filterType === 'all'
                     ? 'bg-primary-100 text-primary-700'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -152,7 +152,7 @@ const AdminVerificationQueue = () => {
               </button>
               <button
                 onClick={() => setFilterType('email')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   filterType === 'email'
                     ? 'bg-info-100 text-info-700'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -163,7 +163,7 @@ const AdminVerificationQueue = () => {
               </button>
               <button
                 onClick={() => setFilterType('phone')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   filterType === 'phone'
                     ? 'bg-success-100 text-success-700'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -174,7 +174,7 @@ const AdminVerificationQueue = () => {
               </button>
               <button
                 onClick={() => setFilterType('pan')}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   filterType === 'pan'
                     ? 'bg-warning-100 text-warning-700'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
@@ -210,7 +210,7 @@ const AdminVerificationQueue = () => {
                   <StaggerItem key={`${verification.type}-${verification.id}`} className="p-4 hover:bg-neutral-50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getVerificationColor(verification.type)}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getVerificationColor(verification.type)}`}>
                           {getVerificationIcon(verification.type)}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -225,7 +225,7 @@ const AdminVerificationQueue = () => {
                             {verification.type === 'phone' && verification.userPhone}
                             {verification.type === 'pan' && verification.userPAN}
                           </Typography.Small>
-                          <div className="flex items-center gap-2 text-xs text-neutral-500">
+                          <div className="flex items-center gap-2 text-body-small text-neutral-500">
                             <Clock className="h-3 w-3" />
                             Submitted {new Date(verification.submittedAt).toLocaleDateString()}
                           </div>
@@ -274,7 +274,7 @@ const AdminVerificationQueue = () => {
                     setActionType(null);
                     setReason('');
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>
@@ -296,13 +296,13 @@ const AdminVerificationQueue = () => {
                   </Typography.Small>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     {actionType === 'reject' ? 'Rejection Reason' : 'Notes'} <span className="text-error-500">*</span>
                   </label>
                   <textarea
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     rows={3}
                     placeholder={actionType === 'reject' ? 'Enter rejection reason...' : 'Enter notes (optional)...'}
                     required={actionType === 'reject'}

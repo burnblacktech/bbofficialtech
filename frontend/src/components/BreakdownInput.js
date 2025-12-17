@@ -135,17 +135,17 @@ const BreakdownInput = ({
   };
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 p-6 ${className}`}>
+    <div className={`bg-white rounded-xl border border-slate-200 p-6 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gold-50 rounded-lg">
+          <div className="p-2 bg-gold-50 rounded-xl">
             <Icon className="w-5 h-5 text-gold-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <h3 className="text-heading-4 font-semibold text-slate-900">{title}</h3>
             {description && (
-              <p className="text-sm text-gray-600">{description}</p>
+              <p className="text-body-regular text-slate-600">{description}</p>
             )}
           </div>
         </div>
@@ -153,7 +153,7 @@ const BreakdownInput = ({
         <button
           onClick={handleAddItem}
           disabled={localItems.length >= maxItems}
-          className="bg-gold-500 text-white px-4 py-2 rounded-lg hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          className="bg-gold-500 text-white px-4 py-2 rounded-xl hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Add Item</span>
@@ -162,7 +162,7 @@ const BreakdownInput = ({
 
       {/* Rules & Cap Information */}
       {rules.cap && (
-        <div className={`p-3 rounded-lg mb-4 ${
+        <div className={`p-3 rounded-xl mb-4 ${
           totals.isCapReached
             ? 'bg-yellow-50 border border-yellow-200'
             : 'bg-green-50 border border-green-200'
@@ -188,18 +188,18 @@ const BreakdownInput = ({
       {/* Items List */}
       <div className="space-y-3">
         {localItems.map((item, index) => (
-          <div key={item.id} className="border border-gray-200 rounded-lg p-4">
+          <div key={item.id} className="border border-slate-200 rounded-xl p-4">
             {/* Item Header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-3">
-                <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
+                <span className="text-body-regular font-medium text-slate-500">#{index + 1}</span>
                 <div className="flex-1">
                   <input
                     type="text"
                     placeholder="Description (e.g., SBI FD Interest)"
                     value={item.description}
                     onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
                   />
                 </div>
               </div>
@@ -207,13 +207,13 @@ const BreakdownInput = ({
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => toggleItemExpansion(item.id)}
-                  className="p-1 text-gray-400 hover:text-gray-600"
+                  className="p-1 text-slate-400 hover:text-slate-600"
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleRemoveItem(item.id)}
-                  className="p-1 text-red-400 hover:text-red-600"
+                  className="p-1 text-red-400 hover:text-error-600"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -224,7 +224,7 @@ const BreakdownInput = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Amount Input */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-body-small font-medium text-slate-700 mb-1">
                   Amount (₹)
                 </label>
                 <input
@@ -232,13 +232,13 @@ const BreakdownInput = ({
                   placeholder={placeholder}
                   value={item.amount || ''}
                   onChange={(e) => handleUpdateItem(item.id, 'amount', parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
                 />
               </div>
 
               {/* Source Input */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-body-small font-medium text-slate-700 mb-1">
                   Source
                 </label>
                 <input
@@ -246,14 +246,14 @@ const BreakdownInput = ({
                   placeholder="e.g., SBI Bank"
                   value={item.source}
                   onChange={(e) => handleUpdateItem(item.id, 'source', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
                 />
               </div>
 
               {/* Proof Upload */}
               {showProofUpload && (
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                  <label className="block text-body-small font-medium text-slate-700 mb-1">
                     Proof
                   </label>
                   <div className="flex items-center space-x-2">
@@ -266,7 +266,7 @@ const BreakdownInput = ({
                     />
                     <label
                       htmlFor={`proof-${item.id}`}
-                      className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-sm"
+                      className="flex items-center space-x-2 px-3 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 cursor-pointer text-body-regular"
                     >
                       <Upload className="w-4 h-4" />
                       <span>{item.proofUploaded ? 'Reupload' : 'Upload'}</span>
@@ -281,30 +281,30 @@ const BreakdownInput = ({
 
             {/* Expanded Details */}
             {expandedItems.has(item.id) && (
-              <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="mt-3 pt-3 border-t border-slate-200">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-body-small font-medium text-slate-700 mb-1">
                       Additional Notes
                     </label>
                     <textarea
                       placeholder="Any additional details..."
                       value={item.notes || ''}
                       onChange={(e) => handleUpdateItem(item.id, 'notes', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
                       rows={2}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-body-small font-medium text-slate-700 mb-1">
                       Date
                     </label>
                     <input
                       type="date"
                       value={item.date || ''}
                       onChange={(e) => handleUpdateItem(item.id, 'date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 text-body-regular"
                     />
                   </div>
                 </div>
@@ -314,35 +314,35 @@ const BreakdownInput = ({
         ))}
 
         {localItems.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <Icon className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <div className="text-center py-8 text-slate-500">
+            <Icon className="w-12 h-12 mx-auto mb-3 text-slate-300" />
             <p>No items added yet</p>
-            <p className="text-sm">Click "Add Item" to get started</p>
+            <p className="text-body-regular">Click "Add Item" to get started</p>
           </div>
         )}
       </div>
 
       {/* Summary */}
       {showBreakdown && localItems.length > 0 && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="mt-6 pt-4 border-t border-slate-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="text-sm">
-                <span className="text-gray-600">Total Items:</span>
+              <div className="text-body-regular">
+                <span className="text-slate-600">Total Items:</span>
                 <span className="ml-1 font-medium">{totals.totalItems}</span>
               </div>
-              <div className="text-sm">
-                <span className="text-gray-600">Eligible:</span>
+              <div className="text-body-regular">
+                <span className="text-slate-600">Eligible:</span>
                 <span className="ml-1 font-medium">{totals.eligibleItems}</span>
               </div>
             </div>
 
             <div className="text-right">
-              <div className="text-lg font-semibold text-gray-900">
+              <div className="text-body-large font-semibold text-slate-900">
                 ₹{totals.finalValue.toLocaleString()}
               </div>
               {rules.cap && totals.totalEligible > rules.cap && (
-                <div className="text-xs text-yellow-600">
+                <div className="text-body-small text-yellow-600">
                   Capped at ₹{rules.cap.toLocaleString()}
                 </div>
               )}

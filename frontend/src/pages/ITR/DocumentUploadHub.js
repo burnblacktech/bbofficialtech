@@ -313,19 +313,19 @@ const DocumentUploadHub = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-slate-600" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">Document Upload Hub</h1>
-              <p className="text-sm text-slate-500">Upload and analyze your tax documents</p>
+              <h1 className="text-heading-4 font-semibold text-slate-900">Document Upload Hub</h1>
+              <p className="text-body-regular text-slate-500">Upload and analyze your tax documents</p>
             </div>
           </div>
           {selectedPerson && (
-            <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg">
+            <div className="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl">
               <Users className="w-4 h-4 text-slate-500" />
-              <span className="text-sm text-slate-700">{selectedPerson.name}</span>
+              <span className="text-body-regular text-slate-700">{selectedPerson.name}</span>
             </div>
           )}
         </div>
@@ -364,13 +364,13 @@ const DocumentUploadHub = () => {
               <Upload className="w-8 h-8 text-white" />
             </div>
 
-            <h2 className="text-xl font-semibold text-slate-900 mb-2">
+            <h2 className="text-heading-3 font-semibold text-slate-900 mb-2">
               {isDragging ? 'Drop files here' : 'Upload Your Documents'}
             </h2>
             <p className="text-slate-500 mb-4">
               Drag and drop files here, or click to browse
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-body-small text-slate-400">
               Supported: PDF, JPG, PNG, XLS, XLSX • Max 10MB per file
             </p>
 
@@ -391,14 +391,14 @@ const DocumentUploadHub = () => {
               className="space-y-4"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-heading-4 font-semibold text-slate-900">
                   Uploaded Documents ({documents.length})
                 </h3>
                 {processedCount < documents.length && (
                   <button
                     onClick={handleProcessDocuments}
                     disabled={isUploading}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-xl font-medium hover:bg-primary-600 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-4 h-4" />
                     Process All ({documents.length - processedCount} pending)
@@ -418,7 +418,7 @@ const DocumentUploadHub = () => {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ delay: index * 0.05 }}
-                      className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+                      className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-elevation-2 transition-shadow"
                     >
                       <div className="flex items-start gap-3">
                         <div className={cn(
@@ -434,13 +434,13 @@ const DocumentUploadHub = () => {
                               <p className="font-medium text-slate-900 truncate">
                                 {doc.name}
                               </p>
-                              <p className="text-xs text-slate-500">
+                              <p className="text-body-small text-slate-500">
                                 {formatFileSize(doc.size)}
                               </p>
                             </div>
                             <button
                               onClick={() => handleRemoveDoc(doc.id)}
-                              className="p-1 text-slate-400 hover:text-red-500 rounded"
+                              className="p-1 text-slate-400 hover:text-error-500 rounded"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -451,7 +451,7 @@ const DocumentUploadHub = () => {
                             <select
                               value={doc.category}
                               onChange={(e) => handleCategoryChange(doc.id, e.target.value)}
-                              className="text-sm px-2 py-1 rounded-lg border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+                              className="text-body-regular px-2 py-1 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
                             >
                               {DOCUMENT_CATEGORIES.map((cat) => (
                                 <option key={cat.id} value={cat.id}>
@@ -460,7 +460,7 @@ const DocumentUploadHub = () => {
                               ))}
                             </select>
                             {doc.confidence < 100 && (
-                              <span className="ml-2 text-xs text-slate-500">
+                              <span className="ml-2 text-body-small text-slate-500">
                                 ({doc.confidence}% match)
                               </span>
                             )}
@@ -469,17 +469,17 @@ const DocumentUploadHub = () => {
                           {/* Status Badge */}
                           <div className="mt-2">
                             {doc.status === 'processing' ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-blue-600">
+                              <span className="inline-flex items-center gap-1 text-body-small text-blue-600">
                                 <Loader className="w-3 h-3 animate-spin" />
                                 Processing...
                               </span>
                             ) : doc.status === 'processed' ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+                              <span className="inline-flex items-center gap-1 text-body-small text-emerald-600">
                                 <CheckCircle className="w-3 h-3" />
                                 Processed • {doc.extractedData?.fields} fields extracted
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-xs text-amber-600">
+                              <span className="inline-flex items-center gap-1 text-body-small text-amber-600">
                                 <AlertCircle className="w-3 h-3" />
                                 Pending processing
                               </span>
@@ -501,7 +501,7 @@ const DocumentUploadHub = () => {
                 >
                   <button
                     onClick={handleProceed}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-amber-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-amber-500 text-white rounded-xl font-semibold hover:shadow-elevation-3 transition-all"
                   >
                     Continue to Filing
                     <ArrowRight className="w-5 h-5" />
@@ -532,14 +532,14 @@ const DocumentUploadHub = () => {
                   )}
                 >
                   <div className={cn(
-                    'w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br',
+                    'w-8 h-8 rounded-xl flex items-center justify-center bg-gradient-to-br',
                     category.color,
                   )}>
                     <Icon className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">{category.label}</p>
-                    <p className="text-xs text-slate-500">{category.description}</p>
+                    <p className="text-body-regular font-medium text-slate-900">{category.label}</p>
+                    <p className="text-body-small text-slate-500">{category.description}</p>
                   </div>
                 </div>
               );

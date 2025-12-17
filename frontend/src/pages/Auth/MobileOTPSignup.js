@@ -165,20 +165,20 @@ const MobileOTPSignup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <button
             onClick={() => navigate('/signup')}
-            className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-4"
+            className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to signup
           </button>
-          <h2 className="text-center text-heading-xl text-gray-900">
+          <h2 className="text-center text-heading-xl text-slate-900">
             Sign up with Mobile
           </h2>
-          <p className="mt-2 text-center text-body-md text-gray-600">
+          <p className="mt-2 text-center text-body-md text-slate-600">
             We'll send you a verification code
           </p>
         </div>
@@ -192,11 +192,11 @@ const MobileOTPSignup = () => {
           }
         >
           {error && (
-            <div className="px-4 py-3 rounded-md bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
+            <div className="px-4 py-3 rounded-xl bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">Error</p>
-                <p className="text-sm mt-1">{error}</p>
+                <p className="text-body-regular mt-1">{error}</p>
               </div>
             </div>
           )}
@@ -204,23 +204,23 @@ const MobileOTPSignup = () => {
           {/* Step 1: Enter Mobile Number */}
           {step === 1 && (
             <div>
-              <label htmlFor="phone" className="block text-label-md text-gray-700 mb-1">
+              <label htmlFor="phone" className="block text-label-md text-slate-700 mb-1">
                 Mobile Number
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <input
                   id="phone"
                   name="phone"
                   type="tel"
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="10-digit mobile number"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-body-small text-slate-500">
                 We'll send a 6-digit verification code to this number
               </p>
             </div>
@@ -230,7 +230,7 @@ const MobileOTPSignup = () => {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <label htmlFor="otp" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="otp" className="block text-label-md text-slate-700 mb-1">
                   Enter Verification Code
                 </label>
                 <input
@@ -239,12 +239,12 @@ const MobileOTPSignup = () => {
                   type="text"
                   required
                   maxLength={6}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 text-center text-2xl tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 text-center text-heading-2 tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="000000"
                   value={formData.otp}
                   onChange={(e) => handleInputChange('otp', e.target.value.replace(/\D/g, '').slice(0, 6))}
                 />
-                <p className="mt-2 text-center text-body-sm text-gray-600">
+                <p className="mt-2 text-center text-body-sm text-slate-600">
                   Code sent to +91 {formData.phone}
                 </p>
               </div>
@@ -254,7 +254,7 @@ const MobileOTPSignup = () => {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={countdown > 0 || isLoading}
-                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-slate-400 disabled:cursor-not-allowed"
                 >
                   {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
                 </button>
@@ -270,12 +270,12 @@ const MobileOTPSignup = () => {
                   <CheckCircle className="w-8 h-8 text-success-600" />
                 </div>
               </div>
-              <p className="text-center text-body-md text-gray-700 mb-6">
+              <p className="text-center text-body-md text-slate-700 mb-6">
                 Mobile verified! Please complete your profile
               </p>
 
               <div>
-                <label htmlFor="fullName" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="fullName" className="block text-label-md text-slate-700 mb-1">
                   Full Name
                 </label>
                 <input
@@ -283,7 +283,7 @@ const MobileOTPSignup = () => {
                   name="fullName"
                   type="text"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="Enter your full name"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
@@ -291,7 +291,7 @@ const MobileOTPSignup = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-label-md text-slate-700 mb-1">
                   Email Address
                 </label>
                 <input
@@ -299,7 +299,7 @@ const MobileOTPSignup = () => {
                   name="email"
                   type="email"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
@@ -307,7 +307,7 @@ const MobileOTPSignup = () => {
               </div>
 
               <div>
-                <label htmlFor="pan" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="pan" className="block text-label-md text-slate-700 mb-1">
                   PAN Number
                 </label>
                 <input
@@ -316,7 +316,7 @@ const MobileOTPSignup = () => {
                   type="text"
                   required
                   maxLength={10}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 uppercase focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 uppercase focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="ABCDE1234F"
                   value={formData.pan}
                   onChange={(e) => handleInputChange('pan', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))}
@@ -329,11 +329,11 @@ const MobileOTPSignup = () => {
                   name="acceptTerms"
                   type="checkbox"
                   required
-                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-gray-300 rounded mt-1"
+                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-slate-300 rounded mt-1"
                   checked={formData.acceptTerms}
                   onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
                 />
-                <label htmlFor="acceptTerms" className="ml-2 block text-body-sm text-gray-700">
+                <label htmlFor="acceptTerms" className="ml-2 block text-body-sm text-slate-700">
                   I accept the{' '}
                   <Link to="/terms" className="text-gold-600 hover:text-gold-500">
                     Terms of Service
@@ -352,7 +352,7 @@ const MobileOTPSignup = () => {
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                className="flex-1 py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Back
               </button>
@@ -360,7 +360,7 @@ const MobileOTPSignup = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+              className="flex-1 py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading
                 ? 'Processing...'
@@ -373,7 +373,7 @@ const MobileOTPSignup = () => {
           </div>
 
           <div className="text-center">
-            <p className="text-body-sm text-gray-600">
+            <p className="text-body-sm text-slate-600">
               Already have an account?{' '}
               <Link to="/login" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign in

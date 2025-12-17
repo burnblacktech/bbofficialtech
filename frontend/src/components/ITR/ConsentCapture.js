@@ -56,12 +56,12 @@ const ConsentCapture = ({ returnVersionId, scope, level = 'global', fieldPath = 
   };
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
       <div className="flex items-start space-x-3">
         <Shield className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
         <div className="flex-1">
-          <h4 className="font-semibold text-gray-900 mb-2">Consent Required</h4>
-          <p className="text-sm text-gray-700 mb-4">
+          <h4 className="font-semibold text-slate-900 mb-2">Consent Required</h4>
+          <p className="text-body-regular text-slate-700 mb-4">
             {consentTexts[scope] || 'Your consent is required to proceed.'}
           </p>
           {!consented ? (
@@ -69,7 +69,7 @@ const ConsentCapture = ({ returnVersionId, scope, level = 'global', fieldPath = 
               <button
                 onClick={() => handleConsent(true)}
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 <CheckCircle className="w-4 h-4" />
                 <span>I Consent</span>
@@ -77,7 +77,7 @@ const ConsentCapture = ({ returnVersionId, scope, level = 'global', fieldPath = 
               <button
                 onClick={() => handleConsent(false)}
                 disabled={loading}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 <XCircle className="w-4 h-4" />
                 <span>Decline</span>

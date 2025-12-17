@@ -31,7 +31,7 @@ const TrustIndicators = memo(({ stats, isLoading }) => {
         {[...Array(4)].map((_, i) => (
           <div key={i} className="text-center">
             <div className="text-number-lg text-gold-500 animate-pulse">---</div>
-            <div className="text-body-sm text-gray-600 animate-pulse">---</div>
+            <div className="text-body-sm text-slate-600 animate-pulse">---</div>
           </div>
         ))}
       </div>
@@ -49,19 +49,19 @@ const TrustIndicators = memo(({ stats, isLoading }) => {
     <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
       <div className="text-center">
         <div className="text-number-lg text-gold-500">{statsData.totalUsersFormatted}</div>
-        <div className="text-body-sm text-gray-600">Users Trust Us</div>
+        <div className="text-body-sm text-slate-600">Users Trust Us</div>
       </div>
       <div className="text-center">
         <div className="text-number-lg text-gold-500">{statsData.totalRefundsFormatted}</div>
-        <div className="text-body-sm text-gray-600">Refunds Generated</div>
+        <div className="text-body-sm text-slate-600">Refunds Generated</div>
       </div>
       <div className="text-center">
         <div className="text-number-lg text-gold-500">{statsData.successRateFormatted}</div>
-        <div className="text-body-sm text-gray-600">Success Rate</div>
+        <div className="text-body-sm text-slate-600">Success Rate</div>
       </div>
       <div className="text-center">
         <div className="text-number-lg text-gold-500">{statsData.supportAvailability}</div>
-        <div className="text-body-sm text-gray-600">Support</div>
+        <div className="text-body-sm text-slate-600">Support</div>
       </div>
     </div>
   );
@@ -69,15 +69,15 @@ const TrustIndicators = memo(({ stats, isLoading }) => {
 TrustIndicators.displayName = 'TrustIndicators';
 
 const TestimonialCard = memo(({ stars, text, name, title }) => (
-  <div className="bg-gray-50 p-6 rounded-lg">
+  <div className="bg-slate-50 p-6 rounded-xl">
     <div className="flex items-center mb-4">
       {stars.map((_, i) => (
         <Star key={i} className="w-5 h-5 text-gold-500 fill-current" />
       ))}
     </div>
-    <p className="text-body-md text-gray-600 mb-4">"{text}"</p>
+    <p className="text-body-md text-slate-600 mb-4">"{text}"</p>
     <div className="text-heading-sm">{name}</div>
-    <div className="text-body-sm text-gray-500">{title}</div>
+    <div className="text-body-sm text-slate-500">{title}</div>
   </div>
 ));
 
@@ -188,28 +188,28 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-burn-gradient rounded-lg flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-burn-gradient rounded-xl flex items-center justify-center shadow-elevation-3">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-heading-lg text-black">BurnBlack</h1>
-                <p className="text-body-sm text-gray-600">Enterprise Tax Platform</p>
+                <p className="text-body-sm text-slate-600">Enterprise Tax Platform</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <Link
                 to="/login"
-                className="text-gray-600 hover:text-black text-label-lg"
+                className="text-slate-600 hover:text-black text-label-lg"
               >
                 Sign In
               </Link>
               <Link
                 to="/login"
-                className="bg-gold-500 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-gold-600 transition-colors shadow-md hover:shadow-lg"
+                className="bg-gold-500 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-gold-600 transition-colors shadow-elevation-2 hover:shadow-elevation-3"
               >
                 Get Started
               </Link>
@@ -224,14 +224,14 @@ const LandingPage = () => {
           <h1 className="text-display-lg text-black mb-6">
             Secure ITR Filing Made Simple
           </h1>
-          <p className="text-body-lg text-gray-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-body-lg text-slate-600 mb-8 max-w-3xl mx-auto">
             Experience the future of tax filing with AI-powered insights, maximum refund optimization,
             and enterprise-grade security. Join thousands of users who trust BurnBlack.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/login"
-              className="bg-gold-500 text-white px-8 py-4 rounded-lg text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
+              className="bg-gold-500 text-white px-8 py-4 rounded-xl text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-elevation-3 hover:shadow-elevation-4"
               aria-label="Start your free trial with BurnBlack"
             >
               Start Free Trial
@@ -239,7 +239,7 @@ const LandingPage = () => {
             </Link>
             <Link
               to="#features"
-              className="border border-gold-300 text-gold-600 px-8 py-4 rounded-lg text-heading-md hover:bg-gold-50 transition-all duration-200 transform hover:scale-105"
+              className="border border-gold-300 text-gold-600 px-8 py-4 rounded-xl text-heading-md hover:bg-gold-50 transition-all duration-200 transform hover:scale-105"
               aria-label="Learn more about BurnBlack features"
             >
               Learn More
@@ -258,79 +258,79 @@ const LandingPage = () => {
             <h2 className="text-display-md text-black mb-4">
               Why Choose BurnBlack?
             </h2>
-            <p className="text-body-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-body-lg text-slate-600 max-w-2xl mx-auto">
               Powerful features designed for individuals, CAs, and enterprises
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
               <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Bot className="w-8 h-8 text-gold-600" />
               </div>
               <h3 className="text-heading-lg mb-4">AI-Powered Filing</h3>
-              <p className="text-body-md text-gray-600">
+              <p className="text-body-md text-slate-600">
                 Our intelligent CA Bot guides you through the entire filing process,
                 ensuring accuracy and maximizing your refunds.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
               <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <TrendingUp className="w-8 h-8 text-gold-500" />
               </div>
               <h3 className="text-heading-lg mb-4">Maximum Refunds</h3>
-              <p className="text-body-md text-gray-600">
+              <p className="text-body-md text-slate-600">
                 Advanced tax optimization algorithms ensure you claim every eligible
                 deduction and credit for maximum refunds.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
               <div className="w-16 h-16 bg-info-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Shield className="w-8 h-8 text-info-500" />
               </div>
               <h3 className="text-heading-lg mb-4">Bank-Grade Security</h3>
-              <p className="text-body-md text-gray-600">
+              <p className="text-body-md text-slate-600">
                 Enterprise-grade encryption, secure document handling, and compliance
                 with all regulatory requirements.
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
               <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Clock className="w-8 h-8 text-gold-600" />
               </div>
               <h3 className="text-heading-lg mb-4">Lightning Fast</h3>
-              <p className="text-body-md text-gray-600">
+              <p className="text-body-md text-slate-600">
                 Complete your ITR filing in minutes, not hours. Our streamlined
                 process saves you time and effort.
               </p>
             </div>
 
             {/* Feature 5 */}
-            <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
               <div className="w-16 h-16 bg-warning-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FileText className="w-8 h-8 text-warning-600" />
               </div>
               <h3 className="text-heading-lg mb-4">All ITR Forms</h3>
-              <p className="text-body-md text-gray-600">
+              <p className="text-body-md text-slate-600">
                 Support for ITR-1, ITR-2, ITR-3, and ITR-4 with automatic form
                 selection based on your income sources.
               </p>
             </div>
 
             {/* Feature 6 */}
-            <div className="text-center p-8 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
               <div className="w-16 h-16 bg-info-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users className="w-8 h-8 text-info-600" />
               </div>
               <h3 className="text-heading-lg mb-4">Family Management</h3>
-              <p className="text-body-md text-gray-600">
+              <p className="text-body-md text-slate-600">
                 File returns for your entire family from one account with
                 centralized document management.
               </p>
@@ -340,27 +340,27 @@ const LandingPage = () => {
       </section>
 
       {/* User Types Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-display-md text-black mb-4">
               Perfect for Everyone
             </h2>
-            <p className="text-body-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-body-lg text-slate-600 max-w-2xl mx-auto">
               Whether you're an individual, CA, or enterprise, we have solutions for you
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Individual Users */}
-            <div className="bg-white p-8 rounded-lg shadow-sm">
+            <div className="bg-white p-8 rounded-xl shadow-elevation-1">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gold-100 rounded-lg flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mr-4">
                   <UserCheck className="w-6 h-6 text-gold-600" />
                 </div>
                 <h3 className="text-heading-lg">Individual Users</h3>
               </div>
-              <ul className="space-y-3 text-body-md text-gray-600">
+              <ul className="space-y-3 text-body-md text-slate-600">
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
                   Self-filing with AI guidance
@@ -380,21 +380,21 @@ const LandingPage = () => {
               </ul>
               <Link
                 to="/login"
-                className="mt-6 inline-block bg-gold-500 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-gold-600 transition-colors"
+                className="mt-6 inline-block bg-gold-500 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-gold-600 transition-colors"
               >
                 Start Free
               </Link>
             </div>
 
             {/* Chartered Accountants */}
-            <div className="bg-white p-8 rounded-lg shadow-sm">
+            <div className="bg-white p-8 rounded-xl shadow-elevation-1">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mr-4">
                   <Building2 className="w-6 h-6 text-success-600" />
                 </div>
                 <h3 className="text-heading-lg">Chartered Accountants</h3>
               </div>
-              <ul className="space-y-3 text-body-md text-gray-600">
+              <ul className="space-y-3 text-body-md text-slate-600">
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
                   Client portfolio management
@@ -414,21 +414,21 @@ const LandingPage = () => {
               </ul>
               <Link
                 to="/login"
-                className="mt-6 inline-block bg-success-600 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-success-600 transition-colors"
+                className="mt-6 inline-block bg-success-600 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-success-600 transition-colors"
               >
                 CA Dashboard
               </Link>
             </div>
 
             {/* Enterprises */}
-            <div className="bg-white p-8 rounded-lg shadow-sm">
+            <div className="bg-white p-8 rounded-xl shadow-elevation-1">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-info-100 rounded-lg flex items-center justify-center mr-4">
+                <div className="w-12 h-12 bg-info-100 rounded-xl flex items-center justify-center mr-4">
                   <Building2 className="w-6 h-6 text-info-600" />
                 </div>
                 <h3 className="text-heading-lg">Enterprises</h3>
               </div>
-              <ul className="space-y-3 text-body-md text-gray-600">
+              <ul className="space-y-3 text-body-md text-slate-600">
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
                   Multi-user management
@@ -448,7 +448,7 @@ const LandingPage = () => {
               </ul>
               <Link
                 to="/login"
-                className="mt-6 inline-block bg-info-600 text-white px-6 py-2 rounded-lg text-label-lg hover:bg-info-600 transition-colors"
+                className="mt-6 inline-block bg-info-600 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-info-600 transition-colors"
               >
                 Enterprise Plan
               </Link>
@@ -464,7 +464,7 @@ const LandingPage = () => {
             <h2 className="text-display-md text-black mb-4">
               What Our Users Say
             </h2>
-            <p className="text-body-lg text-gray-600">
+            <p className="text-body-lg text-slate-600">
               Join thousands of satisfied customers
             </p>
           </div>
@@ -496,7 +496,7 @@ const LandingPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/login"
-              className="bg-white text-gold-600 px-8 py-4 rounded-lg text-heading-md hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-lg hover:shadow-xl"
+              className="bg-white text-gold-600 px-8 py-4 rounded-xl text-heading-md hover:bg-slate-100 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-elevation-3 hover:shadow-elevation-4"
               aria-label="Start your free trial with BurnBlack"
             >
               Start Free Trial
@@ -504,7 +504,7 @@ const LandingPage = () => {
             </Link>
             <Link
               to="/login"
-              className="border border-gold-300 text-white px-8 py-4 rounded-lg text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105"
+              className="border border-gold-300 text-white px-8 py-4 rounded-xl text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105"
               aria-label="Schedule a demo with BurnBlack"
             >
               Schedule Demo
@@ -519,15 +519,15 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gold-500 rounded-xl flex items-center justify-center">
                   <Shield className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h3 className="text-heading-md text-white">BurnBlack</h3>
-                  <p className="text-body-sm text-gray-400">Enterprise Tax Platform</p>
+                  <p className="text-body-sm text-slate-400">Enterprise Tax Platform</p>
                 </div>
               </div>
-              <p className="text-body-sm text-gray-400">
+              <p className="text-body-sm text-slate-400">
                 Secure, intelligent, and user-friendly tax filing platform for individuals,
                 CAs, and enterprises.
               </p>
@@ -535,36 +535,36 @@ const LandingPage = () => {
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Product</h4>
-              <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="#features" className="text-gray-400 hover:text-gold-500 transition-colors">Features</Link></li>
-                <li><Link to="/help" className="text-gray-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/help/faqs" className="text-gray-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
-                <li><Link to="/tools" className="text-gray-400 hover:text-gold-500 transition-colors">Tools</Link></li>
+              <ul className="space-y-2 text-body-sm text-slate-400">
+                <li><Link to="#features" className="text-slate-400 hover:text-gold-500 transition-colors">Features</Link></li>
+                <li><Link to="/help" className="text-slate-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
+                <li><Link to="/help/faqs" className="text-slate-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
+                <li><Link to="/tools" className="text-slate-400 hover:text-gold-500 transition-colors">Tools</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Support</h4>
-              <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="/help" className="text-gray-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/help/contact" className="text-gray-400 hover:text-gold-500 transition-colors">Contact Us</Link></li>
-                <li><Link to="/help/faqs" className="text-gray-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
-                <li><Link to="/notifications" className="text-gray-400 hover:text-gold-500 transition-colors">Notifications</Link></li>
+              <ul className="space-y-2 text-body-sm text-slate-400">
+                <li><Link to="/help" className="text-slate-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
+                <li><Link to="/help/contact" className="text-slate-400 hover:text-gold-500 transition-colors">Contact Us</Link></li>
+                <li><Link to="/help/faqs" className="text-slate-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
+                <li><Link to="/notifications" className="text-slate-400 hover:text-gold-500 transition-colors">Notifications</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-heading-sm text-white mb-4">Company</h4>
-              <ul className="space-y-2 text-body-sm text-gray-400">
-                <li><Link to="/dashboard" className="text-gray-400 hover:text-gold-500 transition-colors">Dashboard</Link></li>
-                <li><Link to="/profile" className="text-gray-400 hover:text-gold-500 transition-colors">Profile</Link></li>
-                <li><Link to="/preferences" className="text-gray-400 hover:text-gold-500 transition-colors">Preferences</Link></li>
-                <li><Link to="/help" className="text-gray-400 hover:text-gold-500 transition-colors">Help</Link></li>
+              <ul className="space-y-2 text-body-sm text-slate-400">
+                <li><Link to="/dashboard" className="text-slate-400 hover:text-gold-500 transition-colors">Dashboard</Link></li>
+                <li><Link to="/profile" className="text-slate-400 hover:text-gold-500 transition-colors">Profile</Link></li>
+                <li><Link to="/preferences" className="text-slate-400 hover:text-gold-500 transition-colors">Preferences</Link></li>
+                <li><Link to="/help" className="text-slate-400 hover:text-gold-500 transition-colors">Help</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-black-800 mt-8 pt-8 text-center text-body-sm text-gray-400">
+          <div className="border-t border-black-800 mt-8 pt-8 text-center text-body-sm text-slate-400">
             <p>&copy; 2024 BurnBlack. All rights reserved.</p>
           </div>
         </div>

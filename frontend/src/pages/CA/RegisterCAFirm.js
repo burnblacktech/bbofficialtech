@@ -286,78 +286,78 @@ const RegisterCAFirm = () => {
       case 1:
         return (
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
+            <h2 className="text-heading-3 font-semibold mb-6">Basic Information</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Firm Name *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Firm Name *</label>
                 <input
                   type="text"
                   value={formData.firmName}
                   onChange={(e) => setFormData(prev => ({ ...prev, firmName: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your firm name"
                 />
-                {errors.firmName && <p className="text-red-500 text-sm mt-1">{errors.firmName}</p>}
+                {errors.firmName && <p className="text-error-500 text-body-regular mt-1">{errors.firmName}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person Name *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Contact Person Name *</label>
                 <input
                   type="text"
                   value={formData.contactPerson}
                   onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter contact person name"
                 />
-                {errors.contactPerson && <p className="text-red-500 text-sm mt-1">{errors.contactPerson}</p>}
+                {errors.contactPerson && <p className="text-error-500 text-body-regular mt-1">{errors.contactPerson}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Email Address *</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="firm@example.com"
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                {errors.email && <p className="text-error-500 text-body-regular mt-1">{errors.email}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Phone Number *</label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="+91 98765 43210"
                 />
-                {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                {errors.phone && <p className="text-error-500 text-body-regular mt-1">{errors.phone}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Password *</label>
                   <input
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter password"
                   />
-                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                  {errors.password && <p className="text-error-500 text-body-regular mt-1">{errors.password}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Confirm Password *</label>
                   <input
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Confirm password"
                   />
-                  {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
+                  {errors.confirmPassword && <p className="text-error-500 text-body-regular mt-1">{errors.confirmPassword}</p>}
                 </div>
               </div>
             </div>
@@ -367,14 +367,14 @@ const RegisterCAFirm = () => {
       case 2:
         return (
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6">Firm Details</h2>
+            <h2 className="text-heading-3 font-semibold mb-6">Firm Details</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Firm Type *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Firm Type *</label>
                 <select
                   value={formData.firmType}
                   onChange={(e) => setFormData(prev => ({ ...prev, firmType: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="PROPRIETORSHIP">Proprietorship</option>
                   <option value="PARTNERSHIP">Partnership</option>
@@ -384,57 +384,57 @@ const RegisterCAFirm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Registration Number *</label>
                 <input
                   type="text"
                   value={formData.registrationNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, registrationNumber: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter registration number"
                 />
-                {errors.registrationNumber && <p className="text-red-500 text-sm mt-1">{errors.registrationNumber}</p>}
+                {errors.registrationNumber && <p className="text-error-500 text-body-regular mt-1">{errors.registrationNumber}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Years of Experience *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Years of Experience *</label>
                   <input
                     type="number"
                     value={formData.yearsOfExperience}
                     onChange={(e) => setFormData(prev => ({ ...prev, yearsOfExperience: parseInt(e.target.value) }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="5"
                     min="0"
                     max="100"
                   />
-                  {errors.yearsOfExperience && <p className="text-red-500 text-sm mt-1">{errors.yearsOfExperience}</p>}
+                  {errors.yearsOfExperience && <p className="text-error-500 text-body-regular mt-1">{errors.yearsOfExperience}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">PAN Number *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">PAN Number *</label>
                   <input
                     type="text"
                     value={formData.panNumber.toUpperCase()}
                     onChange={(e) => setFormData(prev => ({ ...prev, panNumber: e.target.value.toUpperCase() }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                     placeholder="ABCDE1234F"
                     maxLength={10}
                   />
-                  {errors.panNumber && <p className="text-red-500 text-sm mt-1">{errors.panNumber}</p>}
+                  {errors.panNumber && <p className="text-error-500 text-body-regular mt-1">{errors.panNumber}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">GST Number (Optional)</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">GST Number (Optional)</label>
                 <input
                   type="text"
                   value={formData.gstNumber.toUpperCase()}
                   onChange={(e) => setFormData(prev => ({ ...prev, gstNumber: e.target.value.toUpperCase() }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                   placeholder="22AAAAA0000A1ZV"
                   maxLength={15}
                 />
-                {errors.gstNumber && <p className="text-red-500 text-sm mt-1">{errors.gstNumber}</p>}
+                {errors.gstNumber && <p className="text-error-500 text-body-regular mt-1">{errors.gstNumber}</p>}
               </div>
             </div>
           </Card>
@@ -443,10 +443,10 @@ const RegisterCAFirm = () => {
       case 3:
         return (
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6">Office Address</h2>
+            <h2 className="text-heading-3 font-semibold mb-6">Office Address</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1 *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Address Line 1 *</label>
                 <input
                   type="text"
                   value={formData.address.line1}
@@ -454,14 +454,14 @@ const RegisterCAFirm = () => {
                     ...prev,
                     address: { ...prev.address, line1: e.target.value },
                   }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Building name, street"
                 />
-                {errors.addressLine1 && <p className="text-red-500 text-sm mt-1">{errors.addressLine1}</p>}
+                {errors.addressLine1 && <p className="text-error-500 text-body-regular mt-1">{errors.addressLine1}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Address Line 2</label>
                 <input
                   type="text"
                   value={formData.address.line2}
@@ -469,14 +469,14 @@ const RegisterCAFirm = () => {
                     ...prev,
                     address: { ...prev.address, line2: e.target.value },
                   }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Area, locality"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">City *</label>
                   <input
                     type="text"
                     value={formData.address.city}
@@ -484,14 +484,14 @@ const RegisterCAFirm = () => {
                       ...prev,
                       address: { ...prev.address, city: e.target.value },
                     }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Mumbai"
                   />
-                  {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                  {errors.city && <p className="text-error-500 text-body-regular mt-1">{errors.city}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">State *</label>
                   <input
                     type="text"
                     value={formData.address.state}
@@ -499,16 +499,16 @@ const RegisterCAFirm = () => {
                       ...prev,
                       address: { ...prev.address, state: e.target.value },
                     }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Maharashtra"
                   />
-                  {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
+                  {errors.state && <p className="text-error-500 text-body-regular mt-1">{errors.state}</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Pincode *</label>
                   <input
                     type="text"
                     value={formData.address.pincode}
@@ -516,15 +516,15 @@ const RegisterCAFirm = () => {
                       ...prev,
                       address: { ...prev.address, pincode: e.target.value },
                     }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="400001"
                     maxLength={6}
                   />
-                  {errors.pincode && <p className="text-red-500 text-sm mt-1">{errors.pincode}</p>}
+                  {errors.pincode && <p className="text-error-500 text-body-regular mt-1">{errors.pincode}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Country</label>
                   <input
                     type="text"
                     value={formData.address.country}
@@ -532,7 +532,7 @@ const RegisterCAFirm = () => {
                       ...prev,
                       address: { ...prev.address, country: e.target.value },
                     }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="India"
                   />
                 </div>
@@ -544,41 +544,41 @@ const RegisterCAFirm = () => {
       case 4:
         return (
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6">Professional Details</h2>
+            <h2 className="text-heading-3 font-semibold mb-6">Professional Details</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">CA Membership Number *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">CA Membership Number *</label>
                 <input
                   type="text"
                   value={formData.caMembershipNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, caMembershipNumber: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter ICAI membership number"
                 />
-                {errors.caMembershipNumber && <p className="text-red-500 text-sm mt-1">{errors.caMembershipNumber}</p>}
+                {errors.caMembershipNumber && <p className="text-error-500 text-body-regular mt-1">{errors.caMembershipNumber}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Number of CAs *</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Number of CAs *</label>
                   <input
                     type="number"
                     value={formData.numberOfCAs}
                     onChange={(e) => setFormData(prev => ({ ...prev, numberOfCAs: parseInt(e.target.value) }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="1"
                     min="1"
                   />
-                  {errors.numberOfCAs && <p className="text-red-500 text-sm mt-1">{errors.numberOfCAs}</p>}
+                  {errors.numberOfCAs && <p className="text-error-500 text-body-regular mt-1">{errors.numberOfCAs}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Support Staff</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Support Staff</label>
                   <input
                     type="number"
                     value={formData.numberOfStaff}
                     onChange={(e) => setFormData(prev => ({ ...prev, numberOfStaff: parseInt(e.target.value) }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="0"
                     min="0"
                   />
@@ -586,11 +586,11 @@ const RegisterCAFirm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Expected Client Range *</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Expected Client Range *</label>
                 <select
                   value={formData.expectedClients}
                   onChange={(e) => setFormData(prev => ({ ...prev, expectedClients: e.target.value }))}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select client range</option>
                   <option value="0-50">0-50 clients</option>
@@ -599,7 +599,7 @@ const RegisterCAFirm = () => {
                   <option value="251-500">251-500 clients</option>
                   <option value="500+">500+ clients</option>
                 </select>
-                {errors.expectedClients && <p className="text-red-500 text-sm mt-1">{errors.expectedClients}</p>}
+                {errors.expectedClients && <p className="text-error-500 text-body-regular mt-1">{errors.expectedClients}</p>}
               </div>
             </div>
           </Card>
@@ -608,14 +608,14 @@ const RegisterCAFirm = () => {
       case 5:
         return (
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-6">Document Upload</h2>
+            <h2 className="text-heading-3 font-semibold mb-6">Document Upload</h2>
             <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <div className="flex items-start space-x-3">
                   <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
                   <div>
                     <h4 className="text-sm font-semibold text-blue-900">Document Requirements</h4>
-                    <p className="text-sm text-blue-700 mt-1">
+                    <p className="text-body-regular text-blue-700 mt-1">
                       Upload clear, legible copies of the following documents. Files must be JPG, PNG or PDF format and should not exceed 5MB.
                     </p>
                   </div>
@@ -624,17 +624,17 @@ const RegisterCAFirm = () => {
 
               {Object.entries(formData.documents).map(([docType, file]) => (
                 <div key={docType}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">
                     {docType.replace(/([A-Z])/g, ' $1').trim()} *
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                  <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-blue-400 transition-colors">
                     {file ? (
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <FileText className="w-8 h-8 text-green-600" />
                           <div className="text-left">
-                            <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                            <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <p className="text-body-regular font-medium text-slate-900">{file.name}</p>
+                            <p className="text-body-small text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                           </div>
                         </div>
                         <button
@@ -642,16 +642,16 @@ const RegisterCAFirm = () => {
                             ...prev,
                             documents: { ...prev.documents, [docType]: null },
                           }))}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-error-500 hover:text-error-700"
                         >
                           Remove
                         </button>
                       </div>
                     ) : (
                       <div>
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                         <label className="cursor-pointer">
-                          <span className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                          <span className="text-blue-600 hover:text-blue-700 text-body-regular font-medium">
                             Upload Document
                           </span>
                           <input
@@ -661,22 +661,22 @@ const RegisterCAFirm = () => {
                             onChange={(e) => handleFileUpload(docType, e.target.files[0])}
                           />
                         </label>
-                        <p className="text-xs text-gray-500 mt-1">JPG, PNG or PDF (max 5MB)</p>
+                        <p className="text-body-small text-slate-500 mt-1">JPG, PNG or PDF (max 5MB)</p>
                       </div>
                     )}
                     {uploadProgress[docType] !== undefined && uploadProgress[docType] < 100 && (
                       <div className="mt-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-slate-200 rounded-full h-2">
                           <div
                             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${uploadProgress[docType]}%` }}
                           />
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">{uploadProgress[docType]}% uploaded</p>
+                        <p className="text-body-small text-slate-500 mt-1">{uploadProgress[docType]}% uploaded</p>
                       </div>
                     )}
                   </div>
-                  {errors[docType] && <p className="text-red-500 text-sm mt-1">{errors[docType]}</p>}
+                  {errors[docType] && <p className="text-error-500 text-body-regular mt-1">{errors[docType]}</p>}
                 </div>
               ))}
             </div>
@@ -687,36 +687,36 @@ const RegisterCAFirm = () => {
         return (
           <div className="space-y-6">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Subscription Plan</h2>
+              <h2 className="text-heading-3 font-semibold mb-6">Subscription Plan</h2>
               <div className="grid md:grid-cols-3 gap-4">
                 {subscriptionPlans.map((plan) => (
                   <div
                     key={plan.id}
-                    className={`relative border rounded-lg p-4 cursor-pointer transition-all ${
+                    className={`relative border rounded-xl p-4 cursor-pointer transition-all ${
                       formData.selectedPlan === plan.id
                         ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-slate-200 hover:border-slate-300'
                     }`}
                     onClick={() => setFormData(prev => ({ ...prev, selectedPlan: plan.id }))}
                   >
                     {plan.popular && (
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">MOST POPULAR</span>
+                        <span className="bg-blue-600 text-white text-body-small px-3 py-1 rounded-full">MOST POPULAR</span>
                       </div>
                     )}
                     <div className="text-center mb-4">
-                      <h3 className="font-semibold text-lg">{plan.name}</h3>
+                      <h3 className="font-semibold text-heading-4">{plan.name}</h3>
                       <div className="mt-2">
-                        <span className="text-3xl font-bold">₹{plan.price}</span>
-                        <span className="text-gray-500">/{formData.billingCycle === 'YEARLY' ? 'mo' : 'mo'}</span>
+                        <span className="text-heading-1 font-bold">₹{plan.price}</span>
+                        <span className="text-slate-500">/{formData.billingCycle === 'YEARLY' ? 'mo' : 'mo'}</span>
                       </div>
                       {formData.billingCycle === 'YEARLY' && (
-                        <p className="text-sm text-green-600 mt-1">Save 10% with yearly billing</p>
+                        <p className="text-body-regular text-green-600 mt-1">Save 10% with yearly billing</p>
                       )}
                     </div>
                     <ul className="space-y-2">
                       {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-center space-x-2 text-sm">
+                        <li key={index} className="flex items-center space-x-2 text-body-regular">
                           <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                           <span>{feature}</span>
                         </li>
@@ -729,20 +729,20 @@ const RegisterCAFirm = () => {
               <div className="mt-6 flex justify-center space-x-4">
                 <button
                   onClick={() => setFormData(prev => ({ ...prev, billingCycle: 'MONTHLY' }))}
-                  className={`px-6 py-2 rounded-lg ${
+                  className={`px-6 py-2 rounded-xl ${
                     formData.billingCycle === 'MONTHLY'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700'
+                      : 'bg-slate-200 text-slate-700'
                   }`}
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setFormData(prev => ({ ...prev, billingCycle: 'YEARLY' }))}
-                  className={`px-6 py-2 rounded-lg ${
+                  className={`px-6 py-2 rounded-xl ${
                     formData.billingCycle === 'YEARLY'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700'
+                      : 'bg-slate-200 text-slate-700'
                   }`}
                 >
                   Yearly (Save 10%)
@@ -751,7 +751,7 @@ const RegisterCAFirm = () => {
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Terms & Conditions</h2>
+              <h2 className="text-heading-3 font-semibold mb-6">Terms & Conditions</h2>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <input
@@ -759,13 +759,13 @@ const RegisterCAFirm = () => {
                     id="terms"
                     checked={formData.termsAccepted}
                     onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
-                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer">
+                  <label htmlFor="terms" className="text-body-regular text-slate-700 cursor-pointer">
                     I have read and agree to the <a href="#" className="text-blue-600 hover:underline">Terms and Conditions</a> and <a href="#" className="text-blue-600 hover:underline">Service Agreement</a>
                   </label>
                 </div>
-                {errors.terms && <p className="text-red-500 text-sm mt-1">{errors.terms}</p>}
+                {errors.terms && <p className="text-error-500 text-body-regular mt-1">{errors.terms}</p>}
 
                 <div className="flex items-start space-x-3">
                   <input
@@ -773,21 +773,21 @@ const RegisterCAFirm = () => {
                     id="privacy"
                     checked={formData.privacyAccepted}
                     onChange={(e) => setFormData(prev => ({ ...prev, privacyAccepted: e.target.checked }))}
-                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="privacy" className="text-sm text-gray-700 cursor-pointer">
+                  <label htmlFor="privacy" className="text-body-regular text-slate-700 cursor-pointer">
                     I have read and agree to the <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a> and consent to the processing of my personal data
                   </label>
                 </div>
-                {errors.privacy && <p className="text-red-500 text-sm mt-1">{errors.privacy}</p>}
+                {errors.privacy && <p className="text-error-500 text-body-regular mt-1">{errors.privacy}</p>}
               </div>
 
-              <div className="mt-6 bg-gray-50 rounded-lg p-4">
+              <div className="mt-6 bg-slate-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Total Monthly Cost:</span>
-                  <span className="text-xl font-bold text-blue-600">₹{calculatePrice()}</span>
+                  <span className="text-body-regular font-medium">Total Monthly Cost:</span>
+                  <span className="text-heading-3 font-bold text-blue-600">₹{calculatePrice()}</span>
                 </div>
-                <p className="text-xs text-gray-600">
+                <p className="text-body-small text-slate-600">
                   {formData.billingCycle === 'YEARLY'
                     ? `Yearly billing: ₹${calculatePrice() * 12} (save ₹${Math.round(calculatePrice() * 12 * 0.1)})`
                     : 'Monthly billing'
@@ -804,21 +804,21 @@ const RegisterCAFirm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-elevation-1 border-b">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Building2 className="w-8 h-8 text-blue-600" />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Register Your CA Practice</h1>
-                <p className="text-sm text-gray-500">Join our platform and grow your practice</p>
+                <h1 className="text-heading-3 font-bold text-slate-900">Register Your CA Practice</h1>
+                <p className="text-body-regular text-slate-500">Join our platform and grow your practice</p>
               </div>
             </div>
             <button
               onClick={() => navigate('/')}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-slate-500 hover:text-slate-700"
             >
               Cancel
             </button>
@@ -836,20 +836,20 @@ const RegisterCAFirm = () => {
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
                     currentStep >= step
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
+                      : 'bg-slate-200 text-slate-600'
                   }`}
                 >
                   {step}
                 </div>
                 <div
                   className={`h-1 w-16 mx-2 ${
-                    currentStep > step ? 'bg-blue-600' : 'bg-gray-200'
+                    currentStep > step ? 'bg-blue-600' : 'bg-slate-200'
                   }`}
                 />
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs text-gray-600">
+          <div className="flex justify-between text-body-small text-slate-600">
             <span>Basic Info</span>
             <span>Firm Details</span>
             <span>Address</span>
@@ -875,10 +875,10 @@ const RegisterCAFirm = () => {
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-lg ${
+            className={`flex items-center space-x-2 px-6 py-3 rounded-xl ${
               currentStep === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
             }`}
           >
             <ArrowLeft className="w-4 h-4" />
@@ -888,7 +888,7 @@ const RegisterCAFirm = () => {
           {currentStep < 6 ? (
             <button
               onClick={handleNext}
-              className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
             >
               <span>Next</span>
               <ArrowRight className="w-4 h-4" />
@@ -897,7 +897,7 @@ const RegisterCAFirm = () => {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="flex items-center space-x-2 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center space-x-2 px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -922,17 +922,17 @@ const RegisterCAFirm = () => {
             <div className="flex flex-col items-center space-y-2">
               <Shield className="w-8 h-8 text-blue-600" />
               <h3 className="font-semibold">Secure Platform</h3>
-              <p className="text-sm text-gray-600">Bank-level security for your data</p>
+              <p className="text-body-regular text-slate-600">Bank-level security for your data</p>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <Users className="w-8 h-8 text-blue-600" />
               <h3 className="font-semibold">1000+ CA Firms</h3>
-              <p className="text-sm text-gray-600">Trust our platform for their practice</p>
+              <p className="text-body-regular text-slate-600">Trust our platform for their practice</p>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <Star className="w-8 h-8 text-blue-600" />
               <h3 className="font-semibold">4.9/5 Rating</h3>
-              <p className="text-sm text-gray-600">Highest rated in the industry</p>
+              <p className="text-body-regular text-slate-600">Highest rated in the industry</p>
             </div>
           </div>
         </div>

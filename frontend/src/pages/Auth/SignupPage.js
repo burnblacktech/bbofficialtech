@@ -215,7 +215,7 @@ const SignupPage = () => {
   };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength.score === 0) return 'bg-gray-200';
+    if (passwordStrength.score === 0) return 'bg-slate-200';
     if (passwordStrength.score === 1) return 'bg-error-500';
     if (passwordStrength.score === 2) return 'bg-warning-500';
     if (passwordStrength.score === 3) return 'bg-info-500';
@@ -223,13 +223,13 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-heading-xl text-gray-900">
+          <h2 className="mt-6 text-center text-heading-xl text-slate-900">
             Create your account
           </h2>
-          <p className="mt-2 text-center text-body-md text-gray-600">
+          <p className="mt-2 text-center text-body-md text-slate-600">
             Start filing your ITR in minutes
           </p>
         </div>
@@ -242,7 +242,7 @@ const SignupPage = () => {
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   step >= s
                     ? 'bg-gold-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
+                    : 'bg-slate-200 text-slate-600'
                 }`}
               >
                 {step > s ? <CheckCircle className="w-5 h-5" /> : s}
@@ -250,7 +250,7 @@ const SignupPage = () => {
               {s < 3 && (
                 <div
                   className={`w-12 h-1 mx-2 ${
-                    step > s ? 'bg-gold-500' : 'bg-gray-200'
+                    step > s ? 'bg-gold-500' : 'bg-slate-200'
                   }`}
                 />
               )}
@@ -260,11 +260,11 @@ const SignupPage = () => {
 
         <form className="mt-8 space-y-6" onSubmit={step === 3 ? handleSignup : (e) => { e.preventDefault(); handleNext(); }}>
           {error && (
-            <div className="px-4 py-3 rounded-md bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
+            <div className="px-4 py-3 rounded-xl bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <p className="font-medium">Error</p>
-                <p className="text-sm mt-1">{error}</p>
+                <p className="text-body-regular mt-1">{error}</p>
               </div>
             </div>
           )}
@@ -273,17 +273,17 @@ const SignupPage = () => {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <label htmlFor="fullName" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="fullName" className="block text-label-md text-slate-700 mb-1">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
                     id="fullName"
                     name="fullName"
                     type="text"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                     placeholder="Enter your full name"
                     value={formData.fullName}
                     onChange={(e) => handleInputChange('fullName', e.target.value)}
@@ -292,18 +292,18 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-label-md text-slate-700 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
                     id="email"
                     name="email"
                     type="email"
                     autoComplete="email"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
@@ -312,7 +312,7 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="phone" className="block text-label-md text-slate-700 mb-1">
                   Mobile Number
                 </label>
                 <input
@@ -320,7 +320,7 @@ const SignupPage = () => {
                   name="phone"
                   type="tel"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                   placeholder="10-digit mobile number"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -328,18 +328,18 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="password" className="block text-label-md text-slate-700 mb-1">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
                     id="password"
                     name="password"
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                     placeholder="Create a strong password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
@@ -354,13 +354,13 @@ const SignupPage = () => {
                           className={`h-1 flex-1 rounded ${
                             i < passwordStrength.score
                               ? getPasswordStrengthColor()
-                              : 'bg-gray-200'
+                              : 'bg-slate-200'
                           }`}
                         />
                       ))}
                     </div>
                     {passwordStrength.feedback.length > 0 && (
-                      <p className="text-xs text-gray-600">
+                      <p className="text-body-small text-slate-600">
                         {passwordStrength.feedback.join(', ')}
                       </p>
                     )}
@@ -369,25 +369,25 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="confirmPassword" className="block text-label-md text-slate-700 mb-1">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
                     autoComplete="new-password"
                     required
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   />
                 </div>
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="mt-1 text-xs text-error-600">Passwords do not match</p>
+                  <p className="mt-1 text-body-small text-error-600">Passwords do not match</p>
                 )}
               </div>
             </div>
@@ -397,24 +397,24 @@ const SignupPage = () => {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <label htmlFor="pan" className="block text-label-md text-gray-700 mb-1">
+                <label htmlFor="pan" className="block text-label-md text-slate-700 mb-1">
                   PAN Number
                 </label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 z-10" />
                   <input
                     id="pan"
                     name="pan"
                     type="text"
                     required
                     maxLength={10}
-                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 uppercase focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                    className="appearance-none block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 uppercase focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
                     placeholder="ABCDE1234F"
                     value={formData.pan}
                     onChange={(e) => handleInputChange('pan', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-500 mb-4">
+                <p className="mt-1 text-body-small text-slate-500 mb-4">
                   We'll verify your PAN with the Income Tax Department
                 </p>
 
@@ -436,17 +436,17 @@ const SignupPage = () => {
 
                 {/* Show verification status */}
                 {panVerified && panVerificationResult && (
-                  <div className="mt-4 p-3 bg-success-50 border border-success-200 rounded-md flex items-start space-x-2">
+                  <div className="mt-4 p-3 bg-success-50 border border-success-200 rounded-xl flex items-start space-x-2">
                     <CheckCircle className="h-5 w-5 text-success-600 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-success-800">PAN Verified Successfully</p>
+                      <p className="text-body-regular font-medium text-success-800">PAN Verified Successfully</p>
                       {panVerificationResult.fullName && (
-                        <p className="text-xs text-success-700 mt-1">
+                        <p className="text-body-small text-success-700 mt-1">
                           Name: {panVerificationResult.fullName}
                         </p>
                       )}
                       {panVerificationResult.dateOfBirth && (
-                        <p className="text-xs text-success-700 mt-1">
+                        <p className="text-body-small text-success-700 mt-1">
                           Date of Birth: {new Date(panVerificationResult.dateOfBirth).toLocaleDateString('en-IN')}
                         </p>
                       )}
@@ -460,9 +460,9 @@ const SignupPage = () => {
           {/* Step 3: Terms & Conditions */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="bg-gray-50 border border-gray-200 rounded-md p-4 max-h-64 overflow-y-auto">
-                <h3 className="text-heading-sm text-gray-900 mb-2">Terms and Conditions</h3>
-                <div className="text-body-sm text-gray-600 space-y-2">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 max-h-64 overflow-y-auto">
+                <h3 className="text-heading-sm text-slate-900 mb-2">Terms and Conditions</h3>
+                <div className="text-body-sm text-slate-600 space-y-2">
                   <p>
                     By creating an account, you agree to our Terms of Service and Privacy Policy.
                     You understand that:
@@ -482,11 +482,11 @@ const SignupPage = () => {
                   name="acceptTerms"
                   type="checkbox"
                   required
-                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-gray-300 rounded mt-1"
+                  className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-slate-300 rounded mt-1"
                   checked={formData.acceptTerms}
                   onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
                 />
-                <label htmlFor="acceptTerms" className="ml-2 block text-body-sm text-gray-700">
+                <label htmlFor="acceptTerms" className="ml-2 block text-body-sm text-slate-700">
                   I accept the{' '}
                   <Link to="/terms" className="text-gold-600 hover:text-gold-500">
                     Terms of Service
@@ -505,7 +505,7 @@ const SignupPage = () => {
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                className="flex-1 py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
               >
                 Back
               </button>
@@ -513,7 +513,7 @@ const SignupPage = () => {
             <button
               type="submit"
               disabled={isLoading || (step === 2 && !panVerified)}
-              className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+              className="flex-1 py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading
                 ? 'Processing...'
@@ -529,10 +529,10 @@ const SignupPage = () => {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+                  <div className="w-full border-t border-slate-300" />
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-50 text-gray-500">Or sign up with</span>
+                <div className="relative flex justify-center text-body-regular">
+                  <span className="px-2 bg-slate-50 text-slate-500">Or sign up with</span>
                 </div>
               </div>
 
@@ -540,7 +540,7 @@ const SignupPage = () => {
                 <button
                   type="button"
                   onClick={handleGoogleSignup}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  className="w-full inline-flex justify-center py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -567,7 +567,7 @@ const SignupPage = () => {
           )}
 
           <div className="text-center">
-            <p className="text-body-sm text-gray-600">
+            <p className="text-body-sm text-slate-600">
               Already have an account?{' '}
               <Link to="/login" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign in

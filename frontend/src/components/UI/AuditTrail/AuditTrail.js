@@ -27,27 +27,27 @@ export const AuditTrail = ({
   if (!history || history.length === 0) return null;
 
   return (
-    <div className={cn('bg-white rounded-lg border border-gray-200', className)} {...props}>
+    <div className={cn('bg-white rounded-xl border border-slate-200', className)} {...props}>
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-inset rounded-lg"
+        className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-inset rounded-xl"
         aria-expanded={isExpanded}
         aria-label={`${isExpanded ? 'Collapse' : 'Expand'} audit trail for ${fieldLabel}`}
       >
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-gray-500" />
+          <Clock className="w-4 h-4 text-slate-500" />
           <h3
-            className="text-heading-sm font-semibold text-gray-900"
+            className="text-heading-sm font-semibold text-slate-900"
             style={{ fontSize: '16px', fontWeight: 600 }}
           >
             Data History - {fieldLabel}
           </h3>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-500" />
+          <ChevronUp className="w-5 h-5 text-slate-500" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-500" />
+          <ChevronDown className="w-5 h-5 text-slate-500" />
         )}
       </button>
 
@@ -61,7 +61,7 @@ export const AuditTrail = ({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-4 border-t border-gray-200">
+            <div className="px-4 pb-4 space-y-4 border-t border-slate-200">
               {history.map((entry, index) => (
                 <div
                   key={index}
@@ -72,9 +72,9 @@ export const AuditTrail = ({
                 >
                   {/* Timestamp */}
                   <div className="flex items-center gap-2 mb-2">
-                    <Clock className="w-3 h-3 text-gray-400" />
+                    <Clock className="w-3 h-3 text-slate-400" />
                     <span
-                      className="text-body-sm text-gray-600"
+                      className="text-body-sm text-slate-600"
                       style={{ fontSize: '13px', lineHeight: '20px' }}
                     >
                       {formatIndianDateTime(entry.timestamp)}
@@ -85,7 +85,7 @@ export const AuditTrail = ({
                   {entry.type === 'changed' && (
                     <div className="space-y-2">
                       <p
-                        className="text-body-sm text-gray-700"
+                        className="text-body-sm text-slate-700"
                         style={{ fontSize: '13px', lineHeight: '20px' }}
                       >
                         Changed from{' '}
@@ -94,9 +94,9 @@ export const AuditTrail = ({
                       </p>
                       {entry.by && (
                         <div className="flex items-center gap-2">
-                          <User className="w-3 h-3 text-gray-400" />
+                          <User className="w-3 h-3 text-slate-400" />
                           <span
-                            className="text-body-sm text-gray-600"
+                            className="text-body-sm text-slate-600"
                             style={{ fontSize: '13px', lineHeight: '20px' }}
                           >
                             By: {entry.by}
@@ -105,7 +105,7 @@ export const AuditTrail = ({
                       )}
                       {entry.reason && (
                         <p
-                          className="text-body-sm text-gray-600 italic"
+                          className="text-body-sm text-slate-600 italic"
                           style={{ fontSize: '13px', lineHeight: '20px' }}
                         >
                           Reason: {entry.reason}
@@ -117,7 +117,7 @@ export const AuditTrail = ({
                   {entry.type === 'auto-filled' && (
                     <div className="space-y-2">
                       <p
-                        className="text-body-sm text-gray-700"
+                        className="text-body-sm text-slate-700"
                         style={{ fontSize: '13px', lineHeight: '20px' }}
                       >
                         Auto-filled: <span className="font-medium">{valueFormatter(entry.value)}</span>
@@ -127,7 +127,7 @@ export const AuditTrail = ({
                           <SourceChip source={entry.source} size="sm" documentName={entry.sourceDocument} />
                           {entry.sourceDocument && (
                             <span
-                              className="text-body-sm text-gray-600"
+                              className="text-body-sm text-slate-600"
                               style={{ fontSize: '13px', lineHeight: '20px' }}
                             >
                               ({entry.sourceDocument})

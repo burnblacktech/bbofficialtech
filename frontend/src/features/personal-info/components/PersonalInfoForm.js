@@ -222,8 +222,8 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
     return (
       <div className="space-y-1">
         <div className="flex items-center justify-between">
-          <label className="flex items-center text-sm font-medium text-gray-700">
-            {Icon && <Icon className="w-4 h-4 mr-1.5 text-gray-400" />}
+          <label className="flex items-center text-body-regular font-medium text-slate-700">
+            {Icon && <Icon className="w-4 h-4 mr-1.5 text-slate-400" />}
             {label}
             {required && <span className="text-error-500 ml-1">*</span>}
           </label>
@@ -238,23 +238,23 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
             maxLength={maxLength}
             disabled={isDisabled}
             placeholder={placeholder}
-            className={`w-full px-3 py-2.5 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 ${
+            className={`w-full px-3 py-2.5 border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 ${
               hasError
                 ? 'border-error-400 focus:ring-error-500 bg-error-50'
                 : fieldSource
                   ? 'border-info-300 focus:ring-info-500 bg-info-50/30'
-                  : 'border-gray-300 focus:ring-gold-500 hover:border-gray-400'
-            } ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  : 'border-slate-300 focus:ring-gold-500 hover:border-gray-400'
+            } ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}`}
           />
         )}
         {hasError && (
-          <p className="flex items-center text-sm text-error-600 mt-1">
+          <p className="flex items-center text-body-regular text-error-600 mt-1">
             <AlertCircle className="w-3.5 h-3.5 mr-1" />
             {errors[field]}
           </p>
         )}
         {helpText && !hasError && (
-          <p className="text-xs text-gray-500 mt-1">{helpText}</p>
+          <p className="text-body-small text-slate-500 mt-1">{helpText}</p>
         )}
       </div>
     );
@@ -263,10 +263,10 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
   return (
     <div className="space-y-6">
       {/* Progress indicator */}
-      <div className="bg-gradient-to-r from-gold-50 to-amber-50 rounded-lg p-4 border border-gold-200">
+      <div className="bg-gradient-to-r from-gold-50 to-amber-50 rounded-xl p-4 border border-gold-200">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">Profile Completion</span>
-          <span className="text-sm font-semibold text-gold-600">{completionPercentage}%</span>
+          <span className="text-body-regular font-medium text-slate-700">Profile Completion</span>
+          <span className="text-body-regular font-semibold text-gold-600">{completionPercentage}%</span>
         </div>
         <div className="w-full bg-gold-200 rounded-full h-2">
           <div
@@ -278,7 +278,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
 
       {/* Basic Information Section */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center">
+        <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide flex items-center">
           <User className="w-4 h-4 mr-2 text-gold-500" />
           Basic Information
         </h4>
@@ -311,15 +311,15 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
           />
 
           <div className="space-y-1">
-            <label className="flex items-center text-sm font-medium text-gray-700">
-              <User className="w-4 h-4 mr-1.5 text-gray-400" />
+            <label className="flex items-center text-body-regular font-medium text-slate-700">
+              <User className="w-4 h-4 mr-1.5 text-slate-400" />
               Gender
             </label>
             <select
               value={data?.gender || ''}
               onChange={(e) => handleChange('gender', e.target.value)}
               disabled={readOnly}
-              className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              className={`w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-slate-100 cursor-not-allowed' : ''}`}
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -336,15 +336,15 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
           />
 
           <div className="space-y-1">
-            <label className="flex items-center text-sm font-medium text-gray-700">
-              <Info className="w-4 h-4 mr-1.5 text-gray-400" />
+            <label className="flex items-center text-body-regular font-medium text-slate-700">
+              <Info className="w-4 h-4 mr-1.5 text-slate-400" />
               Residential Status
             </label>
             <select
               value={data?.residentialStatus || 'RES'}
               onChange={(e) => handleChange('residentialStatus', e.target.value)}
               disabled={readOnly}
-              className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              className={`w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-slate-100 cursor-not-allowed' : ''}`}
             >
               {RESIDENTIAL_STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -356,7 +356,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
 
       {/* Contact Information Section */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center">
+        <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide flex items-center">
           <Mail className="w-4 h-4 mr-2 text-gold-500" />
           Contact Information
         </h4>
@@ -394,7 +394,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
 
       {/* Address Section */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide flex items-center">
+        <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide flex items-center">
           <MapPin className="w-4 h-4 mr-2 text-gold-500" />
           Address Details
         </h4>
@@ -422,12 +422,12 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
           />
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">State</label>
+            <label className="text-body-regular font-medium text-slate-700">State</label>
             <select
               value={data?.state || ''}
               onChange={(e) => handleChange('state', e.target.value)}
               disabled={readOnly}
-              className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              className={`w-full px-3 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 hover:border-gray-400 ${readOnly ? 'bg-slate-100 cursor-not-allowed' : ''}`}
             >
               <option value="">Select State</option>
               {INDIAN_STATES.map(state => (
@@ -453,7 +453,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
               type="text"
               value="India"
               disabled
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+              className="w-full px-3 py-2.5 border border-slate-300 rounded-xl bg-slate-100 cursor-not-allowed"
             />
           </FormField>
         </div>
@@ -461,12 +461,12 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
 
       {/* Validation Summary */}
       {Object.keys(errors).length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-error-50 border border-red-200 rounded-xl p-4">
           <div className="flex items-start">
-            <AlertCircle className="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-error-600 mr-2 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="text-sm font-semibold text-red-800">Please fix the following errors:</h4>
-              <ul className="mt-2 text-sm text-red-700 list-disc list-inside">
+              <ul className="mt-2 text-body-regular text-error-700 list-disc list-inside">
                 {Object.entries(errors).map(([field, error]) => (
                   <li key={field}>{error}</li>
                 ))}
@@ -478,10 +478,10 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
 
       {/* Data Source Legend */}
       {Object.keys(autoFilledFields).length > 0 && (
-        <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+        <div className="bg-info-50 border border-info-200 rounded-xl p-4">
           <div className="flex items-start">
             <Info className="w-5 h-5 text-info-600 mr-2 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-info-800">
+            <div className="text-body-regular text-info-800">
               <p className="font-medium">Data Source Legend</p>
               <p className="mt-1">
                 Fields highlighted in blue were auto-filled from your profile or verification data.

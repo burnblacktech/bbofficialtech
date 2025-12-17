@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Download, FileText, Mail, X } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import { useExportDiscrepancyPDF } from '../../pdf-export/hooks/use-pdf-export';
 import PDFExportButton from '../../pdf-export/components/pdf-export-button';
 import apiClient from '../../../services/core/APIClient';
@@ -92,11 +92,11 @@ const DiscrepancyReport = ({ discrepancies = [], filingId }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-heading-md text-gray-800">Discrepancy Report</h3>
-          <p className="text-body-sm text-gray-600 mt-1">
+          <p className="text-body-sm text-slate-600 mt-1">
             Export or share discrepancy report
           </p>
         </div>
@@ -104,28 +104,28 @@ const DiscrepancyReport = ({ discrepancies = [], filingId }) => {
 
       {/* Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-gray-50 rounded-lg p-4">
-          <p className="text-body-sm text-gray-600">Total</p>
+        <div className="bg-slate-50 rounded-xl p-4">
+          <p className="text-body-sm text-slate-600">Total</p>
           <p className="text-heading-lg font-semibold text-gray-800">{stats.total}</p>
         </div>
-        <div className="bg-error-50 rounded-lg p-4">
+        <div className="bg-error-50 rounded-xl p-4">
           <p className="text-body-sm text-error-600">Critical</p>
           <p className="text-heading-lg font-semibold text-error-800">{stats.critical}</p>
         </div>
-        <div className="bg-warning-50 rounded-lg p-4">
+        <div className="bg-warning-50 rounded-xl p-4">
           <p className="text-body-sm text-warning-600">Warning</p>
           <p className="text-heading-lg font-semibold text-warning-800">{stats.warning}</p>
         </div>
-        <div className="bg-info-50 rounded-lg p-4">
+        <div className="bg-info-50 rounded-xl p-4">
           <p className="text-body-sm text-info-600">Info</p>
           <p className="text-heading-lg font-semibold text-info-800">{stats.info}</p>
         </div>
-        <div className="bg-success-50 rounded-lg p-4">
+        <div className="bg-success-50 rounded-xl p-4">
           <p className="text-body-sm text-success-600">Resolved</p>
           <p className="text-heading-lg font-semibold text-success-800">{stats.resolved}</p>
         </div>
-        <div className="bg-gray-50 rounded-lg p-4">
-          <p className="text-body-sm text-gray-600">Pending</p>
+        <div className="bg-slate-50 rounded-xl p-4">
+          <p className="text-body-sm text-slate-600">Pending</p>
           <p className="text-heading-lg font-semibold text-gray-800">{stats.pending}</p>
         </div>
       </div>
@@ -154,22 +154,22 @@ const DiscrepancyReport = ({ discrepancies = [], filingId }) => {
       {/* Email Dialog */}
       {showEmailDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Email Discrepancy Report</h3>
+              <h3 className="text-heading-4 font-semibold text-slate-900">Email Discrepancy Report</h3>
               <button
                 onClick={() => {
                   setShowEmailDialog(false);
                   setEmail('');
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Email Address
                 </label>
                 <input
@@ -177,7 +177,7 @@ const DiscrepancyReport = ({ discrepancies = [], filingId }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email address"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex space-x-3">

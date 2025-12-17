@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import { Plus, Users, User, Edit, Trash2, Phone, Mail, CheckCircle, AlertCircle, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import memberService from '../../services/memberService';
@@ -204,7 +204,7 @@ const AddMembers = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-heading-1 font-bold text-neutral-900 mb-2">
             Family Members
           </h1>
           <p className="text-neutral-600">
@@ -228,14 +228,14 @@ const AddMembers = () => {
         {showAddForm && (
           <Card className="mb-6">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+              <h3 className="text-heading-4 font-semibold text-neutral-900 mb-4">
                 {editingMember ? 'Edit Family Member' : 'Add New Family Member'}
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       First Name *
                     </label>
                     <input
@@ -244,12 +244,12 @@ const AddMembers = () => {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Last Name *
                     </label>
                     <input
@@ -258,12 +258,12 @@ const AddMembers = () => {
                       value={formData.lastName}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       PAN Number *
                     </label>
                     <div className="space-y-2">
@@ -276,13 +276,13 @@ const AddMembers = () => {
                           required
                           maxLength="10"
                           placeholder="ABCDE1234F"
-                          className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono uppercase"
+                          className="flex-1 px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono uppercase"
                         />
                         {formData.panNumber && formData.panNumber.length === 10 && !formData.panVerified && (
                           <button
                             type="button"
                             onClick={() => setShowPANVerification(true)}
-                            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-1"
+                            className="px-4 py-2 bg-blue-600 text-white text-body-regular font-medium rounded-xl hover:bg-blue-700 transition-colors flex items-center space-x-1"
                           >
                             <Shield className="w-4 h-4" />
                             <span>Verify PAN</span>
@@ -290,13 +290,13 @@ const AddMembers = () => {
                         )}
                       </div>
                       {formData.panVerified && panVerificationResult && (
-                        <div className="flex items-center space-x-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center space-x-2 text-body-regular text-green-600 bg-green-50 px-3 py-2 rounded-xl">
                           <CheckCircle className="w-4 h-4" />
                           <span>PAN Verified: {panVerificationResult.name}</span>
                         </div>
                       )}
                       {formData.panNumber && formData.panNumber.length === 10 && !formData.panVerified && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-body-small text-slate-500">
                           Optional: Verify PAN to ensure accuracy
                         </p>
                       )}
@@ -304,7 +304,7 @@ const AddMembers = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Date of Birth *
                     </label>
                     <input
@@ -313,12 +313,12 @@ const AddMembers = () => {
                       value={formData.dateOfBirth}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Relationship *
                     </label>
                     <select
@@ -326,7 +326,7 @@ const AddMembers = () => {
                       value={formData.relationship}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <option value="">Select Relationship</option>
                       <option value="spouse">Spouse</option>
@@ -341,7 +341,7 @@ const AddMembers = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Phone Number
                     </label>
                     <input
@@ -349,12 +349,12 @@ const AddMembers = () => {
                       name="phoneNumber"
                       value={formData.phoneNumber}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-1">
                       Email
                     </label>
                     <input
@@ -362,7 +362,7 @@ const AddMembers = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -386,7 +386,7 @@ const AddMembers = () => {
 
               {/* PAN Verification Section */}
               {showPANVerification && formData.panNumber && formData.panNumber.length === 10 && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="mt-6 pt-6 border-t border-slate-200">
                   <PANVerificationInline
                     panNumber={formData.panNumber}
                     onVerified={handlePANVerified}
@@ -406,7 +406,7 @@ const AddMembers = () => {
           <Card>
             <div className="p-12 text-center">
               <Users className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+              <h3 className="text-heading-3 font-semibold text-neutral-900 mb-2">
                 No family members added
               </h3>
               <p className="text-neutral-600 mb-6">
@@ -433,10 +433,10 @@ const AddMembers = () => {
                         <User className="w-6 h-6 text-primary-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-neutral-900">
+                        <h3 className="text-heading-4 font-semibold text-neutral-900">
                           {member.firstName} {member.lastName}
                         </h3>
-                        <p className="text-sm text-neutral-600 capitalize">
+                        <p className="text-body-regular text-neutral-600 capitalize">
                           {member.relationship}
                         </p>
                       </div>
@@ -456,7 +456,7 @@ const AddMembers = () => {
                         variant="secondary"
                         size="sm"
                         onClick={() => handleDelete(member.id)}
-                        className="flex items-center gap-1 text-red-600 hover:text-red-700"
+                        className="flex items-center gap-1 text-error-600 hover:text-error-700"
                       >
                         <Trash2 className="w-3 h-3" />
                         Delete
@@ -464,14 +464,14 @@ const AddMembers = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2 text-sm text-neutral-600">
+                  <div className="space-y-2 text-body-regular text-neutral-600">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">PAN:</span>
                         <span className="font-mono">{member.panNumber}</span>
                       </div>
                       {member.panVerified ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-green-100 text-green-700">
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Verified
                         </span>
@@ -493,7 +493,7 @@ const AddMembers = () => {
                             setShowAddForm(true);
                             setShowPANVerification(true);
                           }}
-                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors"
+                          className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors"
                         >
                           <AlertCircle className="w-3 h-3 mr-1" />
                           Verify PAN
@@ -531,24 +531,24 @@ const AddMembers = () => {
         {/* Delete Confirmation Modal */}
         {memberToDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="bg-white rounded-xl shadow-elevation-4 max-w-md w-full p-6">
               <div className="flex items-center mb-4">
-                <AlertCircle className="h-6 w-6 text-red-600 mr-3" />
-                <h3 className="text-lg font-semibold text-gray-900">Delete Family Member</h3>
+                <AlertCircle className="h-6 w-6 text-error-600 mr-3" />
+                <h3 className="text-heading-4 font-semibold text-slate-900">Delete Family Member</h3>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-slate-600 mb-6">
                 Are you sure you want to delete this family member? This action cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={cancelDelete}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDelete}
-                  className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                  className="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors"
                 >
                   Delete
                 </button>

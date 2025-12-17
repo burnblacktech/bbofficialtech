@@ -14,10 +14,10 @@ const LoadingSpinner = ({ message, size = 'md', className = '' }) => {
   };
 
   return (
-    <div className={`flex flex-col items-center justify-center py-8 ${className}`}>
-      <Loader2 className={`${sizeClasses[size]} text-gold-500 animate-spin`} />
+    <div className={`flex flex-col items-center justify-center py-8 ${className}`} role="status" aria-live="polite">
+      <Loader2 className={`${sizeClasses[size]} text-primary-500 animate-spin`} aria-label="Loading" />
       {message && (
-        <p className="mt-4 text-body-sm text-gray-600">{message}</p>
+        <p className="mt-4 text-body-small text-slate-600">{message}</p>
       )}
     </div>
   );

@@ -54,9 +54,9 @@ const EnhancedDashboard = () => {
       case 'pending':
         return <Clock className="h-4 w-4 text-yellow-600" />;
       case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <AlertCircle className="h-4 w-4 text-error-600" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
+        return <Clock className="h-4 w-4 text-slate-600" />;
     }
   };
 
@@ -67,9 +67,9 @@ const EnhancedDashboard = () => {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'error':
-        return 'bg-red-100 text-red-800';
+        return 'bg-error-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-100 text-gray-800';
     }
   };
 
@@ -128,7 +128,7 @@ const EnhancedDashboard = () => {
       <motion.div variants={itemVariants} className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-2">
+            <h1 className="text-heading-2 font-bold mb-2">
               Welcome back, {user?.fullName || 'there'}! 👋
             </h1>
             <p className="text-blue-100">
@@ -151,14 +151,14 @@ const EnhancedDashboard = () => {
             key={insight.id}
             variants={cardHoverVariants}
             whileHover="hover"
-            className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 cursor-pointer"
+            className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200 cursor-pointer"
             onClick={() => navigate('/dashboard')}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{insight.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{insight.value}</p>
-                <p className="text-sm text-gray-500">{insight.description}</p>
+                <p className="text-body-regular font-medium text-slate-600">{insight.title}</p>
+                <p className="text-heading-2 font-bold text-slate-900">{insight.value}</p>
+                <p className="text-body-regular text-slate-500">{insight.description}</p>
               </div>
               <div className={`p-3 rounded-full bg-${insight.color}-100`}>
                 <insight.icon className={`h-6 w-6 text-${insight.color}-600`} />
@@ -169,10 +169,10 @@ const EnhancedDashboard = () => {
       </motion.div>
 
       {/* Quick Actions */}
-      <motion.div variants={itemVariants} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+      <motion.div variants={itemVariants} className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-          <Target className="h-5 w-5 text-gray-400" />
+          <h2 className="text-heading-4 font-semibold text-slate-900">Quick Actions</h2>
+          <Target className="h-5 w-5 text-slate-400" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickActions.map((action) => (
@@ -180,20 +180,20 @@ const EnhancedDashboard = () => {
               key={action.id}
               variants={cardHoverVariants}
               whileHover="hover"
-              className="p-4 border border-gray-200 rounded-lg cursor-pointer group"
+              className="p-4 border border-slate-200 rounded-xl cursor-pointer group"
               onClick={() => navigate(action.route)}
             >
               <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg bg-${action.color}-100 group-hover:bg-${action.color}-200 transition-colors`}>
+                <div className={`p-2 rounded-xl bg-${action.color}-100 group-hover:bg-${action.color}-200 transition-colors`}>
                   <action.icon className={`h-5 w-5 text-${action.color}-600`} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                  <h3 className="text-sm font-medium text-slate-900 group-hover:text-slate-700">
                     {action.title}
                   </h3>
-                  <p className="text-xs text-gray-500">{action.description}</p>
+                  <p className="text-body-small text-slate-500">{action.description}</p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
               </div>
             </motion.div>
           ))}
@@ -201,10 +201,10 @@ const EnhancedDashboard = () => {
       </motion.div>
 
       {/* Recent Activity */}
-      <motion.div variants={itemVariants} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+      <motion.div variants={itemVariants} className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          <Calendar className="h-5 w-5 text-gray-400" />
+          <h2 className="text-heading-4 font-semibold text-slate-900">Recent Activity</h2>
+          <Calendar className="h-5 w-5 text-slate-400" />
         </div>
         <div className="space-y-3">
           <AnimatePresence>
@@ -214,13 +214,13 @@ const EnhancedDashboard = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-slate-50 rounded-xl"
               >
                 <div className="flex items-center space-x-3">
                   {getStatusIcon(activity.status)}
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                    <p className="text-xs text-gray-500">{activity.date}</p>
+                    <p className="text-body-regular font-medium text-slate-900">{activity.title}</p>
+                    <p className="text-body-small text-slate-500">{activity.date}</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(activity.status)}`}>
@@ -242,13 +242,13 @@ const EnhancedDashboard = () => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold mb-2">AI Tax Assistant</h3>
+            <h3 className="text-heading-4 font-semibold mb-2">AI Tax Assistant</h3>
             <p className="text-purple-100 mb-4">
               Get instant help with your tax filing questions. Our AI assistant is here to guide you.
             </p>
             <div className="flex items-center space-x-2">
               <Zap className="h-4 w-4" />
-              <span className="text-sm">Ask anything about taxes</span>
+              <span className="text-body-regular">Ask anything about taxes</span>
             </div>
           </div>
           <motion.div
@@ -261,20 +261,20 @@ const EnhancedDashboard = () => {
       </motion.div>
 
       {/* Security Status */}
-      <motion.div variants={itemVariants} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+      <motion.div variants={itemVariants} className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-100 rounded-lg">
+            <div className="p-2 bg-green-100 rounded-xl">
               <Shield className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-900">Account Security</h3>
-              <p className="text-xs text-gray-500">Your account is secure and up to date</p>
+              <h3 className="text-body-regular font-medium text-slate-900">Account Security</h3>
+              <p className="text-body-small text-slate-500">Your account is secure and up to date</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
-            <span className="text-sm text-green-600 font-medium">Secure</span>
+            <span className="text-body-regular text-green-600 font-medium">Secure</span>
           </div>
         </div>
       </motion.div>

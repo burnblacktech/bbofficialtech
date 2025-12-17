@@ -51,7 +51,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
         </div>
@@ -61,7 +61,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
 
   if (error || !data) {
     return (
-      <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+      <div className="bg-error-50 border border-error-200 rounded-xl p-6">
         <p className="text-body-sm text-error-900">
           {error?.message || 'Failed to load payment history'}
         </p>
@@ -76,11 +76,11 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
 
   if (payments.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="text-center py-8">
-          <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-heading-md text-gray-900 mb-2">No Payments Found</h3>
-          <p className="text-body-sm text-gray-600">
+          <DollarSign className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-heading-md text-slate-900 mb-2">No Payments Found</h3>
+          <p className="text-body-sm text-slate-600">
             No tax payments have been made for this filing yet.
           </p>
         </div>
@@ -89,21 +89,21 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-heading-md text-gray-900">Payment History</h3>
-          <p className="text-body-sm text-gray-600 mt-1">
+          <h3 className="text-heading-md text-slate-900">Payment History</h3>
+          <p className="text-body-sm text-slate-600 mt-1">
             Total Paid: {formatCurrency(data.totalPaid || 0)}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-400" />
+          <Filter className="h-4 w-4 text-slate-400" />
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="text-body-sm border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="text-body-sm border border-slate-300 rounded-xl px-3 py-1 focus:outline-none focus:ring-2 focus:ring-gold-500"
           >
             <option value="all">All Payments</option>
             <option value="advance_tax">Advance Tax</option>
@@ -118,17 +118,17 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
         {filteredPayments.map((payment) => (
           <div
             key={payment.id}
-            className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+            className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition-colors"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h4 className="text-body-md font-medium text-gray-900">
+                  <h4 className="text-body-md font-medium text-slate-900">
                     {formatCurrency(payment.amount)}
                   </h4>
                   {getStatusBadge(payment.paymentStatus)}
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-body-xs text-gray-600">
+                <div className="grid grid-cols-2 gap-4 text-body-xs text-slate-600">
                   <div className="flex items-center">
                     <Calendar className="h-3 w-3 mr-1" />
                     {formatDate(payment.createdAt)}
@@ -152,7 +152,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
                       onViewPayment(payment);
                     }
                   }}
-                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded"
+                  className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded"
                   title="View Details"
                 >
                   <Eye className="h-4 w-4" />
@@ -162,7 +162,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
 
             {/* Expanded Payment Details */}
             {selectedPaymentId === payment.id && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="mt-4 pt-4 border-t border-slate-200">
                 <PaymentStatus paymentId={payment.id} />
               </div>
             )}
@@ -172,7 +172,7 @@ const PaymentHistory = ({ filingId, onViewPayment }) => {
 
       {filteredPayments.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-body-sm text-gray-600">
+          <p className="text-body-sm text-slate-600">
             No payments found for the selected filter.
           </p>
         </div>

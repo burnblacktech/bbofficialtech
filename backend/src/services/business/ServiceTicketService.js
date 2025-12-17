@@ -47,25 +47,53 @@ class ServiceTicketService {
         assignedTo = await this.autoAssignTicket(ticketType, priority);
       }
 
-      // Create the ticket
-      const ticket = await ServiceTicket.create({
-        userId,
-        filingId,
-        memberId,
-        assignedTo,
-        ticketType,
-        priority: priority || 'MEDIUM',
-        subject,
-        description,
-        slaHours: this.getSlaHoursForType(ticketType),
-        tags,
-        attachments,
-        metadata: {
-          createdBy,
-          ipAddress,
-          createdAt: new Date().toISOString(),
-        },
-      });
+      // Create the ticket (retry once if ticketNumber collides in fallback mode)
+      let ticket;
+      try {
+        ticket = await ServiceTicket.create({
+          userId,
+          filingId,
+          memberId,
+          assignedTo,
+          ticketType,
+          priority: priority || 'MEDIUM',
+          subject,
+          description,
+          slaHours: this.getSlaHoursForType(ticketType),
+          tags,
+          attachments,
+          metadata: {
+            createdBy,
+            ipAddress,
+            createdAt: new Date().toISOString(),
+          },
+        });
+      } catch (err) {
+        const isUniqueTicketNumber =
+          err?.name === 'SequelizeUniqueConstraintError' &&
+          (err?.errors || []).some(e => e?.path === 'ticket_number' || e?.path === 'ticketNumber');
+        if (!isUniqueTicketNumber) throw err;
+
+        // Force regeneration and retry once
+        ticket = await ServiceTicket.create({
+          userId,
+          filingId,
+          memberId,
+          assignedTo,
+          ticketType,
+          priority: priority || 'MEDIUM',
+          subject,
+          description,
+          slaHours: this.getSlaHoursForType(ticketType),
+          tags,
+          attachments,
+          metadata: {
+            createdBy,
+            ipAddress,
+            createdAt: new Date().toISOString(),
+          },
+        });
+      }
 
       // Create initial message
       await ServiceTicketMessage.create({

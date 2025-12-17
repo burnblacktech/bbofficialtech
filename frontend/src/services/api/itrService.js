@@ -19,7 +19,7 @@ class ITRService {
   }
 
   // Create new ITR filing (creates both filing and draft)
-  async createITR(filingData) {
+  async createITR(filingData, config = {}) {
     try {
       // Use /drafts endpoint which creates both filing and draft
       const response = await apiClient.post('/itr/drafts', {
@@ -27,7 +27,7 @@ class ITRService {
         formData: filingData.formData,
         assessmentYear: filingData.assessmentYear,
         taxRegime: filingData.taxRegime,
-      });
+      }, config);
       // Return in expected format for backward compatibility
       // Backend returns: { draft: { id, filingId, ... } }
       const draftData = response.data.draft || response.data;
@@ -204,9 +204,9 @@ class ITRService {
   }
 
   // Update draft
-  async updateDraft(draftId, formData) {
+  async updateDraft(draftId, formData, config = {}) {
     try {
-      const response = await apiClient.put(`/itr/drafts/${draftId}`, { formData });
+      const response = await apiClient.put(`/itr/drafts/${draftId}`, { formData }, config);
       return response.data;
     } catch (error) {
       errorHandler.handleValidationError(error);

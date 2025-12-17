@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Upload, X, FileText, AlertTriangle } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Button from '../common/Button';
+import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 
 const DemandDisputeForm = ({
@@ -80,14 +80,14 @@ const DemandDisputeForm = ({
   return (
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)}>
       {/* Warning */}
-      <div className="bg-warning-50 border border-warning-200 p-4 rounded-lg">
+      <div className="bg-warning-50 border border-warning-200 p-4 rounded-xl">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-warning-900 mb-1">
+            <p className="text-body-regular font-medium text-warning-900 mb-1">
               Disputing a Tax Demand
             </p>
-            <p className="text-xs text-warning-700">
+            <p className="text-body-small text-warning-700">
               Please provide a detailed reason for disputing this demand. Include all relevant facts,
               supporting documents, and legal basis for your dispute. This will be reviewed by the
               Income Tax Department.
@@ -97,15 +97,15 @@ const DemandDisputeForm = ({
       </div>
 
       {/* Demand Info */}
-      <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-        <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+        <div className="grid grid-cols-2 gap-4 text-body-regular">
           <div>
-            <p className="text-gray-600">Demand Number</p>
-            <p className="font-medium text-gray-900">{demand?.demandNumber}</p>
+            <p className="text-slate-600">Demand Number</p>
+            <p className="font-medium text-slate-900">{demand?.demandNumber}</p>
           </div>
           <div>
-            <p className="text-gray-600">Amount</p>
-            <p className="font-medium text-gray-900">
+            <p className="text-slate-600">Amount</p>
+            <p className="font-medium text-slate-900">
               ₹{demand?.totalAmount?.toLocaleString('en-IN') || '0'}
             </p>
           </div>
@@ -114,7 +114,7 @@ const DemandDisputeForm = ({
 
       {/* Dispute Reason */}
       <div>
-        <label htmlFor="disputeReason" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="disputeReason" className="block text-body-regular font-medium text-slate-700 mb-2">
           Reason for Dispute <span className="text-error-500">*</span>
         </label>
         <textarea
@@ -122,22 +122,22 @@ const DemandDisputeForm = ({
           value={disputeReason}
           onChange={(e) => setDisputeReason(e.target.value)}
           rows={8}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           placeholder="Provide a detailed explanation of why you are disputing this demand. Include relevant facts, legal provisions, and any other supporting information..."
           required
           minLength={50}
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-body-small text-slate-500">
           Minimum 50 characters required. {disputeReason.length}/50
         </p>
       </div>
 
       {/* Document Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-body-regular font-medium text-slate-700 mb-2">
           Supporting Documents (Optional)
         </label>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+        <div className="border-2 border-dashed border-slate-300 rounded-xl p-4">
           <input
             type="file"
             id="fileUpload"
@@ -153,11 +153,11 @@ const DemandDisputeForm = ({
               uploading && 'opacity-50 cursor-not-allowed',
             )}
           >
-            <Upload className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-600">
+            <Upload className="w-8 h-8 text-slate-400 mb-2" />
+            <span className="text-body-regular text-slate-600">
               {uploading ? 'Uploading...' : 'Click to upload or drag and drop'}
             </span>
-            <span className="text-xs text-gray-500 mt-1">
+            <span className="text-body-small text-slate-500 mt-1">
               PDF, DOC, DOCX, JPG, PNG (Max 10MB each)
             </span>
           </label>
@@ -169,13 +169,13 @@ const DemandDisputeForm = ({
             {disputeDocuments.map((doc, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded border border-gray-200"
+                className="flex items-center justify-between p-2 bg-slate-50 rounded border border-slate-200"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <span className="text-sm text-gray-700 truncate">{doc.name}</span>
+                  <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="text-body-regular text-slate-700 truncate">{doc.name}</span>
                   {doc.size && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-body-small text-slate-500">
                       ({(doc.size / 1024 / 1024).toFixed(2)} MB)
                     </span>
                   )}
@@ -183,7 +183,7 @@ const DemandDisputeForm = ({
                 <button
                   type="button"
                   onClick={() => handleRemoveDocument(index)}
-                  className="ml-2 p-1 text-gray-400 hover:text-error-600 transition-colors"
+                  className="ml-2 p-1 text-slate-400 hover:text-error-600 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>

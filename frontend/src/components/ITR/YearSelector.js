@@ -68,14 +68,14 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
   const currentYearInfo = availableYears.find(y => y.fy === selectedYear) || availableYears[0];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+        <h3 className="text-heading-4 font-semibold text-slate-900 flex items-center">
           <Calendar className="w-5 h-5 mr-2 text-blue-600" />
           Financial Year
         </h3>
         {currentYearInfo?.isBelated && (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-gold-100 text-gold-700">
             <AlertCircle className="w-3 h-3 mr-1" />
             Belated Return
           </span>
@@ -86,7 +86,7 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
         <select
           value={selectedYear}
           onChange={(e) => onYearChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-medium"
+          className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-body-regular font-medium"
         >
           {availableYears.map((year) => (
             <option key={year.fy} value={year.fy}>
@@ -96,14 +96,14 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
         </select>
 
         {currentYearInfo && (
-          <div className="bg-gray-50 rounded-lg p-3 space-y-2 text-sm">
+          <div className="bg-slate-50 rounded-xl p-3 space-y-2 text-body-regular">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Assessment Year:</span>
-              <span className="font-semibold text-gray-900">{currentYearInfo.assessmentYear}</span>
+              <span className="text-slate-600">Assessment Year:</span>
+              <span className="font-semibold text-slate-900">{currentYearInfo.assessmentYear}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Due Date:</span>
-              <span className="font-semibold text-gray-900">{currentYearInfo.dueDate}</span>
+              <span className="text-slate-600">Due Date:</span>
+              <span className="font-semibold text-slate-900">{currentYearInfo.dueDate}</span>
             </div>
             {currentYearInfo.isBelated ? (
               <div className="flex items-center justify-between text-gold-600">

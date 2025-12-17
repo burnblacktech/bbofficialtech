@@ -144,24 +144,24 @@ const UserProfile = () => {
           <Icon className="h-4 w-4" />
         </div>
         <div className="flex-1">
-          <p className="text-xs font-medium text-neutral-500 mb-1">{label}</p>
+          <p className="text-body-small font-medium text-neutral-500 mb-1">{label}</p>
           {editable && isEditing ? (
             <div>
               <input
                 type={type}
                 value={value || ''}
                 onChange={(e) => handleInputChange(field, e.target.value)}
-                className={`w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold ${
+                className={`w-full p-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold ${
                   errors[field] ? 'border-error-300' : 'border-neutral-300'
                 }`}
                 placeholder={`Enter ${label.toLowerCase()}`}
               />
               {errors[field] && (
-                <p className="text-xs text-error-600 mt-1">{errors[field]}</p>
+                <p className="text-body-small text-error-600 mt-1">{errors[field]}</p>
               )}
             </div>
           ) : (
-            <p className="text-sm font-medium text-burnblack-black">{value || 'Not provided'}</p>
+            <p className="text-body-regular font-medium text-burnblack-black">{value || 'Not provided'}</p>
           )}
         </div>
       </div>
@@ -177,13 +177,13 @@ const UserProfile = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
               >
                 <ArrowLeft className="h-5 w-5 text-burnblack-black" />
               </button>
               <div>
-                <h1 className="text-lg font-semibold text-burnblack-black">Profile</h1>
-                <p className="text-xs text-neutral-500">Manage your account</p>
+                <h1 className="text-heading-4 font-semibold text-burnblack-black">Profile</h1>
+                <p className="text-body-small text-neutral-500">Manage your account</p>
               </div>
             </div>
 
@@ -191,14 +191,14 @@ const UserProfile = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={handleCancel}
-                  className="p-2 rounded-lg hover:bg-neutral-100 active:scale-95 transition-transform"
+                  className="p-2 rounded-xl hover:bg-neutral-100 active:scale-95 transition-transform"
                 >
                   <X className="h-5 w-5 text-neutral-600" />
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={updateProfileMutation.isPending}
-                  className="btn-burnblack p-2 rounded-lg active:scale-95 transition-transform disabled:opacity-50"
+                  className="btn-burnblack p-2 rounded-xl active:scale-95 transition-transform disabled:opacity-50"
                 >
                   {updateProfileMutation.isPending ? (
                     <div className="loading-spinner"></div>
@@ -210,7 +210,7 @@ const UserProfile = () => {
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="btn-burnblack p-2 rounded-lg active:scale-95 transition-transform"
+                className="btn-burnblack p-2 rounded-xl active:scale-95 transition-transform"
               >
                 <Edit3 className="h-4 w-4" />
               </button>
@@ -232,7 +232,7 @@ const UserProfile = () => {
         <div className="px-4 py-6">
           <div className="dashboard-card-burnblack text-center">
             <AlertCircle className="h-12 w-12 text-error-600 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-burnblack-black mb-2">Error Loading Profile</h3>
+            <h3 className="text-heading-4 font-semibold text-burnblack-black mb-2">Error Loading Profile</h3>
             <p className="text-neutral-600 mb-4">Unable to load your profile information.</p>
             <button
               onClick={() => window.location.reload()}
@@ -259,17 +259,17 @@ const UserProfile = () => {
               </button>
             )}
           </div>
-          <h2 className="text-lg font-semibold text-burnblack-black mb-1">{profileData?.firstName} {profileData?.lastName}</h2>
-          <p className="text-sm text-neutral-500">{profileData?.email}</p>
+          <h2 className="text-heading-4 font-semibold text-burnblack-black mb-1">{profileData?.firstName} {profileData?.lastName}</h2>
+          <p className="text-body-regular text-neutral-500">{profileData?.email}</p>
           <div className="flex items-center justify-center space-x-1 mt-2">
             <CheckCircle className="h-3 w-3 text-success-600" />
-            <span className="text-xs text-success-600 font-medium">Verified Account</span>
+            <span className="text-body-small text-success-600 font-medium">Verified Account</span>
           </div>
         </div>
 
         {/* Personal Information */}
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 px-1">Personal Information</h3>
+          <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Personal Information</h3>
           <div className="space-y-3">
             <ProfileInfoCard
               icon={User}
@@ -307,7 +307,7 @@ const UserProfile = () => {
 
         {/* Address Information */}
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 px-1">Address Information</h3>
+          <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Address Information</h3>
           <div className="space-y-3">
             <ProfileInfoCard
               icon={MapPin}
@@ -321,7 +321,7 @@ const UserProfile = () => {
 
         {/* Document Information */}
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 px-1">Documents</h3>
+          <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Documents</h3>
           <div className="space-y-3">
             <ProfileInfoCard
               icon={Shield}
@@ -341,38 +341,38 @@ const UserProfile = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h3>
+        <div className="bg-white rounded-xl p-4 shadow-elevation-1 border border-gray-100">
+          <h3 className="text-sm font-semibold text-slate-900 mb-3">Quick Actions</h3>
           <div className="space-y-2">
             <button
               onClick={() => navigate('/notifications')}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform"
+              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
             >
               <div className="flex items-center space-x-3">
-                <Bell className="h-4 w-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-900">Notifications</span>
+                <Bell className="h-4 w-4 text-slate-600" />
+                <span className="text-body-regular font-medium text-slate-900">Notifications</span>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <ChevronRight className="h-4 w-4 text-slate-400" />
             </button>
 
             <button
               onClick={() => navigate('/settings')}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform"
+              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
             >
               <div className="flex items-center space-x-3">
-                <Settings className="h-4 w-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-900">Settings</span>
+                <Settings className="h-4 w-4 text-slate-600" />
+                <span className="text-body-regular font-medium text-slate-900">Settings</span>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <ChevronRight className="h-4 w-4 text-slate-400" />
             </button>
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-between p-3 bg-red-50 rounded-lg hover:bg-red-100 active:scale-95 transition-transform"
+              className="w-full flex items-center justify-between p-3 bg-error-50 rounded-xl hover:bg-error-100 active:scale-95 transition-transform"
             >
               <div className="flex items-center space-x-3">
-                <LogOut className="h-4 w-4 text-red-600" />
-                <span className="text-sm font-medium text-red-600">Logout</span>
+                <LogOut className="h-4 w-4 text-error-600" />
+                <span className="text-body-regular font-medium text-error-600">Logout</span>
               </div>
               <ChevronRight className="h-4 w-4 text-red-400" />
             </button>
@@ -382,32 +382,32 @@ const UserProfile = () => {
       )}
 
       {/* Bottom Navigation - Mobile Only */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-2 md:hidden">
         <div className="flex justify-around">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <User className="h-5 w-5 mb-1" />
-            <span className="text-xs">Dashboard</span>
+            <span className="text-body-small">Dashboard</span>
           </button>
           <button className="flex flex-col items-center p-2 text-blue-600">
             <User className="h-5 w-5 mb-1" />
-            <span className="text-xs font-medium">Profile</span>
+            <span className="text-body-small font-medium">Profile</span>
           </button>
           <button
             onClick={() => navigate('/filing/start')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <Settings className="h-5 w-5 mb-1" />
-            <span className="text-xs">Settings</span>
+            <span className="text-body-small">Settings</span>
           </button>
           <button
             onClick={() => navigate('/notifications')}
-            className="flex flex-col items-center p-2 text-gray-600 hover:text-blue-600"
+            className="flex flex-col items-center p-2 text-slate-600 hover:text-blue-600"
           >
             <Bell className="h-5 w-5 mb-1" />
-            <span className="text-xs">Alerts</span>
+            <span className="text-body-small">Alerts</span>
           </button>
         </div>
       </nav>

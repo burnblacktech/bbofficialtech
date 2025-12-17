@@ -4,8 +4,18 @@
 // Supports rate limiting, sessions, caching, and pub/sub
 // =====================================================
 
-const Redis = require('ioredis');
 const enterpriseLogger = require('../../utils/logger');
+
+let Redis;
+try {
+  Redis = require('ioredis');
+} catch (error) {
+  // ioredis not installed - Redis functionality will be disabled
+  enterpriseLogger.warn('ioredis not found - Redis features will be disabled', {
+    error: error.message,
+  });
+  Redis = null;
+}
 
 class RedisService {
   constructor() {
@@ -21,6 +31,12 @@ class RedisService {
    * Initialize Redis connection
    */
   async initialize() {
+    if (!Redis) {
+      enterpriseLogger.warn('Redis (ioredis) not available - Redis features disabled');
+      this.isConnected = false;
+      return false;
+    }
+    
     try {
       const redisConfig = {
         host: process.env.REDIS_HOST || 'localhost',
@@ -37,21 +53,41 @@ class RedisService {
           enterpriseLogger.warn(`Redis reconnecting (attempt ${times})...`, { delay });
           return delay;
         },
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: null, // Don't retry on individual commands (will use retryStrategy)
         enableReadyCheck: true,
         enableOfflineQueue: false, // Don't queue commands when offline
         connectTimeout: 10000,
-        lazyConnect: false,
+        lazyConnect: true, // Use lazy connect to avoid immediate connection attempts
+        showFriendlyErrorStack: false,
+        retryOnFailover: true,
       };
 
       // Main client for general operations
-      this.client = new Redis(redisConfig);
+      try {
+        this.client = new Redis(redisConfig);
+      } catch (error) {
+        enterpriseLogger.error('Failed to create Redis client', { error: error.message });
+        this.isConnected = false;
+        return false;
+      }
 
       // Subscriber client for pub/sub (separate connection required)
-      this.subscriber = new Redis(redisConfig);
+      try {
+        this.subscriber = new Redis(redisConfig);
+      } catch (error) {
+        enterpriseLogger.error('Failed to create Redis subscriber', { error: error.message });
+        this.isConnected = false;
+        return false;
+      }
 
       // Publisher client for pub/sub
-      this.publisher = new Redis(redisConfig);
+      try {
+        this.publisher = new Redis(redisConfig);
+      } catch (error) {
+        enterpriseLogger.error('Failed to create Redis publisher', { error: error.message });
+        this.isConnected = false;
+        return false;
+      }
 
       // Event handlers for main client
       this.client.on('connect', () => {
@@ -103,13 +139,32 @@ class RedisService {
         enterpriseLogger.error('Redis publisher error', { error: error.message });
       });
 
-      // Wait for connection
-      await this.client.ping();
-      await this.subscriber.ping();
-      await this.publisher.ping();
-
-      enterpriseLogger.info('Redis service initialized successfully');
-      return true;
+      // With lazyConnect: true, connections happen on first command
+      // Try to ping to trigger connection
+      // Wait for connection with timeout
+      try {
+        await Promise.race([
+          Promise.all([
+            this.client.ping(),
+            this.subscriber.ping(),
+            this.publisher.ping(),
+          ]),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Redis connection timeout')), 5000)
+          ),
+        ]);
+        enterpriseLogger.info('Redis service initialized successfully');
+        this.isConnected = true;
+        return true;
+      } catch (pingError) {
+        // If ping fails, Redis might not be available but we can still continue
+        enterpriseLogger.warn('Redis ping failed, but connections will retry in background', {
+          error: pingError.message,
+        });
+        // Set a flag that Redis is not ready yet but connections are established
+        this.isConnected = false;
+        return false; // Return false so server knows Redis is not ready
+      }
     } catch (error) {
       enterpriseLogger.error('Failed to initialize Redis service', {
         error: error.message,
@@ -122,30 +177,33 @@ class RedisService {
 
   /**
    * Get main Redis client
+   * Returns null if not connected (graceful degradation)
    */
   getClient() {
     if (!this.client || !this.isConnected) {
-      throw new Error('Redis client not initialized or not connected');
+      return null;
     }
     return this.client;
   }
 
   /**
    * Get subscriber client for pub/sub
+   * Returns null if not connected (graceful degradation)
    */
   getSubscriber() {
     if (!this.subscriber || !this.isConnected) {
-      throw new Error('Redis subscriber not initialized or not connected');
+      return null;
     }
     return this.subscriber;
   }
 
   /**
    * Get publisher client for pub/sub
+   * Returns null if not connected (graceful degradation)
    */
   getPublisher() {
     if (!this.publisher || !this.isConnected) {
-      throw new Error('Redis publisher not initialized or not connected');
+      return null;
     }
     return this.publisher;
   }
@@ -154,7 +212,14 @@ class RedisService {
    * Check if Redis is connected
    */
   isReady() {
-    return this.isConnected && this.client && this.client.status === 'ready';
+    // Check if client exists and is in a ready state
+    // Also check if status is 'ready' or 'connect' (connecting but usable)
+    if (!this.client) {
+      return false;
+    }
+    const status = this.client.status;
+    // ioredis status can be: 'wait', 'end', 'close', 'ready', 'connect', 'reconnecting'
+    return this.isConnected && (status === 'ready' || status === 'connect');
   }
 
   /**
@@ -163,16 +228,28 @@ class RedisService {
   async disconnect() {
     try {
       if (this.client) {
-        await this.client.quit();
-        enterpriseLogger.info('Redis client disconnected');
+        try {
+          await this.client.quit();
+          enterpriseLogger.info('Redis client disconnected');
+        } catch (error) {
+          enterpriseLogger.warn('Error disconnecting Redis client', { error: error.message });
+        }
       }
       if (this.subscriber) {
-        await this.subscriber.quit();
-        enterpriseLogger.info('Redis subscriber disconnected');
+        try {
+          await this.subscriber.quit();
+          enterpriseLogger.info('Redis subscriber disconnected');
+        } catch (error) {
+          enterpriseLogger.warn('Error disconnecting Redis subscriber', { error: error.message });
+        }
       }
       if (this.publisher) {
-        await this.publisher.quit();
-        enterpriseLogger.info('Redis publisher disconnected');
+        try {
+          await this.publisher.quit();
+          enterpriseLogger.info('Redis publisher disconnected');
+        } catch (error) {
+          enterpriseLogger.warn('Error disconnecting Redis publisher', { error: error.message });
+        }
       }
       this.isConnected = false;
     } catch (error) {

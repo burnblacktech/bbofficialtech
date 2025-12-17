@@ -43,34 +43,34 @@ const SectionExplainer = ({ selectedSectionId, onSectionSelect }) => {
       <div className="space-y-4">
         <button
           onClick={() => onSectionSelect(null)}
-          className="text-sm text-gold-600 hover:text-gold-700 flex items-center gap-1"
+          className="text-body-regular text-gold-600 hover:text-gold-700 flex items-center gap-1"
         >
           ← Back to sections
         </button>
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
-            <div className="px-3 py-1 bg-gold-600 text-white rounded-lg font-bold">
+            <div className="px-3 py-1 bg-gold-600 text-white rounded-xl font-bold">
               Section {section.section}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{section.title}</h3>
+            <h3 className="text-heading-2 font-bold text-slate-900">{section.title}</h3>
           </div>
-          <p className="text-gray-600 mb-4">{section.summary}</p>
+          <p className="text-slate-600 mb-4">{section.summary}</p>
           <div className="prose max-w-none">
-            <p className="text-gray-700 whitespace-pre-line mb-4">{section.explanation}</p>
+            <p className="text-slate-700 whitespace-pre-line mb-4">{section.explanation}</p>
             {section.limit && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
                 <p className="font-semibold text-blue-900">Deduction Limit:</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-heading-2 font-bold text-blue-600">
                   ₹{section.limit.toLocaleString('en-IN')}
                 </p>
               </div>
             )}
             {section.eligibleItems && section.eligibleItems.length > 0 && (
               <div>
-                <p className="font-semibold text-gray-900 mb-2">Eligible Items:</p>
+                <p className="font-semibold text-slate-900 mb-2">Eligible Items:</p>
                 <ul className="space-y-1">
                   {section.eligibleItems.map((item, index) => (
-                    <li key={index} className="flex items-center gap-2 text-gray-700">
+                    <li key={index} className="flex items-center gap-2 text-slate-700">
                       <CheckCircle className="w-4 h-4 text-green-600" />
                       {item}
                     </li>
@@ -86,25 +86,25 @@ const SectionExplainer = ({ selectedSectionId, onSectionSelect }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-900">Tax Sections</h3>
+      <h3 className="font-semibold text-slate-900">Tax Sections</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {sections.map((section) => (
           <div
             key={section.id}
             onClick={() => onSectionSelect(section.id)}
-            className="border border-gray-200 rounded-lg p-4 hover:border-gold-300 hover:shadow-md transition-all cursor-pointer"
+            className="border border-slate-200 rounded-xl p-4 hover:border-gold-300 hover:shadow-elevation-2 transition-all cursor-pointer"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="px-2 py-1 bg-gold-600 text-white rounded text-sm font-bold">
+                  <div className="px-2 py-1 bg-gold-600 text-white rounded text-body-regular font-bold">
                     {section.section}
                   </div>
-                  <h4 className="font-semibold text-gray-900">{section.title}</h4>
+                  <h4 className="font-semibold text-slate-900">{section.title}</h4>
                 </div>
-                <p className="text-sm text-gray-600">{section.summary}</p>
+                <p className="text-body-regular text-slate-600">{section.summary}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
+              <ChevronRight className="w-5 h-5 text-slate-400" />
             </div>
           </div>
         ))}

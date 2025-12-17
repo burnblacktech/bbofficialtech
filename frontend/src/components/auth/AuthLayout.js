@@ -18,17 +18,17 @@ const AuthLayout = ({ children, title, subtitle }) => {
               <Shield className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">BurnBlack</h1>
-              <p className="text-sm text-gray-600">Enterprise Tax Platform</p>
+              <h1 className="text-heading-2 font-bold text-slate-900">BurnBlack</h1>
+              <p className="text-body-regular text-slate-600">Enterprise Tax Platform</p>
             </div>
           </Link>
         </div>
 
         {title && (
           <div className="mt-6 text-center">
-            <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
+            <h2 className="text-heading-1 font-bold text-slate-900">{title}</h2>
             {subtitle && (
-              <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
+              <p className="mt-2 text-body-regular text-slate-600">{subtitle}</p>
             )}
           </div>
         )}
@@ -36,14 +36,14 @@ const AuthLayout = ({ children, title, subtitle }) => {
 
       {/* Main Content */}
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-100">
+        <div className="bg-white py-8 px-4 shadow-elevation-4 sm:rounded-xl sm:px-10 border border-gray-100">
           {children}
         </div>
       </div>
 
       {/* Footer */}
       <div className="mt-8 text-center">
-        <p className="text-xs text-gray-500">
+        <p className="text-body-small text-slate-500">
           &copy; {new Date().getFullYear()} BurnBlack. All rights reserved.
         </p>
       </div>

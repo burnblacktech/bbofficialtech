@@ -55,11 +55,11 @@ const FeatureRequest = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/help"
-          className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Help Center
@@ -68,17 +68,17 @@ const FeatureRequest = () => {
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <Lightbulb className="h-8 w-8 text-yellow-600" />
-            <h1 className="text-heading-2xl text-gray-900">Request a Feature</h1>
+            <h1 className="text-heading-2xl text-slate-900">Request a Feature</h1>
           </div>
-          <p className="text-body-md text-gray-600">
+          <p className="text-body-md text-slate-600">
             Have an idea for a new feature? We'd love to hear it!
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 space-y-6">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-label-md text-gray-700 mb-1">
+            <label htmlFor="title" className="block text-label-md text-slate-700 mb-1">
               Feature Title <span className="text-error-600">*</span>
             </label>
             <input
@@ -88,13 +88,13 @@ const FeatureRequest = () => {
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
               placeholder="Brief name for the feature"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-label-md text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-label-md text-slate-700 mb-1">
               Description <span className="text-error-600">*</span>
             </label>
             <textarea
@@ -104,13 +104,13 @@ const FeatureRequest = () => {
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe the feature in detail. What would it do? How would it work?"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
           {/* Use Case */}
           <div>
-            <label htmlFor="useCase" className="block text-label-md text-gray-700 mb-1">
+            <label htmlFor="useCase" className="block text-label-md text-slate-700 mb-1">
               Use Case
             </label>
             <textarea
@@ -119,21 +119,21 @@ const FeatureRequest = () => {
               value={formData.useCase}
               onChange={(e) => handleInputChange('useCase', e.target.value)}
               placeholder="How would you use this feature? What problem would it solve?"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             />
           </div>
 
           {/* Category & Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="category" className="block text-label-md text-gray-700 mb-1">
+              <label htmlFor="category" className="block text-label-md text-slate-700 mb-1">
                 Category
               </label>
               <select
                 id="category"
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -143,14 +143,14 @@ const FeatureRequest = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="priority" className="block text-label-md text-gray-700 mb-1">
+              <label htmlFor="priority" className="block text-label-md text-slate-700 mb-1">
                 Priority
               </label>
               <select
                 id="priority"
                 value={formData.priority}
                 onChange={(e) => handleInputChange('priority', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               >
                 <option value="low">Low - Nice to have</option>
                 <option value="medium">Medium - Would be helpful</option>
@@ -160,7 +160,7 @@ const FeatureRequest = () => {
           </div>
 
           {/* Info Box */}
-          <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+          <div className="bg-info-50 border border-info-200 rounded-xl p-4">
             <div className="flex">
               <CheckCircle className="h-5 w-5 text-info-600 flex-shrink-0 mt-0.5" />
               <div className="ml-3">
@@ -176,14 +176,14 @@ const FeatureRequest = () => {
           <div className="flex space-x-4">
             <Link
               to="/help"
-              className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-center"
+              className="flex-1 py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 text-center"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+              className="flex-1 py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
               {isLoading ? 'Submitting...' : 'Submit Feature Request'}
             </button>

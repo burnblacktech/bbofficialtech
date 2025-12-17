@@ -193,16 +193,16 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="bg-white rounded-xl shadow-elevation-3 p-8">
         <div className="flex items-center mb-6">
           <User className="h-8 w-8 text-primary-600 mr-3" />
-          <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
+          <h2 className="text-heading-2 font-bold text-slate-900">Personal Information</h2>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Basic Information Section */}
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
+          <div className="bg-blue-50 p-6 rounded-xl">
+            <h3 className="text-heading-4 font-semibold text-blue-900 mb-4 flex items-center">
               <Shield className="h-5 w-5 mr-2" />
               Basic Information
             </h3>
@@ -210,7 +210,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Gender */}
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="gender" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Gender *
                 </label>
                 <select
@@ -219,7 +219,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   aria-label={getAriaLabel('Gender', true, errors.gender?.message)}
                   aria-describedby={getAriaDescribedBy('gender', null, errors.gender?.message)}
                   aria-invalid={!!errors.gender}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="">Select Gender</option>
                   <option value="MALE">Male</option>
@@ -227,7 +227,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   <option value="OTHER">Other</option>
                 </select>
                 {errors.gender && (
-                  <p id="gender-error" role="alert" className="mt-1 text-sm text-red-600 flex items-center" aria-live="polite">
+                  <p id="gender-error" role="alert" className="mt-1 text-body-regular text-error-600 flex items-center" aria-live="polite">
                     <AlertCircle className="h-4 w-4 mr-1" aria-hidden="true" />
                     {errors.gender.message}
                   </p>
@@ -236,7 +236,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
               {/* Aadhaar */}
               <div>
-                <label htmlFor="aadhaar" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="aadhaar" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Aadhaar Number
                 </label>
                 <input
@@ -248,10 +248,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   aria-label={getAriaLabel('Aadhaar Number', false, errors.aadhaar?.message)}
                   aria-describedby={getAriaDescribedBy('aadhaar', null, errors.aadhaar?.message)}
                   aria-invalid={!!errors.aadhaar}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 />
                 {errors.aadhaar && (
-                  <p id="aadhaar-error" role="alert" className="mt-1 text-sm text-red-600 flex items-center" aria-live="polite">
+                  <p id="aadhaar-error" role="alert" className="mt-1 text-body-regular text-error-600 flex items-center" aria-live="polite">
                     <AlertCircle className="h-4 w-4 mr-1" aria-hidden="true" />
                     {errors.aadhaar.message}
                   </p>
@@ -260,13 +260,13 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
               {/* Filing For */}
               <div>
-                <label htmlFor="filing_for" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="filing_for" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Filing For *
                 </label>
                 <select
                   id="filing_for"
                   {...register('filing_for')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="SELF">Self</option>
                   <option value="SPOUSE">Spouse</option>
@@ -274,7 +274,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   <option value="HUF">HUF</option>
                 </select>
                 {errors.filing_for && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <p className="mt-1 text-body-regular text-error-600 flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.filing_for.message}
                   </p>
@@ -283,20 +283,20 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
               {/* Residential Status */}
               <div>
-                <label htmlFor="residential_status" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="residential_status" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Residential Status *
                 </label>
                 <select
                   id="residential_status"
                   {...register('residential_status')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="RESIDENT">Resident</option>
                   <option value="NON_RESIDENT">Non-Resident</option>
                   <option value="RESIDENT_NOT_ORDINARILY_RESIDENT">Resident but Not Ordinarily Resident</option>
                 </select>
                 {errors.residential_status && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <p className="mt-1 text-body-regular text-error-600 flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.residential_status.message}
                   </p>
@@ -306,7 +306,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               {/* Country of Residence (conditional) */}
               {residentialStatus === 'NON_RESIDENT' && (
                 <div className="md:col-span-2">
-                  <label htmlFor="country_of_residence" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="country_of_residence" className="block text-body-regular font-medium text-slate-700 mb-2">
                     Country of Residence *
                   </label>
                   <input
@@ -314,10 +314,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                     id="country_of_residence"
                     {...register('country_of_residence')}
                     placeholder="Enter country name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                   />
                   {errors.country_of_residence && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-body-regular text-error-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.country_of_residence.message}
                     </p>
@@ -328,8 +328,8 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
           </div>
 
           {/* Family Information Section */}
-          <div className="bg-green-50 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
+          <div className="bg-green-50 p-6 rounded-xl">
+            <h3 className="text-heading-4 font-semibold text-green-900 mb-4 flex items-center">
               <Users className="h-5 w-5 mr-2" />
               Family Information
             </h3>
@@ -337,7 +337,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Father's Name */}
               <div>
-                <label htmlFor="father_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="father_name" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Father's Name *
                 </label>
                 <input
@@ -345,10 +345,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   id="father_name"
                   {...register('father_name')}
                   placeholder="Enter father's full name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 />
                 {errors.father_name && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <p className="mt-1 text-body-regular text-error-600 flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.father_name.message}
                   </p>
@@ -357,7 +357,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
               {/* Mother's Name */}
               <div>
-                <label htmlFor="mother_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="mother_name" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Mother's Name
                 </label>
                 <input
@@ -365,10 +365,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   id="mother_name"
                   {...register('mother_name')}
                   placeholder="Enter mother's full name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 />
                 {errors.mother_name && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <p className="mt-1 text-body-regular text-error-600 flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.mother_name.message}
                   </p>
@@ -379,7 +379,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               {filingFor === 'SPOUSE' && (
                 <>
                   <div>
-                    <label htmlFor="spouse_name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="spouse_name" className="block text-body-regular font-medium text-slate-700 mb-2">
                       Spouse Name *
                     </label>
                     <input
@@ -387,10 +387,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                       id="spouse_name"
                       {...register('spouse_name')}
                       placeholder="Enter spouse's full name"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     />
                     {errors.spouse_name && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <p className="mt-1 text-body-regular text-error-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
                         {errors.spouse_name.message}
                       </p>
@@ -398,7 +398,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   </div>
 
                   <div>
-                    <label htmlFor="spouse_pan" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="spouse_pan" className="block text-body-regular font-medium text-slate-700 mb-2">
                       Spouse PAN
                     </label>
                     <input
@@ -407,10 +407,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                       {...register('spouse_pan')}
                       placeholder="ABCDE1234F"
                       maxLength="10"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     />
                     {errors.spouse_pan && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <p className="mt-1 text-body-regular text-error-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
                         {errors.spouse_pan.message}
                       </p>
@@ -418,7 +418,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   </div>
 
                   <div>
-                    <label htmlFor="spouse_aadhaar" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="spouse_aadhaar" className="block text-body-regular font-medium text-slate-700 mb-2">
                       Spouse Aadhaar
                     </label>
                     <input
@@ -427,10 +427,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                       {...register('spouse_aadhaar')}
                       placeholder="12-digit Aadhaar number"
                       maxLength="12"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                     />
                     {errors.spouse_aadhaar && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <p className="mt-1 text-body-regular text-error-600 flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
                         {errors.spouse_aadhaar.message}
                       </p>
@@ -442,8 +442,8 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
           </div>
 
           {/* Address Information Section */}
-          <div className="bg-purple-50 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold text-purple-900 mb-4 flex items-center">
+          <div className="bg-purple-50 p-6 rounded-xl">
+            <h3 className="text-heading-4 font-semibold text-purple-900 mb-4 flex items-center">
               <MapPin className="h-5 w-5 mr-2" />
               Address Information
             </h3>
@@ -451,7 +451,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
             <div className="space-y-4">
               {/* Address Line 1 */}
               <div>
-                <label htmlFor="address.line1" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="address.line1" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Address Line 1 *
                 </label>
                 <input
@@ -459,10 +459,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   id="address.line1"
                   {...register('address.line1')}
                   placeholder="House/Flat No., Building Name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 />
                 {errors.address?.line1 && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <p className="mt-1 text-body-regular text-error-600 flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.address.line1.message}
                   </p>
@@ -471,7 +471,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
               {/* Address Line 2 */}
               <div>
-                <label htmlFor="address.line2" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="address.line2" className="block text-body-regular font-medium text-slate-700 mb-2">
                   Address Line 2
                 </label>
                 <input
@@ -479,10 +479,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                   id="address.line2"
                   {...register('address.line2')}
                   placeholder="Street, Area, Locality"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 />
                 {errors.address?.line2 && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <p className="mt-1 text-body-regular text-error-600 flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.address.line2.message}
                   </p>
@@ -492,7 +492,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* City */}
                 <div>
-                  <label htmlFor="address.city" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="address.city" className="block text-body-regular font-medium text-slate-700 mb-2">
                     City *
                   </label>
                   <input
@@ -500,10 +500,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                     id="address.city"
                     {...register('address.city')}
                     placeholder="City"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                   />
                   {errors.address?.city && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-body-regular text-error-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.address.city.message}
                     </p>
@@ -512,7 +512,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
                 {/* State */}
                 <div>
-                  <label htmlFor="address.state" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="address.state" className="block text-body-regular font-medium text-slate-700 mb-2">
                     State *
                   </label>
                   <input
@@ -520,10 +520,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                     id="address.state"
                     {...register('address.state')}
                     placeholder="State"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                   />
                   {errors.address?.state && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-body-regular text-error-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.address.state.message}
                     </p>
@@ -532,7 +532,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
                 {/* PIN Code */}
                 <div>
-                  <label htmlFor="address.pin_code" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="address.pin_code" className="block text-body-regular font-medium text-slate-700 mb-2">
                     PIN Code *
                   </label>
                   <input
@@ -541,10 +541,10 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                     {...register('address.pin_code')}
                     placeholder="123456"
                     maxLength="6"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl shadow-elevation-1 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                   />
                   {errors.address?.pin_code && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-body-regular text-error-600 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.address.pin_code.message}
                     </p>
@@ -556,8 +556,8 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
 
           {/* Validation Summary */}
           {validation && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="text-md font-medium text-gray-900 mb-2 flex items-center">
+            <div className="bg-slate-50 p-4 rounded-xl">
+              <h4 className="text-md font-medium text-slate-900 mb-2 flex items-center">
                 <Info className="h-5 w-5 mr-2" />
                 Validation Summary
               </h4>
@@ -568,7 +568,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                     <span>All required information is complete</span>
                   </div>
                 ) : (
-                  <div className="flex items-center text-red-600">
+                  <div className="flex items-center text-error-600">
                     <AlertCircle className="h-4 w-4 mr-2" />
                     <span>Missing required fields: {validation.missingFields.join(', ')}</span>
                   </div>
@@ -588,11 +588,11 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex justify-between pt-6 border-t border-gray-200">
+          <div className="flex justify-between pt-6 border-t border-slate-200">
             <button
               type="button"
               onClick={validatePersonalInfo}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              className="px-4 py-2 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               Validate
             </button>
@@ -601,7 +601,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                className="px-6 py-2 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Information'}
               </button>
@@ -610,7 +610,7 @@ const PersonalInfoForm = ({ intakeId, defaultValues, onSave, onNext }) => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="px-6 py-2 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
                   Next Step
                 </button>

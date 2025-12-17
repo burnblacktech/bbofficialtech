@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Calculator, Info } from 'lucide-react';
 import { usePresumptiveTaxCalculation } from '../hooks/use-business-income';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
   const [formData, setFormData] = useState({
@@ -77,13 +77,13 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center gap-3 mb-6">
         <Calculator className="h-6 w-6 text-gold-600" />
         <h3 className="text-heading-md text-gray-800">Presumptive Tax Calculator</h3>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
         <div className="flex items-start gap-3">
           <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-body-sm text-blue-800">
@@ -99,18 +99,18 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
       </div>
 
       {errors.general && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div className="bg-error-50 border border-red-200 rounded-xl p-4 mb-6">
           <p className="text-body-sm text-red-800">{errors.general}</p>
         </div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">Section</label>
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">Section</label>
           <select
             value={formData.section}
             onChange={(e) => handleChange('section', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
           >
             <option value="44AD">Section 44AD (Business)</option>
             <option value="44ADA">Section 44ADA (Profession)</option>
@@ -119,18 +119,18 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
         </div>
 
         <div>
-          <label className="block text-body-sm font-medium text-gray-700 mb-2">Gross Receipts (₹)</label>
+          <label className="block text-body-sm font-medium text-slate-700 mb-2">Gross Receipts (₹)</label>
           <input
             type="number"
             value={formData.grossReceipts}
             onChange={(e) => handleChange('grossReceipts', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-              errors.grossReceipts ? 'border-red-300' : 'border-gray-300'
+            className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+              errors.grossReceipts ? 'border-error-300' : 'border-slate-300'
             }`}
             placeholder="Enter gross receipts"
           />
           {errors.grossReceipts && (
-            <p className="text-body-sm text-red-600 mt-1">{errors.grossReceipts}</p>
+            <p className="text-body-sm text-error-600 mt-1">{errors.grossReceipts}</p>
           )}
         </div>
 
@@ -143,7 +143,7 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
               onChange={(e) => handleChange('isDigitalReceipts', e.target.checked)}
               className="mr-2"
             />
-            <label htmlFor="digitalReceipts" className="text-body-sm text-gray-700">
+            <label htmlFor="digitalReceipts" className="text-body-sm text-slate-700">
               Digital receipts (6% instead of 8%)
             </label>
           </div>
@@ -152,27 +152,27 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
         {formData.section === '44AE' && (
           <>
             <div>
-              <label className="block text-body-sm font-medium text-gray-700 mb-2">Number of Vehicles</label>
+              <label className="block text-body-sm font-medium text-slate-700 mb-2">Number of Vehicles</label>
               <input
                 type="number"
                 value={formData.numberOfVehicles}
                 onChange={(e) => handleChange('numberOfVehicles', e.target.value)}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                  errors.numberOfVehicles ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                  errors.numberOfVehicles ? 'border-error-300' : 'border-slate-300'
                 }`}
                 placeholder="Enter number of vehicles"
               />
               {errors.numberOfVehicles && (
-                <p className="text-body-sm text-red-600 mt-1">{errors.numberOfVehicles}</p>
+                <p className="text-body-sm text-error-600 mt-1">{errors.numberOfVehicles}</p>
               )}
             </div>
             <div>
-              <label className="block text-body-sm font-medium text-gray-700 mb-2">Heavy Vehicles (Optional)</label>
+              <label className="block text-body-sm font-medium text-slate-700 mb-2">Heavy Vehicles (Optional)</label>
               <input
                 type="number"
                 value={formData.heavyVehicles}
                 onChange={(e) => handleChange('heavyVehicles', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 placeholder="Enter number of heavy vehicles"
               />
             </div>
@@ -189,23 +189,23 @@ const PresumptiveTaxCalculator = ({ onCalculate, initialData = {} }) => {
       </div>
 
       {result && (
-        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-6">
+        <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-6">
           <h4 className="text-body-md font-semibold text-gray-800 mb-4">Calculation Result</h4>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-body-sm text-gray-600">Gross Receipts:</span>
+              <span className="text-body-sm text-slate-600">Gross Receipts:</span>
               <span className="text-body-md font-semibold text-gray-800">
                 {formatCurrency(result.grossReceipts)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-body-sm text-gray-600">Presumptive Income:</span>
+              <span className="text-body-sm text-slate-600">Presumptive Income:</span>
               <span className="text-heading-md font-bold text-green-700">
                 {formatCurrency(result.presumptiveIncome)}
               </span>
             </div>
             <div className="bg-white rounded p-2 mt-2">
-              <p className="text-body-xs text-gray-600">
+              <p className="text-body-xs text-slate-600">
                 Section: {result.applicableSection} | {result.breakdown.calculation}
               </p>
             </div>

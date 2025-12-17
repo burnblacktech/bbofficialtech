@@ -337,16 +337,16 @@ const DataIntegrationDashboard = ({ userId }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-heading-1 font-bold text-slate-900">
                 Data Integration Dashboard
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-slate-600 mt-2">
                 Auto-populate your ITR with real-time financial data integration
               </p>
             </div>
@@ -355,7 +355,7 @@ const DataIntegrationDashboard = ({ userId }) => {
               <button
                 onClick={triggerDataSync}
                 disabled={syncStatus.isSyncing || isLoading}
-                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <RefreshCw className={`w-5 h-5 ${syncStatus.isSyncing ? 'animate-spin' : ''}`} />
                 <span>{syncStatus.isSyncing ? 'Syncing...' : 'Sync Data'}</span>
@@ -364,7 +364,7 @@ const DataIntegrationDashboard = ({ userId }) => {
               <button
                 onClick={triggerAutoPopulation}
                 disabled={!autoPopulation.available || isLoading}
-                className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Zap className="w-5 h-5" />
                 <span>Auto-Populate ITR</span>
@@ -378,16 +378,16 @@ const DataIntegrationDashboard = ({ userId }) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="bg-white rounded-xl shadow-elevation-1 p-6"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Income</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-slate-600 text-body-regular">Total Income</p>
+                <p className="text-heading-2 font-bold text-slate-900">
                   ₹{financialData.totalIncome.toLocaleString()}
                 </p>
               </div>
-              <div className="bg-green-100 p-3 rounded-lg">
+              <div className="bg-green-100 p-3 rounded-xl">
                 <TrendingUp className="w-6 h-6 text-green-600" />
               </div>
             </div>
@@ -397,16 +397,16 @@ const DataIntegrationDashboard = ({ userId }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="bg-white rounded-xl shadow-elevation-1 p-6"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Total Deductions</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-slate-600 text-body-regular">Total Deductions</p>
+                <p className="text-heading-2 font-bold text-slate-900">
                   ₹{financialData.totalDeductions.toLocaleString()}
                 </p>
               </div>
-              <div className="bg-blue-100 p-3 rounded-lg">
+              <div className="bg-blue-100 p-3 rounded-xl">
                 <Shield className="w-6 h-6 text-blue-600" />
               </div>
             </div>
@@ -416,16 +416,16 @@ const DataIntegrationDashboard = ({ userId }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="bg-white rounded-xl shadow-elevation-1 p-6"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">TDS Credits</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-slate-600 text-body-regular">TDS Credits</p>
+                <p className="text-heading-2 font-bold text-slate-900">
                   ₹{financialData.totalTDS.toLocaleString()}
                 </p>
               </div>
-              <div className="bg-purple-100 p-3 rounded-lg">
+              <div className="bg-purple-100 p-3 rounded-xl">
                 <Database className="w-6 h-6 text-purple-600" />
               </div>
             </div>
@@ -435,16 +435,16 @@ const DataIntegrationDashboard = ({ userId }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="bg-white rounded-xl shadow-elevation-1 p-6"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Data Quality</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-slate-600 text-body-regular">Data Quality</p>
+                <p className="text-heading-2 font-bold text-slate-900">
                   {syncStatus.dataQuality}%
                 </p>
               </div>
-              <div className="bg-yellow-100 p-3 rounded-lg">
+              <div className="bg-yellow-100 p-3 rounded-xl">
                 <Activity className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
@@ -457,35 +457,35 @@ const DataIntegrationDashboard = ({ userId }) => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="bg-white rounded-xl shadow-elevation-1 p-6"
           >
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <h2 className="text-heading-3 font-semibold text-slate-900 mb-4 flex items-center">
               <Link className="w-5 h-5 mr-2 text-blue-600" />
               Connected Data Sources
             </h2>
 
             <div className="space-y-3">
               {financialData.dataSources.map((source, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <div className="flex items-center space-x-3">
                     <div className={`w-3 h-3 rounded-full ${
                       source.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
                     }`} />
                     <div>
-                      <p className="font-medium text-gray-900">{source.name}</p>
-                      <p className="text-sm text-gray-600">{source.type.replace('_', ' ')}</p>
+                      <p className="font-medium text-slate-900">{source.name}</p>
+                      <p className="text-body-regular text-slate-600">{source.type.replace('_', ' ')}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">{source.lastSync}</p>
-                    <p className="text-xs text-green-600">Active</p>
+                    <p className="text-body-regular text-slate-600">{source.lastSync}</p>
+                    <p className="text-body-small text-green-600">Active</p>
                   </div>
                 </div>
               ))}
 
               {financialData.dataSources.length === 0 && (
                 <div className="text-center py-8">
-                  <p className="text-gray-600">No data sources connected yet</p>
+                  <p className="text-slate-600">No data sources connected yet</p>
                   <button className="mt-4 text-blue-600 hover:text-blue-700">
                     Connect Data Sources →
                   </button>
@@ -498,16 +498,16 @@ const DataIntegrationDashboard = ({ userId }) => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="bg-white rounded-xl shadow-elevation-1 p-6"
           >
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <h2 className="text-heading-3 font-semibold text-slate-900 mb-4 flex items-center">
               <Zap className="w-5 h-5 mr-2 text-yellow-600" />
               Auto-Population Status
             </h2>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Readiness</span>
+                <span className="text-slate-600">Readiness</span>
                 <div className="flex items-center space-x-2">
                   <div className={`w-2 h-2 rounded-full ${
                     autoPopulation.available ? 'bg-green-500' : 'bg-yellow-500'
@@ -521,15 +521,15 @@ const DataIntegrationDashboard = ({ userId }) => {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Confidence</span>
+                <span className="text-slate-600">Confidence</span>
                 <div className="flex items-center space-x-2">
-                  <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div className="w-24 bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full"
                       style={{ width: `${autoPopulation.confidence}%` }}
                     />
                   </div>
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-body-regular font-medium text-slate-900">
                     {autoPopulation.confidence}%
                   </span>
                 </div>
@@ -537,12 +537,12 @@ const DataIntegrationDashboard = ({ userId }) => {
 
               {autoPopulation.recommendations.length > 0 && (
                 <div className="border-t pt-4">
-                  <h3 className="font-medium text-gray-900 mb-2">Recommendations</h3>
+                  <h3 className="font-medium text-slate-900 mb-2">Recommendations</h3>
                   <div className="space-y-2">
                     {autoPopulation.recommendations.map((rec, index) => (
-                      <div key={index} className="p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm font-medium text-blue-900">{rec.title}</p>
-                        <p className="text-xs text-blue-700 mt-1">{rec.description}</p>
+                      <div key={index} className="p-3 bg-blue-50 rounded-xl">
+                        <p className="text-body-regular font-medium text-blue-900">{rec.title}</p>
+                        <p className="text-body-small text-blue-700 mt-1">{rec.description}</p>
                       </div>
                     ))}
                   </div>
@@ -557,32 +557,32 @@ const DataIntegrationDashboard = ({ userId }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl shadow-sm p-6"
+          className="bg-white rounded-xl shadow-elevation-1 p-6"
         >
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-heading-3 font-semibold text-slate-900 mb-4">Quick Actions</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center space-x-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-              <Upload className="w-5 h-5 text-gray-600" />
+            <button className="flex items-center space-x-3 p-4 border-2 border-dashed border-slate-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-colors">
+              <Upload className="w-5 h-5 text-slate-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">Upload Documents</p>
-                <p className="text-sm text-gray-600">Form 16, Bank Statements, etc.</p>
+                <p className="font-medium text-slate-900">Upload Documents</p>
+                <p className="text-body-regular text-slate-600">Form 16, Bank Statements, etc.</p>
               </div>
             </button>
 
-            <button className="flex items-center space-x-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-              <Building className="w-5 h-5 text-gray-600" />
+            <button className="flex items-center space-x-3 p-4 border-2 border-dashed border-slate-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-colors">
+              <Building className="w-5 h-5 text-slate-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">Connect Bank</p>
-                <p className="text-sm text-gray-600">Auto-sync bank statements</p>
+                <p className="font-medium text-slate-900">Connect Bank</p>
+                <p className="text-body-regular text-slate-600">Auto-sync bank statements</p>
               </div>
             </button>
 
-            <button className="flex items-center space-x-3 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-              <CreditCard className="w-5 h-5 text-gray-600" />
+            <button className="flex items-center space-x-3 p-4 border-2 border-dashed border-slate-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-colors">
+              <CreditCard className="w-5 h-5 text-slate-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">Connect Broker</p>
-                <p className="text-sm text-gray-600">Auto-import capital gains</p>
+                <p className="font-medium text-slate-900">Connect Broker</p>
+                <p className="text-body-regular text-slate-600">Auto-import capital gains</p>
               </div>
             </button>
           </div>

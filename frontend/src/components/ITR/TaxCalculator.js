@@ -27,15 +27,15 @@ const StatCard = ({ label, value, icon: Icon, colorScheme = 'blue' }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-xl p-4 border ${colorClasses[colorScheme]} shadow-sm hover:shadow-md transition-shadow`}
+      className={`rounded-xl p-4 border ${colorClasses[colorScheme]} shadow-elevation-1 hover:shadow-elevation-2 transition-shadow`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-slate-600">{label}</span>
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClasses[colorScheme].split(' ')[0]}`}>
+        <span className="text-body-regular font-medium text-slate-600">{label}</span>
+        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${colorClasses[colorScheme].split(' ')[0]}`}>
           <Icon className="w-4 h-4" />
         </div>
       </div>
-      <p className="text-2xl font-bold text-slate-900 tabular-nums">
+      <p className="text-heading-2 font-bold text-slate-900 tabular-nums">
         ₹{formatCurrency(value)}
       </p>
     </motion.div>
@@ -256,8 +256,8 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
           <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-3">
             <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
           </div>
-          <p className="text-sm font-medium text-slate-600">Calculating tax...</p>
-          <p className="text-xs text-slate-400 mt-1">This may take a moment</p>
+          <p className="text-body-regular font-medium text-slate-600">Calculating tax...</p>
+          <p className="text-body-small text-slate-400 mt-1">This may take a moment</p>
         </div>
       </div>
     );
@@ -270,10 +270,10 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
         <div className="w-12 h-12 rounded-full bg-error-50 flex items-center justify-center mx-auto mb-3">
           <Calculator className="w-6 h-6 text-error-500" />
         </div>
-        <p className="text-sm text-error-600 font-medium">{error}</p>
+        <p className="text-body-regular text-error-600 font-medium">{error}</p>
         <button
           onClick={calculateTax}
-          className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
+          className="mt-3 text-body-regular text-primary-600 hover:text-primary-700 font-medium"
         >
           Try again
         </button>
@@ -288,8 +288,8 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
         <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
           <Calculator className="w-6 h-6 text-slate-400" />
         </div>
-        <p className="text-sm text-slate-600 font-medium">No tax data available</p>
-        <p className="text-xs text-slate-400 mt-1">Enter income and deduction details to calculate tax</p>
+        <p className="text-body-regular text-slate-600 font-medium">No tax data available</p>
+        <p className="text-body-small text-slate-400 mt-1">Enter income and deduction details to calculate tax</p>
       </div>
     );
   }
@@ -330,7 +330,7 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
         </h4>
 
         <div className="space-y-3">
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between text-body-regular">
             <span className="text-slate-600">Tax on Income</span>
             <span className="font-semibold text-slate-900 tabular-nums">
               ₹{formatCurrency(taxBreakdown.taxLiability)}
@@ -338,7 +338,7 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
           </div>
 
           {taxBreakdown.rebate87A > 0 && (
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-body-regular">
               <span className="text-slate-600">Less: Rebate u/s 87A</span>
               <span className="font-semibold text-emerald-600 tabular-nums">
                 -₹{formatCurrency(taxBreakdown.rebate87A)}
@@ -346,7 +346,7 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
             </div>
           )}
 
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between text-body-regular">
             <span className="text-slate-600">Health & Education Cess (4%)</span>
             <span className="font-semibold text-slate-900 tabular-nums">
               ₹{formatCurrency(taxBreakdown.cess)}
@@ -355,12 +355,12 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
 
           <div className="border-t border-slate-300 pt-3 flex justify-between">
             <span className="font-semibold text-slate-900">Total Tax Liability</span>
-            <span className="font-bold text-slate-900 tabular-nums text-lg">
+            <span className="font-bold text-slate-900 tabular-nums text-body-large">
               ₹{formatCurrency(taxBreakdown.totalTaxLiability)}
             </span>
           </div>
 
-          <div className="flex justify-between text-sm pt-2">
+          <div className="flex justify-between text-body-regular pt-2">
             <span className="text-slate-600">Less: Taxes Already Paid (TDS/Advance)</span>
             <span className="font-semibold text-blue-600 tabular-nums">
               -₹{formatCurrency(taxBreakdown.totalTaxesPaid)}
@@ -403,7 +403,7 @@ const TaxCalculator = ({ formData, onComputed, regime = 'old', assessmentYear = 
                 <p className="font-semibold text-slate-900">
                   {taxBreakdown.isRefund ? 'Refund Due' : taxBreakdown.refundOrPayable === 0 ? 'No Tax Due' : 'Tax Payable'}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-body-small text-slate-500">
                   {taxBreakdown.isRefund ? 'You will receive this amount' : 'Amount to be paid'}
                 </p>
               </div>

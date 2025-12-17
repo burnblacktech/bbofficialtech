@@ -57,20 +57,20 @@ const VisualLimitGauge = ({
   };
 
   return (
-    <div className={`${colors.light} rounded-lg p-4 border ${colors.border}`}>
+    <div className={`${colors.light} rounded-xl p-4 border ${colors.border}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-medium text-gray-900">{title}</h4>
+        <h4 className="font-medium text-slate-900">{title}</h4>
         <div className="flex items-center">
           {isOverLimit ? (
-            <AlertCircle className="w-4 h-4 text-red-500 mr-1" />
+            <AlertCircle className="w-4 h-4 text-error-500 mr-1" />
           ) : isNearLimit ? (
             <TrendingUp className="w-4 h-4 text-gold-500 mr-1" />
           ) : (
             <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
           )}
           <span className={`text-sm font-medium ${
-            isOverLimit ? 'text-red-600' : isNearLimit ? 'text-gold-600' : 'text-green-600'
+            isOverLimit ? 'text-error-600' : isNearLimit ? 'text-gold-600' : 'text-green-600'
           }`}>
             {showPercentage && `${Math.round(percentage)}%`}
           </span>
@@ -79,7 +79,7 @@ const VisualLimitGauge = ({
 
       {/* Progress Bar */}
       <div className="mb-3">
-        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ease-out ${
               isOverLimit ? 'bg-red-500' : isNearLimit ? 'bg-gold-500' : colors.bg
@@ -90,27 +90,27 @@ const VisualLimitGauge = ({
       </div>
 
       {/* Amounts */}
-      <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-2 gap-4 text-body-regular">
         <div>
-          <span className="text-gray-600">Claimed:</span>
+          <span className="text-slate-600">Claimed:</span>
           <div className={`font-semibold ${
-            isOverLimit ? 'text-red-600' : colors.text
+            isOverLimit ? 'text-error-600' : colors.text
           }`}>
             {formatAmount(claimed)}
           </div>
         </div>
         <div>
-          <span className="text-gray-600">Limit:</span>
-          <div className="font-semibold text-gray-900">
+          <span className="text-slate-600">Limit:</span>
+          <div className="font-semibold text-slate-900">
             {formatAmount(limit)}
           </div>
         </div>
       </div>
 
       {/* Status Message */}
-      <div className="mt-3 text-xs">
+      <div className="mt-3 text-body-small">
         {isOverLimit ? (
-          <div className="text-red-600 bg-red-50 rounded px-2 py-1">
+          <div className="text-error-600 bg-error-50 rounded px-2 py-1">
             ⚠️ Over limit by {formatAmount(claimed - limit)}
           </div>
         ) : isNearLimit ? (
@@ -126,7 +126,7 @@ const VisualLimitGauge = ({
 
       {/* Additional Info */}
       {percentage > 0 && (
-        <div className="mt-2 text-xs text-gray-500">
+        <div className="mt-2 text-body-small text-slate-500">
           {claimed > 0 && (
             <div>
               You've claimed {formatAmount(claimed)} of {formatAmount(limit)} limit

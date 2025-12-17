@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-import Button from '../../common/Button';
+import Button from '../../DesignSystem/components/Button';
 import { formatIndianCurrency } from '../../../lib/format';
 import { cn } from '../../../lib/utils';
 import SourceChip from '../../ui/SourceChip/SourceChip';
@@ -39,7 +39,7 @@ const DiscrepancyPanel = ({
   };
 
   return (
-    <div className={cn('border-2 border-warning-300 bg-warning-50 rounded-lg p-4', className)}>
+    <div className={cn('border-2 border-warning-300 bg-warning-50 rounded-xl p-4', className)}>
       <div className="flex items-start space-x-2 mb-3">
         <AlertTriangle className="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
@@ -55,27 +55,27 @@ const DiscrepancyPanel = ({
       {/* Comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {/* Manual Entry */}
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-label-md font-medium text-gray-700" style={{ fontSize: '13px', fontWeight: 500 }}>
+            <span className="text-label-md font-medium text-slate-700" style={{ fontSize: '13px', fontWeight: 500 }}>
               Your Entry
             </span>
             <SourceChip source="manual" size="sm" />
           </div>
-          <div className="text-number-md font-semibold text-gray-900" style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+          <div className="text-number-md font-semibold text-slate-900" style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {formatIndianCurrency(manualValue)}
           </div>
         </div>
 
         {/* Uploaded Value */}
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-label-md font-medium text-gray-700" style={{ fontSize: '13px', fontWeight: 500 }}>
+            <span className="text-label-md font-medium text-slate-700" style={{ fontSize: '13px', fontWeight: 500 }}>
               From Document
             </span>
             <SourceChip source={source} size="sm" />
           </div>
-          <div className="text-number-md font-semibold text-gray-900" style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+          <div className="text-number-md font-semibold text-slate-900" style={{ fontSize: '18px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
             {formatIndianCurrency(uploadedValue)}
           </div>
         </div>
@@ -111,14 +111,14 @@ const DiscrepancyPanel = ({
       {/* Explanation Input */}
       {showExplanation && (
         <div className="mt-4 pt-4 border-t border-warning-200">
-          <label className="block text-label-md font-medium text-gray-700 mb-2" style={{ fontSize: '13px', fontWeight: 500 }}>
+          <label className="block text-label-md font-medium text-slate-700 mb-2" style={{ fontSize: '13px', fontWeight: 500 }}>
             Explain the difference
           </label>
           <textarea
             value={explanationText}
             onChange={(e) => setExplanationText(e.target.value)}
             placeholder="e.g., Document shows gross salary, but I'm entering net salary after deductions..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-body-md focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500 focus:ring-offset-1"
+            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-body-md focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500 focus:ring-offset-1"
             style={{ fontSize: '14px', lineHeight: '22px', minHeight: '80px' }}
             rows={3}
           />

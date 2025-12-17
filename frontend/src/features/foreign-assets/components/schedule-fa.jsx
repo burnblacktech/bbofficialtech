@@ -56,7 +56,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>
         </div>
@@ -66,7 +66,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
 
   if (error) {
     return (
-      <div className="bg-error-50 border border-error-200 rounded-lg p-6">
+      <div className="bg-error-50 border border-error-200 rounded-xl p-6">
         <p className="text-body-sm text-error-900">
           {error.message || 'Failed to load foreign assets'}
         </p>
@@ -79,20 +79,20 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
     : assets.filter(asset => asset.assetType === activeTab);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
+    <div className="bg-white rounded-xl border border-slate-200">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-heading-lg text-gray-900">Schedule FA - Foreign Assets</h2>
-            <p className="text-body-sm text-gray-600 mt-1">
+            <h2 className="text-heading-lg text-slate-900">Schedule FA - Foreign Assets</h2>
+            <p className="text-body-sm text-slate-600 mt-1">
               Declare all foreign assets held during the financial year
             </p>
           </div>
           {!showAddForm && (
             <button
               onClick={() => handleAddAsset('bank_accounts')}
-              className="flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Asset
@@ -103,7 +103,7 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
 
       {/* Tabs */}
       {!showAddForm && (
-        <div className="border-b border-gray-200 px-6">
+        <div className="border-b border-slate-200 px-6">
           <div className="flex space-x-1 overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -118,13 +118,13 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
                   className={`flex items-center px-4 py-3 text-body-sm font-medium border-b-2 transition-colors ${
                     activeTab === tab.id
                       ? 'border-gold-500 text-gold-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                      : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300'
                   }`}
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {tab.label}
                   {count > 0 && (
-                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
+                    <span className="ml-2 px-2 py-0.5 text-body-small bg-slate-100 text-slate-700 rounded-full">
                       {count}
                     </span>
                   )}
@@ -172,15 +172,15 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
           // Show asset list for selected type
           <div className="space-y-4">
             {filteredAssets.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-                <Globe className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-heading-md text-gray-900 mb-2">No {tabs.find(t => t.id === activeTab)?.label} Found</h3>
-                <p className="text-body-sm text-gray-600 mb-4">
+              <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
+                <Globe className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                <h3 className="text-heading-md text-slate-900 mb-2">No {tabs.find(t => t.id === activeTab)?.label} Found</h3>
+                <p className="text-body-sm text-slate-600 mb-4">
                   Add your first {tabs.find(t => t.id === activeTab)?.label.toLowerCase()} to get started.
                 </p>
                 <button
                   onClick={() => handleAddAsset(activeTab)}
-                  className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                  className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add {tabs.find(t => t.id === activeTab)?.label.slice(0, -1)}
@@ -191,22 +191,22 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
                 {filteredAssets.map((asset) => (
                   <div
                     key={asset.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                    className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h4 className="text-heading-md text-gray-900">
+                          <h4 className="text-heading-md text-slate-900">
                             {asset.assetDetails?.bankName ||
                               asset.assetDetails?.companyName ||
                               asset.assetDetails?.address ||
                               'Foreign Asset'}
                           </h4>
-                          <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                          <span className="px-2 py-1 text-body-small font-medium bg-blue-100 text-blue-800 rounded">
                             {asset.country}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 text-body-sm text-gray-600">
+                        <div className="grid grid-cols-2 gap-4 text-body-sm text-slate-600">
                           <div>
                             <span className="font-medium">Value:</span>{' '}
                             ₹{parseFloat(asset.valuationAmountInr || 0).toLocaleString('en-IN')}
@@ -225,17 +225,17 @@ const ScheduleFA = ({ filingId, onUpdate }) => {
                       </div>
                       <button
                         onClick={() => handleEditAsset(asset)}
-                        className="ml-4 px-3 py-1 text-sm text-gold-600 hover:text-gold-700 hover:bg-gold-50 rounded"
+                        className="ml-4 px-3 py-1 text-body-regular text-gold-600 hover:text-gold-700 hover:bg-gold-50 rounded"
                       >
                         Edit
                       </button>
                     </div>
                   </div>
                 ))}
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-slate-200">
                   <button
                     onClick={() => handleAddAsset(activeTab)}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    className="inline-flex items-center px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Another {tabs.find(t => t.id === activeTab)?.label.slice(0, -1)}

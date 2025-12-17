@@ -83,7 +83,7 @@ const Select = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-label-lg text-gray-700 mb-1.5"
+          className="block text-label-lg text-slate-700 mb-1.5"
           style={{ fontSize: '14px', fontWeight: 500, lineHeight: '20px' }}
         >
           {label}
@@ -104,10 +104,10 @@ const Select = ({
             'flex items-center justify-between',
             'focus:outline-none focus:ring-0',
             {
-              'border-gray-300 bg-white focus:border-gold-500 focus:shadow-[0_0_0_3px_rgba(255,107,0,0.1)]':
+              'border-slate-300 bg-white focus:border-gold-500 focus:shadow-[0_0_0_3px_rgba(255,107,0,0.1)]':
                 !error && !disabled,
               'border-2 border-error-500 bg-error-50': error,
-              'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed': disabled,
+              'border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed': disabled,
             },
           )}
           style={{ fontSize: '16px', lineHeight: '24px' }}
@@ -117,12 +117,12 @@ const Select = ({
           aria-describedby={error ? errorId : helperText ? helperId : undefined}
           aria-required={required}
         >
-          <span className={selectedOption ? 'text-gray-800' : 'text-gray-400'}>
+          <span className={selectedOption ? 'text-gray-800' : 'text-slate-400'}>
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           <ChevronDown
             className={cn(
-              'w-5 h-5 text-gray-400 transition-transform',
+              'w-5 h-5 text-slate-400 transition-transform',
               { 'rotate-180': isOpen },
             )}
           />
@@ -137,17 +137,17 @@ const Select = ({
         {isOpen && (
           <div
             ref={dropdownRef}
-            className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-[10px] shadow-floating max-h-60 overflow-auto"
+            className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-[10px] shadow-floating max-h-60 overflow-auto"
             role="listbox"
           >
             {searchable && (
-              <div className="p-2 border-b border-gray-200">
+              <div className="p-2 border-b border-slate-200">
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search..."
-                  className="w-full h-10 px-3 text-body-md border border-gray-300 rounded-lg focus:outline-none focus:border-gold-500"
+                  className="w-full h-10 px-3 text-body-md border border-slate-300 rounded-xl focus:outline-none focus:border-gold-500"
                   style={{ fontSize: '14px', lineHeight: '22px' }}
                   autoFocus
                 />
@@ -155,7 +155,7 @@ const Select = ({
             )}
 
             {filteredOptions.length === 0 ? (
-              <div className="px-4 py-3 text-body-md text-gray-500 text-center" style={{ fontSize: '14px' }}>
+              <div className="px-4 py-3 text-body-md text-slate-500 text-center" style={{ fontSize: '14px' }}>
                 No options found
               </div>
             ) : (
@@ -166,7 +166,7 @@ const Select = ({
                   onClick={() => handleSelect(option.value)}
                   className={cn(
                     'w-full px-4 py-3 text-left text-body-md transition-colors',
-                    'hover:bg-gray-50 focus:bg-gray-50 focus:outline-none',
+                    'hover:bg-slate-50 focus:bg-slate-50 focus:outline-none',
                     {
                       'bg-gold-50 text-gold-600': value === option.value,
                       'text-gray-800': value !== option.value,
@@ -200,7 +200,7 @@ const Select = ({
       {helperText && !error && (
         <p
           id={helperId}
-          className="mt-1.5 text-body-sm text-gray-500"
+          className="mt-1.5 text-body-sm text-slate-500"
           style={{ fontSize: '13px', lineHeight: '20px' }}
         >
           {helperText}

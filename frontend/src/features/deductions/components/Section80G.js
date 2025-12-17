@@ -18,7 +18,7 @@ import {
   Calendar,
   IndianRupee,
 } from 'lucide-react';
-import apiClient from '../../../services/core/APIClient';
+import { deductionService } from '../services/deduction.service';
 import toast from 'react-hot-toast';
 import { ConfirmationDialog } from '../../../components/UI/ConfirmationDialog/ConfirmationDialog';
 
@@ -64,14 +64,7 @@ const Section80G = ({ filingId, onUpdate }) => {
   // Fetch 80G deductions
   const { data: deductionsData, isLoading } = useQuery({
     queryKey: ['section80G', filingId],
-    queryFn: async () => {
-      try {
-        const response = await apiClient.get(`/api/itr/deductions/80G?filingId=${filingId}`);
-        return response.data;
-      } catch (error) {
-        return { data: { deductions: [], totalAmount: 0, remainingLimit: 0 } };
-      }
-    },
+    queryFn: () => deductionService.getDeductions(filingId, '80G'),
     enabled: !!filingId,
   });
 
@@ -82,11 +75,7 @@ const Section80G = ({ filingId, onUpdate }) => {
   const addDeductionMutation = useMutation({
     mutationFn: async (data) => {
       try {
-        const response = await apiClient.post('/api/itr/deductions/80G', {
-          filingId,
-          ...data,
-        });
-        return response.data;
+        return await deductionService.createDeduction(filingId, '80G', data);
       } catch (error) {
         if (onUpdate) {
           onUpdate({ section80G: parseFloat(data.donationAmount) || 0 });
@@ -94,11 +83,14 @@ const Section80G = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80G', filingId]);
       resetForm();
       setShowAddForm(false);
       toast.success('80G deduction added successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80G: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to add deduction');
@@ -109,11 +101,7 @@ const Section80G = ({ filingId, onUpdate }) => {
   const updateDeductionMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       try {
-        const response = await apiClient.put(`/api/itr/deductions/80G/${id}`, {
-          filingId,
-          ...data,
-        });
-        return response.data;
+        return await deductionService.updateDeductionBySection(filingId, '80G', id, data);
       } catch (error) {
         if (onUpdate) {
           onUpdate({ section80G: parseFloat(data.donationAmount) || 0 });
@@ -121,11 +109,14 @@ const Section80G = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80G', filingId]);
       resetForm();
       setShowAddForm(false);
       toast.success('80G deduction updated successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80G: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to update deduction');
@@ -136,15 +127,17 @@ const Section80G = ({ filingId, onUpdate }) => {
   const deleteDeductionMutation = useMutation({
     mutationFn: async (id) => {
       try {
-        const response = await apiClient.delete(`/api/itr/deductions/80G/${id}?filingId=${filingId}`);
-        return response.data;
+        return await deductionService.deleteDeductionBySection(filingId, '80G', id);
       } catch (error) {
         return { success: true };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80G', filingId]);
       toast.success('80G deduction deleted successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80G: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to delete deduction');
@@ -265,48 +258,48 @@ const Section80G = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-heading-lg text-gray-900 mb-1">Section 80G - Donations</h3>
-            <p className="text-body-sm text-gray-600">
+            <h3 className="text-heading-lg text-slate-900 mb-1">Section 80G - Donations</h3>
+            <p className="text-body-sm text-slate-600">
               Claim deductions for donations to approved institutions
             </p>
           </div>
           <div className="text-right">
-            <div className="text-body-xs text-gray-500 mb-1">Total Claimed</div>
+            <div className="text-body-xs text-slate-500 mb-1">Total Claimed</div>
             <div className="text-heading-xl font-bold text-gold-600">
               ₹{totalAmount.toLocaleString('en-IN')}
             </div>
-            <div className="text-body-xs text-gray-500 mt-1">No upper limit</div>
+            <div className="text-body-xs text-slate-500 mt-1">No upper limit</div>
           </div>
         </div>
       </div>
 
       {/* Donation Type Selector */}
       {!showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h4 className="text-heading-md text-gray-900 mb-4">Donation Types</h4>
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <h4 className="text-heading-md text-slate-900 mb-4">Donation Types</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {donationTypes.map((type) => {
               const Icon = type.icon;
               return (
                 <div
                   key={type.id}
-                  className={`p-4 rounded-lg border-2 ${
+                  className={`p-4 rounded-xl border-2 ${
                     formData.donationType === type.id
                       ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <Icon className={`w-6 h-6 text-${type.color}-600`} />
                     <div>
-                      <div className="text-heading-sm font-semibold text-gray-900">{type.name}</div>
-                      <div className="text-body-xs text-gray-600">{type.description}</div>
+                      <div className="text-heading-sm font-semibold text-slate-900">{type.name}</div>
+                      <div className="text-body-xs text-slate-600">{type.description}</div>
                     </div>
                   </div>
-                  <div className="text-body-xs text-gray-500 mt-2">
+                  <div className="text-body-xs text-slate-500 mt-2">
                     Examples: {type.examples.join(', ')}
                   </div>
                 </div>
@@ -318,9 +311,9 @@ const Section80G = ({ filingId, onUpdate }) => {
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-heading-md text-gray-900">
+            <h4 className="text-heading-md text-slate-900">
               {editingDeduction ? 'Edit Donation' : 'Add New Donation'}
             </h4>
             <button
@@ -328,7 +321,7 @@ const Section80G = ({ filingId, onUpdate }) => {
                 resetForm();
                 setShowAddForm(false);
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-slate-500 hover:text-slate-700"
             >
               ✕
             </button>
@@ -337,13 +330,13 @@ const Section80G = ({ filingId, onUpdate }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Donation Type *
                 </label>
                 <select
                   value={formData.donationType}
                   onChange={(e) => setFormData({ ...formData, donationType: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 >
                   {donationTypes.map((type) => (
                     <option key={type.id} value={type.id}>
@@ -354,43 +347,43 @@ const Section80G = ({ filingId, onUpdate }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Donation Amount (₹) *
                 </label>
                 <input
                   type="number"
                   value={formData.donationAmount}
                   onChange={(e) => setFormData({ ...formData, donationAmount: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.donationAmount ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.donationAmount ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="0"
                 />
                 {formErrors.donationAmount && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.donationAmount}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.donationAmount}</p>
                 )}
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Donee Name *
                 </label>
                 <input
                   type="text"
                   value={formData.doneeName}
                   onChange={(e) => setFormData({ ...formData, doneeName: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.doneeName ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.doneeName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Name of the institution/organization"
                 />
                 {formErrors.doneeName && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.doneeName}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.doneeName}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Donee PAN</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Donee PAN</label>
                 <input
                   type="text"
                   value={formData.doneePan}
@@ -398,18 +391,18 @@ const Section80G = ({ filingId, onUpdate }) => {
                     setFormData({ ...formData, doneePan: e.target.value.toUpperCase() })
                   }
                   maxLength={10}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.doneePan ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.doneePan ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="ABCDE1234F"
                 />
                 {formErrors.doneePan && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.doneePan}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.doneePan}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Registration Number
                 </label>
                 <input
@@ -418,49 +411,49 @@ const Section80G = ({ filingId, onUpdate }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, registrationNumber: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Registration number (if applicable)"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Donee Address *
                 </label>
                 <textarea
                   value={formData.doneeAddress}
                   onChange={(e) => setFormData({ ...formData, doneeAddress: e.target.value })}
                   rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.doneeAddress ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.doneeAddress ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Complete address of the institution"
                 />
                 {formErrors.doneeAddress && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.doneeAddress}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.doneeAddress}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Receipt Number
                 </label>
                 <input
                   type="text"
                   value={formData.receiptNumber}
                   onChange={(e) => setFormData({ ...formData, receiptNumber: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Receipt number"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Receipt Date</label>
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">Receipt Date</label>
                 <input
                   type="date"
                   value={formData.receiptDate}
                   onChange={(e) => setFormData({ ...formData, receiptDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
               </div>
             </div>
@@ -472,14 +465,14 @@ const Section80G = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50"
               >
                 {editingDeduction ? 'Update' : 'Add'} Donation
               </button>
@@ -492,10 +485,10 @@ const Section80G = ({ filingId, onUpdate }) => {
       {!showAddForm && (
         <>
           <div className="flex justify-between items-center">
-            <h4 className="text-heading-md text-gray-900">Your Donations</h4>
+            <h4 className="text-heading-md text-slate-900">Your Donations</h4>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <Plus className="w-4 h-4" />
               Add Donation
@@ -503,12 +496,12 @@ const Section80G = ({ filingId, onUpdate }) => {
           </div>
 
           {deductions.length === 0 ? (
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-              <Heart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 mb-4">No donations added yet</p>
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+              <Heart className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <p className="text-slate-600 mb-4">No donations added yet</p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
               >
                 Add Your First Donation
               </button>
@@ -518,12 +511,12 @@ const Section80G = ({ filingId, onUpdate }) => {
               {deductions.map((deduction) => (
                 <div
                   key={deduction.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                  className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h5 className="text-heading-sm font-semibold text-gray-900">
+                        <h5 className="text-heading-sm font-semibold text-slate-900">
                           {deduction.doneeName}
                         </h5>
                         <span
@@ -536,7 +529,7 @@ const Section80G = ({ filingId, onUpdate }) => {
                           {deduction.donationType} Deduction
                         </span>
                       </div>
-                      <div className="text-body-sm text-gray-600 space-y-1">
+                      <div className="text-body-sm text-slate-600 space-y-1">
                         <p>Amount: ₹{deduction.donationAmount?.toLocaleString('en-IN')}</p>
                         {deduction.doneeAddress && <p>Address: {deduction.doneeAddress}</p>}
                         {deduction.receiptNumber && <p>Receipt: {deduction.receiptNumber}</p>}
@@ -550,17 +543,17 @@ const Section80G = ({ filingId, onUpdate }) => {
                           onChange={(e) => handleProofUpload(e, deduction.id)}
                           className="hidden"
                         />
-                        <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
+                        <Upload className="w-5 h-5 text-slate-500 hover:text-gold-500" />
                       </label>
                       <button
                         onClick={() => handleEdit(deduction)}
-                        className="p-1 text-gray-500 hover:text-gold-500"
+                        className="p-1 text-slate-500 hover:text-gold-500"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(deduction.id)}
-                        className="p-1 text-gray-500 hover:text-red-500"
+                        className="p-1 text-slate-500 hover:text-error-500"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>

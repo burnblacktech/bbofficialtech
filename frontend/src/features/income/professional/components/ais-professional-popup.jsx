@@ -8,7 +8,7 @@ import { X, CheckCircle, AlertCircle, Info, Briefcase } from 'lucide-react';
 import { useAISProfessionalIncome, useApplyAISProfessionalIncome, useCompareAISWithForm } from '../hooks/use-ais-integration';
 import { professionalIncomeAISService } from '../services/ais-integration.service';
 import SourceChip from '../../../../components/UI/SourceChip/SourceChip';
-import Button from '../../../../components/common/Button';
+import Button from '../../../../components/DesignSystem/components/Button';
 
 const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onApplied }) => {
   const [selectedProfessions, setSelectedProfessions] = useState([]);
@@ -59,9 +59,9 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6">
+        <div className="bg-white rounded-xl p-6">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading AIS data...</p>
+          <p className="mt-4 text-slate-600">Loading AIS data...</p>
         </div>
       </div>
     );
@@ -70,17 +70,17 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
   if (!aisData || !aisData.professionalIncome || mappedData.length === 0) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">AIS Professional Income</h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+        <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-white border-b border-slate-200 p-4 flex items-center justify-between">
+            <h3 className="text-heading-4 font-semibold text-slate-900">AIS Professional Income</h3>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
             </button>
           </div>
           <div className="p-6 text-center">
-            <Info className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No professional income data found in AIS</p>
-            <p className="text-sm text-gray-500 mt-2">
+            <Info className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <p className="text-slate-600">No professional income data found in AIS</p>
+            <p className="text-body-regular text-slate-500 mt-2">
               Professional income from Section 194J (TDS on professional fees) will appear here
             </p>
           </div>
@@ -94,19 +94,19 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-white border-b border-slate-200 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Briefcase className="w-5 h-5 text-gold-600" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">AIS Professional Income Data</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="text-heading-4 font-semibold text-slate-900">AIS Professional Income Data</h3>
+              <p className="text-body-regular text-slate-500">
                 Found {totalProfessions} profession{totalProfessions !== 1 ? 's' : ''} in AIS
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -117,11 +117,11 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
             <div className="flex items-start gap-2">
               <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-yellow-900">
+                <p className="text-body-regular font-medium text-yellow-900">
                   {comparison.summary.newCount} new profession{comparison.summary.newCount !== 1 ? 's' : ''} found
                   {comparison.summary.conflictCount > 0 && `, ${comparison.summary.conflictCount} conflict${comparison.summary.conflictCount !== 1 ? 's' : ''}`}
                 </p>
-                <p className="text-xs text-yellow-700 mt-1">
+                <p className="text-body-small text-yellow-700 mt-1">
                   Review the data below before applying to your form.
                 </p>
               </div>
@@ -130,18 +130,18 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
         )}
 
         {/* Selection Controls */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={selectedProfessions.length === mappedData.length && mappedData.length > 0}
                 onChange={handleSelectAll}
-                className="w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
+                className="w-4 h-4 text-gold-600 border-slate-300 rounded focus:ring-gold-500"
               />
-              <span className="text-sm font-medium text-gray-700">Select All</span>
+              <span className="text-body-regular font-medium text-slate-700">Select All</span>
             </label>
-            <span className="text-sm text-gray-500">
+            <span className="text-body-regular text-slate-500">
               {totalSelected} of {totalProfessions} selected
             </span>
           </div>
@@ -157,10 +157,10 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
             return (
               <div
                 key={profession.id}
-                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                className={`border rounded-xl p-4 cursor-pointer transition-colors ${
                   isSelected
                     ? 'border-gold-500 bg-gold-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-slate-200 hover:border-slate-300'
                 }`}
                 onClick={() => toggleProfession(profession.id)}
               >
@@ -170,59 +170,59 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
                     checked={isSelected}
                     onChange={() => toggleProfession(profession.id)}
                     onClick={(e) => e.stopPropagation()}
-                    className="mt-1 w-4 h-4 text-gold-600 border-gray-300 rounded focus:ring-gold-500"
+                    className="mt-1 w-4 h-4 text-gold-600 border-slate-300 rounded focus:ring-gold-500"
                   />
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-gray-900">{profession.professionName}</h4>
+                          <h4 className="font-semibold text-slate-900">{profession.professionName}</h4>
                           {isNew && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded">
+                            <span className="px-2 py-0.5 text-body-small font-medium bg-green-100 text-green-800 rounded">
                               New
                             </span>
                           )}
                           {conflict && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
+                            <span className="px-2 py-0.5 text-body-small font-medium bg-yellow-100 text-yellow-800 rounded">
                               Conflict
                             </span>
                           )}
                           <SourceChip source="ais" />
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-body-regular">
                           <div>
-                            <span className="text-gray-500">Professional Fees:</span>
-                            <p className="font-medium text-gray-900">
+                            <span className="text-slate-500">Professional Fees:</span>
+                            <p className="font-medium text-slate-900">
                               ₹{profession.pnl.professionalFees.toLocaleString('en-IN')}
                             </p>
                           </div>
                           <div>
-                            <span className="text-gray-500">TDS Deducted:</span>
-                            <p className="font-medium text-gray-900">
+                            <span className="text-slate-500">TDS Deducted:</span>
+                            <p className="font-medium text-slate-900">
                               ₹{profession.pnl.tdsDeducted.toLocaleString('en-IN')}
                             </p>
                           </div>
                           {profession.professionType && (
                             <div>
-                              <span className="text-gray-500">Type:</span>
-                              <p className="font-medium text-gray-900">{profession.professionType}</p>
+                              <span className="text-slate-500">Type:</span>
+                              <p className="font-medium text-slate-900">{profession.professionType}</p>
                             </div>
                           )}
                           {profession.registrationNumber && (
                             <div>
-                              <span className="text-gray-500">Registration:</span>
-                              <p className="font-medium text-gray-900">{profession.registrationNumber}</p>
+                              <span className="text-slate-500">Registration:</span>
+                              <p className="font-medium text-slate-900">{profession.registrationNumber}</p>
                             </div>
                           )}
                         </div>
                         {profession.entries && profession.entries.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-gray-200">
-                            <p className="text-xs text-gray-500 mb-2">
+                          <div className="mt-3 pt-3 border-t border-slate-200">
+                            <p className="text-body-small text-slate-500 mb-2">
                               {profession.entries.length} TDS entr{profession.entries.length !== 1 ? 'ies' : 'y'} from Section 194J
                             </p>
                             <div className="space-y-1">
                               {profession.entries.slice(0, 3).map((entry, idx) => (
-                                <div key={idx} className="text-xs text-gray-600 flex items-center justify-between">
+                                <div key={idx} className="text-body-small text-slate-600 flex items-center justify-between">
                                   <span>
                                     {entry.date ? new Date(entry.date).toLocaleDateString('en-IN') : 'N/A'}
                                   </span>
@@ -232,7 +232,7 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
                                 </div>
                               ))}
                               {profession.entries.length > 3 && (
-                                <p className="text-xs text-gray-500">
+                                <p className="text-body-small text-slate-500">
                                   +{profession.entries.length - 3} more entr{profession.entries.length - 3 !== 1 ? 'ies' : 'y'}
                                 </p>
                               )}
@@ -245,10 +245,10 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
                       )}
                     </div>
                     {conflict && (
-                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
                         <div className="flex items-start gap-2">
                           <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5" />
-                          <div className="flex-1 text-xs">
+                          <div className="flex-1 text-body-small">
                             <p className="font-medium text-yellow-900 mb-1">Amount Mismatch</p>
                             <p className="text-yellow-700">
                               AIS: ₹{conflict.ais.pnl.professionalFees.toLocaleString('en-IN')} |
@@ -269,8 +269,8 @@ const AISProfessionalPopup = ({ filingId, formProfessions = [], onClose, onAppli
         </div>
 
         {/* Footer Actions */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+        <div className="sticky bottom-0 bg-white border-t border-slate-200 p-4 flex items-center justify-between">
+          <div className="text-body-regular text-slate-600">
             {totalSelected > 0 && (
               <span>
                 {totalSelected} profession{totalSelected !== 1 ? 's' : ''} selected

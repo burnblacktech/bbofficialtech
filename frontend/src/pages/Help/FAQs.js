@@ -123,19 +123,19 @@ const FAQs = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/help"
-          className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Help Center
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-heading-2xl text-gray-900 mb-4">Frequently Asked Questions</h1>
-          <p className="text-body-md text-gray-600">
+          <h1 className="text-heading-2xl text-slate-900 mb-4">Frequently Asked Questions</h1>
+          <p className="text-body-md text-slate-600">
             Find quick answers to common questions
           </p>
         </div>
@@ -155,10 +155,10 @@ const FAQs = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-md text-body-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-body-sm font-medium transition-colors ${
                   selectedCategory === category.id
                     ? 'bg-gold-500 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {category.name} ({category.count})
@@ -168,10 +168,10 @@ const FAQs = () => {
         </div>
 
         {/* FAQs List */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-200">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 divide-y divide-gray-200">
           {filteredFAQs.length === 0 ? (
             <div className="p-12 text-center">
-              <p className="text-body-md text-gray-600">No FAQs found matching your search.</p>
+              <p className="text-body-md text-slate-600">No FAQs found matching your search.</p>
             </div>
           ) : (
             filteredFAQs.map((faq) => (
@@ -180,42 +180,42 @@ const FAQs = () => {
                   onClick={() => toggleItem(faq.id)}
                   className="w-full flex items-start justify-between text-left"
                 >
-                  <h3 className="text-heading-sm text-gray-900 flex-1 pr-4">
+                  <h3 className="text-heading-sm text-slate-900 flex-1 pr-4">
                     {faq.question}
                   </h3>
                   {expandedItems.has(faq.id) ? (
-                    <ChevronUp className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                    <ChevronUp className="h-5 w-5 text-slate-400 flex-shrink-0" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                    <ChevronDown className="h-5 w-5 text-slate-400 flex-shrink-0" />
                   )}
                 </button>
                 {expandedItems.has(faq.id) && (
                   <div className="mt-4">
-                    <div className="text-body-md text-gray-600 mb-4">
+                    <div className="text-body-md text-slate-600 mb-4">
                       {faq.answer}
                     </div>
 
                     {/* Feedback Section */}
                     {!feedbackGiven.has(faq.id) ? (
-                      <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                        <span className="text-body-sm text-gray-600">Was this helpful?</span>
+                      <div className="flex items-center gap-4 pt-4 border-t border-slate-200">
+                        <span className="text-body-sm text-slate-600">Was this helpful?</span>
                         <button
                           onClick={() => handleFeedback(faq.id, true)}
-                          className="flex items-center gap-2 px-3 py-1.5 text-body-sm text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100"
+                          className="flex items-center gap-2 px-3 py-1.5 text-body-sm text-green-700 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100"
                         >
                           <ThumbsUp className="h-4 w-4" />
                           Yes
                         </button>
                         <button
                           onClick={() => handleFeedback(faq.id, false)}
-                          className="flex items-center gap-2 px-3 py-1.5 text-body-sm text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100"
+                          className="flex items-center gap-2 px-3 py-1.5 text-body-sm text-error-700 bg-error-50 border border-red-200 rounded-xl hover:bg-error-100"
                         >
                           <ThumbsDown className="h-4 w-4" />
                           No
                         </button>
                       </div>
                     ) : (
-                      <div className="pt-4 border-t border-gray-200">
+                      <div className="pt-4 border-t border-slate-200">
                         <p className="text-body-sm text-green-600 flex items-center gap-2">
                           <ThumbsUp className="h-4 w-4" />
                           Thank you for your feedback!
@@ -225,8 +225,8 @@ const FAQs = () => {
 
                     {/* Related FAQs */}
                     {getRelatedFAQs(faq).length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h4 className="text-body-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                      <div className="mt-6 pt-4 border-t border-slate-200">
+                        <h4 className="text-body-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                           <MessageSquare className="h-4 w-4" />
                           Related Questions
                         </h4>
@@ -258,14 +258,14 @@ const FAQs = () => {
         </div>
 
         {/* Still need help */}
-        <div className="mt-8 bg-gold-50 border border-gold-200 rounded-lg p-6">
-          <h3 className="text-heading-md text-gray-900 mb-2">Still need help?</h3>
-          <p className="text-body-sm text-gray-600 mb-4">
+        <div className="mt-8 bg-gold-50 border border-gold-200 rounded-xl p-6">
+          <h3 className="text-heading-md text-slate-900 mb-2">Still need help?</h3>
+          <p className="text-body-sm text-slate-600 mb-4">
             Can't find what you're looking for? Our support team is here to help.
           </p>
           <Link
             to="/help/contact"
-            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors"
           >
             Contact Support
           </Link>

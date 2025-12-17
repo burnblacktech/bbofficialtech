@@ -16,7 +16,7 @@ const NotificationBadge = ({ className = '' }) => {
     return (
       <button
         onClick={() => navigate('/notifications')}
-        className={`relative p-2 text-gray-600 hover:text-gray-900 ${className}`}
+        className={`relative p-2 text-slate-600 hover:text-slate-900 ${className}`}
         aria-label="Notifications"
       >
         <Bell className="h-5 w-5" />
@@ -27,7 +27,7 @@ const NotificationBadge = ({ className = '' }) => {
   return (
     <button
       onClick={() => navigate('/notifications')}
-      className={`relative p-2 text-gray-600 hover:text-gray-900 ${className}`}
+      className={`relative p-2 text-slate-600 hover:text-slate-900 ${className}`}
       aria-label={`${unreadCount} unread notifications`}
     >
       <Bell className="h-5 w-5" />

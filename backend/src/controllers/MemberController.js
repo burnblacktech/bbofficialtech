@@ -196,7 +196,7 @@ class MemberController {
 
       // Check if PAN already exists for this user
       const existingMember = await FamilyMember.findOne({
-        where: { userId, pan },
+        where: { userId, panNumber: pan.toUpperCase() },
       });
       if (existingMember) {
         throw new AppError('Member with this PAN already exists', 400);
@@ -221,14 +221,32 @@ class MemberController {
         throw new AppError(`Invalid relationship. Must be one of: ${validRelationships.join(', ')}`, 400);
       }
 
+      // Validate gender if provided
+      if (gender !== undefined) {
+        const validGenders = ['male', 'female', 'other'];
+        if (!validGenders.includes(gender.toLowerCase())) {
+          throw new AppError(`Invalid gender. Must be one of: ${validGenders.join(', ')}`, 400);
+        }
+      }
+
+      // Parse fullName into firstName and lastName
+      const nameParts = (fullName || '').trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+      if (!firstName || !lastName) {
+        throw new AppError('Full name must include both first and last name', 400);
+      }
+
       // Create member with verified PAN
       const member = await FamilyMember.create({
         userId,
-        fullName,
-        pan: pan.toUpperCase(),
+        firstName,
+        lastName,
+        panNumber: pan.toUpperCase(),
         relationship,
         dateOfBirth,
-        gender,
+        gender: gender ? gender.toLowerCase() : undefined,
         status: 'active',
         metadata,
         panVerified: true,
@@ -317,8 +335,18 @@ class MemberController {
       const oldValues = {};
 
       if (fullName !== undefined) {
-        oldValues.fullName = member.fullName;
-        updateData.fullName = fullName;
+        // Parse fullName into firstName and lastName
+        const nameParts = (fullName || '').trim().split(/\s+/);
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+        if (!firstName || !lastName) {
+          throw new AppError('Full name must include both first and last name', 400);
+        }
+
+        oldValues.fullName = member.getFullName();
+        updateData.firstName = firstName;
+        updateData.lastName = lastName;
       }
       if (pan !== undefined) {
         if (!this.isValidPAN(pan)) {
@@ -326,7 +354,7 @@ class MemberController {
         }
         
         // If PAN is being changed, verify it via SurePass
-        if (pan.toUpperCase() !== member.pan) {
+        if (pan.toUpperCase() !== member.panNumber) {
           const panVerificationService = require('../services/business/PANVerificationService');
           const verificationResult = await panVerificationService.verifyPAN(pan.toUpperCase(), userId);
           
@@ -339,8 +367,8 @@ class MemberController {
           updateData.panVerifiedAt = new Date();
         }
         
-        oldValues.pan = member.pan;
-        updateData.pan = pan.toUpperCase();
+        oldValues.pan = member.panNumber;
+        updateData.panNumber = pan.toUpperCase();
       }
       if (relationship !== undefined) {
         const validRelationships = ['spouse', 'child', 'parent', 'sibling', 'other'];
@@ -355,8 +383,13 @@ class MemberController {
         updateData.dateOfBirth = dateOfBirth;
       }
       if (gender !== undefined) {
+        // Validate gender value
+        const validGenders = ['male', 'female', 'other'];
+        if (!validGenders.includes(gender.toLowerCase())) {
+          throw new AppError(`Invalid gender. Must be one of: ${validGenders.join(', ')}`, 400);
+        }
         oldValues.gender = member.gender;
-        updateData.gender = gender;
+        updateData.gender = gender.toLowerCase();
       }
       if (status !== undefined) {
         const validStatuses = ['active', 'inactive'];

@@ -92,7 +92,7 @@ const Section80DD = ({ filingId, onUpdate }) => {
   const updateDeductionMutation = useMutation({
     mutationFn: async ({ deductionId, data }) => {
       try {
-        const response = await apiClient.put(`/api/itr/deductions/80DD/${deductionId}`, data);
+        const response = await apiClient.put(`/api/itr/deductions/80DD/${deductionId}`, { filingId, ...data });
         return response.data;
       } catch (error) {
         const amount = parseFloat(data.disabilityPercentage) >= 80 ? 125000 : 75000;
@@ -102,11 +102,14 @@ const Section80DD = ({ filingId, onUpdate }) => {
         return { success: true, data };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80DD', filingId]);
       resetForm();
       setEditingDeduction(null);
       toast.success('80DD deduction updated successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80DD: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to update deduction');
@@ -117,7 +120,7 @@ const Section80DD = ({ filingId, onUpdate }) => {
   const deleteDeductionMutation = useMutation({
     mutationFn: async (deductionId) => {
       try {
-        const response = await apiClient.delete(`/api/itr/deductions/80DD/${deductionId}`);
+        const response = await apiClient.delete(`/api/itr/deductions/80DD/${deductionId}?filingId=${filingId}`);
         return response.data;
       } catch (error) {
         if (onUpdate) {
@@ -126,9 +129,12 @@ const Section80DD = ({ filingId, onUpdate }) => {
         return { success: true };
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries(['section80DD', filingId]);
       toast.success('80DD deduction deleted successfully');
+      if (typeof onUpdate === 'function') {
+        onUpdate({ section80DD: result?.data?.totalAmount ?? 0 });
+      }
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || 'Failed to delete deduction');
@@ -267,20 +273,20 @@ const Section80DD = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-gold-100 rounded-lg">
+            <div className="p-3 bg-gold-100 rounded-xl">
               <Heart className="h-6 w-6 text-gold-600" />
             </div>
             <div>
-              <h2 className="text-heading-lg text-gray-900">Section 80DD</h2>
-              <p className="text-body-sm text-gray-600">Disabled Dependent (40-80%: ₹75,000 | 80%+: ₹1,25,000)</p>
+              <h2 className="text-heading-lg text-slate-900">Section 80DD</h2>
+              <p className="text-body-sm text-slate-600">Disabled Dependent (40-80%: ₹75,000 | 80%+: ₹1,25,000)</p>
             </div>
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Add Dependent</span>
@@ -288,9 +294,9 @@ const Section80DD = ({ filingId, onUpdate }) => {
         </div>
 
         {/* Summary */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-slate-50 rounded-xl p-4">
           <div className="flex justify-between items-center">
-            <span className="text-body-sm font-medium text-gray-700">Total Deduction</span>
+            <span className="text-body-sm font-medium text-slate-700">Total Deduction</span>
             <span className="text-heading-lg font-bold text-gold-600">₹{totalAmount.toLocaleString('en-IN')}</span>
           </div>
         </div>
@@ -306,48 +312,48 @@ const Section80DD = ({ filingId, onUpdate }) => {
             return (
               <div
                 key={deduction.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+                className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
-                    <div className={`p-3 ${isSevere ? 'bg-red-100' : 'bg-gold-100'} rounded-lg`}>
-                      <Heart className={`h-6 w-6 ${isSevere ? 'text-red-600' : 'text-gold-600'}`} />
+                    <div className={`p-3 ${isSevere ? 'bg-error-100' : 'bg-gold-100'} rounded-xl`}>
+                      <Heart className={`h-6 w-6 ${isSevere ? 'text-error-600' : 'text-gold-600'}`} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="text-heading-md text-gray-900">{deduction.dependentName}</h3>
+                        <h3 className="text-heading-md text-slate-900">{deduction.dependentName}</h3>
                         {deduction.isVerified && (
                           <CheckCircle2 className="h-5 w-5 text-green-600" />
                         )}
                         {isSevere && (
-                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                          <span className="px-2 py-0.5 rounded text-body-small font-medium bg-error-100 text-red-800">
                             Severe Disability
                           </span>
                         )}
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <span className="text-body-sm text-gray-600">Relationship: </span>
-                          <span className="text-body-sm font-medium text-gray-900">
+                          <span className="text-body-sm text-slate-600">Relationship: </span>
+                          <span className="text-body-sm font-medium text-slate-900">
                             {relationships.find(r => r.id === deduction.relationship)?.name || deduction.relationship}
                           </span>
                         </div>
                         <div>
-                          <span className="text-body-sm text-gray-600">Disability: </span>
-                          <span className="text-body-sm font-medium text-gray-900">{deduction.disabilityPercentage}%</span>
+                          <span className="text-body-sm text-slate-600">Disability: </span>
+                          <span className="text-body-sm font-medium text-slate-900">{deduction.disabilityPercentage}%</span>
                         </div>
                         <div>
-                          <span className="text-body-sm text-gray-600">Certificate: </span>
-                          <span className="text-body-sm font-medium text-gray-900">{deduction.certificateNumber}</span>
+                          <span className="text-body-sm text-slate-600">Certificate: </span>
+                          <span className="text-body-sm font-medium text-slate-900">{deduction.certificateNumber}</span>
                         </div>
                         <div className="mt-3">
                           <div className="text-heading-md font-bold text-gold-600">
                             ₹{amount.toLocaleString('en-IN')}
                           </div>
-                          <div className="text-body-xs text-gray-600">Deduction Amount</div>
+                          <div className="text-body-xs text-slate-600">Deduction Amount</div>
                         </div>
                         {deduction.proofDocument && (
-                          <div className="flex items-center space-x-2 text-body-sm text-gray-600">
+                          <div className="flex items-center space-x-2 text-body-sm text-slate-600">
                             <FileText className="h-4 w-4" />
                             <span>Medical certificate uploaded</span>
                           </div>
@@ -363,19 +369,19 @@ const Section80DD = ({ filingId, onUpdate }) => {
                         onChange={(e) => handleProofUpload(e, deduction.id)}
                         className="hidden"
                       />
-                      <div className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                      <div className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
                         <Upload className="h-4 w-4" />
                       </div>
                     </label>
                     <button
                       onClick={() => handleEdit(deduction)}
-                      className="p-2 text-gold-600 hover:bg-gold-50 rounded-md transition-colors"
+                      className="p-2 text-gold-600 hover:bg-gold-50 rounded-xl transition-colors"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(deduction.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      className="p-2 text-error-600 hover:bg-error-50 rounded-xl transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -386,15 +392,15 @@ const Section80DD = ({ filingId, onUpdate }) => {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-heading-md text-gray-900 mb-2">No Disabled Dependents</h3>
-          <p className="text-body-sm text-gray-600 mb-4">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Heart className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-heading-md text-slate-900 mb-2">No Disabled Dependents</h3>
+          <p className="text-body-sm text-slate-600 mb-4">
             Add disabled dependent details to claim deduction under Section 80DD
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600"
+            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
           >
             Add Dependent
           </button>
@@ -404,9 +410,9 @@ const Section80DD = ({ filingId, onUpdate }) => {
       {/* Add/Edit Form Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-elevation-4 p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-heading-xl text-gray-900">
+              <h2 className="text-heading-xl text-slate-900">
                 {editingDeduction ? 'Edit' : 'Add'} 80DD Deduction
               </h2>
               <button
@@ -414,7 +420,7 @@ const Section80DD = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
                 <AlertCircle className="h-6 w-6" />
               </button>
@@ -423,15 +429,15 @@ const Section80DD = ({ filingId, onUpdate }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Dependent Name */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Dependent Name <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.dependentName}
                   onChange={(e) => setFormData({ ...formData, dependentName: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.dependentName ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.dependentName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter dependent name"
                 />
@@ -442,14 +448,14 @@ const Section80DD = ({ filingId, onUpdate }) => {
 
               {/* Relationship */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Relationship <span className="text-error-600">*</span>
                 </label>
                 <select
                   value={formData.relationship}
                   onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.relationship ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.relationship ? 'border-error-500' : 'border-slate-300'
                   }`}
                 >
                   <option value="">Select relationship</option>
@@ -466,7 +472,7 @@ const Section80DD = ({ filingId, onUpdate }) => {
 
               {/* Disability Percentage */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Disability Percentage (%) <span className="text-error-600">*</span>
                 </label>
                 <input
@@ -475,8 +481,8 @@ const Section80DD = ({ filingId, onUpdate }) => {
                   onChange={(e) => setFormData({ ...formData, disabilityPercentage: e.target.value })}
                   min={40}
                   max={100}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.disabilityPercentage ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.disabilityPercentage ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter disability percentage (40-100)"
                 />
@@ -484,7 +490,7 @@ const Section80DD = ({ filingId, onUpdate }) => {
                   <p className="mt-1 text-body-xs text-error-600">{formErrors.disabilityPercentage}</p>
                 )}
                 {formData.disabilityPercentage && (
-                  <p className="mt-1 text-body-xs text-gray-600">
+                  <p className="mt-1 text-body-xs text-slate-600">
                     Deduction amount: ₹{deductionAmount.toLocaleString('en-IN')}
                     {parseFloat(formData.disabilityPercentage) >= 80 && (
                       <span className="text-green-600 font-medium"> (Severe disability)</span>
@@ -495,15 +501,15 @@ const Section80DD = ({ filingId, onUpdate }) => {
 
               {/* Certificate Number */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Disability Certificate Number <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.certificateNumber}
                   onChange={(e) => setFormData({ ...formData, certificateNumber: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.certificateNumber ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.certificateNumber ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Enter certificate number"
                 />
@@ -514,15 +520,15 @@ const Section80DD = ({ filingId, onUpdate }) => {
 
               {/* Certificate Date */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
+                <label className="block text-label-md text-slate-700 mb-1">
                   Certificate Date <span className="text-error-600">*</span>
                 </label>
                 <input
                   type="date"
                   value={formData.certificateDate}
                   onChange={(e) => setFormData({ ...formData, certificateDate: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.certificateDate ? 'border-error-500' : 'border-gray-300'
+                  className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.certificateDate ? 'border-error-500' : 'border-slate-300'
                   }`}
                 />
                 {formErrors.certificateDate && (
@@ -532,20 +538,20 @@ const Section80DD = ({ filingId, onUpdate }) => {
 
               {/* Expenses (Optional) */}
               <div>
-                <label className="block text-label-md text-gray-700 mb-1">
-                  Medical Expenses (₹) <span className="text-gray-500 text-xs">(Optional)</span>
+                <label className="block text-label-md text-slate-700 mb-1">
+                  Medical Expenses (₹) <span className="text-slate-500 text-body-small">(Optional)</span>
                 </label>
                 <input
                   type="number"
                   value={formData.expenses}
                   onChange={(e) => setFormData({ ...formData, expenses: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   placeholder="Enter medical expenses if any"
                 />
               </div>
 
               {/* Info Box */}
-              <div className="bg-info-50 border border-info-200 rounded-lg p-4">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-4">
                 <div className="flex">
                   <AlertCircle className="h-5 w-5 text-info-600 flex-shrink-0 mt-0.5" />
                   <div className="ml-3">
@@ -567,14 +573,14 @@ const Section80DD = ({ filingId, onUpdate }) => {
                     resetForm();
                     setShowAddForm(false);
                   }}
-                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                  className="flex-1 py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 text-body-regular font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                  className="flex-1 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
+                  className="flex-1 py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
                   {addDeductionMutation.isPending || updateDeductionMutation.isPending
                     ? 'Saving...'

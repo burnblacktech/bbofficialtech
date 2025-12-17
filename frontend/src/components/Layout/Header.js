@@ -63,14 +63,14 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-elevation-1">
       <div className="px-3 sm:px-4 lg:px-6 xl:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
           {/* Left Section: Logo & Menu Button */}
           <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
             <button
               onClick={onMenuClick}
-              className="p-1.5 sm:p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden"
+              className="p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 lg:hidden"
               aria-label="Toggle menu"
             >
               <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -80,7 +80,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard')}
             >
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-lg flex items-center justify-center mr-1.5 sm:mr-2 shadow-card relative">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-xl flex items-center justify-center mr-1.5 sm:mr-2 shadow-card relative">
                 <img
                   src="/bb-logo.svg"
                   alt="BurnBlack Logo"
@@ -92,9 +92,9 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                     if (fallback) fallback.style.display = 'block';
                   }}
                 />
-                <span className="text-white font-bold text-xs sm:text-sm hidden logo-fallback absolute">BB</span>
+                <span className="text-white font-bold text-body-small sm:text-body-regular hidden logo-fallback absolute">BB</span>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-900 hidden sm:block">
+              <span className="text-body-large sm:text-heading-3 font-bold text-slate-900 hidden sm:block">
                 BurnBlack
               </span>
             </div>
@@ -104,15 +104,15 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
           {showSearch && (
             <div className="flex-1 max-w-lg mx-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
                 <button
                   onClick={() => setShowSearch(false)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -125,7 +125,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
             {/* Search Button (mobile) */}
             <button
               onClick={() => setShowSearch(!showSearch)}
-              className="p-1.5 sm:p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 lg:hidden"
+              className="p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 lg:hidden"
               aria-label="Search"
             >
               <Search className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -135,7 +135,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
             <div className="relative" ref={notificationsRef}>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-1.5 sm:p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                className="relative p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 aria-label="Notifications"
               >
                 <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -147,7 +147,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
             {/* Settings */}
             <button
               onClick={() => navigate('/profile')}
-              className="p-1.5 sm:p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 hidden sm:block"
+              className="p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 hidden sm:block"
               aria-label="Settings"
             >
               <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -157,39 +157,39 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1.5 lg:p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1.5 lg:p-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-full flex items-center justify-center shadow-card">
-                  <span className="text-white text-xs sm:text-sm font-medium">
+                  <span className="text-white text-body-small sm:text-body-regular font-medium">
                     {getUserInitials()}
                   </span>
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-xs sm:text-sm font-medium text-gray-900">
+                  <p className="text-body-small sm:text-body-regular font-medium text-slate-900">
                     {user?.fullName?.split(' ')[0] || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500 truncate max-w-[100px] lg:max-w-[120px]">
+                  <p className="text-body-small text-slate-500 truncate max-w-[100px] lg:max-w-[120px]">
                     {user?.email || ''}
                   </p>
                 </div>
-                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 hidden md:block" />
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-slate-500 hidden md:block" />
               </button>
 
               {/* User Dropdown Menu */}
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                  <div className="px-4 py-3 border-b border-gray-200 sm:hidden">
-                    <p className="text-sm font-medium text-gray-900">
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-elevation-3 border border-slate-200 py-1 z-50">
+                  <div className="px-4 py-3 border-b border-slate-200 sm:hidden">
+                    <p className="text-body-regular font-medium text-slate-900">
                       {user?.fullName || 'User'}
                     </p>
-                    <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
+                    <p className="text-body-small text-slate-500 truncate">{user?.email || ''}</p>
                   </div>
                   <button
                     onClick={() => {
                       navigate('/profile');
                       setShowUserMenu(false);
                     }}
-                    className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="w-full flex items-center space-x-3 px-4 py-2 text-body-regular text-slate-700 hover:bg-slate-100 transition-colors"
                   >
                     <User className="h-4 w-4" />
                     <span>Profile Settings</span>
@@ -199,15 +199,15 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                       navigate('/profile');
                       setShowUserMenu(false);
                     }}
-                    className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="w-full flex items-center space-x-3 px-4 py-2 text-body-regular text-slate-700 hover:bg-slate-100 transition-colors"
                   >
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </button>
-                  <div className="border-t border-gray-200 my-1"></div>
+                  <div className="border-t border-slate-200 my-1"></div>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-error-600 hover:bg-error-50 transition-colors"
+                    className="w-full flex items-center space-x-3 px-4 py-2 text-body-regular text-error-600 hover:bg-error-50 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>

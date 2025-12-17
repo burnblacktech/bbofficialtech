@@ -20,14 +20,14 @@ const TabularIncomeDisplay = ({
     if (!salaries || salaries.length === 0) return null;
 
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
         <div className="bg-neutral-50 border-b border-neutral-200 px-3 py-2">
           <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
             Salary Income (From Form 16)
           </h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-body-small">
             <thead>
               <tr className="bg-neutral-100 border-b border-neutral-200">
                 <th className="px-3 py-1.5 text-left font-semibold text-neutral-700">Employer Name</th>
@@ -69,7 +69,7 @@ const TabularIncomeDisplay = ({
     if (interest === 0 && dividend === 0 && other === 0) return null;
 
     return (
-      <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
         <div className="bg-neutral-50 border-b border-neutral-200 px-3 py-2">
           <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
             Other Sources of Income
@@ -79,19 +79,19 @@ const TabularIncomeDisplay = ({
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center">
               <p className="text-[10px] text-neutral-500 mb-1">Interest from Savings</p>
-              <p className="text-sm font-bold text-neutral-900 tabular-nums">
+              <p className="text-body-regular font-bold text-neutral-900 tabular-nums">
                 {formatIndianCurrency(interest)}
               </p>
             </div>
             <div className="text-center border-x border-neutral-200">
               <p className="text-[10px] text-neutral-500 mb-1">Dividend Income</p>
-              <p className="text-sm font-bold text-neutral-900 tabular-nums">
+              <p className="text-body-regular font-bold text-neutral-900 tabular-nums">
                 {formatIndianCurrency(dividend)}
               </p>
             </div>
             <div className="text-center">
               <p className="text-[10px] text-neutral-500 mb-1">Other Income</p>
-              <p className="text-sm font-bold text-neutral-900 tabular-nums">
+              <p className="text-body-regular font-bold text-neutral-900 tabular-nums">
                 {formatIndianCurrency(other)}
               </p>
             </div>

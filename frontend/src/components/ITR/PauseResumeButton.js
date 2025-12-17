@@ -59,7 +59,7 @@ const PauseResumeButton = ({ filing, onPaused, onResumed, className = '' }) => {
       <button
         onClick={handlePause}
         disabled={isLoading}
-        className={`flex items-center space-x-2 px-4 py-2 bg-warning-500 text-white rounded-lg hover:bg-warning-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
+        className={`flex items-center space-x-2 px-4 py-2 bg-warning-500 text-white rounded-xl hover:bg-warning-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
       >
         {isLoading ? (
           <Loader className="w-4 h-4 animate-spin" />
@@ -76,7 +76,7 @@ const PauseResumeButton = ({ filing, onPaused, onResumed, className = '' }) => {
       <button
         onClick={handleResume}
         disabled={isLoading}
-        className={`flex items-center space-x-2 px-4 py-2 bg-success-500 text-white rounded-lg hover:bg-success-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
+        className={`flex items-center space-x-2 px-4 py-2 bg-success-500 text-white rounded-xl hover:bg-success-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${className}`}
       >
         {isLoading ? (
           <Loader className="w-4 h-4 animate-spin" />

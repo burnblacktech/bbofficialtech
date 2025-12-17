@@ -46,7 +46,7 @@ import { useExportDraftPDF } from '../../features/pdf-export/hooks/use-pdf-expor
 import PDFExportButton from '../../features/pdf-export/components/pdf-export-button';
 import useRealTimeValidation from '../../hooks/useRealTimeValidation';
 import ITRValidationEngine from '../../components/ITR/core/ITRValidationEngine';
-import { AlertCircle, XCircle, Cloud, CloudOff, Check } from 'lucide-react';
+import { AlertCircle, XCircle, Cloud, CloudOff, Check, LogOut } from 'lucide-react';
 import ValidationSummary from '../../components/ITR/ValidationSummary';
 import { formatIndianCurrency } from '../../lib/format';
 import useAutoSave, { AutoSaveIndicator } from '../../hooks/useAutoSave';
@@ -134,6 +134,13 @@ const ITRComputation = () => {
   const filingId = params.filingId || searchParams.get('filingId') || location.state?.filingId;
   const viewMode = location.state?.viewMode || searchParams.get('viewMode') || null; // 'readonly' for completed filings
 
+  // Draft identity stabilization: URL/state can lag; keep a local copy that updates immediately after POST /itr/drafts.
+  // This prevents duplicate filing/draft creation during the window before searchParams reflect the new draftId.
+  const [draftIdLocal, setDraftIdLocal] = useState(draftId || null);
+  const [filingIdLocal, setFilingIdLocal] = useState(filingId || null);
+  const effectiveDraftId = searchParams.get('draftId') || location.state?.draftId || draftIdLocal;
+  const effectiveFilingId = params.filingId || searchParams.get('filingId') || location.state?.filingId || filingIdLocal;
+
   // Track entry point for context-aware back navigation
   const getEntryPoint = () => {
     if (location.state?.dataSource) {
@@ -156,6 +163,22 @@ const ITRComputation = () => {
   };
 
   const entryPoint = getEntryPoint();
+
+  const autoDetectITR = location.state?.autoDetectITR || false;
+  // Get initial ITR from location state, recommendation, or localStorage recovery
+  const getInitialITR = () => {
+    if (location.state?.selectedITR) return location.state.selectedITR;
+    if (location.state?.recommendedITR) return location.state.recommendedITR;
+    // Try to recover from localStorage entry point
+    const recoveredEntryPoint = safeLocalStorageGet('itr_computation_entry_point', null);
+    if (recoveredEntryPoint) {
+      const recoveredDraft = safeLocalStorageGet('itr_draft_current', null);
+      if (recoveredDraft?.selectedITR) return recoveredDraft.selectedITR;
+    }
+    return 'ITR-1'; // Default to ITR-1
+  };
+  const initialITR = getInitialITR();
+  const [selectedITR, setSelectedITR] = useState(initialITR);
 
   // Store entry point and ITR type in localStorage for page refresh recovery
   useEffect(() => {
@@ -191,26 +214,11 @@ const ITRComputation = () => {
       safeLocalStorageSet('itr_selected_person', selectedPerson);
     }
   }, [selectedPerson, draftId, filingId, viewMode, navigate]);
-  const autoDetectITR = location.state?.autoDetectITR || false;
-  // Get initial ITR from location state, recommendation, or localStorage recovery
-  const getInitialITR = () => {
-    if (location.state?.selectedITR) return location.state.selectedITR;
-    if (location.state?.recommendedITR) return location.state.recommendedITR;
-    // Try to recover from localStorage entry point
-    const recoveredEntryPoint = safeLocalStorageGet('itr_computation_entry_point', null);
-    if (recoveredEntryPoint) {
-      const recoveredDraft = safeLocalStorageGet('itr_draft_current', null);
-      if (recoveredDraft?.selectedITR) return recoveredDraft.selectedITR;
-    }
-    return 'ITR-1'; // Default to ITR-1
-  };
-  const initialITR = getInitialITR();
   const _recommendation = location.state?.recommendation;
   const dataSource = location.state?.dataSource; // 'form16', 'it-portal', 'manual', 'previous-year'
   const showDocumentUpload = location.state?.showDocumentUpload || false;
   const showITPortalConnect = location.state?.showITPortalConnect || false;
   const copiedFromPreviousYear = location.state?.copiedFromPreviousYear || false;
-  const [selectedITR, setSelectedITR] = useState(initialITR);
   // Initialize assessment year from draft or location state, default to current year
   const getDefaultAssessmentYear = () => {
     if (location.state?.assessmentYear) return location.state.assessmentYear;
@@ -228,6 +236,8 @@ const ITRComputation = () => {
   const [verificationResult, setVerificationResult] = useState(initialVerificationResult || null);
   const [showValidationSummary, setShowValidationSummary] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const createDraftIdempotencyKeyRef = useRef(null);
+  const generateClientRequestId = () => `itr_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   const lastSavedTimestampRef = useRef(null);
   const isCreatingDraftRef = useRef(false);
   const pendingDraftCreationRef = useRef(null); // Track last saved timestamp to prevent recursive updates
@@ -1536,26 +1546,6 @@ const ITRComputation = () => {
     }
   }, [formData, taxRegime, assessmentYear, calculateClientSideTax]);
 
-  // Compute tax when form data or regime changes - 300ms debounce
-  // Trigger on all relevant form data changes: income, deductions, taxes paid
-  useEffect(() => {
-    // Only compute if we have minimum required data (PAN and some income data)
-    if (!formData.personalInfo?.pan || !formData.income) {
-      return;
-    }
-
-    // Debounce computation - 300ms for responsive feel
-    const timeoutId = setTimeout(handleComputeTax, 300);
-    return () => clearTimeout(timeoutId);
-  }, [
-    handleComputeTax,
-    taxRegime,
-    formData.income, // Trigger on any income changes
-    formData.deductions, // Trigger on any deduction changes
-    formData.taxesPaid, // Trigger on any tax paid changes
-    formData.personalInfo?.pan, // Re-trigger if PAN changes (though unlikely)
-  ]);
-
   // Real-time validation on formData changes
   useEffect(() => {
     if (!formData || isReadOnly) return;
@@ -1841,11 +1831,10 @@ const ITRComputation = () => {
 
   const handleRegimeChange = useCallback((newRegime) => {
     setTaxRegime(newRegime);
-    // Tax will be recalculated automatically via useEffect that watches taxRegime
-    // Trigger immediate tax computation
-    if (formData.personalInfo.pan && formData.income) {
-      handleComputeTax();
-    }
+    // Manual mode: clear computed values and let user explicitly compute
+    setTaxComputation(null);
+    setRegimeComparison(null);
+    setShowComparison(false);
     // Show comparison if available
     if (regimeComparison) {
       setShowComparison(true);
@@ -2609,7 +2598,7 @@ const ITRComputation = () => {
   // Create draft automatically when user starts entering data
   const createDraftAutomatically = useCallback(async (dataToSave) => {
     // Don't create if already creating, if we have a draftId, or if navigation is in progress
-    const currentDraftId = searchParams.get('draftId');
+    const currentDraftId = effectiveDraftId;
     if (isCreatingDraftRef.current || currentDraftId || isNavigatingRef.current) {
       return null;
     }
@@ -2658,23 +2647,38 @@ const ITRComputation = () => {
     isCreatingDraftRef.current = true;
     const creationPromise = (async () => {
       try {
+        if (!createDraftIdempotencyKeyRef.current) {
+          createDraftIdempotencyKeyRef.current = `itr_draft_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+        }
+
         // Create filing and draft (createITR now calls /drafts endpoint which creates both)
         const response = await itrService.createITR({
           itrType: selectedITR,
           formData: dataToSave,
           assessmentYear,
           taxRegime,
+        }, {
+          headers: {
+            'X-Idempotency-Key': createDraftIdempotencyKeyRef.current,
+            // Stable per-draft-creation attempt so backend logs can be traced
+            'X-Client-Request-Id': createDraftIdempotencyKeyRef.current,
+          },
         });
 
         if (response?.draft?.id || response?.id) {
           const newDraftId = response.draft?.id || response.id;
           const newFilingId = response.filing?.id || response.filingId;
 
+          // Update local draft identity immediately to prevent duplicate draft creation
+          setDraftIdLocal(newDraftId);
+          if (newFilingId) setFilingIdLocal(newFilingId);
+
           // Mark navigation as in progress
           isNavigatingRef.current = true;
 
-          // Update URL with draft ID
-          navigate(`/itr/computation?draftId=${newDraftId}`, {
+          // Update URL with draft ID + filing ID (critical for refresh + preventing re-creation)
+          const nextUrl = `/itr/computation?draftId=${newDraftId}${newFilingId ? `&filingId=${newFilingId}` : ''}`;
+          navigate(nextUrl, {
             replace: true,
             state: { ...location.state, draftId: newDraftId, filingId: newFilingId },
           });
@@ -2746,11 +2750,11 @@ const ITRComputation = () => {
 
     pendingDraftCreationRef.current = creationPromise;
     return creationPromise;
-  }, [searchParams, selectedITR, assessmentYear, taxRegime, navigate, location.state]);
+  }, [effectiveDraftId, selectedITR, assessmentYear, taxRegime, navigate, location.state]);
 
   // Enhanced auto-save using useAutoSave hook
   const saveDraftData = useCallback(async (dataToSave) => {
-    if (!draftId) {
+    if (!effectiveDraftId) {
       // Try to create draft automatically if we have meaningful data
       const newDraftId = await createDraftAutomatically(dataToSave);
 
@@ -2787,12 +2791,12 @@ const ITRComputation = () => {
     // Save to backend via FormDataService
     try {
       // Use FormDataService to save all form data
-      await formDataService.saveFormData('all', dataToSave, draftId);
+      await formDataService.saveFormData('all', dataToSave, effectiveDraftId);
     } catch (error) {
       enterpriseLogger.error('Auto-save failed', { error });
       throw error;
     }
-  }, [draftId, assessmentYear, taxRegime, selectedITR, createDraftAutomatically]);
+  }, [effectiveDraftId, assessmentYear, taxRegime, selectedITR, createDraftAutomatically]);
 
   // Use enhanced auto-save hook - enabled for all ITR types regardless of PAN status
   // Auto-save works as long as we have a draftId (or will save to localStorage as fallback)
@@ -2805,7 +2809,7 @@ const ITRComputation = () => {
     saveFn: saveDraftData,
     data: formData,
     debounceMs: 2000,
-    localStorageKey: draftId ? `itr_draft_${draftId}` : 'itr_draft_current',
+    localStorageKey: effectiveDraftId ? `itr_draft_${effectiveDraftId}` : 'itr_draft_current',
     enabled: true, // Always enabled - will save to localStorage if no draftId, or to backend if draftId exists
     onSaveSuccess: () => {
       setAutoSaveStatus('saved');
@@ -2946,9 +2950,11 @@ const ITRComputation = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [draftId, assessmentYear, taxRegime, selectedITR]);
 
-  const handleSaveDraft = async () => {
+  const handleSaveDraft = async ({ exitAfterSave = false } = {}) => {
     setIsSaving(true);
     try {
+      const exitRoute = user?.role === 'END_USER' ? '/dashboard' : '/home';
+
       // Validate ITR-1 data before saving
       if (selectedITR === 'ITR-1' || selectedITR === 'ITR1') {
         const validationResult = validationEngine.validateBusinessRules(formData, selectedITR);
@@ -3176,38 +3182,76 @@ const ITRComputation = () => {
         selectedPerson,
       };
 
-      if (draftId) {
+      if (effectiveDraftId) {
         // Update existing draft
-        const updateData = {
-          formData: draftData.formData,
+        await itrService.updateDraft(effectiveDraftId, draftData.formData, {
+          headers: {
+            'X-Client-Request-Id': generateClientRequestId(),
+          },
+        });
+        safeLocalStorageSet('itr_last_resume', {
+          draftId: effectiveDraftId,
+          filingId: effectiveFilingId,
           assessmentYear: draftData.assessmentYear,
-          taxRegime: draftData.taxRegime,
-        };
-        await itrService.updateDraft(draftId, updateData);
+          itrType: selectedITR,
+          savedAt: Date.now(),
+        });
         toast.success('Draft saved successfully', {
           icon: '✅',
           duration: 2000,
         });
+
+        if (exitAfterSave) {
+          navigate(exitRoute, { replace: true });
+          return;
+        }
       } else {
+        if (!createDraftIdempotencyKeyRef.current) {
+          createDraftIdempotencyKeyRef.current = `itr_draft_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+        }
+
         // Create new filing + draft (createITR already creates both)
         const response = await itrService.createITR({
           itrType: selectedITR,
           formData: draftData.formData,
           assessmentYear: draftData.assessmentYear,
           taxRegime: draftData.taxRegime,
+        }, {
+          headers: {
+            'X-Idempotency-Key': createDraftIdempotencyKeyRef.current,
+            'X-Client-Request-Id': createDraftIdempotencyKeyRef.current,
+          },
         });
         // createITR already creates both filing and draft, so just update URL
         if (response?.draft?.id || response?.id) {
           const newDraftId = response.draft?.id || response.id;
           const newFilingId = response.filing?.id || response.filingId;
-                    // Update URL with draft ID and filing ID
-          navigate(`/itr/computation?draftId=${newDraftId}${newFilingId ? `&filingId=${newFilingId}` : ''}`, {
-            replace: true,
-            state: { ...location.state, draftId: newDraftId, filingId: newFilingId },
+          setDraftIdLocal(newDraftId);
+          if (newFilingId) setFilingIdLocal(newFilingId);
+          safeLocalStorageSet('itr_last_resume', {
+            draftId: newDraftId,
+            filingId: newFilingId,
+            assessmentYear: draftData.assessmentYear,
+            itrType: selectedITR,
+            savedAt: Date.now(),
           });
+
           toast.success('Draft saved successfully', {
             icon: '✅',
             duration: 2000,
+          });
+
+          if (exitAfterSave) {
+            navigate(exitRoute, { replace: true });
+            return;
+          }
+
+          // Update URL with draft ID and filing ID (editable mode should never carry viewMode=readonly)
+          const nextState = { ...(location.state || {}), draftId: newDraftId, filingId: newFilingId };
+          delete nextState.viewMode;
+          navigate(`/itr/computation?draftId=${newDraftId}${newFilingId ? `&filingId=${newFilingId}` : ''}`, {
+            replace: true,
+            state: nextState,
           });
         } else {
           toast.error('Failed to create draft. Please try again.');
@@ -3249,6 +3293,22 @@ const ITRComputation = () => {
   const handleStartFresh = () => {
     setCurrentFiling(null);
     setShowResumeModal(false);
+    // Clear readonly viewMode and IDs if user chooses to start fresh (otherwise inputs stay disabled)
+    const nextState = { ...(location.state || {}) };
+    delete nextState.viewMode;
+    delete nextState.filing;
+    delete nextState.draftId;
+    delete nextState.filingId;
+    navigate('/itr/computation', {
+      replace: true,
+      state: {
+        ...nextState,
+        // Keep person context if we have it; otherwise route guard will ask user to pick.
+        selectedPerson: selectedPerson || nextState.selectedPerson,
+        selectedITR,
+        assessmentYear,
+      },
+    });
     // Reset form data to match initial state structure
     setFormData({
       personalInfo: {
@@ -4092,9 +4152,9 @@ const ITRComputation = () => {
   }), [regimeComparison, taxComputation]);
 
   return (
-    <div className="bg-neutral-50 flex flex-col" style={{ height: '100vh', overflow: 'hidden' }}>
+    <div className="bg-slate-50 flex flex-col" style={{ height: '100vh', overflow: 'hidden' }}>
       {/* Enhanced Header - ITR-Specific Dashboard */}
-      <header className="bg-white border-b border-neutral-200 z-50 flex-shrink-0">
+      <header className="bg-white border-b border-slate-200 z-50 flex-shrink-0">
         <div className="max-w-[1400px] mx-auto px-3">
           {/* Main Header Bar - Compact 48px height */}
           <div className="flex items-center justify-between h-12">
@@ -4102,23 +4162,23 @@ const ITRComputation = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleBack}
-                className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="p-1.5 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
                 aria-label="Go back"
               >
-                <ArrowLeft className="h-4 w-4 text-neutral-600" />
+                <ArrowLeft className="h-4 w-4 text-slate-600" />
               </button>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold font-display text-neutral-900">
+                <h1 className="text-base font-bold font-display text-slate-900">
                   Income Tax Computation
                 </h1>
                 {userDisplayName && (
                   <>
-                    <span className="text-neutral-300 text-xs">•</span>
-                    <span className="text-xs font-medium text-neutral-700">{userDisplayName}</span>
+                    <span className="text-slate-300 text-body-small">•</span>
+                    <span className="text-body-small font-medium text-slate-700">{userDisplayName}</span>
                   </>
                 )}
-                <span className="text-neutral-300 text-xs">•</span>
-                <span className="text-xs font-medium text-neutral-700">{getFinancialYear(assessmentYear)}</span>
+                <span className="text-slate-300 text-body-small">•</span>
+                <span className="text-body-small font-medium text-slate-700">{getFinancialYear(assessmentYear)}</span>
               </div>
             </div>
 
@@ -4334,18 +4394,15 @@ const ITRComputation = () => {
                       }
                       // Remove balance sheet if it exists
                       if (updated.balanceSheet !== undefined) {
-                        const { balanceSheet, ...rest } = updated;
-                        updated = rest;
+                        delete updated.balanceSheet;
                       }
                       // Remove audit info if it exists
                       if (updated.auditInfo !== undefined) {
-                        const { auditInfo, ...rest } = updated;
-                        updated = rest;
+                        delete updated.auditInfo;
                       }
                       // Remove Schedule FA if it exists
                       if (updated.scheduleFA !== undefined) {
-                        const { scheduleFA, ...rest } = updated;
-                        updated = rest;
+                        delete updated.scheduleFA;
                       }
                       // Initialize presumptive business income if it doesn't exist
                       if (updated.income?.presumptiveBusiness === undefined) {
@@ -4391,10 +4448,7 @@ const ITRComputation = () => {
               />
               <RegimeToggle
                 regime={taxRegime}
-                onRegimeChange={(newRegime) => {
-                  setTaxRegime(newRegime);
-                  // Tax computation will update automatically via useEffect
-                }}
+                onRegimeChange={handleRegimeChange}
                 savings={regimeComparison ? {
                   amount: Math.abs(regimeComparison.savings || 0),
                   betterRegime: (regimeComparison.savings || 0) > 0 ? 'new' : 'old',
@@ -4407,7 +4461,7 @@ const ITRComputation = () => {
             <div className="flex items-center gap-1.5">
               {/* Auto-save indicator - compact */}
               {!isReadOnly && (
-                <div className="hidden sm:flex items-center text-[10px] text-neutral-500" style={{ gap: '2px' }}>
+                <div className="hidden sm:flex items-center text-[10px] text-slate-500" style={{ gap: '2px' }}>
                   {!navigator.onLine ? (
                     <motion.span
                       initial={{ opacity: 0 }}
@@ -4466,13 +4520,40 @@ const ITRComputation = () => {
               {/* Save button - compact */}
               {!isReadOnly && (
                 <button
-                  onClick={handleSaveDraft}
+                  onClick={() => handleSaveDraft({ exitAfterSave: false })}
                   disabled={isSaving}
-                  className="flex items-center px-2 py-1 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
+                  className="flex items-center px-2 py-1 text-body-small font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50"
                   style={{ gap: '2px' }}
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Save</span>
+                </button>
+              )}
+
+              {/* Save & Exit */}
+              {!isReadOnly && (
+                <button
+                  onClick={() => handleSaveDraft({ exitAfterSave: true })}
+                  disabled={isSaving}
+                  className="flex items-center px-2 py-1 text-body-small font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50"
+                  style={{ gap: '2px' }}
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Save &amp; Exit</span>
+                  <span className="sm:hidden">Exit</span>
+                </button>
+              )}
+
+              {/* Compute / Refresh Tax (manual mode) */}
+              {!isReadOnly && (
+                <button
+                  onClick={handleComputeTax}
+                  disabled={isComputingTax}
+                  className="flex items-center px-2 py-1 text-body-small font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50"
+                  style={{ gap: '2px' }}
+                >
+                  <Calculator className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{isComputingTax ? 'Computing…' : 'Compute'}</span>
                 </button>
               )}
 
@@ -4481,7 +4562,7 @@ const ITRComputation = () => {
                 <button
                   onClick={handleDownloadJSON}
                   disabled={isDownloading}
-                  className="flex items-center px-2 py-1 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-50"
+                  className="flex items-center px-2 py-1 text-body-small font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-50"
                   style={{ gap: '2px' }}
                 >
                   {isDownloading ? (
@@ -4574,10 +4655,10 @@ const ITRComputation = () => {
         />
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto bg-neutral-50 itr-computation-container">
+        <div className="flex-1 overflow-y-auto bg-slate-50 itr-computation-container">
           {/* Auto-Population Progress Banner - Compact */}
           {(isPrefetching || autoPopulationSummary) && (
-            <div className="bg-neutral-50 border-b border-neutral-200 px-3 py-1.5 flex-shrink-0">
+            <div className="bg-slate-50 border-b border-slate-200 px-3 py-1.5 flex-shrink-0">
               <div className="max-w-[1200px] mx-auto">
                 <AutoPopulationProgress
                   isActive={isPrefetching}
@@ -4593,7 +4674,7 @@ const ITRComputation = () => {
           {showValidationSummary && Object.keys(validationErrors).length > 0 && (
             <div className="bg-info-50 border-b border-info-200 px-3 py-1 flex-shrink-0">
               <div className="max-w-[1200px] mx-auto flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs text-info-700">
+                <div className="flex items-center gap-1.5 text-body-small text-info-700">
                   <AlertTriangle className="w-3.5 h-3.5" />
                   <span>{Object.keys(validationErrors).length} issues</span>
                   <button
@@ -4653,16 +4734,16 @@ const ITRComputation = () => {
                 <div className="mb-3">
                   <div className="flex items-center gap-2 mb-1">
                     {Icon && (
-                      <div className="w-8 h-8 rounded-lg bg-gold-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-gold-100 flex items-center justify-center flex-shrink-0">
                         <Icon className="w-4 h-4 text-gold-700" />
                       </div>
                     )}
                     <div>
-                      <h2 className="text-lg font-bold font-display text-neutral-900">
+                      <h2 className="text-heading-4 font-bold font-display text-slate-900">
                         {activeSection?.title || 'Section'}
                       </h2>
                       {activeSection?.description && (
-                        <p className="text-xs text-neutral-600 mt-0.5">
+                        <p className="text-body-small text-slate-600 mt-0.5">
                           {activeSection.description}
                         </p>
                       )}
@@ -4678,7 +4759,7 @@ const ITRComputation = () => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-              className="bg-white rounded-lg border border-neutral-200 shadow-sm p-4"
+              className="bg-white rounded-xl border border-slate-200 shadow-elevation-1 p-4"
               style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
             >
               {(() => {
@@ -4706,9 +4787,10 @@ const ITRComputation = () => {
                       filingId={filingId || draftId}
                       currentTaxComputation={taxComputation}
                       onUpdate={() => {
-                        if (filingId || draftId) {
-                          handleComputeTax();
-                        }
+                        // Manual tax compute mode: let user explicitly recompute
+                        setTaxComputation(null);
+                        setRegimeComparison(null);
+                        setShowComparison(false);
                       }}
                     />
                   );
@@ -4748,7 +4830,7 @@ const ITRComputation = () => {
           {/* Read-only notice (minimal) - Positioned to avoid conflicts with mobile menu button */}
           {isReadOnly && (
             <div
-              className="fixed left-1/2 -translate-x-1/2 bg-info-100 text-info-800 px-4 py-2 rounded-full text-sm shadow-md z-40"
+              className="fixed left-1/2 -translate-x-1/2 bg-info-100 text-info-800 px-4 py-2 rounded-full text-body-regular shadow-elevation-2 z-40"
               style={{
                 // Position above mobile menu button (bottom-20 = 5rem = 80px)
                 bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',

@@ -293,7 +293,7 @@ const Checkout = () => {
                   {/* Basic Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="firmName" className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label htmlFor="firmName" className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Firm Name *
                       </label>
                       <input
@@ -302,7 +302,7 @@ const Checkout = () => {
                         name="firmName"
                         value={formData.firmName}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                           errors.firmName ? 'border-error-300' : 'border-neutral-300'
                         }`}
                         placeholder="Enter firm name"
@@ -315,7 +315,7 @@ const Checkout = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="contactPerson" className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label htmlFor="contactPerson" className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Contact Person *
                       </label>
                       <input
@@ -324,7 +324,7 @@ const Checkout = () => {
                         name="contactPerson"
                         value={formData.contactPerson}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                           errors.contactPerson ? 'border-error-300' : 'border-neutral-300'
                         }`}
                         placeholder="Enter contact person name"
@@ -340,7 +340,7 @@ const Checkout = () => {
                   {/* Contact Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label htmlFor="email" className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Email Address *
                       </label>
                       <input
@@ -349,7 +349,7 @@ const Checkout = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                           errors.email ? 'border-error-300' : 'border-neutral-300'
                         }`}
                         placeholder="Enter email address"
@@ -362,7 +362,7 @@ const Checkout = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label htmlFor="phone" className="block text-body-regular font-medium text-neutral-700 mb-2">
                         Phone Number *
                       </label>
                       <input
@@ -371,7 +371,7 @@ const Checkout = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                           errors.phone ? 'border-error-300' : 'border-neutral-300'
                         }`}
                         placeholder="Enter phone number"
@@ -396,7 +396,7 @@ const Checkout = () => {
                           name="address.street"
                           value={formData.address.street}
                           onChange={handleInputChange}
-                          className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                          className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                             errors['address.street'] ? 'border-error-300' : 'border-neutral-300'
                           }`}
                           placeholder="Street address"
@@ -415,7 +415,7 @@ const Checkout = () => {
                             name="address.city"
                             value={formData.address.city}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                               errors['address.city'] ? 'border-error-300' : 'border-neutral-300'
                             }`}
                             placeholder="City"
@@ -433,7 +433,7 @@ const Checkout = () => {
                             name="address.state"
                             value={formData.address.state}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                               errors['address.state'] ? 'border-error-300' : 'border-neutral-300'
                             }`}
                             placeholder="State"
@@ -451,7 +451,7 @@ const Checkout = () => {
                             name="address.pincode"
                             value={formData.address.pincode}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                               errors['address.pincode'] ? 'border-error-300' : 'border-neutral-300'
                             }`}
                             placeholder="Pincode"
@@ -469,7 +469,7 @@ const Checkout = () => {
                   {/* Business Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="panNumber" className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label htmlFor="panNumber" className="block text-body-regular font-medium text-neutral-700 mb-2">
                         PAN Number *
                       </label>
                       <input
@@ -478,7 +478,7 @@ const Checkout = () => {
                         name="panNumber"
                         value={formData.panNumber}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
                           errors.panNumber ? 'border-error-300' : 'border-neutral-300'
                         }`}
                         placeholder="ABCDE1234F"
@@ -492,7 +492,7 @@ const Checkout = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="gstNumber" className="block text-sm font-medium text-neutral-700 mb-2">
+                      <label htmlFor="gstNumber" className="block text-body-regular font-medium text-neutral-700 mb-2">
                         GST Number
                       </label>
                       <input
@@ -501,7 +501,7 @@ const Checkout = () => {
                         name="gstNumber"
                         value={formData.gstNumber}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="22AAAAA0000A1Z5"
                       />
                     </div>
@@ -512,14 +512,14 @@ const Checkout = () => {
                     <button
                       type="button"
                       onClick={() => navigate('/ca/subscription-plans')}
-                      className="px-6 py-3 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                      className="px-6 py-3 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                     >
                       Back
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                      className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
                     >
                       {loading ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -532,7 +532,7 @@ const Checkout = () => {
 
                   {/* Error Message */}
                   {errors.submit && (
-                    <div className="flex items-center space-x-2 p-3 bg-error-50 border border-error-200 rounded-lg">
+                    <div className="flex items-center space-x-2 p-3 bg-error-50 border border-error-200 rounded-xl">
                       <AlertCircle className="w-4 h-4 text-error-600" />
                       <Typography.Small className="text-error-700">
                         {errors.submit}
@@ -599,7 +599,7 @@ const Checkout = () => {
                         <Typography.Small className="font-medium text-neutral-700">
                           Total Amount
                         </Typography.Small>
-                        <Typography.Small className="font-bold text-lg">
+                        <Typography.Small className="font-bold text-body-large">
                           {formatCurrency(billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice)}
                         </Typography.Small>
                       </div>
@@ -607,7 +607,7 @@ const Checkout = () => {
                   </div>
 
                   {/* Security Notice */}
-                  <div className="flex items-start space-x-3 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+                  <div className="flex items-start space-x-3 p-3 bg-primary-50 border border-primary-200 rounded-xl">
                     <Shield className="w-4 h-4 text-primary-600 mt-0.5" />
                     <Typography.Small className="text-primary-700">
                       Your payment is processed securely through Razorpay. We do not store your payment information.

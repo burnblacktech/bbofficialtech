@@ -82,21 +82,21 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
   const totalSavings = calculateTotalSavings();
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 p-6 shadow-sm">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 p-6 shadow-elevation-1">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
+          <div className="p-2 bg-blue-100 rounded-xl">
             <Lightbulb className="h-6 w-6 text-blue-600" />
           </div>
           <div>
             <h3 className="text-heading-md font-semibold text-gray-800">Tax Harvesting Suggestions</h3>
-            <p className="text-body-xs text-gray-600 mt-1">Optimize your capital gains tax liability</p>
+            <p className="text-body-xs text-slate-600 mt-1">Optimize your capital gains tax liability</p>
           </div>
         </div>
         {totalSavings > 0 && (
           <button
             onClick={() => setShowSavingsPreview(!showSavingsPreview)}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-body-sm flex items-center gap-2"
+            className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium text-body-sm flex items-center gap-2"
           >
             <Calculator className="h-4 w-4" />
             View Savings: {formatCurrency(totalSavings)}
@@ -106,7 +106,7 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
 
       {/* Savings Preview Modal */}
       {showSavingsPreview && totalSavings > 0 && (
-        <div className="mb-4 bg-green-50 border-2 border-green-300 rounded-lg p-4">
+        <div className="mb-4 bg-green-50 border-2 border-green-300 rounded-xl p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h4 className="text-heading-sm font-semibold text-green-900 mb-2 flex items-center gap-2">
@@ -131,47 +131,47 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
       )}
 
       {summary && (
-        <div className="bg-white rounded-lg p-4 mb-4 border-2 border-blue-200 shadow-sm">
+        <div className="bg-white rounded-xl p-4 mb-4 border-2 border-blue-200 shadow-elevation-1">
           <h4 className="text-heading-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
             <Info className="h-4 w-4 text-blue-600" />
             Capital Gains Summary
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 rounded-lg p-3">
-              <p className="text-body-xs text-gray-600 mb-1">Short-term Gains</p>
+            <div className="bg-blue-50 rounded-xl p-3">
+              <p className="text-body-xs text-slate-600 mb-1">Short-term Gains</p>
               <p className="text-heading-sm font-bold text-blue-700">
                 {formatCurrency(summary.totalSTCG)}
               </p>
             </div>
-            <div className="bg-purple-50 rounded-lg p-3">
-              <p className="text-body-xs text-gray-600 mb-1">Long-term Gains</p>
+            <div className="bg-purple-50 rounded-xl p-3">
+              <p className="text-body-xs text-slate-600 mb-1">Long-term Gains</p>
               <p className="text-heading-sm font-bold text-purple-700">
                 {formatCurrency(summary.totalLTCG)}
               </p>
             </div>
-            <div className="bg-red-50 rounded-lg p-3">
-              <p className="text-body-xs text-gray-600 mb-1">Short-term Losses</p>
-              <p className="text-heading-sm font-bold text-red-700">
+            <div className="bg-error-50 rounded-xl p-3">
+              <p className="text-body-xs text-slate-600 mb-1">Short-term Losses</p>
+              <p className="text-heading-sm font-bold text-error-700">
                 {formatCurrency(summary.totalSTCL)}
               </p>
             </div>
-            <div className="bg-orange-50 rounded-lg p-3">
-              <p className="text-body-xs text-gray-600 mb-1">Long-term Losses</p>
+            <div className="bg-orange-50 rounded-xl p-3">
+              <p className="text-body-xs text-slate-600 mb-1">Long-term Losses</p>
               <p className="text-heading-sm font-bold text-orange-700">
                 {formatCurrency(summary.totalLTCL)}
               </p>
             </div>
           </div>
           {(summary.netSTCG > 0 || summary.netLTCG > 0) && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-slate-200">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-body-sm font-medium text-gray-700">Net Short-term Gains:</span>
+                <span className="text-body-sm font-medium text-slate-700">Net Short-term Gains:</span>
                 <span className="text-heading-sm font-bold text-green-700">
                   {formatCurrency(summary.netSTCG)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-body-sm font-medium text-gray-700">Net Long-term Gains:</span>
+                <span className="text-body-sm font-medium text-slate-700">Net Long-term Gains:</span>
                 <span className="text-heading-sm font-bold text-green-700">
                   {formatCurrency(summary.netLTCG)}
                 </span>
@@ -190,7 +190,7 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
             return (
               <div
                 key={index}
-                className={`bg-white rounded-lg p-5 border-2 shadow-sm transition-all ${
+                className={`bg-white rounded-xl p-5 border-2 shadow-elevation-1 transition-all ${
                   isApplied
                     ? 'border-green-400 bg-green-50'
                     : getSuggestionColor(suggestion.type)
@@ -208,10 +208,10 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
                         </span>
                       )}
                     </div>
-                    <p className="text-body-sm text-gray-700 mb-3">{suggestion.description}</p>
+                    <p className="text-body-sm text-slate-700 mb-3">{suggestion.description}</p>
 
                     {suggestion.savings > 0 && (
-                      <div className="bg-green-100 rounded-lg p-3 mb-3">
+                      <div className="bg-green-100 rounded-xl p-3 mb-3">
                         <div className="flex items-center justify-between">
                           <span className="text-body-sm font-medium text-green-800">Potential Tax Savings:</span>
                           <span className="text-heading-sm font-bold text-green-700">
@@ -229,7 +229,7 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
                     )}
 
                     {suggestion.type === 'carryforward' && (
-                      <div className="bg-orange-100 rounded-lg p-3 mb-3">
+                      <div className="bg-orange-100 rounded-xl p-3 mb-3">
                         <p className="text-body-xs text-orange-800">
                           <Info className="h-3 w-3 inline mr-1" />
                           Losses can be carried forward for up to 8 years and set off against future gains
@@ -238,8 +238,8 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
                     )}
 
                     {isExpanded && suggestion.details && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-body-xs text-gray-600">{suggestion.details}</p>
+                      <div className="mt-3 pt-3 border-t border-slate-200">
+                        <p className="text-body-xs text-slate-600">{suggestion.details}</p>
                       </div>
                     )}
                   </div>
@@ -247,7 +247,7 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
                     <div className="ml-4 flex flex-col gap-2">
                       <button
                         onClick={() => handleApplySuggestion(suggestion, index)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-body-sm flex items-center justify-center gap-2 transition-colors"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium text-body-sm flex items-center justify-center gap-2 transition-colors"
                       >
                         <ArrowRight className="h-4 w-4" />
                         {suggestion.action || 'Apply'}
@@ -255,7 +255,7 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
                       {suggestion.details && (
                         <button
                           onClick={() => setExpandedSuggestion(isExpanded ? null : index)}
-                          className="px-3 py-1.5 text-body-xs text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                          className="px-3 py-1.5 text-body-xs text-slate-600 hover:text-gray-800 hover:bg-slate-100 rounded-xl transition-colors"
                         >
                           {isExpanded ? 'Show Less' : 'Learn More'}
                         </button>
@@ -270,12 +270,12 @@ const TaxHarvestingHelper = ({ stcgEntries = [], ltcgEntries = [], lossEntries =
       )}
 
       {suggestions.length === 0 && summary && (
-        <div className="bg-white rounded-lg p-6 border-2 border-blue-200 text-center">
+        <div className="bg-white rounded-xl p-6 border-2 border-blue-200 text-center">
           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
-          <p className="text-body-md font-medium text-gray-700 mb-1">
+          <p className="text-body-md font-medium text-slate-700 mb-1">
             No Tax Harvesting Opportunities
           </p>
-          <p className="text-body-sm text-gray-600">
+          <p className="text-body-sm text-slate-600">
             All gains and losses are already optimized. Great job!
           </p>
         </div>

@@ -76,43 +76,43 @@ class ErrorBoundary extends React.Component {
 
       // Default error UI
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
-            <div className="flex items-center justify-center w-16 h-16 mx-auto bg-red-100 rounded-full mb-4">
-              <AlertTriangle className="w-8 h-8 text-red-600" />
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+          <div className="max-w-md w-full bg-white shadow-elevation-3 rounded-xl p-6">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto bg-error-100 rounded-full mb-4">
+              <AlertTriangle className="w-8 h-8 text-error-600" />
             </div>
 
             <div className="text-center mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
                 Something went wrong
               </h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-body-regular text-slate-600 mb-4">
                 We're sorry, but something unexpected happened. Our team has been notified.
               </p>
               {errorId && (
-                <p className="text-xs text-gray-500 mb-4">
-                  Error ID: <code className="bg-gray-100 px-2 py-1 rounded">{errorId}</code>
+                <p className="text-body-small text-slate-500 mb-4">
+                  Error ID: <code className="bg-slate-100 px-2 py-1 rounded">{errorId}</code>
                 </p>
               )}
             </div>
 
             {showDetails && error && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <details className="text-sm">
-                  <summary className="cursor-pointer text-gray-700 font-medium mb-2">
+              <div className="mb-6 p-4 bg-slate-50 rounded-xl">
+                <details className="text-body-regular">
+                  <summary className="cursor-pointer text-slate-700 font-medium mb-2">
                     Error Details
                   </summary>
                   <div className="mt-2 space-y-2">
                     <div>
-                      <strong className="text-gray-700">Error:</strong>
-                      <pre className="mt-1 text-xs text-red-600 overflow-auto">
+                      <strong className="text-slate-700">Error:</strong>
+                      <pre className="mt-1 text-body-small text-error-600 overflow-auto">
                         {error.toString()}
                       </pre>
                     </div>
                     {errorInfo && errorInfo.componentStack && (
                       <div>
-                        <strong className="text-gray-700">Component Stack:</strong>
-                        <pre className="mt-1 text-xs text-gray-600 overflow-auto max-h-32">
+                        <strong className="text-slate-700">Component Stack:</strong>
+                        <pre className="mt-1 text-body-small text-slate-600 overflow-auto max-h-32">
                           {errorInfo.componentStack}
                         </pre>
                       </div>
@@ -152,7 +152,7 @@ class ErrorBoundary extends React.Component {
               {this.props.showContactSupport && (
                 <a
                   href="mailto:support@burnblack.com?subject=Error Report"
-                  className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                  className="flex items-center justify-center gap-2 text-body-regular text-slate-600 hover:text-slate-900"
                 >
                   <Mail className="w-4 h-4" />
                   Contact Support

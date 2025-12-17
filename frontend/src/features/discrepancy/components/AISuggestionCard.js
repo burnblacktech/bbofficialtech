@@ -7,7 +7,7 @@ import React from 'react';
 import { Sparkles, TrendingUp, AlertCircle } from 'lucide-react';
 import { formatIndianCurrency } from '../../../lib/format';
 import { cn } from '../../../lib/utils';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const AISuggestionCard = ({
   suggestion,
@@ -38,7 +38,7 @@ const AISuggestionCard = ({
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-gold-500" aria-hidden="true" />
-          <h4 className="text-heading-sm font-semibold text-gray-900">AI Suggestion</h4>
+          <h4 className="text-heading-sm font-semibold text-slate-900">AI Suggestion</h4>
         </div>
         <div className="flex items-center gap-2">
           <span className={cn('text-label-md font-medium', getConfidenceColor())}>
@@ -48,12 +48,12 @@ const AISuggestionCard = ({
       </div>
 
       <div className="mb-3">
-        <p className="text-body-md text-gray-700 mb-2">
+        <p className="text-body-md text-slate-700 mb-2">
           <span className="font-medium">{discrepancy.fieldName || discrepancy.fieldPath}:</span>
         </p>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-body-sm text-gray-600">Your Value</p>
+            <p className="text-body-sm text-slate-600">Your Value</p>
             <p className="text-number-md font-medium tabular-nums">
               {typeof discrepancy.manualValue === 'number'
                 ? formatIndianCurrency(discrepancy.manualValue)
@@ -61,7 +61,7 @@ const AISuggestionCard = ({
             </p>
           </div>
           <div>
-            <p className="text-body-sm text-gray-600">Source Value</p>
+            <p className="text-body-sm text-slate-600">Source Value</p>
             <p className="text-number-md font-medium tabular-nums">
               {typeof discrepancy.uploadedValue === 'number'
                 ? formatIndianCurrency(discrepancy.uploadedValue)
@@ -71,17 +71,17 @@ const AISuggestionCard = ({
         </div>
       </div>
 
-      <div className="mb-3 p-3 bg-white bg-opacity-50 rounded-lg">
+      <div className="mb-3 p-3 bg-white bg-opacity-50 rounded-xl">
         <div className="flex items-center gap-2 mb-1">
           <TrendingUp className="h-4 w-4 text-gold-500" aria-hidden="true" />
-          <p className="text-label-md font-medium text-gray-900">Recommended Value</p>
+          <p className="text-label-md font-medium text-slate-900">Recommended Value</p>
         </div>
-        <p className="text-number-md font-bold tabular-nums text-gray-900">
+        <p className="text-number-md font-bold tabular-nums text-slate-900">
           {typeof sug.suggestedValue === 'number'
             ? formatIndianCurrency(sug.suggestedValue)
             : sug.suggestedValue}
         </p>
-        <p className="text-body-sm text-gray-600 mt-1">{sug.reasoning}</p>
+        <p className="text-body-sm text-slate-600 mt-1">{sug.reasoning}</p>
       </div>
 
       <div className="flex gap-2">

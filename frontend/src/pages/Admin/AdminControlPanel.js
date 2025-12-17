@@ -87,7 +87,7 @@ const AdminControlPanel = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-1 Rate (₹)</label>
+              <label className="block text-body-regular font-medium text-neutral-700 mb-2">ITR-1 Rate (₹)</label>
               <input
                 type="number"
                 value={settings.defaultItrRates?.itr_1 || 0}
@@ -96,11 +96,11 @@ const AdminControlPanel = () => {
                   // eslint-disable-next-line camelcase
                   defaultItrRates: { ...settings.defaultItrRates, itr_1: parseInt(e.target.value) },
                 })}
-                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-2 Rate (₹)</label>
+              <label className="block text-body-regular font-medium text-neutral-700 mb-2">ITR-2 Rate (₹)</label>
               <input
                 type="number"
                 value={settings.defaultItrRates?.itr_2 || 0}
@@ -109,11 +109,11 @@ const AdminControlPanel = () => {
                   // eslint-disable-next-line camelcase
                   defaultItrRates: { ...settings.defaultItrRates, itr_2: parseInt(e.target.value) },
                 })}
-                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-3 Rate (₹)</label>
+              <label className="block text-body-regular font-medium text-neutral-700 mb-2">ITR-3 Rate (₹)</label>
               <input
                 type="number"
                 value={settings.defaultItrRates?.itr_3 || 0}
@@ -122,11 +122,11 @@ const AdminControlPanel = () => {
                   // eslint-disable-next-line camelcase
                   defaultItrRates: { ...settings.defaultItrRates, itr_3: parseInt(e.target.value) },
                 })}
-                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">ITR-4 Rate (₹)</label>
+              <label className="block text-body-regular font-medium text-neutral-700 mb-2">ITR-4 Rate (₹)</label>
               <input
                 type="number"
                 value={settings.defaultItrRates?.itr_4 || 0}
@@ -135,7 +135,7 @@ const AdminControlPanel = () => {
                   // eslint-disable-next-line camelcase
                   defaultItrRates: { ...settings.defaultItrRates, itr_4: parseInt(e.target.value) },
                 })}
-                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -148,13 +148,13 @@ const AdminControlPanel = () => {
         </CardHeader>
         <CardContent>
           <div className="max-w-md">
-            <label className="block text-sm font-medium text-neutral-700 mb-2">Commission Percentage (%)</label>
+            <label className="block text-body-regular font-medium text-neutral-700 mb-2">Commission Percentage (%)</label>
             <input
               type="number"
               step="0.1"
               value={settings.platformCommission || 0}
               onChange={(e) => setSettings({ ...settings, platformCommission: parseFloat(e.target.value) })}
-              className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
             />
           </div>
         </CardContent>
@@ -171,21 +171,21 @@ const AdminControlPanel = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">Max Filings Per Month</label>
+              <label className="block text-body-regular font-medium text-neutral-700 mb-2">Max Filings Per Month</label>
               <input
                 type="number"
                 value={settings.maxFilingsPerUserMonth || 0}
                 onChange={(e) => setSettings({ ...settings, maxFilingsPerUserMonth: parseInt(e.target.value) })}
-                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">Max Filings Per Year</label>
+              <label className="block text-body-regular font-medium text-neutral-700 mb-2">Max Filings Per Year</label>
               <input
                 type="number"
                 value={settings.maxFilingsPerUserYear || 0}
                 onChange={(e) => setSettings({ ...settings, maxFilingsPerUserYear: parseInt(e.target.value) })}
-                className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -201,12 +201,12 @@ const AdminControlPanel = () => {
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-neutral-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">CA Firm</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Monthly Limit</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Yearly Limit</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Current Usage</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">User</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">CA Firm</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Monthly Limit</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Yearly Limit</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Current Usage</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-neutral-200">
@@ -260,12 +260,12 @@ const AdminControlPanel = () => {
             <table className="min-w-full divide-y divide-neutral-200">
               <thead className="bg-neutral-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Firm Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Billing Mode</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Commission</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Last Activity</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Firm Name</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Billing Mode</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Commission</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Last Activity</th>
+                  <th className="px-6 py-3 text-left text-body-small font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-neutral-200">

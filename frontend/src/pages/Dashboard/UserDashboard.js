@@ -31,6 +31,9 @@ const UserDashboard = () => {
   const navigate = useNavigate();
   const userId = user?.id || user?.userId;
 
+  // Last saved/resumable draft (set by ITRComputation Save & Exit)
+  const [lastResume, setLastResume] = useState(null);
+
   // Real-time dashboard updates
   const { connectionStatus, isConnected, lastUpdate, refreshDashboard } = useDashboardRealtime();
 
@@ -78,6 +81,18 @@ const UserDashboard = () => {
   const loading = statsLoading || filingsLoading;
   const error = statsError || filingsError;
   const isEmpty = !loading && !hasFiled;
+
+  // Load last resume pointer from localStorage (best-effort)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('itr_last_resume');
+      if (raw) {
+        setLastResume(JSON.parse(raw));
+      }
+    } catch (e) {
+      // Ignore malformed localStorage
+    }
+  }, []);
 
   // Show welcome modal on first login
   useEffect(() => {
@@ -230,7 +245,7 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-slate-50 p-6">
         <DashboardSkeleton />
       </div>
     );
@@ -257,10 +272,10 @@ const UserDashboard = () => {
             </svg>
           </div>
           <h2 className="text-heading-md font-semibold text-black mb-2">Failed to Load Dashboard</h2>
-          <p className="text-body-md text-gray-600 mb-6">{errorMessage}</p>
+          <p className="text-body-md text-slate-600 mb-6">{errorMessage}</p>
           <button
             onClick={handleRetry}
-            className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 mx-auto shadow-lg shadow-primary-500/20"
+            className="px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 mx-auto shadow-elevation-3 shadow-primary-500/20"
           >
             <RefreshCw className="w-4 h-4" />
             Retry
@@ -275,7 +290,7 @@ const UserDashboard = () => {
     return (
       <div>
           <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-card">
-            <div className="w-16 h-16 bg-aurora-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/20">
+            <div className="w-16 h-16 bg-aurora-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-elevation-3 shadow-primary-500/20">
               <FileText className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-heading-md font-semibold text-slate-900 mb-2">No Filings Yet</h2>
@@ -284,7 +299,7 @@ const UserDashboard = () => {
             </p>
             <button
               onClick={handleStartFiling}
-              className="px-6 py-3 bg-aurora-gradient text-white rounded-xl hover:opacity-90 transition-all font-semibold shadow-lg shadow-primary-500/20"
+              className="px-6 py-3 bg-aurora-gradient text-white rounded-xl hover:opacity-90 transition-all font-semibold shadow-elevation-3 shadow-primary-500/20"
             >
               Start Filing
             </button>
@@ -315,32 +330,32 @@ const UserDashboard = () => {
                 {isConnected ? (
                   <div className="flex items-center gap-1 text-success-600" title="Connected to live updates">
                     <Wifi className="w-4 h-4" />
-                    <span className="text-xs hidden sm:inline">Live</span>
+                    <span className="text-body-small hidden sm:inline">Live</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 text-warning-600" title="Using polling updates">
                     <WifiOff className="w-4 h-4" />
-                    <span className="text-xs hidden sm:inline">Polling</span>
+                    <span className="text-body-small hidden sm:inline">Polling</span>
                   </div>
                 )}
                 {lastUpdate && (
                   <button
                     onClick={refreshDashboard}
-                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-1.5 hover:bg-slate-100 rounded-xl transition-colors"
                     title="Refresh dashboard"
                   >
-                    <RefreshCw className="w-4 h-4 text-gray-500" />
+                    <RefreshCw className="w-4 h-4 text-slate-500" />
                   </button>
                 )}
               </div>
             </div>
-            <p className="text-body-sm sm:text-body-md text-gray-600">
+            <p className="text-body-sm sm:text-body-md text-slate-600">
               {hasFiled
                 ? 'Here\'s your filing status and next steps.'
                 : 'Let\'s get your taxes filed quickly and securely.'
               }
               {lastUpdate && (
-                <span className="ml-2 text-xs text-gray-400">
+                <span className="ml-2 text-body-small text-slate-400">
                   Updated {formatLastUpdate()}
                 </span>
               )}
@@ -364,39 +379,39 @@ const UserDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Completion Rate Card */}
             {hasFiled && (
-              <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5 hover:shadow-card-hover transition-all duration-200">
+              <div className="bg-white rounded-xl shadow-card border border-slate-200 p-5 hover:shadow-card-hover transition-all duration-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-sm">
+                    <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-elevation-1">
                       <BarChart3 className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <p className="text-label-sm font-medium text-gray-600">Completion Rate</p>
+                      <p className="text-label-sm font-medium text-slate-600">Completion Rate</p>
                       <p className="text-number-lg font-bold text-black tabular-nums">{completionRate}%</p>
                     </div>
                   </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-slate-200 rounded-full h-2.5">
                   <div
                     className="bg-gradient-to-r from-primary-500 to-primary-600 h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${completionRate}%` }}
                   />
                 </div>
-                <p className="text-body-sm text-gray-600 mt-2">
+                <p className="text-body-sm text-slate-600 mt-2">
                   {completedFilingsCount} of {totalFilingsCount} filing{totalFilingsCount !== 1 ? 's' : ''} completed
                 </p>
               </div>
             )}
 
             {/* Refund Status Card - Always Visible */}
-            <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5 hover:shadow-card-hover transition-all duration-200">
+            <div className="bg-white rounded-xl shadow-card border border-slate-200 p-5 hover:shadow-card-hover transition-all duration-200">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-gradient-to-br from-success-500 to-success-600 rounded-xl shadow-sm">
+                  <div className="p-3 bg-gradient-to-br from-success-500 to-success-600 rounded-xl shadow-elevation-1">
                     <TrendingUp className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-label-sm font-medium text-gray-600">Refund Status</p>
+                    <p className="text-label-sm font-medium text-slate-600">Refund Status</p>
                     <p className="text-number-lg font-bold text-black tabular-nums">
                       ₹{(refundData.totalPendingAmount + refundData.totalCreditedAmount).toLocaleString('en-IN')}
                     </p>
@@ -411,21 +426,21 @@ const UserDashboard = () => {
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-warning-50 border border-warning-200 rounded-lg">
-                  <p className="text-label-xs text-gray-600 mb-1">Pending</p>
+                <div className="p-3 bg-warning-50 border border-warning-200 rounded-xl">
+                  <p className="text-label-xs text-slate-600 mb-1">Pending</p>
                   <p className="text-number-md font-bold tabular-nums text-black">
                     ₹{refundData.totalPendingAmount.toLocaleString('en-IN')}
                   </p>
-                  <p className="text-body-xs text-gray-600 mt-1">
+                  <p className="text-body-xs text-slate-600 mt-1">
                     {refundData.pendingRefunds.length} refund{refundData.pendingRefunds.length !== 1 ? 's' : ''}
                   </p>
                 </div>
-                <div className="p-3 bg-success-50 border border-success-200 rounded-lg">
-                  <p className="text-label-xs text-gray-600 mb-1">Credited</p>
+                <div className="p-3 bg-success-50 border border-success-200 rounded-xl">
+                  <p className="text-label-xs text-slate-600 mb-1">Credited</p>
                   <p className="text-number-md font-bold tabular-nums text-black">
                     ₹{refundData.totalCreditedAmount.toLocaleString('en-IN')}
                   </p>
-                  <p className="text-body-xs text-gray-600 mt-1">
+                  <p className="text-body-xs text-slate-600 mt-1">
                     {refundData.creditedRefunds.length} refund{refundData.creditedRefunds.length !== 1 ? 's' : ''}
                   </p>
                 </div>
@@ -435,7 +450,7 @@ const UserDashboard = () => {
 
           {/* Recent Activity Summary - Compact */}
           {recentActivity.length > 0 && (
-            <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5">
+            <div className="bg-white rounded-xl shadow-card border border-slate-200 p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-heading-sm font-semibold text-black">Recent Activity</h3>
                 {recentActivity.length > 3 && (
@@ -459,7 +474,7 @@ const UserDashboard = () => {
                       case 'member_added':
                         return { icon: Users, bgColor: 'bg-primary-50', iconColor: 'text-primary-500' };
                       default:
-                        return { icon: FileText, bgColor: 'bg-gray-100', iconColor: 'text-gray-600' };
+                        return { icon: FileText, bgColor: 'bg-slate-100', iconColor: 'text-slate-600' };
                     }
                   };
 
@@ -469,7 +484,7 @@ const UserDashboard = () => {
                   return (
                     <div
                       key={activity.id || index}
-                      className="flex items-center gap-3 py-2 px-2 hover:bg-gray-50 rounded-lg transition-colors"
+                      className="flex items-center gap-3 py-2 px-2 hover:bg-slate-50 rounded-xl transition-colors"
                     >
                       <div className={`w-8 h-8 ${bgColor} rounded-full flex items-center justify-center flex-shrink-0`}>
                         <ActivityIcon className={`w-4 h-4 ${iconColor}`} />
@@ -479,13 +494,13 @@ const UserDashboard = () => {
                           {activity.description || activity.title || 'Activity'}
                         </p>
                         {activity.metadata && (
-                          <p className="text-body-xs text-gray-600 truncate">
+                          <p className="text-body-xs text-slate-600 truncate">
                             {activity.metadata.itrType || activity.metadata.filename || activity.metadata.name || ''}
                           </p>
                         )}
                       </div>
                       {formattedDate && (
-                        <span className="text-body-xs text-gray-500 flex-shrink-0">{formattedDate}</span>
+                        <span className="text-body-xs text-slate-500 flex-shrink-0">{formattedDate}</span>
                       )}
                     </div>
                   );
@@ -497,6 +512,56 @@ const UserDashboard = () => {
       </div>
 
       {/* Continue Filing Section - Ongoing/Paused Filings */}
+      {(() => {
+        const hasResumeTarget = !!(lastResume?.draftId || lastResume?.filingId);
+        const alreadyInOngoing = !!(lastResume?.filingId && ongoingFilings.some(f => f.id === lastResume.filingId));
+        const resumeUrl = lastResume?.draftId
+          ? `/itr/computation?draftId=${lastResume.draftId}${lastResume.filingId ? `&filingId=${lastResume.filingId}` : ''}`
+          : (lastResume?.filingId ? `/itr/computation?filingId=${lastResume.filingId}` : null);
+
+        if (!hasResumeTarget || alreadyInOngoing || !resumeUrl) return null;
+
+        return (
+          <div className="mb-6">
+            <h2 className="text-heading-sm font-semibold text-black mb-4">Resume where you left off</h2>
+            <div className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-primary-50 rounded-xl">
+                      <FileText className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-slate-900 text-heading-sm truncate">
+                        {lastResume?.itrType ? `${lastResume.itrType}` : 'ITR Draft'}
+                        {lastResume?.assessmentYear ? ` - AY ${lastResume.assessmentYear}` : ''}
+                      </h3>
+                      {lastResume?.savedAt && (
+                        <p className="text-body-sm text-slate-600 mt-0.5">
+                          Last saved {formatRelativeTime(lastResume.savedAt)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-body-sm text-slate-600">
+                    You can continue from exactly where you stopped.
+                  </p>
+                </div>
+                <div className="flex-shrink-0">
+                  <button
+                    onClick={() => navigate(resumeUrl)}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-all shadow-elevation-1 shadow-primary-500/20 hover:shadow-elevation-2"
+                  >
+                    Resume
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {ongoingFilings.length > 0 && (
         <div className="mb-6">
           <h2 className="text-heading-sm font-semibold text-black mb-4">Continue Filing</h2>
@@ -508,7 +573,7 @@ const UserDashboard = () => {
               return (
                 <div
                   key={filing.id}
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200 cursor-pointer group"
+                  className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200 cursor-pointer group"
                   onClick={() => navigate(`/itr/computation?filingId=${filing.id}`, {
                     state: { filing },
                   })}
@@ -516,7 +581,7 @@ const UserDashboard = () => {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-primary-50 rounded-lg group-hover:bg-primary-100 transition-colors">
+                        <div className="p-2 bg-primary-50 rounded-xl group-hover:bg-primary-100 transition-colors">
                           <FileText className="w-5 h-5 text-primary-600" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -524,12 +589,12 @@ const UserDashboard = () => {
                             {filing.itrType} - AY {filing.assessmentYear}
                           </h3>
                           <div className="mt-1">
-                            <FilingStatusBadge filing={filing} showInvoice={false} className="text-xs" />
+                            <FilingStatusBadge filing={filing} showInvoice={false} className="text-body-small" />
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-body-sm text-gray-600 mb-3">
+                      <div className="flex flex-wrap items-center gap-3 text-body-sm text-slate-600 mb-3">
                         {isPaused && filing.pausedAt && (
                           <span className="flex items-center gap-1.5">
                             <Pause className="w-4 h-4" />
@@ -548,7 +613,7 @@ const UserDashboard = () => {
 
                       {/* Progress Bar */}
                       {progress > 0 && (
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 mb-3">
                           <div
                             className={`h-2.5 rounded-full transition-all duration-500 ${
                               isPaused
@@ -577,7 +642,7 @@ const UserDashboard = () => {
                               state: { filing },
                             });
                           }}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-success-500 text-white rounded-lg hover:bg-success-600 transition-all shadow-sm shadow-success-500/20 hover:shadow-md"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-success-500 text-white rounded-xl hover:bg-success-600 transition-all shadow-elevation-1 shadow-success-500/20 hover:shadow-elevation-2"
                         >
                           <Play className="w-4 h-4" />
                           Resume
@@ -590,7 +655,7 @@ const UserDashboard = () => {
                               state: { filing },
                             });
                           }}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all shadow-sm shadow-primary-500/20 hover:shadow-md"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-all shadow-elevation-1 shadow-primary-500/20 hover:shadow-elevation-2"
                         >
                           Continue
                           <ArrowRight className="w-4 h-4" />
@@ -612,7 +677,7 @@ const UserDashboard = () => {
             <h2 className="text-heading-sm font-semibold text-black">Filing History</h2>
             <button
               onClick={handleViewHistory}
-              className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+              className="text-primary-600 hover:text-primary-700 text-body-regular font-medium flex items-center gap-1"
             >
               View All
               <ArrowRight className="w-4 h-4" />
@@ -622,14 +687,14 @@ const UserDashboard = () => {
             {completedFilings.slice(0, 5).map((filing) => (
               <div
                 key={filing.id}
-                className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200 cursor-pointer group"
+                className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-card-hover hover:border-primary-200 transition-all duration-200 cursor-pointer group"
                 onClick={() => navigate(`/itr/computation?filingId=${filing.id}`, {
                   state: { filing, viewMode: 'readonly' },
                 })}
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="p-2 bg-success-50 rounded-lg group-hover:bg-success-100 transition-colors flex-shrink-0">
+                    <div className="p-2 bg-success-50 rounded-xl group-hover:bg-success-100 transition-colors flex-shrink-0">
                       <FileText className="w-4 h-4 text-success-600" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -637,9 +702,9 @@ const UserDashboard = () => {
                         {filing.itrType} - AY {filing.assessmentYear}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <FilingStatusBadge filing={filing} showInvoice={false} className="text-xs" />
+                        <FilingStatusBadge filing={filing} showInvoice={false} className="text-body-small" />
                         {filing.submittedAt && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-body-small text-slate-500">
                             Submitted {formatRelativeTime(filing.submittedAt)}
                           </span>
                         )}
@@ -654,7 +719,7 @@ const UserDashboard = () => {
                           state: { filing, viewMode: 'readonly' },
                         });
                       }}
-                      className="px-4 py-2 text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+                      className="px-4 py-2 text-body-regular text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-xl transition-colors"
                     >
                       View
                     </button>
@@ -750,7 +815,7 @@ const UserDashboard = () => {
       {(hasFiled || recentActivity.length > 3) && (
         <div className="mt-6">
           <h2 className="text-heading-sm font-semibold text-black mb-4">All Recent Activity</h2>
-          <div className="bg-white rounded-xl shadow-card border border-gray-200 p-5">
+          <div className="bg-white rounded-xl shadow-card border border-slate-200 p-5">
             {recentActivity.length > 3 ? (
               <div className="space-y-0">
                 {recentActivity.slice(3).map((activity, index) => {
@@ -764,7 +829,7 @@ const UserDashboard = () => {
                       case 'member_added':
                         return { icon: Users, bgColor: 'bg-primary-50', iconColor: 'text-primary-500' };
                       default:
-                        return { icon: FileText, bgColor: 'bg-gray-100', iconColor: 'text-gray-600' };
+                        return { icon: FileText, bgColor: 'bg-slate-100', iconColor: 'text-slate-600' };
                     }
                   };
 
@@ -776,7 +841,7 @@ const UserDashboard = () => {
                       key={activity.id || `activity-${index + 3}`}
                       className={`flex items-center justify-between py-3 px-3 ${
                         index < recentActivity.length - 4 ? 'border-b border-gray-100' : ''
-                      } hover:bg-gray-50 rounded-lg transition-colors`}
+                      } hover:bg-slate-50 rounded-xl transition-colors`}
                     >
                       <div className="flex items-center min-w-0 flex-1">
                         <div className={`w-8 h-8 ${bgColor} rounded-full flex items-center justify-center mr-3 flex-shrink-0`}>
@@ -787,14 +852,14 @@ const UserDashboard = () => {
                             {activity.description || activity.title || 'Activity'}
                           </p>
                           {activity.metadata && (
-                            <p className="text-body-xs text-gray-600 truncate mt-0.5">
+                            <p className="text-body-xs text-slate-600 truncate mt-0.5">
                               {activity.metadata.itrType || activity.metadata.filename || activity.metadata.name || ''}
                             </p>
                           )}
                         </div>
                       </div>
                       {formattedDate && (
-                        <span className="text-body-sm text-gray-500 ml-3 flex-shrink-0">{formattedDate}</span>
+                        <span className="text-body-sm text-slate-500 ml-3 flex-shrink-0">{formattedDate}</span>
                       )}
                     </div>
                   );
@@ -802,7 +867,7 @@ const UserDashboard = () => {
               </div>
             ) : (
               <div className="text-center py-6">
-                <p className="text-body-md text-gray-500">No additional activity to display</p>
+                <p className="text-body-md text-slate-500">No additional activity to display</p>
               </div>
             )}
           </div>

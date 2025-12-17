@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Building2, Plus, Trash2, Edit2 } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDeleteEmployer }) => {
   const formatCurrency = (amount) => {
@@ -41,9 +41,9 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
       </div>
 
       {employers.length === 0 ? (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
-          <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-body-md text-gray-600 mb-4">No employers added yet</p>
+        <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+          <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <p className="text-body-md text-slate-600 mb-4">No employers added yet</p>
           {onAddEmployer && (
             <Button onClick={onAddEmployer}>Add First Employer</Button>
           )}
@@ -53,7 +53,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
           {employers.map((employer, index) => (
             <div
               key={employer.id || index}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gold-300 transition-colors"
+              className="bg-white rounded-xl border border-slate-200 p-6 hover:border-gold-300 transition-colors"
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -61,14 +61,14 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
                     {employer.employerName || `Employer ${index + 1}`}
                   </h4>
                   {employer.employerTAN && (
-                    <p className="text-body-sm text-gray-600 mt-1">TAN: {employer.employerTAN}</p>
+                    <p className="text-body-sm text-slate-600 mt-1">TAN: {employer.employerTAN}</p>
                   )}
                 </div>
                 <div className="flex gap-2">
                   {onEditEmployer && (
                     <button
                       onClick={() => onEditEmployer(employer)}
-                      className="p-2 text-gray-400 hover:text-gold-600 rounded-lg hover:bg-gold-50"
+                      className="p-2 text-slate-400 hover:text-gold-600 rounded-xl hover:bg-gold-50"
                       aria-label="Edit employer"
                     >
                       <Edit2 className="h-4 w-4" />
@@ -77,7 +77,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
                   {onDeleteEmployer && (
                     <button
                       onClick={() => onDeleteEmployer(employer.id || index)}
-                      className="p-2 text-gray-400 hover:text-error-600 rounded-lg hover:bg-error-50"
+                      className="p-2 text-slate-400 hover:text-error-600 rounded-xl hover:bg-error-50"
                       aria-label="Delete employer"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -88,7 +88,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-body-sm text-gray-600">Basic + DA</p>
+                  <p className="text-body-sm text-slate-600">Basic + DA</p>
                   <p className="text-body-md font-semibold text-gray-800">
                     {formatCurrency(
                       (employer.basicSalary || 0) + (employer.dearnessAllowance || 0),
@@ -96,13 +96,13 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
                   </p>
                 </div>
                 <div>
-                  <p className="text-body-sm text-gray-600">HRA</p>
+                  <p className="text-body-sm text-slate-600">HRA</p>
                   <p className="text-body-md font-semibold text-gray-800">
                     {formatCurrency(employer.hraReceived || 0)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-body-sm text-gray-600">Allowances</p>
+                  <p className="text-body-sm text-slate-600">Allowances</p>
                   <p className="text-body-md font-semibold text-gray-800">
                     {formatCurrency(
                       (employer.specialAllowance || 0) + (employer.otherAllowances || 0),
@@ -110,7 +110,7 @@ const SalaryBreakdown = ({ employers = [], onAddEmployer, onEditEmployer, onDele
                   </p>
                 </div>
                 <div>
-                  <p className="text-body-sm text-gray-600">Total</p>
+                  <p className="text-body-sm text-slate-600">Total</p>
                   <p className="text-body-md font-semibold text-gold-600">
                     {formatCurrency(calculateTotal(employer))}
                   </p>

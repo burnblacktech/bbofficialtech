@@ -232,7 +232,7 @@ const AdminUserManagement = () => {
                   placeholder="Search users by name, email, or role..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
 
@@ -242,7 +242,7 @@ const AdminUserManagement = () => {
                   <select
                     value={filterRole}
                     onChange={(e) => setFilterRole(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     {roleOptions.map(role => (
                       <option key={role} value={role}>
@@ -253,7 +253,7 @@ const AdminUserManagement = () => {
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     {statusOptions.map(status => (
                       <option key={status} value={status}>
@@ -264,7 +264,7 @@ const AdminUserManagement = () => {
                   <select
                     value={filterRegistrationSource}
                     onChange={(e) => setFilterRegistrationSource(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="all">All Sources</option>
                     <option value="LOCAL">Local</option>
@@ -274,7 +274,7 @@ const AdminUserManagement = () => {
                   <select
                     value={filterHasFilings}
                     onChange={(e) => setFilterHasFilings(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="all">All Users</option>
                     <option value="true">Has Filings</option>
@@ -283,46 +283,46 @@ const AdminUserManagement = () => {
                   <select
                     value={filterHasPayments}
                     onChange={(e) => setFilterHasPayments(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="all">All Users</option>
                     <option value="true">Has Payments</option>
                     <option value="false">No Payments</option>
                   </select>
                   <div>
-                    <label className="block text-xs text-neutral-600 mb-1">Registration From</label>
+                    <label className="block text-body-small text-neutral-600 mb-1">Registration From</label>
                     <input
                       type="date"
                       value={registrationDateFrom}
                       onChange={(e) => setRegistrationDateFrom(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-600 mb-1">Registration To</label>
+                    <label className="block text-body-small text-neutral-600 mb-1">Registration To</label>
                     <input
                       type="date"
                       value={registrationDateTo}
                       onChange={(e) => setRegistrationDateTo(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-600 mb-1">Last Login From</label>
+                    <label className="block text-body-small text-neutral-600 mb-1">Last Login From</label>
                     <input
                       type="date"
                       value={lastLoginFrom}
                       onChange={(e) => setLastLoginFrom(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-600 mb-1">Last Login To</label>
+                    <label className="block text-body-small text-neutral-600 mb-1">Last Login To</label>
                     <input
                       type="date"
                       value={lastLoginTo}
                       onChange={(e) => setLastLoginTo(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -383,19 +383,19 @@ const AdminUserManagement = () => {
                             {user.phone && (
                               <div className="flex items-center space-x-1 text-neutral-500">
                                 <Phone className="h-3 w-3" />
-                                <Typography.Small className="text-xs">{user.phone}</Typography.Small>
+                                <Typography.Small className="text-body-small">{user.phone}</Typography.Small>
                               </div>
                             )}
                             <div className="flex items-center space-x-1 text-neutral-500">
                               <Calendar className="h-3 w-3" />
-                              <Typography.Small className="text-xs">
+                              <Typography.Small className="text-body-small">
                                 Joined {new Date(user.created_at).toLocaleDateString()}
                               </Typography.Small>
                             </div>
                             {user.last_login && (
                               <div className="flex items-center space-x-1 text-neutral-500">
                                 <Clock className="h-3 w-3" />
-                                <Typography.Small className="text-xs">
+                                <Typography.Small className="text-body-small">
                                   Last login {new Date(user.last_login).toLocaleDateString()}
                                 </Typography.Small>
                               </div>
@@ -403,7 +403,7 @@ const AdminUserManagement = () => {
                             {user.total_filings > 0 && (
                               <div className="flex items-center space-x-1 text-neutral-500">
                                 <FileText className="h-3 w-3" />
-                                <Typography.Small className="text-xs">{user.total_filings} filings</Typography.Small>
+                                <Typography.Small className="text-body-small">{user.total_filings} filings</Typography.Small>
                               </div>
                             )}
                           </div>
@@ -413,7 +413,7 @@ const AdminUserManagement = () => {
                               {user.metadata.tags.slice(0, 3).map((tag) => (
                                 <span
                                   key={tag}
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-xs"
+                                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-50 text-primary-600 rounded text-body-small"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                   }}
@@ -423,7 +423,7 @@ const AdminUserManagement = () => {
                                 </span>
                               ))}
                               {user.metadata.tags.length > 3 && (
-                                <span className="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded text-xs">
+                                <span className="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded text-body-small">
                                   +{user.metadata.tags.length - 3}
                                 </span>
                               )}
@@ -439,7 +439,7 @@ const AdminUserManagement = () => {
                           setSelectedUser(user);
                           setShowUserModal(true);
                         }}
-                        className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500 transition-colors"
+                        className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors"
                       >
                         <MoreVertical className="h-5 w-5" />
                       </button>
@@ -492,22 +492,22 @@ const AdminUserManagement = () => {
                   setSelectedUser(null);
                   setShowUserModal(false);
                 }}
-                className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
               >
                 <X className="h-5 w-5" />
               </button>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* User Info */}
-              <div className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-lg">
-                <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <div className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-xl">
+                <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                   {getRoleIcon(selectedUser.role)}
                 </div>
                 <div>
                   <Typography.Small className="font-medium text-neutral-900">
                     {selectedUser.fullName || selectedUser.name}
                   </Typography.Small>
-                  <Typography.Small className="text-neutral-600 text-xs">
+                  <Typography.Small className="text-neutral-600 text-body-small">
                     {selectedUser.email}
                   </Typography.Small>
                 </div>
@@ -540,7 +540,7 @@ const AdminUserManagement = () => {
                         setShowUserModal(false);
                       }}
                       disabled={selectedUser.status === status}
-                      className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${
                         selectedUser.status === status
                           ? 'bg-primary-100 text-primary-700 cursor-not-allowed'
                           : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'

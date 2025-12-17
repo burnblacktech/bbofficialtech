@@ -127,13 +127,13 @@ const ReviewValidation = ({
       className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-50 transition-colors"
     >
       <div className="flex items-center space-x-3">
-        <div className="p-2 rounded-lg bg-burnblack-gold bg-opacity-20">
+        <div className="p-2 rounded-xl bg-burnblack-gold bg-opacity-20">
           {React.createElement(icon, { className: 'h-5 w-5 text-burnblack-gold' })}
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-burnblack-black">{title}</h3>
+          <h3 className="text-heading-4 font-semibold text-burnblack-black">{title}</h3>
           {count && (
-            <p className="text-sm text-neutral-500">{count} items</p>
+            <p className="text-body-regular text-neutral-500">{count} items</p>
           )}
         </div>
       </div>
@@ -150,12 +150,12 @@ const ReviewValidation = ({
       {/* Header */}
       <div className="dashboard-card-burnblack p-4">
         <div className="flex items-center space-x-3 mb-4">
-          <div className="p-2 rounded-lg bg-burnblack-gold bg-opacity-20">
+          <div className="p-2 rounded-xl bg-burnblack-gold bg-opacity-20">
             <CheckCircle className="h-6 w-6 text-burnblack-gold" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-burnblack-black">Review & Validation</h2>
-            <p className="text-sm text-neutral-500">
+            <h2 className="text-heading-3 font-semibold text-burnblack-black">Review & Validation</h2>
+            <p className="text-body-regular text-neutral-500">
               Final review before filing your ITR-1
             </p>
           </div>
@@ -163,28 +163,28 @@ const ReviewValidation = ({
 
         {/* Validation Status */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="p-3 bg-success-50 rounded-lg">
+          <div className="p-3 bg-success-50 rounded-xl">
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-4 w-4 text-success-600" />
-              <span className="text-sm font-medium text-success-800">Passed</span>
+              <span className="text-body-regular font-medium text-success-800">Passed</span>
             </div>
-            <p className="text-lg font-bold text-success-900">{success.length}</p>
+            <p className="text-body-large font-bold text-success-900">{success.length}</p>
           </div>
 
-          <div className="p-3 bg-warning-50 rounded-lg">
+          <div className="p-3 bg-warning-50 rounded-xl">
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-4 w-4 text-warning-600" />
-              <span className="text-sm font-medium text-warning-800">Warnings</span>
+              <span className="text-body-regular font-medium text-warning-800">Warnings</span>
             </div>
-            <p className="text-lg font-bold text-warning-900">{warnings.length}</p>
+            <p className="text-body-large font-bold text-warning-900">{warnings.length}</p>
           </div>
 
-          <div className="p-3 bg-error-50 rounded-lg">
+          <div className="p-3 bg-error-50 rounded-xl">
             <div className="flex items-center space-x-2">
               <AlertCircle className="h-4 w-4 text-error-600" />
-              <span className="text-sm font-medium text-error-800">Errors</span>
+              <span className="text-body-regular font-medium text-error-800">Errors</span>
             </div>
-            <p className="text-lg font-bold text-error-900">{errors.length}</p>
+            <p className="text-body-large font-bold text-error-900">{errors.length}</p>
           </div>
         </div>
       </div>
@@ -198,10 +198,10 @@ const ReviewValidation = ({
           <div className="px-4 pb-4 space-y-4">
             {/* Salary Income */}
             {filingData.income.salary && (
-              <div className="p-3 bg-neutral-50 rounded-lg">
+              <div className="p-3 bg-neutral-50 rounded-xl">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-neutral-600">Salary Income</span>
-                  <span className="text-sm font-semibold text-burnblack-black">
+                  <span className="text-body-regular font-medium text-neutral-600">Salary Income</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">
                     ₹{(() => {
                       const { basicSalary = 0, hra = 0, allowances = 0 } = filingData.income.salary;
                       return (basicSalary + hra + allowances).toLocaleString();
@@ -213,10 +213,10 @@ const ReviewValidation = ({
 
             {/* House Property */}
             {filingData.income.houseProperty && (
-              <div className="p-3 bg-neutral-50 rounded-lg">
+              <div className="p-3 bg-neutral-50 rounded-xl">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-neutral-600">House Property</span>
-                  <span className="text-sm font-semibold text-burnblack-black">
+                  <span className="text-body-regular font-medium text-neutral-600">House Property</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">
                     ₹{(() => {
                       const { annualValue = 0, municipalTaxes = 0, interestOnLoan = 0, isSelfOccupied = false } = filingData.income.houseProperty;
                       const netAnnualValue = annualValue - municipalTaxes;
@@ -234,10 +234,10 @@ const ReviewValidation = ({
 
             {/* Other Income */}
             {filingData.income.otherIncome && (
-              <div className="p-3 bg-neutral-50 rounded-lg">
+              <div className="p-3 bg-neutral-50 rounded-xl">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-neutral-600">Other Income</span>
-                  <span className="text-sm font-semibold text-burnblack-black">
+                  <span className="text-body-regular font-medium text-neutral-600">Other Income</span>
+                  <span className="text-body-regular font-semibold text-burnblack-black">
                     ₹{(() => {
                       const { bankInterest = 0, fdInterest = 0, dividendIncome = 0, otherSources = 0 } = filingData.income.otherIncome;
                       return (bankInterest + fdInterest + dividendIncome + otherSources).toLocaleString();
@@ -249,8 +249,8 @@ const ReviewValidation = ({
 
             <div className="border-t border-neutral-200 pt-3">
               <div className="flex justify-between">
-                <span className="text-lg font-semibold text-burnblack-black">Total Income</span>
-                <span className="text-xl font-bold text-burnblack-gold">
+                <span className="text-body-large font-semibold text-burnblack-black">Total Income</span>
+                <span className="text-heading-3 font-bold text-burnblack-gold">
                   ₹{totalIncome.toLocaleString()}
                 </span>
               </div>
@@ -300,10 +300,10 @@ const ReviewValidation = ({
               if (deductionAmount === 0) return null;
 
               return (
-                <div key={key} className="p-3 bg-neutral-50 rounded-lg">
+                <div key={key} className="p-3 bg-neutral-50 rounded-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-neutral-600">{deductionName}</span>
-                    <span className="text-sm font-semibold text-burnblack-black">
+                    <span className="text-body-regular font-medium text-neutral-600">{deductionName}</span>
+                    <span className="text-body-regular font-semibold text-burnblack-black">
                       ₹{deductionAmount.toLocaleString()}
                     </span>
                   </div>
@@ -313,8 +313,8 @@ const ReviewValidation = ({
 
             <div className="border-t border-neutral-200 pt-3">
               <div className="flex justify-between">
-                <span className="text-lg font-semibold text-burnblack-black">Total Deductions</span>
-                <span className="text-xl font-bold text-burnblack-gold">
+                <span className="text-body-large font-semibold text-burnblack-black">Total Deductions</span>
+                <span className="text-heading-3 font-bold text-burnblack-gold">
                   ₹{totalDeductions.toLocaleString()}
                 </span>
               </div>
@@ -329,10 +329,10 @@ const ReviewValidation = ({
 
         {expandedSections.taxes && (
           <div className="px-4 pb-4 space-y-4">
-            <div className="p-3 bg-neutral-50 rounded-lg">
+            <div className="p-3 bg-neutral-50 rounded-xl">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-neutral-600">Taxable Income</span>
-                <span className="text-sm font-semibold text-burnblack-black">
+                <span className="text-body-regular font-medium text-neutral-600">Taxable Income</span>
+                <span className="text-body-regular font-semibold text-burnblack-black">
                   ₹{taxableIncome.toLocaleString()}
                 </span>
               </div>
@@ -340,10 +340,10 @@ const ReviewValidation = ({
 
             {filingData.taxComputation && (
               <>
-                <div className="p-3 bg-neutral-50 rounded-lg">
+                <div className="p-3 bg-neutral-50 rounded-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-neutral-600">Total Tax</span>
-                    <span className="text-sm font-semibold text-burnblack-black">
+                    <span className="text-body-regular font-medium text-neutral-600">Total Tax</span>
+                    <span className="text-body-regular font-semibold text-burnblack-black">
                       ₹{(filingData.taxComputation.totalTax || 0).toLocaleString()}
                     </span>
                   </div>
@@ -351,7 +351,7 @@ const ReviewValidation = ({
 
                 <div className="border-t border-neutral-200 pt-3">
                   <div className="flex justify-between">
-                    <span className="text-lg font-semibold text-burnblack-black">
+                    <span className="text-body-large font-semibold text-burnblack-black">
                       {filingData.taxComputation.netRefund > 0 ? 'Refund Due' : 'Tax Payable'}
                     </span>
                     <span className={`text-xl font-bold ${
@@ -374,14 +374,14 @@ const ReviewValidation = ({
         {expandedSections.validation && (
           <div className="px-4 pb-4 space-y-3">
             {validationResults.length === 0 ? (
-              <div className="p-3 bg-success-50 rounded-lg text-center">
+              <div className="p-3 bg-success-50 rounded-xl text-center">
                 <CheckCircle className="h-8 w-8 text-success-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-success-800">All validations passed!</p>
-                <p className="text-xs text-success-600">Your ITR-1 is ready for filing</p>
+                <p className="text-body-regular font-medium text-success-800">All validations passed!</p>
+                <p className="text-body-small text-success-600">Your ITR-1 is ready for filing</p>
               </div>
             ) : (
               validationResults.map((result, index) => (
-                <div key={index} className={`p-3 rounded-lg ${
+                <div key={index} className={`p-3 rounded-xl ${
                   result.severity === 'error' ? 'bg-error-50' :
                   result.severity === 'warning' ? 'bg-warning-50' : 'bg-success-50'
                 }`}>
@@ -420,19 +420,19 @@ const ReviewValidation = ({
       {/* AI Suggestions */}
       {aiSuggestions.length > 0 && (
         <div className="dashboard-card-burnblack p-4">
-          <h3 className="text-lg font-semibold text-burnblack-black mb-4">AI Recommendations</h3>
+          <h3 className="text-heading-4 font-semibold text-burnblack-black mb-4">AI Recommendations</h3>
           <div className="space-y-3">
             {aiSuggestions.map((suggestion, index) => (
-              <div key={index} className="p-3 bg-burnblack-gold bg-opacity-10 rounded-lg">
+              <div key={index} className="p-3 bg-burnblack-gold bg-opacity-10 rounded-xl">
                 <div className="flex items-start space-x-2">
                   <Lightbulb className="h-4 w-4 text-burnblack-gold mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-burnblack-black">{suggestion.message}</p>
+                    <p className="text-body-regular font-medium text-burnblack-black">{suggestion.message}</p>
                     {suggestion.suggestion && (
-                      <p className="text-xs text-neutral-600 mt-1">{suggestion.suggestion}</p>
+                      <p className="text-body-small text-neutral-600 mt-1">{suggestion.suggestion}</p>
                     )}
                     {suggestion.action && (
-                      <button className="text-xs text-burnblack-gold font-medium mt-2 hover:underline">
+                      <button className="text-body-small text-burnblack-gold font-medium mt-2 hover:underline">
                         {suggestion.action}
                       </button>
                     )}
@@ -475,7 +475,7 @@ const ReviewValidation = ({
             <button
               onClick={() => onValidate()}
               disabled={isValidating}
-              className="px-4 py-2 bg-burnblack-gold text-white rounded-lg hover:bg-burnblack-gold-dark transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-burnblack-gold text-white rounded-xl hover:bg-burnblack-gold-dark transition-colors disabled:opacity-50"
             >
               {isValidating ? 'Re-validating...' : 'Re-validate'}
             </button>

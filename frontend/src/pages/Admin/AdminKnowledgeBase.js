@@ -129,13 +129,13 @@ const AdminKnowledgeBase = () => {
                   placeholder="Search articles..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2.5 w-full border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="pl-10 pr-4 py-2.5 w-full border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>{category.name}</option>
@@ -148,7 +148,7 @@ const AdminKnowledgeBase = () => {
                   setSortBy(field);
                   setSortOrder(order);
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="updatedAt-desc">Recently Updated</option>
                 <option value="createdAt-desc">Recently Created</option>
@@ -184,7 +184,7 @@ const AdminKnowledgeBase = () => {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredArticles.map((article) => (
               <StaggerItem key={article.id}>
-                <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
+                <Card className="h-full flex flex-col hover:shadow-elevation-3 transition-shadow">
                   <CardContent className="p-6 flex-1 flex flex-col">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
@@ -204,7 +204,7 @@ const AdminKnowledgeBase = () => {
                       </Typography.Small>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-neutral-500 mb-4">
+                    <div className="flex items-center justify-between text-body-regular text-neutral-500 mb-4">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center">
                           <Eye className="w-4 h-4 mr-1" />
@@ -223,7 +223,7 @@ const AdminKnowledgeBase = () => {
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-neutral-200">
                       <div className="flex flex-wrap gap-1">
                         {article.tags.slice(0, 2).map((tag) => (
-                          <span key={tag} className="inline-flex px-2 py-1 text-xs bg-neutral-100 text-neutral-600 rounded">
+                          <span key={tag} className="inline-flex px-2 py-1 text-body-small bg-neutral-100 text-neutral-600 rounded">
                             {tag}
                           </span>
                         ))}

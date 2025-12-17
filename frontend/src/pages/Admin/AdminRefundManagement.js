@@ -181,7 +181,7 @@ const AdminRefundManagement = () => {
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <select
@@ -190,7 +190,7 @@ const AdminRefundManagement = () => {
                   setFilters({ ...filters, status: e.target.value });
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Status</option>
                 <option value="processing">Processing</option>
@@ -205,7 +205,7 @@ const AdminRefundManagement = () => {
                   setFilters({ ...filters, startDate: e.target.value });
                   setPagination({ ...pagination, offset: 0 });
                 }}
-                className="px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-2.5 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </CardContent>
@@ -345,7 +345,7 @@ const AdminRefundManagement = () => {
                     setApprovalNotes('');
                     setSelectedRefund(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -355,13 +355,13 @@ const AdminRefundManagement = () => {
                   Approve refund request for ₹{parseFloat(selectedRefund.expectedAmount || 0).toLocaleString('en-IN')}
                 </Typography.Body>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Approval Notes (Optional)
                   </label>
                   <textarea
                     value={approvalNotes}
                     onChange={(e) => setApprovalNotes(e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     rows={3}
                     placeholder="Enter approval notes..."
                   />
@@ -395,7 +395,7 @@ const AdminRefundManagement = () => {
                     setRejectionData({ reason: '', notes: '' });
                     setSelectedRefund(null);
                   }}
-                  className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500"
+                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -405,13 +405,13 @@ const AdminRefundManagement = () => {
                   Please provide a reason for rejecting this refund request.
                 </Typography.Body>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Rejection Reason <span className="text-error-500">*</span>
                   </label>
                   <textarea
                     value={rejectionData.reason}
                     onChange={(e) => setRejectionData({ ...rejectionData, reason: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                     rows={3}
                     placeholder="Enter rejection reason..."
                   />
@@ -439,7 +439,7 @@ const AdminRefundManagement = () => {
             <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Refund Details</CardTitle>
-                <button onClick={() => setSelectedRefund(null)} className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500">
+                <button onClick={() => setSelectedRefund(null)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>

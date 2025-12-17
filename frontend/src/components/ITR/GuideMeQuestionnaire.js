@@ -252,7 +252,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
             {currentStep === 4 && 'Any of these apply to you?'}
             {currentStep === 5 && 'Based on your answers, you should file:'}
           </h2>
-          <span className="text-sm font-medium text-slate-500">Step {currentStep} of 5</span>
+          <span className="text-body-regular font-medium text-slate-500">Step {currentStep} of 5</span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-2">
           <motion.div
@@ -289,21 +289,21 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
                     className={cn(
                       'p-4 rounded-xl border-2 transition-all text-left',
                       isSelected
-                        ? 'border-primary-500 bg-primary-50 shadow-md'
+                        ? 'border-primary-500 bg-primary-50 shadow-elevation-2'
                         : 'border-slate-200 bg-white hover:border-slate-300',
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        'w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br',
+                        'w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br',
                         source.color,
                       )}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-semibold text-slate-900">{source.label}</div>
+                        <div className="text-body-regular font-semibold text-slate-900">{source.label}</div>
                         {source.note && (
-                          <div className="text-xs text-slate-500 mt-0.5">{source.note}</div>
+                          <div className="text-body-small text-slate-500 mt-0.5">{source.note}</div>
                         )}
                       </div>
                       {isSelected && <CheckCircle className="w-5 h-5 text-primary-500" />}
@@ -327,7 +327,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-800">
+                <p className="text-body-regular font-medium text-blue-800">
                   {answers.incomeSources.map((id) => {
                     const source = INCOME_SOURCES_STEP1.find((s) => s.id === id);
                     return source?.label;
@@ -345,11 +345,11 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
                     className={cn(
                       'p-6 rounded-xl border-2 transition-all text-center',
                       isSelected
-                        ? 'border-primary-500 bg-primary-50 shadow-md'
+                        ? 'border-primary-500 bg-primary-50 shadow-elevation-2'
                         : 'border-slate-200 bg-white hover:border-slate-300',
                     )}
                   >
-                    <div className="text-lg font-semibold text-slate-900">{range.label}</div>
+                    <div className="text-body-large font-semibold text-slate-900">{range.label}</div>
                     {isSelected && (
                       <CheckCircle className="w-5 h-5 text-primary-500 mx-auto mt-3" />
                     )}
@@ -379,15 +379,15 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
                     className={cn(
                       'p-6 rounded-xl border-2 transition-all text-left',
                       isSelected
-                        ? 'border-primary-500 bg-primary-50 shadow-md'
+                        ? 'border-primary-500 bg-primary-50 shadow-elevation-2'
                         : 'border-slate-200 bg-white hover:border-slate-300',
                     )}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-lg font-semibold text-slate-900">{option.label}</div>
+                        <div className="text-body-large font-semibold text-slate-900">{option.label}</div>
                         {option.description && (
-                          <div className="text-sm text-slate-500 mt-1">{option.description}</div>
+                          <div className="text-body-regular text-slate-500 mt-1">{option.description}</div>
                         )}
                       </div>
                       {isSelected && <CheckCircle className="w-5 h-5 text-primary-500" />}
@@ -399,7 +399,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
             {answers.residency === 'nri' && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
                 <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-amber-800">
+                <p className="text-body-regular text-amber-800">
                   NRIs must file ITR-2 or above (ITR-1 not allowed)
                 </p>
               </div>
@@ -447,7 +447,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
             className="space-y-6"
           >
             <div className="bg-gradient-to-br from-primary-50 to-amber-50 rounded-2xl border-2 border-primary-200 p-8 text-center">
-              <div className="text-6xl font-bold text-primary-600 mb-4">{recommendedITR}</div>
+              <div className="text-display-1 font-bold text-primary-600 mb-4">{recommendedITR}</div>
               <p className="text-body-lg text-slate-700 mb-6">Because you have:</p>
               <ul className="space-y-2 text-left max-w-md mx-auto">
                 {recommendationReasons.map((reason, idx) => (
@@ -463,7 +463,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
               <div className="bg-warning-50 border border-warning-200 rounded-xl p-4 flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-warning-800">
+                  <p className="text-body-regular font-medium text-warning-800">
                     Important: Since income &gt; ₹50 lakh, you must also report assets and liabilities in Schedule AL.
                   </p>
                 </div>
@@ -473,7 +473,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
             <div className="flex items-center gap-4 justify-center">
               <button
                 onClick={() => onComplete(recommendedITR, answers)}
-                className="px-8 py-3 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/25"
+                className="px-8 py-3 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all shadow-elevation-3 shadow-primary-500/25"
               >
                 Proceed with {recommendedITR}
                 <ArrowRight className="w-5 h-5 ml-2 inline" />
@@ -505,7 +505,7 @@ const GuideMeQuestionnaire = ({ onComplete, onBack }) => {
             className={cn(
               'flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all',
               canProceed()
-                ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-lg shadow-primary-500/25'
+                ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-elevation-3 shadow-primary-500/25'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed',
             )}
           >

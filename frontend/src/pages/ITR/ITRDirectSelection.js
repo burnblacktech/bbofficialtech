@@ -175,20 +175,20 @@ const ITRDirectSelection = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className="p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-neutral-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-neutral-600" />
             </button>
             <div>
-              <h1 className="text-xl font-semibold text-neutral-900">Select ITR Form</h1>
-              <p className="text-sm text-neutral-500">Choose the appropriate ITR type for your filing</p>
+              <h1 className="text-heading-3 font-semibold text-neutral-900">Select ITR Form</h1>
+              <p className="text-body-regular text-neutral-500">Choose the appropriate ITR type for your filing</p>
             </div>
           </div>
           {selectedPerson && (
-            <div className="hidden md:flex items-center gap-2 bg-neutral-50 px-3 py-1.5 rounded-lg">
+            <div className="hidden md:flex items-center gap-2 bg-neutral-50 px-3 py-1.5 rounded-xl">
               <Users className="w-4 h-4 text-neutral-500" />
-              <span className="text-sm text-neutral-700">{selectedPerson.name}</span>
-              <span className="text-xs text-neutral-500 bg-neutral-200 px-2 py-0.5 rounded">
+              <span className="text-body-regular text-neutral-700">{selectedPerson.name}</span>
+              <span className="text-body-small text-neutral-500 bg-neutral-200 px-2 py-0.5 rounded">
                 {selectedPerson.panNumber}
               </span>
             </div>
@@ -206,8 +206,8 @@ const ITRDirectSelection = () => {
         >
           <Sparkles className="w-5 h-5 text-gold-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-gold-800">Expert Mode</p>
-            <p className="text-xs text-gold-700 mt-0.5">
+            <p className="text-body-regular font-medium text-gold-800">Expert Mode</p>
+            <p className="text-body-small text-gold-700 mt-0.5">
               You are directly selecting the ITR form. Make sure you choose the correct form based on your income sources.
               Incorrect form selection may lead to rejection of your return.
             </p>
@@ -230,15 +230,15 @@ const ITRDirectSelection = () => {
                 className={cn(
                   'relative rounded-2xl border-2 overflow-hidden transition-all cursor-pointer',
                   isSelected
-                    ? 'border-gold-500 shadow-lg shadow-gold-500/20'
-                    : 'border-neutral-200 hover:border-neutral-300 hover:shadow-md',
+                    ? 'border-gold-500 shadow-elevation-3 shadow-gold-500/20'
+                    : 'border-neutral-200 hover:border-neutral-300 hover:shadow-elevation-2',
                 )}
                 onClick={() => handleSelectITR(itr.id)}
               >
                 {/* Recommended Badge */}
                 {itr.recommended && (
                   <div className="absolute top-3 right-3 z-10">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gold-100 text-gold-700">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-body-small font-medium bg-gold-100 text-gold-700">
                       <Sparkles className="w-3 h-3" />
                       Recommended
                     </span>
@@ -268,8 +268,8 @@ const ITRDirectSelection = () => {
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-neutral-900">{itr.name}</h3>
-                      <p className="text-sm text-neutral-600 mt-0.5">{itr.subtitle}</p>
+                      <h3 className="text-heading-4 font-bold text-neutral-900">{itr.name}</h3>
+                      <p className="text-body-regular text-neutral-600 mt-0.5">{itr.subtitle}</p>
                       <div className="flex items-center gap-3 mt-2">
                         <span className={cn(
                           'text-xs font-medium px-2 py-0.5 rounded-full',
@@ -279,7 +279,7 @@ const ITRDirectSelection = () => {
                         )}>
                           {itr.complexity}
                         </span>
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-body-small text-neutral-500">
                           ~{itr.estimatedTime}
                         </span>
                       </div>
@@ -294,7 +294,7 @@ const ITRDirectSelection = () => {
                       e.stopPropagation();
                       setShowDetails(isExpanded ? null : itr.id);
                     }}
-                    className="text-sm font-medium text-gold-600 hover:text-gold-700 flex items-center gap-1"
+                    className="text-body-regular font-medium text-gold-600 hover:text-gold-700 flex items-center gap-1"
                   >
                     {isExpanded ? 'Hide Details' : 'View Eligibility'}
                     <ArrowRight className={cn(
@@ -320,7 +320,7 @@ const ITRDirectSelection = () => {
                           </h4>
                           <ul className="space-y-1">
                             {itr.eligibility.map((item, i) => (
-                              <li key={i} className="text-xs text-neutral-600 flex items-start gap-2">
+                              <li key={i} className="text-body-small text-neutral-600 flex items-start gap-2">
                                 <CheckCircle className="w-3 h-3 text-success-500 flex-shrink-0 mt-0.5" />
                                 {item}
                               </li>
@@ -330,13 +330,13 @@ const ITRDirectSelection = () => {
 
                         {/* Not Eligible For */}
                         <div>
-                          <h4 className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-2 flex items-center gap-1">
+                          <h4 className="text-xs font-semibold text-error-700 uppercase tracking-wide mb-2 flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" />
                             Not Eligible For
                           </h4>
                           <ul className="space-y-1">
                             {itr.notEligible.map((item, i) => (
-                              <li key={i} className="text-xs text-neutral-600 flex items-start gap-2">
+                              <li key={i} className="text-body-small text-neutral-600 flex items-start gap-2">
                                 <AlertCircle className="w-3 h-3 text-error-400 flex-shrink-0 mt-0.5" />
                                 {item}
                               </li>
@@ -359,7 +359,7 @@ const ITRDirectSelection = () => {
           transition={{ delay: 0.4 }}
           className="mt-8 flex items-center justify-between"
         >
-          <p className="text-sm text-neutral-500">
+          <p className="text-body-regular text-neutral-500">
             {selectedITR
               ? `You've selected ${selectedITR}. Click Continue to proceed.`
               : 'Select an ITR form to continue.'}
@@ -370,7 +370,7 @@ const ITRDirectSelection = () => {
             className={cn(
               'inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all',
               selectedITR
-                ? 'bg-gold-500 text-white hover:bg-gold-600 shadow-lg shadow-gold-500/25'
+                ? 'bg-gold-500 text-white hover:bg-gold-600 shadow-elevation-3 shadow-gold-500/25'
                 : 'bg-neutral-200 text-neutral-400 cursor-not-allowed',
             )}
           >

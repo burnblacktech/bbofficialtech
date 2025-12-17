@@ -39,25 +39,25 @@ const TaxCreditSection = ({
         {/* Content - Compact */}
         <div className="p-4 space-y-2">
           {/* TDS Credit */}
-          <div className="flex items-center justify-between py-1.5 px-3 bg-neutral-50 rounded-lg border border-neutral-200">
-            <span className="text-xs font-medium text-neutral-700">TDS Credit</span>
-            <span className="text-xs font-bold text-neutral-900 tabular-nums">
+          <div className="flex items-center justify-between py-1.5 px-3 bg-neutral-50 rounded-xl border border-neutral-200">
+            <span className="text-body-small font-medium text-neutral-700">TDS Credit</span>
+            <span className="text-body-small font-bold text-neutral-900 tabular-nums">
               {formatIndianCurrency(tdsCredit)}
             </span>
           </div>
 
           {/* Self Assessment Tax */}
-          <div className="flex items-center justify-between py-1.5 px-3 bg-neutral-50 rounded-lg border border-neutral-200">
-            <span className="text-xs font-medium text-neutral-700">Self Assessment Tax</span>
-            <span className="text-xs font-bold text-neutral-900 tabular-nums">
+          <div className="flex items-center justify-between py-1.5 px-3 bg-neutral-50 rounded-xl border border-neutral-200">
+            <span className="text-body-small font-medium text-neutral-700">Self Assessment Tax</span>
+            <span className="text-body-small font-bold text-neutral-900 tabular-nums">
               {formatIndianCurrency(selfAssessmentTax)}
             </span>
           </div>
 
           {/* Total Tax Credit */}
-          <div className="flex items-center justify-between py-2 px-3 bg-blue-50 rounded-lg border border-blue-200">
-            <span className="text-xs font-semibold text-blue-900">Total Tax Credit</span>
-            <span className="text-sm font-bold text-blue-900 tabular-nums">
+          <div className="flex items-center justify-between py-2 px-3 bg-blue-50 rounded-xl border border-blue-200">
+            <span className="text-body-small font-semibold text-blue-900">Total Tax Credit</span>
+            <span className="text-body-regular font-bold text-blue-900 tabular-nums">
               {formatIndianCurrency(totalTaxCredit)}
             </span>
           </div>
@@ -67,7 +67,7 @@ const TaxCreditSection = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className={cn(
-              'flex items-center justify-between py-2.5 px-3 rounded-lg border-2 mt-2',
+              'flex items-center justify-between py-2.5 px-3 rounded-xl border-2 mt-2',
               isRefund || finalAmount === 0
                 ? 'bg-emerald-50 border-emerald-300'
                 : 'bg-amber-50 border-amber-300',

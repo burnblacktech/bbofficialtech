@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useITR } from '../../contexts/ITRContext';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import StatusBadge from '../../components/DesignSystem/StatusBadge';
 import { LoadingState } from '../../components/DesignSystem';
 import FilingStatusBadge from '../../components/ITR/FilingStatusBadge';
@@ -176,10 +176,10 @@ const FilingHistory = () => {
     <div>
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-heading-2 sm:text-heading-1 font-bold text-slate-900 mb-2">
             Filing History
           </h1>
-          <p className="text-sm sm:text-base text-gray-600">
+          <p className="text-body-regular sm:text-body-large text-slate-600">
             View and manage all your ITR filings
           </p>
         </div>
@@ -195,13 +195,13 @@ const FilingHistory = () => {
                   placeholder="Search by ITR type or assessment year..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
               {/* Tabs for Ongoing/Completed */}
               {isEndUser && (
-                <div className="flex gap-2 border-b border-gray-200">
+                <div className="flex gap-2 border-b border-slate-200">
                   {['all', 'ongoing', 'completed'].map((tab) => (
                     <button
                       key={tab}
@@ -209,7 +209,7 @@ const FilingHistory = () => {
                       className={`px-4 py-2 font-medium capitalize border-b-2 transition-colors ${
                         activeTab === tab
                           ? 'border-gold-500 text-gold-600'
-                          : 'border-transparent text-gray-600 hover:text-gray-900'
+                          : 'border-transparent text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       {tab}
@@ -224,7 +224,7 @@ const FilingHistory = () => {
                 <select
                   value={assessmentYearFilter}
                   onChange={(e) => setAssessmentYearFilter(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="all">All Years</option>
                   {assessmentYears.map((year) => (
@@ -254,11 +254,11 @@ const FilingHistory = () => {
         {filteredFilings.length === 0 ? (
           <Card>
             <div className="p-12 text-center">
-              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-heading-3 font-semibold text-slate-900 mb-2">
                 No filings found
               </h3>
-              <p className="text-sm sm:text-base text-gray-600 mb-6">
+              <p className="text-body-regular sm:text-body-large text-slate-600 mb-6">
                 {searchTerm || filter !== 'all'
                   ? 'No filings match your current filters'
                   : 'You haven\'t filed any ITR yet'
@@ -281,13 +281,13 @@ const FilingHistory = () => {
                     {/* Filing Info */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-heading-4 font-semibold text-slate-900">
                           {filing.itrType} - AY {filing.assessmentYear}
                         </h3>
                         <FilingStatusBadge filing={filing} showInvoice={false} />
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-2">
+                      <div className="flex flex-wrap items-center gap-4 text-body-regular text-slate-600 mb-2">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>Created: {new Date(filing.createdAt).toLocaleDateString()}</span>

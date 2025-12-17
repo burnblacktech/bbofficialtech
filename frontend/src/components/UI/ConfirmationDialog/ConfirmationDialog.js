@@ -71,7 +71,7 @@ export const ConfirmationDialog = ({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed z-50 bg-white rounded-xl shadow-xl max-w-md w-full mx-4',
+              'fixed z-50 bg-white rounded-xl shadow-elevation-4 max-w-md w-full mx-4',
               className,
             )}
             role="dialog"
@@ -80,15 +80,15 @@ export const ConfirmationDialog = ({
             {...props}
           >
             {/* Header */}
-            <div className="flex items-start justify-between p-6 border-b border-gray-200">
+            <div className="flex items-start justify-between p-6 border-b border-slate-200">
               <div className="flex items-start gap-3">
-                <div className={cn('p-2 rounded-lg', config.iconBg)}>
+                <div className={cn('p-2 rounded-xl', config.iconBg)}>
                   <Icon className={cn('w-5 h-5', config.iconColor)} />
                 </div>
                 <div>
                   <h3
                     id="confirmation-title"
-                    className="text-heading-md font-semibold text-gray-900"
+                    className="text-heading-md font-semibold text-slate-900"
                     style={{ fontSize: '18px', fontWeight: 600 }}
                   >
                     {title}
@@ -97,10 +97,10 @@ export const ConfirmationDialog = ({
               </div>
               <button
                 onClick={onClose}
-                className="p-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
+                className="p-1 rounded hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
                 aria-label="Close dialog"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
 
@@ -108,7 +108,7 @@ export const ConfirmationDialog = ({
             <div className="p-6">
               {typeof message === 'string' ? (
                 <p
-                  className="text-body-md text-gray-700"
+                  className="text-body-md text-slate-700"
                   style={{ fontSize: '14px', lineHeight: '22px' }}
                 >
                   {message}
@@ -119,10 +119,10 @@ export const ConfirmationDialog = ({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-body-sm font-medium text-gray-700 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-lg"
+                className="px-4 py-2 text-body-sm font-medium text-slate-700 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 rounded-xl"
                 style={{ fontSize: '13px' }}
               >
                 {cancelLabel}
@@ -130,7 +130,7 @@ export const ConfirmationDialog = ({
               <button
                 onClick={onConfirm}
                 className={cn(
-                  'px-4 py-2 text-white rounded-lg text-body-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg',
+                  'px-4 py-2 text-white rounded-xl text-body-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-xl',
                   config.confirmColor,
                 )}
                 style={{ fontSize: '13px', fontWeight: 600 }}
@@ -170,21 +170,21 @@ export const DeleteConfirmationDialog = ({
       message={
         <div className="space-y-3">
           <p
-            className="text-body-md text-gray-700"
+            className="text-body-md text-slate-700"
             style={{ fontSize: '14px', lineHeight: '22px' }}
           >
             You are about to delete:
           </p>
-          <div className="bg-gray-50 rounded-lg p-3">
+          <div className="bg-slate-50 rounded-xl p-3">
             <p
-              className="text-body-md font-semibold text-gray-900"
+              className="text-body-md font-semibold text-slate-900"
               style={{ fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}
             >
               {itemName}
             </p>
             {itemDetails && (
               <p
-                className="text-body-sm text-gray-600 mt-1"
+                className="text-body-sm text-slate-600 mt-1"
                 style={{ fontSize: '13px', lineHeight: '20px' }}
               >
                 {itemDetails}
@@ -192,7 +192,7 @@ export const DeleteConfirmationDialog = ({
             )}
           </div>
           <p
-            className="text-body-sm text-gray-600"
+            className="text-body-sm text-slate-600"
             style={{ fontSize: '13px', lineHeight: '20px' }}
           >
             This will affect your tax calculation. This action cannot be undone.

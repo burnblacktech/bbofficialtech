@@ -225,14 +225,14 @@ const OtherSourcesForm = ({
               <Landmark className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Interest Income</h3>
-              <p className="text-sm text-slate-500">Interest from savings, FDs, deposits, etc.</p>
+              <h3 className="text-heading-4 font-semibold text-slate-900">Interest Income</h3>
+              <p className="text-body-regular text-slate-500">Interest from savings, FDs, deposits, etc.</p>
             </div>
           </div>
           {!readOnly && (
             <button
               onClick={handleAddInterest}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-body-regular font-medium text-primary-600 bg-primary-50 rounded-xl hover:bg-primary-100 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add
@@ -243,11 +243,11 @@ const OtherSourcesForm = ({
         {interestIncomes.length === 0 ? (
           <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 p-6 text-center">
             <Landmark className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-600">No interest income declared</p>
+            <p className="text-body-regular text-slate-600">No interest income declared</p>
             {!readOnly && (
               <button
                 onClick={handleAddInterest}
-                className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors"
+                className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-body-regular font-medium text-white bg-primary-500 rounded-xl hover:bg-primary-600 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Interest Income
@@ -271,14 +271,14 @@ const OtherSourcesForm = ({
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Type */}
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-body-small font-medium text-slate-600 mb-1">
                           Interest Type
                         </label>
                         <select
                           value={income.type}
                           onChange={(e) => handleInterestChange(income.id, 'type', e.target.value)}
                           disabled={readOnly}
-                          className="w-full px-3 py-2 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-sm disabled:bg-slate-50"
+                          className="w-full px-3 py-2 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-body-regular disabled:bg-slate-50"
                         >
                           <option value="">Select type</option>
                           {INTEREST_INCOME_TYPES.map((type) => (
@@ -291,36 +291,36 @@ const OtherSourcesForm = ({
 
                       {/* Amount */}
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-body-small font-medium text-slate-600 mb-1">
                           Amount (₹)
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-body-regular">₹</span>
                           <input
                             type="number"
                             value={income.amount || ''}
                             onChange={(e) => handleInterestChange(income.id, 'amount', e.target.value)}
                             disabled={readOnly}
                             placeholder="0"
-                            className="w-full pl-7 pr-3 py-2 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-sm text-right tabular-nums disabled:bg-slate-50"
+                            className="w-full pl-7 pr-3 py-2 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-body-regular text-right tabular-nums disabled:bg-slate-50"
                           />
                         </div>
                       </div>
 
                       {/* TDS Deducted */}
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-body-small font-medium text-slate-600 mb-1">
                           TDS Deducted (₹)
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-body-regular">₹</span>
                           <input
                             type="number"
                             value={income.tdsDeducted || ''}
                             onChange={(e) => handleInterestChange(income.id, 'tdsDeducted', e.target.value)}
                             disabled={readOnly}
                             placeholder="0"
-                            className="w-full pl-7 pr-3 py-2 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-sm text-right tabular-nums disabled:bg-slate-50"
+                            className="w-full pl-7 pr-3 py-2 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-body-regular text-right tabular-nums disabled:bg-slate-50"
                           />
                         </div>
                       </div>
@@ -329,7 +329,7 @@ const OtherSourcesForm = ({
                     {!readOnly && (
                       <button
                         onClick={() => handleRemoveInterest(income.id)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-error-500 hover:bg-error-50 rounded-xl transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -338,7 +338,7 @@ const OtherSourcesForm = ({
 
                   {/* Deduction hint */}
                   {typeConfig?.deductionRef && (
-                    <p className="mt-2 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">
+                    <p className="mt-2 text-body-small text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">
                       Eligible for Section {typeConfig.deductionRef} deduction (up to ₹{typeConfig.deductionLimit?.toLocaleString('en-IN')})
                     </p>
                   )}
@@ -348,8 +348,8 @@ const OtherSourcesForm = ({
 
             {/* Interest Total */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-blue-800">Total Interest Income</span>
-              <span className="text-lg font-bold text-blue-700 tabular-nums">
+              <span className="text-body-regular font-medium text-blue-800">Total Interest Income</span>
+              <span className="text-body-large font-bold text-blue-700 tabular-nums">
                 {formatCurrency(totalInterestIncome)}
               </span>
             </div>
@@ -358,10 +358,10 @@ const OtherSourcesForm = ({
             {eligible80TTADeduction > 0 && (
               <div className="bg-emerald-50 rounded-xl border border-emerald-200 p-3 flex items-center justify-between">
                 <div>
-                  <span className="text-sm font-medium text-emerald-800">80TTA Deduction Eligible</span>
-                  <p className="text-xs text-emerald-600">On savings bank interest (max ₹10,000)</p>
+                  <span className="text-body-regular font-medium text-emerald-800">80TTA Deduction Eligible</span>
+                  <p className="text-body-small text-emerald-600">On savings bank interest (max ₹10,000)</p>
                 </div>
-                <span className="text-lg font-bold text-emerald-700 tabular-nums">
+                <span className="text-body-large font-bold text-emerald-700 tabular-nums">
                   {formatCurrency(eligible80TTADeduction)}
                 </span>
               </div>
@@ -378,14 +378,14 @@ const OtherSourcesForm = ({
               <Gift className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Other Income</h3>
-              <p className="text-sm text-slate-500">Dividends, family pension, gifts, etc.</p>
+              <h3 className="text-heading-4 font-semibold text-slate-900">Other Income</h3>
+              <p className="text-body-regular text-slate-500">Dividends, family pension, gifts, etc.</p>
             </div>
           </div>
           {!readOnly && (
             <button
               onClick={handleAddOther}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-body-regular font-medium text-purple-600 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add
@@ -396,7 +396,7 @@ const OtherSourcesForm = ({
         {otherIncomes.length === 0 ? (
           <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 p-6 text-center">
             <Gift className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm text-slate-600">No other income declared</p>
+            <p className="text-body-regular text-slate-600">No other income declared</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -415,14 +415,14 @@ const OtherSourcesForm = ({
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Type */}
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-body-small font-medium text-slate-600 mb-1">
                           Income Type
                         </label>
                         <select
                           value={income.type}
                           onChange={(e) => handleOtherChange(income.id, 'type', e.target.value)}
                           disabled={readOnly}
-                          className="w-full px-3 py-2 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-sm disabled:bg-slate-50"
+                          className="w-full px-3 py-2 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-body-regular disabled:bg-slate-50"
                         >
                           <option value="">Select type</option>
                           {OTHER_INCOME_TYPES.map((type) => (
@@ -435,36 +435,36 @@ const OtherSourcesForm = ({
 
                       {/* Amount */}
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-body-small font-medium text-slate-600 mb-1">
                           Amount (₹)
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-body-regular">₹</span>
                           <input
                             type="number"
                             value={income.amount || ''}
                             onChange={(e) => handleOtherChange(income.id, 'amount', e.target.value)}
                             disabled={readOnly}
                             placeholder="0"
-                            className="w-full pl-7 pr-3 py-2 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-sm text-right tabular-nums disabled:bg-slate-50"
+                            className="w-full pl-7 pr-3 py-2 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-body-regular text-right tabular-nums disabled:bg-slate-50"
                           />
                         </div>
                       </div>
 
                       {/* TDS Deducted */}
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-body-small font-medium text-slate-600 mb-1">
                           TDS Deducted (₹)
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-body-regular">₹</span>
                           <input
                             type="number"
                             value={income.tdsDeducted || ''}
                             onChange={(e) => handleOtherChange(income.id, 'tdsDeducted', e.target.value)}
                             disabled={readOnly}
                             placeholder="0"
-                            className="w-full pl-7 pr-3 py-2 rounded-lg border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-sm text-right tabular-nums disabled:bg-slate-50"
+                            className="w-full pl-7 pr-3 py-2 rounded-xl border-2 border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all text-body-regular text-right tabular-nums disabled:bg-slate-50"
                           />
                         </div>
                       </div>
@@ -473,7 +473,7 @@ const OtherSourcesForm = ({
                     {!readOnly && (
                       <button
                         onClick={() => handleRemoveOther(income.id)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-error-500 hover:bg-error-50 rounded-xl transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -482,12 +482,12 @@ const OtherSourcesForm = ({
 
                   {/* Special notes for certain types */}
                   {typeConfig?.flatRate && (
-                    <p className="mt-2 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded inline-block">
+                    <p className="mt-2 text-body-small text-amber-600 bg-amber-50 px-2 py-1 rounded inline-block">
                       Taxed at flat rate of {typeConfig.flatRate}%
                     </p>
                   )}
                   {typeConfig?.exemptLimit && (
-                    <p className="mt-2 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded inline-block">
+                    <p className="mt-2 text-body-small text-emerald-600 bg-emerald-50 px-2 py-1 rounded inline-block">
                       Exempt up to ₹{typeConfig.exemptLimit.toLocaleString('en-IN')} from non-relatives
                     </p>
                   )}
@@ -497,8 +497,8 @@ const OtherSourcesForm = ({
 
             {/* Other Income Total */}
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200 p-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-purple-800">Total Other Income</span>
-              <span className="text-lg font-bold text-purple-700 tabular-nums">
+              <span className="text-body-regular font-medium text-purple-800">Total Other Income</span>
+              <span className="text-body-large font-bold text-purple-700 tabular-nums">
                 {formatCurrency(totalOtherIncome)}
               </span>
             </div>
@@ -515,10 +515,10 @@ const OtherSourcesForm = ({
         >
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-lg font-semibold">Total Income from Other Sources</span>
-              <p className="text-sm text-slate-300 mt-0.5">Interest + Other Income</p>
+              <span className="text-body-large font-semibold">Total Income from Other Sources</span>
+              <p className="text-body-regular text-slate-300 mt-0.5">Interest + Other Income</p>
             </div>
-            <span className="text-2xl font-bold tabular-nums">
+            <span className="text-heading-2 font-bold tabular-nums">
               {formatCurrency(totalOtherSourcesIncome)}
             </span>
           </div>
@@ -528,9 +528,9 @@ const OtherSourcesForm = ({
       {/* Help Box */}
       <div className="bg-blue-50 rounded-xl border border-blue-200 p-4 flex items-start gap-3">
         <HelpCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-        <div className="text-sm text-blue-800">
+        <div className="text-body-regular text-blue-800">
           <p className="font-medium mb-1">About Other Sources Income</p>
-          <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
+          <ul className="text-body-small text-blue-700 space-y-1 list-disc list-inside">
             <li>Interest from savings accounts up to ₹10,000 is eligible for 80TTA deduction</li>
             <li>For senior citizens (60+), 80TTB allows deduction up to ₹50,000 on all interest income</li>
             <li>Dividend income is fully taxable from AY 2021-22 onwards</li>

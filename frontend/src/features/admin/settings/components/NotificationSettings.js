@@ -64,10 +64,10 @@ const NotificationSettings = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">Email Notifications</label>
-            <p className="text-xs text-gray-500 mt-1">Send notifications via email</p>
+            <label className="text-body-regular font-medium text-slate-700">Email Notifications</label>
+            <p className="text-body-small text-slate-500 mt-1">Send notifications via email</p>
           </div>
           <input
             type="checkbox"
@@ -77,10 +77,10 @@ const NotificationSettings = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">SMS Notifications</label>
-            <p className="text-xs text-gray-500 mt-1">Send notifications via SMS</p>
+            <label className="text-body-regular font-medium text-slate-700">SMS Notifications</label>
+            <p className="text-body-small text-slate-500 mt-1">Send notifications via SMS</p>
           </div>
           <input
             type="checkbox"
@@ -90,10 +90,10 @@ const NotificationSettings = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
           <div>
-            <label className="text-sm font-medium text-gray-700">Push Notifications</label>
-            <p className="text-xs text-gray-500 mt-1">Send browser push notifications</p>
+            <label className="text-body-regular font-medium text-slate-700">Push Notifications</label>
+            <p className="text-body-small text-slate-500 mt-1">Send browser push notifications</p>
           </div>
           <input
             type="checkbox"
@@ -103,11 +103,11 @@ const NotificationSettings = () => {
           />
         </div>
 
-        <div className="border-t border-gray-200 pt-4 mt-4">
-          <h4 className="text-sm font-medium text-gray-900 mb-4">Notification Types</h4>
+        <div className="border-t border-slate-200 pt-4 mt-4">
+          <h4 className="text-sm font-medium text-slate-900 mb-4">Notification Types</h4>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm text-gray-700">Filing Complete</label>
+              <label className="text-body-regular text-slate-700">Filing Complete</label>
               <input
                 type="checkbox"
                 checked={formData.notifyOnFilingComplete}
@@ -116,7 +116,7 @@ const NotificationSettings = () => {
               />
             </div>
             <div className="flex items-center justify-between">
-              <label className="text-sm text-gray-700">Refund Status</label>
+              <label className="text-body-regular text-slate-700">Refund Status</label>
               <input
                 type="checkbox"
                 checked={formData.notifyOnRefund}
@@ -125,7 +125,7 @@ const NotificationSettings = () => {
               />
             </div>
             <div className="flex items-center justify-between">
-              <label className="text-sm text-gray-700">Deadline Reminders</label>
+              <label className="text-body-regular text-slate-700">Deadline Reminders</label>
               <input
                 type="checkbox"
                 checked={formData.notifyOnDeadline}
@@ -134,7 +134,7 @@ const NotificationSettings = () => {
               />
             </div>
             <div className="flex items-center justify-between">
-              <label className="text-sm text-gray-700">System Updates</label>
+              <label className="text-body-regular text-slate-700">System Updates</label>
               <input
                 type="checkbox"
                 checked={formData.notifyOnSystemUpdate}
@@ -150,7 +150,7 @@ const NotificationSettings = () => {
         <button
           type="submit"
           disabled={mutation.isLoading}
-          className="px-6 py-3 bg-gold-600 text-white rounded-lg hover:bg-gold-700 disabled:opacity-50 flex items-center space-x-2"
+          className="px-6 py-3 bg-gold-600 text-white rounded-xl hover:bg-gold-700 disabled:opacity-50 flex items-center space-x-2"
         >
           {mutation.isLoading ? (
             <>

@@ -38,15 +38,15 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
 
   return (
     <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-blue-900">Section 80C Limit</h3>
-            <p className="text-sm text-blue-700">Maximum deduction: ₹1,50,000</p>
+            <p className="text-body-regular text-blue-700">Maximum deduction: ₹1,50,000</p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-blue-900">₹{remainingCapacity.toLocaleString('en-IN')}</p>
-            <p className="text-xs text-blue-600">Remaining capacity</p>
+            <p className="text-heading-2 font-bold text-blue-900">₹{remainingCapacity.toLocaleString('en-IN')}</p>
+            <p className="text-body-small text-blue-600">Remaining capacity</p>
           </div>
         </div>
       </div>
@@ -56,10 +56,10 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
           const Icon = option.icon;
           const value = investments[option.key];
           return (
-            <div key={option.key} className="border border-gray-200 rounded-lg p-4">
+            <div key={option.key} className="border border-slate-200 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Icon className="w-5 h-5 text-gold-600" />
-                <h4 className="font-semibold text-gray-900">{option.label}</h4>
+                <h4 className="font-semibold text-slate-900">{option.label}</h4>
               </div>
               <div className="space-y-2">
                 <input
@@ -67,9 +67,9 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
                   value={value}
                   onChange={(e) => handleInvestmentChange(option.key, e.target.value)}
                   placeholder="Enter amount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                 />
-                <div className="text-xs text-gray-600 space-y-1">
+                <div className="text-body-small text-slate-600 space-y-1">
                   <p>Lock-in: {option.lockIn}</p>
                   <p>Expected returns: {option.returns}</p>
                   <p>Max: ₹{option.max.toLocaleString('en-IN')}</p>
@@ -81,29 +81,29 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
       </div>
 
       {/* Summary */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Investment Summary</h3>
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
+        <h3 className="font-semibold text-slate-900 mb-4">Investment Summary</h3>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-gray-700">Total Investment:</span>
+            <span className="text-slate-700">Total Investment:</span>
             <span className="font-semibold">₹{totalInvested.toLocaleString('en-IN')}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-700">Remaining Capacity:</span>
-            <span className={`font-semibold ${remaining > 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <span className="text-slate-700">Remaining Capacity:</span>
+            <span className={`font-semibold ${remaining > 0 ? 'text-green-600' : 'text-error-600'}`}>
               ₹{remaining.toLocaleString('en-IN')}
             </span>
           </div>
           {excess > 0 && (
-            <div className="flex justify-between text-red-600">
+            <div className="flex justify-between text-error-600">
               <span>Excess (not eligible for deduction):</span>
               <span className="font-semibold">₹{excess.toLocaleString('en-IN')}</span>
             </div>
           )}
-          <div className="pt-2 border-t border-gray-300">
+          <div className="pt-2 border-t border-slate-300">
             <div className="flex justify-between">
-              <span className="font-semibold text-gray-900">Eligible Deduction:</span>
-              <span className="font-bold text-lg text-gold-600">
+              <span className="font-semibold text-slate-900">Eligible Deduction:</span>
+              <span className="font-bold text-body-large text-gold-600">
                 ₹{Math.min(totalInvested, remainingCapacity).toLocaleString('en-IN')}
               </span>
             </div>
@@ -113,11 +113,11 @@ const Section80CPlanner = ({ recommendations = [], remainingCapacity = 150000, a
 
       {/* Recommendations */}
       {recommendations && recommendations.length > 0 && (
-        <div className="border border-gold-200 rounded-lg p-4 bg-gold-50">
+        <div className="border border-gold-200 rounded-xl p-4 bg-gold-50">
           <h4 className="font-semibold text-gold-900 mb-2">AI Recommendations</h4>
           <ul className="space-y-2">
             {recommendations.slice(0, 3).map((rec, index) => (
-              <li key={index} className="text-sm text-gold-800">
+              <li key={index} className="text-body-regular text-gold-800">
                 • {rec.description} - Invest ₹{rec.investmentAmount?.toLocaleString('en-IN')} for ₹{rec.deductionAmount?.toLocaleString('en-IN')} deduction
               </li>
             ))}

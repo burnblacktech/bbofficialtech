@@ -114,11 +114,11 @@ const PANVerificationInline = ({
 
   if (compact) {
     return (
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
         {!verificationResult ? (
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-body-regular font-medium text-slate-700 mb-1">
                 PAN Number
               </label>
               <div className="flex gap-2">
@@ -128,13 +128,13 @@ const PANVerificationInline = ({
                   onChange={handlePANChange}
                   placeholder="ABCDE1234F"
                   maxLength={10}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-center text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-center text-body-regular font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   disabled={isVerifying}
                 />
                 <button
                   onClick={handleVerifyPAN}
                   disabled={!panNumber || panNumber.length !== 10 || isVerifying}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white text-body-regular font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isVerifying ? (
                     <Loader className="w-4 h-4 animate-spin" />
@@ -145,9 +145,9 @@ const PANVerificationInline = ({
               </div>
             </div>
             {error && (
-              <div className={`flex flex-col space-y-2 text-sm ${isServiceUnavailable ? 'text-gold-600' : 'text-red-600'}`}>
+              <div className={`flex flex-col space-y-2 text-sm ${isServiceUnavailable ? 'text-gold-600' : 'text-error-600'}`}>
                 <div className="flex items-start space-x-2">
-                  <AlertCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isServiceUnavailable ? 'text-gold-600' : 'text-red-600'}`} />
+                  <AlertCircle className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isServiceUnavailable ? 'text-gold-600' : 'text-error-600'}`} />
                   <span>{error}</span>
                 </div>
                 {isServiceUnavailable && (
@@ -170,7 +170,7 @@ const PANVerificationInline = ({
                       }
                       toast.success('Proceeding with manual verification');
                     }}
-                    className="text-xs font-medium text-gold-700 hover:text-gold-900 underline text-left"
+                    className="text-body-small font-medium text-gold-700 hover:text-gold-900 underline text-left"
                   >
                     Verify Manually & Continue
                   </button>
@@ -180,19 +180,19 @@ const PANVerificationInline = ({
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm">
+            <div className="flex items-center space-x-2 text-body-regular">
               <CheckCircle className="w-5 h-5 text-green-600" />
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-slate-900">
                   PAN Verified: {formatPAN(panNumber)}
                 </p>
-                <p className="text-gray-600">{verificationResult.name}</p>
+                <p className="text-slate-600">{verificationResult.name}</p>
               </div>
             </div>
             {onCancel && (
               <button
                 onClick={handleReset}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -204,21 +204,21 @@ const PANVerificationInline = ({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
+          <div className="p-2 bg-blue-100 rounded-xl">
             <Shield className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">PAN Verification</h3>
-            <p className="text-sm text-gray-600">Verify your PAN with Income Tax Department</p>
+            <h3 className="text-heading-4 font-semibold text-slate-900">PAN Verification</h3>
+            <p className="text-body-regular text-slate-600">Verify your PAN with Income Tax Department</p>
           </div>
         </div>
         {onCancel && (
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-slate-400 hover:text-slate-600 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -228,7 +228,7 @@ const PANVerificationInline = ({
       {!verificationResult ? (
         <div className="space-y-4">
           <div>
-            <label htmlFor="panInput" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="panInput" className="block text-body-regular font-medium text-slate-700 mb-2">
               PAN Number
             </label>
             <input
@@ -238,23 +238,23 @@ const PANVerificationInline = ({
               onChange={handlePANChange}
               placeholder="ABCDE1234F"
               maxLength={10}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl text-center text-body-large font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               disabled={isVerifying}
             />
-            <p className="text-xs text-gray-500 text-center mt-2">
+            <p className="text-body-small text-slate-500 text-center mt-2">
               Enter your 10-character PAN number
             </p>
           </div>
 
           {error && (
-            <div className={`rounded-lg p-4 border ${isServiceUnavailable ? 'bg-gold-50 border-gold-200' : 'bg-red-50 border-red-200'}`}>
+            <div className={`rounded-xl p-4 border ${isServiceUnavailable ? 'bg-gold-50 border-gold-200' : 'bg-error-50 border-red-200'}`}>
               <div className="flex items-start space-x-3">
-                <AlertCircle className={`h-5 w-5 ${isServiceUnavailable ? 'text-gold-600' : 'text-red-600'} mt-0.5 flex-shrink-0`} />
+                <AlertCircle className={`h-5 w-5 ${isServiceUnavailable ? 'text-gold-600' : 'text-error-600'} mt-0.5 flex-shrink-0`} />
                 <div className="flex-1">
                   <h4 className={`text-sm font-semibold mb-1 ${isServiceUnavailable ? 'text-gold-900' : 'text-red-900'}`}>
                     {isServiceUnavailable ? 'Service Unavailable' : 'Verification Failed'}
                   </h4>
-                  <p className={`text-xs ${isServiceUnavailable ? 'text-gold-700' : 'text-red-700'} mb-3`}>
+                  <p className={`text-xs ${isServiceUnavailable ? 'text-gold-700' : 'text-error-700'} mb-3`}>
                     {error}
                   </p>
                   {isServiceUnavailable && (
@@ -278,7 +278,7 @@ const PANVerificationInline = ({
                         }
                         toast.success('You can proceed with manual verification');
                       }}
-                      className="text-sm font-medium text-gold-700 hover:text-gold-900 underline"
+                      className="text-body-regular font-medium text-gold-700 hover:text-gold-900 underline"
                     >
                       Verify Manually & Continue
                     </button>
@@ -291,7 +291,7 @@ const PANVerificationInline = ({
           <button
             onClick={handleVerifyPAN}
             disabled={!panNumber || panNumber.length !== 10 || isVerifying}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             {isVerifying ? (
               <>
@@ -312,26 +312,26 @@ const PANVerificationInline = ({
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-green-100">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">PAN Verified Successfully</h3>
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">PAN Verified Successfully</h3>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+          <div className="bg-slate-50 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">PAN Number</span>
-              <span className="text-sm font-mono font-semibold text-gray-900">
+              <span className="text-body-regular text-slate-600">PAN Number</span>
+              <span className="text-body-regular font-mono font-semibold text-slate-900">
                 {formatPAN(panNumber)}
               </span>
             </div>
             {verificationResult.name && (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Name</span>
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="text-body-regular text-slate-600">Name</span>
+                <span className="text-body-regular font-semibold text-slate-900">
                   {verificationResult.name}
                 </span>
               </div>
             )}
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Status</span>
+              <span className="text-body-regular text-slate-600">Status</span>
               <span className={`text-sm font-semibold px-2 py-1 rounded-full ${
                 verificationResult.source === 'MANUAL'
                   ? 'bg-gold-100 text-gold-700'
@@ -343,24 +343,24 @@ const PANVerificationInline = ({
           </div>
 
           {verificationResult.source === 'MANUAL' ? (
-            <div className="bg-gold-50 rounded-lg p-4 border border-gold-200">
+            <div className="bg-gold-50 rounded-xl p-4 border border-gold-200">
               <div className="flex items-center space-x-3">
                 <AlertCircle className="h-5 w-5 text-gold-600" />
                 <div>
                   <h4 className="text-sm font-semibold text-gold-900 mb-1">Manual Verification</h4>
-                  <p className="text-xs text-gold-700">
+                  <p className="text-body-small text-gold-700">
                     Please verify your PAN details manually before proceeding with ITR filing
                   </p>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
               <div className="flex items-center space-x-3">
                 <Shield className="h-5 w-5 text-blue-600" />
                 <div>
                   <h4 className="text-sm font-semibold text-blue-900 mb-1">Data Verified</h4>
-                  <p className="text-xs text-blue-700">
+                  <p className="text-body-small text-blue-700">
                     Information verified directly with Income Tax Department
                   </p>
                 </div>
@@ -371,7 +371,7 @@ const PANVerificationInline = ({
           {onCancel && (
             <button
               onClick={handleReset}
-              className="w-full text-sm text-gray-600 hover:text-gray-900 py-2"
+              className="w-full text-body-regular text-slate-600 hover:text-slate-900 py-2"
             >
               Verify Another PAN
             </button>

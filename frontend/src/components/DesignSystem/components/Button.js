@@ -13,8 +13,8 @@ import { springs, transitions } from '../../../lib/motion';
 /**
  * Button Component
  * @param {Object} props
- * @param {string} props.variant - 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'outline' | 'ghost' | 'link'
- * @param {string} props.size - 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+ * @param {string} props.variant - 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'outline' | 'ghost' | 'link' | 'danger' (maps to 'error')
+ * @param {string} props.size - 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'small' | 'medium' | 'large' | 'xlarge' | 'icon' | 'icon-sm' | 'icon-lg'
  * @param {boolean} props.disabled
  * @param {boolean} props.loading
  * @param {boolean} props.success - Show success state with checkmark
@@ -36,6 +36,25 @@ const Button = React.forwardRef(({
   onClick,
   ...props
 }, ref) => {
+  // Size mapping for backward compatibility
+  const sizeMap = {
+    small: 'sm',
+    medium: 'md',
+    large: 'lg',
+    xlarge: 'xl',
+    icon: 'md', // Default icon size
+    'icon-sm': 'sm',
+    'icon-lg': 'lg',
+  };
+
+  // Variant mapping for backward compatibility
+  const variantMap = {
+    danger: 'error',
+  };
+
+  // Map old values to new values
+  const mappedSize = sizeMap[size] || size;
+  const mappedVariant = variantMap[variant] || variant;
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Handle success state - show checkmark then reset
@@ -48,7 +67,7 @@ const Button = React.forwardRef(({
   }, [success]);
 
   // Base classes - newUI.md Section 9.3.4
-  const baseClasses = 'font-semibold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex items-center justify-center gap-2 relative overflow-hidden';
+  const baseClasses = 'font-semibold rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 inline-flex items-center justify-center gap-2 relative overflow-hidden';
 
   // Variant classes - newUI.md Section 9.3.4
   const variantClasses = {
@@ -57,7 +76,7 @@ const Button = React.forwardRef(({
       'bg-gold-500 text-white', // Rest: BG Gold-500 (#D4AF37)
       'hover:bg-gold-700 hover:shadow-gold-accent hover:-translate-y-0.5', // Hover: BG Gold-700, Gold glow, translateY(-1px)
       'active:bg-gold-900 active:shadow-none active:translate-y-0.5', // Active: BG Gold-900, no shadow, translateY(1px)
-      'focus:ring-gold-500',
+      'focus-visible:ring-gold-500',
       'shadow-elevation-1', // Shadow Level 1
       loading && 'bg-gold-400', // Loading: BG Gold-400
       showSuccess && 'bg-success-base', // Success: BG Success-Base
@@ -66,19 +85,19 @@ const Button = React.forwardRef(({
     ),
     // Secondary Button (Outline) - newUI.md Section 9.3.4
     secondary: cn(
-      'border-2 border-neutral-900 bg-transparent text-neutral-900', // Rest: Border Black-900, transparent BG
-      'hover:bg-neutral-900/5 hover:text-neutral-900', // Hover: BG Black-900 (5%), text Black-900
-      'active:bg-neutral-900/10', // Active: BG Black-900 (10%)
-      'focus:ring-neutral-900',
-      disabled && 'opacity-50 cursor-not-allowed border-neutral-300',
+      'border-2 border-slate-900 bg-transparent text-slate-900', // Rest: Border Slate-900, transparent BG
+      'hover:bg-slate-900/5 hover:text-slate-900', // Hover: BG Slate-900 (5%), text Slate-900
+      'active:bg-slate-900/10', // Active: BG Slate-900 (10%)
+      'focus-visible:ring-slate-900',
+      disabled && 'opacity-50 cursor-not-allowed border-slate-300',
       !disabled && 'cursor-pointer',
     ),
-    success: 'bg-success-base text-white hover:bg-success-dark focus:ring-success-base shadow-elevation-1',
-    warning: 'bg-warning-base text-white hover:bg-warning-dark focus:ring-warning-base shadow-elevation-1',
-    error: 'bg-error-base text-white hover:bg-error-dark focus:ring-error-base shadow-elevation-1',
-    outline: 'border-2 border-gold-500 text-gold-700 hover:bg-gold-100 focus:ring-gold-500',
-    ghost: 'text-gold-700 hover:bg-gold-100 focus:ring-gold-500',
-    link: 'text-gold-700 hover:text-gold-900 hover:underline focus:ring-gold-500 p-0',
+    success: 'bg-success-base text-white hover:bg-success-dark focus-visible:ring-success-base shadow-elevation-1',
+    warning: 'bg-warning-base text-white hover:bg-warning-dark focus-visible:ring-warning-base shadow-elevation-1',
+    error: 'bg-error-base text-white hover:bg-error-dark focus-visible:ring-error-base shadow-elevation-1',
+    outline: 'border-2 border-gold-500 text-gold-700 hover:bg-gold-100 focus-visible:ring-gold-500',
+    ghost: 'text-gold-700 hover:bg-gold-100 focus-visible:ring-gold-500',
+    link: 'text-gold-700 hover:text-gold-900 hover:underline focus-visible:ring-gold-500 p-0',
   };
 
   const sizeClasses = {
@@ -93,8 +112,8 @@ const Button = React.forwardRef(({
 
   const classes = cn(
     baseClasses,
-    variantClasses[variant],
-    sizeClasses[size],
+    variantClasses[mappedVariant],
+    sizeClasses[mappedSize],
     widthClasses,
     className,
   );
@@ -143,7 +162,7 @@ const Button = React.forwardRef(({
       ref={ref}
       className={classes}
       whileHover={!disabled && !loading ? {
-        scale: variant === 'primary' ? 1 : 1.01,
+        scale: mappedVariant === 'primary' ? 1 : 1.01,
         transition: transitionConfig,
       } : {}}
       whileTap={!disabled && !loading ? {

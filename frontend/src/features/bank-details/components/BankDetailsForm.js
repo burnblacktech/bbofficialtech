@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { usePreValidateBankAccount, useVerifyBankAccount } from '../hooks/use-bank-details';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const BankDetailsForm = ({ filingId, data, onUpdate }) => {
   const [errors, setErrors] = useState({});
@@ -186,7 +186,7 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-heading-md text-gray-800">Bank Account Details</h3>
-          <p className="text-body-sm text-gray-600 mt-1">
+          <p className="text-body-sm text-slate-600 mt-1">
             Add bank accounts for refund processing
           </p>
         </div>
@@ -196,15 +196,15 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
         </Button>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-sm text-blue-800">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+        <p className="text-body-regular text-blue-800">
           <strong>Note:</strong> Bank details are required for tax refunds. Ensure IFSC and account number are correct.
         </p>
       </div>
 
       {accounts.length === 0 ? (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 text-center">
-          <p className="text-body-md text-gray-600 mb-4">No bank accounts added</p>
+        <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+          <p className="text-body-md text-slate-600 mb-4">No bank accounts added</p>
           <Button onClick={handleAddAccount}>Add Bank Account</Button>
         </div>
       ) : (
@@ -212,24 +212,24 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
           {accounts.map((account) => (
             <div
               key={account.id}
-              className="bg-white rounded-xl border border-gray-200 p-6"
+              className="bg-white rounded-xl border border-slate-200 p-6"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-body-sm font-medium text-slate-700 mb-2">
                       Bank Name
                     </label>
                     <input
                       type="text"
                       value={account.bankName || ''}
                       onChange={(e) => handleAccountChange(account.id, 'bankName', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                      className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="Bank Name"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-body-sm font-medium text-slate-700 mb-2">
                       IFSC Code
                     </label>
                     <input
@@ -237,30 +237,30 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                       value={account.ifsc || ''}
                       onChange={(e) => handleAccountChange(account.id, 'ifsc', e.target.value)}
                       maxLength={11}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500 uppercase"
+                      className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 uppercase"
                       placeholder="ABCD0123456"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-body-sm font-medium text-slate-700 mb-2">
                       Account Number
                     </label>
                     <input
                       type="text"
                       value={account.accountNumber || ''}
                       onChange={(e) => handleAccountChange(account.id, 'accountNumber', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                      className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                       placeholder="Account Number"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-body-sm font-medium text-slate-700 mb-2">
                       Account Type
                     </label>
                     <select
                       value={account.accountType || 'savings'}
                       onChange={(e) => handleAccountChange(account.id, 'accountType', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                      className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     >
                       <option value="savings">Savings</option>
                       <option value="current">Current</option>
@@ -269,14 +269,14 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                 </div>
                 <button
                   onClick={() => handleRemoveAccount(account.id)}
-                  className="ml-4 p-2 text-gray-400 hover:text-error-600 rounded-lg hover:bg-error-50"
+                  className="ml-4 p-2 text-slate-400 hover:text-error-600 rounded-xl hover:bg-error-50"
                   aria-label="Remove account"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                 <div className="flex items-center gap-4">
                   <label className="flex items-center">
                     <input
@@ -285,7 +285,7 @@ const BankDetailsForm = ({ filingId, data, onUpdate }) => {
                       onChange={() => handleSetRefundAccount(account.id)}
                       className="mr-2"
                     />
-                    <span className="text-body-sm text-gray-700">Use for refund</span>
+                    <span className="text-body-sm text-slate-700">Use for refund</span>
                   </label>
                   {account.verified ? (
                     <div className="flex items-center text-success-600">

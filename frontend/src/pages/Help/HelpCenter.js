@@ -52,7 +52,7 @@ const HelpCenter = () => {
       title: 'Account & Settings',
       description: 'Manage your account',
       icon: HelpCircle,
-      color: 'bg-gray-100 text-gray-600',
+      color: 'bg-slate-100 text-slate-600',
       articles: 10,
     },
     {
@@ -90,8 +90,8 @@ const HelpCenter = () => {
       <div>
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">How can we help you?</h1>
-          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
+          <h1 className="text-heading-2 sm:text-heading-1 font-bold text-slate-900 mb-4">How can we help you?</h1>
+          <p className="text-body-regular sm:text-body-large text-slate-600 max-w-2xl mx-auto">
             Find answers to common questions, learn how to use BurnBlack, and get support when you need it.
           </p>
         </div>
@@ -109,10 +109,10 @@ const HelpCenter = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 hover:shadow-elevation-2 transition-shadow"
               >
                 <Icon className="h-8 w-8 text-gold-600 mb-3" />
-                <h3 className="text-heading-sm text-gray-900">{link.title}</h3>
+                <h3 className="text-heading-sm text-slate-900">{link.title}</h3>
               </Link>
             );
           })}
@@ -127,7 +127,7 @@ const HelpCenter = () => {
         {/* Popular Articles */}
         <div className="mb-12">
           <h2 className="text-heading-xl text-black mb-6">Popular Articles</h2>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-200">
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 divide-y divide-gray-200">
             {popularArticles.map((article) => (
               <ArticleCard
                 key={article.id}
@@ -146,17 +146,17 @@ const HelpCenter = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link
             to="/help/report-bug"
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 hover:shadow-elevation-2 transition-shadow"
           >
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="p-3 bg-error-100 rounded-lg">
+                <div className="p-3 bg-error-100 rounded-xl">
                   <Bug className="h-6 w-6 text-error-600" />
                 </div>
               </div>
               <div>
                 <h3 className="text-heading-md text-black mb-2">Report a Bug</h3>
-                <p className="text-body-sm text-gray-600">
+                <p className="text-body-sm text-slate-600">
                   Found an issue? Let us know and we'll fix it.
                 </p>
               </div>
@@ -165,17 +165,17 @@ const HelpCenter = () => {
 
           <Link
             to="/help/feature-request"
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 hover:shadow-elevation-2 transition-shadow"
           >
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="p-3 bg-warning-100 rounded-lg">
+                <div className="p-3 bg-warning-100 rounded-xl">
                   <Lightbulb className="h-6 w-6 text-warning-600" />
                 </div>
               </div>
               <div>
                 <h3 className="text-heading-md text-black mb-2">Request a Feature</h3>
-                <p className="text-body-sm text-gray-600">
+                <p className="text-body-sm text-slate-600">
                   Have an idea? We'd love to hear it.
                 </p>
               </div>

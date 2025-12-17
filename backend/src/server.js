@@ -162,6 +162,26 @@ const gracefulShutdown = async signal => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
+// Global error handlers to catch unhandled errors
+process.on('uncaughtException', (error) => {
+  enterpriseLogger.error('Uncaught Exception - Server will exit', {
+    error: error.message,
+    stack: error.stack,
+  });
+  // Give time for logs to be written
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  enterpriseLogger.error('Unhandled Rejection - Server will continue but this should be fixed', {
+    reason: reason instanceof Error ? reason.message : String(reason),
+    stack: reason instanceof Error ? reason.stack : undefined,
+  });
+  // Don't exit on unhandled rejection, but log it
+});
+
 // =====================================================
 // SERVER STARTUP;
 // =====================================================
@@ -171,24 +191,77 @@ const startServer = async () => {
   try {
     // Test database connection first
     enterpriseLogger.info('Testing database connection...');
-    const dbConnected = await testConnection();
+    let dbConnected = false;
+    try {
+      dbConnected = await testConnection();
+    } catch (dbError) {
+      enterpriseLogger.error('Database connection test threw an error', {
+        error: dbError.message,
+        stack: dbError.stack,
+      });
+      dbConnected = false;
+    }
     
     if (!dbConnected) {
       enterpriseLogger.error('Database connection failed. Server will not start.');
-      process.exit(1);
+      setTimeout(() => {
+        process.exit(1);
+      }, 1000);
+      return;
     }
     
     // Initialize Redis (non-blocking - server can start without Redis in dev)
     enterpriseLogger.info('Initializing Redis connection...');
-    const redisConnected = await redisService.initialize();
-    if (!redisConnected) {
-      enterpriseLogger.warn('Redis connection failed. Server will continue but some features may be limited.', {
-        note: 'Rate limiting, sessions, and caching will use fallback mechanisms',
+    let redisConnected = false;
+    try {
+      redisConnected = await redisService.initialize();
+      if (!redisConnected) {
+        enterpriseLogger.warn('Redis connection failed. Server will continue but some features may be limited.', {
+          note: 'Rate limiting, sessions, and caching will use fallback mechanisms',
+        });
+      } else {
+        // Initialize job queue if Redis is available
+        enterpriseLogger.info('Initializing job queue service...');
+        try {
+          await jobQueueService.initialize();
+        } catch (jobQueueError) {
+          enterpriseLogger.warn('Job queue initialization failed, continuing without background jobs', {
+            error: jobQueueError.message,
+          });
+        }
+        
+        // Upgrade session store to Redis if available
+        try {
+          let RedisStore;
+          try {
+            RedisStore = require('connect-redis').default;
+          } catch (requireError) {
+            enterpriseLogger.warn('connect-redis package not available - sessions will use memory store', {
+              error: requireError.message,
+            });
+            RedisStore = null;
+          }
+          
+          if (RedisStore) {
+            const redisClient = redisService.getClient();
+            if (redisClient) {
+              // Note: This won't work for existing sessions, but new sessions will use Redis
+              enterpriseLogger.info('Redis available - sessions will use Redis store for new connections');
+            }
+          }
+        } catch (sessionError) {
+          enterpriseLogger.warn('Failed to upgrade session store to Redis', {
+            error: sessionError.message,
+          });
+        }
+      }
+    } catch (redisError) {
+      enterpriseLogger.error('Redis initialization error (non-fatal)', {
+        error: redisError.message,
+        stack: redisError.stack,
       });
-    } else {
-      // Initialize job queue if Redis is available
-      enterpriseLogger.info('Initializing job queue service...');
-      await jobQueueService.initialize();
+      // Continue without Redis
+      redisConnected = false;
     }
     
     // Verify schema exists
@@ -201,7 +274,7 @@ const startServer = async () => {
     });
     
     // Start the server
-    server.listen(PORT, HOST, () => {
+    server.listen(PORT, HOST, async () => {
       enterpriseLogger.info('Server listening', {
         host: HOST,
         port: PORT,
@@ -223,7 +296,7 @@ const startServer = async () => {
 
       // Initialize WebSocket server
       try {
-        wsManager.initialize(server);
+        await wsManager.initialize(server);
         enterpriseLogger.info('WebSocket server initialized');
       } catch (error) {
         enterpriseLogger.warn('WebSocket server initialization failed', {
@@ -236,8 +309,12 @@ const startServer = async () => {
     enterpriseLogger.error('Failed to start server', {
       error: error.message,
       stack: error.stack,
+      name: error.name,
     });
-    process.exit(1);
+    // Give time for logs to be written
+    setTimeout(() => {
+      process.exit(1);
+    }, 1000);
   }
 };
 

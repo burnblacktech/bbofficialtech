@@ -174,12 +174,12 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
   return (
     <div className="space-y-6">
       {/* Form 16 Upload Section */}
-      <div className="bg-gradient-to-r from-gold-50 to-amber-50 rounded-lg p-4 border border-gold-200">
+      <div className="bg-gradient-to-r from-gold-50 to-amber-50 rounded-xl p-4 border border-gold-200">
         <div className="flex items-start space-x-3">
           <Upload className="w-5 h-5 text-gold-600 mt-0.5" />
           <div className="flex-1">
-            <h4 className="text-sm font-semibold text-gray-900">Upload Form 16</h4>
-            <p className="text-xs text-gray-600 mt-1">
+            <h4 className="text-sm font-semibold text-slate-900">Upload Form 16</h4>
+            <p className="text-body-small text-slate-600 mt-1">
               Upload your Form 16 to auto-fill salary details. We'll extract employer info, salary breakdown, and TDS.
             </p>
             <div className="mt-3">
@@ -197,14 +197,14 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
 
       {/* Quick Entry or Detailed Breakdown Toggle */}
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+        <h4 className="text-sm font-semibold text-slate-900 flex items-center">
           <Building2 className="w-4 h-4 mr-2 text-gold-500" />
           Salary Income
         </h4>
         <button
           type="button"
           onClick={() => setShowBreakdown(!showBreakdown)}
-          className="flex items-center text-sm text-gold-600 hover:text-gold-700 font-medium"
+          className="flex items-center text-body-regular text-gold-600 hover:text-gold-700 font-medium"
         >
           {showBreakdown ? 'Simple Entry' : 'Detailed Breakdown'}
           {showBreakdown ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
@@ -215,23 +215,23 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
       {!showBreakdown && (
         <div className="space-y-4">
           <div className="relative">
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
+            <label className="flex items-center text-body-regular font-medium text-slate-700 mb-1">
               Gross Salary Income
               {isAutoFilled('salary') && <SourceChip source="form16" size="sm" className="ml-2" />}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
               <input
                 type="number"
                 value={data?.salary || 0}
                 onChange={(e) => handleSalaryChange(e.target.value)}
-                className={`w-full pl-8 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-lg font-semibold ${
-                  isAutoFilled('salary') ? 'border-blue-300 bg-blue-50/30' : 'border-gray-300'
+                className={`w-full pl-8 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-lg font-semibold ${
+                  isAutoFilled('salary') ? 'border-blue-300 bg-blue-50/30' : 'border-slate-300'
                 }`}
                 placeholder="0"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-body-small text-slate-500 mt-1">
               Total salary received from all employers during the financial year
             </p>
           </div>
@@ -241,33 +241,33 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
       {/* Detailed Breakdown Mode */}
       {showBreakdown && (
         <div className="space-y-4">
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {breakdownFields.map(({ key, label, helpText }) => (
                 <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">
                     {label}
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">₹</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-body-regular">₹</span>
                     <input
                       type="number"
                       value={breakdown[key] || 0}
                       onChange={(e) => handleBreakdownChange(key, e.target.value)}
-                      className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="0"
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">{helpText}</p>
+                  <p className="text-body-small text-slate-500 mt-0.5">{helpText}</p>
                 </div>
               ))}
             </div>
 
             {/* Breakdown Total */}
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-slate-200">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Gross Salary Total</span>
-                <span className="text-lg font-bold text-gold-600">{formatCurrency(grossSalary)}</span>
+                <span className="text-body-regular font-medium text-slate-700">Gross Salary Total</span>
+                <span className="text-body-large font-bold text-gold-600">{formatCurrency(grossSalary)}</span>
               </div>
             </div>
           </div>
@@ -278,14 +278,14 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
       {employers.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+            <h4 className="text-sm font-semibold text-slate-900 flex items-center">
               <Building2 className="w-4 h-4 mr-2 text-gold-500" />
               Employer Details
             </h4>
             <button
               type="button"
               onClick={handleAddEmployer}
-              className="flex items-center text-sm text-gold-600 hover:text-gold-700 font-medium"
+              className="flex items-center text-body-regular text-gold-600 hover:text-gold-700 font-medium"
             >
               <Plus className="w-4 h-4 mr-1" />
               Add Employer
@@ -294,16 +294,16 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
 
           <div className="space-y-3">
             {employers.map((employer, index) => (
-              <div key={employer.id} className="bg-white border border-gray-200 rounded-lg p-4">
+              <div key={employer.id} className="bg-white border border-slate-200 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-700">Employer {index + 1}</span>
+                  <span className="text-body-regular font-medium text-slate-700">Employer {index + 1}</span>
                   <div className="flex items-center space-x-2">
                     {employer.source && <SourceChip source={employer.source} size="sm" />}
                     {employers.length > 1 && (
                       <button
                         type="button"
                         onClick={() => handleRemoveEmployer(employer.id)}
-                        className="p-1 text-red-500 hover:bg-red-50 rounded"
+                        className="p-1 text-error-500 hover:bg-error-50 rounded"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -313,43 +313,43 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Employer Name</label>
+                    <label className="block text-body-small font-medium text-slate-600 mb-1">Employer Name</label>
                     <input
                       type="text"
                       value={employer.name}
                       onChange={(e) => handleEmployerChange(employer.id, 'name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-body-regular"
                       placeholder="Company Name"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">TAN</label>
+                    <label className="block text-body-small font-medium text-slate-600 mb-1">TAN</label>
                     <input
                       type="text"
                       value={employer.tan}
                       onChange={(e) => handleEmployerChange(employer.id, 'tan', e.target.value.toUpperCase())}
                       maxLength={10}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm font-mono"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-body-regular font-mono"
                       placeholder="ABCD12345E"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Salary (₹)</label>
+                    <label className="block text-body-small font-medium text-slate-600 mb-1">Salary (₹)</label>
                     <input
                       type="number"
                       value={employer.salary}
                       onChange={(e) => handleEmployerChange(employer.id, 'salary', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-body-regular"
                       placeholder="0"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">TDS Deducted (₹)</label>
+                    <label className="block text-body-small font-medium text-slate-600 mb-1">TDS Deducted (₹)</label>
                     <input
                       type="number"
                       value={employer.tds}
                       onChange={(e) => handleEmployerChange(employer.id, 'tds', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 text-sm"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-body-regular"
                       placeholder="0"
                     />
                   </div>
@@ -365,7 +365,7 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
         <button
           type="button"
           onClick={handleAddEmployer}
-          className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gold-400 hover:text-gold-600 transition-colors flex items-center justify-center"
+          className="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-600 hover:border-gold-400 hover:text-gold-600 transition-colors flex items-center justify-center"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Employer Details
@@ -373,35 +373,35 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
       )}
 
       {/* Computation Summary */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
         <div className="flex items-center mb-3">
           <Calculator className="w-5 h-5 text-green-600 mr-2" />
-          <h4 className="text-sm font-semibold text-gray-900">Salary Income Computation</h4>
+          <h4 className="text-sm font-semibold text-slate-900">Salary Income Computation</h4>
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600">Gross Salary</span>
-            <span className="font-medium text-gray-900">{formatCurrency(data?.salary || grossSalary)}</span>
+          <div className="flex justify-between items-center text-body-regular">
+            <span className="text-slate-600">Gross Salary</span>
+            <span className="font-medium text-slate-900">{formatCurrency(data?.salary || grossSalary)}</span>
           </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600 flex items-center">
+          <div className="flex justify-between items-center text-body-regular">
+            <span className="text-slate-600 flex items-center">
               Less: Standard Deduction (u/s 16)
-              <Info className="w-3.5 h-3.5 ml-1 text-gray-400" />
+              <Info className="w-3.5 h-3.5 ml-1 text-slate-400" />
             </span>
-            <span className="font-medium text-red-600">- {formatCurrency(standardDeduction)}</span>
+            <span className="font-medium text-error-600">- {formatCurrency(standardDeduction)}</span>
           </div>
           <div className="pt-2 mt-2 border-t border-green-200">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-semibold text-gray-900">Net Taxable Salary</span>
-              <span className="text-lg font-bold text-green-600">{formatCurrency(netTaxableSalary)}</span>
+              <span className="text-sm font-semibold text-slate-900">Net Taxable Salary</span>
+              <span className="text-body-large font-bold text-green-600">{formatCurrency(netTaxableSalary)}</span>
             </div>
           </div>
         </div>
 
         {/* Info about standard deduction */}
-        <div className="mt-3 p-2 bg-green-100 rounded-lg">
-          <p className="text-xs text-green-800">
+        <div className="mt-3 p-2 bg-green-100 rounded-xl">
+          <p className="text-body-small text-green-800">
             <Info className="w-3 h-3 inline mr-1" />
             Standard deduction of ₹{STANDARD_DEDUCTION_LIMIT.toLocaleString('en-IN')} is automatically applied under Section 16(ia).
           </p>

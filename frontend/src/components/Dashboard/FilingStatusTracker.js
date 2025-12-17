@@ -46,7 +46,7 @@ const FilingStatusTracker = ({ filing }) => {
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-elevation-3 border border-gray-100 overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-500 to-blue-500 p-6 text-white">
         <div className="flex items-center justify-between">
@@ -65,19 +65,19 @@ const FilingStatusTracker = ({ filing }) => {
       <div className="p-6 border-b border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center">
-            <Hash className="w-5 h-5 text-gray-400 mr-3" />
+            <Hash className="w-5 h-5 text-slate-400 mr-3" />
             <div>
-              <p className="text-label-sm text-gray-500">Acknowledgement Number</p>
-              <p className="font-mono text-body-sm font-medium text-gray-900">
+              <p className="text-label-sm text-slate-500">Acknowledgement Number</p>
+              <p className="font-mono text-body-sm font-medium text-slate-900">
                 {mockFiling.acknowledgementNumber}
               </p>
             </div>
           </div>
           <div className="flex items-center">
-            <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+            <Calendar className="w-5 h-5 text-slate-400 mr-3" />
             <div>
-              <p className="text-label-sm text-gray-500">Filing Date</p>
-              <p className="text-body-sm font-medium text-gray-900">
+              <p className="text-label-sm text-slate-500">Filing Date</p>
+              <p className="text-body-sm font-medium text-slate-900">
                 {new Date(mockFiling.filingDate).toLocaleDateString('en-IN', {
                   day: 'numeric',
                   month: 'long',
@@ -105,13 +105,13 @@ const FilingStatusTracker = ({ filing }) => {
                       ? 'bg-green-100 text-green-600'
                       : step.current
                         ? 'bg-blue-100 text-blue-600'
-                        : 'bg-gray-100 text-gray-400'
+                        : 'bg-slate-100 text-slate-400'
                   }`}>
                     <Icon className="w-5 h-5" />
                   </div>
                   {!isLast && (
                     <div className={`w-0.5 h-16 mt-2 ${
-                      step.completed ? 'bg-green-200' : 'bg-gray-200'
+                      step.completed ? 'bg-green-200' : 'bg-slate-200'
                     }`}></div>
                   )}
                 </div>
@@ -120,13 +120,13 @@ const FilingStatusTracker = ({ filing }) => {
                 <div className="flex-1 pb-6">
                   <div className="flex items-center justify-between mb-1">
                     <h3 className={`text-heading-sm font-semibold ${
-                      step.completed ? 'text-success-600' : step.current ? 'text-info-600' : 'text-gray-500'
+                      step.completed ? 'text-success-600' : step.current ? 'text-info-600' : 'text-slate-500'
                     }`}>
                       {step.title}
                     </h3>
-                    <span className="text-body-sm text-gray-500">{step.date}</span>
+                    <span className="text-body-sm text-slate-500">{step.date}</span>
                   </div>
-                  <p className="text-gray-600 text-body-sm">{step.description}</p>
+                  <p className="text-slate-600 text-body-sm">{step.description}</p>
                 </div>
               </div>
             );
@@ -135,13 +135,13 @@ const FilingStatusTracker = ({ filing }) => {
       </div>
 
       {/* Actions */}
-      <div className="p-6 bg-gray-50 border-t border-gray-100">
+      <div className="p-6 bg-slate-50 border-t border-gray-100">
         <div className="flex flex-col sm:flex-row gap-3">
-          <button className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+          <button className="flex-1 bg-white border border-slate-300 text-slate-700 py-3 px-4 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center">
             <Download className="w-4 h-4 mr-2" />
             Download ITR-V
           </button>
-          <button className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+          <button className="flex-1 bg-white border border-slate-300 text-slate-700 py-3 px-4 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center">
             <FileText className="w-4 h-4 mr-2" />
             Download Full Form
           </button>

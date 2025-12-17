@@ -80,16 +80,16 @@ const ITRComputationContent = ({
         <div className="mb-4">
           <div className="flex items-center gap-3 mb-2">
             {Icon && (
-              <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
                 <Icon className="w-5 h-5 text-primary-600" />
               </div>
             )}
             <div>
-              <h2 className="text-xl font-bold text-slate-900">
+              <h2 className="text-heading-3 font-bold text-slate-900">
                 {activeSection?.title || 'Section'}
               </h2>
               {activeSection?.description && (
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-body-regular text-slate-600 mt-1">
                   {activeSection.description}
                 </p>
               )}
@@ -103,7 +103,7 @@ const ITRComputationContent = ({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          className="bg-white rounded-lg border border-slate-200 shadow-sm p-6"
+          className="bg-white rounded-xl border border-slate-200 shadow-elevation-1 p-6"
         >
           {activeSection?.id === 'scheduleFA' ? (
             <ScheduleFA
@@ -244,7 +244,7 @@ const ITRComputationContent = ({
 
       {/* Read-only notice */}
       {isReadOnly && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-info-100 text-info-800 px-4 py-2 rounded-full text-sm shadow-md z-40">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-info-100 text-info-800 px-4 py-2 rounded-full text-body-regular shadow-elevation-2 z-40">
           <Info className="h-4 w-4 inline mr-2" />
           Read-only mode
         </div>

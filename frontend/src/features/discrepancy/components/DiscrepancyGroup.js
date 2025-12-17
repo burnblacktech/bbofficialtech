@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, CheckSquare, Square } from 'lucide-react';
 import DiscrepancyPanel from './DiscrepancyPanel';
 import { cn } from '../../../lib/utils';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyGroup = ({
   section,
@@ -33,7 +33,7 @@ const DiscrepancyGroup = ({
   const someSelected = discrepancies.some((_, index) => selectedIndices.has(index));
 
   return (
-    <div className={cn('rounded-lg border', getSeverityColor())}>
+    <div className={cn('rounded-xl border', getSeverityColor())}>
       {/* Group Header */}
       <div
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-opacity-50 transition-colors"
@@ -49,7 +49,7 @@ const DiscrepancyGroup = ({
                 }
               });
             }}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-slate-600 hover:text-slate-900"
           >
             {allSelected ? (
               <CheckSquare className="h-5 w-5" />
@@ -60,10 +60,10 @@ const DiscrepancyGroup = ({
             )}
           </button>
           <div>
-            <h4 className="text-heading-sm font-semibold text-gray-900 capitalize">
+            <h4 className="text-heading-sm font-semibold text-slate-900 capitalize">
               {section.replace(/_/g, ' ')}
             </h4>
-            <p className="text-body-md text-gray-600 mt-1">
+            <p className="text-body-md text-slate-600 mt-1">
               {discrepancies.length} discrepancy{discrepancies.length !== 1 ? 'ies' : ''}
               {criticalCount > 0 && ` • ${criticalCount} critical`}
               {warningCount > 0 && ` • ${warningCount} warning`}
@@ -90,9 +90,9 @@ const DiscrepancyGroup = ({
             </div>
           )}
           {isExpanded ? (
-            <ChevronUp className="h-5 w-5 text-gray-400" />
+            <ChevronUp className="h-5 w-5 text-slate-400" />
           ) : (
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-slate-400" />
           )}
         </div>
       </div>
@@ -108,7 +108,7 @@ const DiscrepancyGroup = ({
                     onSelect(index);
                   }
                 }}
-                className="mt-1 text-gray-600 hover:text-gray-900"
+                className="mt-1 text-slate-600 hover:text-slate-900"
               >
                 {selectedIndices.has(index) ? (
                   <CheckSquare className="h-4 w-4" />

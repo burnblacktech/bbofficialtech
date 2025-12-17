@@ -788,14 +788,19 @@ class UserController {
    * Get draft statistics for user
    */
   async getDraftStats(userId) {
-    const stats = await ITRDraft.findAll({
-      where: { userId },
-      attributes: [
-        [sequelize.fn('COUNT', sequelize.col('id')), 'totalDrafts'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN is_completed = false THEN 1 END')), 'activeDrafts'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN is_completed = true THEN 1 END')), 'submittedDrafts'],
-      ],
-      raw: true,
+    // NOTE: itr_drafts does not have user_id. Drafts belong to a filing (itr_filings),
+    // so we must join through itr_filings to scope drafts for the user.
+    const stats = await sequelize.query(`
+      SELECT
+        COUNT(*)::int AS "totalDrafts",
+        COUNT(CASE WHEN d.is_completed = false THEN 1 END)::int AS "activeDrafts",
+        COUNT(CASE WHEN d.is_completed = true THEN 1 END)::int AS "submittedDrafts"
+      FROM itr_drafts d
+      JOIN itr_filings f ON d.filing_id = f.id
+      WHERE f.user_id = :userId
+    `, {
+      type: sequelize.QueryTypes.SELECT,
+      replacements: { userId },
     });
 
     return {
@@ -855,7 +860,8 @@ class UserController {
       where: { userId },
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalMembers'],
-        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN is_dependent = true THEN 1 END')), 'activeMembers'],
+        // Some environments don't have legacy `is_dependent` column; use canonical `is_active` instead.
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN \"is_active\" = true THEN 1 END')), 'activeMembers'],
       ],
       raw: true,
     });

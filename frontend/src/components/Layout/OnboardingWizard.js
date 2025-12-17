@@ -102,10 +102,10 @@ const OnboardingWizard = ({ onComplete }) => {
               <Calculator className="w-8 h-8" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-heading-1 font-bold text-slate-900 mb-2">
             ITR Filing Platform
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-body-large text-slate-600">
             Your trusted partner for hassle-free tax filing
           </p>
         </div>
@@ -119,19 +119,19 @@ const OnboardingWizard = ({ onComplete }) => {
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                     index <= currentStep
                       ? 'bg-gold-500 text-white'
-                      : 'bg-gray-200 text-gray-400'
+                      : 'bg-slate-200 text-slate-400'
                   }`}>
                     <step.icon className="w-5 h-5" />
                   </div>
-                  <span className={`text-xs mt-2 text-center ${
-                    index <= currentStep ? 'text-blue-600 font-medium' : 'text-gray-400'
+                  <span className={`text-body-small mt-2 text-center ${
+                    index <= currentStep ? 'text-primary-600 font-medium' : 'text-slate-400'
                   }`}>
                     {step.title}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
                   <div className={`flex-1 h-0.5 mx-4 mt-5 transition-colors ${
-                    index < currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                    index < currentStep ? 'bg-primary-600' : 'bg-slate-200'
                   }`} />
                 )}
               </React.Fragment>
@@ -140,7 +140,7 @@ const OnboardingWizard = ({ onComplete }) => {
         </div>
 
         {/* Step Content */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden card-mobile">
+        <div className="bg-white rounded-xl shadow-elevation-3 border border-slate-200 overflow-hidden card-mobile">
           <div className="p-6 lg:p-8">
             <CurrentStepComponent
               userProfile={userProfile}
@@ -149,14 +149,14 @@ const OnboardingWizard = ({ onComplete }) => {
           </div>
 
           {/* Navigation */}
-          <div className="px-6 lg:px-8 py-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between mobile-bottom-nav">
+          <div className="px-6 lg:px-8 py-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between mobile-bottom-nav">
             <button
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className={`flex items-center px-4 lg:px-6 py-3 lg:py-2 border border-gray-300 text-gray-700 rounded-lg transition-colors touch-target btn-touch ${
+              className={`flex items-center px-4 lg:px-6 py-3 lg:py-2 border border-slate-300 text-slate-700 rounded-xl transition-colors touch-target btn-touch ${
                 currentStep === 0
                   ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-50 active:bg-gray-100'
+                  : 'hover:bg-slate-50 active:bg-slate-100'
               }`}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -164,14 +164,14 @@ const OnboardingWizard = ({ onComplete }) => {
             </button>
 
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500 hidden md:inline">
+              <span className="text-body-regular text-slate-500 hidden md:inline">
                 Step {currentStep + 1} of {steps.length}
               </span>
 
               {currentStep < steps.length - 1 ? (
                 <button
                   onClick={handleNext}
-                  className="flex items-center px-4 lg:px-6 py-3 lg:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors touch-target btn-touch"
+                  className="flex items-center px-4 lg:px-6 py-3 lg:py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 active:bg-primary-800 transition-colors touch-target btn-touch"
                 >
                   <span className="hidden sm:inline">Next</span>
                   <span className="sm:hidden">Continue</span>
@@ -180,7 +180,7 @@ const OnboardingWizard = ({ onComplete }) => {
               ) : (
                 <button
                   onClick={handleComplete}
-                  className="flex items-center px-4 lg:px-6 py-3 lg:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 active:bg-green-800 transition-colors touch-target btn-touch"
+                  className="flex items-center px-4 lg:px-6 py-3 lg:py-2 bg-success-600 text-white rounded-xl hover:bg-success-700 active:bg-success-800 transition-colors touch-target btn-touch"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   <span className="hidden sm:inline">Get Started</span>
@@ -198,10 +198,10 @@ const OnboardingWizard = ({ onComplete }) => {
 // Step Components
 const WelcomeStep = () => (
   <div className="text-center space-y-6">
-    <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-lg">
+    <div className="bg-gradient-to-r from-primary-500 to-ember-600 text-white p-8 rounded-xl">
       <Sparkles className="w-16 h-16 mx-auto mb-4" />
-      <h2 className="text-2xl font-bold mb-4">Welcome to Smart Tax Filing!</h2>
-      <p className="text-lg opacity-90">
+      <h2 className="text-heading-2 font-bold mb-4">Welcome to Smart Tax Filing!</h2>
+      <p className="text-body-large opacity-90">
         We're excited to help you file your taxes efficiently and accurately.
         Our intelligent system will guide you through every step.
       </p>
@@ -209,27 +209,27 @@ const WelcomeStep = () => (
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
       <div className="text-center">
-        <div className="bg-blue-100 text-blue-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+        <div className="bg-info-100 text-info-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
           <Shield className="w-8 h-8" />
         </div>
         <h3 className="font-semibold mb-2">Secure & Private</h3>
-        <p className="text-sm text-gray-600">Your data is protected with bank-level security</p>
+        <p className="text-body-regular text-slate-600">Your data is protected with bank-level security</p>
       </div>
 
       <div className="text-center">
-        <div className="bg-green-100 text-green-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+        <div className="bg-success-100 text-success-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
           <BarChart3 className="w-8 h-8" />
         </div>
         <h3 className="font-semibold mb-2">Expert Guidance</h3>
-        <p className="text-sm text-gray-600">AI-powered assistance for accurate filing</p>
+        <p className="text-body-regular text-slate-600">AI-powered assistance for accurate filing</p>
       </div>
 
       <div className="text-center">
-        <div className="bg-purple-100 text-purple-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+        <div className="bg-primary-100 text-primary-600 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
           <Clock className="w-8 h-8" />
         </div>
         <h3 className="font-semibold mb-2">Time Saving</h3>
-        <p className="text-sm text-gray-600">Complete your filing in minutes, not hours</p>
+        <p className="text-body-regular text-slate-600">Complete your filing in minutes, not hours</p>
       </div>
     </div>
   </div>
@@ -238,13 +238,13 @@ const WelcomeStep = () => (
 const ExperienceStep = ({ userProfile, onUpdate }) => (
   <div className="space-y-6">
     <div className="text-center mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Tell us about your experience</h2>
-      <p className="text-gray-600">This helps us customize your filing experience</p>
+      <h2 className="text-heading-2 font-bold text-slate-900 mb-2">Tell us about your experience</h2>
+      <p className="text-slate-600">This helps us customize your filing experience</p>
     </div>
 
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-body-regular font-medium text-slate-700 mb-3">
           How experienced are you with tax filing?
         </label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -257,14 +257,14 @@ const ExperienceStep = ({ userProfile, onUpdate }) => (
             <button
               key={option.value}
               onClick={() => onUpdate({ experience: option.value })}
-              className={`p-4 border rounded-lg text-left transition-colors ${
+              className={`p-4 border rounded-xl text-left transition-colors ${
                 userProfile.experience === option.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <div className="font-medium">{option.label}</div>
-              <div className="text-sm text-gray-500 mt-1">{option.desc}</div>
+              <div className="text-body-regular text-slate-500 mt-1">{option.desc}</div>
             </button>
           ))}
         </div>
@@ -276,13 +276,13 @@ const ExperienceStep = ({ userProfile, onUpdate }) => (
 const AssessmentStep = ({ userProfile, onUpdate }) => (
   <div className="space-y-6">
     <div className="text-center mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Quick Assessment</h2>
-      <p className="text-gray-600">Help us understand your filing needs</p>
+      <h2 className="text-heading-2 font-bold text-slate-900 mb-2">Quick Assessment</h2>
+      <p className="text-slate-600">Help us understand your filing needs</p>
     </div>
 
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-body-regular font-medium text-slate-700 mb-3">
           How often do you file taxes?
         </label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -294,10 +294,10 @@ const AssessmentStep = ({ userProfile, onUpdate }) => (
             <button
               key={option.value}
               onClick={() => onUpdate({ filingFrequency: option.value })}
-              className={`p-4 border rounded-lg text-center transition-colors ${
+              className={`p-4 border rounded-xl text-center transition-colors ${
                 userProfile.filingFrequency === option.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <option.icon className="w-8 h-8 mx-auto mb-2" />
@@ -308,7 +308,7 @@ const AssessmentStep = ({ userProfile, onUpdate }) => (
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-body-regular font-medium text-slate-700 mb-3">
           What's your main concern about tax filing?
         </label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,14 +321,14 @@ const AssessmentStep = ({ userProfile, onUpdate }) => (
             <button
               key={option.value}
               onClick={() => onUpdate({ mainConcern: option.value })}
-              className={`p-4 border rounded-lg text-left transition-colors ${
+              className={`p-4 border rounded-xl text-left transition-colors ${
                 userProfile.mainConcern === option.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <div className="font-medium">{option.label}</div>
-              <div className="text-sm text-gray-500 mt-1">{option.desc}</div>
+              <div className="text-body-regular text-slate-500 mt-1">{option.desc}</div>
             </button>
           ))}
         </div>
@@ -340,13 +340,13 @@ const AssessmentStep = ({ userProfile, onUpdate }) => (
 const PreferencesStep = ({ userProfile, onUpdate }) => (
   <div className="space-y-6">
     <div className="text-center mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Set Your Preferences</h2>
-      <p className="text-gray-600">Customize your filing experience</p>
+      <h2 className="text-heading-2 font-bold text-slate-900 mb-2">Set Your Preferences</h2>
+      <p className="text-slate-600">Customize your filing experience</p>
     </div>
 
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-body-regular font-medium text-slate-700 mb-3">
           Preferred device for filing
         </label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -358,10 +358,10 @@ const PreferencesStep = ({ userProfile, onUpdate }) => (
             <button
               key={option.value}
               onClick={() => onUpdate({ preferredDevice: option.value })}
-              className={`p-4 border rounded-lg text-center transition-colors ${
+              className={`p-4 border rounded-xl text-center transition-colors ${
                 userProfile.preferredDevice === option.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <option.icon className="w-8 h-8 mx-auto mb-2" />
@@ -372,7 +372,7 @@ const PreferencesStep = ({ userProfile, onUpdate }) => (
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-body-regular font-medium text-slate-700 mb-3">
           How much time do you have for filing?
         </label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -384,14 +384,14 @@ const PreferencesStep = ({ userProfile, onUpdate }) => (
             <button
               key={option.value}
               onClick={() => onUpdate({ timeAvailable: option.value })}
-              className={`p-4 border rounded-lg text-center transition-colors ${
+              className={`p-4 border rounded-xl text-center transition-colors ${
                 userProfile.timeAvailable === option.value
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-slate-200 hover:border-slate-300'
               }`}
             >
               <div className="font-medium">{option.label}</div>
-              <div className="text-sm text-gray-500 mt-1">{option.desc}</div>
+              <div className="text-body-regular text-slate-500 mt-1">{option.desc}</div>
             </button>
           ))}
         </div>
@@ -430,29 +430,29 @@ const ReadyStep = ({ userProfile }) => {
 
   return (
     <div className="text-center space-y-6">
-      <div className="bg-green-50 border border-green-200 rounded-lg p-8">
-        <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">You're All Set!</h2>
-        <p className="text-green-700">
+      <div className="bg-success-50 border border-success-200 rounded-xl p-8">
+        <CheckCircle className="w-16 h-16 text-success-600 mx-auto mb-4" />
+        <h2 className="text-heading-2 font-bold text-slate-900 mb-2">You're All Set!</h2>
+        <p className="text-success-700">
           Based on your preferences, we've customized your filing experience.
         </p>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="font-semibold text-blue-900 mb-4">Your Personalized Experience:</h3>
+      <div className="bg-primary-50 border border-primary-200 rounded-xl p-6">
+        <h3 className="font-semibold text-primary-900 mb-4">Your Personalized Experience:</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {getRecommendations().map((rec, index) => (
-            <div key={index} className="flex items-center text-blue-800">
-              <CheckCircle className="w-4 h-4 mr-2 text-blue-600" />
-              <span className="text-sm">{rec}</span>
+            <div key={index} className="flex items-center text-primary-800">
+              <CheckCircle className="w-4 h-4 mr-2 text-primary-600" />
+              <span className="text-body-regular">{rec}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="font-semibold text-gray-900 mb-2">Ready to Start Filing?</h3>
-        <p className="text-gray-600 text-sm">
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
+        <h3 className="font-semibold text-slate-900 mb-2">Ready to Start Filing?</h3>
+        <p className="text-slate-600 text-body-regular">
           Click "Get Started" to begin your tax filing journey with your personalized experience.
         </p>
       </div>

@@ -46,14 +46,14 @@ const ResponsiveSection = ({
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               {Icon && (
-                <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-primary-100 flex items-center justify-center">
                   <Icon className="w-4 h-4 text-primary-600" />
                 </div>
               )}
-              <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+              <h3 className="text-heading-4 font-semibold text-slate-900">{title}</h3>
             </div>
             {description && (
-              <p className="text-sm text-slate-600 ml-10">{description}</p>
+              <p className="text-body-regular text-slate-600 ml-10">{description}</p>
             )}
           </div>
         )}
@@ -64,7 +64,7 @@ const ResponsiveSection = ({
 
   // Mobile/Tablet: Progressive disclosure with [+] / [-] indicators
   return (
-    <div className={cn('w-full border border-slate-200 rounded-lg bg-white overflow-hidden', className)}>
+    <div className={cn('w-full border border-slate-200 rounded-xl bg-white overflow-hidden', className)}>
       <button
         onClick={handleToggle}
         onKeyDown={(e) => {
@@ -80,7 +80,7 @@ const ResponsiveSection = ({
         aria-controls={`section-${id}`}
       >
         <div className="flex items-center gap-3 flex-1 text-left">
-          <span className="text-sm font-medium text-slate-600">
+          <span className="text-body-regular font-medium text-slate-600">
             {isExpanded ? '[-]' : '[+]'}
           </span>
           <div className="flex-1">
@@ -88,15 +88,15 @@ const ResponsiveSection = ({
               {Icon && (
                 <Icon className="w-4 h-4 text-slate-600" />
               )}
-              <span className="text-sm font-semibold text-slate-900 truncate" title={title}>{title}</span>
+              <span className="text-body-regular font-semibold text-slate-900 truncate" title={title}>{title}</span>
               {showTotal && totalValue !== undefined && (
-                <span className="text-sm font-medium text-slate-600">
+                <span className="text-body-regular font-medium text-slate-600">
                   (₹{totalValue.toLocaleString('en-IN')})
                 </span>
               )}
             </div>
             {description && !isExpanded && (
-              <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+              <p className="text-body-small text-slate-500 mt-0.5">{description}</p>
             )}
           </div>
         </div>

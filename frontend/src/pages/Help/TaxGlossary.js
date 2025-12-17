@@ -175,11 +175,11 @@ const TaxGlossary = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/help"
-          className="flex items-center text-body-sm text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-body-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back to Help Center
@@ -188,9 +188,9 @@ const TaxGlossary = () => {
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <BookOpen className="h-8 w-8 text-gold-600" />
-            <h1 className="text-heading-2xl text-gray-900">Tax Glossary</h1>
+            <h1 className="text-heading-2xl text-slate-900">Tax Glossary</h1>
           </div>
-          <p className="text-body-md text-gray-600">
+          <p className="text-body-md text-slate-600">
             Understand tax terminology and concepts
           </p>
         </div>
@@ -208,10 +208,10 @@ const TaxGlossary = () => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedLetter('all')}
-              className={`px-3 py-1 rounded-md text-body-sm font-medium ${
+              className={`px-3 py-1 rounded-xl text-body-sm font-medium ${
                 selectedLetter === 'all'
                   ? 'bg-gold-500 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
               }`}
             >
               All
@@ -220,10 +220,10 @@ const TaxGlossary = () => {
               <button
                 key={letter}
                 onClick={() => setSelectedLetter(letter)}
-                className={`px-3 py-1 rounded-md text-body-sm font-medium ${
+                className={`px-3 py-1 rounded-xl text-body-sm font-medium ${
                   selectedLetter === letter
                     ? 'bg-gold-500 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {letter}
@@ -234,22 +234,22 @@ const TaxGlossary = () => {
 
         {/* Glossary Terms */}
         {Object.keys(groupedByCategory).length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <p className="text-body-md text-gray-600">No terms found matching your search.</p>
+          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+            <p className="text-body-md text-slate-600">No terms found matching your search.</p>
           </div>
         ) : (
           <div className="space-y-8">
             {Object.entries(groupedByCategory).map(([category, terms]) => (
-              <div key={category} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-heading-lg text-gray-900 mb-4">{category}</h2>
+              <div key={category} className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+                <h2 className="text-heading-lg text-slate-900 mb-4">{category}</h2>
                 <div className="space-y-6">
                   {terms.map((item) => (
                     <div key={item.term} id={`term-${item.term}`} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
                       <h3 className="text-heading-sm text-gold-600 mb-2">{item.term}</h3>
-                      <p className="text-body-md text-gray-600 mb-3">{item.definition}</p>
+                      <p className="text-body-md text-slate-600 mb-3">{item.definition}</p>
 
                       {item.example && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3">
                           <div className="flex items-start gap-2">
                             <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                             <div>
@@ -262,7 +262,7 @@ const TaxGlossary = () => {
 
                       {item.relatedTerms && item.relatedTerms.length > 0 && (
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-body-xs font-semibold text-gray-600">Related terms:</span>
+                          <span className="text-body-xs font-semibold text-slate-600">Related terms:</span>
                           {item.relatedTerms.map((relatedTerm, idx) => {
                             const relatedItem = glossary.find((g) => g.term === relatedTerm);
                             if (!relatedItem) return null;

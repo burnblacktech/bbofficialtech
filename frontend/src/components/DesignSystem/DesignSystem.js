@@ -196,20 +196,20 @@ export const Button = React.forwardRef(({
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
 
   const variants = {
-    primary: 'bg-primary-500 text-white hover:bg-primary-600 focus-visible:ring-primary-500 shadow-sm hover:shadow-md',
-    secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-500 shadow-sm hover:shadow-md',
+    primary: 'bg-primary-500 text-white hover:bg-primary-600 focus-visible:ring-primary-500 shadow-elevation-1 hover:shadow-elevation-2',
+    secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-500 shadow-elevation-1 hover:shadow-elevation-2',
     outline: 'border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 focus-visible:ring-primary-500',
     ghost: 'text-neutral-700 hover:bg-neutral-100 focus-visible:ring-primary-500',
-    success: 'bg-success-500 text-white hover:bg-success-600 focus-visible:ring-success-500 shadow-sm hover:shadow-md',
-    warning: 'bg-warning-500 text-white hover:bg-warning-600 focus-visible:ring-warning-500 shadow-sm hover:shadow-md',
-    error: 'bg-error-500 text-white hover:bg-error-600 focus-visible:ring-error-500 shadow-sm hover:shadow-md',
+    success: 'bg-success-500 text-white hover:bg-success-600 focus-visible:ring-success-500 shadow-elevation-1 hover:shadow-elevation-2',
+    warning: 'bg-warning-500 text-white hover:bg-warning-600 focus-visible:ring-warning-500 shadow-elevation-1 hover:shadow-elevation-2',
+    error: 'bg-error-500 text-white hover:bg-error-600 focus-visible:ring-error-500 shadow-elevation-1 hover:shadow-elevation-2',
   };
 
   const sizes = {
-    xs: 'h-8 px-2 text-xs rounded-md',
-    sm: 'h-9 px-3 text-sm rounded-md',
-    md: 'h-10 px-4 text-sm rounded-lg',
-    lg: 'h-11 px-6 text-base rounded-lg',
+    xs: 'h-8 px-2 text-xs rounded-xl',
+    sm: 'h-9 px-3 text-sm rounded-xl',
+    md: 'h-10 px-4 text-sm rounded-xl',
+    lg: 'h-11 px-6 text-base rounded-xl',
     xl: 'h-12 px-8 text-lg rounded-xl',
   };
 
@@ -252,7 +252,7 @@ export const Input = React.forwardRef(({
   disabled = false,
   ...props
 }, ref) => {
-  const baseClasses = 'flex h-10 w-full rounded-lg border bg-white px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+  const baseClasses = 'flex h-10 w-full rounded-xl border bg-white px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 
   const stateClasses = error
     ? 'border-error-300 focus-visible:ring-error-500'
@@ -287,8 +287,8 @@ export const Card = React.forwardRef(({
   hover = false,
   ...props
 }, ref) => {
-  const baseClasses = 'rounded-xl border bg-white text-neutral-900 shadow-sm transition-all duration-200';
-  const hoverClasses = hover ? 'hover:shadow-md hover:scale-[1.01] cursor-pointer' : '';
+  const baseClasses = 'rounded-xl border bg-white text-neutral-900 shadow-elevation-1 transition-all duration-200';
+  const hoverClasses = hover ? 'hover:shadow-elevation-2 hover:scale-[1.01] cursor-pointer' : '';
   const classes = `${baseClasses} ${hoverClasses} ${className}`;
 
   return (

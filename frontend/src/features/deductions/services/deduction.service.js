@@ -7,7 +7,9 @@ import apiClient from '../../../services/core/APIClient';
 
 class DeductionService {
   constructor() {
-    this.basePath = '/api/itr/deductions';
+    // APIClient baseURL already includes '/api' in most environments.
+    // Keep this path free of the '/api' prefix to avoid accidental '/api/api' duplication.
+    this.basePath = '/itr/deductions';
   }
 
   /**
@@ -50,7 +52,11 @@ class DeductionService {
    */
   async updateDeduction(filingId, deductionId, data) {
     try {
-      const response = await apiClient.put(`${this.basePath}/${deductionId}`, {
+      const section = data?.section || data?.deductionSection;
+      if (!section) {
+        throw new Error('section is required to update a deduction');
+      }
+      const response = await apiClient.put(`${this.basePath}/${section}/${deductionId}`, {
         filingId,
         ...data,
       });
@@ -68,11 +74,26 @@ class DeductionService {
    */
   async deleteDeduction(filingId, deductionId) {
     try {
+      // Caller must provide section in deductionId payload in new API shape
+      // Prefer deleteDeductionBySection() going forward.
       const response = await apiClient.delete(`${this.basePath}/${deductionId}?filingId=${filingId}`);
       return response.data;
     } catch (error) {
       return { success: true };
     }
+  }
+
+  async updateDeductionBySection(filingId, section, deductionId, data) {
+    const response = await apiClient.put(`${this.basePath}/${section}/${deductionId}`, {
+      filingId,
+      ...data,
+    });
+    return response.data;
+  }
+
+  async deleteDeductionBySection(filingId, section, deductionId) {
+    const response = await apiClient.delete(`${this.basePath}/${section}/${deductionId}?filingId=${filingId}`);
+    return response.data;
   }
 
   /**

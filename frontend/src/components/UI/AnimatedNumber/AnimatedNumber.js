@@ -115,7 +115,7 @@ const AnimatedNumber = ({
   // Get color class based on change direction
   const colorClass = useMemo(() => {
     if (!colorChange || !changeDirection) return '';
-    return changeDirection === 'up' ? 'text-emerald-600' : 'text-red-500';
+    return changeDirection === 'up' ? 'text-emerald-600' : 'text-error-500';
   }, [colorChange, changeDirection]);
 
   // Change indicator
@@ -135,7 +135,7 @@ const AnimatedNumber = ({
     >
       {prefix}
       {changeIndicator && (
-        <span className={`mr-0.5 ${changeDirection === 'up' ? 'text-emerald-500' : 'text-red-500'}`}>
+        <span className={`mr-0.5 ${changeDirection === 'up' ? 'text-emerald-500' : 'text-error-500'}`}>
           {changeIndicator}
         </span>
       )}
@@ -224,7 +224,7 @@ export const TrendNumber = ({
 
   const trendColor = {
     up: 'text-emerald-600',
-    down: 'text-red-500',
+    down: 'text-error-500',
     neutral: '',
   };
 
@@ -262,9 +262,9 @@ export const CompareNumber = ({
 
   return (
     <div className={`flex flex-col ${className}`} {...props}>
-      <AnimatedNumber value={currentValue} format={format} className="text-lg font-bold" />
+      <AnimatedNumber value={currentValue} format={format} className="text-body-large font-bold" />
       {compareValue !== 0 && (
-        <span className={`text-xs font-medium ${isPositive ? 'text-emerald-600' : 'text-red-500'}`}>
+        <span className={`text-xs font-medium ${isPositive ? 'text-emerald-600' : 'text-error-500'}`}>
           {isPositive ? '+' : ''}
           <AnimatedNumber value={difference} format={format} /> vs {label}
         </span>

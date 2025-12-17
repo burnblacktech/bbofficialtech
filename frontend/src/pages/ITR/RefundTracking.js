@@ -10,7 +10,7 @@ import RefundStatusCard from '../../components/ITR/RefundStatusCard';
 import RefundHistoryTable from '../../components/ITR/RefundHistoryTable';
 import apiClient from '../../services/core/APIClient';
 import toast from 'react-hot-toast';
-import Button from '../../components/common/Button';
+import Button from '../../components/DesignSystem/components/Button';
 import { cn } from '../../lib/utils';
 import { enterpriseLogger } from '../../utils/logger';
 
@@ -126,7 +126,7 @@ const RefundTracking = () => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin text-gold-500 mx-auto mb-4" aria-hidden="true" />
-          <p className="text-body-md text-gray-600">Loading refund status...</p>
+          <p className="text-body-md text-slate-600">Loading refund status...</p>
         </div>
       </div>
     );
@@ -138,7 +138,7 @@ const RefundTracking = () => {
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-body-md text-gray-600 hover:text-gray-900 mb-4 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
+            className="flex items-center gap-2 text-body-md text-slate-600 hover:text-slate-900 mb-4 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
             aria-label="Go back"
           >
             <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -146,8 +146,8 @@ const RefundTracking = () => {
           </button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-display-md text-gray-900">Refund Tracking</h1>
-              <p className="text-body-md text-gray-600 mt-1">
+              <h1 className="text-display-md text-slate-900">Refund Tracking</h1>
+              <p className="text-body-md text-slate-600 mt-1">
                 Track your ITR refund status and history
               </p>
             </div>
@@ -165,7 +165,7 @@ const RefundTracking = () => {
         {/* Current Refund Status */}
         {filingId && refund && (
           <div className="mb-8">
-            <h2 className="text-heading-lg text-gray-900 mb-4">Current Refund Status</h2>
+            <h2 className="text-heading-lg text-slate-900 mb-4">Current Refund Status</h2>
             <RefundStatusCard
               refund={refund}
               onUpdateAccount={() => setShowUpdateAccountModal(true)}
@@ -176,7 +176,7 @@ const RefundTracking = () => {
 
         {/* Refund History */}
         <div>
-          <h2 className="text-heading-lg text-gray-900 mb-4">Refund History</h2>
+          <h2 className="text-heading-lg text-slate-900 mb-4">Refund History</h2>
           <RefundHistoryTable refunds={refundHistory} />
         </div>
     </div>

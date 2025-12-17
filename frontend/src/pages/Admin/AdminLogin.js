@@ -156,7 +156,7 @@ const AdminLogin = () => {
               <form onSubmit={handleLogin} className="space-y-6">
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="email" className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Email Address
                   </label>
                   <div className="relative">
@@ -168,7 +168,7 @@ const AdminLogin = () => {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="admin@burnblack.com"
                       disabled={loading || isLocked}
                     />
@@ -177,7 +177,7 @@ const AdminLogin = () => {
 
                 {/* Password Field */}
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="password" className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Password
                   </label>
                   <div className="relative">
@@ -189,7 +189,7 @@ const AdminLogin = () => {
                       required
                       value={formData.password}
                       onChange={handleInputChange}
-                      className="w-full pl-10 pr-10 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full pl-10 pr-10 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter your password"
                       disabled={loading || isLocked}
                     />
@@ -209,7 +209,7 @@ const AdminLogin = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center space-x-2 p-3 bg-error-50 border border-error-200 rounded-lg"
+                    className="flex items-center space-x-2 p-3 bg-error-50 border border-error-200 rounded-xl"
                   >
                     <AlertCircle className="w-4 h-4 text-error-600" />
                     <Typography.Small className="text-error-700">
@@ -220,7 +220,7 @@ const AdminLogin = () => {
 
                 {/* Login Attempts Warning */}
                 {loginAttempts > 0 && !isLocked && (
-                  <div className="flex items-center space-x-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
+                  <div className="flex items-center space-x-2 p-3 bg-warning-50 border border-warning-200 rounded-xl">
                     <AlertCircle className="w-4 h-4 text-warning-600" />
                     <Typography.Small className="text-warning-700">
                       {3 - loginAttempts} attempts remaining before account lock
@@ -232,7 +232,7 @@ const AdminLogin = () => {
                 <button
                   type="submit"
                   disabled={loading || isLocked}
-                  className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-xl text-body-regular font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? (
                     <div className="flex items-center space-x-2">
@@ -273,7 +273,7 @@ const AdminLogin = () => {
           <div className="text-center">
             <button
               onClick={handleBackToMain}
-              className="text-sm text-primary-600 hover:text-primary-700 transition-colors"
+              className="text-body-regular text-primary-600 hover:text-primary-700 transition-colors"
             >
               ← Back to Main Site
             </button>

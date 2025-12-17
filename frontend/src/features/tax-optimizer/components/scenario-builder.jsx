@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, X, TrendingUp, Building2, Heart, Home, Calculator, Save, FolderOpen, Star, Download } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import apiClient from '../../../services/core/APIClient';
 import toast from 'react-hot-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -263,7 +263,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
     <div className="space-y-6">
       {/* Scenario Type Selection */}
       <div>
-        <label className="block text-body-sm font-medium text-gray-700 mb-3">
+        <label className="block text-body-sm font-medium text-slate-700 mb-3">
           Select Scenario Type
         </label>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -273,25 +273,25 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
               <button
                 key={scenarioType.id}
                 onClick={() => handleScenarioTypeChange(scenarioType.id)}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                className={`p-4 border-2 rounded-xl text-left transition-all ${
                   currentScenario.type === scenarioType.id
                     ? 'border-gold-500 bg-gold-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
                 <div className="flex items-start">
                   <Icon className={`h-5 w-5 mr-3 mt-0.5 ${
-                    currentScenario.type === scenarioType.id ? 'text-gold-600' : 'text-gray-400'
+                    currentScenario.type === scenarioType.id ? 'text-gold-600' : 'text-slate-400'
                   }`} />
                   <div className="flex-1">
-                    <h4 className="text-body-sm font-medium text-gray-900 mb-1">
+                    <h4 className="text-body-sm font-medium text-slate-900 mb-1">
                       {scenarioType.label}
                     </h4>
-                    <p className="text-body-xs text-gray-600">
+                    <p className="text-body-xs text-slate-600">
                       {scenarioType.description}
                     </p>
                     {scenarioType.maxAmount && (
-                      <p className="text-body-xs text-gray-500 mt-1">
+                      <p className="text-body-xs text-slate-500 mt-1">
                         Max: ₹{scenarioType.maxAmount.toLocaleString('en-IN')}
                       </p>
                     )}
@@ -305,18 +305,18 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
 
       {/* Scenario Fields */}
       {selectedScenarioType && (
-        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-          <h3 className="text-heading-sm text-gray-900 font-medium mb-4">
+        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+          <h3 className="text-heading-sm text-slate-900 font-medium mb-4">
             Configure {selectedScenarioType.label}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {selectedScenarioType.fields.map((field) => (
               <div key={field.name}>
-                <label className="block text-body-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-sm font-medium text-slate-700 mb-2">
                   {field.label}
                   {field.max && (
-                    <span className="text-body-xs text-gray-500 ml-2">
+                    <span className="text-body-xs text-slate-500 ml-2">
                       (Max: ₹{field.max.toLocaleString('en-IN')})
                     </span>
                   )}
@@ -328,13 +328,13 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
                     onChange={(e) => handleFieldChange(field.name, parseFloat(e.target.value) || 0)}
                     placeholder={field.placeholder}
                     max={field.max}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   />
                 ) : field.type === 'select' ? (
                   <select
                     value={currentScenario.changes[field.name] || ''}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   >
                     <option value="">Select {field.label}</option>
                     {field.options.map((option) => (
@@ -352,7 +352,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
             <button
               onClick={handleAddScenario}
               disabled={!currentScenario.changes.amount && currentScenario.type !== 'hraOptimization'}
-              className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
+              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add to Scenarios
@@ -364,7 +364,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
       {/* Scenarios List */}
       {scenarios.length > 0 && (
         <div>
-          <h3 className="text-heading-sm text-gray-900 font-medium mb-4">
+          <h3 className="text-heading-sm text-slate-900 font-medium mb-4">
             Scenarios to Compare ({scenarios.length})
           </h3>
           <div className="space-y-2">
@@ -374,20 +374,20 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
               return (
                 <div
                   key={scenario.id}
-                  className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg"
+                  className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl"
                 >
                   <div className="flex items-center">
                     <Icon className="h-5 w-5 text-gold-600 mr-3" />
                     <div>
-                      <p className="text-body-sm font-medium text-gray-900">{scenario.name}</p>
-                      <p className="text-body-xs text-gray-600">
+                      <p className="text-body-sm font-medium text-slate-900">{scenario.name}</p>
+                      <p className="text-body-xs text-slate-600">
                         Amount: ₹{parseFloat(scenario.changes.amount || scenario.changes.interestAmount || 0).toLocaleString('en-IN')}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={() => handleRemoveScenario(scenario.id)}
-                    className="p-2 text-gray-400 hover:text-gray-600"
+                    className="p-2 text-slate-400 hover:text-slate-600"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -399,11 +399,11 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
       )}
 
       {/* Actions */}
-      <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+      <div className="flex justify-between items-center pt-4 border-t border-slate-200">
         <div className="flex gap-2">
           <button
             onClick={() => setShowLoadModal(true)}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center"
+            className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 flex items-center"
           >
             <FolderOpen className="h-4 w-4 mr-2" />
             Load Saved
@@ -411,7 +411,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
           {scenarios.length > 0 || (currentScenario.changes.amount && currentScenario.name) ? (
             <button
               onClick={() => setShowSaveModal(true)}
-              className="px-4 py-2 bg-info-500 text-white rounded-lg hover:bg-info-600 flex items-center"
+              className="px-4 py-2 bg-info-500 text-white rounded-xl hover:bg-info-600 flex items-center"
             >
               <Save className="h-4 w-4 mr-2" />
               Save Scenario
@@ -421,7 +421,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
         <button
           onClick={handleSimulate}
           disabled={scenarios.length === 0 && (!currentScenario.changes.amount && currentScenario.type !== 'hraOptimization')}
-          className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
+          className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center"
         >
           <Calculator className="h-4 w-4 mr-2" />
           {scenarios.length > 1 ? 'Compare Scenarios' : 'Simulate Scenario'}
@@ -431,29 +431,29 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
       {/* Save Modal */}
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Save Scenario</h3>
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-4">Save Scenario</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Scenario Name <span className="text-error-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={currentScenario.name}
                   onChange={(e) => setCurrentScenario({ ...currentScenario, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                   placeholder="e.g., Max 80C Investment"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-body-regular font-medium text-slate-700 mb-2">
                   Description (Optional)
                 </label>
                 <textarea
                   value={currentScenario.description}
                   onChange={(e) => setCurrentScenario({ ...currentScenario, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                   rows={3}
                   placeholder="Add a description..."
                 />
@@ -462,14 +462,14 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
             <div className="flex justify-end gap-2 mt-6">
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveScenario}
                 disabled={!currentScenario.name || saveScenarioMutation.isPending}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:bg-gray-300"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:bg-gray-300"
               >
                 {saveScenarioMutation.isPending ? 'Saving...' : 'Save'}
               </button>
@@ -481,33 +481,33 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
       {/* Load Modal */}
       {showLoadModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Load Saved Scenario</h3>
+          <div className="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-4">Load Saved Scenario</h3>
             {savedScenarios.length === 0 ? (
               <div className="text-center py-8">
-                <FolderOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No saved scenarios found</p>
+                <FolderOpen className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600">No saved scenarios found</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {savedScenarios.map((scenario) => (
                   <div
                     key={scenario.id}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                    className="p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer"
                     onClick={() => handleLoadScenario(scenario)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-gray-900">{scenario.name}</h4>
+                          <h4 className="font-medium text-slate-900">{scenario.name}</h4>
                           {scenario.isFavorite && (
                             <Star className="h-4 w-4 text-gold-500 fill-current" />
                           )}
                         </div>
                         {scenario.description && (
-                          <p className="text-sm text-gray-600 mt-1">{scenario.description}</p>
+                          <p className="text-body-regular text-slate-600 mt-1">{scenario.description}</p>
                         )}
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-body-small text-slate-500 mt-1">
                           Type: {scenario.scenarioType} • Created: {new Date(scenario.createdAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -516,7 +516,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
                           e.stopPropagation();
                           handleLoadScenario(scenario);
                         }}
-                        className="ml-4 px-3 py-1 bg-gold-500 text-white rounded hover:bg-gold-600 text-sm"
+                        className="ml-4 px-3 py-1 bg-gold-500 text-white rounded hover:bg-gold-600 text-body-regular"
                       >
                         Load
                       </button>
@@ -528,7 +528,7 @@ const ScenarioBuilder = ({ filingId, onSimulate, onCompare }) => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowLoadModal(false)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200"
               >
                 Close
               </button>

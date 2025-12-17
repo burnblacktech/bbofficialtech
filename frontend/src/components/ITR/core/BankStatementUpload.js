@@ -203,17 +203,17 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-heading-3 font-semibold text-slate-900 mb-2">
             Upload Bank Statement for Auto-Analysis
           </h3>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-slate-600 max-w-2xl mx-auto">
             Automatically categorize transactions and identify tax-relevant entries like interest income, TDS, investments, etc.
           </p>
         </div>
 
         {/* Bank Selection */}
         <div className="max-w-md mx-auto mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             Select Your Bank
           </label>
           <Select
@@ -227,10 +227,10 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
 
         {/* Drag and Drop Area */}
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
             dragActive
               ? 'border-green-500 bg-green-50'
-              : 'border-gray-300 hover:border-gray-400'
+              : 'border-slate-300 hover:border-gray-400'
           } ${isUploading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -250,7 +250,7 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
           {isUploading ? (
             <div className="space-y-4">
               <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-sm font-medium text-green-600">
+              <p className="text-body-regular font-medium text-green-600">
                 {isAnalyzing ? 'Analyzing transactions...' : 'Uploading file...'}
               </p>
 
@@ -258,7 +258,7 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
               {uploadProgress > 0 && !isAnalyzing && (
                 <div className="space-y-2">
                   <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-xs text-gray-500">{uploadProgress}%</p>
+                  <p className="text-body-small text-slate-500">{uploadProgress}%</p>
                 </div>
               )}
 
@@ -266,20 +266,20 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
               {analysisProgress > 0 && isAnalyzing && (
                 <div className="space-y-2">
                   <Progress value={analysisProgress} className="h-2" />
-                  <p className="text-xs text-gray-500">{analysisProgress}%</p>
+                  <p className="text-body-small text-slate-500">{analysisProgress}%</p>
                 </div>
               )}
             </div>
           ) : (
             <div className="space-y-4">
-              <svg className="w-12 h-12 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 text-slate-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <div>
-                <p className="text-lg font-medium text-gray-900">
+                <p className="text-body-large font-medium text-slate-900">
                   Click to upload or drag and drop
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-body-regular text-slate-500">
                   {instructions.acceptedFormats.join(', ')} up to {instructions.maxFileSize}
                 </p>
               </div>
@@ -305,15 +305,15 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
 
       {/* Supported Banks */}
       <Card className="p-6 bg-green-50 border-green-200">
-        <h4 className="text-lg font-semibold text-green-900 mb-4">🏦 Supported Banks</h4>
+        <h4 className="text-heading-4 font-semibold text-green-900 mb-4">🏦 Supported Banks</h4>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {instructions.supportedBanks.slice(0, 10).map((bank) => (
-            <div key={bank} className="text-sm text-green-800 font-medium">
+            <div key={bank} className="text-body-regular text-green-800 font-medium">
               ✓ {bank}
             </div>
           ))}
         </div>
-        <p className="text-sm text-green-700 mt-3">
+        <p className="text-body-regular text-green-700 mt-3">
           Plus many more! If your bank isn't listed, select "Other" and we'll still analyze your statement.
         </p>
       </Card>
@@ -326,33 +326,33 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
         >
           {/* Summary Card */}
           <Card className="p-6 bg-green-50 border-green-200 mb-6">
-            <h4 className="text-lg font-semibold text-green-900 mb-4">
+            <h4 className="text-heading-4 font-semibold text-green-900 mb-4">
               ✅ Bank Statement Analysis Complete!
             </h4>
             <div className="grid md:grid-cols-4 gap-4 mb-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-900">
+                <div className="text-heading-2 font-bold text-green-900">
                   {analysisData.summary.totalTransactions}
                 </div>
-                <div className="text-sm text-green-700">Total Transactions</div>
+                <div className="text-body-regular text-green-700">Total Transactions</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-900">
+                <div className="text-heading-2 font-bold text-green-900">
                   {formatCurrency(analysisData.summary.totalCredits)}
                 </div>
-                <div className="text-sm text-green-700">Total Credits</div>
+                <div className="text-body-regular text-green-700">Total Credits</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-900">
+                <div className="text-heading-2 font-bold text-green-900">
                   {formatCurrency(analysisData.summary.taxRelevantAmount)}
                 </div>
-                <div className="text-sm text-green-700">Tax-Relevant Amount</div>
+                <div className="text-body-regular text-green-700">Tax-Relevant Amount</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-900">
+                <div className="text-heading-2 font-bold text-green-900">
                   {analysisData.insights?.length || 0}
                 </div>
-                <div className="text-sm text-green-700">Tax Insights Found</div>
+                <div className="text-body-regular text-green-700">Tax Insights Found</div>
               </div>
             </div>
           </Card>
@@ -360,21 +360,21 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
           {/* Tax Insights */}
           {analysisData.insights && analysisData.insights.length > 0 && (
             <Card className="p-6 mb-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">📊 Tax Insights Found</h4>
+              <h4 className="text-heading-4 font-semibold text-slate-900 mb-4">📊 Tax Insights Found</h4>
               <div className="space-y-3">
                 {analysisData.insights.map((insight, index) => (
                   <div
                     key={index}
-                    className={`p-4 rounded-lg border ${
+                    className={`p-4 rounded-xl border ${
                       insight.priority === 'high'
-                        ? 'bg-red-50 border-red-200'
+                        ? 'bg-error-50 border-red-200'
                         : insight.priority === 'medium'
                         ? 'bg-yellow-50 border-yellow-200'
                         : 'bg-blue-50 border-blue-200'
                     }`}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="text-2xl">
+                      <div className="text-heading-2">
                         {insight.type === 'salary' && '💼'}
                         {insight.type === 'interest' && '🏦'}
                         {insight.type === 'tds' && '📄'}
@@ -383,15 +383,15 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
                         {insight.type === 'professional' && '💻'}
                       </div>
                       <div className="flex-1">
-                        <h5 className="font-medium text-gray-900">{insight.title}</h5>
-                        <p className="text-sm text-gray-600 mt-1">{insight.description}</p>
-                        <p className="text-sm font-medium text-gray-700 mt-2">
+                        <h5 className="font-medium text-slate-900">{insight.title}</h5>
+                        <p className="text-body-regular text-slate-600 mt-1">{insight.description}</p>
+                        <p className="text-body-regular font-medium text-slate-700 mt-2">
                           Action: {insight.action}
                         </p>
                       </div>
                       <div className={`px-2 py-1 text-xs font-medium rounded-full ${
                         insight.priority === 'high'
-                          ? 'bg-red-100 text-red-800'
+                          ? 'bg-error-100 text-red-800'
                           : insight.priority === 'medium'
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-blue-100 text-blue-800'
@@ -407,22 +407,22 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
 
           {/* Category Breakdown */}
           <Card className="p-6 mb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">📈 Transaction Categories</h4>
+            <h4 className="text-heading-4 font-semibold text-slate-900 mb-4">📈 Transaction Categories</h4>
             <div className="space-y-3">
               {Object.entries(analysisData.summary.categories || {})
                 .filter(([_, category]) => category.count > 0)
                 .map(([category, data]) => (
-                  <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={category} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                     <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{getCategoryIcon(category)}</div>
+                      <div className="text-heading-2">{getCategoryIcon(category)}</div>
                       <div>
-                        <div className="font-medium text-gray-900 capitalize">{category}</div>
-                        <div className="text-sm text-gray-600">{data.count} transactions</div>
+                        <div className="font-medium text-slate-900 capitalize">{category}</div>
+                        <div className="text-body-regular text-slate-600">{data.count} transactions</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium text-gray-900">{formatCurrency(data.totalAmount)}</div>
-                      <div className="text-sm text-gray-600">{data.percentage?.toFixed(1)}%</div>
+                      <div className="font-medium text-slate-900">{formatCurrency(data.totalAmount)}</div>
+                      <div className="text-body-regular text-slate-600">{data.percentage?.toFixed(1)}%</div>
                     </div>
                   </div>
                 ))}
@@ -431,36 +431,36 @@ const BankStatementUpload = ({ onAnalysisComplete, onAutoPopulate, className = '
 
           {/* Tax Implications */}
           <Card className="p-6 mb-6">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">💰 Tax Implications</h4>
+            <h4 className="text-heading-4 font-semibold text-slate-900 mb-4">💰 Tax Implications</h4>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h5 className="font-medium text-gray-900">Taxable Income Sources</h5>
+                <h5 className="font-medium text-slate-900">Taxable Income Sources</h5>
                 {Object.entries(analysisData.taxImplications.taxableIncome).map(([source, amount]) => (
                   amount > 0 && (
-                    <div key={source} className="flex justify-between text-sm">
-                      <span className="text-gray-600 capitalize">{source}:</span>
-                      <span className="font-medium text-gray-900">{formatCurrency(amount)}</span>
+                    <div key={source} className="flex justify-between text-body-regular">
+                      <span className="text-slate-600 capitalize">{source}:</span>
+                      <span className="font-medium text-slate-900">{formatCurrency(amount)}</span>
                     </div>
                   )
                 ))}
-                <div className="flex justify-between text-sm font-medium pt-2 border-t">
-                  <span className="text-gray-900">Total Taxable Income:</span>
+                <div className="flex justify-between text-body-regular font-medium pt-2 border-t">
+                  <span className="text-slate-900">Total Taxable Income:</span>
                   <span className="text-green-600">{formatCurrency(analysisData.taxImplications.taxableIncome.total)}</span>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h5 className="font-medium text-gray-900">Tax Credits & Deductions</h5>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">TDS:</span>
-                  <span className="font-medium text-gray-900">{formatCurrency(analysisData.taxImplications.taxCredits.tds)}</span>
+                <h5 className="font-medium text-slate-900">Tax Credits & Deductions</h5>
+                <div className="flex justify-between text-body-regular">
+                  <span className="text-slate-600">TDS:</span>
+                  <span className="font-medium text-slate-900">{formatCurrency(analysisData.taxImplications.taxCredits.tds)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Investments:</span>
-                  <span className="font-medium text-gray-900">{formatCurrency(analysisData.taxImplications.deductions.investment)}</span>
+                <div className="flex justify-between text-body-regular">
+                  <span className="text-slate-600">Investments:</span>
+                  <span className="font-medium text-slate-900">{formatCurrency(analysisData.taxImplications.deductions.investment)}</span>
                 </div>
-                <div className="flex justify-between text-sm font-medium pt-2 border-t">
-                  <span className="text-gray-900">Total Tax Credit:</span>
+                <div className="flex justify-between text-body-regular font-medium pt-2 border-t">
+                  <span className="text-slate-900">Total Tax Credit:</span>
                   <span className="text-green-600">{formatCurrency(analysisData.taxImplications.taxCredits.total)}</span>
                 </div>
               </div>

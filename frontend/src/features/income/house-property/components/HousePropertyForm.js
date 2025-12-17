@@ -261,16 +261,16 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
       {showCalculator && calculatorPropertyIndex !== null && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white border-b border-slate-200 p-4 flex items-center justify-between">
               <h3 className="text-heading-md text-gray-800">Pre-construction Interest Calculator</h3>
               <button
                 onClick={() => {
                   setShowCalculator(false);
                   setCalculatorPropertyIndex(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-slate-400 hover:text-slate-600"
               >
-                <span className="text-2xl">&times;</span>
+                <span className="text-heading-2">&times;</span>
               </button>
             </div>
             <div className="p-6">
@@ -407,10 +407,10 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
       />
 
       <div className="flex items-center justify-between">
-        <h4 className="font-semibold text-gray-900">House Properties</h4>
+        <h4 className="font-semibold text-slate-900">House Properties</h4>
         <button
           onClick={addProperty}
-          className="flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="flex items-center px-3 py-1.5 text-body-regular bg-blue-600 text-white rounded-xl hover:bg-blue-700"
         >
           <Plus className="w-4 h-4 mr-1" />
           Add Property
@@ -418,11 +418,11 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
       </div>
 
       {properties.length === 0 ? (
-        <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-gray-500">No properties added yet</p>
+        <div className="text-center py-8 bg-slate-50 rounded-xl border border-slate-200">
+          <p className="text-slate-500">No properties added yet</p>
           <button
             onClick={addProperty}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
           >
             Add Your First Property
           </button>
@@ -430,12 +430,12 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
       ) : (
         <div className="space-y-4">
           {properties.map((property, index) => (
-            <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div key={index} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
-                <h5 className="font-medium text-gray-900">Property #{index + 1}</h5>
+                <h5 className="font-medium text-slate-900">Property #{index + 1}</h5>
                 <button
                   onClick={() => removeProperty(index)}
-                  className="text-red-600 hover:text-red-700"
+                  className="text-error-600 hover:text-error-700"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -455,11 +455,11 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Property Type</label>
                   <select
                     value={property.propertyType || 'self_occupied'}
                     onChange={(e) => updateProperty(index, 'propertyType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   >
                     <option value="self_occupied">Self Occupied</option>
                     <option value="let_out">Let Out</option>
@@ -468,7 +468,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">
                     Annual Rental Income (₹)
                     {property.source && (
                       <SourceChip source={property.source} size="sm" className="ml-2" />
@@ -484,37 +484,37 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                         updateProperty(index, 'isEdited', true);
                       }
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Municipal Taxes Paid (₹)</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Municipal Taxes Paid (₹)</label>
                   <input
                     type="number"
                     value={property.municipalTaxes || 0}
                     onChange={(e) => updateProperty(index, 'municipalTaxes', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Interest on Housing Loan (₹)</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Interest on Housing Loan (₹)</label>
                   <input
                     type="number"
                     value={property.interestOnLoan || 0}
                     onChange={(e) => updateProperty(index, 'interestOnLoan', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-sm font-medium text-gray-700">Pre-construction Interest (₹)</label>
+                    <label className="block text-body-regular font-medium text-slate-700">Pre-construction Interest (₹)</label>
                     <button
                       type="button"
                       onClick={() => openCalculator(index)}
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+                      className="flex items-center gap-1 text-body-small text-blue-600 hover:text-blue-700"
                     >
                       <Calculator className="w-3 h-3" />
                       Calculate
@@ -524,12 +524,12 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                     type="number"
                     value={property.preConstructionInterest || 0}
                     onChange={(e) => updateProperty(index, 'preConstructionInterest', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Property Address</label>
+                  <label className="block text-body-regular font-medium text-slate-700 mb-1">Property Address</label>
                   <textarea
                     value={property.propertyAddress || ''}
                     onChange={(e) => {
@@ -540,7 +540,7 @@ const HousePropertyForm = ({ filingId, data, onUpdate, selectedITR, onDataUpload
                       }
                     }}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                     placeholder="Enter property address"
                   />
                 </div>

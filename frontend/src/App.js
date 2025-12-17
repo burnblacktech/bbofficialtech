@@ -36,6 +36,8 @@ const MobileVerification = lazy(() => import('./pages/Auth/MobileVerification'))
 const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/Auth/ResetPassword'));
 const GoogleOAuthSuccess = lazy(() => import('./pages/Auth/GoogleOAuthSuccess'));
+const GoogleOAuthError = lazy(() => import('./pages/Auth/GoogleOAuthError'));
+const GoogleOAuthLinkRequired = lazy(() => import('./pages/Auth/GoogleOAuthLinkRequired'));
 
 // CA Registration components
 const RegisterCAFirm = lazy(() => import('./pages/CA/RegisterCAFirm'));
@@ -203,6 +205,22 @@ const AppContent = () => {
           element={
             <Suspense fallback={<RouteLoader message="Processing authentication..." />}>
               <GoogleOAuthSuccess />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/auth/google/error"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading authentication error..." />}>
+              <GoogleOAuthError />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/auth/google/link-required"
+          element={
+            <Suspense fallback={<RouteLoader message="Loading account linking..." />}>
+              <GoogleOAuthLinkRequired />
             </Suspense>
           }
         />

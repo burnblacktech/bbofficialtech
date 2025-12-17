@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import Modal from '../../common/Modal';
-import Button from '../../common/Button';
+import Button from '../../DesignSystem/components/Button';
 import { AlertTriangle } from 'lucide-react';
 
 const ConfirmDialog = ({
@@ -53,7 +53,7 @@ const ConfirmDialog = ({
         )}
 
         {description && (
-          <p className="text-body-md text-gray-700 mb-6 text-center" style={{ fontSize: '14px', lineHeight: '22px' }}>
+          <p className="text-body-md text-slate-700 mb-6 text-center" style={{ fontSize: '14px', lineHeight: '22px' }}>
             {description}
           </p>
         )}

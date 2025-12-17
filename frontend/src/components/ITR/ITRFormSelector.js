@@ -143,11 +143,11 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
 
   if (isAnalyzing) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <Loader className="w-8 h-8 animate-spin text-gold-500 mx-auto mb-4" />
-            <p className="text-gray-600">Analyzing profile to recommend ITR form...</p>
+            <p className="text-slate-600">Analyzing profile to recommend ITR form...</p>
           </div>
         </div>
       </div>
@@ -155,31 +155,31 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+    <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">ITR Form Selection</h3>
-          <p className="text-sm text-gray-600">Select the appropriate ITR form for filing</p>
+          <h3 className="text-heading-4 font-semibold text-slate-900">ITR Form Selection</h3>
+          <p className="text-body-regular text-slate-600">Select the appropriate ITR form for filing</p>
         </div>
         {recommendation && recommendation.confidence > 0.8 && (
           <div className="flex items-center text-success-600">
             <CheckCircle className="w-5 h-5 mr-1" />
-            <span className="text-sm font-medium">Auto-Selected</span>
+            <span className="text-body-regular font-medium">Auto-Selected</span>
           </div>
         )}
       </div>
 
       {/* Recommendation Banner */}
       {recommendation && (
-        <div className="bg-info-50 rounded-lg p-4 mb-4 border border-info-100">
+        <div className="bg-info-50 rounded-xl p-4 mb-4 border border-info-100">
           <div className="flex items-start space-x-3">
             <Info className="h-5 w-5 text-info-500 mt-0.5" />
             <div className="flex-1">
               <h4 className="font-semibold text-info-900 mb-1">
                 Recommended: {recommendation.recommendedITR}
               </h4>
-              <p className="text-sm text-info-700 mb-2">{recommendation.reason}</p>
-              <div className="flex items-center space-x-4 text-xs text-info-600">
+              <p className="text-body-regular text-info-700 mb-2">{recommendation.reason}</p>
+              <div className="flex items-center space-x-4 text-body-small text-info-600">
                 <span>Confidence: {Math.round(recommendation.confidence * 100)}%</span>
               </div>
             </div>
@@ -189,8 +189,8 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
 
       {/* Error State */}
       {error && (
-        <div className="bg-error-50 rounded-lg p-4 mb-4 border border-error-100">
-          <p className="text-sm text-error-700">{error}</p>
+        <div className="bg-error-50 rounded-xl p-4 mb-4 border border-error-100">
+          <p className="text-body-regular text-error-700">{error}</p>
         </div>
       )}
 
@@ -206,29 +206,29 @@ const ITRFormSelector = ({ selectedPerson, verificationResult, onITRSelect, init
               key={itrType}
               onClick={() => handleITRSelect(itrType)}
               className={`
-                p-4 rounded-lg border-2 transition-all text-left
+                p-4 rounded-xl border-2 transition-all text-left
                 ${isSelected
-                  ? 'border-gold-500 bg-gold-50 shadow-md'
-                  : 'border-gray-200 hover:border-gray-300 bg-white'
+                  ? 'border-gold-500 bg-gold-50 shadow-elevation-2'
+                  : 'border-slate-200 hover:border-slate-300 bg-white'
                 }
                 ${isRecommended && !isSelected ? 'ring-2 ring-info-200' : ''}
               `}
             >
-              <div className={`w-10 h-10 ${getITRColor(itrType)} rounded-lg flex items-center justify-center mb-3`}>
+              <div className={`w-10 h-10 ${getITRColor(itrType)} rounded-xl flex items-center justify-center mb-3`}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
-              <h4 className="font-semibold text-gray-900 mb-1">{itrType}</h4>
-              <p className="text-xs text-gray-600 mb-2">
+              <h4 className="font-semibold text-slate-900 mb-1">{itrType}</h4>
+              <p className="text-body-small text-slate-600 mb-2">
                 {itrDescriptions[itrType]?.shortDescription || 'Income Tax Return'}
               </p>
               {isSelected && (
-                <div className="flex items-center text-gold-600 text-xs">
+                <div className="flex items-center text-gold-600 text-body-small">
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Selected
                 </div>
               )}
               {isRecommended && !isSelected && (
-                <div className="flex items-center text-info-600 text-xs">
+                <div className="flex items-center text-info-600 text-body-small">
                   <Info className="w-3 h-3 mr-1" />
                   Recommended
                 </div>

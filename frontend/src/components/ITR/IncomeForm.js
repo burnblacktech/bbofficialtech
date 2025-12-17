@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
-import Button from '../UI/Button';
+import Button from '../DesignSystem/components/Button';
 import Card from '../common/Card';
 import Tooltip from '../common/Tooltip';
 import { enterpriseLogger } from '../../utils/logger';
@@ -547,10 +547,10 @@ const IncomeForm = ({ data = {}, onChange, onNext, onPrevious, itrType = 'ITR1' 
         </div>
 
         {Object.keys(errors).length > 0 && (
-          <div className="validation-errors bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+          <div className="validation-errors bg-error-50 border border-red-200 rounded-xl p-4 mt-4">
             <h4 className="font-semibold text-red-800 mb-2">Validation Errors:</h4>
             {Object.entries(errors).map(([key, error]) => (
-              <div key={key} className="error-message text-red-700 text-sm mb-1 flex items-start">
+              <div key={key} className="error-message text-error-700 text-body-regular mb-1 flex items-start">
                 <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
                 <span>{error}</span>
               </div>

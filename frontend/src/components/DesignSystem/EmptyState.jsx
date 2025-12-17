@@ -17,7 +17,7 @@ import {
   Upload,
   AlertTriangle,
 } from 'lucide-react';
-import Button from '../common/Button';
+import Button from './components/Button';
 import { cn } from '../../lib/utils';
 
 const VARIANT_CONFIG = {
@@ -37,8 +37,8 @@ const VARIANT_CONFIG = {
     description: 'We encountered an error while loading the data.',
     colors: {
       icon: 'text-red-400',
-      title: 'text-red-600',
-      description: 'text-red-500',
+      title: 'text-error-600',
+      description: 'text-error-500',
     },
   },
   loading: {
@@ -110,7 +110,7 @@ const EmptyState = ({
       >
         {Icon && (
           <div className={cn('mb-4', size === 'lg' && 'mb-5')}>
-            <Icon className={cn('text-gray-300', iconSize[size])} aria-hidden="true" />
+            <Icon className={cn('text-slate-300', iconSize[size])} aria-hidden="true" />
           </div>
         )}
 
@@ -134,7 +134,7 @@ const EmptyState = ({
         {description && (
           <p
             className={cn(
-              'text-body-md text-gray-500 max-w-sm mb-6',
+              'text-body-md text-slate-500 max-w-sm mb-6',
               size === 'sm' && 'text-body-sm',
             )}
             style={{
@@ -212,7 +212,7 @@ const EmptyState = ({
           {action && (
             <motion.button
               onClick={action}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -223,7 +223,7 @@ const EmptyState = ({
           {secondaryAction && (
             <motion.button
               onClick={secondaryAction}
-              className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

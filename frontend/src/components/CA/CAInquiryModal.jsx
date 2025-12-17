@@ -161,7 +161,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
               </div>
               <button
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500 transition-colors"
+                className="text-slate-400 hover:text-slate-500 transition-colors"
                 aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
@@ -169,16 +169,16 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* CA Firm Name */}
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-body-sm text-gray-600">To:</p>
-              <p className="text-body-md font-medium text-gray-900">{firmName}</p>
+            <div className="mb-4 p-3 bg-slate-50 rounded-xl">
+              <p className="text-body-sm text-slate-600">To:</p>
+              <p className="text-body-md font-medium text-slate-900">{firmName}</p>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Inquiry Type */}
               <div>
-                <label htmlFor="inquiryType" className="block text-body-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="inquiryType" className="block text-body-sm font-medium text-slate-700 mb-2">
                   Inquiry Type
                 </label>
                 <select
@@ -186,7 +186,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                   ref={firstInputRef}
                   value={inquiryType}
                   onChange={(e) => setInquiryType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 >
                   <option value="general">General Inquiry</option>
                   <option value="itr_filing">ITR Filing Help</option>
@@ -199,7 +199,7 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
               {/* Filing ID (optional) */}
               {inquiryType === 'itr_filing' && (
                 <div>
-                  <label htmlFor="filingId" className="block text-body-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="filingId" className="block text-body-sm font-medium text-slate-700 mb-2">
                     Filing ID (Optional)
                   </label>
                   <input
@@ -208,14 +208,14 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                     value={filingId}
                     onChange={(e) => setFilingId(e.target.value)}
                     placeholder="Enter filing ID if related to specific filing"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   />
                 </div>
               )}
 
               {/* Message */}
               <div>
-                <label htmlFor="message" className="block text-body-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="message" className="block text-body-sm font-medium text-slate-700 mb-2">
                   Message <span className="text-error-500">*</span>
                 </label>
                 <textarea
@@ -224,16 +224,16 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Describe your inquiry or question..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                   required
                 />
-                <p className="mt-1 text-body-xs text-gray-500">
+                <p className="mt-1 text-body-xs text-slate-500">
                   {message.length}/1000 characters
                 </p>
               </div>
 
               {/* Info Box */}
-              <div className="bg-info-50 border border-info-200 rounded-lg p-3">
+              <div className="bg-info-50 border border-info-200 rounded-xl p-3">
                 <div className="flex items-start">
                   <AlertCircle className="h-4 w-4 text-info-600 mt-0.5 mr-2 flex-shrink-0" />
                   <div className="text-body-xs text-info-800">
@@ -252,14 +252,14 @@ const CAInquiryModal = ({ firmId, firmName, isOpen, onClose, onSubmit }) => {
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 text-body-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-body-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={sendInquiryMutation.isPending || !message.trim()}
-                  className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-lg hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-body-sm font-medium text-white bg-gold-500 rounded-xl hover:bg-gold-600 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sendInquiryMutation.isPending ? (
                     <>

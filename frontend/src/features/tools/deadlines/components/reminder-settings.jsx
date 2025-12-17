@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Bell, X } from 'lucide-react';
 import { useCreateReminder, useUpdateReminder, useDeleteReminder } from '../hooks/use-deadlines';
-import Button from '../../../../components/common/Button';
+import Button from '../../../../components/DesignSystem/components/Button';
 
 const ReminderSettings = ({ deadlineId, onClose }) => {
   const [reminderDays, setReminderDays] = useState([7, 3, 1]);
@@ -49,15 +49,15 @@ const ReminderSettings = ({ deadlineId, onClose }) => {
   ];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-white border border-slate-200 rounded-xl p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Bell className="w-5 h-5 text-gold-600" />
-          <h4 className="font-semibold text-gray-900">Reminder Settings</h4>
+          <h4 className="font-semibold text-slate-900">Reminder Settings</h4>
         </div>
         <button
           onClick={onClose}
-          className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-1 hover:bg-slate-100 rounded-xl transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -72,13 +72,13 @@ const ReminderSettings = ({ deadlineId, onClose }) => {
               onChange={(e) => setEnabled(e.target.checked)}
               className="w-4 h-4 text-gold-600 rounded focus:ring-2 focus:ring-gold-500"
             />
-            <span className="text-sm font-medium text-gray-700">Enable reminders</span>
+            <span className="text-body-regular font-medium text-slate-700">Enable reminders</span>
           </label>
         </div>
 
         {enabled && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-body-regular font-medium text-slate-700 mb-2">
               Remind me (days before deadline):
             </label>
             <div className="flex flex-wrap gap-2">
@@ -86,10 +86,10 @@ const ReminderSettings = ({ deadlineId, onClose }) => {
                 <button
                   key={option.value}
                   onClick={() => toggleDay(option.value)}
-                  className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                  className={`px-3 py-1 text-sm rounded-xl transition-colors ${
                     reminderDays.includes(option.value)
                       ? 'bg-gold-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   {option.label}
@@ -97,7 +97,7 @@ const ReminderSettings = ({ deadlineId, onClose }) => {
               ))}
             </div>
             {reminderDays.length === 0 && (
-              <p className="text-xs text-red-600 mt-1">Select at least one reminder day</p>
+              <p className="text-body-small text-error-600 mt-1">Select at least one reminder day</p>
             )}
           </div>
         )}

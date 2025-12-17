@@ -218,7 +218,7 @@ const BreathingGrid = ({
           animate={{ y: 0, opacity: 1 }}
           transition={shouldReduceMotion ? { duration: 0 } : SPRING.snappy}
         >
-          <div className="bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
+          <div className="bg-white/95 backdrop-blur-xl border-b border-slate-200/50 shadow-elevation-1">
             <div
               ref={glanceBarRef}
               className="flex items-center gap-2 h-16 px-4 overflow-x-auto hide-scrollbar"

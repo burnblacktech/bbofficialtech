@@ -81,7 +81,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
       medium: 'text-warning-600 bg-warning-100',
       high: 'text-error-600 bg-error-100',
     };
-    return colors[risk] || 'text-gray-600 bg-gray-100';
+    return colors[risk] || 'text-slate-600 bg-slate-100';
   };
 
   /**
@@ -93,7 +93,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
       medium: 'text-warning-600 bg-warning-100',
       low: 'text-success-600 bg-success-100',
     };
-    return colors[urgency] || 'text-gray-600 bg-gray-100';
+    return colors[urgency] || 'text-slate-600 bg-slate-100';
   };
 
   if (isGenerating) {
@@ -102,10 +102,10 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
         <div className="text-center space-y-4">
           <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">
               Generating Personalized Recommendations
             </h3>
-            <p className="text-gray-600">
+            <p className="text-slate-600">
               Our AI is analyzing your profile and finding the best tax-saving options...
             </p>
           </div>
@@ -129,17 +129,17 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-heading-3 font-semibold text-slate-900 mb-2">
             💡 AI-Powered Tax Saving Recommendations
           </h3>
-          <p className="text-gray-600">
+          <p className="text-slate-600">
             Get personalized suggestions to maximize your tax savings based on your profile and risk appetite
           </p>
         </div>
 
         {/* Risk Profile Selector */}
         <div className="max-w-md mx-auto">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-body-regular font-medium text-slate-700 mb-2">
             Your Risk Profile
           </label>
           <Select
@@ -148,7 +148,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
             options={riskProfiles}
             className="w-full"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-body-small text-slate-500 mt-1">
             {riskProfiles.find(rp => rp.value === selectedRiskProfile)?.description}
           </p>
         </div>
@@ -171,31 +171,31 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
         <>
           {/* Summary */}
           <Card className="p-6 bg-success-50 border-success-200">
-            <h4 className="text-lg font-semibold text-success-900 mb-4">📊 Tax Saving Summary</h4>
+            <h4 className="text-heading-4 font-semibold text-success-900 mb-4">📊 Tax Saving Summary</h4>
             <div className="grid md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-success-900">
+                <div className="text-heading-2 font-bold text-success-900">
                   {recommendations.summary?.totalRecommendations || 0}
                 </div>
-                <div className="text-sm text-success-700">Recommendations</div>
+                <div className="text-body-regular text-success-700">Recommendations</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-success-900">
+                <div className="text-heading-2 font-bold text-success-900">
                   {formatCurrency(recommendations.summary?.totalInvestmentSuggested || 0)}
                 </div>
-                <div className="text-sm text-success-700">Total Investment</div>
+                <div className="text-body-regular text-success-700">Total Investment</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-success-900">
+                <div className="text-heading-2 font-bold text-success-900">
                   {formatCurrency(recommendations.taxSavings?.total || 0)}
                 </div>
-                <div className="text-sm text-success-700">Tax Savings</div>
+                <div className="text-body-regular text-success-700">Tax Savings</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-success-900">
+                <div className="text-heading-2 font-bold text-success-900">
                   {recommendations.deadline?.daysLeft || 0}
                 </div>
-                <div className="text-sm text-success-700">Days Left</div>
+                <div className="text-body-regular text-success-700">Days Left</div>
               </div>
             </div>
 
@@ -214,16 +214,16 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
           {/* Recommendations List */}
           <div className="space-y-4">
             {recommendations.recommendations.map((recommendation, index) => (
-              <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
+              <Card key={index} className="p-6 hover:shadow-elevation-3 transition-shadow">
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                   <div className="flex-1 space-y-4">
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div>
-                        <h4 className="text-lg font-semibold text-gray-900">
+                        <h4 className="text-heading-4 font-semibold text-slate-900">
                           {recommendation.name}
                         </h4>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-body-regular text-slate-600 mt-1">
                           {recommendation.description}
                         </p>
                       </div>
@@ -240,40 +240,40 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
                     {/* Key Details */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Section:</span>
-                          <span className="font-medium text-gray-900">{recommendation.section}</span>
+                        <div className="flex justify-between text-body-regular">
+                          <span className="text-slate-600">Section:</span>
+                          <span className="font-medium text-slate-900">{recommendation.section}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Suggested Amount:</span>
-                          <span className="font-medium text-gray-900">
+                        <div className="flex justify-between text-body-regular">
+                          <span className="text-slate-600">Suggested Amount:</span>
+                          <span className="font-medium text-slate-900">
                             {formatCurrency(recommendation.suggestedAmount)}
                           </span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Lock-in Period:</span>
-                          <span className="font-medium text-gray-900">
+                        <div className="flex justify-between text-body-regular">
+                          <span className="text-slate-600">Lock-in Period:</span>
+                          <span className="font-medium text-slate-900">
                             {recommendation.lockInPeriod ? `${recommendation.lockInPeriod} years` : 'None'}
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Expected Returns:</span>
-                          <span className="font-medium text-gray-900">
+                        <div className="flex justify-between text-body-regular">
+                          <span className="text-slate-600">Expected Returns:</span>
+                          <span className="font-medium text-slate-900">
                             {recommendation.expectedReturn?.toFixed(1)}%
                           </span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Tax Savings:</span>
+                        <div className="flex justify-between text-body-regular">
+                          <span className="text-slate-600">Tax Savings:</span>
                           <span className="font-medium text-success-600">
                             {formatCurrency(recommendation.expectedSavings?.taxSaved || 0)}
                           </span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Suitability:</span>
-                          <span className="font-medium text-gray-900">
+                        <div className="flex justify-between text-body-regular">
+                          <span className="text-slate-600">Suitability:</span>
+                          <span className="font-medium text-slate-900">
                             {recommendation.suitability?.toFixed(0)}%
                           </span>
                         </div>
@@ -285,7 +285,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
                       {recommendation.pros && (
                         <div>
                           <h5 className="font-medium text-success-900 text-sm mb-2">✅ Pros:</h5>
-                          <ul className="text-sm text-success-700 space-y-1">
+                          <ul className="text-body-regular text-success-700 space-y-1">
                             {recommendation.pros.slice(0, 3).map((pro, i) => (
                               <li key={i} className="flex items-start">
                                 <span className="mr-1">•</span>
@@ -299,7 +299,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
                       {recommendation.cons && (
                         <div>
                           <h5 className="font-medium text-error-900 text-sm mb-2">⚠️ Considerations:</h5>
-                          <ul className="text-sm text-error-700 space-y-1">
+                          <ul className="text-body-regular text-error-700 space-y-1">
                             {recommendation.cons.slice(0, 3).map((con, i) => (
                               <li key={i} className="flex items-start">
                                 <span className="mr-1">•</span>
@@ -315,7 +315,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
                     {recommendation.implementation && (
                       <div>
                         <h5 className="font-medium text-primary-900 text-sm mb-2">🔧 How to Implement:</h5>
-                        <ol className="text-sm text-primary-700 space-y-1">
+                        <ol className="text-body-regular text-primary-700 space-y-1">
                           {recommendation.implementation.slice(0, 4).map((step, i) => (
                             <li key={i} className="flex items-start">
                               <span className="mr-2 font-medium">{i + 1}.</span>
@@ -357,7 +357,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
           {/* Tax Breakdown */}
           {recommendations.taxSavings && (
             <Card className="p-6 bg-purple-50 border-purple-200">
-              <h4 className="text-lg font-semibold text-purple-900 mb-4">
+              <h4 className="text-heading-4 font-semibold text-purple-900 mb-4">
                 💰 Tax Savings Breakdown by Section
               </h4>
               <div className="space-y-3">
@@ -374,7 +374,7 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
                         <div className="font-bold text-primary-900">
                           {formatCurrency(amount)}
                         </div>
-                        <div className="text-sm text-primary-700">
+                        <div className="text-body-regular text-primary-700">
                           {((amount / recommendations.taxSavings.total) * 100).toFixed(1)}% of total
                         </div>
                       </div>
@@ -388,15 +388,15 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-4 h-4 bg-primary-600 rounded-full"></div>
-                    <span className="font-bold text-primary-900 text-lg">
+                    <span className="font-bold text-primary-900 text-body-large">
                       Total Tax Savings
                     </span>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-primary-900 text-lg">
+                    <div className="font-bold text-primary-900 text-body-large">
                       {formatCurrency(recommendations.taxSavings.total)}
                     </div>
-                    <div className="text-sm text-primary-700">
+                    <div className="text-body-regular text-primary-700">
                       {(recommendations.summary?.totalInvestmentSuggested > 0 &&
                         ((recommendations.taxSavings.total / recommendations.summary.totalInvestmentSuggested) * 100).toFixed(1))}%
                       effective tax saving rate
@@ -409,36 +409,36 @@ const TaxSavingsRecommendations = ({ userProfile, currentInvestments, onRecommen
 
           {/* Next Steps */}
           <Card className="p-6 bg-info-50 border-info-200">
-            <h4 className="text-lg font-semibold text-info-900 mb-4">
+            <h4 className="text-heading-4 font-semibold text-info-900 mb-4">
               📅 Next Steps
             </h4>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-body-regular font-medium">1</span>
                 <div>
-                  <p className="text-sm text-info-800 font-medium">Choose Your Investments</p>
-                  <p className="text-sm text-info-700">Select from the recommendations above based on your risk profile and financial goals</p>
+                  <p className="text-body-regular text-info-800 font-medium">Choose Your Investments</p>
+                  <p className="text-body-regular text-info-700">Select from the recommendations above based on your risk profile and financial goals</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-body-regular font-medium">2</span>
                 <div>
-                  <p className="text-sm text-info-800 font-medium">Complete KYC and Documentation</p>
-                  <p className="text-sm text-info-700">Ensure all required documents are ready for the investment process</p>
+                  <p className="text-body-regular text-info-800 font-medium">Complete KYC and Documentation</p>
+                  <p className="text-body-regular text-info-700">Ensure all required documents are ready for the investment process</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-body-regular font-medium">3</span>
                 <div>
-                  <p className="text-sm text-info-800 font-medium">Invest Before Deadline</p>
-                  <p className="text-sm text-info-700">Complete investments before March 31st to claim deductions for this year</p>
+                  <p className="text-body-regular text-info-800 font-medium">Invest Before Deadline</p>
+                  <p className="text-body-regular text-info-700">Complete investments before March 31st to claim deductions for this year</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-body-regular font-medium">4</span>
                 <div>
-                  <p className="text-sm text-info-800 font-medium">Save All Documents</p>
-                  <p className="text-sm text-info-700">Keep investment proofs and receipts for ITR filing and future reference</p>
+                  <p className="text-body-regular text-info-800 font-medium">Save All Documents</p>
+                  <p className="text-body-regular text-info-700">Keep investment proofs and receipts for ITR filing and future reference</p>
                 </div>
               </div>
             </div>

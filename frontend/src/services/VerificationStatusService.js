@@ -148,8 +148,8 @@ class VerificationStatusService {
         },
       };
 
-      // Save to backend
-      await itrService.updateDraft(draftId, { formData: updatedData });
+      // Save to backend - itrService.updateDraft wraps payload as { formData }
+      await itrService.updateDraft(draftId, updatedData);
 
       // Update cache
       const cacheKey = `verification_${draftId}`;

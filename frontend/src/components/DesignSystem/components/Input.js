@@ -10,6 +10,7 @@ const Input = React.forwardRef(({
   label,
   error,
   helperText,
+  success = false,
   required = false,
   disabled = false,
   className = '',
@@ -19,24 +20,31 @@ const Input = React.forwardRef(({
   rightIcon: RightIcon,
   ...props
 }, ref) => {
+  // Support error as boolean or string
+  const errorMessage = typeof error === 'boolean' ? (error ? 'Invalid input' : null) : error;
+  const hasError = !!error;
+  const hasSuccess = !!success;
+
   const baseInputClasses = `
-    w-full px-3 py-2 border rounded-lg transition-all duration-300
-    focus:outline-none focus:ring-2 focus:ring-offset-2
-    ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : 'bg-white'}
+    w-full px-3 py-2 border rounded-xl transition-all duration-300
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+    ${disabled ? 'bg-slate-50 text-slate-500 cursor-not-allowed' : 'bg-white'}
     ${LeftIcon ? 'pl-10' : ''}
     ${RightIcon ? 'pr-10' : ''}
   `;
 
-  const stateClasses = error
-    ? 'border-error-300 focus:border-error-500 focus:ring-error-500 text-error-900 placeholder-error-300'
-    : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500 text-gray-900 placeholder-gray-400';
+  const stateClasses = hasError
+    ? 'border-error-300 focus-visible:border-error-500 focus-visible:ring-error-500 text-error-900 placeholder-error-300'
+    : hasSuccess
+    ? 'border-success-300 focus-visible:border-success-500 focus-visible:ring-success-500 text-slate-900 placeholder-slate-400'
+    : 'border-slate-300 focus-visible:border-gold-500 focus-visible:ring-gold-500 text-slate-900 placeholder-slate-400';
 
   const classes = `${baseInputClasses} ${stateClasses} ${className}`;
 
   const inputElement = (
     <>
       {LeftIcon && (
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">
           <LeftIcon className="h-4 w-4" />
         </div>
       )}
@@ -50,7 +58,7 @@ const Input = React.forwardRef(({
       />
 
       {RightIcon && (
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
           <RightIcon className="h-4 w-4" />
         </div>
       )}
@@ -61,7 +69,7 @@ const Input = React.forwardRef(({
     <div className={`relative ${containerClassName}`}>
       {label && (
         <label className={`block text-sm font-medium mb-1 ${
-          error ? 'text-error-700' : 'text-gray-700'
+          hasError ? 'text-error-700' : hasSuccess ? 'text-success-700' : 'text-slate-700'
         }`}>
           {label}
           {required && <span className="text-error-500 ml-1">*</span>}
@@ -81,11 +89,11 @@ const Input = React.forwardRef(({
         )}
       </div>
 
-      {(error || helperText) && (
+      {(errorMessage || helperText) && (
         <p className={`mt-1 text-sm ${
-          error ? 'text-error-600' : 'text-gray-500'
+          hasError ? 'text-error-600' : hasSuccess ? 'text-success-600' : 'text-slate-500'
         }`}>
-          {error || helperText}
+          {errorMessage || helperText}
         </p>
       )}
     </div>

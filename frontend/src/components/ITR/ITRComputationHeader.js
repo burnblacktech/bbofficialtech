@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { ArrowLeft, Save, Download, FileText, Cloud, CloudOff, AlertCircle, Check } from 'lucide-react';
+import { ArrowLeft, Save, Download, FileText, Cloud, CloudOff, AlertCircle, Check, LogOut, Calculator } from 'lucide-react';
 import { motion } from 'framer-motion';
 import RegimeToggle from './RegimeToggle';
 import ITRToggle from './ITRToggle';
@@ -27,6 +27,8 @@ const ITRComputationHeader = ({
   isSaving,
   isDownloading,
   onSaveDraft,
+  onSaveAndExit,
+  onComputeTax,
   onDownloadJSON,
   onFileReturns,
   currentFiling,
@@ -52,7 +54,7 @@ const ITRComputationHeader = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onBack}
-              className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
+              className="p-1.5 rounded-xl hover:bg-neutral-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
               aria-label="Go back"
             >
               <ArrowLeft className="h-4 w-4 text-neutral-600" />
@@ -63,12 +65,12 @@ const ITRComputationHeader = ({
               </h1>
               {userDisplayName && (
                 <>
-                  <span className="text-neutral-300 text-xs">•</span>
-                  <span className="text-xs font-medium text-neutral-700">{userDisplayName}</span>
+                  <span className="text-neutral-300 text-body-small">•</span>
+                  <span className="text-body-small font-medium text-neutral-700">{userDisplayName}</span>
                 </>
               )}
-              <span className="text-neutral-300 text-xs">•</span>
-              <span className="text-xs font-medium text-neutral-700">{getFinancialYear(assessmentYear)}</span>
+              <span className="text-neutral-300 text-body-small">•</span>
+              <span className="text-body-small font-medium text-neutral-700">{getFinancialYear(assessmentYear)}</span>
             </div>
           </div>
 
@@ -164,10 +166,37 @@ const ITRComputationHeader = ({
                 onClick={onSaveDraft}
                 disabled={isSaving}
                 aria-label={isSaving ? 'Saving draft...' : 'Save draft'}
-                className="px-3 py-1.5 text-xs font-medium bg-gold-500 text-white rounded-lg hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                className="px-3 py-1.5 text-body-small font-medium bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 <Save className="w-3 h-3" />
                 <span className="hidden sm:inline">Save</span>
+              </button>
+            )}
+
+            {/* Save & Exit */}
+            {!isReadOnly && typeof onSaveAndExit === 'function' && (
+              <button
+                onClick={onSaveAndExit}
+                disabled={isSaving}
+                aria-label={isSaving ? 'Saving and exiting...' : 'Save and exit'}
+                className="px-3 py-1.5 text-body-small font-medium bg-neutral-100 text-neutral-700 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <LogOut className="w-3 h-3" />
+                <span className="hidden sm:inline">Save &amp; Exit</span>
+                <span className="sm:hidden">Exit</span>
+              </button>
+            )}
+
+            {/* Compute / Refresh Tax (manual mode) */}
+            {!isReadOnly && typeof onComputeTax === 'function' && (
+              <button
+                onClick={onComputeTax}
+                disabled={isComputingTax}
+                aria-label={isComputingTax ? 'Computing tax...' : 'Compute tax'}
+                className="px-3 py-1.5 text-body-small font-medium bg-neutral-100 text-neutral-700 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <Calculator className="w-3 h-3" />
+                <span className="hidden sm:inline">{isComputingTax ? 'Computing…' : 'Compute'}</span>
               </button>
             )}
 
@@ -185,7 +214,7 @@ const ITRComputationHeader = ({
               onClick={onDownloadJSON}
               disabled={isDownloading}
               aria-label={isDownloading ? 'Downloading JSON...' : 'Download JSON'}
-              className="px-3 py-1.5 text-xs font-medium bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              className="px-3 py-1.5 text-body-small font-medium bg-neutral-100 text-neutral-700 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
             >
               <Download className="w-3 h-3" />
               <span className="hidden sm:inline">JSON</span>
@@ -196,7 +225,7 @@ const ITRComputationHeader = ({
               <button
                 onClick={onFileReturns}
                 aria-label="File ITR returns"
-                className="px-3 py-1.5 text-xs font-medium bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 text-body-small font-medium bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors flex items-center gap-1.5"
               >
                 <FileText className="w-3 h-3" />
                 <span className="hidden sm:inline">File</span>

@@ -158,10 +158,10 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-heading-3 font-semibold text-slate-900 mb-2">
             Upload Form 16 for Auto-Fill
           </h3>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-slate-600 max-w-2xl mx-auto">
             Automatically extract all your income and tax details from Form 16.
             No more manual data entry!
           </p>
@@ -169,10 +169,10 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
         {/* Drag and Drop Area */}
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
             dragActive
               ? 'border-primary-500 bg-primary-50'
-              : 'border-gray-300 hover:border-gray-400'
+              : 'border-slate-300 hover:border-gray-400'
           } ${isUploading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -192,46 +192,46 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
           {isUploading ? (
             <div className="space-y-4">
               <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-sm font-medium text-primary-600">
+              <p className="text-body-regular font-medium text-primary-600">
                 {isExtracting ? 'Extracting data...' : 'Uploading file...'}
               </p>
 
               {/* Upload Progress */}
               {uploadProgress > 0 && !isExtracting && (
                 <div className="space-y-2">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-500">{uploadProgress}%</p>
+                  <p className="text-body-small text-slate-500">{uploadProgress}%</p>
                 </div>
               )}
 
               {/* Extraction Progress */}
               {extractionProgress > 0 && isExtracting && (
                 <div className="space-y-2">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${extractionProgress}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-500">{extractionProgress}%</p>
+                  <p className="text-body-small text-slate-500">{extractionProgress}%</p>
                 </div>
               )}
             </div>
           ) : (
             <div className="space-y-4">
-              <svg className="w-12 h-12 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 text-slate-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <div>
-                <p className="text-lg font-medium text-gray-900">
+                <p className="text-body-large font-medium text-slate-900">
                   Click to upload or drag and drop
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-body-regular text-slate-500">
                   {instructions.acceptedFormats.join(', ')} up to {instructions.maxFileSize}
                 </p>
               </div>
@@ -244,17 +244,17 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
         {/* Error Display */}
         {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="mt-4 bg-error-50 border border-red-200 rounded-xl p-4">
             <div className="flex items-start justify-between">
               <div className="flex items-start">
-                <svg className="w-5 h-5 text-red-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-error-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
-                <p className="text-sm text-red-800">{error}</p>
+                <p className="text-body-regular text-red-800">{error}</p>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="text-red-600 hover:text-red-800 ml-4"
+                className="text-error-600 hover:text-red-800 ml-4"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -267,21 +267,21 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
       {/* Instructions */}
       <Card className="p-6 bg-blue-50 border-blue-200">
-        <h4 className="text-lg font-semibold text-blue-900 mb-4">📋 How It Works</h4>
+        <h4 className="text-heading-4 font-semibold text-blue-900 mb-4">📋 How It Works</h4>
         <div className="space-y-3">
           {instructions.steps.map((step, index) => (
             <div key={index} className="flex items-start space-x-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+              <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-body-regular font-medium">
                 {index + 1}
               </span>
-              <p className="text-sm text-blue-800">{step}</p>
+              <p className="text-body-regular text-blue-800">{step}</p>
             </div>
           ))}
         </div>
 
         <div className="mt-6">
           <h5 className="font-medium text-blue-900 mb-2">💡 Pro Tips:</h5>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <ul className="text-body-regular text-blue-800 space-y-1">
             {instructions.tips.map((tip, index) => (
               <li key={index} className="flex items-start">
                 <span className="mr-2">•</span>
@@ -301,10 +301,10 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
           <Card className="p-6 bg-green-50 border-green-200">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h4 className="text-lg font-semibold text-green-900">
+                <h4 className="text-heading-4 font-semibold text-green-900">
                   ✅ Form 16 Data Extracted Successfully!
                 </h4>
-                <p className="text-sm text-green-700 mt-1">
+                <p className="text-body-regular text-green-700 mt-1">
                   Confidence: {extractedData.validation?.isValid ? 'High' : 'Medium'} ({extractedData.confidence}%)
                 </p>
               </div>
@@ -314,7 +314,7 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div className="space-y-3">
                 <h5 className="font-medium text-green-900">Employer Information</h5>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-body-regular">
                   <div className="flex justify-between">
                     <span className="text-green-700">Name:</span>
                     <span className="font-medium text-green-900">{extractedData.employer.name || 'Not found'}</span>
@@ -332,7 +332,7 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
               <div className="space-y-3">
                 <h5 className="font-medium text-green-900">Employee Information</h5>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-body-regular">
                   <div className="flex justify-between">
                     <span className="text-green-700">Name:</span>
                     <span className="font-medium text-green-900">{extractedData.employee.name || 'Not found'}</span>
@@ -353,7 +353,7 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
             <div className="space-y-4">
               <h5 className="font-medium text-green-900">Financial Summary</h5>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-body-regular">
                   <div className="flex justify-between">
                     <span className="text-green-700">Gross Salary:</span>
                     <span className="font-medium text-green-900">
@@ -374,7 +374,7 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
                   </div>
                 </div>
 
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-body-regular">
                   <div className="flex justify-between">
                     <span className="text-green-700">Total Tax Payable:</span>
                     <span className="font-medium text-green-900">
@@ -419,14 +419,14 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
             {/* Warnings */}
             {extractedData.validation?.warnings && extractedData.validation.warnings.length > 0 && (
-              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                 <div className="flex items-start">
                   <svg className="w-5 h-5 text-yellow-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-yellow-800">Please review the extracted data</p>
-                    <p className="text-xs text-yellow-700 mt-1">{extractedData.validation.warnings.join(', ')}</p>
+                    <p className="text-body-regular font-medium text-yellow-800">Please review the extracted data</p>
+                    <p className="text-body-small text-yellow-700 mt-1">{extractedData.validation.warnings.join(', ')}</p>
                   </div>
                 </div>
               </div>
@@ -434,14 +434,14 @@ const Form16Upload = ({ onExtractionComplete, onAutoPopulate, className = '' }) 
 
             {/* Validation Errors */}
             {extractedData.validation?.errors && extractedData.validation.errors.length > 0 && (
-              <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="mt-4 bg-error-50 border border-red-200 rounded-xl p-4">
                 <div className="flex items-start">
-                  <svg className="w-5 h-5 text-red-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-error-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800">Some data could not be extracted</p>
-                    <p className="text-xs text-red-700 mt-1">{extractedData.validation.errors.join(', ')}</p>
+                    <p className="text-body-regular font-medium text-red-800">Some data could not be extracted</p>
+                    <p className="text-body-small text-error-700 mt-1">{extractedData.validation.errors.join(', ')}</p>
                   </div>
                 </div>
               </div>

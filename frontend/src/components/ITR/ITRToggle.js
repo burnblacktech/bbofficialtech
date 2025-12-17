@@ -78,7 +78,7 @@ const ITRToggle = ({
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200',
+            'flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200',
             'bg-white hover:bg-slate-50 transition-colors',
             'text-sm font-medium text-slate-700',
           )}
@@ -94,7 +94,7 @@ const ITRToggle = ({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-slate-200 z-50 overflow-hidden"
+              className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-elevation-3 border border-slate-200 z-50 overflow-hidden"
             >
               <div className="p-2">
                 {ITR_OPTIONS.map((option) => (
@@ -103,13 +103,13 @@ const ITRToggle = ({
                     type="button"
                     onClick={() => handleITRSelect(option.value)}
                     className={cn(
-                      'w-full text-left px-3 py-2 rounded-md text-sm transition-colors',
+                      'w-full text-left px-3 py-2 rounded-xl text-sm transition-colors',
                       'hover:bg-slate-50',
                       selectedITR === option.value && 'bg-gold-50 text-gold-800 font-medium',
                     )}
                   >
                     <div className="font-medium">{option.label}</div>
-                    <div className="text-xs text-slate-500 mt-0.5">{option.description}</div>
+                    <div className="text-body-small text-slate-500 mt-0.5">{option.description}</div>
                   </button>
                 ))}
               </div>
@@ -126,14 +126,14 @@ const ITRToggle = ({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-900">ITR Type Switch</h3>
+                  <h3 className="text-heading-4 font-bold text-slate-900">ITR Type Switch</h3>
                   <button
                     onClick={handleCancelSwitch}
-                    className="p-1 rounded-lg hover:bg-slate-100"
+                    className="p-1 rounded-xl hover:bg-slate-100"
                   >
                     <X className="w-5 h-5 text-slate-500" />
                   </button>
@@ -141,30 +141,30 @@ const ITRToggle = ({
 
                 {compatibilityResult.isCompatible ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 p-3 rounded-xl">
                       <CheckCircle className="w-5 h-5" />
                       <span className="font-medium">Compatible switch detected</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 border border-slate-200 rounded-lg">
-                        <div className="text-sm text-slate-500 mb-1">Current</div>
+                      <div className="p-4 border border-slate-200 rounded-xl">
+                        <div className="text-body-regular text-slate-500 mb-1">Current</div>
                         <div className="font-semibold text-slate-900">{selectedITR}</div>
                       </div>
-                      <div className="p-4 border border-gold-200 bg-gold-50 rounded-lg">
-                        <div className="text-sm text-gold-600 mb-1">Proposed</div>
+                      <div className="p-4 border border-gold-200 bg-gold-50 rounded-xl">
+                        <div className="text-body-regular text-gold-600 mb-1">Proposed</div>
                         <div className="font-semibold text-gold-800">{proposedITR}</div>
                       </div>
                     </div>
 
                     {compatibilityResult.compatibleFields?.length > 0 && (
                       <div>
-                        <div className="text-sm font-medium text-slate-700 mb-2">Compatible Fields (will be migrated):</div>
+                        <div className="text-body-regular font-medium text-slate-700 mb-2">Compatible Fields (will be migrated):</div>
                         <div className="flex flex-wrap gap-2">
                           {compatibilityResult.compatibleFields.map((field) => (
                             <span
                               key={field}
-                              className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs"
+                              className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-body-small"
                             >
                               {field}
                             </span>
@@ -176,13 +176,13 @@ const ITRToggle = ({
                     <div className="flex gap-3 pt-4">
                       <button
                         onClick={handleConfirmSwitch}
-                        className="flex-1 px-4 py-2 bg-gold-600 text-white rounded-lg font-medium hover:bg-gold-700 transition-colors"
+                        className="flex-1 px-4 py-2 bg-gold-600 text-white rounded-xl font-medium hover:bg-gold-700 transition-colors"
                       >
                         Confirm Switch
                       </button>
                       <button
                         onClick={handleCancelSwitch}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors"
                       >
                         Cancel
                       </button>
@@ -190,23 +190,23 @@ const ITRToggle = ({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-amber-700 bg-amber-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-2 text-amber-700 bg-amber-50 p-3 rounded-xl">
                       <AlertTriangle className="w-5 h-5" />
                       <span className="font-medium">Incompatible switch detected</span>
                     </div>
 
-                    <div className="text-sm text-slate-600">
+                    <div className="text-body-regular text-slate-600">
                       {compatibilityResult.reason || 'Switching to this ITR type may cause data loss.'}
                     </div>
 
                     {compatibilityResult.incompatibleFields?.length > 0 && (
                       <div>
-                        <div className="text-sm font-medium text-slate-700 mb-2">Incompatible Fields (will be cleared):</div>
+                        <div className="text-body-regular font-medium text-slate-700 mb-2">Incompatible Fields (will be cleared):</div>
                         <div className="flex flex-wrap gap-2">
                           {compatibilityResult.incompatibleFields.map((field) => (
                             <span
                               key={field}
-                              className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs"
+                              className="px-2 py-1 bg-error-100 text-error-700 rounded text-body-small"
                             >
                               {field}
                             </span>
@@ -218,13 +218,13 @@ const ITRToggle = ({
                     <div className="flex gap-3 pt-4">
                       <button
                         onClick={handleConfirmSwitch}
-                        className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                        className="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
                       >
                         Switch Anyway
                       </button>
                       <button
                         onClick={handleCancelSwitch}
-                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors"
                       >
                         Cancel
                       </button>

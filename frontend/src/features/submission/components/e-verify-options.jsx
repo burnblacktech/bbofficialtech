@@ -18,7 +18,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useEVerification } from '../hooks/use-e-verification';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 
 const VERIFICATION_METHODS = [
@@ -273,7 +273,7 @@ const EVerifyOptions = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-body-md font-medium text-gray-700 mb-2">
+                  <label className="block text-body-md font-medium text-slate-700 mb-2">
                     Enter OTP
                   </label>
                   <input
@@ -281,7 +281,7 @@ const EVerifyOptions = ({
                     maxLength={6}
                     value={otpValue}
                     onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="000000"
                   />
                   <button
@@ -319,7 +319,7 @@ const EVerifyOptions = ({
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-body-md font-medium text-gray-700 mb-2">
+              <label className="block text-body-md font-medium text-slate-700 mb-2">
                 DP ID
               </label>
               <input
@@ -328,12 +328,12 @@ const EVerifyOptions = ({
                 onChange={(e) =>
                   setDematCredentials({ ...dematCredentials, dpId: e.target.value })
                 }
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 placeholder="Enter DP ID"
               />
             </div>
             <div>
-              <label className="block text-body-md font-medium text-gray-700 mb-2">
+              <label className="block text-body-md font-medium text-slate-700 mb-2">
                 Client ID
               </label>
               <input
@@ -342,7 +342,7 @@ const EVerifyOptions = ({
                 onChange={(e) =>
                   setDematCredentials({ ...dematCredentials, clientId: e.target.value })
                 }
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                 placeholder="Enter Client ID"
               />
             </div>
@@ -368,7 +368,7 @@ const EVerifyOptions = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-body-md font-medium text-gray-700 mb-2">
+                  <label className="block text-body-md font-medium text-slate-700 mb-2">
                     Enter EVC
                   </label>
                   <input
@@ -376,7 +376,7 @@ const EVerifyOptions = ({
                     maxLength={6}
                     value={otpValue}
                     onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="000000"
                   />
                   <button
@@ -393,7 +393,7 @@ const EVerifyOptions = ({
             ) : (
               <>
                 <div>
-                  <label className="block text-body-md font-medium text-gray-700 mb-2">
+                  <label className="block text-body-md font-medium text-slate-700 mb-2">
                     Account Number
                   </label>
                   <input
@@ -402,12 +402,12 @@ const EVerifyOptions = ({
                     onChange={(e) =>
                       setBankEvcDetails({ ...bankEvcDetails, accountNumber: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="Enter account number"
                   />
                 </div>
                 <div>
-                  <label className="block text-body-md font-medium text-gray-700 mb-2">
+                  <label className="block text-body-md font-medium text-slate-700 mb-2">
                     IFSC Code
                   </label>
                   <input
@@ -416,7 +416,7 @@ const EVerifyOptions = ({
                     onChange={(e) =>
                       setBankEvcDetails({ ...bankEvcDetails, ifsc: e.target.value.toUpperCase() })
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
                     placeholder="Enter IFSC code"
                   />
                 </div>
@@ -429,16 +429,16 @@ const EVerifyOptions = ({
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-body-md font-medium text-gray-700 mb-2">
+              <label className="block text-body-md font-medium text-slate-700 mb-2">
                 Upload Digital Signature Certificate
               </label>
               <input
                 type="file"
                 accept=".p12,.pfx"
                 onChange={(e) => setDscFile(e.target.files[0])}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
               />
-              <p className="mt-2 text-body-sm text-gray-500">
+              <p className="mt-2 text-body-sm text-slate-500">
                 Supported formats: .p12, .pfx
               </p>
             </div>
@@ -466,7 +466,7 @@ const EVerifyOptions = ({
         <h3 className="text-heading-md text-gray-800 mb-2">
           Choose Verification Method
         </h3>
-        <p className="text-body-md text-gray-600">
+        <p className="text-body-md text-slate-600">
           Select your preferred method to complete E-verification for ITR submission
         </p>
       </div>
@@ -483,7 +483,7 @@ const EVerifyOptions = ({
               disabled={isProcessing}
               className={`
                 p-4 rounded-xl border-2 transition-all text-left
-                ${isSelected ? `${method.borderColor} ${method.bgColor}` : 'border-gray-200 hover:border-gray-300'}
+                ${isSelected ? `${method.borderColor} ${method.bgColor}` : 'border-slate-200 hover:border-slate-300'}
                 ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
               `}
             >
@@ -493,7 +493,7 @@ const EVerifyOptions = ({
                   <h4 className="text-body-md font-semibold text-gray-800 mb-1">
                     {method.name}
                   </h4>
-                  <p className="text-body-sm text-gray-600">{method.description}</p>
+                  <p className="text-body-sm text-slate-600">{method.description}</p>
                 </div>
                 {isSelected && (
                   <CheckCircle className={`h-5 w-5 ${method.color}`} />
@@ -505,7 +505,7 @@ const EVerifyOptions = ({
       </div>
 
       {selectedMethod && (
-        <div className="mt-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="mt-6 p-6 bg-slate-50 rounded-xl border border-slate-200">
           <h4 className="text-body-md font-semibold text-gray-800 mb-4">
             {VERIFICATION_METHODS.find((m) => m.id === selectedMethod)?.name} Details
           </h4>
@@ -513,7 +513,7 @@ const EVerifyOptions = ({
         </div>
       )}
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
         {onClose && (
           <Button variant="ghost" onClick={onClose} disabled={isProcessing}>
             Cancel

@@ -8,7 +8,7 @@ import { AlertTriangle, Search, Filter, CheckSquare, Square } from 'lucide-react
 import DiscrepancyGroup from './DiscrepancyGroup';
 import AISuggestionCard from './AISuggestionCard';
 import { cn } from '../../../lib/utils';
-import Button from '../../../components/common/Button';
+import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyManager = ({
   discrepancies = [],
@@ -68,7 +68,7 @@ const DiscrepancyManager = ({
           <h3 className="text-heading-lg text-gray-800">
             Data Discrepancies
           </h3>
-          <p className="text-body-md text-gray-600 mt-1">
+          <p className="text-body-md text-slate-600 mt-1">
             {filteredDiscrepancies.length} discrepancy{filteredDiscrepancies.length !== 1 ? 'ies' : ''} found
           </p>
         </div>
@@ -86,20 +86,20 @@ const DiscrepancyManager = ({
       {/* Filters and Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search discrepancies..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
             aria-label="Search discrepancies"
           />
         </div>
         <select
           value={filterSeverity}
           onChange={(e) => setFilterSeverity(e.target.value)}
-          className="border border-gray-200 rounded-lg px-4 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+          className="border border-slate-200 rounded-xl px-4 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by severity"
         >
           <option value="all">All Severities</option>
@@ -110,7 +110,7 @@ const DiscrepancyManager = ({
         <select
           value={filterSection}
           onChange={(e) => setFilterSection(e.target.value)}
-          className="border border-gray-200 rounded-lg px-4 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
+          className="border border-slate-200 rounded-xl px-4 py-2 text-body-md focus:ring-2 focus:ring-gold-500 focus:border-transparent"
           aria-label="Filter by section"
         >
           <option value="all">All Sections</option>
@@ -123,7 +123,7 @@ const DiscrepancyManager = ({
       {/* AI Suggestions */}
       {showSuggestions && suggestions.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-label-md font-semibold text-gray-900">AI-Powered Suggestions</h4>
+          <h4 className="text-label-md font-semibold text-slate-900">AI-Powered Suggestions</h4>
           {suggestions.slice(0, 3).map((suggestion, index) => (
             <AISuggestionCard
               key={index}
@@ -206,8 +206,8 @@ const DiscrepancyManager = ({
 
       {filteredDiscrepancies.length === 0 && (
         <div className="text-center py-8">
-          <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-gray-400" aria-hidden="true" />
-          <p className="text-body-md text-gray-600">No discrepancies found matching your filters</p>
+          <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-slate-400" aria-hidden="true" />
+          <p className="text-body-md text-slate-600">No discrepancies found matching your filters</p>
         </div>
       )}
     </div>

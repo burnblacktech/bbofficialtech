@@ -237,39 +237,39 @@ const Section80GG = ({ filingId, onUpdate }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-heading-lg text-gray-900 mb-1">Section 80GG - Rent Paid</h3>
-            <p className="text-body-sm text-gray-600">
+            <h3 className="text-heading-lg text-slate-900 mb-1">Section 80GG - Rent Paid</h3>
+            <p className="text-body-sm text-slate-600">
               For individuals not receiving HRA (Max: ₹60,000 or lower of formula)
             </p>
           </div>
           <div className="text-right">
-            <div className="text-body-xs text-gray-500 mb-1">Total Claimed</div>
+            <div className="text-body-xs text-slate-500 mb-1">Total Claimed</div>
             <div className="text-heading-xl font-bold text-gold-600">
               ₹{totalAmount.toLocaleString('en-IN')}
             </div>
-            <div className="text-body-xs text-gray-500 mt-1">Limit: ₹60,000</div>
+            <div className="text-body-xs text-slate-500 mt-1">Limit: ₹60,000</div>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-4 bg-gray-50 rounded-lg p-4">
+        <div className="mt-4 bg-slate-50 rounded-xl p-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-body-sm font-medium text-gray-700">Utilization</span>
-            <span className="text-heading-sm font-bold text-gray-900">
+            <span className="text-body-sm font-medium text-slate-700">Utilization</span>
+            <span className="text-heading-sm font-bold text-slate-900">
               ₹{totalAmount.toLocaleString('en-IN')} / ₹{limit.toLocaleString('en-IN')}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 rounded-full h-2">
             <div
               className="bg-gold-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${utilizationPercentage}%` }}
             />
           </div>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-body-xs text-gray-600">{utilizationPercentage.toFixed(1)}% utilized</span>
+            <span className="text-body-xs text-slate-600">{utilizationPercentage.toFixed(1)}% utilized</span>
             <span className="text-body-xs text-green-600 font-medium">
               ₹{remainingLimit.toLocaleString('en-IN')} remaining
             </span>
@@ -277,7 +277,7 @@ const Section80GG = ({ filingId, onUpdate }) => {
         </div>
 
         {/* Important Note */}
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
           <div className="flex items-start gap-2">
             <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
             <div className="text-body-xs text-blue-800">
@@ -291,9 +291,9 @@ const Section80GG = ({ filingId, onUpdate }) => {
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-heading-md text-gray-900">
+            <h4 className="text-heading-md text-slate-900">
               {editingDeduction ? 'Edit Rent Details' : 'Add Rent Details'}
             </h4>
             <button
@@ -301,7 +301,7 @@ const Section80GG = ({ filingId, onUpdate }) => {
                 resetForm();
                 setShowAddForm(false);
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-slate-500 hover:text-slate-700"
             >
               ✕
             </button>
@@ -310,48 +310,48 @@ const Section80GG = ({ filingId, onUpdate }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Rent Paid (₹) *
                 </label>
                 <input
                   type="number"
                   value={formData.rentPaid}
                   onChange={(e) => setFormData({ ...formData, rentPaid: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.rentPaid ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.rentPaid ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="0"
                 />
                 {formErrors.rentPaid && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.rentPaid}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.rentPaid}</p>
                 )}
                 {parseFloat(formData.rentPaid) > 100000 && (
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-body-small text-blue-600 mt-1">
                     Landlord PAN required for rent &gt; ₹1,00,000/year
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Landlord Name *
                 </label>
                 <input
                   type="text"
                   value={formData.landlordName}
                   onChange={(e) => setFormData({ ...formData, landlordName: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.landlordName ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.landlordName ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Landlord's full name"
                 />
                 {formErrors.landlordName && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.landlordName}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.landlordName}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Landlord PAN {parseFloat(formData.rentPaid) > 100000 && '*'}
                 </label>
                 <input
@@ -361,31 +361,31 @@ const Section80GG = ({ filingId, onUpdate }) => {
                     setFormData({ ...formData, landlordPan: e.target.value.toUpperCase() })
                   }
                   maxLength={10}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.landlordPan ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.landlordPan ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="ABCDE1234F"
                 />
                 {formErrors.landlordPan && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.landlordPan}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.landlordPan}</p>
                 )}
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-body-regular font-medium text-slate-700 mb-1">
                   Property Address *
                 </label>
                 <textarea
                   value={formData.propertyAddress}
                   onChange={(e) => setFormData({ ...formData, propertyAddress: e.target.value })}
                   rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 ${
-                    formErrors.propertyAddress ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 ${
+                    formErrors.propertyAddress ? 'border-error-500' : 'border-slate-300'
                   }`}
                   placeholder="Complete address of the rented property"
                 />
                 {formErrors.propertyAddress && (
-                  <p className="text-xs text-red-500 mt-1">{formErrors.propertyAddress}</p>
+                  <p className="text-body-small text-error-500 mt-1">{formErrors.propertyAddress}</p>
                 )}
               </div>
             </div>
@@ -397,14 +397,14 @@ const Section80GG = ({ filingId, onUpdate }) => {
                   resetForm();
                   setShowAddForm(false);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={addDeductionMutation.isPending || updateDeductionMutation.isPending}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600 disabled:opacity-50"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 disabled:opacity-50"
               >
                 {editingDeduction ? 'Update' : 'Add'} Rent Details
               </button>
@@ -417,10 +417,10 @@ const Section80GG = ({ filingId, onUpdate }) => {
       {!showAddForm && (
         <>
           <div className="flex justify-between items-center">
-            <h4 className="text-heading-md text-gray-900">Your Rent Details</h4>
+            <h4 className="text-heading-md text-slate-900">Your Rent Details</h4>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+              className="flex items-center gap-2 px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
             >
               <Plus className="w-4 h-4" />
               Add Rent Details
@@ -428,12 +428,12 @@ const Section80GG = ({ filingId, onUpdate }) => {
           </div>
 
           {deductions.length === 0 ? (
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 text-center">
-              <Home className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 mb-4">No rent details added yet</p>
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-8 text-center">
+              <Home className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <p className="text-slate-600 mb-4">No rent details added yet</p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-4 py-2 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
               >
                 Add Rent Details
               </button>
@@ -443,16 +443,16 @@ const Section80GG = ({ filingId, onUpdate }) => {
               {deductions.map((deduction) => (
                 <div
                   key={deduction.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                  className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h5 className="text-heading-sm font-semibold text-gray-900">
+                        <h5 className="text-heading-sm font-semibold text-slate-900">
                           {deduction.propertyAddress}
                         </h5>
                       </div>
-                      <div className="text-body-sm text-gray-600 space-y-1">
+                      <div className="text-body-sm text-slate-600 space-y-1">
                         <p>Rent Paid: ₹{deduction.rentPaid?.toLocaleString('en-IN')}</p>
                         <p>Landlord: {deduction.landlordName}</p>
                         {deduction.landlordPan && <p>PAN: {deduction.landlordPan}</p>}
@@ -466,17 +466,17 @@ const Section80GG = ({ filingId, onUpdate }) => {
                           onChange={(e) => handleProofUpload(e, deduction.id)}
                           className="hidden"
                         />
-                        <Upload className="w-5 h-5 text-gray-500 hover:text-gold-500" />
+                        <Upload className="w-5 h-5 text-slate-500 hover:text-gold-500" />
                       </label>
                       <button
                         onClick={() => handleEdit(deduction)}
-                        className="p-1 text-gray-500 hover:text-gold-500"
+                        className="p-1 text-slate-500 hover:text-gold-500"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(deduction.id)}
-                        className="p-1 text-gray-500 hover:text-red-500"
+                        className="p-1 text-slate-500 hover:text-error-500"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>

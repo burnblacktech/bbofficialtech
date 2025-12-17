@@ -83,18 +83,18 @@ const ValidatedSelect = ({
   };
 
   const getSelectClassName = () => {
-    const baseClasses = 'w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors appearance-none cursor-pointer';
+    const baseClasses = 'w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 transition-colors appearance-none cursor-pointer';
 
     if (disabled) {
-      return `${baseClasses} bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed`;
+      return `${baseClasses} bg-slate-100 border-slate-300 text-slate-500 cursor-not-allowed`;
     }
 
     if (!validationState.isTouched) {
-      return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
+      return `${baseClasses} border-slate-300 focus:ring-gold-500 focus:border-gold-500`;
     }
 
     if (validationState.errors.length > 0) {
-      return `${baseClasses} border-red-300 focus:ring-red-500 focus:border-red-500`;
+      return `${baseClasses} border-error-300 focus:ring-red-500 focus:border-error-500`;
     }
 
     if (validationState.warnings.length > 0) {
@@ -105,7 +105,7 @@ const ValidatedSelect = ({
       return `${baseClasses} border-green-300 focus:ring-green-500 focus:border-green-500`;
     }
 
-    return `${baseClasses} border-gray-300 focus:ring-gold-500 focus:border-gold-500`;
+    return `${baseClasses} border-slate-300 focus:ring-gold-500 focus:border-gold-500`;
   };
 
   const getValidationIcon = () => {
@@ -114,11 +114,11 @@ const ValidatedSelect = ({
     }
 
     if (!validationState.isTouched || !value) {
-      return <ChevronDown className="w-4 h-4 text-gray-400" />;
+      return <ChevronDown className="w-4 h-4 text-slate-400" />;
     }
 
     if (validationState.errors.length > 0) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
+      return <AlertCircle className="w-4 h-4 text-error-500" />;
     }
 
     if (validationState.warnings.length > 0) {
@@ -129,7 +129,7 @@ const ValidatedSelect = ({
       return <CheckCircle className="w-4 h-4 text-green-500" />;
     }
 
-    return <ChevronDown className="w-4 h-4 text-gray-400" />;
+    return <ChevronDown className="w-4 h-4 text-slate-400" />;
   };
 
   const getSelectedOptionLabel = () => {
@@ -156,13 +156,13 @@ const ValidatedSelect = ({
   };
 
   const getHelperTextColor = () => {
-    if (!validationState.isTouched) return 'text-gray-500';
+    if (!validationState.isTouched) return 'text-slate-500';
 
-    if (validationState.errors.length > 0) return 'text-red-600';
+    if (validationState.errors.length > 0) return 'text-error-600';
     if (validationState.warnings.length > 0) return 'text-yellow-600';
     if (validationState.isValid && value) return 'text-green-600';
 
-    return 'text-gray-500';
+    return 'text-slate-500';
   };
 
   const fieldId = `select-${name}`;
@@ -175,9 +175,9 @@ const ValidatedSelect = ({
   return (
     <div className={`space-y-1 ${className}`}>
       {label && (
-        <label id={labelId} htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
+        <label id={labelId} htmlFor={fieldId} className="block text-body-regular font-medium text-slate-700">
           {label}
-          {required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+          {required && <span className="text-error-500 ml-1" aria-label="required">*</span>}
         </label>
       )}
 
@@ -221,7 +221,7 @@ const ValidatedSelect = ({
           aria-labelledby={label ? `${fieldId}-label` : undefined}
           className={`${getSelectClassName()} flex items-center justify-between`}
         >
-          <span className={value ? 'text-gray-900' : 'text-gray-500'}>
+          <span className={value ? 'text-slate-900' : 'text-slate-500'}>
             {getSelectedOptionLabel()}
           </span>
           <div className="flex items-center space-x-2">
@@ -235,11 +235,11 @@ const ValidatedSelect = ({
             id={`${fieldId}-listbox`}
             role="listbox"
             aria-label={label || name}
-            className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+            className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-xl shadow-elevation-3 max-h-60 overflow-y-auto"
           >
             <div className="py-1">
               {options.length === 0 ? (
-                <div className="px-3 py-2 text-sm text-gray-500 text-center">
+                <div className="px-3 py-2 text-body-regular text-slate-500 text-center">
                   No options available
                 </div>
               ) : (
@@ -250,15 +250,15 @@ const ValidatedSelect = ({
                     role="option"
                     aria-selected={value === option.value}
                     onClick={() => handleChange(option.value)}
-                    className={`w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors ${
+                    className={`w-full px-3 py-2 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none transition-colors ${
                       value === option.value
                         ? 'bg-gold-50 text-gold-700 font-medium'
-                        : 'text-gray-900'
+                        : 'text-slate-900'
                     }`}
                   >
                     {option.label}
                     {option.description && (
-                      <span className="block text-xs text-gray-500 mt-1">
+                      <span className="block text-body-small text-slate-500 mt-1">
                         {option.description}
                       </span>
                     )}
@@ -284,12 +284,12 @@ const ValidatedSelect = ({
 
       {/* Suggestions */}
       {showSuggestions && validationState.suggestions.length > 0 && (isFocused || validationState.errors.length > 0) && (
-        <div className="mt-2 p-3 bg-info-50 border border-info-200 rounded-lg">
+        <div className="mt-2 p-3 bg-info-50 border border-info-200 rounded-xl">
           <div className="flex items-start space-x-2">
             <Info className="w-4 h-4 text-info-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-info-900 mb-1">Suggestions:</p>
-              <ul className="text-xs text-info-800 space-y-1">
+              <p className="text-body-regular font-medium text-info-900 mb-1">Suggestions:</p>
+              <ul className="text-body-small text-info-800 space-y-1">
                 {validationState.suggestions.slice(0, 3).map((suggestion, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2">•</span>
@@ -304,12 +304,12 @@ const ValidatedSelect = ({
 
       {/* Warnings */}
       {validationState.warnings.length > 0 && validationState.isTouched && (
-        <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
           <div className="flex items-start space-x-2">
             <Info className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-yellow-900 mb-1">Please Note:</p>
-              <ul className="text-xs text-yellow-800 space-y-1">
+              <p className="text-body-regular font-medium text-yellow-900 mb-1">Please Note:</p>
+              <ul className="text-body-small text-yellow-800 space-y-1">
                 {validationState.warnings.map((warning, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2">•</span>
@@ -324,12 +324,12 @@ const ValidatedSelect = ({
 
       {/* Errors */}
       {validationState.errors.length > 0 && validationState.isTouched && (
-        <div id={errorId} role="alert" aria-live="polite" className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <div id={errorId} role="alert" aria-live="polite" className="mt-2 p-3 bg-error-50 border border-red-200 rounded-xl">
           <div className="flex items-start space-x-2">
-            <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" aria-hidden="true" />
+            <AlertCircle className="w-4 h-4 text-error-600 mt-0.5 flex-shrink-0" aria-hidden="true" />
             <div>
-              <p className="text-sm font-medium text-red-900 mb-1">Please Fix:</p>
-              <ul className="text-xs text-red-800 space-y-1">
+              <p className="text-body-regular font-medium text-red-900 mb-1">Please Fix:</p>
+              <ul className="text-body-small text-red-800 space-y-1">
                 {validationState.errors.map((error, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2" aria-hidden="true">•</span>

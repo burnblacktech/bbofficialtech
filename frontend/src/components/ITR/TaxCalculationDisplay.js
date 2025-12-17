@@ -88,18 +88,18 @@ const TaxCalculationDisplay = ({
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex items-center justify-between py-1.5 px-3 bg-neutral-50 rounded-lg border border-neutral-200"
+                className="flex items-center justify-between py-1.5 px-3 bg-neutral-50 rounded-xl border border-neutral-200"
               >
-                <span className="text-xs text-neutral-700 font-medium">
+                <span className="text-body-small text-neutral-700 font-medium">
                   {formatSlabLine(slab, index, index === 0)}
                 </span>
-                <span className="text-xs font-bold text-neutral-900 tabular-nums">
+                <span className="text-body-small font-bold text-neutral-900 tabular-nums">
                   {formatIndianCurrency(slab.tax)}
                 </span>
               </motion.div>
             ))
           ) : (
-            <div className="text-center py-4 text-sm text-neutral-500">
+            <div className="text-center py-4 text-body-regular text-neutral-500">
               No tax slabs calculated yet
             </div>
           )}
@@ -110,12 +110,12 @@ const TaxCalculationDisplay = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: (slabBreakdown?.length || 0) * 0.05 + 0.1 }}
-              className="flex items-center justify-between py-2 px-3 bg-blue-50 rounded-lg border border-blue-200"
+              className="flex items-center justify-between py-2 px-3 bg-blue-50 rounded-xl border border-blue-200"
             >
-              <span className="text-xs font-semibold text-blue-900 uppercase">
+              <span className="text-body-small font-semibold text-blue-900 uppercase">
                 Health and Education Cess (4%)
               </span>
-              <span className="text-xs font-bold text-blue-900 tabular-nums">
+              <span className="text-body-small font-bold text-blue-900 tabular-nums">
                 {formatIndianCurrency(educationCess)}
               </span>
             </motion.div>
@@ -126,12 +126,12 @@ const TaxCalculationDisplay = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: (slabBreakdown?.length || 0) * 0.05 + 0.2 }}
-            className="flex items-center justify-between py-2.5 px-3 bg-gold-50 rounded-lg border-2 border-gold-300 mt-2"
+            className="flex items-center justify-between py-2.5 px-3 bg-gold-50 rounded-xl border-2 border-gold-300 mt-2"
           >
-            <span className="text-sm font-bold text-gold-900 uppercase tracking-wide">
+            <span className="text-body-regular font-bold text-gold-900 uppercase tracking-wide">
               Total Tax Liability
             </span>
-            <span className="text-lg font-bold text-gold-900 tabular-nums">
+            <span className="text-body-large font-bold text-gold-900 tabular-nums">
               {formatIndianCurrency(totalTaxLiability)}
             </span>
           </motion.div>

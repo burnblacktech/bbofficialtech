@@ -209,7 +209,7 @@ const InvoiceManagement = () => {
             </Typography.Body>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">
+            <button className="px-4 py-2 bg-primary-500 text-white rounded-xl text-body-regular font-medium hover:bg-primary-600 transition-colors">
               Export Invoices
             </button>
           </div>
@@ -224,11 +224,11 @@ const InvoiceManagement = () => {
                   <Typography.Small className="text-neutral-600 mb-1">
                     Total Invoices
                   </Typography.Small>
-                  <Typography.H3 className="text-2xl font-bold text-neutral-900">
+                  <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
                     {stats.total}
                   </Typography.H3>
                 </div>
-                <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
                   <FileText className="w-6 h-6 text-primary-600" />
                 </div>
               </div>
@@ -242,11 +242,11 @@ const InvoiceManagement = () => {
                   <Typography.Small className="text-neutral-600 mb-1">
                     Paid Invoices
                   </Typography.Small>
-                  <Typography.H3 className="text-2xl font-bold text-success-600">
+                  <Typography.H3 className="text-heading-2 font-bold text-success-600">
                     {stats.paid}
                   </Typography.H3>
                 </div>
-                <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
                   <CheckCircle className="w-6 h-6 text-success-600" />
                 </div>
               </div>
@@ -260,11 +260,11 @@ const InvoiceManagement = () => {
                   <Typography.Small className="text-neutral-600 mb-1">
                     Pending Invoices
                   </Typography.Small>
-                  <Typography.H3 className="text-2xl font-bold text-warning-600">
+                  <Typography.H3 className="text-heading-2 font-bold text-warning-600">
                     {stats.pending}
                   </Typography.H3>
                 </div>
-                <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
                   <Clock className="w-6 h-6 text-warning-600" />
                 </div>
               </div>
@@ -278,11 +278,11 @@ const InvoiceManagement = () => {
                   <Typography.Small className="text-neutral-600 mb-1">
                     Total Revenue
                   </Typography.Small>
-                  <Typography.H3 className="text-2xl font-bold text-secondary-600">
+                  <Typography.H3 className="text-heading-2 font-bold text-secondary-600">
                     {formatCurrency(stats.totalRevenue)}
                   </Typography.H3>
                 </div>
-                <div className="w-12 h-12 bg-secondary-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
                   <IndianRupee className="w-6 h-6 text-secondary-600" />
                 </div>
               </div>
@@ -302,7 +302,7 @@ const InvoiceManagement = () => {
                     placeholder="Search invoices by number, user, or PAN..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-xl text-body-regular focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -310,7 +310,7 @@ const InvoiceManagement = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
                 >
                   <option value="all">All Status</option>
                   <option value="paid">Paid</option>
@@ -321,7 +321,7 @@ const InvoiceManagement = () => {
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-lg text-sm"
+                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular"
                 >
                   <option value="all">All Types</option>
                   <option value="itr_filing">ITR Filing</option>
@@ -464,7 +464,7 @@ const InvoiceManagement = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
@@ -574,14 +574,14 @@ const InvoiceManagement = () => {
                   <div className="flex items-center justify-end space-x-3 pt-4 border-t">
                     <button
                       onClick={() => setShowInvoiceModal(false)}
-                      className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+                      className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                     >
                       Close
                     </button>
                     {selectedInvoice.downloadUrl && (
                       <button
                         onClick={() => handleInvoiceAction('download', selectedInvoice)}
-                        className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center space-x-2"
+                        className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors flex items-center space-x-2"
                       >
                         <Download className="w-4 h-4" />
                         <span>Download</span>
