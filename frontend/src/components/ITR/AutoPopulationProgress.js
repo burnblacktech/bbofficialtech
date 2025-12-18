@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader, CheckCircle, AlertCircle, RefreshCw, X } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { DATA_SOURCE_LABELS } from '../../services/AutoPopulationService';
 
 const AutoPopulationProgress = ({

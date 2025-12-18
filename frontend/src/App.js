@@ -8,7 +8,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Core components (keep synchronous - needed immediately)
-import Layout from './components/Layout.js';
+import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ErrorBoundary as DesignSystemErrorBoundary } from './components/DesignSystem';
 import ProtectedRoute from './components/auth/ProtectedRoute';

@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronDown, AlertTriangle, Loader } from 'lucide-react';
 import { formatIndianCurrency } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import SourceChip from '../SourceChip/SourceChip';
 import EmptyState from '../../DesignSystem/EmptyState';
 import { FileText } from 'lucide-react';

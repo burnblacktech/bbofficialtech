@@ -5,7 +5,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Upload, X, FileText, Image, File } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const FileUpload = ({
   label,

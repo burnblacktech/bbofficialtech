@@ -15,8 +15,8 @@ import documentService from './api/documentService';
 import paymentService from './api/paymentService';
 
 // Utility services
-import validationService from './utils/validationService';
-import storageService from './utils/storageService';
+import validationService from '../utils/validationService';
+import storageService from '../utils/storageService';
 
 // Tax and financial services
 import { itrJsonExportService } from './itrJsonExportService';

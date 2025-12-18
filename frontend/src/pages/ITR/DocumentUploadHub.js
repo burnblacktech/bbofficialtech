@@ -28,7 +28,7 @@ import {
   Shield,
   Briefcase,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { springs, variants } from '../../lib/motion';
 import toast from 'react-hot-toast';
 

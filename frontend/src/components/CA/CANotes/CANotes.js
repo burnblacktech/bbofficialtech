@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { FileText, Plus, Edit2, Trash2 } from 'lucide-react';
 import Button from '../../DesignSystem/components/Button';
 import { formatIndianDateTime } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const CANotes = ({
   notes = [],

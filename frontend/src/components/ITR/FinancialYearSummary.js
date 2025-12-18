@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, IndianRupee } from 'lucide-react';
 import AnimatedNumber from '../UI/AnimatedNumber';
 import { formatIndianCurrency } from '../../lib/format';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const FinancialYearSummary = ({
   grossTotalIncome = 0,

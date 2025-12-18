@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import Button from '../../../components/DesignSystem/components/Button';
 import { formatIndianCurrency } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import SourceChip from '../../../components/UI/SourceChip/SourceChip';
 
 const DiscrepancyPanel = ({

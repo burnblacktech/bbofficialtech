@@ -7,7 +7,7 @@
 import { useState, useRef, forwardRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, AlertCircle, Eye, EyeOff, ChevronDown, X, Search, IndianRupee } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { springs, variants } from '../../lib/motion';
 
 // =====================================================

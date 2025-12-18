@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import { formatIndianCurrency } from '../../../lib/format';
 
 /**

@@ -20,7 +20,7 @@ import {
   BadgeCheck,
   FileEdit,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 // Legacy badge config for backward compatibility
 const legacyBadgeConfig = {

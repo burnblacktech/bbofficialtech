@@ -7,7 +7,7 @@
 import React from 'react';
 import { Clock, Info } from 'lucide-react';
 import SourceChip from '../SourceChip/SourceChip';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import { formatIndianDateTime } from '../../../lib/format';
 
 /**

@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const Toast = ({
   id,

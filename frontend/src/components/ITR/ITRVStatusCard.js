@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { CheckCircle, Clock, XCircle, AlertCircle, FileText, Download, RefreshCw, Calendar } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import Button from '../DesignSystem/components/Button';
 import StatusBadge from '../DesignSystem/StatusBadge';
 import { format } from 'date-fns';

@@ -7,7 +7,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 // Toast variants configuration
 const TOAST_VARIANTS = {

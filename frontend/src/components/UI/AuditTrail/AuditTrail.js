@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { Clock, FileText, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import { formatIndianDateTime } from '../../../lib/format';
 import SourceChip from '../SourceChip/SourceChip';
 

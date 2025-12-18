@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { RichTooltip } from '../Tooltip';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 /**
  * TaxTerm Component

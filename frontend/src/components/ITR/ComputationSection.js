@@ -7,7 +7,7 @@
 import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, CheckCircle, AlertCircle, IndianRupee, Info } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { springs, variants } from '../../lib/motion';
 import TaxCalculator from './TaxCalculator';
 import DeductionBreakdown from './DeductionBreakdown';

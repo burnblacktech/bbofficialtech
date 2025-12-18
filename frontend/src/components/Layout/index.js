@@ -4,9 +4,9 @@
 // =====================================================
 
 import React, { useState } from 'react';
-import Header from './Layout/Header';
-import Sidebar from './Layout/Sidebar';
-import Footer from './Layout/Footer';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import Footer from './Footer';
 
 const Layout = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -63,3 +63,4 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
+

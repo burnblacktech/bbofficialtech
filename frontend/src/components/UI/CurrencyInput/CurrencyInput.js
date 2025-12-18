@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useEffect, forwardRef } from 'react';
 import { AlertCircle, FileText } from 'lucide-react';
 import { formatIndianCurrency, formatIndianNumber, parseIndianNumber } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import { COLORS } from '../../../constants/designTokens';
 
 const CurrencyInput = forwardRef(({

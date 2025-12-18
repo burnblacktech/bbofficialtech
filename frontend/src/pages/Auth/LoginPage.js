@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
 import { useSearchParams, Link } from 'react-router-dom';
 import { AlertCircle, Clock, Eye, EyeOff } from 'lucide-react';
-import { sanitizeEmail, sanitizePassword } from '../../lib/utils/sanitize';
+import { sanitizeEmail, sanitizePassword } from '../../utils/sanitize';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

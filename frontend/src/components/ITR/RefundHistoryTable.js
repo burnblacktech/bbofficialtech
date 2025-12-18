@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Download, Calendar, Filter } from 'lucide-react';
 import { formatIndianCurrency } from '../../lib/format';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import Button from '../DesignSystem/components/Button';
 
 const RefundHistoryTable = ({ refunds = [] }) => {

@@ -7,7 +7,7 @@
 import React from 'react';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 /**
  * ConfirmationDialog Component

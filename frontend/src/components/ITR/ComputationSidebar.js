@@ -23,7 +23,7 @@ import {
   Lock,
   Database,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 // Section navigation item component
 const SectionNavItem = ({

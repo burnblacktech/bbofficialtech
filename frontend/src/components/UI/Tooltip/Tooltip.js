@@ -5,7 +5,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 /**
  * Basic Tooltip Component

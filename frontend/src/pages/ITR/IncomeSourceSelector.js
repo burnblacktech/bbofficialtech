@@ -22,7 +22,7 @@ import {
   Sparkles,
   HelpCircle,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 // Income source categories
 const INCOME_SOURCES = [

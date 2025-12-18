@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { CheckCircle, XCircle, Upload, FileText, Eye } from 'lucide-react';
 import Button from '../../DesignSystem/components/Button';
 import FileUpload from '../../UI/FileUpload/FileUpload';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const DocumentChecklist = ({
   itrType,

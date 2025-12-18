@@ -4,7 +4,7 @@
 // =====================================================
 
 import { motion } from 'framer-motion';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 // Base shimmer animation - newUI.md Section 9.3.6
 // Animation: shimmer 1.5s infinite

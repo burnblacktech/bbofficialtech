@@ -10,7 +10,7 @@ import VerificationForm from '../Forms/VerificationForm';
 import everificationService from '../../services/everificationService';
 import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const EVerificationModal = ({
   isOpen,

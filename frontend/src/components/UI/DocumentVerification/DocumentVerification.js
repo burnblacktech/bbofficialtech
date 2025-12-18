@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { CheckCircle, X, FileText } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import { VerificationState } from '../VerificationState';
 import { formatIndianDateTime } from '../../../lib/format';
 

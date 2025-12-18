@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Tooltip } from '../Tooltip';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 /**
  * FirstTimeTooltip Component

@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, CheckSquare, Square } from 'lucide-react';
 import DiscrepancyPanel from './DiscrepancyPanel';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyGroup = ({

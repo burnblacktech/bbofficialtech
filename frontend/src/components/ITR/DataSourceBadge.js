@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { FileText, Database, User, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { DATA_SOURCE_LABELS } from '../../services/AutoPopulationService';
 
 const SOURCE_ICONS = {

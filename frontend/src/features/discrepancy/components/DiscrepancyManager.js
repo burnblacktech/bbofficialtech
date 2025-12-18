@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { AlertTriangle, Search, Filter, CheckSquare, Square } from 'lucide-react';
 import DiscrepancyGroup from './DiscrepancyGroup';
 import AISuggestionCard from './AISuggestionCard';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyManager = ({

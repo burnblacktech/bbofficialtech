@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useResponsiveBreakpoint } from '../../utils/responsive';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const ResponsiveSection = ({
   id,

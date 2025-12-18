@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, FileText, CheckCircle, Loader, AlertCircle, IndianRupee } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { springs } from '../../lib/motion';
 import { form16ExtractionService } from '../../services';
 import toast from 'react-hot-toast';

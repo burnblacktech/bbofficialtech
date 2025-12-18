@@ -5,7 +5,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const DropdownMenu = ({
   trigger,

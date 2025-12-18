@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Loader2 } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import { springs, transitions } from '../../../lib/motion';
 
 /**

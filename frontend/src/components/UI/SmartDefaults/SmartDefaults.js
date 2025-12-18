@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 /**
  * SmartDefaultSuggestion Component

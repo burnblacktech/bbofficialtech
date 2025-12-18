@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { CheckCircle, Clock, XCircle, FileText, AlertCircle, MessageSquare } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { format } from 'date-fns';
 
 const NoticeTimeline = ({ timeline = [], className = '' }) => {

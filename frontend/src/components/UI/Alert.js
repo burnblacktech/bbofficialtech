@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { AlertCircle, CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const Alert = ({
   type = 'info',

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { CheckCircle, Clock, XCircle, FileText, Mail, Truck, AlertCircle } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { format } from 'date-fns';
 
 const ITRVTimeline = ({ timeline = [], className = '' }) => {

@@ -6,7 +6,7 @@
 import React from 'react';
 import { CheckCircle, Clock, XCircle, AlertCircle, TrendingUp, Building2 } from 'lucide-react';
 import { formatIndianCurrency } from '../../lib/format';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import Button from '../DesignSystem/components/Button';
 
 const RefundStatusCard = ({

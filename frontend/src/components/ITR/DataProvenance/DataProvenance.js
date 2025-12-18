@@ -7,7 +7,7 @@ import React from 'react';
 import { Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import SourceChip from '../../ui/SourceChip/SourceChip';
 import { formatIndianDateTime } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const DataProvenance = ({
   source,

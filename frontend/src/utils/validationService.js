@@ -194,3 +194,4 @@ class ValidationService {
 const validationService = new ValidationService();
 
 export default validationService;
+

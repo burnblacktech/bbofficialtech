@@ -8,7 +8,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, CheckCircle } from 'lucide-react';
 import { formatIndianCurrency } from '../../lib/format';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const TaxCalculationDisplay = ({
   slabBreakdown = [],

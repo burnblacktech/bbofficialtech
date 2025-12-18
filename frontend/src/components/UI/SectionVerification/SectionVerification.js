@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { VerificationState } from '../VerificationState';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 /**
  * SectionVerification Component

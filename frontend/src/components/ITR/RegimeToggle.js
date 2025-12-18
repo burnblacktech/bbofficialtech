@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, TrendingDown, TrendingUp } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const RegimeToggle = ({
   regime,

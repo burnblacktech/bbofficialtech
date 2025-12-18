@@ -10,7 +10,7 @@ import apiClient from '../../services/core/APIClient';
 import toast from 'react-hot-toast';
 import { formatIndianCurrency } from '../../lib/format';
 import { LineChart as RechartsLineChart, Line, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import Button from '../../components/DesignSystem/components/Button';
 import StatusBadge from '../../components/DesignSystem/StatusBadge';
 

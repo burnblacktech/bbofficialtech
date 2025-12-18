@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Clock, User, CheckCircle, FileText, Download } from 'lucide-react';
 import { formatIndianCurrency } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import Button from '../../../components/DesignSystem/components/Button';
 
 const DiscrepancyHistory = ({

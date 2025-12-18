@@ -10,7 +10,7 @@ import {
   CheckCircle, AlertCircle, AlertTriangle, Info, ChevronDown, ChevronUp, ArrowRight,
   RefreshCw, Plus, FileText,
 } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { springs, variants, transitions } from '../../lib/motion';
 
 // Status configurations - newUI.md Section 10.1.1

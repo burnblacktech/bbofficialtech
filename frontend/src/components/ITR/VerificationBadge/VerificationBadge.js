@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { CheckCircle, Clock, AlertTriangle, PenTool } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const VerificationBadge = ({
   status = 'pending', // 'verified' | 'pending' | 'discrepancy' | 'manual'

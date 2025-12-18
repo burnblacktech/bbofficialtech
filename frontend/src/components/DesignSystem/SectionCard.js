@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, AlertTriangle, Info, ChevronRight, X } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 // Card dimensions (fixed to match grid columns)
 const CARD_SIZES = {

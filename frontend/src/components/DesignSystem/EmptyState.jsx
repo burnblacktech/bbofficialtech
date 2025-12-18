@@ -18,7 +18,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import Button from './components/Button';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const VARIANT_CONFIG = {
   'no-data': {

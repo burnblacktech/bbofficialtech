@@ -6,7 +6,7 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../services/core/APIClient';
 import itrService from '../services/api/itrService';
-import { validateDashboardStats, validateFilings, validateRefunds } from '../lib/utils/api-validation';
+import { validateDashboardStats, validateFilings, validateRefunds } from '../utils/api-validation';
 import wsService from '../services/websocketService';
 
 /**

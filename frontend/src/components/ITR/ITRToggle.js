@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, AlertTriangle, CheckCircle, X, ChevronDown } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 
 const ITR_OPTIONS = [
   { value: 'ITR-1', label: 'ITR-1 (Sahaj)', description: 'For salaried individuals' },

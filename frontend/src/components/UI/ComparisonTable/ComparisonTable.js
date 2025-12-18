@@ -8,7 +8,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Loader } from 'lucide-react';
 import { formatIndianCurrency } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 import EmptyState from '../../DesignSystem/EmptyState';
 import { FileText } from 'lucide-react';
 

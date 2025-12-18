@@ -11,7 +11,7 @@ import RefundHistoryTable from '../../components/ITR/RefundHistoryTable';
 import apiClient from '../../services/core/APIClient';
 import toast from 'react-hot-toast';
 import Button from '../../components/DesignSystem/components/Button';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { enterpriseLogger } from '../../utils/logger';
 import itrService from '../../services/api/itrService';
 

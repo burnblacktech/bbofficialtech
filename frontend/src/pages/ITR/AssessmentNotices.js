@@ -12,7 +12,7 @@ import NoticeTimeline from '../../components/ITR/NoticeTimeline';
 import apiClient from '../../services/core/APIClient';
 import toast from 'react-hot-toast';
 import Button from '../../components/DesignSystem/components/Button';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import { enterpriseLogger } from '../../utils/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Modal from '../../components/common/Modal';

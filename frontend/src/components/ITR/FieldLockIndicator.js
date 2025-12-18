@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Lock, CheckCircle, AlertCircle, Unlock } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import UnlockFieldModal from './UnlockFieldModal';
 
 const FieldLockIndicator = ({

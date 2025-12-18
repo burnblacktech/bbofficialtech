@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { IndianRupee, CreditCard, Building2, Wallet } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../utils';
 import Button from '../DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import { formatIndianCurrency } from '../../lib/format';

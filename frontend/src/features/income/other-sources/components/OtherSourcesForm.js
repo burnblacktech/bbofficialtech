@@ -17,7 +17,7 @@ import {
   AlertTriangle,
   IndianRupee,
 } from 'lucide-react';
-import { cn } from '../../../../lib/utils';
+import { cn } from '../../../../utils';
 import { springs, variants } from '../../../../lib/motion';
 
 // Interest income types

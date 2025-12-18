@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Send, Mail, FileText, CheckCircle, Clock } from 'lucide-react';
 import Button from '../../DesignSystem/components/Button';
 import { formatIndianDateTime } from '../../../lib/format';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../utils';
 
 const ClientCommunication = ({
   messages = [],

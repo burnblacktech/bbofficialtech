@@ -17,7 +17,7 @@ import {
   Calendar,
   IndianRupee,
 } from 'lucide-react';
-import { cn } from '../../../../lib/utils';
+import { cn } from '../../../../utils';
 import { springs, variants } from '../../../../lib/motion';
 
 // Agricultural income types per ITD guidelines
