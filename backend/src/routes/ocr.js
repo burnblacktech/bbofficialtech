@@ -52,7 +52,7 @@ router.post('/rent-receipt', authenticateToken, upload.single('file'), async (re
     });
 
     // Use RentReceiptOCRService for actual OCR processing
-    const RentReceiptOCRService = require('../services/business/RentReceiptOCRService');
+    const RentReceiptOCRService = require('../services/itr/RentReceiptOCRService');
     const result = await RentReceiptOCRService.processDocument(
       req.file.buffer,
       req.file.originalname
@@ -216,7 +216,7 @@ router.post('/rent-receipts-batch', authenticateToken, upload.array('files', 10)
     // Process each file using real OCR service
     const RentReceiptOCRService = require('../services/business/RentReceiptOCRService');
     const results = [];
-    
+
     for (const file of req.files) {
       try {
         const result = await RentReceiptOCRService.processDocument(

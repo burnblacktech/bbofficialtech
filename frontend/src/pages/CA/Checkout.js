@@ -170,6 +170,7 @@ const Checkout = () => {
         currency: orderData.currency,
         name: 'BurnBlack',
         description: `${plan.name} Subscription`,
+        // eslint-disable-next-line camelcase
         order_id: orderData.id,
         handler: async (response) => {
           try {
@@ -181,8 +182,11 @@ const Checkout = () => {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
               },
               body: JSON.stringify({
+                // eslint-disable-next-line camelcase
                 razorpay_order_id: response.razorpay_order_id,
+                // eslint-disable-next-line camelcase
                 razorpay_payment_id: response.razorpay_payment_id,
+                // eslint-disable-next-line camelcase
                 razorpay_signature: response.razorpay_signature,
                 planId: plan.id,
                 billingCycle: billingCycle,
@@ -302,9 +306,8 @@ const Checkout = () => {
                         name="firmName"
                         value={formData.firmName}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                          errors.firmName ? 'border-error-300' : 'border-neutral-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.firmName ? 'border-error-300' : 'border-neutral-300'
+                          }`}
                         placeholder="Enter firm name"
                       />
                       {errors.firmName && (
@@ -324,9 +327,8 @@ const Checkout = () => {
                         name="contactPerson"
                         value={formData.contactPerson}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                          errors.contactPerson ? 'border-error-300' : 'border-neutral-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.contactPerson ? 'border-error-300' : 'border-neutral-300'
+                          }`}
                         placeholder="Enter contact person name"
                       />
                       {errors.contactPerson && (
@@ -349,9 +351,8 @@ const Checkout = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                          errors.email ? 'border-error-300' : 'border-neutral-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.email ? 'border-error-300' : 'border-neutral-300'
+                          }`}
                         placeholder="Enter email address"
                       />
                       {errors.email && (
@@ -371,9 +372,8 @@ const Checkout = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                          errors.phone ? 'border-error-300' : 'border-neutral-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.phone ? 'border-error-300' : 'border-neutral-300'
+                          }`}
                         placeholder="Enter phone number"
                       />
                       {errors.phone && (
@@ -396,9 +396,8 @@ const Checkout = () => {
                           name="address.street"
                           value={formData.address.street}
                           onChange={handleInputChange}
-                          className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                            errors['address.street'] ? 'border-error-300' : 'border-neutral-300'
-                          }`}
+                          className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors['address.street'] ? 'border-error-300' : 'border-neutral-300'
+                            }`}
                           placeholder="Street address"
                         />
                         {errors['address.street'] && (
@@ -415,9 +414,8 @@ const Checkout = () => {
                             name="address.city"
                             value={formData.address.city}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                              errors['address.city'] ? 'border-error-300' : 'border-neutral-300'
-                            }`}
+                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors['address.city'] ? 'border-error-300' : 'border-neutral-300'
+                              }`}
                             placeholder="City"
                           />
                           {errors['address.city'] && (
@@ -433,9 +431,8 @@ const Checkout = () => {
                             name="address.state"
                             value={formData.address.state}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                              errors['address.state'] ? 'border-error-300' : 'border-neutral-300'
-                            }`}
+                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors['address.state'] ? 'border-error-300' : 'border-neutral-300'
+                              }`}
                             placeholder="State"
                           />
                           {errors['address.state'] && (
@@ -451,9 +448,8 @@ const Checkout = () => {
                             name="address.pincode"
                             value={formData.address.pincode}
                             onChange={handleInputChange}
-                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                              errors['address.pincode'] ? 'border-error-300' : 'border-neutral-300'
-                            }`}
+                            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors['address.pincode'] ? 'border-error-300' : 'border-neutral-300'
+                              }`}
                             placeholder="Pincode"
                           />
                           {errors['address.pincode'] && (
@@ -478,9 +474,8 @@ const Checkout = () => {
                         name="panNumber"
                         value={formData.panNumber}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                          errors.panNumber ? 'border-error-300' : 'border-neutral-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.panNumber ? 'border-error-300' : 'border-neutral-300'
+                          }`}
                         placeholder="ABCDE1234F"
                         maxLength={10}
                       />

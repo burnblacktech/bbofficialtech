@@ -19,8 +19,8 @@ export const ITR1_CONFIG = {
   sections: [
     {
       id: 'personal_info',
-      title: 'Personal Information',
-      description: 'Basic details about the taxpayer',
+      title: 'Before You File: Your Identity',
+      description: 'We need these details only to file your return.',
       required: true,
       fields: [
         {

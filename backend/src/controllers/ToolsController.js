@@ -5,8 +5,8 @@
 
 const { query: dbQuery } = require('../utils/dbQuery');
 const enterpriseLogger = require('../utils/logger');
-const InvestmentPlanningService = require('../services/business/InvestmentPlanningService');
-const DeadlineService = require('../services/business/DeadlineService');
+const InvestmentPlanningService = require('../services/itr/InvestmentPlanningService');
+const DeadlineService = require('../services/common/DeadlineService');
 
 class ToolsController {
   // =====================================================
@@ -217,7 +217,7 @@ class ToolsController {
 
       // For now, return basic structure
       // In production, this would search a database or content management system
-      const KnowledgeBaseService = require('../services/business/KnowledgeBaseService');
+      const KnowledgeBaseService = require('../services/common/KnowledgeBaseService');
       const results = await KnowledgeBaseService.search(query, { category, section });
 
       res.json({
@@ -244,7 +244,7 @@ class ToolsController {
     try {
       const { topicId } = req.params;
 
-      const KnowledgeBaseService = require('../services/business/KnowledgeBaseService');
+      const KnowledgeBaseService = require('../services/common/KnowledgeBaseService');
       const topic = await KnowledgeBaseService.getTopic(topicId);
 
       if (!topic) {
@@ -277,7 +277,7 @@ class ToolsController {
     try {
       const { sectionId } = req.params;
 
-      const KnowledgeBaseService = require('../services/business/KnowledgeBaseService');
+      const KnowledgeBaseService = require('../services/common/KnowledgeBaseService');
       const explanation = await KnowledgeBaseService.getSectionExplanation(sectionId);
 
       if (!explanation) {

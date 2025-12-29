@@ -6,9 +6,9 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { ITRFiling, User, Invoice, CAFirm, TaxPayment } = require('../models');
-const ExpertReviewService = require('../services/business/ExpertReviewService');
-const InvoiceService = require('../services/business/InvoiceService');
-const TaxPaymentService = require('../services/business/TaxPaymentService');
+const ExpertReviewService = require('../services/itr/ExpertReviewService');
+const InvoiceService = require('../services/common/InvoiceService');
+const TaxPaymentService = require('../services/itr/TaxPaymentService');
 const ITDPaymentGatewayService = require('../services/integration/ITDPaymentGatewayService');
 const Form26ASService = require('../services/integration/Form26ASService');
 const enterpriseLogger = require('../utils/logger');
@@ -128,7 +128,7 @@ class PaymentController {
 
       // Check if payment bypass is enabled
       const bypassPayment = process.env.BYPASS_PAYMENT === 'true' || process.env.NODE_ENV === 'development';
-      
+
       // Handle bypassed payments (mock orders)
       if (bypassPayment && razorpay_order_id && razorpay_order_id.startsWith('order_bypass_')) {
         enterpriseLogger.warn('PaymentController: Payment verification bypassed (Development Mode)', {
@@ -726,7 +726,7 @@ class PaymentController {
 
       // Find payment by challan number
       const taxPayment = await TaxPayment.findByChallanNumber(callbackData.challanNumber);
-      
+
       if (!taxPayment) {
         enterpriseLogger.warn('Tax payment not found for ITD callback', {
           challanNumber: callbackData.challanNumber,

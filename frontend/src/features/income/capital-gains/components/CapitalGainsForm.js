@@ -109,7 +109,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
     }
   };
 
-  const updateSTCGEntry = async (index, field, value) => {
+  const updateSTCGEntry = (index, field, value) => {
     const updated = [...stcgDetails];
     updated[index] = { ...updated[index], [field]: value };
 
@@ -122,20 +122,8 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
     }
 
     setStcgDetails(updated);
-
-    if (filingId && updateMutation) {
-      try {
-        await updateMutation.mutateAsync({
-          hasCapitalGains,
-          stcgDetails: updated,
-          ltcgDetails,
-        });
-      } catch (error) {
-        toast.error('Failed to update STCG entry');
-      }
-    } else if (onUpdate) {
-      onUpdate({ stcgDetails: updated });
-    }
+    // LANE 2: SLOW LANE - No immediate mutation/parent update
+    // User must click "Save" to commit changes
   };
 
   const addLTCGEntry = async () => {
@@ -175,7 +163,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
     }
   };
 
-  const updateLTCGEntry = async (index, field, value) => {
+  const updateLTCGEntry = (index, field, value) => {
     const updated = [...ltcgDetails];
     updated[index] = { ...updated[index], [field]: value };
 
@@ -188,19 +176,29 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
     }
 
     setLtcgDetails(updated);
+    // LANE 2: SLOW LANE - No immediate mutation/parent update
+    // User must click "Save" to commit changes
+  };
 
+  const handleSave = async () => {
     if (filingId && updateMutation) {
       try {
         await updateMutation.mutateAsync({
           hasCapitalGains,
           stcgDetails,
-          ltcgDetails: updated,
+          ltcgDetails,
         });
+        toast.success('Capital Gains saved successfully');
       } catch (error) {
-        toast.error('Failed to update LTCG entry');
+        toast.error('Failed to save Capital Gains');
       }
     } else if (onUpdate) {
-      onUpdate({ ltcgDetails: updated });
+      onUpdate({
+        hasCapitalGains,
+        stcgDetails,
+        ltcgDetails,
+      });
+      toast.success('Capital Gains saved');
     }
   };
 
@@ -518,6 +516,17 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
         </div>
       </div>
 
+      {/* Save Button for Slow Lane */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={updateMutation?.isLoading}
+          className="bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-lg disabled:opacity-70"
+        >
+          {updateMutation?.isLoading ? 'Saving...' : 'Save Changes'}
+        </button>
+      </div>
+
       {/* OCR Upload Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {/* Sale Deed OCR Upload */}
@@ -540,11 +549,10 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               />
               <label
                 htmlFor="sale-deed-input"
-                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${
-                  isProcessingSaleDeed
-                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    : 'bg-white text-slate-700 hover:bg-slate-50'
-                }`}
+                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${isProcessingSaleDeed
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  : 'bg-white text-slate-700 hover:bg-slate-50'
+                  }`}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 {isProcessingSaleDeed ? 'Processing...' : 'Choose Sale Deed'}
@@ -660,11 +668,10 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
               />
               <label
                 htmlFor="broker-statement-ocr-input"
-                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${
-                  isProcessingBrokerStatement
-                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    : 'bg-white text-slate-700 hover:bg-slate-50'
-                }`}
+                className={`inline-flex items-center px-4 py-2 border border-slate-300 rounded-xl cursor-pointer ${isProcessingBrokerStatement
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  : 'bg-white text-slate-700 hover:bg-slate-50'
+                  }`}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 {isProcessingBrokerStatement ? 'Processing...' : 'Choose Broker Statement'}

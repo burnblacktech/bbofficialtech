@@ -234,6 +234,7 @@ const ComputationSection = ({
                   onUpdate={onUpdate}
                   selectedITR={selectedITR}
                   onForm16Extracted={onDataUploaded}
+                  readOnly={readOnly}
                 />
               </SubSection>
             </motion.div>
@@ -255,6 +256,7 @@ const ComputationSection = ({
                     selectedITR={selectedITR}
                     onDataUploaded={onDataUploaded}
                     maxProperties={1}
+                    readOnly={readOnly}
                   />
                 </div>
               </SubSection>
@@ -268,6 +270,7 @@ const ComputationSection = ({
                   onUpdate={(data) => onUpdate({ otherSources: data })}
                   selectedITR={selectedITR}
                   filingId={fullFormData?.filingId || fullFormData?.id || formData?.filingId || formData?.id}
+                  readOnly={readOnly}
                 />
               </SubSection>
             </motion.div>

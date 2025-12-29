@@ -3,7 +3,7 @@
 // Handles scenario management endpoints
 // =====================================================
 
-const scenarioService = require('../services/business/ScenarioService');
+const scenarioService = require('../services/itr/ScenarioService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 const {

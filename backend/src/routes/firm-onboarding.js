@@ -7,8 +7,8 @@ const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
 const { requireRole, requirePermission } = require('../middleware/rbac');
 const { checkFirmAccess } = require('../middleware/dataIsolation');
-const ClientProfileService = require('../services/business/ClientProfileService');
-const FirmDashboardService = require('../services/business/FirmDashboardService');
+const ClientProfileService = require('../services/common/ClientProfileService');
+const FirmDashboardService = require('../services/common/FirmDashboardService');
 const CAFirm = require('../models/CAFirm');
 const User = require('../models/User');
 const enterpriseLogger = require('../utils/logger');
@@ -355,7 +355,7 @@ router.get('/firms/:firmId/dashboard', authenticateToken, checkFirmAccess('firmI
 // CA REVIEW QUEUE ROUTES
 // =====================================================
 
-const CAReviewQueueService = require('../services/business/CAReviewQueueService');
+const CAReviewQueueService = require('../services/itr/CAReviewQueueService');
 
 // Get review queue for a firm
 router.get('/firms/:firmId/review-queue', authenticateToken, checkFirmAccess('firmId'), requirePermission('ca_firm.queue_view'), async (req, res) => {

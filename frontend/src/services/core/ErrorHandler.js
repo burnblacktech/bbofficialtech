@@ -33,6 +33,16 @@ class ErrorHandler {
     return this.errorCategories.UNKNOWN;
   }
 
+  getCode(error) {
+    if (error.response?.data?.error?.code) {
+      return error.response.data.error.code;
+    }
+    if (error.code) {
+      return error.code;
+    }
+    return null;
+  }
+
   getMessage(error, defaultMessage = 'An unexpected error occurred') {
     // Try to extract message from different error structures
     if (error.response?.data?.message) {
@@ -90,6 +100,7 @@ class ErrorHandler {
     } = options;
 
     const category = this.categorizeError(error);
+    const code = this.getCode(error);
     const message = customMessage || this.getMessage(error);
     const severity = this.getSeverity(error);
 
@@ -97,6 +108,7 @@ class ErrorHandler {
     if (logError && process.env.NODE_ENV === 'development') {
       console.error('🚨 Error handled:', {
         category,
+        code,
         message,
         severity,
         status: error.response?.status,
@@ -113,16 +125,17 @@ class ErrorHandler {
 
     // Call custom error handler
     if (onError) {
-      onError(error, { category, message, severity });
+      onError(error, { category, code, message, severity });
     }
 
     // Track error for analytics (in production)
     if (process.env.NODE_ENV === 'production') {
-      this.trackError(error, { category, message, severity });
+      this.trackError(error, { category, code, message, severity });
     }
 
     return {
       category,
+      code,
       message,
       severity,
       handled: true,

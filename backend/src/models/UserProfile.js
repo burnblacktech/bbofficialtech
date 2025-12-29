@@ -96,18 +96,7 @@ const UserProfile = sequelize.define('UserProfile', {
     allowNull: true,
     field: 'ifsc_code',
   },
-  profileCompleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    allowNull: false,
-    field: 'profile_completed',
-  },
-  completionPercentage: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
-    allowNull: false,
-    field: 'completion_percentage',
-  },
+
   metadata: {
     type: DataTypes.JSONB,
     allowNull: true,
@@ -133,42 +122,10 @@ const UserProfile = sequelize.define('UserProfile', {
     { fields: ['user_id'], unique: true },
     { fields: ['pan_number'], unique: true },
     { fields: ['aadhaar_number'], unique: true },
-    { fields: ['profile_completed'] },
-    { fields: ['completion_percentage'] },
+
   ],
 });
 
-// Instance method to calculate completion percentage
-UserProfile.prototype.calculateCompletionPercentage = function() {
-  let completedFields = 0;
-  const totalFields = 10; // PAN, Aadhaar, DOB, Address1, City, State, Pincode, BankName, AccountNumber, IFSCCode
 
-  if (this.panNumber) {completedFields++;}
-  if (this.aadhaarNumber) {completedFields++;}
-  if (this.dateOfBirth) {completedFields++;}
-  if (this.addressLine1 && this.city && this.state && this.pincode) {completedFields++;} // Group address fields
-  if (this.bankName && this.accountNumber && this.ifscCode) {completedFields++;} // Group bank fields
-
-  // Add other fields as they become mandatory
-  // For now, let's simplify to a few key ones
-  if (this.panNumber) {completedFields++;}
-  if (this.dateOfBirth) {completedFields++;}
-  if (this.addressLine1) {completedFields++;}
-  if (this.city) {completedFields++;}
-  if (this.state) {completedFields++;}
-  if (this.pincode) {completedFields++;}
-  if (this.bankName) {completedFields++;}
-  if (this.accountNumber) {completedFields++;}
-  if (this.ifscCode) {completedFields++;}
-
-  const percentage = Math.min(100, Math.round((completedFields / totalFields) * 100));
-  this.completionPercentage = percentage;
-  this.profileCompleted = percentage === 100;
-};
-
-// Hook to calculate percentage before saving
-UserProfile.beforeSave(async (profile) => {
-  profile.calculateCompletionPercentage();
-});
 
 module.exports = UserProfile;

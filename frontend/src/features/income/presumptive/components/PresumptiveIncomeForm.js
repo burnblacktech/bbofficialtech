@@ -32,10 +32,11 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
   });
 
   useEffect(() => {
-    calculatePresumptiveIncome();
+    // Only calculate locally, do not update parent yet
+    calculatePresumptiveIncome(false);
   }, [formData.grossReceipts, formData.presumptiveRate, formData.grossReceiptsProfession, formData.presumptiveRateProfession, formData.vehicleCount, formData.heavyVehicleCount, formData.lightVehicleCount, section]);
 
-  const calculatePresumptiveIncome = () => {
+  const calculatePresumptiveIncome = (shouldUpdateParent = false) => {
     let presumptiveIncome = 0;
 
     if (section === '44AD') {
@@ -55,27 +56,41 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
     }
 
     const newData = { ...formData, presumptiveIncome };
-    setFormData(newData);
-    if (onChange) {
+    // Avoid infinite loop if values haven't changed
+    if (formData.presumptiveIncome !== presumptiveIncome) {
+      setFormData(newData);
+    }
+
+    // Only update parent if explicitly requested (e.g. on Save)
+    if (shouldUpdateParent && onChange) {
       onChange(newData);
     }
+    return newData;
   };
 
   const handleChange = (field, value) => {
     const newData = { ...formData, [field]: value };
     setFormData(newData);
-    if (onChange) {
-      onChange(newData);
-    }
-    calculatePresumptiveIncome();
+    // LANE 2: SLOW LANE - No immediate parent update
   };
 
   const handleSectionChange = (newSection) => {
     setSection(newSection);
     const newData = { ...formData, section: newSection };
     setFormData(newData);
-    if (onChange) {
-      onChange(newData);
+    // LANE 2: SLOW LANE
+  };
+
+  const handleSave = () => {
+    // Force calculation one last time to ensure consistency
+    const textData = calculatePresumptiveIncome(true);
+    // Logic inside calculatePresumptiveIncome (with true) calls onChange
+    // But since we modified it to return data, we can also explicit call comparison if needed
+    // The previous refactor handles the calling of onChange if passed true
+    if (onNext) {
+      // Optional: treat save as just saving data, or use toast
+      // Replicating Toast from other forms if available, else just allow parent update
+      // Assuming parent handles toast on sync or we can add one here if imported
     }
   };
 
@@ -94,9 +109,17 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
   return (
     <div className="space-y-6">
       <div className="border border-slate-200 rounded-xl p-6">
-        <h3 className="text-heading-4 font-semibold text-slate-900 mb-4">
-          Presumptive Taxation (ITR-4)
-        </h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-heading-4 font-semibold text-slate-900">
+            Presumptive Taxation (ITR-4)
+          </h3>
+          <button
+            onClick={handleSave}
+            className="bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors text-sm font-medium"
+          >
+            Save Changes
+          </button>
+        </div>
 
         {/* Section Selection */}
         <div className="mb-6">
@@ -106,11 +129,10 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <button
               onClick={() => handleSectionChange('44AD')}
-              className={`p-4 border-2 rounded-xl text-left transition-colors ${
-                section === '44AD'
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-slate-200 hover:border-slate-300'
-              }`}
+              className={`p-4 border-2 rounded-xl text-left transition-colors ${section === '44AD'
+                ? 'border-primary-500 bg-primary-50'
+                : 'border-slate-200 hover:border-slate-300'
+                }`}
             >
               <Building2 className="h-5 w-5 text-primary-600 mb-2" />
               <div className="font-semibold text-slate-900">Section 44AD</div>
@@ -118,11 +140,10 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
             </button>
             <button
               onClick={() => handleSectionChange('44ADA')}
-              className={`p-4 border-2 rounded-xl text-left transition-colors ${
-                section === '44ADA'
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-slate-200 hover:border-slate-300'
-              }`}
+              className={`p-4 border-2 rounded-xl text-left transition-colors ${section === '44ADA'
+                ? 'border-primary-500 bg-primary-50'
+                : 'border-slate-200 hover:border-slate-300'
+                }`}
             >
               <Briefcase className="h-5 w-5 text-primary-600 mb-2" />
               <div className="font-semibold text-slate-900">Section 44ADA</div>
@@ -130,11 +151,10 @@ const PresumptiveIncomeForm = ({ data = {}, onChange, onNext, onPrevious, filing
             </button>
             <button
               onClick={() => handleSectionChange('44AE')}
-              className={`p-4 border-2 rounded-xl text-left transition-colors ${
-                section === '44AE'
-                  ? 'border-success-500 bg-success-50'
-                  : 'border-slate-200 hover:border-slate-300'
-              }`}
+              className={`p-4 border-2 rounded-xl text-left transition-colors ${section === '44AE'
+                ? 'border-success-500 bg-success-50'
+                : 'border-slate-200 hover:border-slate-300'
+                }`}
             >
               <Truck className="h-5 w-5 text-success-600 mb-2" />
               <div className="font-semibold text-slate-900">Section 44AE</div>

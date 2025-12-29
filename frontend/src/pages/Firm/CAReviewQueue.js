@@ -148,11 +148,10 @@ const CAReviewQueue = () => {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    filter === f
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filter === f
                       ? 'bg-primary-600 text-white'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
+                    }`}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1).replace('_', ' ')}
                 </button>
@@ -205,6 +204,15 @@ const CAReviewQueue = () => {
                     )}
                     {ticket.status === 'IN_PROGRESS' && (
                       <div className="flex space-x-2">
+                        {ticket.filingId && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => navigate(`/itr/computation?filingId=${ticket.filingId}`)}
+                          >
+                            View Filing
+                          </Button>
+                        )}
                         <Button
                           variant="primary"
                           size="sm"

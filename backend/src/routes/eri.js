@@ -5,9 +5,9 @@
 
 const express = require('express');
 const router = express.Router();
-const ERIService = require('../services/ERIService');
+// const ERIService = require('../services/ERIService'); // Removed legacy service
 const eriController = require('../controllers/eriController');
-const eriIntegrationService = require('../services/business/ERIIntegrationService');
+const eriIntegrationService = require('../services/eri/ERIIntegrationService');
 const { authenticateToken } = require('../middleware/auth');
 const enterpriseLogger = require('../utils/logger');
 const { sendSuccess, sendError } = require('../utils/responseFormatter');
@@ -20,7 +20,7 @@ router.get('/test-connection', async (req, res) => {
     const isLiveMode = process.env.FEATURE_ERI_LIVE === 'true';
     const baseUrl = process.env.ERI_API_BASE_URL || 'https://eri.incometax.gov.in/api';
     const apiKey = process.env.ERI_API_KEY || process.env.ERI_API_SECRET;
-    
+
     const config = {
       isLiveMode,
       baseUrl,
@@ -60,7 +60,7 @@ router.use(authenticateToken);
  */
 router.get('/health', async (req, res) => {
   try {
-    const health = await ERIService.healthCheck();
+    const health = await eriIntegrationService.healthCheck();
     sendSuccess(res, 'ERI service health check', health);
   } catch (error) {
     sendError(res, 'ERI health check failed', 500, error.message);
@@ -79,7 +79,7 @@ router.post('/validate-pan', async (req, res) => {
       return sendError(res, 'PAN is required', 400);
     }
 
-    const result = await ERIService.validatePAN(pan);
+    const result = await eriIntegrationService.verifyPan(pan);
     sendSuccess(res, 'PAN validated successfully', result.data);
 
   } catch (error) {
@@ -99,7 +99,7 @@ router.get('/prefill/:pan/:assessmentYear', async (req, res) => {
   try {
     const { pan, assessmentYear } = req.params;
 
-    const result = await ERIService.getPrefilledData(pan, assessmentYear);
+    const result = await eriIntegrationService.fetchPreviousItrData(pan, assessmentYear);
     sendSuccess(res, 'Prefilled data retrieved', result.data);
 
   } catch (error) {
@@ -124,7 +124,8 @@ router.post('/submit', async (req, res) => {
       return sendError(res, 'itrData, itrType, and assessmentYear are required', 400);
     }
 
-    const result = await ERIService.submitITR(itrData, itrType, assessmentYear);
+    // Pass null for digitalSignature for now, and userId
+    const result = await eriIntegrationService.uploadFiling(itrData, null, itrType, assessmentYear, req.user?.id);
 
     enterpriseLogger.info('ITR submitted via ERI', {
       userId: req.user?.id,
@@ -156,7 +157,7 @@ router.get('/status/:acknowledgmentNumber', async (req, res) => {
   try {
     const { acknowledgmentNumber } = req.params;
 
-    const result = await ERIService.getFilingStatus(acknowledgmentNumber);
+    const result = await eriIntegrationService.fetchAcknowledgement(acknowledgmentNumber);
     sendSuccess(res, 'Filing status retrieved', result);
 
   } catch (error) {
@@ -181,7 +182,7 @@ router.post('/everify/initiate', async (req, res) => {
       return sendError(res, 'acknowledgmentNumber and method are required', 400);
     }
 
-    const result = await ERIService.initiateEVerification(acknowledgmentNumber, method);
+    const result = await eriIntegrationService.initiateEVerification(acknowledgmentNumber, method);
 
     enterpriseLogger.info('E-verification initiated via ERI', {
       userId: req.user?.id,
@@ -214,7 +215,7 @@ router.post('/everify/complete', async (req, res) => {
       return sendError(res, 'transactionId and otp are required', 400);
     }
 
-    const result = await ERIService.completeEVerification(transactionId, otp);
+    const result = await eriIntegrationService.completeEVerification(transactionId, otp);
 
     enterpriseLogger.info('E-verification completed via ERI', {
       userId: req.user?.id,
@@ -243,7 +244,7 @@ router.get('/itrv/:acknowledgmentNumber', async (req, res) => {
   try {
     const { acknowledgmentNumber } = req.params;
 
-    const result = await ERIService.downloadITRV(acknowledgmentNumber);
+    const result = await eriIntegrationService.downloadITRV(acknowledgmentNumber);
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=${result.filename}`);
@@ -267,7 +268,7 @@ router.get('/form26as/:pan/:assessmentYear', async (req, res) => {
   try {
     const { pan, assessmentYear } = req.params;
 
-    const result = await ERIService.getForm26AS(pan, assessmentYear);
+    const result = await eriIntegrationService.getForm26AS(pan, assessmentYear);
     sendSuccess(res, 'Form 26AS retrieved', result.data);
 
   } catch (error) {
@@ -288,7 +289,7 @@ router.get('/ais/:pan/:assessmentYear', async (req, res) => {
   try {
     const { pan, assessmentYear } = req.params;
 
-    const result = await ERIService.getAIS(pan, assessmentYear);
+    const result = await eriIntegrationService.getAIS(pan, assessmentYear);
     sendSuccess(res, 'AIS data retrieved', result.data);
 
   } catch (error) {

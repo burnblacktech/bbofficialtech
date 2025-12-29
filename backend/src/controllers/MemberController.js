@@ -16,10 +16,10 @@ class MemberController {
     enterpriseLogger.info('MemberController initialized');
 
     // Bind methods to preserve 'this' context
-    if (this.getMembers) {this.getMembers = this.getMembers.bind(this);}
-    if (this.createMember) {this.createMember = this.createMember.bind(this);}
-    if (this.updateMember) {this.updateMember = this.updateMember.bind(this);}
-    if (this.deleteMember) {this.deleteMember = this.deleteMember.bind(this);}
+    if (this.getMembers) { this.getMembers = this.getMembers.bind(this); }
+    if (this.createMember) { this.createMember = this.createMember.bind(this); }
+    if (this.updateMember) { this.updateMember = this.updateMember.bind(this); }
+    if (this.deleteMember) { this.deleteMember = this.deleteMember.bind(this); }
   }
 
   // =====================================================
@@ -32,7 +32,7 @@ class MemberController {
    */
   async getMembers(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const { status, search } = req.query;
 
       const whereClause = { userId };
@@ -106,7 +106,7 @@ class MemberController {
    */
   async getMemberById(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const { id } = req.params;
 
       const member = await FamilyMember.findOne({
@@ -173,7 +173,7 @@ class MemberController {
    */
   async createMember(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const {
         fullName,
         pan,
@@ -208,7 +208,7 @@ class MemberController {
       }
 
       // Verify PAN using SurePass service
-      const panVerificationService = require('../services/business/PANVerificationService');
+      const panVerificationService = require('../services/common/PANVerificationService');
       const verificationResult = await panVerificationService.verifyPAN(pan.toUpperCase(), userId);
 
       if (!verificationResult.isValid) {
@@ -311,7 +311,7 @@ class MemberController {
    */
   async updateMember(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const { id } = req.params;
       const {
         fullName,
@@ -352,21 +352,21 @@ class MemberController {
         if (!this.isValidPAN(pan)) {
           throw new AppError('Invalid PAN format', 400);
         }
-        
+
         // If PAN is being changed, verify it via SurePass
         if (pan.toUpperCase() !== member.panNumber) {
-          const panVerificationService = require('../services/business/PANVerificationService');
+          const panVerificationService = require('../services/common/PANVerificationService');
           const verificationResult = await panVerificationService.verifyPAN(pan.toUpperCase(), userId);
-          
+
           if (!verificationResult.isValid) {
             throw new AppError('PAN verification failed. Please enter a valid PAN number.', 400);
           }
-          
+
           // Set verified status for new PAN
           updateData.panVerified = true;
           updateData.panVerifiedAt = new Date();
         }
-        
+
         oldValues.pan = member.panNumber;
         updateData.panNumber = pan.toUpperCase();
       }
@@ -468,7 +468,7 @@ class MemberController {
    */
   async deleteMember(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const { id } = req.params;
 
       const member = await FamilyMember.findOne({
@@ -536,7 +536,7 @@ class MemberController {
    */
   async getMemberFilings(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const { id: memberId } = req.params;
       const { status, itrType, page = 1, limit = 20 } = req.query;
 
@@ -620,7 +620,7 @@ class MemberController {
    */
   async getMemberDocuments(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.targetUserId || req.user.userId;
       const { id: memberId } = req.params;
       const { category, status, page = 1, limit = 20 } = req.query;
 
@@ -761,7 +761,7 @@ class MemberController {
    * Format file size
    */
   formatFileSize(bytes) {
-    if (bytes === 0) {return '0 Bytes';}
+    if (bytes === 0) { return '0 Bytes'; }
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));

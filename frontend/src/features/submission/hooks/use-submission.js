@@ -4,8 +4,9 @@
 // =====================================================
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { submissionService } from '../services/submission.service';
 import toast from 'react-hot-toast';
+import { submissionService } from '../services/submission.service';
+import errorHandler from '../../../services/core/ErrorHandler';
 
 /**
  * Hook for submitting ITR filing
@@ -22,7 +23,7 @@ export function useSubmitITR(filingId) {
       toast.success('ITR submitted successfully!');
     },
     onError: (error) => {
-      toast.error(error.message || 'ITR submission failed');
+      errorHandler.handle(error, { customMessage: 'ITR submission failed' });
     },
   });
 }

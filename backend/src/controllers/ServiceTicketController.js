@@ -2,7 +2,7 @@
 // SERVICE TICKET CONTROLLER (API ENDPOINTS)
 // =====================================================
 
-const serviceTicketService = require('../services/business/ServiceTicketService');
+const serviceTicketService = require('../services/common/ServiceTicketService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 

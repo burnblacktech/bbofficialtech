@@ -88,20 +88,21 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
     };
     const updated = [...professions, newProfession];
     setProfessions(updated);
-    onUpdate({ professions: updated });
+    // LANE 2: SLOW LANE
+    // onUpdate({ professions: updated });
   };
 
   const removeProfession = (index) => {
     const updated = professions.filter((_, i) => i !== index);
     setProfessions(updated);
-    onUpdate({ professions: updated });
+    // onUpdate({ professions: updated });
   };
 
   const updateProfession = (index, field, value) => {
     const updated = [...professions];
     updated[index] = { ...updated[index], [field]: value };
     setProfessions(updated);
-    onUpdate({ professions: updated });
+    // onUpdate({ professions: updated });
   };
 
   const updatePNL = (professionIndex, field, value) => {
@@ -123,7 +124,7 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
       (pnl.depreciation?.total || 0);
 
     setProfessions(updated);
-    onUpdate({ professions: updated });
+    // onUpdate({ professions: updated });
   };
 
   const updateExpenseCategory = (professionIndex, category, field, value) => {
@@ -145,13 +146,21 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
       (pnl.depreciation?.total || 0);
 
     setProfessions(updated);
-    onUpdate({ professions: updated });
+    // onUpdate({ professions: updated });
   };
 
   const handleAISApplied = (appliedData) => {
     // Refresh data after AIS data is applied
     // The mutation will invalidate queries and refetch
     toast.success(`${appliedData.professions?.length || 0} profession${(appliedData.professions?.length || 0) !== 1 ? 's' : ''} added from AIS`);
+  };
+
+  // Manual Save Handler
+  const handleSave = () => {
+    if (onUpdate) {
+      onUpdate({ professions });
+      toast.success('Professional Income saved successfully');
+    }
   };
 
   if (!isITR3) {
@@ -227,13 +236,21 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
           <Briefcase className="w-5 h-5" />
           Professional Income
         </h3>
-        <button
-          onClick={addProfession}
-          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-body-regular"
-        >
-          <Plus className="w-4 h-4" />
-          Add Profession
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
+          >
+            Save Changes
+          </button>
+          <button
+            onClick={addProfession}
+            className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-body-regular"
+          >
+            <Plus className="w-4 h-4" />
+            Add Profession
+          </button>
+        </div>
       </div>
 
       {professions.map((profession, professionIndex) => (
@@ -427,62 +444,62 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                   </div>
                 </button>
                 {expandedSections[`expenses-${professionIndex}`] && (
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Office Rent (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.expenses?.officeRent || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'officeRent', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Office Rent (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.expenses?.officeRent || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'officeRent', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Professional Fees Paid (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.expenses?.professionalFeesPaid || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'professionalFeesPaid', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Travel Expenses (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.expenses?.travel || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'travel', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Communication (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.expenses?.communication || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'communication', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Books & Periodicals (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.expenses?.booksPeriodicals || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'booksPeriodicals', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Professional Expenses (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.expenses?.other || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'other', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Professional Fees Paid (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.expenses?.professionalFeesPaid || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'professionalFeesPaid', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Travel Expenses (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.expenses?.travel || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'travel', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Communication (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.expenses?.communication || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'communication', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Books & Periodicals (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.expenses?.booksPeriodicals || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'booksPeriodicals', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Professional Expenses (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.expenses?.other || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'expenses', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                </div>
                 )}
               </div>
             )}
@@ -507,61 +524,59 @@ const ProfessionalIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataU
                   </div>
                 </button>
                 {expandedSections[`depreciation-${professionIndex}`] && (
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Office Equipment (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.depreciation?.officeEquipment || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'officeEquipment', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Office Equipment (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.depreciation?.officeEquipment || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'officeEquipment', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Furniture (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.depreciation?.furniture || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'furniture', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Vehicles (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.depreciation?.vehicles || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'vehicles', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Assets (₹)</label>
+                      <input
+                        type="number"
+                        value={profession.pnl?.depreciation?.other || 0}
+                        onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'other', e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Furniture (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.depreciation?.furniture || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'furniture', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Vehicles (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.depreciation?.vehicles || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'vehicles', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-regular font-medium text-slate-700 mb-1">Other Assets (₹)</label>
-                    <input
-                      type="number"
-                      value={profession.pnl?.depreciation?.other || 0}
-                      onChange={(e) => updateExpenseCategory(professionIndex, 'depreciation', 'other', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
-                    />
-                  </div>
-                </div>
-              )}
+                )}
               </div>
             )}
 
             {/* Net Professional Income Display */}
-            <div className={`rounded-xl p-4 ${
-              (profession.pnl?.netIncome || 0) >= 0
-                ? 'bg-green-50 border border-green-200'
-                : 'bg-error-50 border border-red-200'
-            }`}>
+            <div className={`rounded-xl p-4 ${(profession.pnl?.netIncome || 0) >= 0
+              ? 'bg-green-50 border border-green-200'
+              : 'bg-error-50 border border-red-200'
+              }`}>
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-slate-900">
                   {(profession.pnl?.netIncome || 0) >= 0 ? 'Net Professional Income' : 'Net Professional Loss'}:
                 </span>
-                <span className={`text-lg font-bold ${
-                  (profession.pnl?.netIncome || 0) >= 0 ? 'text-green-700' : 'text-error-700'
-                }`}>
+                <span className={`text-lg font-bold ${(profession.pnl?.netIncome || 0) >= 0 ? 'text-green-700' : 'text-error-700'
+                  }`}>
                   ₹{Math.abs(profession.pnl?.netIncome || 0).toLocaleString('en-IN')}
                 </span>
               </div>

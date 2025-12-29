@@ -335,24 +335,24 @@ const ITRFiling = sequelize.define('ITRFiling', {
 });
 
 // Instance methods
-ITRFiling.prototype.updateStatus = async function(newStatus, additionalData = {}) {
+ITRFiling.prototype.updateStatus = async function (newStatus, additionalData = {}) {
   try {
     const updateData = { status: newStatus };
 
     // Set timestamp based on status
     switch (newStatus) {
-    case 'submitted':
-      updateData.submittedAt = new Date();
-      break;
-    case 'acknowledged':
-      updateData.acknowledgedAt = new Date();
-      break;
-    case 'processed':
-      updateData.processedAt = new Date();
-      break;
-    case 'paused':
-      updateData.pausedAt = new Date();
-      break;
+      case 'submitted':
+        updateData.submittedAt = new Date();
+        break;
+      case 'acknowledged':
+        updateData.acknowledgedAt = new Date();
+        break;
+      case 'processed':
+        updateData.processedAt = new Date();
+        break;
+      case 'paused':
+        updateData.pausedAt = new Date();
+        break;
     }
 
     // Merge additional data
@@ -378,15 +378,15 @@ ITRFiling.prototype.updateStatus = async function(newStatus, additionalData = {}
   }
 };
 
-ITRFiling.prototype.canBeSubmitted = function() {
+ITRFiling.prototype.canBeSubmitted = function () {
   return this.status === 'draft' && this.jsonPayload !== null;
 };
 
-ITRFiling.prototype.canBeModified = function() {
+ITRFiling.prototype.canBeModified = function () {
   return ['draft', 'paused', 'rejected'].includes(this.status);
 };
 
-ITRFiling.prototype.pause = async function(reason = null) {
+ITRFiling.prototype.pause = async function (reason = null) {
   try {
     await this.update({
       status: 'paused',
@@ -410,7 +410,7 @@ ITRFiling.prototype.pause = async function(reason = null) {
   }
 };
 
-ITRFiling.prototype.resume = async function() {
+ITRFiling.prototype.resume = async function () {
   try {
     await this.update({
       status: 'draft',
@@ -432,7 +432,7 @@ ITRFiling.prototype.resume = async function() {
   }
 };
 
-ITRFiling.prototype.assignTo = async function(userId) {
+ITRFiling.prototype.assignTo = async function (userId) {
   try {
     await this.update({
       assignedTo: userId,
@@ -445,12 +445,12 @@ ITRFiling.prototype.assignTo = async function(userId) {
         },
       },
     });
-    
+
     enterpriseLogger.info('ITR filing assigned', {
       filingId: this.id,
       assignedTo: userId,
     });
-    
+
     return this;
   } catch (error) {
     enterpriseLogger.error('Assign filing error', {
@@ -462,7 +462,7 @@ ITRFiling.prototype.assignTo = async function(userId) {
   }
 };
 
-ITRFiling.prototype.requestReview = async function(reason = null) {
+ITRFiling.prototype.requestReview = async function (reason = null) {
   try {
     await this.update({
       reviewStatus: 'pending',
@@ -475,12 +475,12 @@ ITRFiling.prototype.requestReview = async function(reason = null) {
         },
       },
     });
-    
+
     enterpriseLogger.info('ITR filing review requested', {
       filingId: this.id,
       reason,
     });
-    
+
     return this;
   } catch (error) {
     enterpriseLogger.error('Request review error', {
@@ -491,7 +491,7 @@ ITRFiling.prototype.requestReview = async function(reason = null) {
   }
 };
 
-ITRFiling.prototype.approveReview = async function(reviewerId, comments = null) {
+ITRFiling.prototype.approveReview = async function (reviewerId, comments = null) {
   try {
     await this.update({
       reviewStatus: 'approved',
@@ -505,12 +505,12 @@ ITRFiling.prototype.approveReview = async function(reviewerId, comments = null) 
         },
       },
     });
-    
+
     enterpriseLogger.info('ITR filing review approved', {
       filingId: this.id,
       reviewerId,
     });
-    
+
     return this;
   } catch (error) {
     enterpriseLogger.error('Approve review error', {
@@ -523,14 +523,14 @@ ITRFiling.prototype.approveReview = async function(reviewerId, comments = null) 
 };
 
 // Class methods
-ITRFiling.findByUser = async function(userId, options = {}) {
+ITRFiling.findByUser = async function (userId, options = {}) {
   try {
     const { assessmentYear, itrType, status } = options;
     const whereClause = { userId };
 
-    if (assessmentYear) {whereClause.assessmentYear = assessmentYear;}
-    if (itrType) {whereClause.itrType = itrType;}
-    if (status) {whereClause.status = status;}
+    if (assessmentYear) { whereClause.assessmentYear = assessmentYear; }
+    if (itrType) { whereClause.itrType = itrType; }
+    if (status) { whereClause.status = status; }
 
     return await ITRFiling.findAll({
       where: whereClause,
@@ -546,7 +546,7 @@ ITRFiling.findByUser = async function(userId, options = {}) {
   }
 };
 
-ITRFiling.findByAckNumber = async function(ackNumber) {
+ITRFiling.findByAckNumber = async function (ackNumber) {
   try {
     return await ITRFiling.findOne({ where: { ackNumber } });
   } catch (error) {
@@ -558,7 +558,7 @@ ITRFiling.findByAckNumber = async function(ackNumber) {
   }
 };
 
-ITRFiling.getFilingStats = async function(userId) {
+ITRFiling.getFilingStats = async function (userId) {
   try {
     const stats = await ITRFiling.findAll({
       where: { userId },
@@ -592,6 +592,11 @@ ITRFiling.beforeCreate(async (filing) => {
 });
 
 ITRFiling.beforeUpdate(async (filing) => {
+  // V4 Migration: Legacy status validation disabled. 
+  // State transitions are now enforced by SubmissionStateMachine.js (Domain Layer).
+  return;
+
+  /* DEPRECATED
   // Validate status transitions
   const validTransitions = {
     'draft': ['paused', 'submitted', 'rejected'],
@@ -610,6 +615,7 @@ ITRFiling.beforeUpdate(async (filing) => {
       throw new Error(`Invalid status transition from ${currentStatus} to ${newStatus}`);
     }
   }
+  */
 });
 
 // Associations will be defined in a separate file

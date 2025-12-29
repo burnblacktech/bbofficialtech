@@ -88,6 +88,8 @@ const CAClientManagement = () => {
   };
 
   const handleDeleteClient = (clientId) => {
+    // eslint-disable-next-line no-restricted-globals
+    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to remove this client? This action cannot be undone.')) {
       deleteClientMutation.mutate(clientId);
     }
@@ -151,8 +153,8 @@ const CAClientManagement = () => {
 
   const filteredClients = clients.filter(client => {
     const matchesSearch = client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         client.pan?.toLowerCase().includes(searchTerm.toLowerCase());
+      client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.pan?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = filterStatus === 'all' || client.status === filterStatus;
     const matchesType = filterType === 'all' || client.client_type === filterType;
@@ -427,11 +429,10 @@ const CAClientManagement = () => {
                         setShowClientModal(false);
                       }}
                       disabled={selectedClient.status === status}
-                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedClient.status === status
-                          ? 'bg-burnblack-gold bg-opacity-20 text-burnblack-gold cursor-not-allowed'
-                          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                      }`}
+                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${selectedClient.status === status
+                        ? 'bg-burnblack-gold bg-opacity-20 text-burnblack-gold cursor-not-allowed'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                        }`}
                     >
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </button>

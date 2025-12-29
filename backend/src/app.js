@@ -14,10 +14,8 @@ const session = require('express-session');
 const passport = require('./config/passport');
 const enterpriseLogger = require('./utils/logger');
 const redisService = require('./services/core/RedisService');
-const { globalErrorHandler } = require('./middleware/errorHandler');
-
-// Import routes;
 const routes = require('./routes');
+const { globalErrorHandler } = require('./middleware/errorHandler');
 
 // =====================================================
 // EXPRESS APP INITIALIZATION;
@@ -89,6 +87,8 @@ app.use(
       const allowedOrigins = [
         'http://localhost:3000',
         'http://localhost:3001',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
         'https://burnblack.com',
         'https://www.burnblack.com',
         'https://app.burnblack.com',
@@ -96,6 +96,11 @@ app.use(
         process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
         process.env.FRONTEND_URL || null,
       ].filter(Boolean);
+
+      // In development, allow any localhost origin
+      if (process.env.NODE_ENV !== 'production' && origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+        return callback(null, true);
+      }
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -207,6 +212,28 @@ app.use((req, res, next) => {
 // Use api.js for explicit route mounting (more reliable than automatic discovery)
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
+
+// =====================================================
+// HEALTH CHECK ENDPOINT
+// =====================================================
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    pid: process.pid,
+  });
+});
+
+// Also support /api/health for consistency
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    pid: process.pid,
+  });
+});
 
 // =====================================================
 // ERROR HANDLING MIDDLEWARE;

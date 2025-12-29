@@ -4,6 +4,7 @@
 
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 const enterpriseLogger = require('../utils/logger');
 
 // Load environment variables
@@ -47,7 +48,7 @@ class DatabaseSeeder {
       {
         email: 'admin@burnblack.com',
         password_hash: adminPassword,
-        role: 'super_admin',
+        role: 'SUPER_ADMIN',
         full_name: 'System Administrator',
         phone: '9999999999',
         status: 'active',
@@ -57,7 +58,7 @@ class DatabaseSeeder {
       {
         email: 'user@burnblack.com',
         password_hash: userPassword,
-        role: 'user',
+        role: 'END_USER',
         full_name: 'Test User',
         phone: '8888888888',
         status: 'active',
@@ -67,7 +68,7 @@ class DatabaseSeeder {
       {
         email: 'ca@burnblack.com',
         password_hash: caPassword,
-        role: 'ca',
+        role: 'CA',
         full_name: 'Chartered Accountant',
         phone: '7777777777',
         status: 'active',
@@ -79,8 +80,8 @@ class DatabaseSeeder {
     for (const user of users) {
       try {
         await client.query(`
-          INSERT INTO users (email, password_hash, role, full_name, phone, status, email_verified, phone_verified)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          INSERT INTO users (email, password_hash, role, full_name, phone, status, email_verified, phone_verified, created_at, updated_at, auth_provider, onboarding_completed, token_version, id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), 'LOCAL', true, 0, $9)
           ON CONFLICT (email) DO NOTHING
         `, [
           user.email,
@@ -91,6 +92,7 @@ class DatabaseSeeder {
           user.status,
           user.email_verified,
           user.phone_verified,
+          uuidv4(),
         ]);
 
         enterpriseLogger.info(`User seeded: ${user.email}`);
@@ -245,20 +247,20 @@ class DatabaseSeeder {
     try {
       client = await this.connect();
 
-      await client.query('BEGIN');
+      // await client.query('BEGIN');
 
       await this.seedUsers(client);
       await this.seedTaxSlabs(client);
       await this.seedValidationRules(client);
       await this.seedSampleData(client);
 
-      await client.query('COMMIT');
+      // await client.query('COMMIT');
 
       enterpriseLogger.info('Database seeding completed successfully');
 
     } catch (error) {
       if (client) {
-        await client.query('ROLLBACK');
+        // await client.query('ROLLBACK');
       }
       enterpriseLogger.error('Database seeding failed', { error: error.message });
       throw error;

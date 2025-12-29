@@ -3,7 +3,7 @@
 // Handles filing analytics endpoints
 // =====================================================
 
-const filingAnalyticsService = require('../services/business/FilingAnalyticsService');
+const filingAnalyticsService = require('../services/itr/FilingAnalyticsService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 const {

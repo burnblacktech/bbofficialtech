@@ -29,7 +29,10 @@ import {
 } from 'lucide-react';
 
 const UserProfile = () => {
-  const { user, logout } = useAuth();
+  // U3.6 Hotfix: Validation in-place, no redirect needed.
+  const { user, logout, refreshProfile } = useAuth();
+
+  /* Restoring Original Logic + U3.6 Hotfix */
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
@@ -63,13 +66,18 @@ const UserProfile = () => {
       const response = await api.put('/users/profile', updatedData);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Refresh Auth Context explicitly
+      if (refreshProfile) await refreshProfile();
       queryClient.invalidateQueries(['userProfile', user?.id]);
       setIsEditing(false);
       setErrors({});
+      // No navigation - stay on profile or let user go back manually
+      toast.success('Profile updated successfully');
     },
     onError: (error) => {
       setErrors(error.response?.data?.errors || { general: 'Failed to update profile' });
+      toast.error('Failed to update profile');
     },
   });
 
@@ -151,9 +159,8 @@ const UserProfile = () => {
                 type={type}
                 value={value || ''}
                 onChange={(e) => handleInputChange(field, e.target.value)}
-                className={`w-full p-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold ${
-                  errors[field] ? 'border-error-300' : 'border-neutral-300'
-                }`}
+                className={`w-full p-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-burnblack-gold ${errors[field] ? 'border-error-300' : 'border-neutral-300'
+                  }`}
                 placeholder={`Enter ${label.toLowerCase()}`}
               />
               {errors[field] && (
@@ -247,138 +254,138 @@ const UserProfile = () => {
       {/* Main Content */}
       {!isLoading && !error && (
         <main className="px-4 py-4 space-y-4">
-        {/* Profile Picture Section */}
-        <div className="dashboard-card-burnblack text-center">
-          <div className="relative inline-block">
-            <div className="w-20 h-20 bg-burnblack-gold bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
-              <User className="h-10 w-10 text-burnblack-gold" />
+          {/* Profile Picture Section */}
+          <div className="dashboard-card-burnblack text-center">
+            <div className="relative inline-block">
+              <div className="w-20 h-20 bg-burnblack-gold bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <User className="h-10 w-10 text-burnblack-gold" />
+              </div>
+              {isEditing && (
+                <button className="absolute bottom-0 right-0 btn-burnblack p-2 rounded-full active:scale-95 transition-transform">
+                  <Camera className="h-4 w-4" />
+                </button>
+              )}
             </div>
-            {isEditing && (
-              <button className="absolute bottom-0 right-0 btn-burnblack p-2 rounded-full active:scale-95 transition-transform">
-                <Camera className="h-4 w-4" />
+            <h2 className="text-heading-4 font-semibold text-burnblack-black mb-1">{profileData?.firstName} {profileData?.lastName}</h2>
+            <p className="text-body-regular text-neutral-500">{profileData?.email}</p>
+            <div className="flex items-center justify-center space-x-1 mt-2">
+              <CheckCircle className="h-3 w-3 text-success-600" />
+              <span className="text-body-small text-success-600 font-medium">Verified Account</span>
+            </div>
+          </div>
+
+          {/* Personal Information */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Personal Information</h3>
+            <div className="space-y-3">
+              <ProfileInfoCard
+                icon={User}
+                label="Full Name"
+                value={profileData.name}
+                editable={true}
+                field="name"
+              />
+              <ProfileInfoCard
+                icon={Mail}
+                label="Email"
+                value={profileData.email}
+                editable={true}
+                field="email"
+                type="email"
+              />
+              <ProfileInfoCard
+                icon={Phone}
+                label="Phone"
+                value={profileData.phone}
+                editable={true}
+                field="phone"
+                type="tel"
+              />
+              <ProfileInfoCard
+                icon={Calendar}
+                label="Date of Birth"
+                value={profileData.dateOfBirth}
+                editable={true}
+                field="dateOfBirth"
+                type="date"
+              />
+            </div>
+          </div>
+
+          {/* Address Information */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Address Information</h3>
+            <div className="space-y-3">
+              <ProfileInfoCard
+                icon={MapPin}
+                label="Address"
+                value={profileData.address}
+                editable={true}
+                field="address"
+              />
+            </div>
+          </div>
+
+          {/* Document Information */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Documents</h3>
+            <div className="space-y-3">
+              <ProfileInfoCard
+                icon={Shield}
+                label="PAN Number"
+                value={profileData.pan}
+                editable={true}
+                field="pan"
+              />
+              <ProfileInfoCard
+                icon={Shield}
+                label="Aadhar Number"
+                value={profileData.aadhar}
+                editable={true}
+                field="aadhar"
+              />
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-xl p-4 shadow-elevation-1 border border-gray-100">
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">Quick Actions</h3>
+            <div className="space-y-2">
+              <button
+                onClick={() => navigate('/notifications')}
+                className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
+              >
+                <div className="flex items-center space-x-3">
+                  <Bell className="h-4 w-4 text-slate-600" />
+                  <span className="text-body-regular font-medium text-slate-900">Notifications</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
               </button>
-            )}
-          </div>
-          <h2 className="text-heading-4 font-semibold text-burnblack-black mb-1">{profileData?.firstName} {profileData?.lastName}</h2>
-          <p className="text-body-regular text-neutral-500">{profileData?.email}</p>
-          <div className="flex items-center justify-center space-x-1 mt-2">
-            <CheckCircle className="h-3 w-3 text-success-600" />
-            <span className="text-body-small text-success-600 font-medium">Verified Account</span>
-          </div>
-        </div>
 
-        {/* Personal Information */}
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Personal Information</h3>
-          <div className="space-y-3">
-            <ProfileInfoCard
-              icon={User}
-              label="Full Name"
-              value={profileData.name}
-              editable={true}
-              field="name"
-            />
-            <ProfileInfoCard
-              icon={Mail}
-              label="Email"
-              value={profileData.email}
-              editable={true}
-              field="email"
-              type="email"
-            />
-            <ProfileInfoCard
-              icon={Phone}
-              label="Phone"
-              value={profileData.phone}
-              editable={true}
-              field="phone"
-              type="tel"
-            />
-            <ProfileInfoCard
-              icon={Calendar}
-              label="Date of Birth"
-              value={profileData.dateOfBirth}
-              editable={true}
-              field="dateOfBirth"
-              type="date"
-            />
+              <button
+                onClick={() => navigate('/settings')}
+                className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
+              >
+                <div className="flex items-center space-x-3">
+                  <Settings className="h-4 w-4 text-slate-600" />
+                  <span className="text-body-regular font-medium text-slate-900">Settings</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-between p-3 bg-error-50 rounded-xl hover:bg-error-100 active:scale-95 transition-transform"
+              >
+                <div className="flex items-center space-x-3">
+                  <LogOut className="h-4 w-4 text-error-600" />
+                  <span className="text-body-regular font-medium text-error-600">Logout</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-red-400" />
+              </button>
+            </div>
           </div>
-        </div>
-
-        {/* Address Information */}
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Address Information</h3>
-          <div className="space-y-3">
-            <ProfileInfoCard
-              icon={MapPin}
-              label="Address"
-              value={profileData.address}
-              editable={true}
-              field="address"
-            />
-          </div>
-        </div>
-
-        {/* Document Information */}
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Documents</h3>
-          <div className="space-y-3">
-            <ProfileInfoCard
-              icon={Shield}
-              label="PAN Number"
-              value={profileData.pan}
-              editable={true}
-              field="pan"
-            />
-            <ProfileInfoCard
-              icon={Shield}
-              label="Aadhar Number"
-              value={profileData.aadhar}
-              editable={true}
-              field="aadhar"
-            />
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-4 shadow-elevation-1 border border-gray-100">
-          <h3 className="text-sm font-semibold text-slate-900 mb-3">Quick Actions</h3>
-          <div className="space-y-2">
-            <button
-              onClick={() => navigate('/notifications')}
-              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
-            >
-              <div className="flex items-center space-x-3">
-                <Bell className="h-4 w-4 text-slate-600" />
-                <span className="text-body-regular font-medium text-slate-900">Notifications</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </button>
-
-            <button
-              onClick={() => navigate('/settings')}
-              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
-            >
-              <div className="flex items-center space-x-3">
-                <Settings className="h-4 w-4 text-slate-600" />
-                <span className="text-body-regular font-medium text-slate-900">Settings</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-slate-400" />
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center justify-between p-3 bg-error-50 rounded-xl hover:bg-error-100 active:scale-95 transition-transform"
-            >
-              <div className="flex items-center space-x-3">
-                <LogOut className="h-4 w-4 text-error-600" />
-                <span className="text-body-regular font-medium text-error-600">Logout</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-red-400" />
-            </button>
-          </div>
-        </div>
-      </main>
+        </main>
       )}
 
       {/* Bottom Navigation - Mobile Only */}

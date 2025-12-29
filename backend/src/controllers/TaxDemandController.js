@@ -3,7 +3,7 @@
 // Handles tax demand management endpoints
 // =====================================================
 
-const taxDemandService = require('../services/business/TaxDemandService');
+const taxDemandService = require('../services/itr/TaxDemandService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 const {
@@ -12,7 +12,7 @@ const {
   validationErrorResponse,
   notFoundResponse,
 } = require('../utils/responseFormatter');
-const auditService = require('../services/business/AuditInformationService');
+const auditService = require('../services/itr/AuditInformationService');
 
 class TaxDemandController {
   /**

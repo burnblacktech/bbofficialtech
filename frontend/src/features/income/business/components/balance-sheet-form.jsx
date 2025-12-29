@@ -47,22 +47,21 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
   }, [balanceSheetData, setValue]);
 
   // Auto-save on change with debounce
-  useEffect(() => {
-    if (!filingId || !balanceSheet?.hasBalanceSheet) return;
-
-    const timeoutId = setTimeout(() => {
-      if (balanceSheet.assets?.total > 0 || balanceSheet.liabilities?.total > 0) {
-        handleSubmit((data) => {
-          updateBalanceSheetMutation.mutate(data);
-          if (onUpdate) {
-            onUpdate({ balanceSheet: data });
-          }
-        })();
+  // Manual Save Handler (Slow Lane)
+  const handleSave = () => {
+    handleSubmit((data) => {
+      updateBalanceSheetMutation.mutate(data);
+      if (onUpdate) {
+        onUpdate({ balanceSheet: data });
       }
-    }, 1000);
+    })();
+  };
 
-    return () => clearTimeout(timeoutId);
-  }, [balanceSheet, filingId, handleSubmit, updateBalanceSheetMutation, onUpdate]);
+  /* Auto-save removed for Slow Lane compliance
+  useEffect(() => {
+    ...
+  }, ...);
+  */
 
   const updateAssetsCategory = (category, field, value) => {
     const numValue = parseFloat(value) || 0;
@@ -131,13 +130,20 @@ const BalanceSheetForm = ({ filingId, selectedITR, onUpdate }) => {
           <FileText className="w-5 h-5" />
           Balance Sheet
         </h3>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium text-sm"
+          >
+            Save Changes
+          </button>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={balanceSheet.hasBalanceSheet || false}
               onChange={(e) => {
                 setValue('hasBalanceSheet', e.target.checked);
+                // Allow immediate toggle for UX, but data entry is manual save
                 if (onUpdate) {
                   onUpdate({ balanceSheet: { ...balanceSheet, hasBalanceSheet: e.target.checked } });
                 }

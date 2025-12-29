@@ -12,7 +12,7 @@ import SourceChip from '../../../../components/UI/SourceChip/SourceChip';
 // Standard deduction limit for FY 2024-25
 const STANDARD_DEDUCTION_LIMIT = 50000;
 
-const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilledFields = {}, sources = {} }) => {
+const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilledFields = {}, sources = {}, readOnly = false }) => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [employers, setEmployers] = useState(data?.employers || []);
   const [showAddEmployer, setShowAddEmployer] = useState(false);
@@ -49,9 +49,10 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
 
   // Handle single salary field change
   const handleSalaryChange = useCallback((value) => {
+    console.log('[SalaryForm] handleSalaryChange:', value, 'Current data:', data);
     const numValue = parseFloat(value) || 0;
     onUpdate({ salary: numValue });
-  }, [onUpdate]);
+  }, [onUpdate, data]);
 
   // Handle breakdown field change
   const handleBreakdownChange = useCallback((field, value) => {
@@ -225,10 +226,10 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
                 type="number"
                 value={data?.salary || 0}
                 onChange={(e) => handleSalaryChange(e.target.value)}
-                className={`w-full pl-8 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-lg font-semibold ${
-                  isAutoFilled('salary') ? 'border-blue-300 bg-blue-50/30' : 'border-slate-300'
-                }`}
+                className={`w-full pl-8 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 text-lg font-semibold ${isAutoFilled('salary') ? 'border-blue-300 bg-blue-50/30' : 'border-slate-300'
+                  }`}
                 placeholder="0"
+                disabled={readOnly}
               />
             </div>
             <p className="text-body-small text-slate-500 mt-1">
@@ -256,6 +257,7 @@ const SalaryForm = ({ data, onUpdate, selectedITR, onForm16Extracted, autoFilled
                       onChange={(e) => handleBreakdownChange(key, e.target.value)}
                       className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500"
                       placeholder="0"
+                      disabled={readOnly}
                     />
                   </div>
                   <p className="text-body-small text-slate-500 mt-0.5">{helpText}</p>

@@ -12,6 +12,7 @@ import {
   Compass,
   Copy,
   Download,
+  FileText,
   RefreshCw,
   Upload,
   X,
@@ -86,6 +87,9 @@ export default function DataSourceSelector({ onProceed }) {
 
   const previousYearRequestedRef = useRef(false);
   const existingFilingRequestedRef = useRef(false);
+  const existingDraftRequestedRef = useRef(false);
+
+  const [existingDraft, setExistingDraft] = useState(null);
 
   const panNumber = selectedPerson?.panNumber || user?.panNumber || null;
   const userId = selectedPerson?.id || user?.id || null;
@@ -164,6 +168,34 @@ export default function DataSourceSelector({ onProceed }) {
       }
     };
     checkExisting();
+  }, [selectedPerson?.id, assessmentYear]);
+
+  // Resume Draft Detection
+  useEffect(() => {
+    const checkDraft = async () => {
+      if (!selectedPerson?.id) return;
+      if (existingDraftRequestedRef.current) return;
+      existingDraftRequestedRef.current = true;
+
+      try {
+        const result = await itrService.getUserDrafts({
+          userId: selectedPerson.id,
+          assessmentYear, // e.g. 2025-26
+          status: 'draft,paused',
+          limit: 1,
+        });
+
+        // Handle various response shapes (array or { drafts: [] })
+        const drafts = Array.isArray(result) ? result : (result?.drafts || []);
+
+        if (drafts.length > 0) {
+          setExistingDraft(drafts[0]);
+        }
+      } catch (e) {
+        // noop
+      }
+    };
+    checkDraft();
   }, [selectedPerson?.id, assessmentYear]);
 
   // When auto-detect finishes successfully in AUTO stage, converge to Recommendation
@@ -624,6 +656,48 @@ export default function DataSourceSelector({ onProceed }) {
 
       <div className="max-w-[960px] mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
         {renderContextStrip()}
+
+        {existingDraft && (
+          <div className="bg-white rounded-xl border border-primary-200 shadow-elevation-2 p-5 mb-5 ring-4 ring-primary-50">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-primary-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-heading-4 font-semibold text-slate-900">Resume your saved draft</h3>
+                <p className="text-body-regular text-slate-600 mt-1">
+                  You have a saved {existingDraft.itrType} draft from {new Date(existingDraft.updatedAt || existingDraft.createdAt).toLocaleDateString()}.
+                </p>
+                <div className="flex items-center gap-3 mt-4">
+                  <button
+                    onClick={() => {
+                      navigate(`/itr/computation?draftId=${existingDraft.id}`, {
+                        state: {
+                          selectedPerson,
+                          assessmentYear,
+                          selectedITR: existingDraft.itrType,
+                        },
+                      });
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 transition-colors shadow-elevation-1"
+                  >
+                    Resume Filing
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Starting a new filing will discard your existing draft. Are you sure?')) { // eslint-disable-line no-alert
+                        setExistingDraft(null);
+                      }
+                    }}
+                    className="px-5 py-2.5 rounded-xl text-slate-600 font-medium hover:bg-slate-50 transition-colors"
+                  >
+                    Discard & Start New
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={springs.gentle}>
           <div className="bg-white rounded-xl border border-slate-200 shadow-elevation-2 p-5 sm:p-6">

@@ -117,10 +117,10 @@ class UserController {
   async updateUserProfile(req, res, next) {
     try {
       const userId = req.user.userId;
-      const { 
-        fullName, 
-        phone, 
-        metadata, 
+      const {
+        fullName,
+        phone,
+        metadata,
         dateOfBirth,
         addressLine1,
         addressLine2,
@@ -131,8 +131,8 @@ class UserController {
 
       // Check if any fields are provided for update
       const hasUserFields = fullName || phone || metadata || dateOfBirth !== undefined;
-      const hasAddressFields = addressLine1 !== undefined || addressLine2 !== undefined || 
-                               city !== undefined || state !== undefined || pincode !== undefined;
+      const hasAddressFields = addressLine1 !== undefined || addressLine2 !== undefined ||
+        city !== undefined || state !== undefined || pincode !== undefined;
 
       if (!hasUserFields && !hasAddressFields) {
         throw new AppError('No fields provided for update', 400);
@@ -171,7 +171,7 @@ class UserController {
 
       // Update UserProfile address fields
       let userProfile = await UserProfile.findOne({ where: { userId: user.id } });
-      
+
       if (hasAddressFields) {
         if (!userProfile) {
           // Create UserProfile if it doesn't exist
@@ -207,7 +207,7 @@ class UserController {
             profileUpdateData.pincode = pincode || null;
             updatedFields.push('pincode');
           }
-          
+
           if (Object.keys(profileUpdateData).length > 0) {
             await userProfile.update(profileUpdateData);
             await userProfile.reload();
@@ -984,10 +984,10 @@ class UserController {
       // Mask account numbers for display
       const maskedAccounts = bankAccounts.map(account => {
         const accountNumber = account.accountNumber;
-        const masked = accountNumber.length > 4 
+        const masked = accountNumber.length > 4
           ? '****' + accountNumber.slice(-4)
           : '****';
-        
+
         return {
           ...account.toJSON(),
           accountNumber: masked,
@@ -1239,7 +1239,7 @@ class UserController {
         });
       }
 
-      const aadhaarVerificationService = require('../services/business/AadhaarVerificationService');
+      const aadhaarVerificationService = require('../services/common/AadhaarVerificationService');
       const verificationResult = await aadhaarVerificationService.verifyAadhaar(aadhaarNumber, userId);
 
       if (!verificationResult.success || !verificationResult.verified) {
@@ -1298,7 +1298,7 @@ class UserController {
       }
 
       // Verify Aadhaar first
-      const aadhaarVerificationService = require('../services/business/AadhaarVerificationService');
+      const aadhaarVerificationService = require('../services/common/AadhaarVerificationService');
       const verificationResult = await aadhaarVerificationService.verifyAadhaar(aadhaarNumber, userId);
 
       if (!verificationResult.success || !verificationResult.verified) {
@@ -1437,7 +1437,7 @@ class UserController {
         attributes: ['aadhaarNumber', 'aadhaarLinked', 'aadhaarVerifiedAt'],
       });
 
-      const aadhaarVerificationService = require('../services/business/AadhaarVerificationService');
+      const aadhaarVerificationService = require('../services/common/AadhaarVerificationService');
       const maskedAadhaar = userProfile?.aadhaarNumber
         ? aadhaarVerificationService.maskAadhaar(userProfile.aadhaarNumber)
         : null;

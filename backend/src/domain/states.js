@@ -158,25 +158,31 @@ const STATE_ALLOWED_ACTIONS = {
     'lock_filing',
     'override_values', // CA/Admin only, with reason
     'recompute_tax', // If data changes
+    'export_json',
+    'edit_data', // Allow editing to trigger re-computation/rollback
   ],
   [ITR_DOMAIN_STATES.LOCKED]: [
     'file_itr',
     'unlock_filing', // Admin only, with reason
+    'export_json',
   ],
   [ITR_DOMAIN_STATES.FILED]: [
     'e_verify',
     'track_submission',
     'download_acknowledgment',
+    'export_json',
   ],
   [ITR_DOMAIN_STATES.ACKNOWLEDGED]: [
     'track_refund',
     'track_itrv',
     'view_acknowledgment',
     'mark_completed',
+    'export_json',
   ],
   [ITR_DOMAIN_STATES.COMPLETED]: [
     'view_history',
     'download_documents',
+    'export_json',
   ],
 };
 

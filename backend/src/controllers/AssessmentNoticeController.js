@@ -3,16 +3,12 @@
 // Handles assessment notice management endpoints
 // =====================================================
 
-const assessmentNoticeService = require('../services/business/AssessmentNoticeService');
+const assessmentNoticeService = require('../services/itr/AssessmentNoticeService');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
-const {
-  successResponse,
-  errorResponse,
-  validationErrorResponse,
-  notFoundResponse,
-} = require('../utils/responseFormatter');
-const auditService = require('../services/business/AuditInformationService');
+const { sendSuccess, sendError } = require('../utils/responseFormatter');
+// const auditService = require('../services/itr/AuditInformationService');
+const auditService = require('../services/itr/AuditInformationService');
 
 class AssessmentNoticeController {
   /**

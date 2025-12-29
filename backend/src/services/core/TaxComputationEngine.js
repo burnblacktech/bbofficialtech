@@ -4,12 +4,12 @@
 
 const enterpriseLogger = require('../../utils/logger');
 const { AppError } = require('../../middleware/errorHandler');
-const BusinessIncomeCalculator = require('../business/BusinessIncomeCalculator');
+const BusinessIncomeCalculator = require('../itr/BusinessIncomeCalculator');
 const {
   DEFAULT_ASSESSMENT_YEAR,
   getDefaultAssessmentYear,
 } = require('../../constants/assessmentYears');
-const ProfessionalIncomeCalculator = require('../business/ProfessionalIncomeCalculator');
+const ProfessionalIncomeCalculator = require('../itr/ProfessionalIncomeCalculator');
 
 class TaxComputationEngine {
   constructor() {
@@ -476,7 +476,7 @@ class TaxComputationEngine {
    * @returns {number} - Age
    */
   calculateAge(dateOfBirth) {
-    if (!dateOfBirth) {return 0;}
+    if (!dateOfBirth) { return 0; }
     const today = new Date();
     const birthDate = new Date(dateOfBirth);
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -704,11 +704,11 @@ class TaxComputationEngine {
       baseTaxLiability,
       simulatedTaxLiability,
       breakdown: {
-        incomeTax: (parseFloat(baseTax.taxComputation?.totalTax || baseTax.totalTax || 0) - 
-                   parseFloat(simulatedTax.taxComputation?.totalTax || simulatedTax.totalTax || 0)),
+        incomeTax: (parseFloat(baseTax.taxComputation?.totalTax || baseTax.totalTax || 0) -
+          parseFloat(simulatedTax.taxComputation?.totalTax || simulatedTax.totalTax || 0)),
         cess: (parseFloat(baseTax.cess || 0) - parseFloat(simulatedTax.cess || 0)),
-        surcharge: (parseFloat(baseTax.taxComputation?.surcharge || 0) - 
-                   parseFloat(simulatedTax.taxComputation?.surcharge || 0)),
+        surcharge: (parseFloat(baseTax.taxComputation?.surcharge || 0) -
+          parseFloat(simulatedTax.taxComputation?.surcharge || 0)),
       },
     };
   }
@@ -760,18 +760,18 @@ class TaxComputationEngine {
     // Apply changes based on scenario type
     if (simulationChanges.type === 'section80C') {
       if (!merged.deductions) merged.deductions = {};
-      merged.deductions.section80C = (parseFloat(merged.deductions.section80C || 0) + 
-                                       parseFloat(simulationChanges.changes.amount || 0));
+      merged.deductions.section80C = (parseFloat(merged.deductions.section80C || 0) +
+        parseFloat(simulationChanges.changes.amount || 0));
       merged.deductions.section80C = Math.min(150000, merged.deductions.section80C);
     } else if (simulationChanges.type === 'section80CCD') {
       if (!merged.deductions) merged.deductions = {};
-      merged.deductions.section80CCD = (parseFloat(merged.deductions.section80CCD || 0) + 
-                                        parseFloat(simulationChanges.changes.amount || 0));
+      merged.deductions.section80CCD = (parseFloat(merged.deductions.section80CCD || 0) +
+        parseFloat(simulationChanges.changes.amount || 0));
       merged.deductions.section80CCD = Math.min(50000, merged.deductions.section80CCD);
     } else if (simulationChanges.type === 'section80D') {
       if (!merged.deductions) merged.deductions = {};
-      merged.deductions.section80D = (parseFloat(merged.deductions.section80D || 0) + 
-                                      parseFloat(simulationChanges.changes.amount || 0));
+      merged.deductions.section80D = (parseFloat(merged.deductions.section80D || 0) +
+        parseFloat(simulationChanges.changes.amount || 0));
       merged.deductions.section80D = Math.min(25000, merged.deductions.section80D);
     } else if (simulationChanges.type === 'hraOptimization') {
       if (!merged.income) merged.income = {};
@@ -785,8 +785,8 @@ class TaxComputationEngine {
     } else if (simulationChanges.type === 'section24') {
       if (!merged.income) merged.income = {};
       if (!merged.income.houseProperty) merged.income.houseProperty = {};
-      merged.income.houseProperty.interestOnLoan = (parseFloat(merged.income.houseProperty.interestOnLoan || 0) + 
-                                                    parseFloat(simulationChanges.changes.interestAmount || 0));
+      merged.income.houseProperty.interestOnLoan = (parseFloat(merged.income.houseProperty.interestOnLoan || 0) +
+        parseFloat(simulationChanges.changes.interestAmount || 0));
       merged.income.houseProperty.interestOnLoan = Math.min(200000, merged.income.houseProperty.interestOnLoan);
     }
 

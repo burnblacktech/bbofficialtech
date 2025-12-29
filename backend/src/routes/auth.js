@@ -213,10 +213,10 @@ router.post('/login',
       );
 
       // Handle both [results, metadata] and direct results array formats
-      const queryResult = Array.isArray(queryResponse) && queryResponse.length > 0 
+      const queryResult = Array.isArray(queryResponse) && queryResponse.length > 0
         ? (Array.isArray(queryResponse[0]) ? queryResponse[0] : queryResponse)
         : [];
-      
+
       // queryResult should be the results array
       const user = Array.isArray(queryResult) && queryResult.length > 0 ? queryResult[0] : null;
 
@@ -241,7 +241,7 @@ router.post('/login',
         user.phoneVerified = user.phone_verified;
         user.tokenVersion = user.token_version;
         user.lastLoginAt = user.last_login_at;
-        user.onboardingCompleted = user.onboarding_completed;
+
       }
 
       if (!user) {
@@ -350,9 +350,11 @@ router.post('/login',
           fullName: user.fullName || user.full_name,
           role: user.role,
           status: user.status,
-          onboardingCompleted: user.onboardingCompleted || user.onboarding_completed || false,
+          status: user.status,
           authProvider: user.authProvider || user.auth_provider,
           hasPassword: !!user.passwordHash,
+
+          profile_picture: user.metadata?.profile_picture,
         },
       });
     } catch (error) {
@@ -476,8 +478,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
         'city',
         'state',
         'pincode',
-        'profileCompleted',
-        'completionPercentage',
+
       ],
     });
 
@@ -498,17 +499,13 @@ router.get('/profile', authenticateToken, async (req, res) => {
         panNumber: user.panNumber,
         panVerified: user.panVerified || false,
         panVerifiedAt: user.panVerifiedAt,
-        onboardingCompleted: user.onboardingCompleted || false,
+
         address: userProfile ? {
           addressLine1: userProfile.addressLine1 || null,
           addressLine2: userProfile.addressLine2 || null,
           city: userProfile.city || null,
           state: userProfile.state || null,
           pincode: userProfile.pincode || null,
-        } : null,
-        profileCompletion: userProfile ? {
-          profileCompleted: userProfile.profileCompleted || false,
-          completionPercentage: typeof userProfile.completionPercentage === 'number' ? userProfile.completionPercentage : 0,
         } : null,
       },
     });
@@ -539,9 +536,9 @@ router.put('/profile', authenticateToken, async (req, res) => {
     }
 
     // Update user fields
-    if (fullName) {user.fullName = fullName;}
-    if (phone) {user.phone = phone;}
-    if (dateOfBirth !== undefined) {user.dateOfBirth = dateOfBirth;}
+    if (fullName) { user.fullName = fullName; }
+    if (phone) { user.phone = phone; }
+    if (dateOfBirth !== undefined) { user.dateOfBirth = dateOfBirth; }
     if (gender !== undefined) {
       // Validate gender value
       if (gender && !['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
@@ -810,12 +807,10 @@ router.get('/google/callback',
         });
 
         const frontendUrl = getOAuthFrontendUrl(req);
-        
+
         // Handle specific error types
-        if (err.message === 'ACCOUNT_LINKING_REQUIRED') {
-          return res.redirect(`${frontendUrl}/auth/google/link-required?email=${encodeURIComponent(info?.email || '')}`);
-        }
-        
+        // ACCOUNT_LINKING_REQUIRED is handled via auto-link now, so we removed that check.
+
         // Handle Google rate limit errors
         if (err.message && (
           err.message.includes('too many requests') ||
@@ -830,12 +825,12 @@ router.get('/google/callback',
           });
           return res.redirect(`${frontendUrl}/login?error=oauth_rate_limit&message=${encodeURIComponent('Too many requests to Google. Please wait 15-30 minutes before trying again.')}`);
         }
-        
+
         // Redirect to error page with error message
         const errorMessage = encodeURIComponent(err.message || 'Authentication failed');
         return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
       }
-      
+
       if (!user) {
         enterpriseLogger.warn('Google OAuth authentication returned no user', {
           info: info,
@@ -847,7 +842,7 @@ router.get('/google/callback',
         const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
         return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
       }
-      
+
       // Attach user to request and continue
       req.user = user;
       req.authInfo = info;
@@ -856,11 +851,8 @@ router.get('/google/callback',
   },
   async (req, res) => {
     try {
-      // Check for account linking error
-      if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') {
-        const frontendUrl = getOAuthFrontendUrl(req);
-        return res.redirect(`${frontendUrl}/auth/google/link-required?email=${encodeURIComponent(req.authInfo.email)}`);
-      }
+      // Check for account linking error - Removed as per U1.1 (Auto-link)
+      // if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') { ... }
 
       const user = req.user;
 
@@ -925,6 +917,8 @@ router.get('/google/callback',
         status: user.status,
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
+
+        profile_picture: user.metadata?.profile_picture,
       };
       const redirectUrl = `${frontendUrl}/auth/google/success?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(userData))}`;
 
@@ -1019,7 +1013,7 @@ router.post('/forgot-password',
       });
 
       if (!user) {
-      // Don't reveal if user exists or not
+        // Don't reveal if user exists or not
         return res.json({
           success: true,
           message: 'If the email exists, a reset link has been sent',
@@ -1058,7 +1052,7 @@ router.post('/forgot-password',
           email,
           error: emailError.message,
         });
-      // Don't fail the request if email fails
+        // Don't fail the request if email fails
       }
 
       enterpriseLogger.info('Password reset token generated', {
@@ -1633,60 +1627,6 @@ router.post('/upgrade-to-professional',
 // =====================================================
 
 // Complete onboarding
-router.post('/complete-onboarding', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const { onboardingCompleted } = req.body;
 
-    // Get user
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found',
-      });
-    }
-
-    // Update onboarding status
-    await user.update({
-      onboardingCompleted: onboardingCompleted || true,
-    });
-
-    // Log audit event
-    await AuditLog.logAuthEvent({
-      userId,
-      event: 'onboarding_completed',
-      details: {
-        onboardingCompleted: onboardingCompleted || true,
-      },
-      ipAddress: req.ip,
-      userAgent: req.get('User-Agent'),
-    });
-
-    enterpriseLogger.info('Onboarding completed', {
-      userId,
-      onboardingCompleted: onboardingCompleted || true,
-    });
-
-    res.json({
-      success: true,
-      message: 'Onboarding completed successfully',
-      data: {
-        onboardingCompleted: user.onboardingCompleted,
-      },
-    });
-
-  } catch (error) {
-    enterpriseLogger.error('Complete onboarding failed', {
-      error: error.message,
-      userId: req.user?.userId,
-    });
-
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-    });
-  }
-});
 
 module.exports = router;

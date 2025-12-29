@@ -67,15 +67,26 @@ const Section44AEForm = ({
   // Check if exceeds vehicle limit
   const exceedsVehicleLimit = vehicles.length >= MAX_VEHICLES;
 
-  // Propagate changes to parent
+  /* Auto-update removed for Slow Lane
   useEffect(() => {
-    onUpdate?.({
-      hasGoodsCarriage,
-      vehicles,
-      totalPresumptiveIncome,
-      totalVehicles: vehicles.length,
-    });
-  }, [hasGoodsCarriage, vehicles, totalPresumptiveIncome, onUpdate]);
+    onUpdate?.({ ... });
+  }, ...);
+  */
+
+  // Manual Save Handler (Slow Lane)
+  const handleSave = () => {
+    if (onUpdate) {
+      onUpdate({
+        hasGoodsCarriage,
+        vehicles,
+        totalPresumptiveIncome,
+        totalVehicles: vehicles.length,
+      });
+      // Assuming toast is available or parent handles it, but for consistency if toast is not imported we skip it
+      // or we can import toast. But let's check imports first.
+      // File has no toast import. We will skip toast notification here or rely on parent feedback.
+    }
+  };
 
   const handleAddVehicle = () => {
     if (exceedsVehicleLimit) return;
@@ -135,6 +146,12 @@ const Section44AEForm = ({
             </p>
           </div>
         </div>
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium text-sm"
+        >
+          Save Changes
+        </button>
       </div>
 
       {/* Goods Carriage Toggle */}

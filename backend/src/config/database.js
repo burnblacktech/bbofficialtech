@@ -31,7 +31,7 @@ const connectionString = process.env.DIRECT_URI || process.env.SUPABASE_DATABASE
 if (connectionString) {
   // Clean connection string (remove quotes if present)
   let cleanConnectionString = connectionString.replace(/^["']|["']$/g, '');
-  
+
   // Auto-encode password if it contains special characters and isn't already encoded
   // Check if password part needs encoding (between : and @)
   const passwordMatch = cleanConnectionString.match(/:\/([^:]+):([^@]+)@/);
@@ -48,51 +48,56 @@ if (connectionString) {
       enterpriseLogger.info('Auto-encoded password in connection string');
     }
   }
-  
+
   enterpriseLogger.info('Initializing Supabase connection', {
     connectionType: process.env.DIRECT_URI ? 'Direct URI' : 'Pooler',
     connectionStringPreview: cleanConnectionString.substring(0, 50) + '...',
     hasSSL: true,
   });
-  
+
   // Use Supabase connection string
-  sequelize = new Sequelize(cleanConnectionString, {
-    dialect: 'postgres',
-    logging: (msg, timing) => {
-      // Log all queries in development, slow queries (> 100ms) in production
-      if (process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
-        enterpriseLogger.debug('Sequelize Query', { query: msg, timing: timing ? `${timing}ms` : undefined });
-      } else if (timing && timing > 100) {
-        enterpriseLogger.warn('Slow Sequelize query detected', {
-          query: msg.substring(0, 200),
-          duration: `${timing}ms`,
-        });
-      }
-    },
-    benchmark: true, // Enable query timing
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false, // Supabase uses self-signed certificates
+  try {
+    sequelize = new Sequelize(cleanConnectionString, {
+      dialect: 'postgres',
+      logging: (msg, timing) => {
+        // Log all queries in development, slow queries (> 100ms) in production
+        if (process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
+          enterpriseLogger.debug('Sequelize Query', { query: msg, timing: timing ? `${timing}ms` : undefined });
+        } else if (timing && timing > 100) {
+          enterpriseLogger.warn('Slow Sequelize query detected', {
+            query: msg.substring(0, 200),
+            duration: `${timing}ms`,
+          });
+        }
       },
-      connectTimeout: 60000,
-      requestTimeout: 60000,
-    },
-    pool: {
-      max: parseInt(process.env.DB_POOL_MAX) || 20,
-      min: parseInt(process.env.DB_POOL_MIN) || 5,
-      acquire: parseInt(process.env.DB_POOL_ACQUIRE) || 30000,
-      idle: parseInt(process.env.DB_POOL_IDLE) || 10000,
-    },
-    define: {
-      timestamps: true,
-      underscored: true,
-      freezeTableName: true,
-    },
-    // Set default schema search path to public
-    schema: 'public',
-  });
-  
+      benchmark: true, // Enable query timing
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false, // Supabase uses self-signed certificates
+        },
+        connectTimeout: 60000,
+        requestTimeout: 60000,
+      },
+      pool: {
+        max: parseInt(process.env.DB_POOL_MAX) || 20,
+        min: parseInt(process.env.DB_POOL_MIN) || 5,
+        acquire: parseInt(process.env.DB_POOL_ACQUIRE) || 30000,
+        idle: parseInt(process.env.DB_POOL_IDLE) || 10000,
+      },
+      define: {
+        timestamps: true,
+        underscored: true,
+        freezeTableName: true,
+      },
+      // Set default schema search path to public
+      schema: 'public',
+    });
+  } catch (err) {
+    console.error('SEQUELIZE INIT ERROR:', err);
+    throw err;
+  }
+
   enterpriseLogger.info(`Using Supabase ${process.env.DIRECT_URI ? 'direct' : 'pooler'} connection`);
 } else {
   // Use individual database configuration
@@ -149,7 +154,7 @@ if (connectionString) {
   };
 
   sequelize = new Sequelize(dbConfig);
-  
+
   if (isSupabase) {
     enterpriseLogger.info('Using Supabase with individual config (SSL enabled)');
   } else {

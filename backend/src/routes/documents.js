@@ -67,65 +67,37 @@ const form16Upload = multer({
   },
 });
 
+// Basic extraction only (Form16OCRService was deprecated/removed)
+// We strictly use pdf-parse for text-based PDFs now.
 router.post('/form16/extract', form16Upload.single('file'), async (req, res) => {
   try {
-    const userId = req.user.userId;
-
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        error: 'No file uploaded',
-      });
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
 
-    enterpriseLogger.info('Processing Form16 extraction', {
-      userId,
-      fileName: req.file.originalname,
-      fileSize: req.file.size,
-      fileType: req.file.mimetype,
-    });
-
-    // Import Form16 OCR service (create if doesn't exist)
-    let Form16OCRService;
-    try {
-      Form16OCRService = require('../services/business/Form16OCRService');
-    } catch (error) {
-      // If service doesn't exist, use basic extraction
-      enterpriseLogger.warn('Form16OCRService not found, using basic extraction', {
-        error: error.message,
-      });
-
-      // Basic extraction - extract text from PDF
+    // Check file type
+    if (req.file.mimetype === 'application/pdf') {
       const pdfParse = require('pdf-parse');
       const extractedText = await pdfParse(req.file.buffer);
 
-      // Process extracted text using pattern matching (similar to frontend)
       const processedData = processForm16Text(extractedText.text);
 
       return res.json({
         success: true,
         extractedText: extractedText.text,
-        extractedData: processedData, // Also include as extractedData for compatibility
+        extractedData: processedData,
         data: processedData,
-        confidence: 0.75,
-        warnings: ['Using basic extraction - Form16OCRService not fully implemented'],
-        message: 'Form16 extracted successfully',
+        confidence: 0.8,
+        message: 'Form16 (Text) extracted successfully',
+      });
+    } else {
+      // Image based fallback using Tesseract (if needed) or just return error for now
+      // The original code fell back to basic extraction which assumed PDF.
+      return res.status(400).json({
+        success: false,
+        error: 'Only text-based PDFs are currently supported for Form 16 extraction.'
       });
     }
-
-    // Use Form16 OCR service if available
-    const result = await Form16OCRService.processDocument(req.file);
-
-    res.json({
-      success: true,
-      extractedText: result.extractedText,
-      extractedData: result.extractedData, // Also include as extractedData for compatibility
-      data: result.extractedData,
-      confidence: result.confidence || 0.85,
-      warnings: result.warnings || [],
-      message: 'Form16 extracted successfully',
-    });
-
   } catch (error) {
     enterpriseLogger.error('Form16 extraction failed', {
       userId: req.user?.userId,
@@ -174,7 +146,7 @@ function processForm16Text(text) {
     if (match && match[1]) {
       const value = match[1].trim().replace(/[₹,]/g, '');
       const numValue = parseFloat(value);
-      
+
       if (key.includes('Name')) {
         if (key.includes('employee')) {
           data.employee.name = value;

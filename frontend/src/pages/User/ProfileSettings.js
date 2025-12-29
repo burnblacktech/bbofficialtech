@@ -88,8 +88,8 @@ const ProfileSettings = () => {
         };
         // Only update if there are changes
         if (updateData.fullName || updateData.phone || updateData.dateOfBirth !== undefined ||
-            updateData.addressLine1 !== undefined || updateData.addressLine2 !== undefined ||
-            updateData.city !== undefined || updateData.state !== undefined || updateData.pincode !== undefined) {
+          updateData.addressLine1 !== undefined || updateData.addressLine2 !== undefined ||
+          updateData.city !== undefined || updateData.state !== undefined || updateData.pincode !== undefined) {
           const response = await apiClient.put('/users/profile', updateData);
           if (!response.data.success) {
             throw new Error(response.data.error || 'Failed to update profile');
@@ -146,21 +146,21 @@ const ProfileSettings = () => {
 
   return (
     <div>
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-heading-2 sm:text-heading-1 font-bold text-slate-900">Profile Settings</h1>
-              <p className="text-body-regular sm:text-body-large text-slate-600 mt-2">Manage your account information and preferences</p>
-            </div>
-            {returnTo ? (
-              <button
-                onClick={() => navigate(returnTo)}
-                className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 flex items-center gap-2 text-body-sm font-medium"
-              >
-                Back to filing
-              </button>
-            ) : (
+      {/* Header */}
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-heading-2 sm:text-heading-1 font-bold text-slate-900">Profile Settings</h1>
+            <p className="text-body-regular sm:text-body-large text-slate-600 mt-2">Manage your account information and preferences</p>
+          </div>
+          {returnTo ? (
+            <button
+              onClick={() => navigate(returnTo)}
+              className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 flex items-center gap-2 text-body-sm font-medium"
+            >
+              Back to filing
+            </button>
+          ) : (
             <button
               onClick={() => navigate('/preferences')}
               className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 flex items-center gap-2 text-body-sm font-medium"
@@ -169,39 +169,38 @@ const ProfileSettings = () => {
               Preferences
               <ExternalLink className="h-4 w-4" />
             </button>
-            )}
-          </div>
+          )}
         </div>
+      </div>
 
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden">
-          {/* Tab Navigation */}
-          <div className="border-b border-slate-200">
-            <nav className="flex space-x-8 px-6">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${
-                      activeTab === tab.id
-                        ? 'border-gold-500 text-gold-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden">
+        {/* Tab Navigation */}
+        <div className="border-b border-slate-200">
+          <nav className="flex space-x-8 px-6">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${activeTab === tab.id
+                      ? 'border-gold-500 text-gold-600'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}
-                  >
-                    <Icon className="w-4 h-4 mr-2" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Tab Content */}
-          <div className="p-6">
-            {renderTabContent()}
-          </div>
+                >
+                  <Icon className="w-4 h-4 mr-2" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
         </div>
+
+        {/* Tab Content */}
+        <div className="p-6">
+          {renderTabContent()}
+        </div>
+      </div>
     </div>
   );
 };
@@ -618,7 +617,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
   // Check if save should be disabled
   const isSaveDisabled = isLoading || isDataLoading ||
     (formData.panNumber && formData.panNumber.length === 10 &&
-     formData.panNumber !== originalPAN && !panVerified);
+      formData.panNumber !== originalPAN && !panVerified);
 
   // Show loading state while user data is being fetched
   if (isDataLoading) {
@@ -651,10 +650,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
           </div>
           <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
             <div
-              className={`h-full transition-all duration-300 ${
-                completionPercentage === 100 ? 'bg-success-500' :
-                completionPercentage >= 70 ? 'bg-gold-500' : 'bg-warning-500'
-              }`}
+              className={`h-full transition-all duration-300 ${completionPercentage === 100 ? 'bg-success-500' :
+                  completionPercentage >= 70 ? 'bg-gold-500' : 'bg-warning-500'
+                }`}
               style={{ width: `${completionPercentage}%` }}
             ></div>
           </div>
@@ -705,10 +703,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
                 disabled={isLoading || isDataLoading || (user?.emailVerified && fieldLockService.shouldLockField('personalInfo', 'name', VERIFICATION_STATUS.VERIFIED).locked)}
-                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                  fieldErrors.fullName ? 'border-error-300 focus:border-error-500' :
-                  fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-slate-300'
-                }`}
+                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.fullName ? 'border-error-300 focus:border-error-500' :
+                    fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-slate-300'
+                  }`}
                 required
                 placeholder="Enter your full name"
               />
@@ -760,10 +757,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
                 disabled={isLoading || isDataLoading}
-                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                  fieldErrors.phone ? 'border-error-300 focus:border-error-500' :
-                  fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-slate-300'
-                }`}
+                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.phone ? 'border-error-300 focus:border-error-500' :
+                    fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-slate-300'
+                  }`}
                 placeholder="10 digit phone number"
               />
               {fieldValidations.phone && formData.phone && formData.phone.length === 10 && !fieldErrors.phone && (
@@ -801,10 +797,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   value={formData.panNumber}
                   onChange={handlePANChange}
                   maxLength={10}
-                  disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 font-mono uppercase disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                    panVerified && formData.panNumber ? 'border-success-300' : 'border-slate-300'
-                  }`}
+                  disabled={isLoading || isDataLoading || (user?.panVerified && originalPAN)}
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 font-mono uppercase disabled:bg-slate-50 disabled:cursor-not-allowed ${panVerified && formData.panNumber ? 'border-success-300' : 'border-slate-300'
+                    }`}
                   placeholder="ABCDE1234F"
                 />
                 {panVerified && formData.panNumber && (
@@ -815,7 +810,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
               {panVerified && formData.panNumber && (
                 <p className="text-body-small text-success-600 flex items-center">
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  PAN Verified
+                  PAN Verified (Locked)
                 </p>
               )}
               {formData.panNumber && formData.panNumber.length === 10 && formData.panNumber !== originalPAN && !panVerified && (
@@ -840,8 +835,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
           )}
           <div>
             <label className="block text-body-regular font-medium text-slate-700 mb-2">
-              Date of Birth
-              <span className="text-body-small text-slate-500 ml-1">(Optional)</span>
+              Date of Birth *
             </label>
             <div className="relative">
               <input
@@ -857,10 +851,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 }}
                 disabled={isLoading || isDataLoading}
                 max={new Date().toISOString().split('T')[0]}
-                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                  fieldErrors.dateOfBirth ? 'border-error-300 focus:border-error-500' :
-                  fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-slate-300'
-                }`}
+                className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.dateOfBirth ? 'border-error-300 focus:border-error-500' :
+                    fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-slate-300'
+                  }`}
               />
               {fieldValidations.dateOfBirth && formData.dateOfBirth && !fieldErrors.dateOfBirth && (
                 <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-success-600" />
@@ -926,10 +919,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                    fieldErrors.addressLine1 ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-slate-300'
-                  }`}
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.addressLine1 ? 'border-error-300 focus:border-error-500' :
+                      fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-slate-300'
+                    }`}
                   required
                   placeholder="Street address, P.O. box"
                 />
@@ -977,10 +969,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                    fieldErrors.city ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.city && formData.city ? 'border-success-300' : 'border-slate-300'
-                  }`}
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.city ? 'border-error-300 focus:border-error-500' :
+                      fieldValidations.city && formData.city ? 'border-success-300' : 'border-slate-300'
+                    }`}
                   required
                   placeholder="City"
                 />
@@ -1015,10 +1006,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                    fieldErrors.state ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.state && formData.state ? 'border-success-300' : 'border-slate-300'
-                  }`}
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.state ? 'border-error-300 focus:border-error-500' :
+                      fieldValidations.state && formData.state ? 'border-success-300' : 'border-slate-300'
+                    }`}
                   required
                   placeholder="State"
                 />
@@ -1056,10 +1046,9 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                     // Auto-save is handled by useAutoSave hook via formData changes
                   }}
                   disabled={isLoading || isDataLoading}
-                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${
-                    fieldErrors.pincode ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-slate-300'
-                  }`}
+                  className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.pincode ? 'border-error-300 focus:border-error-500' :
+                      fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-slate-300'
+                    }`}
                   required
                   placeholder="6 digit pincode (e.g., 400001)"
                   maxLength={6}
@@ -1336,11 +1325,10 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                 type={showPasswords.current ? 'text' : 'password'}
                 value={formData.currentPassword}
                 onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
-                  validationErrors.currentPassword
+                className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${validationErrors.currentPassword
                     ? 'border-error-300'
                     : 'border-slate-300'
-                }`}
+                  }`}
                 required={hasPassword}
               />
               <button
@@ -1367,13 +1355,12 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               type={showPasswords.new ? 'text' : 'password'}
               value={formData.newPassword}
               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
-                validationErrors.newPassword
+              className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${validationErrors.newPassword
                   ? 'border-error-300'
                   : formData.newPassword && passwordStrength.score >= 2
-                  ? 'border-success-300'
-                  : 'border-slate-300'
-              }`}
+                    ? 'border-success-300'
+                    : 'border-slate-300'
+                }`}
               required
               minLength={8}
             />
@@ -1400,11 +1387,10 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className={`h-2 flex-1 rounded ${
-                      i < passwordStrength.score
+                    className={`h-2 flex-1 rounded ${i < passwordStrength.score
                         ? getPasswordStrengthColor()
                         : 'bg-slate-200'
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -1443,13 +1429,12 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               type={showPasswords.confirm ? 'text' : 'password'}
               value={formData.confirmPassword}
               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-              className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${
-                validationErrors.confirmPassword
+              className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${validationErrors.confirmPassword
                   ? 'border-error-300'
                   : formData.confirmPassword && formData.newPassword === formData.confirmPassword
-                  ? 'border-success-300'
-                  : 'border-slate-300'
-              }`}
+                    ? 'border-success-300'
+                    : 'border-slate-300'
+                }`}
               required
               minLength={8}
             />
@@ -1968,13 +1953,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-xl font-mono ${
-                    validationErrors.ifsc
+                  className={`w-full px-3 py-2 border rounded-xl font-mono ${validationErrors.ifsc
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.ifsc && !validationErrors.ifsc && formData.ifsc.length === 11
-                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
-                  }`}
+                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    }`}
                   placeholder="HDFC0001234"
                   maxLength={11}
                 />
@@ -2013,13 +1997,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-xl ${
-                    validationErrors.bankName
+                  className={`w-full px-3 py-2 border rounded-xl ${validationErrors.bankName
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.bankName && !validationErrors.bankName
-                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
-                  }`}
+                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    }`}
                   placeholder="Enter bank name"
                 />
                 {formData.bankName && !validationErrors.bankName && (
@@ -2051,13 +2034,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-xl ${
-                    validationErrors.accountNumber
+                  className={`w-full px-3 py-2 border rounded-xl ${validationErrors.accountNumber
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.accountNumber && !validationErrors.accountNumber
-                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
-                  }`}
+                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    }`}
                   placeholder="Enter account number"
                   minLength={9}
                   maxLength={18}
@@ -2092,13 +2074,12 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                     }
                   }}
                   required
-                  className={`w-full px-3 py-2 border rounded-xl ${
-                    validationErrors.accountHolderName
+                  className={`w-full px-3 py-2 border rounded-xl ${validationErrors.accountHolderName
                       ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
                       : formData.accountHolderName && !validationErrors.accountHolderName
-                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
-                  }`}
+                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    }`}
                   placeholder="Enter account holder name"
                 />
                 {formData.accountHolderName && !validationErrors.accountHolderName && (

@@ -4,8 +4,7 @@
 // =====================================================
 
 const ORDER = [
-  'personalInfo',
-  'income',
+  'income', // V1: Numbers First
   // ITR-3
   'businessIncome',
   'professionalIncome',
@@ -19,9 +18,11 @@ const ORDER = [
   // common
   'deductions',
   'taxesPaid',
-  'bankDetails',
-  'taxComputation',
+  'taxComputation', // Outcome (Step 5)
   'taxOptimizer',
+  // The Gate (Step 6)
+  'personalInfo',
+  'bankDetails',
 ];
 
 function get(obj, path) {

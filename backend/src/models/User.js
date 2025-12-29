@@ -114,12 +114,7 @@ const User = sequelize.define('User', {
     defaultValue: 'active',
     allowNull: false,
   },
-  onboardingCompleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    allowNull: false,
-    field: 'onboarding_completed',
-  },
+
   dateOfBirth: {
     type: DataTypes.DATEONLY,
     allowNull: true,
@@ -185,7 +180,7 @@ const User = sequelize.define('User', {
 });
 
 // Instance methods
-User.prototype.validatePassword = async function(password) {
+User.prototype.validatePassword = async function (password) {
   try {
     return await bcrypt.compare(password, this.passwordHash);
   } catch (error) {
@@ -197,7 +192,9 @@ User.prototype.validatePassword = async function(password) {
   }
 };
 
-User.prototype.toJSON = function() {
+
+
+User.prototype.toJSON = function () {
   const values = Object.assign({}, this.get());
   delete values.passwordHash;
   // Add computed hasPassword field
@@ -207,13 +204,13 @@ User.prototype.toJSON = function() {
 
 // Virtual getter for hasPassword
 Object.defineProperty(User.prototype, 'hasPassword', {
-  get: function() {
+  get: function () {
     return !!this.passwordHash;
   },
 });
 
 // Class methods
-User.hashPassword = async function(password) {
+User.hashPassword = async function (password) {
   try {
     const saltRounds = 12;
     return await bcrypt.hash(password, saltRounds);
@@ -223,7 +220,7 @@ User.hashPassword = async function(password) {
   }
 };
 
-User.findByEmail = async function(email) {
+User.findByEmail = async function (email) {
   try {
     return await User.findOne({ where: { email: email.toLowerCase() } });
   } catch (error) {
@@ -235,7 +232,7 @@ User.findByEmail = async function(email) {
   }
 };
 
-User.findActiveUsers = async function() {
+User.findActiveUsers = async function () {
   try {
     return await User.findAll({
       where: { status: 'active' },
@@ -248,7 +245,7 @@ User.findActiveUsers = async function() {
 };
 
 // Instance methods for assignments
-User.prototype.getAssignedClients = async function() {
+User.prototype.getAssignedClients = async function () {
   try {
     const { Assignment, FamilyMember } = require('./index');
     const assignments = await Assignment.findAll({
@@ -273,7 +270,7 @@ User.prototype.getAssignedClients = async function() {
   }
 };
 
-User.prototype.canAccessClient = async function(clientId) {
+User.prototype.canAccessClient = async function (clientId) {
   try {
     // PlatformAdmin/SUPER_ADMIN can access (with audit)
     if (['SUPER_ADMIN', 'PLATFORM_ADMIN'].includes(this.role)) {
@@ -320,7 +317,7 @@ User.prototype.canAccessClient = async function(clientId) {
   }
 };
 
-User.prototype.getFirmContext = function() {
+User.prototype.getFirmContext = function () {
   return {
     firmId: this.caFirmId,
     role: this.role,

@@ -159,15 +159,15 @@ const Document = sequelize.define('Document', {
 });
 
 // Instance methods
-Document.prototype.getFileSize = function() {
+Document.prototype.getFileSize = function () {
   const bytes = this.sizeBytes;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  if (bytes === 0) {return '0 Bytes';}
+  if (bytes === 0) { return '0 Bytes'; }
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
 };
 
-Document.prototype.getFileIcon = function() {
+Document.prototype.getFileIcon = function () {
   const mimeType = this.mimeType.toLowerCase();
 
   if (mimeType.includes('image')) {
@@ -183,7 +183,7 @@ Document.prototype.getFileIcon = function() {
   }
 };
 
-Document.prototype.getStatusColor = function() {
+Document.prototype.getStatusColor = function () {
   const statusColors = {
     'PENDING': 'yellow',
     'SCANNING': 'blue',
@@ -194,13 +194,13 @@ Document.prototype.getStatusColor = function() {
   return statusColors[this.verificationStatus] || 'gray';
 };
 
-Document.prototype.getDownloadUrl = function() {
+Document.prototype.getDownloadUrl = function () {
   // This would be implemented in the service layer
   // Returns signed URL for S3 or local file URL
   return null;
 };
 
-Document.prototype.softDelete = async function(deletedBy) {
+Document.prototype.softDelete = async function (deletedBy) {
   this.isDeleted = true;
   this.deletedAt = new Date();
   this.deletedBy = deletedBy;
@@ -213,7 +213,7 @@ Document.prototype.softDelete = async function(deletedBy) {
   });
 };
 
-Document.prototype.markVerified = async function() {
+Document.prototype.markVerified = async function () {
   this.verified = true;
   this.verificationStatus = 'VERIFIED';
   await this.save();
@@ -224,7 +224,7 @@ Document.prototype.markVerified = async function() {
   });
 };
 
-Document.prototype.markScanning = async function() {
+Document.prototype.markScanning = async function () {
   this.verificationStatus = 'SCANNING';
   await this.save();
 
@@ -234,7 +234,7 @@ Document.prototype.markScanning = async function() {
   });
 };
 
-Document.prototype.markFailed = async function(reason) {
+Document.prototype.markFailed = async function (reason) {
   this.verificationStatus = 'FAILED';
   this.virusScanResult = {
     ...this.virusScanResult,
@@ -251,7 +251,7 @@ Document.prototype.markFailed = async function(reason) {
 };
 
 // Class methods
-Document.getCategoryLabel = function(category) {
+Document.getCategoryLabel = function (category) {
   const labels = {
     'FORM_16': 'Form 16',
     'BANK_STATEMENT': 'Bank Statement',
@@ -265,7 +265,7 @@ Document.getCategoryLabel = function(category) {
   return labels[category] || 'Unknown';
 };
 
-Document.getAllowedMimeTypes = function() {
+Document.getAllowedMimeTypes = function () {
   return [
     'image/jpeg',
     'image/jpg',
@@ -276,11 +276,11 @@ Document.getAllowedMimeTypes = function() {
   ];
 };
 
-Document.getMaxFileSize = function() {
+Document.getMaxFileSize = function () {
   return 10 * 1024 * 1024; // 10MB
 };
 
-Document.validateFile = function(file) {
+Document.validateFile = function (file) {
   const errors = [];
 
   // Check file size
@@ -304,7 +304,7 @@ Document.validateFile = function(file) {
   };
 };
 
-Document.getUserStorageStats = async function(userId) {
+Document.getUserStorageStats = async function (userId) {
   const stats = await Document.findAll({
     where: {
       userId,
@@ -325,7 +325,7 @@ Document.getUserStorageStats = async function(userId) {
   };
 };
 
-Document.getCategoryStats = async function(userId) {
+Document.getCategoryStats = async function (userId) {
   const stats = await Document.findAll({
     where: {
       userId,
@@ -384,4 +384,4 @@ Document.afterUpdate(async (document) => {
 
 enterpriseLogger.info('Document model defined');
 
-module.exports = { Document };
+module.exports = Document;

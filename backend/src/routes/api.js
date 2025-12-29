@@ -209,6 +209,13 @@ router.use('/ca-marketplace', generalLimiter, require('./ca-marketplace'));
 router.use('/finance', generalLimiter, require('./finance'));
 
 // =====================================================
+// CA WORKSPACE ROUTES (V3)
+// =====================================================
+
+// CA routes (inbox, filing review)
+router.use('/ca', generalLimiter, require('./ca'));
+
+// =====================================================
 // ERROR HANDLING
 // =====================================================
 

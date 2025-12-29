@@ -14,6 +14,7 @@ import { ErrorBoundary as DesignSystemErrorBoundary } from './components/DesignS
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteLoader from './components/UI/RouteLoader';
 import { ITRProvider } from './contexts/ITRContext';
+import { FILING_ROUTES, getAllFilingRoutes } from './routes/filingRoutes';
 
 // Performance monitoring
 import { initWebVitals } from './utils/webVitals';
@@ -40,13 +41,17 @@ const GoogleOAuthError = lazy(() => import('./pages/Auth/GoogleOAuthError'));
 const GoogleOAuthLinkRequired = lazy(() => import('./pages/Auth/GoogleOAuthLinkRequired'));
 
 // Onboarding / gates
-const CompleteProfileGate = lazy(() => import('./pages/Onboarding/CompleteProfileGate'));
+
 
 // CA Registration components
 const RegisterCAFirm = lazy(() => import('./pages/CA/RegisterCAFirm'));
 const RegistrationSuccess = lazy(() => import('./pages/CA/RegistrationSuccess'));
 const CAMarketplace = lazy(() => import('./pages/CA/Marketplace'));
 const CAProfile = lazy(() => import('./pages/CA/CAProfile'));
+const CACheckout = lazy(() => import('./pages/CA/Checkout'));
+const CASubscriptionPlans = lazy(() => import('./pages/CA/SubscriptionPlans'));
+const CAAnalytics = lazy(() => import('./pages/CA/CAAnalytics'));
+const CAClientManagement = lazy(() => import('./pages/CA/CAClientManagement'));
 
 // Admin components
 const AdminLogin = lazy(() => import('./pages/Admin/AdminLogin'));
@@ -87,15 +92,22 @@ const ClientList = lazy(() => import('./pages/Firm/ClientList'));
 const ClientOnboardingForm = lazy(() => import('./pages/Firm/ClientOnboardingForm'));
 const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
 
+const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
+
+// CA Workspace V3
+const CAInbox = lazy(() => import('./pages/CA/CAInbox'));
+const CAFilingReview = lazy(() => import('./pages/CA/CAFilingReview'));
+
 // User pages
 const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
-const StartFiling = lazy(() => import('./pages/ITR/StartFiling'));
+
+// ITR Components (Restored)
 const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
-const FilingPersonSelector = lazy(() => import('./components/ITR/FilingPersonSelector'));
-const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
-const ITRFormRecommender = lazy(() => import('./components/ITR/ITRFormRecommender'));
-const ITRComputation = lazy(() => import('./pages/ITR/ITRComputation'));
-const DetermineITR = lazy(() => import('./pages/ITR/DetermineITR'));
+// const FilingPersonSelector = lazy(() => import('./components/ITR/FilingPersonSelector')); // Loaded via filingRoutes
+// const ITRFormRecommender = lazy(() => import('./components/ITR/ITRFormRecommender')); // Loaded via filingRoutes
+// const ITRComputation = lazy(() => import('./pages/ITR/ITRComputation')); // Loaded via filingRoutes
+// const DetermineITR = lazy(() => import('./pages/ITR/DetermineITR')); // Loaded via filingRoutes
+
 const RefundTracking = lazy(() => import('./pages/ITR/RefundTracking'));
 const ITRVTracking = lazy(() => import('./pages/ITR/ITRVTracking'));
 const AssessmentNotices = lazy(() => import('./pages/ITR/AssessmentNotices'));
@@ -103,13 +115,6 @@ const TaxDemands = lazy(() => import('./pages/ITR/TaxDemands'));
 const FilingAnalytics = lazy(() => import('./pages/ITR/FilingAnalytics'));
 const EVerification = lazy(() => import('./pages/ITR/EVerification'));
 const Acknowledgment = lazy(() => import('./pages/Acknowledgment'));
-const ITRFormSelection = lazy(() => import('./pages/ITR/ITRFormSelection'));
-const ITRModeSelection = lazy(() => import('./pages/ITR/ITRModeSelection'));
-const ITRDirectSelection = lazy(() => import('./pages/ITR/ITRDirectSelection'));
-const IncomeSourceSelector = lazy(() => import('./pages/ITR/IncomeSourceSelector'));
-const DocumentUploadHub = lazy(() => import('./pages/ITR/DocumentUploadHub'));
-const DataSourceSelector = lazy(() => import('./components/ITR/DataSourceSelector'));
-const ITRReview = lazy(() => import('./pages/ITR/ITRReview'));
 const PreviousYearSelector = lazy(() => import('./features/itr/components/previous-year-selector'));
 const PreviousYearPreview = lazy(() => import('./features/itr/components/previous-year-preview'));
 const PreviousYearReview = lazy(() => import('./features/itr/components/previous-year-review'));
@@ -314,6 +319,16 @@ const AppContent = () => {
             <Layout>
               <Suspense fallback={<RouteLoader message="Loading marketplace..." />}>
                 <CAMarketplace />
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/ca/plans"
+          element={
+            <Layout>
+              <Suspense fallback={<RouteLoader message="Loading subscription plans..." />}>
+                <CASubscriptionPlans />
               </Suspense>
             </Layout>
           }
@@ -702,130 +717,57 @@ const AppContent = () => {
               </Layout>
             }
           />
+          <Route
+            path="/ca/clients/manage"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading client management..." />}>
+                  <CAClientManagement />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/ca/analytics"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading analytics..." />}>
+                  <CAAnalytics />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/ca/checkout"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading checkout..." />}>
+                  <CACheckout />
+                </Suspense>
+              </Layout>
+            }
+          />
 
-          {/* ITR Filing Routes */}
+
+          {/* V3 CA Workspace */}
           <Route
-            path="/itr/select-person"
+            path="/ca/inbox"
             element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading person selector..." />}>
-                  <FilingPersonSelector />
-                </Suspense>
-              </Layout>
+              <Suspense fallback={<RouteLoader message="Loading inbox..." />}>
+                <CAInbox />
+              </Suspense>
             }
           />
           <Route
-            path="/itr/pan-verification"
+            path="/ca/filing/:filingId"
             element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading PAN verification..." />}>
-                  <PANVerification />
-                </Suspense>
-              </Layout>
+              <Suspense fallback={<RouteLoader message="Loading filing review..." />}>
+                <CAFilingReview />
+              </Suspense>
             }
           />
-          <Route
-            path="/itr/recommend-form"
-            element={
-              <Layout>
-                <ITRDetermineRedirect />
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/determine"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Determining ITR..." />}>
-                  <DetermineITR />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/data-source"
-            element={
-              <Layout>
-                <ITRDetermineRedirect />
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/select-form"
-            element={
-              <Layout>
-                <ITRDetermineRedirect />
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/mode-selection"
-            element={
-              <Layout>
-                <ITRDetermineRedirect />
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/direct-selection"
-            element={
-              <Layout>
-                <ITRDetermineRedirect />
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/income-sources"
-            element={
-              <Layout>
-                <ITRDetermineRedirect />
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/document-upload"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading document upload..." />}>
-                  <DocumentUploadHub />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/review"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading review..." />}>
-                  <ITRReview />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/computation"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading ITR computation..." />}>
-                  <DesignSystemErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>
-                    <ITRComputation />
-                  </DesignSystemErrorBoundary>
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/filing/:filingId/*"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading ITR filing..." />}>
-                  <DesignSystemErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>
-                    <ITRComputation />
-                  </DesignSystemErrorBoundary>
-                </Suspense>
-              </Layout>
-            }
-          />
+
+          {/* ITR Features */}
           <Route
             path="/itr/previous-year-selector"
             element={
@@ -856,17 +798,22 @@ const AppContent = () => {
               </Layout>
             }
           />
-          {/* Legacy route - redirects to select-person */}
-          <Route
-            path="/itr/start"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading filing start..." />}>
-                  <StartFiling />
-                </Suspense>
-              </Layout>
-            }
-          />
+
+          {/* Centralized Filing Routes */}
+          {getAllFilingRoutes().map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <Layout>
+                  <Suspense fallback={<RouteLoader message={`Loading ${route.title || 'filing'}...`} />}>
+                    <route.component />
+                  </Suspense>
+                </Layout>
+              }
+            />
+          ))}
+
           <Route
             path="/filing-history"
             element={
@@ -899,16 +846,7 @@ const AppContent = () => {
               </Layout>
             }
           />
-          <Route
-            path="/onboarding/complete-profile"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading profile gate..." />}>
-                  <CompleteProfileGate />
-                </Suspense>
-              </Layout>
-            }
-          />
+
           <Route
             path="/itr/assessment-notices"
             element={

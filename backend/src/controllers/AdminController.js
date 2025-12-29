@@ -41,7 +41,7 @@ class AdminController {
       // This approach works reliably and avoids model column issues
       let queryResult;
       let user = null;
-      
+
       try {
         // First, check database connection and verify user exists
         const connectionCheck = await sequelize.query(
@@ -133,7 +133,7 @@ class AdminController {
         user.phoneVerified = user.phone_verified;
         user.tokenVersion = user.token_version;
         user.lastLoginAt = user.last_login_at;
-        user.onboardingCompleted = user.onboarding_completed;
+
       }
 
       if (!user) {
@@ -141,7 +141,7 @@ class AdminController {
           email: email.toLowerCase(),
           ip: req.ip,
         });
-        
+
         // Log failed attempt
         await AuditLog.logAuthEvent({
           userId: null,
@@ -415,7 +415,7 @@ class AdminController {
           whereClause.id = { [Op.notIn]: userIds };
         }
       }
-      
+
       if (req.query.hasPayments === 'true') {
         // Users with at least one paid invoice
         const usersWithPayments = await Invoice.findAll({
@@ -906,7 +906,7 @@ class AdminController {
       const currentPeriodUsers = await User.count({
         where: { createdAt: { [Op.gte]: weekAgo } }
       });
-      const userGrowth = previousPeriodUsers > 0 
+      const userGrowth = previousPeriodUsers > 0
         ? ((currentPeriodUsers - previousPeriodUsers) / previousPeriodUsers * 100).toFixed(1)
         : 0;
 
@@ -950,14 +950,14 @@ class AdminController {
 
       const prevRevenue = parseFloat(previousPeriodRevenue[0]?.total) || 0;
       const currRevenue = parseFloat(currentPeriodRevenue[0]?.total) || 0;
-      const revenueGrowth = prevRevenue > 0 
+      const revenueGrowth = prevRevenue > 0
         ? ((currRevenue - prevRevenue) / prevRevenue * 100).toFixed(1)
         : 0;
 
       // Calculate filing completion rate
       const totalFilings = filingStats.totalFilings;
       const completedFilings = filingStats.acknowledgedFilings || 0;
-      const completionRate = totalFilings > 0 
+      const completionRate = totalFilings > 0
         ? ((completedFilings / totalFilings) * 100).toFixed(1)
         : 0;
 
@@ -1272,7 +1272,7 @@ class AdminController {
       const retentionCohorts = this._calculateRetentionCohorts(users, startDate, endDate);
 
       // Calculate retention rate
-      const activeInPeriod = users.filter(u => 
+      const activeInPeriod = users.filter(u =>
         u.lastLoginAt && moment(u.lastLoginAt).isAfter(moment(startDate))
       ).length;
       const retentionRate = users.length > 0 ? (activeInPeriod / users.length) * 100 : 0;
@@ -1453,7 +1453,7 @@ class AdminController {
     users.forEach(user => {
       const signupDate = moment(user.createdAt);
       const cohortKey = signupDate.format('YYYY-MM');
-      
+
       if (!cohorts[cohortKey]) {
         cohorts[cohortKey] = {
           cohort: cohortKey,
@@ -1464,12 +1464,12 @@ class AdminController {
       }
 
       cohorts[cohortKey].totalUsers += 1;
-      
+
       if (user.lastLoginAt) {
         const lastLogin = moment(user.lastLoginAt);
         const daysSinceSignup = now.diff(signupDate, 'days');
         const daysSinceLogin = now.diff(lastLogin, 'days');
-        
+
         // Active if logged in within last 30 days
         if (daysSinceLogin <= 30 && daysSinceSignup >= 7) {
           cohorts[cohortKey].activeUsers += 1;
@@ -1731,7 +1731,7 @@ class AdminController {
         });
 
         // Calculate retention
-        const activeInPeriod = users.filter(u => 
+        const activeInPeriod = users.filter(u =>
           u.lastLoginAt && moment(u.lastLoginAt).isAfter(moment(startDate))
         ).length;
         responseData.userMetrics.retentionRate = users.length > 0
@@ -1803,9 +1803,9 @@ class AdminController {
         };
 
         filings.forEach(filing => {
-          responseData.filingMetrics.byType[filing.itrType] = 
+          responseData.filingMetrics.byType[filing.itrType] =
             (responseData.filingMetrics.byType[filing.itrType] || 0) + 1;
-          responseData.filingMetrics.byStatus[filing.status] = 
+          responseData.filingMetrics.byStatus[filing.status] =
             (responseData.filingMetrics.byStatus[filing.status] || 0) + 1;
         });
       }
@@ -1858,7 +1858,7 @@ class AdminController {
         };
 
         invoices.forEach(invoice => {
-          responseData.revenueMetrics.byType[invoice.type] = 
+          responseData.revenueMetrics.byType[invoice.type] =
             (responseData.revenueMetrics.byType[invoice.type] || 0) + parseFloat(invoice.totalAmount || 0);
         });
       }
@@ -2273,7 +2273,7 @@ class AdminController {
       // Revoke impersonation session
       const authHeader = req.headers['authorization'];
       const token = authHeader && authHeader.split(' ')[1];
-      
+
       if (token) {
         try {
           // Find and revoke the impersonation session
@@ -2381,7 +2381,7 @@ class AdminController {
       }
 
       const oldStatus = user.status;
-      
+
       // Soft delete: Set status to inactive and mark as deleted in metadata
       user.status = 'inactive';
       const metadata = user.metadata || {};
@@ -2390,7 +2390,7 @@ class AdminController {
       metadata.deletedBy = adminId;
       metadata.deleteReason = reason || 'Deleted by admin';
       user.metadata = metadata;
-      
+
       await user.save();
 
       // Revoke all sessions
@@ -3086,18 +3086,18 @@ class AdminController {
    * Get user statistics
    */
   async getUserStats() {
-      const stats = await User.findAll({
-        attributes: [
-          [sequelize.fn('COUNT', sequelize.col('id')), 'totalUsers'],
-          [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'active\' THEN 1 END')), 'activeUsers'],
-          [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'inactive\' THEN 1 END')), 'inactiveUsers'],
-          [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'suspended\' THEN 1 END')), 'suspendedUsers'],
-          [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'END_USER\' THEN 1 END')), 'regularUsers'],
-          [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'CA\' THEN 1 END')), 'caUsers'],
-          [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role IN (\'SUPER_ADMIN\', \'PLATFORM_ADMIN\') THEN 1 END')), 'adminUsers'],
-        ],
-        raw: true,
-      });
+    const stats = await User.findAll({
+      attributes: [
+        [sequelize.fn('COUNT', sequelize.col('id')), 'totalUsers'],
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'active\' THEN 1 END')), 'activeUsers'],
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'inactive\' THEN 1 END')), 'inactiveUsers'],
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN status = \'suspended\' THEN 1 END')), 'suspendedUsers'],
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'END_USER\' THEN 1 END')), 'regularUsers'],
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role = \'CA\' THEN 1 END')), 'caUsers'],
+        [sequelize.fn('COUNT', sequelize.literal('CASE WHEN role IN (\'SUPER_ADMIN\', \'PLATFORM_ADMIN\') THEN 1 END')), 'adminUsers'],
+      ],
+      raw: true,
+    });
 
     return {
       totalUsers: parseInt(stats[0].totalUsers) || 0,
@@ -3972,9 +3972,9 @@ class AdminController {
       const completedFilings = filings.filter(f => f.submittedAt && f.acknowledgedAt);
       const avgCompletionTime = completedFilings.length > 0
         ? completedFilings.reduce((sum, f) => {
-            const days = moment(f.acknowledgedAt).diff(moment(f.submittedAt), 'days');
-            return sum + days;
-          }, 0) / completedFilings.length
+          const days = moment(f.acknowledgedAt).diff(moment(f.submittedAt), 'days');
+          return sum + days;
+        }, 0) / completedFilings.length
         : 0;
 
       // Deduction patterns (from jsonPayload if available)
@@ -5165,23 +5165,23 @@ class AdminController {
     try {
       const { timeRange = '30d' } = req.query;
       const adminId = req.user.id;
-      
+
       // Calculate date range
       const now = new Date();
       const daysAgo = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
       const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
-      
+
       // Get user stats
       const [totalUsers, activeUsers, newUsersThisMonth] = await Promise.all([
         User.count(),
         User.count({ where: { status: 'active' } }),
-        User.count({ 
-          where: { 
-            createdAt: { [Op.gte]: new Date(now.getFullYear(), now.getMonth(), 1) } 
-          } 
+        User.count({
+          where: {
+            createdAt: { [Op.gte]: new Date(now.getFullYear(), now.getMonth(), 1) }
+          }
         }),
       ]);
-      
+
       // Get previous period for growth calculation
       const previousStartDate = new Date(startDate.getTime() - daysAgo * 24 * 60 * 60 * 1000);
       const previousPeriodUsers = await User.count({
@@ -5190,19 +5190,19 @@ class AdminController {
       const currentPeriodUsers = await User.count({
         where: { createdAt: { [Op.gte]: startDate } }
       });
-      const userGrowth = previousPeriodUsers > 0 
+      const userGrowth = previousPeriodUsers > 0
         ? ((currentPeriodUsers - previousPeriodUsers) / previousPeriodUsers * 100).toFixed(1)
         : 0;
-      
+
       // Get revenue stats
       const revenueData = await this.getRevenueStats(startDate, now);
-      
+
       // Get filing stats
       const filingData = await this.getFilingStatsWithGrowth(startDate, now, previousStartDate);
-      
+
       // Get system health
       const systemHealth = await this.getSystemHealthMetrics();
-      
+
       res.json({
         success: true,
         data: {
@@ -5234,7 +5234,7 @@ class AdminController {
         },
       });
     } catch (error) {
-      enterpriseLogger.error('Failed to get platform stats', { 
+      enterpriseLogger.error('Failed to get platform stats', {
         error: error.message,
         adminId: req.user?.id,
         stack: error.stack,
@@ -5274,7 +5274,7 @@ class AdminController {
 
     const currentTotal = parseFloat(currentPeriodRevenue[0]?.total) || 0;
     const previousTotal = parseFloat(previousPeriodRevenue[0]?.total) || 0;
-    const growth = previousTotal > 0 
+    const growth = previousTotal > 0
       ? ((currentTotal - previousTotal) / previousTotal * 100).toFixed(1)
       : 0;
 
@@ -5309,7 +5309,7 @@ class AdminController {
     });
 
     const currentTotal = parseInt(currentPeriodFilings[0]?.total) || 0;
-    const growth = previousPeriodFilings > 0 
+    const growth = previousPeriodFilings > 0
       ? ((currentTotal - previousPeriodFilings) / previousPeriodFilings * 100).toFixed(1)
       : 0;
 
@@ -5328,17 +5328,17 @@ class AdminController {
     const uptime = process.uptime();
     const uptimeHours = uptime / 3600;
     const uptimePercent = uptimeHours > 0 ? Math.min(99.9, 100 - (uptimeHours / 8760 * 100)).toFixed(2) : 99.9;
-    
+
     // Get memory usage
     const memUsage = process.memoryUsage();
     const memoryUsage = Math.round((memUsage.heapUsed / memUsage.heapTotal) * 100);
-    
+
     // Estimate CPU usage (simplified - in production use system monitoring)
     const cpuUsage = Math.min(100, Math.round(Math.random() * 30 + 50)); // Placeholder: 50-80%
-    
+
     // Estimate disk usage (simplified - in production use system monitoring)
     const diskUsage = Math.min(100, Math.round(Math.random() * 20 + 40)); // Placeholder: 40-60%
-    
+
     // Estimate response time (simplified - in production track actual response times)
     const responseTime = Math.round(Math.random() * 100 + 200); // Placeholder: 200-300ms
 
@@ -5359,13 +5359,13 @@ class AdminController {
     try {
       const adminId = req.user.id;
       const healthMetrics = await this.getSystemHealthMetrics();
-      
+
       // Determine overall status
-      const status = healthMetrics.cpuUsage > 90 || healthMetrics.memoryUsage > 90 
-        ? 'warning' 
+      const status = healthMetrics.cpuUsage > 90 || healthMetrics.memoryUsage > 90
+        ? 'warning'
         : healthMetrics.cpuUsage > 95 || healthMetrics.memoryUsage > 95
-        ? 'critical'
-        : 'healthy';
+          ? 'critical'
+          : 'healthy';
 
       res.status(200).json({
         success: true,
@@ -5475,7 +5475,7 @@ class AdminController {
       // Load from database settings table
       const { PlatformSettings } = require('../models');
       const dbSettings = await PlatformSettings.getSetting('platform', null);
-      
+
       // Merge default settings with database settings (database takes precedence)
       const settings = dbSettings ? { ...defaultSettings, ...dbSettings } : defaultSettings;
 
@@ -5699,7 +5699,7 @@ class AdminController {
         users.map(async (user) => {
           const metadata = user.metadata || {};
           const limits = metadata.limits || {};
-          
+
           // Get current month and year filing counts
           const now = new Date();
           const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -6209,7 +6209,7 @@ class AdminController {
       });
 
       const completedFilings = completedFilingsData.length;
-      
+
       // Calculate average completion time (from creation to acknowledgment)
       let averageCompletionTime = 0;
       if (completedFilings > 0) {
@@ -6220,7 +6220,7 @@ class AdminController {
             const acknowledged = new Date(f.acknowledgedAt);
             return (acknowledged - created) / (1000 * 60 * 60); // Convert to hours
           });
-        
+
         if (completionTimes.length > 0) {
           averageCompletionTime = completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length;
         }
@@ -6230,7 +6230,7 @@ class AdminController {
       const totalFilings = await ITRFiling.count({
         where: { firmId: id },
       });
-      
+
       const rejectedFilings = await ITRFiling.count({
         where: {
           firmId: id,
@@ -6238,7 +6238,7 @@ class AdminController {
         },
       });
 
-      const errorRate = totalFilings > 0 
+      const errorRate = totalFilings > 0
         ? ((rejectedFilings / totalFilings) * 100).toFixed(2)
         : 0;
 
@@ -6277,7 +6277,7 @@ class AdminController {
             const resolved = new Date(t.resolvedAt);
             return (resolved - created) / (1000 * 60 * 60); // Convert to hours
           });
-        
+
         if (responseTimes.length > 0) {
           averageResponseTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
         }
@@ -6535,7 +6535,7 @@ class AdminController {
         if (pendingAmount > 0) {
           // Get existing payout history or initialize empty array
           const payoutHistory = metadata.payoutHistory || [];
-          
+
           // Add new payout to history
           payoutHistory.push({
             date: new Date().toISOString(),
@@ -7404,7 +7404,7 @@ class AdminController {
         reason,
       });
       metadata.verificationHistory = verificationHistory;
-      
+
       await user.update({ metadata });
 
       // Log audit event
@@ -7517,7 +7517,7 @@ class AdminController {
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (days > 0) {
       return `${days}d ${hours}h ${minutes}m`;
     } else if (hours > 0) {
@@ -7783,7 +7783,7 @@ class AdminController {
       // Store communication in metadata
       const metadata = user.metadata || {};
       const communicationHistory = metadata.communicationHistory || [];
-      
+
       const uuidv4 = require('uuid').v4;
       const communication = {
         id: uuidv4(),
@@ -8212,19 +8212,19 @@ class AdminController {
       const oldGroupName = decodeURIComponent(id);
 
       if (name && name !== oldGroupName) {
-      // Rename group - get all users and filter those with this group
-      const allUsers = await User.findAll({
-        where: {
-          metadata: {
-            [Op.ne]: null,
+        // Rename group - get all users and filter those with this group
+        const allUsers = await User.findAll({
+          where: {
+            metadata: {
+              [Op.ne]: null,
+            },
           },
-        },
-      });
+        });
 
-      const users = allUsers.filter(user => {
-        const groups = user.metadata?.groups || [];
-        return groups.includes(oldGroupName);
-      });
+        const users = allUsers.filter(user => {
+          const groups = user.metadata?.groups || [];
+          return groups.includes(oldGroupName);
+        });
 
         const newGroupName = name.trim().toLowerCase();
         for (const user of users) {
@@ -8811,7 +8811,7 @@ class AdminController {
       }
 
       // Get template
-      const template = await this.getUserTemplate({ params: { id } }, { status: () => {}, json: () => {} }, () => {});
+      const template = await this.getUserTemplate({ params: { id } }, { status: () => { }, json: () => { } }, () => { });
       if (!template) {
         throw new AppError('Template not found', 404);
       }
@@ -8890,7 +8890,7 @@ class AdminController {
     try {
       const { metrics, dimensions, filters, aggregation } = req.body;
 
-      const reportBuilderService = require('../services/business/ReportBuilderService');
+      const reportBuilderService = require('../services/itr/ReportBuilderService');
       const result = await reportBuilderService.buildCustomReport({
         metrics,
         dimensions,

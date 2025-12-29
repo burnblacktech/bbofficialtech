@@ -131,7 +131,7 @@ const handleTokenRefresh = async (req, res) => {
   try {
     // Try to get refresh token from cookie first, then from body
     let refreshToken = req.cookies.refreshToken;
-    
+
     if (!refreshToken && req.body && req.body.refreshToken) {
       refreshToken = req.body.refreshToken;
     }
@@ -211,7 +211,7 @@ const handleTokenRefresh = async (req, res) => {
         fullName: user.fullName,
         role: user.role,
         status: user.status,
-        onboardingCompleted: user.onboardingCompleted,
+
       },
     });
 

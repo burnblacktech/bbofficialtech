@@ -24,6 +24,7 @@ const ITR_CARDS = [
     name: 'ITR-1 (SAHAJ)',
     icon: Briefcase,
     accent: 'bg-primary-500',
+    description: 'For salaried individuals with income up to ₹50 Lakh and one house property.',
     eligibility: [
       'Salary / Pension up to ₹50 lakh',
       'One house property',
@@ -45,6 +46,7 @@ const ITR_CARDS = [
     name: 'ITR-2',
     icon: TrendingUp,
     accent: 'bg-ember-500',
+    description: 'For salaried individuals with capital gains, foreign income, or multiple properties.',
     eligibility: [
       'Everything in ITR-1, PLUS:',
       'Capital gains (stocks, mutual funds, property)',
@@ -62,6 +64,7 @@ const ITR_CARDS = [
     name: 'ITR-3',
     icon: Building2,
     accent: 'bg-gold-500',
+    description: 'For individuals with income from business or profession (intraday, F&O, etc.).',
     eligibility: [
       'Everything in ITR-2, PLUS:',
       'Business or professional income',
@@ -76,6 +79,7 @@ const ITR_CARDS = [
     name: 'ITR-4 (SUGAM)',
     icon: Calculator,
     accent: 'bg-emerald-500',
+    description: 'For small businesses and professionals opting for presumptive taxation.',
     eligibility: [
       'For presumptive taxation (Section 44AD/44ADA/44AE):',
       'Small business turnover up to ₹2 crore',
@@ -134,6 +138,10 @@ const ITRSelectionCards = ({ onSelect, selectedITR = null, onHelp = null }) => {
               </div>
 
               <div className="mb-2 flex-1 min-h-0">
+                <div className="mb-3 text-sm text-slate-600 font-medium border-b border-slate-100 pb-2">
+                  {itr.description}
+                </div>
+
                 <div className="flex items-start gap-1.5 mb-1">
                   <CheckCircle className="w-3 h-3 text-emerald-500 flex-shrink-0 mt-0.5" />
                   <div className="text-body-small text-slate-700 leading-tight">

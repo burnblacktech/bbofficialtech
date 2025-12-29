@@ -3,7 +3,7 @@
 // Fetches and parses AIS data from Income Tax Department via ERI
 // =====================================================
 
-const ERIService = require('../ERIService');
+const eriIntegrationService = require('../business/ERIIntegrationService');
 const enterpriseLogger = require('../../utils/logger');
 
 class AISService {
@@ -21,7 +21,7 @@ class AISService {
       });
 
       // Fetch AIS data from ERI service
-      const eriResult = await ERIService.getAIS(pan, assessmentYear);
+      const eriResult = await eriIntegrationService.getAIS(pan, assessmentYear);
 
       if (!eriResult.success || !eriResult.data) {
         throw new Error('Failed to fetch AIS data from ERI');

@@ -40,25 +40,18 @@ const HomeRedirect = () => {
     case 'CA_FIRM_ADMIN':
       return <Navigate to="/firm/dashboard" replace />;
     case 'CA_FIRM_SENIOR_CA':
-      return <Navigate to="/firm/clients" replace />;
     case 'CA_FIRM_CA':
-      return <Navigate to="/firm/clients" replace />;
     case 'CA_FIRM_JUNIOR_CA':
-      return <Navigate to="/firm/tasks" replace />;
     case 'CA_FIRM_ASSISTANT':
-      return <Navigate to="/firm/tasks" replace />;
+      return <Navigate to="/ca/clients" replace />;
 
     // Independent CAs - Self-registered practices
     case 'INDEPENDENT_CA_ADMIN':
-      return <Navigate to="/independent/dashboard" replace />;
     case 'INDEPENDENT_CA_SENIOR_CA':
-      return <Navigate to="/independent/clients" replace />;
     case 'INDEPENDENT_CA':
-      return <Navigate to="/independent/clients" replace />;
     case 'INDEPENDENT_CA_JUNIOR':
-      return <Navigate to="/independent/tasks" replace />;
     case 'INDEPENDENT_CA_ASSISTANT':
-      return <Navigate to="/independent/tasks" replace />;
+      return <Navigate to="/ca/clients" replace />;
 
     // Legacy roles for backward compatibility
     case 'CA':

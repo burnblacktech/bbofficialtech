@@ -4,6 +4,7 @@
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiClient } from '../../services';
 import { toast } from 'react-hot-toast';
@@ -26,6 +27,7 @@ import InvoiceBadge from '../../components/ITR/InvoiceBadge';
 
 const CAStaffDashboard = () => {
   const { user } = useAuth();
+  const routerNavigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [assignedClients, setAssignedClients] = useState([]);
   const [filings, setFilings] = useState([]);
@@ -128,6 +130,11 @@ const CAStaffDashboard = () => {
     }
   };
 
+  // Navigate to ITR filing for review
+  const handleReviewFiling = (filingId) => {
+    routerNavigate(`/itr/computation?filingId=${filingId}`);
+  };
+
   const filteredClients = assignedClients.filter(client =>
     client.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.email.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -172,7 +179,7 @@ const CAStaffDashboard = () => {
         </div>
       </div>
 
-        {/* Stats Cards */}
+      {/* Stats Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow p-6">
@@ -277,11 +284,10 @@ const CAStaffDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 <tab.icon className="h-4 w-4 mr-2" />
                 {tab.label}
@@ -351,9 +357,8 @@ const CAStaffDashboard = () => {
                           <div className="text-body-regular text-slate-500">{client.email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            client.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-error-100 text-red-800'
-                          }`}>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${client.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-error-100 text-red-800'
+                            }`}>
                             {client.status}
                           </span>
                         </td>
@@ -422,11 +427,10 @@ const CAStaffDashboard = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2">
-                              <div className={`text-sm font-medium ${
-                                filing.itrType === 'ITR-3' || filing.itrType === 'ITR3'
-                                  ? 'text-blue-700 font-semibold'
-                                  : 'text-slate-500'
-                              }`}>
+                              <div className={`text-sm font-medium ${filing.itrType === 'ITR-3' || filing.itrType === 'ITR3'
+                                ? 'text-blue-700 font-semibold'
+                                : 'text-slate-500'
+                                }`}>
                                 {filing.itrType}
                               </div>
                               {(filing.itrType === 'ITR-3' || filing.itrType === 'ITR3') && (
@@ -459,11 +463,10 @@ const CAStaffDashboard = () => {
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              filing.reviewStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${filing.reviewStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                               filing.reviewStatus === 'in_review' ? 'bg-blue-100 text-blue-800' :
-                              'bg-slate-100 text-gray-800'
-                            }`}>
+                                'bg-slate-100 text-gray-800'
+                              }`}>
                               {filing.reviewStatus || 'pending'}
                             </span>
                           </td>
@@ -475,7 +478,10 @@ const CAStaffDashboard = () => {
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-body-regular font-medium">
-                            <button className="text-blue-600 hover:text-blue-900 mr-4">
+                            <button
+                              onClick={() => handleReviewFiling(filing.id)}
+                              className="text-blue-600 hover:text-blue-900 mr-4"
+                            >
                               Review
                             </button>
                           </td>
@@ -532,11 +538,10 @@ const CAStaffDashboard = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className={`text-sm font-medium ${
-                              filing.itrType === 'ITR-3' || filing.itrType === 'ITR3'
-                                ? 'text-blue-700 font-semibold'
-                                : 'text-slate-500'
-                            }`}>
+                            <div className={`text-sm font-medium ${filing.itrType === 'ITR-3' || filing.itrType === 'ITR3'
+                              ? 'text-blue-700 font-semibold'
+                              : 'text-slate-500'
+                              }`}>
                               {filing.itrType}
                             </div>
                             {(filing.itrType === 'ITR-3' || filing.itrType === 'ITR3') && (
@@ -584,7 +589,10 @@ const CAStaffDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-body-regular font-medium">
-                          <button className="text-blue-600 hover:text-blue-900 mr-4">
+                          <button
+                            onClick={() => handleReviewFiling(filing.id)}
+                            className="text-blue-600 hover:text-blue-900 mr-4"
+                          >
                             Review
                           </button>
                         </td>
@@ -804,20 +812,18 @@ const CAStaffDashboard = () => {
                         <div className="text-body-regular text-slate-900">{ticket.subject}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          ticket.status === 'open' ? 'bg-error-100 text-red-800' :
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ticket.status === 'open' ? 'bg-error-100 text-red-800' :
                           ticket.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                            'bg-green-100 text-green-800'
+                          }`}>
                           {ticket.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          ticket.priority === 'high' ? 'bg-error-100 text-red-800' :
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ticket.priority === 'high' ? 'bg-error-100 text-red-800' :
                           ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                            'bg-green-100 text-green-800'
+                          }`}>
                           {ticket.priority}
                         </span>
                       </td>

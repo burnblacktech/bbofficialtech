@@ -82,7 +82,8 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
   }]);
 
   const handleChange = (field, value) => {
-    onUpdate({ [field]: value });
+    // onUpdate({ [field]: value });
+    // LANE 2: SLOW LANE - No immediate parent update
   };
 
   const addBusiness = () => {
@@ -129,20 +130,20 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
     };
     const updated = [...businesses, newBusiness];
     setBusinesses(updated);
-    onUpdate({ businesses: updated });
+    // onUpdate({ businesses: updated });
   };
 
   const removeBusiness = (index) => {
     const updated = businesses.filter((_, i) => i !== index);
     setBusinesses(updated);
-    onUpdate({ businesses: updated });
+    // onUpdate({ businesses: updated });
   };
 
   const updateBusiness = (index, field, value) => {
     const updated = [...businesses];
     updated[index] = { ...updated[index], [field]: value };
     setBusinesses(updated);
-    onUpdate({ businesses: updated });
+    // onUpdate({ businesses: updated });
   };
 
   const updatePNL = (businessIndex, field, value) => {
@@ -190,7 +191,8 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
       (pnl.otherExpenses || 0);
 
     setBusinesses(updated);
-    onUpdate({ businesses: updated });
+    // LANE 2: SLOW LANE
+    // onUpdate({ businesses: updated });
   };
 
   const updateExpenseCategory = (businessIndex, category, field, value) => {
@@ -231,7 +233,16 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
       (pnl.otherExpenses || 0);
 
     setBusinesses(updated);
-    onUpdate({ businesses: updated });
+    // LANE 2: SLOW LANE
+    // onUpdate({ businesses: updated });
+  };
+
+  // Save handler for Slow Lane
+  const handleSave = () => {
+    if (onUpdate) {
+      onUpdate({ businesses });
+      toast.success('Business Income saved successfully');
+    }
   };
 
   // ITR-4: Presumptive taxation (simplified)
@@ -350,13 +361,21 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
             <Building2 className="w-5 h-5" />
             Business Income
           </h3>
-          <button
-            onClick={addBusiness}
-            className="flex items-center gap-2 px-3 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors text-body-regular"
-          >
-            <Plus className="w-4 h-4" />
-            Add Business
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
+            >
+              Save Changes
+            </button>
+            <button
+              onClick={addBusiness}
+              className="flex items-center gap-2 px-3 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 transition-colors text-body-regular"
+            >
+              <Plus className="w-4 h-4" />
+              Add Business
+            </button>
+          </div>
         </div>
 
         {businesses.map((business, businessIndex) => (
@@ -733,18 +752,16 @@ const BusinessIncomeForm = ({ filingId, data, onUpdate, selectedITR, onDataUploa
               </div>
 
               {/* Net Profit/Loss Display */}
-              <div className={`rounded-xl p-4 ${
-                (business.pnl?.netProfit || 0) >= 0
-                  ? 'bg-green-50 border border-green-200'
-                  : 'bg-error-50 border border-red-200'
-              }`}>
+              <div className={`rounded-xl p-4 ${(business.pnl?.netProfit || 0) >= 0
+                ? 'bg-green-50 border border-green-200'
+                : 'bg-error-50 border border-red-200'
+                }`}>
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-900">
                     {(business.pnl?.netProfit || 0) >= 0 ? 'Net Profit' : 'Net Loss'} from Business:
                   </span>
-                  <span className={`text-lg font-bold ${
-                    (business.pnl?.netProfit || 0) >= 0 ? 'text-green-700' : 'text-error-700'
-                  }`}>
+                  <span className={`text-lg font-bold ${(business.pnl?.netProfit || 0) >= 0 ? 'text-green-700' : 'text-error-700'
+                    }`}>
                     ₹{Math.abs(business.pnl?.netProfit || 0).toLocaleString('en-IN')}
                   </span>
                 </div>

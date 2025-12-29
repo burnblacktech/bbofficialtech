@@ -125,7 +125,10 @@ class APIClient {
 
         // Handle 401 unauthorized - attempt token refresh
         // Skip if this is already a refresh request or if we're already refreshing
-        if (error.response?.status === 401 && !originalRequest._retry && !originalRequest._isRefreshRequest) {
+        // Exclude PAN verification endpoints from refresh logic (public flow)
+        const isExcludedUrl = originalRequest.url?.includes('pan/verify') || originalRequest.url?.includes('pan/status');
+
+        if (error.response?.status === 401 && !originalRequest._retry && !originalRequest._isRefreshRequest && !isExcludedUrl) {
           return this.handleTokenRefresh(originalRequest);
         }
 

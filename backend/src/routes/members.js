@@ -10,6 +10,7 @@ const enterpriseLogger = require('../utils/logger');
 const { Op } = require('sequelize');
 const { AppError } = require('../middleware/errorHandler');
 const { FamilyMember } = require('../models');
+const accessControl = require('../middleware/accessControl');
 
 // Apply authentication middleware to all routes
 router.use(authMiddleware.authenticateToken);
@@ -25,7 +26,7 @@ router.use(authMiddleware.authenticateToken);
  * @query {string} status - Filter by member status (active, inactive)
  * @query {string} search - Search by name, PAN, or relationship
  */
-router.get('/', memberController.getMembers);
+router.get('/', accessControl('user', 'read', { idSource: 'query', idKey: 'userId' }), memberController.getMembers);
 
 /**
  * @route GET /api/members/:id
@@ -33,7 +34,7 @@ router.get('/', memberController.getMembers);
  * @access Private (User)
  * @param {string} id - Member ID
  */
-router.get('/:id', memberController.getMemberById);
+router.get('/:id', accessControl('member', 'read'), memberController.getMemberById);
 
 /**
  * @route POST /api/members
@@ -46,7 +47,7 @@ router.get('/:id', memberController.getMemberById);
  * @body {string} gender - Member's gender (male, female, other) (optional)
  * @body {object} metadata - Additional member metadata (optional)
  */
-router.post('/', memberController.createMember);
+router.post('/', accessControl('user', 'write', { idSource: 'body', idKey: 'userId' }), memberController.createMember);
 
 /**
  * @route PUT /api/members/:id
@@ -61,7 +62,7 @@ router.post('/', memberController.createMember);
  * @body {string} status - Member status (active, inactive) (optional)
  * @body {object} metadata - Additional member metadata (optional)
  */
-router.put('/:id', memberController.updateMember);
+router.put('/:id', accessControl('member', 'write'), memberController.updateMember);
 
 /**
  * @route DELETE /api/members/:id
@@ -69,7 +70,7 @@ router.put('/:id', memberController.updateMember);
  * @access Private (User)
  * @param {string} id - Member ID
  */
-router.delete('/:id', memberController.deleteMember);
+router.delete('/:id', accessControl('member', 'delete'), memberController.deleteMember);
 
 /**
  * @route POST /api/members/:id/verify-pan
@@ -78,12 +79,12 @@ router.delete('/:id', memberController.deleteMember);
  * @param {string} id - Member ID
  * @body {string} pan - PAN number to verify (optional, uses member's PAN if not provided)
  */
-router.post('/:id/verify-pan', async (req, res, next) => {
+router.post('/:id/verify-pan', accessControl('member', 'write'), async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
     const { pan } = req.body;
-    const panVerificationService = require('../services/business/PANVerificationService');
+    const panVerificationService = require('../services/common/PANVerificationService');
     const enterpriseLogger = require('../utils/logger');
 
     // Get the member
@@ -180,7 +181,7 @@ router.post('/:id/verify-pan', async (req, res, next) => {
  * @query {number} page - Page number for pagination (default: 1)
  * @query {number} limit - Items per page (default: 20)
  */
-router.get('/:id/filings', memberController.getMemberFilings);
+router.get('/:id/filings', accessControl('member', 'read'), memberController.getMemberFilings);
 
 /**
  * @route GET /api/members/:id/documents
@@ -192,7 +193,7 @@ router.get('/:id/filings', memberController.getMemberFilings);
  * @query {number} page - Page number for pagination (default: 1)
  * @query {number} limit - Items per page (default: 20)
  */
-router.get('/:id/documents', memberController.getMemberDocuments);
+router.get('/:id/documents', accessControl('member', 'read'), memberController.getMemberDocuments);
 
 // =====================================================
 // MEMBER STATISTICS ROUTES
@@ -204,7 +205,7 @@ router.get('/:id/documents', memberController.getMemberDocuments);
  * @access Private (User)
  * @param {string} id - Member ID
  */
-router.get('/:id/stats', async (req, res, next) => {
+router.get('/:id/stats', accessControl('member', 'read'), async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const { id: memberId } = req.params;
@@ -270,7 +271,7 @@ router.get('/:id/stats', async (req, res, next) => {
  * @body {string} pan - PAN number to validate
  * @body {string} memberId - Optional member ID to exclude from duplicate check
  */
-router.post('/validate-pan', async (req, res, next) => {
+router.post('/validate-pan', accessControl('user', 'read', { idSource: 'body', idKey: 'userId' }), async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const { pan, memberId } = req.body;
@@ -331,7 +332,7 @@ router.post('/validate-pan', async (req, res, next) => {
  * @access Private (User)
  * @body {array} members - Array of member objects to create
  */
-router.post('/bulk-create', async (req, res, next) => {
+router.post('/bulk-create', accessControl('user', 'write', { idSource: 'query' }), async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const { members } = req.body;

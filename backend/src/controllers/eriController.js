@@ -5,7 +5,7 @@
  * and communication with ITD APIs.
  */
 
-const { generateSignedPayload, validateConfiguration, loadCertificate, encryptPassword, decryptPassword } = require('../services/business/eriSigningService');
+const { generateSignedPayload, validateConfiguration, loadCertificate, encryptPassword, decryptPassword } = require('../services/eri/eriSigningService');
 const { savePublicKeyCertificate, getCertificateInfo, validatePEMCertificate } = require('../utils/certificateUtils');
 const enterpriseLogger = require('../utils/logger');
 const axios = require('axios');
@@ -224,7 +224,7 @@ const eriLogin = async (req, res) => {
     // In production, send to ERI API
     // For now, return the signed payload for testing
     const eriApiUrl = process.env.ERI_API_URL || 'https://api.incometax.gov.in/eri';
-    
+
     try {
       // Make actual API call to ERI login endpoint
       const eriResponse = await axios.post(`${eriApiUrl}/login`, signedPayload, {

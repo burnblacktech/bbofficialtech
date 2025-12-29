@@ -13,6 +13,8 @@ const RegimeToggle = ({
   onRegimeChange,
   savings = null, // { amount: number, betterRegime: 'old' | 'new' }
   isLoading = false,
+  isDisabled = false, // Deprecated, use disabled
+  disabled = false,
   className = '',
 }) => {
   const handleToggle = () => {
@@ -26,8 +28,8 @@ const RegimeToggle = ({
       <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-1">
         <button
           type="button"
-          onClick={() => !isLoading && onRegimeChange('old')}
-          disabled={isLoading}
+          onClick={() => !isLoading && !disabled && onRegimeChange('old')}
+          disabled={isLoading || disabled}
           className={cn(
             'px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-200',
             'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -40,8 +42,8 @@ const RegimeToggle = ({
         </button>
         <button
           type="button"
-          onClick={() => !isLoading && onRegimeChange('new')}
-          disabled={isLoading}
+          onClick={() => !isLoading && !disabled && onRegimeChange('new')}
+          disabled={isLoading || disabled}
           className={cn(
             'px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-200',
             'disabled:opacity-50 disabled:cursor-not-allowed',

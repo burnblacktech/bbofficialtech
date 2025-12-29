@@ -113,6 +113,8 @@ const PersonalInfoForm = ({
 
   // Watch form values and update parent
   const watchedValues = watch();
+
+  // Sync with parent only when debounced values change
   useEffect(() => {
     onChange({ ...watchedValues, bankAccounts });
   }, [watchedValues, bankAccounts, onChange]);

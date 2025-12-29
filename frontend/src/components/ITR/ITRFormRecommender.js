@@ -200,7 +200,7 @@ const ITRFormRecommender = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => navigate('/itr/pan-verification')}
+                onClick={() => navigate('/itr/select-person')}
                 className="p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition-transform"
               >
                 <ArrowLeft className="h-5 w-5 text-slate-700" />

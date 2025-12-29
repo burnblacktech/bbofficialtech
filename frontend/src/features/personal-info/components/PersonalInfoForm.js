@@ -238,13 +238,12 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
             maxLength={maxLength}
             disabled={isDisabled}
             placeholder={placeholder}
-            className={`w-full px-3 py-2.5 border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 ${
-              hasError
-                ? 'border-error-400 focus:ring-error-500 bg-error-50'
-                : fieldSource
-                  ? 'border-info-300 focus:ring-info-500 bg-info-50/30'
-                  : 'border-slate-300 focus:ring-gold-500 hover:border-gray-400'
-            } ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}`}
+            className={`w-full px-3 py-2.5 border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 ${hasError
+              ? 'border-error-400 focus:ring-error-500 bg-error-50'
+              : fieldSource
+                ? 'border-info-300 focus:ring-info-500 bg-info-50/30'
+                : 'border-slate-300 focus:ring-gold-500 hover:border-gray-400'
+              } ${isDisabled ? 'bg-slate-100 cursor-not-allowed' : ''}`}
           />
         )}
         {hasError && (
@@ -284,15 +283,30 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
         </h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <FormField
-            field="pan"
-            label="PAN"
-            required
-            maxLength={10}
-            placeholder="ABCDE1234F"
-            icon={CreditCard}
-            helpText="Permanent Account Number"
-          />
+          <div className="flex items-end gap-2">
+            <div className="flex-grow">
+              <FormField
+                field="pan"
+                label="PAN"
+                required
+                disabled={readOnly} // U3.6 Fix: Allow editing inline
+                maxLength={10}
+                placeholder="ABCDE1234F"
+                icon={CreditCard}
+                helpText="Permanent Account Number"
+              />
+            </div>
+            {/* Inline Verify Button Placeholder (U3.6) */}
+            {!readOnly && data?.pan && data?.pan.length === 10 && (
+              <button
+                className="mb-7 px-3 py-2.5 bg-slate-800 text-white text-sm rounded-xl hover:bg-slate-700"
+                onClick={() => alert("Verification triggered (Mock)")}
+                type="button"
+              >
+                Verify
+              </button>
+            )}
+          </div>
 
           <FormField
             field="name"
@@ -367,6 +381,7 @@ const PersonalInfoForm = ({ data, onUpdate, autoFilledFields = {}, sources = {},
             label="Email"
             type="email"
             required
+            disabled={true} // Email is always read-only (from auth)
             placeholder="example@email.com"
             icon={Mail}
           />

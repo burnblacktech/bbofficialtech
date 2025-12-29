@@ -16,13 +16,20 @@ const NextBestAction = ({ blueprint, onActionClick }) => {
   // Determine primary action based on allowedActions priority
   // Priority: file_itr > compute_tax > edit_data
   if (allowedActions?.includes('file_itr') && filingState?.canFile) {
+    const gate = filingState?.submissionGate || { ok: true }; // Default true if not provided (legacy compatibility)
+    const isGateOpen = gate.ok;
+
     actions.push({
       type: 'primary',
-      icon: FileCheck,
-      label: 'Close this financial year',
-      description: 'Review and file your ITR',
+      icon: isGateOpen ? FileCheck : FileCheck, // Could verify icon status
+      label: isGateOpen ? 'File my return' : 'Complete details to file',
+      description: isGateOpen
+        ? 'Review your story and submit to ITD'
+        : 'Final step before submission',
       action: 'file_itr',
-      color: 'green',
+      color: isGateOpen ? 'green' : 'slate',
+      disabled: !isGateOpen,
+      helperText: !isGateOpen ? "We'll submit only after these are completed." : null
     });
   } else if (allowedActions?.includes('compute_tax') && filingState?.canCompute) {
     actions.push({
@@ -86,22 +93,34 @@ const NextBestAction = ({ blueprint, onActionClick }) => {
       <div className="flex flex-col sm:flex-row gap-2">
         {/* Primary Action */}
         {primaryAction && (
-          <button
-            type="button"
-            onClick={() => onActionClick && onActionClick(primaryAction.action)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity ${colorClasses[primaryAction.color] || colorClasses.slate}`}
-          >
-            {primaryAction.icon && (
-              <primaryAction.icon className="w-4 h-4 flex-shrink-0" />
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="text-body-small font-semibold">{primaryAction.label}</div>
-              {primaryAction.description && (
-                <div className="text-body-small opacity-75 mt-0.5">{primaryAction.description}</div>
+          <div className="flex flex-col gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              disabled={primaryAction.disabled}
+              onClick={() => !primaryAction.disabled && onActionClick && onActionClick(primaryAction.action)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all w-full sm:w-auto justify-center
+                ${primaryAction.disabled
+                  ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                  : `cursor-pointer hover:shadow-md active:scale-[0.99] ${colorClasses[primaryAction.color] || colorClasses.slate}`
+                }`}
+            >
+              {primaryAction.icon && (
+                <primaryAction.icon className={`w-5 h-5 flex-shrink-0 ${primaryAction.disabled ? 'text-slate-400' : ''}`} />
               )}
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
-          </button>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="text-body-medium font-semibold">{primaryAction.label}</div>
+                {!primaryAction.disabled && primaryAction.description && (
+                  <div className="text-body-small opacity-75 mt-0.5">{primaryAction.description}</div>
+                )}
+              </div>
+              {!primaryAction.disabled && <ArrowRight className="w-4 h-4 opacity-50 flex-shrink-0" />}
+            </button>
+            {primaryAction.disabled && primaryAction.helperText && (
+              <p className="text-xs text-slate-500 text-center sm:text-left px-1">
+                {primaryAction.helperText}
+              </p>
+            )}
+          </div>
         )}
 
         {/* Secondary Action */}

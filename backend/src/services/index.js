@@ -17,7 +17,7 @@ const {
   PANVerificationService,
   MFAService,
   BrokerFileProcessingService,
-  DeductionTypeDetectionService,
+
   ERIIntegrationService,
   eriSigningService,
 } = require('./business');
@@ -47,7 +47,7 @@ module.exports = {
   PANVerificationService,
   MFAService,
   BrokerFileProcessingService,
-  DeductionTypeDetectionService,
+
   ERIIntegrationService,
   eriSigningService,
 
@@ -73,7 +73,7 @@ module.exports = {
     PANVerificationService,
     MFAService,
     BrokerFileProcessingService,
-    DeductionTypeDetectionService,
+
     ERIIntegrationService,
     eriSigningService,
   },

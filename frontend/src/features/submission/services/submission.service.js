@@ -303,19 +303,14 @@ class SubmissionService {
    * Submit ITR filing
    */
   async submitITR(filingId, verificationToken) {
-    try {
-      const response = await apiClient.post(
-        `${this.basePath}/filings/${filingId}/submit`,
-        { verificationToken },
-      );
-      return {
-        success: true,
-        ...response.data,
-      };
-    } catch (error) {
-      console.error('Failed to submit ITR:', error);
-      throw new Error(error.response?.data?.message || 'ITR submission failed');
-    }
+    const response = await apiClient.post(
+      `${this.basePath}/filings/${filingId}/submit`,
+      { verificationToken },
+    );
+    return {
+      success: true,
+      ...response.data,
+    };
   }
 }
 

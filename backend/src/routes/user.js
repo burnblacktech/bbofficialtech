@@ -130,7 +130,7 @@ router.patch('/pan', async (req, res, next) => {
     }
 
     // Verify PAN using SurePass service
-    const panVerificationService = require('../services/business/PANVerificationService');
+    const panVerificationService = require('../services/common/PANVerificationService');
     const verificationResult = await panVerificationService.verifyPAN(panNumber.toUpperCase(), userId);
 
     if (!verificationResult.isValid) {
@@ -190,7 +190,7 @@ router.post('/verify-pan', async (req, res, next) => {
     const userId = req.user.userId;
     const { pan } = req.body;
     const User = require('../models/User');
-    const panVerificationService = require('../services/business/PANVerificationService');
+    const panVerificationService = require('../services/common/PANVerificationService');
     const enterpriseLogger = require('../utils/logger');
 
     // Get the user
