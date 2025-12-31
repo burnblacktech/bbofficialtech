@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+
+/**
+ * Pre-Commit Hook - S7 Architecture Enforcement
+ * Runs before git commit to prevent architectural violations
+ */
+
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+console.log('🔒 Running S7 Architecture Checks...\n');
+
+let exitCode = 0;
+
+// Check 1: No _legacy directories
+console.log('1️⃣  Checking for legacy directories...');
+try {
+  const legacyCheck = execSync('git diff --cached --name-only | grep "_legacy"', { encoding: 'utf-8' });
+  if (legacyCheck.trim()) {
+    console.error('❌ BLOCKED: _legacy/ directories are forbidden (S7_LOCK.md §6)');
+    console.error('   Files:', legacyCheck.trim());
+    exitCode = 1;
+  } else {
+    console.log('✅ No legacy directories');
+  }
+} catch (e) {
+  // No matches = good
+  console.log('✅ No legacy directories');
+}
+
+// Check 2: Run ESLint
+console.log('\n2️⃣  Running ESLint architecture rules...');
+try {
+  execSync('npm run lint', { stdio: 'inherit' });
+  console.log('✅ ESLint passed');
+} catch (e) {
+  console.error('❌ BLOCKED: ESLint violations detected');
+  exitCode = 1;
+}
+
+// Check 3: Verify no direct status mutations (backup check)
+console.log('\n3️⃣  Scanning for direct state mutations...');
+try {
+  const statusMutations = execSync(
+    'git diff --cached --diff-filter=AM | grep -E "filing\\.status\\s*=" || true',
+    { encoding: 'utf-8' }
+  );
+  if (statusMutations.trim() && !statusMutations.includes('SubmissionStateMachine')) {
+    console.error('❌ BLOCKED: Direct filing.status mutation detected (S7_LOCK.md §1)');
+    console.error('   Use SubmissionStateMachine.transition() instead');
+    console.error('   Violations:', statusMutations.trim());
+    exitCode = 1;
+  } else {
+    console.log('✅ No direct state mutations');
+  }
+} catch (e) {
+  console.log('✅ No direct state mutations');
+}
+
+// Final verdict
+console.log('\n' + '='.repeat(50));
+if (exitCode === 0) {
+  console.log('✅ All S7 architecture checks passed');
+  console.log('🔒 Commit allowed\n');
+} else {
+  console.log('❌ Architecture violations detected');
+  console.log('🚫 Commit blocked');
+  console.log('\nRefer to S7_LOCK.md for architecture contracts\n');
+}
+
+process.exit(exitCode);

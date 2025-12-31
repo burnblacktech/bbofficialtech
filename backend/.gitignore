@@ -98,3 +98,12 @@ uploads/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# S8: Temp files and logs
+*.log
+*.txt
+!README.txt
+temp_*
+trace_*
+boot_*
+lint-results.json

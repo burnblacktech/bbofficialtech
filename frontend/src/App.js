@@ -92,7 +92,7 @@ const ClientList = lazy(() => import('./pages/Firm/ClientList'));
 const ClientOnboardingForm = lazy(() => import('./pages/Firm/ClientOnboardingForm'));
 const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
 
-const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
+
 
 // CA Workspace V3
 const CAInbox = lazy(() => import('./pages/CA/CAInbox'));

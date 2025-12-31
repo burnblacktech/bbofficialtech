@@ -5065,6 +5065,7 @@ const ITRComputation = () => {
             )}
 
           </div>
+        </div>
       </main>
     </div>
   );

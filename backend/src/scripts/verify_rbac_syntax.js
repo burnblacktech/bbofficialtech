@@ -7,13 +7,8 @@ try {
     require('../controllers/MemberController');
     console.log('✅ MemberController loaded.');
 
-    console.log('Loading ITRController...');
-    require('../_legacy/controllers/ITRController');
-    console.log('✅ ITRController loaded.');
-
     console.log('Loading routes...');
     require('../routes/members');
-    require('../routes/itr');
     console.log('✅ Routes loaded.');
 
     console.log('RBAC Syntax Verified Successfully');
