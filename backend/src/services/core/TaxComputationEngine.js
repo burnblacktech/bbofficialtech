@@ -87,6 +87,7 @@ class TaxComputationEngine {
         finalTax: 0,
         refundAmount: 0,
         taxPaid: 0,
+        auditApplicable: filingData.income?.business?.profile?.auditApplicable || false,
         computedAt: new Date().toISOString(),
       };
 
@@ -213,30 +214,35 @@ class TaxComputationEngine {
       }
     }
 
-    // Business income - Handle ITR-3, ITR-4, and simple structures
-    // Use consolidated structure: filingData.income.businessIncome (with fallback for backward compatibility)
-    const businessIncome = filingData.income?.businessIncome || filingData.businessIncome;
-    if (businessIncome?.businesses && Array.isArray(businessIncome.businesses)) {
-      // ITR-3: Multiple businesses with P&L
-      totalIncome += BusinessIncomeCalculator.calculateTotalBusinessIncome(businessIncome.businesses);
-    } else if (filingData.income?.businessIncome?.businesses && Array.isArray(filingData.income.businessIncome.businesses)) {
-      // ITR-3: Multiple businesses with P&L (inside income object)
-      totalIncome += BusinessIncomeCalculator.calculateTotalBusinessIncome(filingData.income.businessIncome.businesses);
-    } else if (filingData.income?.presumptiveBusiness && typeof filingData.income.presumptiveBusiness === 'object') {
-      // ITR-4: Presumptive business income (object with presumptiveIncome property)
-      if (filingData.income.presumptiveBusiness.presumptiveIncome) {
-        totalIncome += parseFloat(filingData.income.presumptiveBusiness.presumptiveIncome) || 0;
-      } else if (filingData.income.presumptiveBusiness.grossReceipts && !filingData.income.presumptiveBusiness.optedOut) {
-        // Calculate presumptive income if not already calculated
-        const grossReceipts = parseFloat(filingData.income.presumptiveBusiness.grossReceipts) || 0;
-        const presumptiveRate = parseFloat(filingData.income.presumptiveBusiness.presumptiveRate) || 0.08;
-        totalIncome += grossReceipts * presumptiveRate;
-      }
-    } else if (filingData.income?.businessIncome) {
-      if (typeof filingData.income.businessIncome === 'object' && filingData.income.businessIncome.netProfit) {
-        totalIncome += parseFloat(filingData.income.businessIncome.netProfit) || 0;
-      } else {
-        totalIncome += parseFloat(filingData.income.businessIncome) || 0;
+    // Business income - Handle ITR-3 (Professional), ITR-4 (Presumptive), and legacy structures
+    const professionalBusiness = filingData.income?.business;
+    if (professionalBusiness?.profitLoss?.userDeclaredNetProfit !== undefined) {
+      // Truth-anchored ITR-3 value from Professional Mode
+      totalIncome += parseFloat(professionalBusiness.profitLoss.userDeclaredNetProfit) || 0;
+    } else {
+      const businessIncome = filingData.income?.businessIncome || filingData.businessIncome;
+      if (businessIncome?.businesses && Array.isArray(businessIncome.businesses)) {
+        // ITR-3: Multiple businesses with P&L
+        totalIncome += BusinessIncomeCalculator.calculateTotalBusinessIncome(businessIncome.businesses);
+      } else if (filingData.income?.businessIncome?.businesses && Array.isArray(filingData.income.businessIncome.businesses)) {
+        // ITR-3: Multiple businesses with P&L (inside income object)
+        totalIncome += BusinessIncomeCalculator.calculateTotalBusinessIncome(filingData.income.businessIncome.businesses);
+      } else if (filingData.income?.presumptiveBusiness && typeof filingData.income.presumptiveBusiness === 'object') {
+        // ITR-4: Presumptive business income (object with presumptiveIncome property)
+        if (filingData.income.presumptiveBusiness.presumptiveIncome) {
+          totalIncome += parseFloat(filingData.income.presumptiveBusiness.presumptiveIncome) || 0;
+        } else if (filingData.income.presumptiveBusiness.grossReceipts && !filingData.income.presumptiveBusiness.optedOut) {
+          // Calculate presumptive income if not already calculated
+          const grossReceipts = parseFloat(filingData.income.presumptiveBusiness.grossReceipts) || 0;
+          const presumptiveRate = parseFloat(filingData.income.presumptiveBusiness.presumptiveRate) || 0.08;
+          totalIncome += grossReceipts * presumptiveRate;
+        }
+      } else if (filingData.income?.businessIncome) {
+        if (typeof filingData.income.businessIncome === 'object' && filingData.income.businessIncome.netProfit) {
+          totalIncome += parseFloat(filingData.income.businessIncome.netProfit) || 0;
+        } else {
+          totalIncome += parseFloat(filingData.income.businessIncome) || 0;
+        }
       }
     }
 

@@ -51,12 +51,13 @@ class CARequestInfoService {
             // Only update status if it's currently IN_REVIEW or similar (or any active CA state)
             // We force it to ACTION_REQUIRED to notify user.
 
-            await filing.update({
-                taxComputation: taxComp,
-                status: 'ACTION_REQUIRED', // Canonical State
-                // lifecycleState might also need update? 'ACTION_REQUIRED' is likely a lifecycle state too?
-                // Let's assume status map handles checks.
-            }, { transaction });
+            // Use state machine for canonical transition
+            const SubmissionStateMachine = require('../../domain/SubmissionStateMachine');
+            const STATES = require('../../domain/SubmissionStates');
+
+            SubmissionStateMachine.transition(filing, STATES.ACTION_REQUIRED);
+            filing.taxComputation = taxComp;
+            await filing.save({ transaction });
 
             await transaction.commit();
 
@@ -92,8 +93,11 @@ class CARequestInfoService {
         // Check if ALL blocking requests are resolved
         const hasPendingBlocking = requests.some(r => r.blocking && r.status !== 'RESOLVED');
 
-        let newStatus = filing.status;
-        if (!hasPendingBlocking && filing.status === 'ACTION_REQUIRED') {
+        const SubmissionStateMachine = require('../../domain/SubmissionStateMachine');
+        const STATES = require('../../domain/SubmissionStates');
+
+        let newStatus = filing.lifecycleState;
+        if (!hasPendingBlocking && filing.lifecycleState === 'ACTION_REQUIRED') {
             newStatus = 'READY_TO_FILE'; // Or return to previous state?
         }
 
@@ -101,7 +105,7 @@ class CARequestInfoService {
         // We need to use update with changed object
         await ITRFiling.update({
             taxComputation: { ...taxComp }, // Ensure generic update
-            status: newStatus
+            lifecycleState: newStatus
         }, { where: { id: filingId } });
 
         return { success: true, status: newStatus };

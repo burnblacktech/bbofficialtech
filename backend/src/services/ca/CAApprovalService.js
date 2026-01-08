@@ -32,7 +32,7 @@ class CAApprovalService {
                 throw new Error('Cannot submit to CA with unresolved blocking issues');
             }
 
-            const oldStatus = filing.status;
+            const oldStatus = filing.lifecycleState;
 
             // V4.1 State Machine Enforcement
             SubmissionStateMachine.transition(filing, STATES.SUBMITTED_TO_CA);
@@ -50,7 +50,7 @@ class CAApprovalService {
             );
 
             await transaction.commit();
-            return { success: true, status: filing.status };
+            return { success: true, status: filing.lifecycleState };
 
         } catch (error) {
             await transaction.rollback();
@@ -79,7 +79,7 @@ class CAApprovalService {
                 throw new Error('Access Denied');
             }
 
-            const initialStatus = filing.status;
+            const initialStatus = filing.lifecycleState;
 
             // V4.1: State Machine Pipeline
             // 1. CA Approves

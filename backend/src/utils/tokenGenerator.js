@@ -30,14 +30,17 @@ const generateShareToken = (filingId, userId, expiresInHours = 168) => {
     expiresAt,
     type: 'share',
   };
-  
+
   // Create a secure token by hashing the payload with a secret
-  const secret = process.env.SHARE_TOKEN_SECRET || process.env.JWT_SECRET || 'default-secret';
+  const secret = process.env.SHARE_TOKEN_SECRET || process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('FATAL: SHARE_TOKEN_SECRET or JWT_SECRET environment variable is required');
+  }
   const payloadString = JSON.stringify(payload);
   const hash = crypto.createHmac('sha256', secret)
     .update(payloadString)
     .digest('base64url');
-  
+
   // Combine random token with hash for additional security
   const randomToken = crypto.randomBytes(16).toString('base64url');
   return `${randomToken}.${hash}`;
@@ -57,19 +60,19 @@ const verifyShareToken = (token, filingId, userId) => {
     // 2. Verify the hash
     // 3. Check expiration
     // 4. Verify filingId and userId match
-    
+
     // For now, we'll use a simple validation
     // In production, store tokens in database with expiration
     if (!token || token === 'TEMP_SHARE_TOKEN') {
       return false;
     }
-    
+
     // Basic format check
     const parts = token.split('.');
     if (parts.length !== 2) {
       return false;
     }
-    
+
     // TODO: Implement full verification with database lookup
     // For now, accept any non-TEMP token as valid
     return true;
@@ -91,13 +94,16 @@ const generatePasswordResetToken = (userId, email) => {
     type: 'password_reset',
     expiresAt: Date.now() + (60 * 60 * 1000), // 1 hour
   };
-  
-  const secret = process.env.PASSWORD_RESET_SECRET || process.env.JWT_SECRET || 'default-secret';
+
+  const secret = process.env.PASSWORD_RESET_SECRET || process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('FATAL: PASSWORD_RESET_SECRET or JWT_SECRET environment variable is required');
+  }
   const payloadString = JSON.stringify(payload);
   const hash = crypto.createHmac('sha256', secret)
     .update(payloadString)
     .digest('base64url');
-  
+
   const randomToken = crypto.randomBytes(16).toString('base64url');
   return `${randomToken}.${hash}`;
 };

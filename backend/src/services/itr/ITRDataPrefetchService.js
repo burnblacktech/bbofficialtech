@@ -20,11 +20,12 @@ class ITRDataPrefetchService {
    * @param {string} userId - User ID
    * @param {string} pan - PAN number
    * @param {string} assessmentYear - Assessment year (e.g., '2024-25')
+   * @param {string} dob - Date of Birth for identity verification
    * @returns {Promise<object>} Consolidated prefetch data
    */
-  async prefetchData(userId, pan, assessmentYear = '2024-25') {
+  async prefetchData(userId, pan, assessmentYear = '2024-25', dob) {
     try {
-      enterpriseLogger.info('Starting ITR data prefetch', { userId, pan, assessmentYear });
+      enterpriseLogger.info('Starting ITR data prefetch', { userId, pan, assessmentYear, dobProvided: !!dob });
 
       const sources = {
         eri: { available: false, lastSync: null, data: null },
@@ -35,11 +36,30 @@ class ITRDataPrefetchService {
 
       // Fetch from all sources in parallel
       const [eriData, aisData, form26asData, userProfileData] = await Promise.allSettled([
-        this.fetchERIData(pan, assessmentYear),
+        this.fetchERIData(pan, assessmentYear, dob),
         this.fetchAISData(userId, pan, assessmentYear),
         this.fetchForm26ASData(userId, pan, assessmentYear),
         this.fetchUserProfileData(userId),
       ]);
+
+      // HARD GATE: Verify DOB if provided and user is fetching for self
+      if (userProfileData.status === 'fulfilled' && userProfileData.value && dob) {
+        const profileDob = userProfileData.value.personalInfo?.dob;
+        // Basic normalization for date comparison (YYYY-MM-DD)
+        if (profileDob && dob) {
+          const normalizedProfileDob = new Date(profileDob).toISOString().split('T')[0];
+          const normalizedProvidedDob = new Date(dob).toISOString().split('T')[0];
+
+          if (normalizedProfileDob !== normalizedProvidedDob) {
+            enterpriseLogger.error('DOB mismatch in hard gate', {
+              userId,
+              profileDob: normalizedProfileDob,
+              providedDob: normalizedProvidedDob
+            });
+            throw new AppError('Date of Birth does not match our records. Please verify.', 400, 'IDENTITY_MISMATCH');
+          }
+        }
+      }
 
       // Process ERI data
       if (eriData.status === 'fulfilled' && eriData.value) {
@@ -106,9 +126,9 @@ class ITRDataPrefetchService {
   /**
    * Fetch data from ERI API
    */
-  async fetchERIData(pan, assessmentYear) {
+  async fetchERIData(pan, assessmentYear, dob) {
     try {
-      const previousITRData = await this.eriService.fetchPreviousItrData(pan, assessmentYear);
+      const previousITRData = await this.eriService.fetchPreviousItrData(pan, assessmentYear, dob);
       return this.mapERIDataToITRFormat(previousITRData);
     } catch (error) {
       enterpriseLogger.warn('ERI data fetch failed', { pan, assessmentYear, error: error.message });

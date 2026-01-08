@@ -11,7 +11,7 @@ const ITRFiling = require('./ITRFiling');
 const Assignment = require('./Assignment');
 const { ServiceTicket } = require('./ServiceTicket');
 const Document = require('./Document');
-const AuditLog = require('./AuditLog');
+// const AuditLog = require('./AuditLog'); // LEGACY - removed
 const Notification = require('./Notification');
 const HelpArticle = require('./HelpArticle');
 const CAMarketplaceInquiry = require('./CAMarketplaceInquiry');
@@ -34,7 +34,7 @@ User.belongsTo(CAFirm, {
 
 // User has many ITR Filings
 User.hasMany(ITRFiling, {
-  foreignKey: 'userId',
+  foreignKey: 'createdBy', // Canonical field
   as: 'filings',
   onDelete: 'CASCADE',
 });
@@ -67,12 +67,12 @@ User.hasMany(ServiceTicket, {
   onDelete: 'SET NULL',
 });
 
-// User has many Audit Logs
-User.hasMany(AuditLog, {
-  foreignKey: 'userId',
-  as: 'auditLogs',
-  onDelete: 'SET NULL',
-});
+// User has many Audit Logs - LEGACY REMOVED
+// User.hasMany(AuditLog, {
+//   foreignKey: 'userId',
+//   as: 'auditLogs',
+//   onDelete: 'SET NULL',
+// });
 
 // User has many Notifications
 User.hasMany(Notification, {
@@ -127,9 +127,9 @@ CAFirm.hasMany(FamilyMember, {
   onDelete: 'SET NULL',
 });
 
-// CA Firm has many ITR Filings (through users)
+// CA Firm has many ITR Filings
 CAFirm.hasMany(ITRFiling, {
-  foreignKey: 'firmId',
+  foreignKey: 'caFirmId', // Canonical field
   as: 'filings',
   onDelete: 'SET NULL',
 });
@@ -187,12 +187,12 @@ FamilyMember.hasMany(Assignment, {
   onDelete: 'CASCADE',
 });
 
-// FamilyMember has many ITR Filings
-FamilyMember.hasMany(ITRFiling, {
-  foreignKey: 'memberId',
-  as: 'filings',
-  onDelete: 'CASCADE',
-});
+// FamilyMember has many ITR Filings - LEGACY REMOVED (not in canonical schema)
+// FamilyMember.hasMany(ITRFiling, {
+//   foreignKey: 'memberId',
+//   as: 'filings',
+//   onDelete: 'CASCADE',
+// });
 
 // =====================================================
 // ASSIGNMENT ASSOCIATIONS
@@ -223,33 +223,33 @@ Assignment.belongsTo(User, {
 // ITR FILING ASSOCIATIONS
 // =====================================================
 
-// ITRFiling belongs to User
+// ITRFiling belongs to User (creator)
 ITRFiling.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user',
+  foreignKey: 'createdBy', // Canonical field
+  as: 'creator',
   onDelete: 'CASCADE',
 });
 
-// ITRFiling belongs to FamilyMember (optional)
-ITRFiling.belongsTo(FamilyMember, {
-  foreignKey: 'memberId',
-  as: 'member',
-  onDelete: 'CASCADE',
-});
+// ITRFiling belongs to FamilyMember - LEGACY REMOVED (not in canonical schema)
+// ITRFiling.belongsTo(FamilyMember, {
+//   foreignKey: 'memberId',
+//   as: 'member',
+//   onDelete: 'CASCADE',
+// });
 
 // ITRFiling belongs to CA Firm
 ITRFiling.belongsTo(CAFirm, {
-  foreignKey: 'firmId',
+  foreignKey: 'caFirmId', // Canonical field
   as: 'firm',
   onDelete: 'SET NULL',
 });
 
-// ITRFiling belongs to User (assigned to)
-ITRFiling.belongsTo(User, {
-  foreignKey: 'assignedTo',
-  as: 'assignedUser',
-  onDelete: 'SET NULL',
-});
+// ITRFiling belongs to User (assigned to) - LEGACY REMOVED (not in canonical schema)
+// ITRFiling.belongsTo(User, {
+//   foreignKey: 'assignedTo',
+//   as: 'assignedUser',
+//   onDelete: 'SET NULL',
+// });
 
 // ITRFiling has many Service Tickets
 ITRFiling.hasMany(ServiceTicket, {
@@ -258,19 +258,19 @@ ITRFiling.hasMany(ServiceTicket, {
   onDelete: 'SET NULL',
 });
 
-// ITRFiling belongs to ITRFiling (previous year filing)
-ITRFiling.belongsTo(ITRFiling, {
-  foreignKey: 'previousYearFilingId',
-  as: 'previousYearFiling',
-  onDelete: 'SET NULL',
-});
+// ITRFiling belongs to ITRFiling (previous year filing) - LEGACY REMOVED
+// ITRFiling.belongsTo(ITRFiling, {
+//   foreignKey: 'previousYearFilingId',
+//   as: 'previousYearFiling',
+//   onDelete: 'SET NULL',
+// });
 
-// ITRFiling has many ITRFilings (as previous year filing)
-ITRFiling.hasMany(ITRFiling, {
-  foreignKey: 'previousYearFilingId',
-  as: 'copiedToFilings',
-  onDelete: 'SET NULL',
-});
+// ITRFiling has many ITRFilings (as previous year filing) - LEGACY REMOVED
+// ITRFiling.hasMany(ITRFiling, {
+//   foreignKey: 'previousYearFilingId',
+//   as: 'copiedToFilings',
+//   onDelete: 'SET NULL',
+// });
 
 // =====================================================
 // DOCUMENT ASSOCIATIONS

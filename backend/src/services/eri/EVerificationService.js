@@ -6,8 +6,7 @@
 
 const enterpriseLogger = require('../../utils/logger');
 const { AppError } = require('../../middleware/errorHandler');
-const eriIntegrationService = require('./ERIIntegrationService');
-const { query: dbQuery } = require('../../utils/dbQuery');
+const { ITRFiling } = require('../../models');
 
 class EVerificationService {
   constructor() {
@@ -337,15 +336,8 @@ class EVerificationService {
    */
   async storeVerificationDetails(filingId, method, verificationResult) {
     try {
-      const updateQuery = `
-        UPDATE itr_filings
-        SET 
-          verification_method = $1,
-          verification_status = $2,
-          verification_date = NOW(),
-          verification_details = $3
-        WHERE id = $4
-      `;
+      const filing = await ITRFiling.findByPk(filingId);
+      if (!filing) throw new AppError('Filing not found', 404);
 
       const verificationDetails = {
         method,
@@ -355,14 +347,14 @@ class EVerificationService {
         verifiedAt: new Date().toISOString(),
       };
 
-      await dbQuery(updateQuery, [
-        method,
-        verificationResult.verified ? 'verified' : 'failed',
-        JSON.stringify(verificationDetails),
-        filingId,
-      ]);
+      await filing.update({
+        verificationMethod: method,
+        verificationStatus: verificationResult.verified ? 'verified' : 'failed',
+        verificationDate: new Date(),
+        verificationDetails: verificationDetails
+      });
 
-      enterpriseLogger.info('Verification details stored', {
+      enterpriseLogger.info('Verification details stored via model', {
         filingId,
         method,
         verified: verificationResult.verified,
@@ -373,6 +365,7 @@ class EVerificationService {
         method,
         error: error.message,
       });
+      if (error instanceof AppError) throw error;
       throw new AppError(`Failed to store verification details: ${error.message}`, 500);
     }
   }
@@ -384,38 +377,29 @@ class EVerificationService {
    */
   async getVerificationStatus(filingId) {
     try {
-      const query = `
-        SELECT 
-          verification_method,
-          verification_status,
-          verification_date,
-          verification_details
-        FROM itr_filings
-        WHERE id = $1
-      `;
+      const filing = await ITRFiling.findByPk(filingId, {
+        attributes: ['verificationMethod', 'verificationStatus', 'verificationDate', 'verificationDetails']
+      });
 
-      const result = await dbQuery(query, [filingId]);
-
-      if (result.rows.length === 0) {
+      if (!filing) {
         throw new AppError('Filing not found', 404);
       }
 
-      const filing = result.rows[0];
       return {
-        method: filing.verification_method,
-        status: filing.verification_status,
-        date: filing.verification_date,
-        details: filing.verification_details ? JSON.parse(filing.verification_details) : null,
+        method: filing.verificationMethod,
+        status: filing.verificationStatus,
+        date: filing.verificationDate,
+        details: filing.verificationDetails,
       };
     } catch (error) {
       enterpriseLogger.error('Failed to get verification status', {
         filingId,
         error: error.message,
       });
+      if (error instanceof AppError) throw error;
       throw new AppError(`Failed to get verification status: ${error.message}`, 500);
     }
   }
 }
 
 module.exports = new EVerificationService();
-

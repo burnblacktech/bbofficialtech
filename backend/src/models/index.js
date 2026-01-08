@@ -11,7 +11,7 @@ const { ServiceTicket } = require('./ServiceTicket');
 const { ServiceTicketMessage } = require('./ServiceTicketMessage');
 const { Invoice } = require('./Invoice');
 const UserSession = require('./UserSession');
-const AuditLog = require('./AuditLog');
+// const AuditLog = require('./AuditLog'); // LEGACY - uses user_id instead of canonical audit_events
 const PasswordResetToken = require('./PasswordResetToken');
 const CAFirm = require('./CAFirm');
 const Invite = require('./Invite');
@@ -40,6 +40,7 @@ const PricingPlan = require('./PricingPlan');
 const Coupon = require('./Coupon');
 const UserSegment = require('./UserSegment');
 const PlatformSettings = require('./PlatformSettings');
+const ERISubmissionAttempt = require('./ERISubmissionAttempt');
 
 // Define associations after all models are loaded
 require('./associations');
@@ -54,7 +55,7 @@ module.exports = {
   ServiceTicketMessage,
   Invoice,
   UserSession,
-  AuditLog,
+  // AuditLog, // REMOVED - legacy model
   PasswordResetToken,
   CAFirm,
   Invite,
@@ -83,4 +84,5 @@ module.exports = {
   Coupon,
   UserSegment,
   PlatformSettings,
+  ERISubmissionAttempt,
 };

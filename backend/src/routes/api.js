@@ -115,7 +115,8 @@ router.use('/auth', strictLimiter, require('./auth'));
 // =====================================================
 
 // ITR routes with general rate limiting
-router.use('/itr', generalLimiter, require('./itr'));
+// TODO: Create itr.js route file or remove this line
+// router.use('/itr', generalLimiter, require('./itr'));
 
 
 // =====================================================
@@ -126,27 +127,29 @@ router.use('/itr', generalLimiter, require('./itr'));
 router.use('/members', generalLimiter, require('./members'));
 
 // =====================================================
-// ADMIN ROUTES
+// FILING ROUTES (S12 Phase 8)
 // =====================================================
 
-// Admin routes with strict rate limiting
-router.use('/admin', strictLimiter, require('./admin'));
+// Filing orchestrator routes - canonical filing CRUD
+router.use('/filings', generalLimiter, require('./filings'));
 
-// =====================================================
-// DOCUMENT ROUTES
-// =====================================================
+// Employer/salary routes
+router.use('/employers', generalLimiter, require('./employers'));
 
-// Document management routes
+// Capital gains routes
+router.use('/capital-gains', generalLimiter, require('./capitalGains'));
+
+// Regime comparison routes
+router.use('/regime-comparison', generalLimiter, require('./regimeComparison'));
+
+// Filing safety routes
+router.use('/filing-safety', generalLimiter, require('./filingSafety'));
+
+// Document and OCR routes
 router.use('/documents', generalLimiter, require('./documents'));
 
-
-
-
-
-
-
-
-
+// Analytics routes
+router.use('/analytics', require('./analytics'));
 
 // =====================================================
 // CA WORKSPACE ROUTES (V3)

@@ -199,7 +199,7 @@ class ERIGatewayService {
      * @param {string} assessmentYear
      * @returns {Promise<object>}
      */
-    async getPrefilledData(pan, assessmentYear) {
+    async getPrefilledData(pan, assessmentYear, dob) {
         if (this.mode === 'MOCK') {
             return this.mockPreviousItrData(pan, assessmentYear);
         }
@@ -286,6 +286,75 @@ class ERIGatewayService {
             enterpriseLogger.error('Filing status check failed', { ackNumber, error: error.message });
             throw mapERIError(error);
         }
+    }
+
+    /**
+     * Mock PAN verification
+     */
+    async mockPanVerification(pan) {
+        enterpriseLogger.info('Mock PAN verification', { pan });
+        return {
+            success: true,
+            data: {
+                pan: pan.toUpperCase(),
+                name: 'MOCK USER SURNAME',
+                firstName: 'MOCK',
+                lastName: 'USER',
+                dateOfBirth: '1990-01-01',
+                category: 'Individual'
+            }
+        };
+    }
+
+    /**
+     * Mock Previous ITR Data for prefill
+     */
+    async mockPreviousItrData(pan, assessmentYear) {
+        enterpriseLogger.info('Mock Previous ITR Data', { pan, assessmentYear });
+        return {
+            success: true,
+            data: {
+                pan: pan.toUpperCase(),
+                fullName: 'MOCK USER',
+                email: 'mock@example.com',
+                phone: '9876543210',
+                dateOfBirth: '1990-01-01',
+                address: 'MOCK ADDRESS, BANGALORE',
+                income: {
+                    salary: 750000,
+                    interestIncome: 12000,
+                    dividendIncome: 4500,
+                    otherIncome: 0
+                },
+                deductions: {
+                    section80C: 150000,
+                    section80D: 25000
+                },
+                taxesPaid: {
+                    tds: 45000,
+                    advanceTax: 10000
+                },
+                bankAccountNumber: '998877665544',
+                ifscCode: 'ICIC0001234',
+                bankName: 'ICICI BANK'
+            }
+        };
+    }
+
+    /**
+     * Mock Acknowledgement Fetch
+     */
+    async mockAcknowledgementFetch(ackNumber) {
+        enterpriseLogger.info('Mock Acknowledgement Fetch', { ackNumber });
+        return {
+            success: true,
+            status: 'COMPLETED',
+            acknowledgementNumber: ackNumber,
+            data: {
+                status: 'Success',
+                filingDate: new Date().toISOString()
+            }
+        };
     }
 
     async _mockSubmission(itrType) {

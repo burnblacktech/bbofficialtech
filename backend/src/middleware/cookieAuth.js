@@ -54,13 +54,13 @@ const authenticateWithCookies = async (req, res, next) => {
       });
     }
 
-    // Generate new access token
+    // Generate new access token (canonical payload only)
     const accessToken = jwt.sign(
       {
         userId: user.id,
         email: user.email,
         role: user.role,
-        tokenVersion: user.tokenVersion,
+        caFirmId: user.caFirmId || null,
       },
       process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '15m' },
@@ -74,7 +74,7 @@ const authenticateWithCookies = async (req, res, next) => {
       userId: user.id,
       email: user.email,
       role: user.role,
-      tokenVersion: user.tokenVersion,
+      caFirmId: user.caFirmId || null,
     };
 
     // Set new access token in response header
@@ -182,13 +182,13 @@ const handleTokenRefresh = async (req, res) => {
       });
     }
 
-    // Generate new access token
+    // Generate new access token (canonical payload only)
     const accessToken = jwt.sign(
       {
         userId: user.id,
         email: user.email,
         role: user.role,
-        tokenVersion: user.tokenVersion,
+        caFirmId: user.caFirmId || null,
       },
       process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '15m' },

@@ -2,7 +2,7 @@ const { sequelize } = require('../../config/database');
 const { QueryTypes } = require('sequelize');
 const enterpriseLogger = require('../../utils/logger');
 const DomainCore = require('../../domain/ITRDomainCore');
-const { ITRFiling, User } = require('../../models');
+const { ITRFiling, ITRDraft, User } = require('../../models');
 const ITR1JsonBuilder = require('./ITR1JsonBuilder');
 const ITR2JsonBuilder = require('./ITR2JsonBuilder');
 const ITR3JsonBuilder = require('./ITR3JsonBuilder');
@@ -31,35 +31,29 @@ class ITRExportService {
      */
     async export(userId, filingId, actor = {}) {
         // 1. Fetch Filing, Draft Data, and Computation
-        const query = `
-       SELECT f.id, f.user_id, f.itr_type, f.assessment_year, f.tax_computation, f.lifecycle_state,
-              d.data as draft_data
-       FROM itr_filings f
-       JOIN itr_drafts d ON d.filing_id = f.id
-       WHERE f.id = $1
-     `;
-        const res = await sequelize.query(query, { bind: [filingId], type: QueryTypes.SELECT });
+        const filing = await ITRFiling.findByPk(filingId, {
+            include: [{ model: ITRDraft, as: 'draft' }]
+        });
+        if (!filing) throw { statusCode: 404, message: 'Filing not found' };
 
-        if (!res.length) throw { statusCode: 404, message: 'Filing not found' };
-        const filing = res[0];
 
         // 2. Validate Access
-        if (filing.user_id !== userId) {
+        if (filing.userId !== userId) {
             const role = actor.role || 'END_USER';
             if (role === 'END_USER') throw { statusCode: 403, message: 'Access denied' };
         }
 
         // 3. Domain Check
-        if (!filing.tax_computation) {
+        if (!filing.taxComputation) {
             throw { statusCode: 400, message: 'Tax computation not found. Please compute tax before exporting.' };
         }
 
-        const draftData = typeof filing.draft_data === 'string' ? JSON.parse(filing.draft_data) : filing.draft_data;
-        const computation = typeof filing.tax_computation === 'string' ? JSON.parse(filing.tax_computation) : filing.tax_computation;
-        const assessmentYear = filing.assessment_year || getDefaultAssessmentYear();
-        const itrType = filing.itr_type;
+        const draftData = filing.draft?.data || {};
+        const computation = filing.taxComputation;
+        const assessmentYear = filing.assessmentYear || getDefaultAssessmentYear();
+        const itrType = filing.itrType;
 
-        const user = await User.findByPk(filing.user_id);
+        const user = await User.findByPk(filing.userId);
 
         let jsonPayload = {};
         let schemaValidationResult = { isValid: true };

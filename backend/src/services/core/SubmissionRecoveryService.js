@@ -24,7 +24,7 @@ class SubmissionRecoveryService {
         // Note: Using updated_at to detect inactivity
         const filings = await ITRFiling.findAll({
             where: {
-                status: STATES.ERI_IN_PROGRESS,
+                lifecycleState: STATES.ERI_IN_PROGRESS,
                 // updated_at < threshold (Sequelize syntax varying, using Op)
             }
         });
@@ -85,7 +85,7 @@ class SubmissionRecoveryService {
             }
 
             await transaction.commit();
-            return { success: true, newStatus: filing.status };
+            return { success: true, newStatus: filing.lifecycleState };
 
         } catch (error) {
             await transaction.rollback();

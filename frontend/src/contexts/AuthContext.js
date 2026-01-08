@@ -177,15 +177,18 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = useCallback(async () => {
+    // Clear local state immediately for better UX
+    setUser(null);
+    setProfile(null);
+    setIsAuthenticated(false);
+    setJustLoggedIn(false);
+
     try {
       await authService.logout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      setUser(null);
-      setProfile(null);
-      setIsAuthenticated(false);
-      setJustLoggedIn(false);
+      // Ensure we always end up at login
       navigate('/login');
     }
   }, [navigate]);

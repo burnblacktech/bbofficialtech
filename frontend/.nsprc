@@ -1,8 +1,0 @@
-{
-  "exceptions": [
-    "https://github.com/advisories/GHSA-4r6h-8v6p-xvw6",
-    "https://github.com/advisories/GHSA-5pgg-2g8v-p4x9"
-  ],
-  "reason": "xlsx package has known vulnerabilities (Prototype Pollution and ReDoS). No fix available from maintainer. Mitigations implemented: file size limits (10MB), input sanitization, prototype pollution prevention, row limits (10,000), disabled date/number format parsing. See SECURITY.md for details."
-}
-

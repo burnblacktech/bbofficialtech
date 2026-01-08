@@ -18,8 +18,6 @@ const enterpriseLogger = require('./utils/logger');
 console.log('TRACE: logger loaded');
 const redisService = require('./services/core/RedisService');
 console.log('TRACE: redis service loaded');
-const routes = require('./routes');
-console.log('TRACE: routes loaded');
 const { globalErrorHandler } = require('./middleware/errorHandler');
 console.log('TRACE: error handler loaded');
 
@@ -274,13 +272,6 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// Unhandled promise rejection handler;
-process.on('unhandledRejection', (reason, promise) => {
-  enterpriseLogger.error('Unhandled Promise Rejection', {
-    reason: reason,
-    promise: promise,
-  });
-});
 
 // Uncaught exception handler;
 process.on('uncaughtException', error => {

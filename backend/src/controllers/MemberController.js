@@ -60,7 +60,7 @@ class MemberController {
         order: [['createdAt', 'DESC']],
         attributes: [
           'id', 'userId', 'firstName', 'lastName', 'panNumber', 'relationship', 'dateOfBirth',
-          'gender', 'maritalStatus', 'phone', 'email', 'address', 'isActive', 'panVerified', 'createdAt', 'updatedAt',
+          'gender', 'isActive', 'panVerified', 'createdAt', 'updatedAt',
         ],
       });
 
@@ -76,10 +76,6 @@ class MemberController {
         dateOfBirth: member.dateOfBirth,
         gender: member.gender,
         genderLabel: this.getGenderLabel(member.gender),
-        maritalStatus: member.maritalStatus,
-        phone: member.phone,
-        email: member.email,
-        address: member.address,
         isActive: member.isActive,
         panVerified: member.panVerified,
         createdAt: member.createdAt,

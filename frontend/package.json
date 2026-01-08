@@ -47,53 +47,6 @@
     "format:all": "npm run format:fix-trailing && prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "dev": "set PORT=3000 && react-scripts start"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "**/*.js",
-          "**/*.jsx"
-        ],
-        "rules": {
-          "no-unused-vars": "off",
-          "import/order": "off",
-          "comma-dangle": "off",
-          "eol-last": "off",
-          "no-trailing-spaces": "off",
-          "pascalcase": "off",
-          "let-const": "off",
-          "prettier/prettier": "off",
-          "react-hooks/rules-of-hooks": "off",
-          "react-hooks/exhaustive-deps": "off"
-        }
-      },
-      {
-        "files": [
-          "**/*.ts",
-          "**/*.tsx"
-        ],
-        "rules": {
-          "no-undef": "off",
-          "no-unused-vars": "off",
-          "no-redeclare": "off"
-        }
-      }
-    ],
-    "rules": {
-      "no-unused-vars": "off",
-      "import/order": "off",
-      "comma-dangle": "off",
-      "eol-last": "off",
-      "no-trailing-spaces": "off",
-      "pascalcase": "off",
-      "let-const": "off",
-      "prettier/prettier": "off"
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",

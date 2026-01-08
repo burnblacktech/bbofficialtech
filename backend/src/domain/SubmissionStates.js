@@ -1,27 +1,22 @@
 /**
  * SubmissionStates.js
  * Canonical list of all possible states for an ITR Filing.
- * V4.1 - Production Hardening
+ * S12 - Aligned with canonical database schema (lowercase)
  */
 
 module.exports = Object.freeze({
     // Initial Draft
-    DRAFT: 'DRAFT',
+    DRAFT: 'draft',
 
-    // User Context
-    READY_TO_FILE: 'READY_TO_FILE',       // User has completed data entry
-    ACTION_REQUIRED: 'ACTION_REQUIRED',   // CA requested info (Loop back)
+    // Review Workflow
+    REVIEW_PENDING: 'review_pending',
+    REVIEWED: 'reviewed',
 
-    // CA Context
-    SUBMITTED_TO_CA: 'SUBMITTED_TO_CA',   // Locked for User, CA Reviewing
+    // Approval
+    APPROVED: 'approved',
 
-    // Submission Pipeline (V4)
-    CA_APPROVED: 'CA_APPROVED',           // CA clicked "Submit", ready for ERI
-    ERI_IN_PROGRESS: 'ERI_IN_PROGRESS',   // Sent to ERI, waiting for response
-    ERI_ACK_RECEIVED: 'ERI_ACK_RECEIVED', // Valid ACK received from ITD
-
-    // Terminal States
-    FILED: 'FILED',                       // Successfully filed and ACK stored
-    ERI_FAILED: 'ERI_FAILED',             // Technical failure (Recoverable)
-    CANCELLED: 'CANCELLED'                // Manual override/cancellation
+    // ERI Submission Pipeline
+    SUBMITTED_TO_ERI: 'submitted_to_eri',
+    ERI_SUCCESS: 'eri_success',
+    ERI_FAILED: 'eri_failed',
 });
