@@ -42,7 +42,6 @@ const GoogleOAuthLinkRequired = lazy(() => import('./pages/Auth/GoogleOAuthLinkR
 
 // Onboarding / gates
 
-
 // CA Registration components
 const RegisterCAFirm = lazy(() => import('./pages/CA/RegisterCAFirm'));
 const RegistrationSuccess = lazy(() => import('./pages/CA/RegistrationSuccess'));
@@ -92,14 +91,34 @@ const ClientList = lazy(() => import('./pages/Firm/ClientList'));
 const ClientOnboardingForm = lazy(() => import('./pages/Firm/ClientOnboardingForm'));
 const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
 
-const CAReviewQueue = lazy(() => import('./pages/Firm/CAReviewQueue'));
-
 // CA Workspace V3
 const CAInbox = lazy(() => import('./pages/CA/CAInbox'));
 const CAFilingReview = lazy(() => import('./pages/CA/CAFilingReview'));
 
 // User pages
-const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
+const UserDashboardV2 = lazy(() => import('./pages/Dashboard/UserDashboardV2'));
+
+// Financial Story UX screens
+const FilingOverview = lazy(() => import('./pages/Filing/FilingOverview'));
+const IncomeStory = lazy(() => import('./pages/Filing/IncomeStory'));
+const TaxBreakdown = lazy(() => import('./pages/Filing/TaxBreakdown'));
+const FilingReadiness = lazy(() => import('./pages/Filing/FilingReadiness'));
+const SubmissionStatus = lazy(() => import('./pages/Filing/SubmissionStatus'));
+const SalaryDetails = lazy(() => import('./pages/Filing/SalaryDetails'));
+const CapitalGainsStory = lazy(() => import('./pages/Filing/CapitalGainsStory'));
+const AddCapitalGain = lazy(() => import('./pages/Filing/AddCapitalGain'));
+const OtherIncomeDetails = lazy(() => import('./pages/Filing/OtherIncomeDetails'));
+const PropertySaleDetails = lazy(() => import('./pages/Filing/PropertySaleDetails'));
+const TaxPaymentGate = lazy(() => import('./pages/Filing/TaxPaymentGate'));
+const PresumptiveIncomeStory = lazy(() => import('./pages/Filing/PresumptiveIncomeStory'));
+const AddPresumptiveIncome = lazy(() => import('./pages/Filing/AddPresumptiveIncome'));
+const ITR3EntryCeremony = lazy(() => import('./pages/ITR/ITR3EntryCeremony'));
+const HousePropertyStory = lazy(() => import('./pages/Filing/HousePropertyStory'));
+const AddHouseProperty = lazy(() => import('./pages/Filing/AddHouseProperty'));
+const ITR3BusinessProfile = lazy(() => import('./pages/Filing/ITR3BusinessProfile'));
+const ITR3ProfitLoss = lazy(() => import('./pages/Filing/ITR3ProfitLoss'));
+const ITR3BalanceSheet = lazy(() => import('./pages/Filing/ITR3BalanceSheet'));
+const ITR3AssetsLiabilities = lazy(() => import('./pages/Filing/ITR3AssetsLiabilities'));
 
 // ITR Components (Restored)
 const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
@@ -115,9 +134,6 @@ const TaxDemands = lazy(() => import('./pages/ITR/TaxDemands'));
 const FilingAnalytics = lazy(() => import('./pages/ITR/FilingAnalytics'));
 const EVerification = lazy(() => import('./pages/ITR/EVerification'));
 const Acknowledgment = lazy(() => import('./pages/Acknowledgment'));
-const PreviousYearSelector = lazy(() => import('./features/itr/components/previous-year-selector'));
-const PreviousYearPreview = lazy(() => import('./features/itr/components/previous-year-preview'));
-const PreviousYearReview = lazy(() => import('./features/itr/components/previous-year-review'));
 const AddMembers = lazy(() => import('./pages/Members/AddMembers'));
 const UserSettings = lazy(() => import('./pages/User/UserSettings'));
 const ProfileSettings = lazy(() => import('./pages/User/ProfileSettings'));
@@ -141,20 +157,6 @@ const ToolsPage = lazy(() => import('./pages/Tools/ToolsPage'));
 // Legal pages
 const TermsPage = lazy(() => import('./pages/Legal/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/Legal/PrivacyPage'));
-
-function ITRDetermineRedirect() {
-  const location = useLocation();
-  return (
-    <Navigate
-      to="/itr/determine"
-      replace
-      state={{
-        ...(location.state || {}),
-        redirectedFrom: location.pathname,
-      }}
-    />
-  );
-}
 
 function AcknowledgmentRedirect() {
   const location = useLocation();
@@ -362,7 +364,7 @@ const AppContent = () => {
             element={
               <Layout>
                 <Suspense fallback={<RouteLoader message="Loading dashboard..." />}>
-                  <UserDashboard />
+                  <UserDashboardV2 />
                 </Suspense>
               </Layout>
             }
@@ -748,7 +750,6 @@ const AppContent = () => {
             }
           />
 
-
           {/* V3 CA Workspace */}
           <Route
             path="/ca/inbox"
@@ -764,38 +765,6 @@ const AppContent = () => {
               <Suspense fallback={<RouteLoader message="Loading filing review..." />}>
                 <CAFilingReview />
               </Suspense>
-            }
-          />
-
-          {/* ITR Features */}
-          <Route
-            path="/itr/previous-year-selector"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading previous year selector..." />}>
-                  <PreviousYearSelector />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/previous-year-preview"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading previous year preview..." />}>
-                  <PreviousYearPreview />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/itr/previous-year-review"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading previous year review..." />}>
-                  <PreviousYearReview />
-                </Suspense>
-              </Layout>
             }
           />
 
@@ -826,6 +795,180 @@ const AppContent = () => {
               </Layout>
             }
           />
+
+          {/* Financial Story UX Routes */}
+          <Route
+            path="/filing/:filingId/overview"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading filing overview..." />}>
+                  <FilingOverview />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/tax-payment"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Securing tax payment..." />}>
+                  <TaxPaymentGate />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/income-story"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading income story..." />}>
+                  <IncomeStory />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/tax-breakdown"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading tax breakdown..." />}>
+                  <TaxBreakdown />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/readiness"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading readiness check..." />}>
+                  <FilingReadiness />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          {/* S25: ERI Submission Outcome UX */}
+          <Route
+            path="/filing/:filingId/submission-status"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading submission status..." />}>
+                  <SubmissionStatus />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          {/* Income Story - Section Overview */}
+          <Route
+            path="/filing/:filingId/income-story"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading income story..." />}>
+                  <IncomeStory />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          {/* Income Section Details Routes */}
+          <Route
+            path="/filing/:filingId/income/salary"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading salary details..." />}>
+                  <SalaryDetails />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/filing/:filingId/income/presumptive"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading business details..." />}>
+                  <PresumptiveIncomeStory />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/income/presumptive/add"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Opening presumptive form..." />}>
+                  <AddPresumptiveIncome />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/income/capital-gains"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading capital gains..." />}>
+                  <CapitalGainsStory />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/filing/:filingId/income/capital-gains/add"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Adding capital gain..." />}>
+                  <AddCapitalGain />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/filing/:filingId/income/other"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading other income..." />}>
+                  <OtherIncomeDetails />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/filing/:filingId/income/house-property"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading house property..." />}>
+                  <HousePropertyStory />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/income/house-property/add"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Adding house property..." />}>
+                  <AddHouseProperty />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/filing/:filingId/income/property-sale"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading property sale details..." />}>
+                  <PropertySaleDetails />
+                </Suspense>
+              </Layout>
+            }
+          />
+
           <Route
             path="/itr/refund-tracking"
             element={

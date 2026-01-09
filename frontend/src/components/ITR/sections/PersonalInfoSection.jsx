@@ -1,12 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PersonalInfoForm } from '../../../features/personal-info';
 import { SectionWrapper } from './SectionWrapper';
-
-import { useState } from 'react';
-import { PersonalInfoForm } from '../../../features/personal-info';
 import { BankDetailsForm } from '../../../features/bank-details'; // Ensure this path is correct
-import { SectionWrapper } from './SectionWrapper';
 import IdentityGateStatus from './IdentityGateStatus';
 import { useAuth } from '../../../contexts/AuthContext';
 import { ArrowLeft } from 'lucide-react';

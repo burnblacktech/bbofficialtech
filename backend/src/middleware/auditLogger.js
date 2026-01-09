@@ -2,7 +2,7 @@
 // AUDIT LOGGING MIDDLEWARE
 // =====================================================
 
-const { AuditLog } = require('../models');
+const AuditService = require('../services/core/AuditService');
 const enterpriseLogger = require('../utils/logger');
 
 /**
@@ -17,7 +17,7 @@ const auditAuthEvents = (action) => {
     let responseData = null;
     let statusCode = null;
 
-    res.json = function(data) {
+    res.json = function (data) {
       responseData = data;
       statusCode = res.statusCode;
       return originalJson.call(this, data);
@@ -30,23 +30,23 @@ const auditAuthEvents = (action) => {
         const userId = req.user?.userId || null;
         const success = statusCode >= 200 && statusCode < 400;
 
-        await AuditLog.logAuthEvent({
-          userId,
-          action,
-          resource: 'auth',
-          ipAddress: req.ip || req.connection.remoteAddress,
-          userAgent: req.headers['user-agent'],
+        await AuditService.logEvent({
+          actorId: userId || '00000000-0000-4000-8000-000000000000', // SYSTEM ID
+          actorRole: req.user?.role || 'ANONYMOUS',
+          action: action.toUpperCase(),
+          entityType: 'AUTH',
+          entityId: userId || '00000000-0000-4000-8000-000000000000',
           metadata: {
             method: req.method,
             url: req.originalUrl,
             statusCode,
             duration,
+            success,
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers['user-agent'],
             requestBody: req.method === 'POST' || req.method === 'PUT' ?
               sanitizeRequestBody(req.body) : null,
-            responseData: success ? responseData : null,
           },
-          success,
-          errorMessage: success ? null : responseData?.error || responseData?.message,
         });
 
         enterpriseLogger.info('Audit event logged', {
@@ -80,7 +80,7 @@ const auditApiEvents = (resource) => {
     let responseData = null;
     let statusCode = null;
 
-    res.json = function(data) {
+    res.json = function (data) {
       responseData = data;
       statusCode = res.statusCode;
       return originalJson.call(this, data);
@@ -93,24 +93,21 @@ const auditApiEvents = (resource) => {
         const userId = req.user?.userId || null;
         const success = statusCode >= 200 && statusCode < 400;
 
-        await AuditLog.create({
-          userId,
-          action: `${req.method}_${resource}`,
-          resource,
-          resourceId: req.params.id || null,
-          ipAddress: req.ip || req.connection.remoteAddress,
-          userAgent: req.headers['user-agent'],
+        await AuditService.logEvent({
+          actorId: userId || '00000000-0000-4000-8000-000000000000',
+          actorRole: req.user?.role || 'ANONYMOUS',
+          action: `${req.method}_${resource}`.toUpperCase(),
+          entityType: resource.toUpperCase(),
+          entityId: req.params.id || '00000000-0000-4000-8000-000000000000',
           metadata: {
             method: req.method,
             url: req.originalUrl,
             statusCode,
             duration,
-            requestBody: req.method === 'POST' || req.method === 'PUT' ?
-              sanitizeRequestBody(req.body) : null,
-            responseData: success ? responseData : null,
+            success,
+            ipAddress: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers['user-agent'],
           },
-          success,
-          errorMessage: success ? null : responseData?.error || responseData?.message,
         });
 
         enterpriseLogger.info('API audit event logged', {
@@ -160,7 +157,7 @@ const auditFailedAuth = (action) => {
     const originalJson = res.json;
     let responseData = null;
 
-    res.json = function(data) {
+    res.json = function (data) {
       responseData = data;
       return originalJson.call(this, data);
     };
@@ -168,20 +165,21 @@ const auditFailedAuth = (action) => {
     res.on('finish', async () => {
       if (res.statusCode === 401 || res.statusCode === 403) {
         try {
-          await AuditLog.logAuthEvent({
-            userId: null,
-            action: `${action}_failed`,
-            resource: 'auth',
-            ipAddress: req.ip || req.connection.remoteAddress,
-            userAgent: req.headers['user-agent'],
+          await AuditService.logEvent({
+            actorId: '00000000-0000-4000-8000-000000000000',
+            actorRole: 'ANONYMOUS',
+            action: `${action}_FAILED`.toUpperCase(),
+            entityType: 'AUTH',
+            entityId: '00000000-0000-4000-8000-000000000000',
             metadata: {
               method: req.method,
               url: req.originalUrl,
               statusCode: res.statusCode,
+              ipAddress: req.ip || req.connection.remoteAddress,
+              userAgent: req.headers['user-agent'],
               requestBody: sanitizeRequestBody(req.body),
+              error: responseData?.error || responseData?.message,
             },
-            success: false,
-            errorMessage: responseData?.error || responseData?.message,
           });
 
           enterpriseLogger.warn('Failed authentication attempt logged', {

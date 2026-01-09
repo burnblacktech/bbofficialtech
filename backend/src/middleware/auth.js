@@ -7,7 +7,10 @@ const rateLimit = require('express-rate-limit');
 const enterpriseLogger = require('../utils/logger');
 
 // JWT Secret from environment
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required');
+}
 
 /**
  * Rate limiting for authentication endpoints
@@ -41,6 +44,10 @@ const authenticateToken = (req, res, next) => {
       });
     }
 
+    console.log('[JWT VERIFY]', {
+      secretPreview: JWT_SECRET?.slice(0, 6),
+      secretLength: JWT_SECRET?.length,
+    });
     jwt.verify(token, JWT_SECRET, { clockTolerance: 60 }, (err, user) => {
       if (err) {
         enterpriseLogger.warn('Invalid token attempt', {

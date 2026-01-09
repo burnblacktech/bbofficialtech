@@ -1,71 +1,83 @@
-/**
- * AuditService.js
- * V4.2 - Production Hardening
- * Handles recording of immutable audit events.
- */
+// =====================================================
+// AUDIT SERVICE - CANONICAL
+// Writes to audit_events table (canonical schema)
+// =====================================================
 
-const AuditEvent = require('../../models/AuditEvent');
-const { sequelize } = require('../../config/database');
+const { AuditEvent } = require('../../models');
+const enterpriseLogger = require('../../utils/logger');
 
 class AuditService {
-
-    /**
-     * Record an audit event.
-     * MUST NOT FAIL (or if it fails, it must block the transaction in critical paths).
-     * @param {Object} eventData
-     * @param {Object} [transaction] - Optional Sequelize transaction.
-     */
-    async log(eventData, transaction = null) {
-        const {
-            entityType,
-            entityId,
-            action,
+    static async logAuthEvent({ actorId, action, metadata = {} }) {
+        return this.logEvent({
             actorId,
-            actorRole,
-            payload,
-            ipAddress
-        } = eventData;
+            action,
+            entityType: 'USER',
+            entityId: actorId,
+            metadata
+        });
+    }
 
-        if (!entityType || !entityId || !action) {
-            throw new Error('AuditService: Missing required fields (entityType, entityId, action)');
-        }
-
+    static async logEvent({ actorId, action, entityType, entityId, metadata = {}, actorRole }, transaction = null) {
+        const systemId = '00000000-0000-4000-8000-000000000000';
         try {
-            await AuditEvent.create({
+            // S13: Structured logging for runtime visibility
+            enterpriseLogger.info('AUDIT_EVENT', {
+                actorId: actorId || systemId,
+                action,
                 entityType,
                 entityId,
-                action,
-                actorId,
+                metadata,
                 actorRole,
-                payload,
-                ipAddress,
-                timestamp: new Date()
-            }, { transaction });
+                service: 'AuditService',
+                timestamp: new Date().toISOString(),
+            });
 
-            // In dev mode, verify it wrote
-            // console.log(`[Audit] Recorded: ${action} on ${entityType}:${entityId}`);
-
+            // Canonical schema mapping: action -> eventType
+            return await AuditEvent.create({
+                actorId: actorId || systemId,
+                actorRole: actorRole || (actorId ? 'USER' : 'SYSTEM'), // Mandatory field in schema
+                eventType: action || 'UNKNOWN',   // Canonical field is event_type
+                entityType: entityType ? entityType.toUpperCase() : 'SYSTEM',
+                entityId: entityId ? String(entityId) : systemId, // Default UUID if missing
+                metadata,
+            }, transaction ? { transaction } : {});
         } catch (error) {
-            console.error('AuditService Critical Failure:', error);
-            // If we are in a transaction, this error will propagate and rollback the main action.
-            // This is INTENTIONAL. Action cannot proceed if audit fails.
-            throw error;
+            // Audit failures should not block main operations
+            enterpriseLogger.error('Audit event creation failed', {
+                actorId,
+                action,
+                entityType,
+                entityId,
+                error: error.message,
+            });
+            return null;
         }
     }
 
     /**
-     * Quick helper for state transitions
+     * Compatibility helper for legacy admin actions
      */
-    async logTransition(filingId, fromStatus, toStatus, actorId, actorRole, transaction) {
-        return this.log({
-            entityType: 'ITR_FILING',
-            entityId: filingId,
-            action: 'STATE_CHANGE',
-            actorId,
-            actorRole,
-            payload: { from: fromStatus, to: toStatus }
-        }, transaction);
+    static async logAdminAction(adminId, action, targetResource, details = {}, ipAddress = null) {
+        return this.logEvent({
+            actorId: adminId,
+            action: action.toUpperCase(),
+            entityType: targetResource,
+            metadata: { ...details, ipAddress }
+        });
+    }
+
+    /**
+     * Compatibility helper for legacy data access
+     */
+    static async logDataAccess(userId, action, dataType, dataId, details = {}, ipAddress = null) {
+        return this.logEvent({
+            actorId: userId,
+            action: action.toUpperCase(),
+            entityType: dataType,
+            entityId: dataId,
+            metadata: { ...details, ipAddress }
+        });
     }
 }
 
-module.exports = new AuditService();
+module.exports = AuditService;

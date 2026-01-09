@@ -23,7 +23,7 @@ class AdminRescueService {
             const filing = await ITRFiling.findOne({ where: { id: filingId }, transaction });
             if (!filing) throw new Error('Not found');
 
-            const oldStatus = filing.status;
+            const oldStatus = filing.lifecycleState;
 
             // Allow Force Transition even if State Machine would complain?
             // V4 Rules: We prefer using State Machine, but this is Rescue.
@@ -57,10 +57,10 @@ class AdminRescueService {
             // Or move to SUBMITTED_TO_CA?
 
             // Let's move to CA_APPROVED, so CA/System can re-trigger submitToITD.
-            const oldStatus = filing.status;
+            const oldStatus = filing.lifecycleState;
 
-            // Bypass checking: We are admin.
-            filing.status = STATES.CA_APPROVED;
+            // Use state machine for proper transition validation
+            SubmissionStateMachine.transition(filing, STATES.CA_APPROVED);
             filing.ackNumber = null;
             filing.rejectionReason = null;
 

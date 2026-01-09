@@ -8,6 +8,9 @@ const bcrypt = require('bcryptjs');
 const enterpriseLogger = require('../utils/logger');
 
 const User = sequelize.define('User', {
+  // =====================================================
+  // IDENTITY
+  // =====================================================
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -21,50 +24,34 @@ const User = sequelize.define('User', {
       isEmail: true,
     },
   },
-  passwordHash: {
-    type: DataTypes.STRING,
-    allowNull: true, // Allow null for OAuth users
-    field: 'password_hash',
-  },
-  role: {
-    type: DataTypes.ENUM('SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'PREPARER', 'REVIEWER', 'END_USER'),
-    defaultValue: 'END_USER',
-    allowNull: false,
-  },
   fullName: {
     type: DataTypes.STRING,
     allowNull: false,
     field: 'full_name',
   },
-  phone: {
+
+  // =====================================================
+  // AUTHENTICATION
+  // =====================================================
+  passwordHash: {
     type: DataTypes.STRING,
-    allowNull: true,
-    validate: {
-      len: [10, 20], // Support international format
-    },
-  },
-  googleId: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
-    field: 'google_id',
+    allowNull: true, // NULL for OAuth-only users
+    field: 'password_hash',
   },
   authProvider: {
-    type: DataTypes.ENUM('LOCAL', 'GOOGLE', 'OTHER'),
-    defaultValue: 'LOCAL',
+    type: DataTypes.ENUM('local', 'google'),
+    defaultValue: 'local',
     allowNull: false,
     field: 'auth_provider',
   },
-  providerId: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'provider_id',
-  },
-  tokenVersion: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
+
+  // =====================================================
+  // AUTHORIZATION
+  // =====================================================
+  role: {
+    type: DataTypes.ENUM('SUPER_ADMIN', 'CA', 'PREPARER', 'END_USER'),
+    defaultValue: 'END_USER',
     allowNull: false,
-    field: 'token_version',
   },
   caFirmId: {
     type: DataTypes.UUID,
@@ -75,63 +62,19 @@ const User = sequelize.define('User', {
     },
     field: 'ca_firm_id',
   },
-  emailVerified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    field: 'email_verified',
-  },
-  phoneVerified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    field: 'phone_verified',
-  },
-  panNumber: {
-    type: DataTypes.STRING(10),
-    allowNull: true,
-    validate: {
-      len: [10, 10],
-      is: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i,
-    },
-    field: 'pan_number',
-  },
-  panVerified: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    field: 'pan_verified',
-  },
-  panVerifiedAt: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    field: 'pan_verified_at',
-  },
-  lastLoginAt: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    field: 'last_login_at',
-  },
+
+  // =====================================================
+  // LIFECYCLE
+  // =====================================================
   status: {
-    type: DataTypes.ENUM('active', 'inactive', 'suspended'),
+    type: DataTypes.ENUM('active', 'disabled'),
     defaultValue: 'active',
     allowNull: false,
   },
 
-  dateOfBirth: {
-    type: DataTypes.DATEONLY,
-    allowNull: true,
-    field: 'date_of_birth',
-    comment: 'User date of birth for tax calculations',
-  },
-  gender: {
-    type: DataTypes.ENUM('MALE', 'FEMALE', 'OTHER'),
-    allowNull: true,
-    comment: 'User gender for profile and tax calculations',
-  },
-  metadata: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {},
-    comment: 'Stores user preferences, notification settings, privacy settings, etc.',
-  },
+  // =====================================================
+  // AUDIT
+  // =====================================================
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -152,29 +95,10 @@ const User = sequelize.define('User', {
       fields: ['email'],
     },
     {
-      unique: true,
-      fields: ['email', 'auth_provider'],
-    },
-    {
       fields: ['role'],
     },
     {
-      fields: ['status'],
-    },
-    {
-      fields: ['auth_provider'],
-    },
-    {
-      fields: ['provider_id'],
-    },
-    {
       fields: ['ca_firm_id'],
-    },
-    {
-      fields: ['metadata'],
-      using: 'gin',
-      name: 'idx_users_metadata_gin',
-      comment: 'GIN index for JSONB metadata queries',
     },
   ],
 });
@@ -329,16 +253,14 @@ User.prototype.getFirmContext = function () {
 
 // Hooks
 User.beforeCreate(async (user) => {
-  if (user.passwordHash) {
-    user.passwordHash = await User.hashPassword(user.passwordHash);
-  }
+  // Password hashing is handled by auth routes (auth.js)
+  // Do NOT hash here - would cause double-hashing
   user.email = user.email.toLowerCase();
 });
 
 User.beforeUpdate(async (user) => {
-  if (user.changed('passwordHash')) {
-    user.passwordHash = await User.hashPassword(user.passwordHash);
-  }
+  // Password hashing is handled by auth routes (auth.js)
+  // Do NOT hash here - would cause double-hashing
   if (user.changed('email')) {
     user.email = user.email.toLowerCase();
   }

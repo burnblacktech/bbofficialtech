@@ -94,9 +94,9 @@ class ERIIntegrationService {
   /**
    * Fetch previous ITR data for prefill
    */
-  async fetchPreviousItrData(pan, assessmentYear) {
+  async fetchPreviousItrData(pan, assessmentYear, dob) {
     try {
-      const result = await this.gateway.getPrefilledData(pan, assessmentYear);
+      const result = await this.gateway.getPrefilledData(pan, assessmentYear, dob);
       // Map Gateway response to expected format
       return {
         pan,

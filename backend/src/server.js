@@ -21,10 +21,22 @@ const dbPoolMonitor = require('./utils/dbPoolMonitor');
 console.log('TRACE: db pool monitor loaded');
 const jobQueueService = require('./services/core/JobQueue');
 console.log('TRACE: job queue loaded');
-const app = require('./app');
-console.log('TRACE: app loaded');
-const wsManager = require('./services/websocket/WebSocketManager');
-console.log('TRACE: wsManager loaded');
+let app, wsManager;
+try {
+  app = require('./app');
+  console.log('TRACE: app loaded');
+} catch (error) {
+  console.error('FATAL: Failed to load app.js', error);
+  process.exit(1);
+}
+
+try {
+  wsManager = require('./services/websocket/WebSocketManager');
+  console.log('TRACE: wsManager loaded');
+} catch (error) {
+  console.error('FATAL: Failed to load WebSocketManager', error);
+  process.exit(1);
+}
 
 
 // =====================================================
@@ -140,14 +152,30 @@ const startServer = async () => {
     console.log('TRACE: Before Verifying schema');
     enterpriseLogger.info('Verifying database schema...');
     const { sequelize } = require('./config/database');
+    console.log('>>> ABOUT TO CALL showAllTables() <<<');
     const tables = await sequelize.getQueryInterface().showAllTables();
+    console.log('>>> showAllTables() COMPLETED - Found', tables.length, 'tables <<<');
+
+    // DEBUG: Print all registered Sequelize models
+    console.log('\n🔍 REGISTERED SEQUELIZE MODELS:', Object.keys(sequelize.models));
+    console.log('Total models registered:', Object.keys(sequelize.models).length, '\n');
+
     enterpriseLogger.info('Database schema verified', {
       tableCount: tables.length,
       tables: tables.slice(0, 10), // Log first 10 tables
     });
 
+    // Validate PORT before starting server
+    console.log('TRACE: About to start HTTP server on port', PORT);
+    const validPort = Number(PORT);
+    if (!validPort || validPort < 1 || validPort > 65535) {
+      throw new Error(`Invalid PORT: ${PORT}. Must be a number between 1 and 65535.`);
+    }
+
     // Start the server
-    server.listen(PORT, HOST, async () => {
+    console.log(`>>> STARTING SERVER ON PORT ${validPort}`);
+    server.listen(validPort, HOST, async () => {
+      console.log(`>>> SERVER LISTENING ON ${validPort}`);
       enterpriseLogger.info('Server listening', {
         host: HOST,
         port: PORT,
@@ -190,6 +218,7 @@ const startServer = async () => {
       }
     });
   } catch (error) {
+    console.error('CRITICAL SERVER STARTUP ERROR:', error);
     enterpriseLogger.error('Failed to start server', {
       error: error.message,
       stack: error.stack,
@@ -202,8 +231,18 @@ const startServer = async () => {
   }
 };
 
-// Start the server
-startServer();
+// Start the server with explicit error handling
+console.log('>>> ABOUT TO START SERVER');
+startServer().catch((error) => {
+  console.error('FATAL: startServer() failed', error);
+  enterpriseLogger.error('Fatal server startup error', {
+    error: error.message,
+    stack: error.stack,
+  });
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
+});
 
 // =====================================================
 // HEALTH CHECK ENDPOINT (FOR LOAD BALANCERS)

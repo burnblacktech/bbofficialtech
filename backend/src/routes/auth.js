@@ -8,7 +8,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('../config/passport');
 const { v4: uuidv4 } = require('uuid');
-const { User, UserSession, AuditLog, PasswordResetToken, CAFirm } = require('../models');
+const { User, UserSession, PasswordResetToken, CAFirm } = require('../models');
+const AuditService = require('../services/core/AuditService');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 const emailService = require('../services/integration/EmailService');
@@ -115,7 +116,7 @@ router.post('/register',
       const existingUser = await User.findOne({
         where: {
           email: email.toLowerCase(),
-          authProvider: 'LOCAL',
+          authProvider: 'local',  // Canonical: lowercase
         },
       });
       if (existingUser) {
@@ -136,7 +137,7 @@ router.post('/register',
         fullName: fullName,
         phone: req.body.phone || null, // Use normalized phone
         role: 'END_USER', // Default role for all public signups
-        authProvider: 'LOCAL',
+        authProvider: 'local', // Canonical: lowercase
         status: 'active',
         emailVerified: true,
       });
@@ -174,7 +175,7 @@ router.post('/register',
 // LOGIN ROUTES
 // =====================================================
 
-// User login
+// User login (canonical Sequelize-only auth)
 router.post('/login',
   process.env.NODE_ENV === 'production' ? progressiveRateLimit() : (req, res, next) => next(),
   process.env.NODE_ENV === 'production' ? recordFailedAttempt : (req, res, next) => next(),
@@ -182,14 +183,6 @@ router.post('/login',
   async (req, res) => {
     try {
       const { email, password } = req.body;
-
-      // Debug logging (remove in production)
-      enterpriseLogger.info('Login attempt', {
-        email: email ? email.toLowerCase() : null,
-        passwordLength: password ? password.length : 0,
-        hasPassword: !!password,
-        ip: req.ip,
-      });
 
       // Validate required fields
       if (!email || !password) {
@@ -199,55 +192,17 @@ router.post('/login',
         });
       }
 
-      // Find user by email (regardless of authProvider)
-      // Use raw query to avoid schema mismatch issues
-      // Explicitly use public.users schema for clarity
-      // Note: sequelize.query returns [results, metadata] when not using QueryTypes
-      const queryResponse = await sequelize.query(
-        `SELECT id, email, password_hash, role, status, auth_provider, full_name, 
-         email_verified, phone_verified, token_version, last_login_at, onboarding_completed
-         FROM public.users WHERE email = :email LIMIT 1`,
-        {
-          replacements: { email: email.toLowerCase() },
-        }
-      );
-
-      // Handle both [results, metadata] and direct results array formats
-      const queryResult = Array.isArray(queryResponse) && queryResponse.length > 0
-        ? (Array.isArray(queryResponse[0]) ? queryResponse[0] : queryResponse)
-        : [];
-
-      // queryResult should be the results array
-      const user = Array.isArray(queryResult) && queryResult.length > 0 ? queryResult[0] : null;
-
-      // Debug logging
-      enterpriseLogger.info('User lookup result', {
-        email: email.toLowerCase(),
-        searchEmail: email,
-        found: !!user,
-        resultLength: queryResult ? queryResult.length : 0,
-        queryResponseType: Array.isArray(queryResponse) ? 'array' : typeof queryResponse,
-        queryResponseLength: Array.isArray(queryResponse) ? queryResponse.length : 'N/A',
-        userId: user ? user.id : null,
-        ip: req.ip,
+      // Find user by email (canonical Sequelize path only)
+      const user = await User.findOne({
+        where: {
+          email: email.toLowerCase(),
+          authProvider: 'local',
+        },
       });
-
-      // Convert to User model instance format
-      if (user) {
-        user.passwordHash = user.password_hash;
-        user.authProvider = user.auth_provider;
-        user.fullName = user.full_name;
-        user.emailVerified = user.email_verified;
-        user.phoneVerified = user.phone_verified;
-        user.tokenVersion = user.token_version;
-        user.lastLoginAt = user.last_login_at;
-
-      }
 
       if (!user) {
         enterpriseLogger.warn('Login failed: User not found', {
           email: email.toLowerCase(),
-          searchEmail: email,
           ip: req.ip,
         });
         return res.status(401).json({
@@ -270,13 +225,12 @@ router.post('/login',
         });
       }
 
-      // Verify password
+      // Verify password (canonical bcrypt compare)
       const isValidPassword = await bcrypt.compare(password, user.passwordHash);
       if (!isValidPassword) {
         enterpriseLogger.warn('Login failed: Invalid password', {
           userId: user.id,
           email: user.email,
-          passwordLength: password ? password.length : 0,
           ip: req.ip,
         });
         return res.status(401).json({
@@ -285,13 +239,13 @@ router.post('/login',
         });
       }
 
-      // Generate JWT token
+      // Generate JWT token (canonical payload only)
       const token = jwt.sign(
         {
           userId: user.id,
           email: user.email,
           role: user.role,
-          tokenVersion: user.tokenVersion,
+          caFirmId: user.caFirmId || null,
         },
         process.env.JWT_SECRET || 'fallback-secret',
         { expiresIn: '1h' },
@@ -315,22 +269,16 @@ router.post('/login',
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       });
 
-      // Update last login using raw query - explicitly use public.users schema
-      await sequelize.query(
-        `UPDATE public.users SET last_login_at = NOW(), updated_at = NOW() WHERE id = :userId`,
-        {
-          replacements: { userId: user.id },
-        }
-      );
-
-      // Log audit event
-      await AuditLog.logAuthEvent({
-        userId: user.id,
-        action: 'login_success',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.headers['user-agent'],
-        success: true,
-      });
+      // Log audit event (non-blocking)
+      AuditService.logAuthEvent({
+        actorId: user.id,
+        action: 'AUTH_LOGIN_SUCCESS',
+        metadata: {
+          method: 'password',
+          ipAddress: req.ip || req.connection.remoteAddress,
+          userAgent: req.headers['user-agent'],
+        },
+      }).catch(err => enterpriseLogger.error('Audit failed', { error: err.message }));
 
       enterpriseLogger.info('User logged in successfully', {
         userId: user.id,
@@ -445,19 +393,11 @@ router.get('/profile', authenticateToken, async (req, res) => {
         'id',
         'email',
         'fullName',
-        'phone',
         'role',
         'status',
         'createdAt',
-        'dateOfBirth',
-        'gender',
-        'metadata',
         'authProvider',
         'passwordHash',
-        'panNumber',
-        'panVerified',
-        'panVerifiedAt',
-        'onboardingCompleted',
       ],
     });
 
@@ -468,45 +408,32 @@ router.get('/profile', authenticateToken, async (req, res) => {
       });
     }
 
-    // Get UserProfile with address fields
+    // Get UserProfile - only if it exists
     const UserProfile = require('../models/UserProfile');
     const userProfile = await UserProfile.findOne({
       where: { userId: user.id },
-      attributes: [
-        'addressLine1',
-        'addressLine2',
-        'city',
-        'state',
-        'pincode',
-
-      ],
     });
 
     res.json({
-      user: {
+      success: true,
+      data: {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
-        phone: user.phone,
         role: user.role,
         status: user.status,
         createdAt: user.createdAt,
-        dateOfBirth: user.dateOfBirth,
-        gender: user.gender,
-        metadata: user.metadata || {},
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
-        panNumber: user.panNumber,
-        panVerified: user.panVerified || false,
-        panVerifiedAt: user.panVerifiedAt,
 
-        address: userProfile ? {
-          addressLine1: userProfile.addressLine1 || null,
-          addressLine2: userProfile.addressLine2 || null,
-          city: userProfile.city || null,
-          state: userProfile.state || null,
-          pincode: userProfile.pincode || null,
-        } : null,
+        // PAN - TODO: Add to database schema
+        pan: null,
+        panVerified: false,
+
+        // Profile data - TODO: Add columns to user_profiles table
+        dateOfBirth: null,
+        gender: null,
+        address: null,
       },
     });
   } catch (error) {
@@ -856,13 +783,13 @@ router.get('/google/callback',
 
       const user = req.user;
 
-      // Generate JWT token
+      // Generate JWT token (canonical payload only)
       const token = jwt.sign(
         {
           userId: user.id,
           email: user.email,
           role: user.role,
-          tokenVersion: user.tokenVersion,
+          caFirmId: user.caFirmId || null,
         },
         process.env.JWT_SECRET || 'fallback-secret',
         { expiresIn: '1h' },
@@ -890,13 +817,7 @@ router.get('/google/callback',
       await user.update({ lastLoginAt: new Date() });
 
       // Log audit event
-      await AuditLog.logAuthEvent({
-        userId: user.id,
-        action: 'google_login_success',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.headers['user-agent'],
-        success: true,
-      });
+      AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
       enterpriseLogger.info('Google OAuth login successful', {
         userId: user.id,
@@ -1034,13 +955,7 @@ router.post('/forgot-password',
       );
 
       // Log audit event
-      await AuditLog.logAuthEvent({
-        userId: user.id,
-        action: 'password_reset_requested',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.headers['user-agent'],
-        success: true,
-      });
+      AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
       // Send password reset email
       try {
@@ -1125,10 +1040,9 @@ router.post('/reset-password',
       const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
       const passwordHash = await bcrypt.hash(newPassword, saltRounds);
 
-      // Update user password and increment token version
+      // Update user password
       await user.update({
         passwordHash,
-        tokenVersion: user.tokenVersion + 1,
       });
 
       // Mark token as used
@@ -1138,13 +1052,7 @@ router.post('/reset-password',
       await UserSession.revokeAllSessions(user.id);
 
       // Log audit event
-      await AuditLog.logAuthEvent({
-        userId: user.id,
-        action: 'password_reset_completed',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.headers['user-agent'],
-        success: true,
-      });
+      AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
       enterpriseLogger.info('Password reset completed', {
         userId: user.id,
@@ -1184,13 +1092,7 @@ router.post('/logout', authenticateToken, auditAuthEvents('logout'), async (req,
     clearRefreshTokenCookie(res);
 
     // Log audit event
-    await AuditLog.logAuthEvent({
-      userId,
-      action: 'logout',
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'],
-      success: true,
-    });
+    AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
     res.json({
       success: true,
@@ -1218,23 +1120,14 @@ router.post('/sessions/logout-all', authenticateToken, auditAuthEvents('revoke_a
     // Revoke all sessions
     await UserSession.revokeAllSessions(userId);
 
-    // Increment token version to invalidate all existing tokens
-    const user = await User.findByPk(userId);
-    await user.update({
-      tokenVersion: user.tokenVersion + 1,
-    });
+    // Token invalidation handled by UserSession revocation above
+    // (Auth is stateless - no token versioning needed)
 
     // Clear refresh token cookie
     clearRefreshTokenCookie(res);
 
     // Log audit event
-    await AuditLog.logAuthEvent({
-      userId,
-      action: 'all_sessions_revoked',
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'],
-      success: true,
-    });
+    AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
     res.json({
       success: true,
@@ -1262,23 +1155,14 @@ router.post('/revoke-all', authenticateToken, requirePermission('admin.user_sess
     // Revoke all sessions
     await UserSession.revokeAllSessions(userId);
 
-    // Increment token version to invalidate all existing tokens
-    const user = await User.findByPk(userId);
-    await user.update({
-      tokenVersion: user.tokenVersion + 1,
-    });
+    // Token invalidation handled by UserSession revocation above
+    // (Auth is stateless - no token versioning needed)
 
     // Clear refresh token cookie
     clearRefreshTokenCookie(res);
 
     // Log audit event
-    await AuditLog.logAuthEvent({
-      userId,
-      action: 'all_sessions_revoked',
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'],
-      success: true,
-    });
+    AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
     res.json({
       success: true,

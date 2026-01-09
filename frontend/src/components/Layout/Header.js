@@ -63,7 +63,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-elevation-1">
+    <header className="sticky top-0 z-50 bg-white border-b border-[var(--s29-border-light)] shadow-sm">
       <div className="px-3 sm:px-4 lg:px-6 xl:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
           {/* Left Section: Logo & Menu Button */}
@@ -80,7 +80,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/dashboard')}
             >
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-xl flex items-center justify-center mr-1.5 sm:mr-2 shadow-card relative">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[var(--s29-primary)] rounded-xl flex items-center justify-center mr-1.5 sm:mr-2 shadow-sm relative">
                 <img
                   src="/bb-logo.svg"
                   alt="BurnBlack Logo"
@@ -94,7 +94,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                 />
                 <span className="text-white font-bold text-body-small sm:text-body-regular hidden logo-fallback absolute">BB</span>
               </div>
-              <span className="text-body-large sm:text-heading-3 font-bold text-slate-900 hidden sm:block">
+              <span className="text-body-large sm:text-heading-3 font-bold text-[var(--s29-text-main)] hidden sm:block">
                 BurnBlack
               </span>
             </div>
@@ -159,16 +159,16 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1.5 lg:p-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-full flex items-center justify-center shadow-card">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[var(--s29-primary)] rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-white text-body-small sm:text-body-regular font-medium">
                     {getUserInitials()}
                   </span>
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-body-small sm:text-body-regular font-medium text-slate-900">
+                  <p className="text-body-small sm:text-body-regular font-bold text-[var(--s29-text-main)]">
                     {user?.fullName?.split(' ')[0] || 'User'}
                   </p>
-                  <p className="text-body-small text-slate-500 truncate max-w-[100px] lg:max-w-[120px]">
+                  <p className="text-body-small text-[var(--s29-text-muted)] truncate max-w-[100px] lg:max-w-[120px]">
                     {user?.email || ''}
                   </p>
                 </div>
@@ -177,7 +177,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
 
               {/* User Dropdown Menu */}
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-elevation-3 border border-slate-200 py-1 z-50">
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-[var(--s29-border-light)] py-1 z-50">
                   <div className="px-4 py-3 border-b border-slate-200 sm:hidden">
                     <p className="text-body-regular font-medium text-slate-900">
                       {user?.fullName || 'User'}

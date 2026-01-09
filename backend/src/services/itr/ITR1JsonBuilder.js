@@ -90,7 +90,7 @@ class ITR1JsonBuilder {
       // Use manual entry from section snapshot
       const income = sectionSnapshot.income || {};
       const salary = income.salary || {};
-      
+
       grossSalary = parseFloat(salary.grossSalary || salary.totalSalary || income.salary || 0);
       standardDeduction = parseFloat(salary.standardDeduction || 0);
       professionalTax = parseFloat(salary.professionalTax || 0);
@@ -167,10 +167,11 @@ class ITR1JsonBuilder {
    */
   buildOtherIncomeSection(sectionSnapshot) {
     const income = sectionSnapshot.income || {};
-    
-    // Map otherIncome to InterestIncome
-    const interestIncome = parseFloat(income.otherIncome || income.interestIncome || 0);
-    const otherIncome = parseFloat(income.otherSources || 0);
+    const otherSources = income.otherSources || {};
+
+    // S22: Derive from nested otherSources if available, else flat fallback
+    const interestIncome = parseFloat(otherSources.interestIncome || otherSources.totalInterestIncome || income.interestIncome || 0);
+    const otherIncome = parseFloat(otherSources.otherIncome || otherSources.totalOtherIncome || income.otherIncome || 0);
     const totalOthSrcInc = interestIncome + otherIncome;
 
     return {
@@ -188,7 +189,7 @@ class ITR1JsonBuilder {
    */
   buildPartC(sectionSnapshot, aggregatedSalary = null) {
     const taxesPaid = sectionSnapshot.taxesPaid || sectionSnapshot.taxes_paid || {};
-    
+
     // Taxes paid
     const advanceTax = parseFloat(taxesPaid.advanceTax || taxesPaid.advance_tax || 0);
     const selfAssessmentTax = parseFloat(taxesPaid.selfAssessmentTax || taxesPaid.self_assessment_tax || 0);

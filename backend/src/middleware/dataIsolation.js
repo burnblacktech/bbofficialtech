@@ -6,7 +6,7 @@
 
 const { User, CAFirm } = require('../models');
 const enterpriseLogger = require('../utils/logger');
-const AuditService = require('../services/utils/AuditService');
+const AuditService = require('../services/core/AuditService');
 
 /**
  * Middleware to automatically filter queries by firmId
@@ -79,17 +79,17 @@ const checkFirmAccess = (firmIdParam = 'firmId') => {
 
       // PlatformAdmin can access (with audit)
       if (firmContext.isPlatformAdmin) {
-      // Log cross-firm access
-      await AuditService.logAdminAction(
-        userId,
-        'cross_firm_access',
-        'firm',
-        {
-          requestedFirmId,
-          path: req.path,
-          method: req.method,
-        }
-      );
+        // Log cross-firm access
+        await AuditService.logAdminAction(
+          userId,
+          'cross_firm_access',
+          'firm',
+          {
+            requestedFirmId,
+            path: req.path,
+            method: req.method,
+          }
+        );
         return next();
       }
 

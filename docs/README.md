@@ -1,91 +1,95 @@
-# BurnBlack Documentation
+# BurnBlack Documentation Index
 
-Welcome to the BurnBlack platform documentation. This directory contains comprehensive documentation organized by category.
-
-## 📚 Documentation Structure
-
-### [Architecture](./architecture/)
-System architecture, design decisions, and technical blueprints.
-
-- **[CA-Grade Blueprint](./architecture/ca-grade-blueprint.md)** - Comprehensive CA-grade ITR filing system blueprint
-- **System Overview** - High-level system architecture (coming soon)
-- **Data Models** - Database schema and relationships (coming soon)
-- **ITR Flow** - Detailed ITR filing flow documentation (coming soon)
-
-### [Guides](./guides/)
-Step-by-step guides for common tasks and workflows.
-
-- **[Launch Checklist](./guides/launch-checklist.md)** - Production deployment checklist
-- **[Security Guide](./guides/security.md)** - Security best practices and vulnerability mitigations
-- **Getting Started** - Quick start guide for developers (coming soon)
-- **Development Guide** - Development setup and workflows (coming soon)
-- **Deployment Guide** - Deployment procedures (coming soon)
-
-### [API](./api/)
-API documentation and endpoint references.
-
-- **Endpoints** - Complete API endpoint documentation (coming soon)
-
-### [Reference](./reference/)
-Technical reference materials and analysis documents.
-
-- **[Alignment Review](./reference/alignment-review.md)** - Current implementation vs blueprint alignment
-- **[ITR Flow Analysis](./reference/itr-flow-analysis.md)** - Comprehensive ITR flow analysis
-- **[Business Logic](./reference/business-logic.md)** - Business logic sequence diagrams
-- **[UX Guidelines](./reference/UX.md)** - User experience guidelines
-
-### [Archive](./archive/)
-Historical documentation and completed implementation plans (for reference only).
-
-### [Changelog](./changelog/)
-Project changelog and historical changes.
-
-- **[2024 Changelog](./changelog/2024.md)** - Consolidated changelog for 2024
-- **[Codebase Status](./changelog/codebase-status.md)** - Current codebase status
-
-## 🚀 Quick Links
-
-- **Main README**: [../README.md](../README.md)
-- **Backend README**: [../backend/README.md](../backend/README.md)
-- **Demo Credentials**: [../DEMO_CREDENTIALS.md](../DEMO_CREDENTIALS.md)
-
-## 📖 Documentation Guidelines
-
-### Adding New Documentation
-
-1. **Architecture docs**: Place in `architecture/` for system design and technical decisions
-2. **Guides**: Place in `guides/` for step-by-step instructions
-3. **API docs**: Place in `api/` for endpoint documentation
-4. **Reference**: Place in `reference/` for technical references
-5. **Changelog**: Add entries to `changelog/2024.md` for changes
-
-### Documentation Standards
-
-- Use clear, concise language
-- Include code examples where relevant
-- Keep documentation up-to-date with code changes
-- Use markdown formatting consistently
-- Add diagrams for complex flows
-
-## 🔍 Finding Information
-
-- **Getting started?** → Check [Guides](./guides/)
-- **Understanding architecture?** → Check [Architecture](./architecture/)
-- **Looking for API docs?** → Check [API](./api/)
-- **Need technical reference?** → Check [Reference](./reference/)
-- **What changed recently?** → Check [Changelog](./changelog/)
-
-## 📝 Contributing
-
-When adding or updating documentation:
-
-1. Follow the existing structure and naming conventions
-2. Update this README if adding new sections
-3. Keep documentation concise and focused
-4. Include examples and code snippets where helpful
-5. Review for accuracy before committing
+All project documentation is centralized in this `docs/` directory.
 
 ---
 
-*Last updated: Q4 2024*
+## Architecture Documentation
 
+**Location**: `docs/architecture/`
+
+- [SYSTEM_MAP.md](architecture/SYSTEM_MAP.md) - System architecture overview
+- [MODULE_OWNERSHIP.md](architecture/MODULE_OWNERSHIP.md) - Module ownership and responsibilities
+- [DEV_ENTRYPOINTS.md](architecture/DEV_ENTRYPOINTS.md) - Development entry points
+- [S15_AUTH_TRUTH.md](architecture/S15_AUTH_TRUTH.md) - Authentication truth documentation
+- [S15_LAYER1_STRUCTURAL_TRUTH.md](architecture/S15_LAYER1_STRUCTURAL_TRUTH.md) - Layer 1 structural truth
+
+---
+
+## Contracts & Specifications
+
+**Location**: `docs/contracts/`
+
+- [LIFECYCLE_CONTRACT.md](contracts/LIFECYCLE_CONTRACT.md) - Filing lifecycle contract
+
+---
+
+## Deployment Guides
+
+**Location**: `docs/deployment/`
+
+- [ERI_DEPLOYMENT.md](deployment/ERI_DEPLOYMENT.md) - ERI deployment guide
+
+---
+
+## Reports & Analysis
+
+**Location**: `docs/reports/`
+
+### Cleanup Reports
+- [architecture_audit.md](reports/architecture_audit.md) - Architecture compliance audit
+- [cleanup_plan.md](reports/cleanup_plan.md) - Repository cleanup plan
+- [phase1_completion.md](reports/phase1_completion.md) - Phase 1 cleanup report
+- [phase2_completion.md](reports/phase2_completion.md) - Phase 2 cleanup report
+- [phase3_completion.md](reports/phase3_completion.md) - Phase 3 cleanup report
+- [phase4_completion.md](reports/phase4_completion.md) - Phase 4 cleanup report
+- [phase5_completion.md](reports/phase5_completion.md) - Phase 5 cleanup report
+- [phase6_completion.md](reports/phase6_completion.md) - Phase 6 cleanup report
+- [final_cleanup_summary.md](reports/final_cleanup_summary.md) - Final cleanup summary
+- [repository_organization.md](reports/repository_organization.md) - Repository organization plan
+
+### Verification Reports
+- [backend_frontend_verification.md](reports/backend_frontend_verification.md) - Backend-frontend alignment verification
+- [financial_story_contract_validation.md](reports/financial_story_contract_validation.md) - Financial Story contract validation
+- [launch_readiness.md](reports/launch_readiness.md) - Launch readiness checklist
+- [test_matrix.md](reports/test_matrix.md) - Test coverage matrix
+
+### Technical Reports
+- [s24f_jurisprudence_report.md](reports/s24f_jurisprudence_report.md) - S24(f) jurisprudence analysis
+- [walkthrough.md](reports/walkthrough.md) - Feature walkthrough
+- [implementation_plan.md](reports/implementation_plan.md) - Implementation plan
+- [task.md](reports/task.md) - Task tracking
+
+---
+
+## Quick Links
+
+### For Developers
+- [System Architecture](architecture/SYSTEM_MAP.md)
+- [Development Entry Points](architecture/DEV_ENTRYPOINTS.md)
+- [Module Ownership](architecture/MODULE_OWNERSHIP.md)
+
+### For DevOps
+- [ERI Deployment Guide](deployment/ERI_DEPLOYMENT.md)
+
+### For Project Managers
+- [Launch Readiness](reports/launch_readiness.md)
+- [Test Matrix](reports/test_matrix.md)
+- [Cleanup Summary](reports/final_cleanup_summary.md)
+
+---
+
+## Documentation Structure
+
+```
+docs/
+├── README.md                    # This file
+├── architecture/                # System design docs
+├── contracts/                   # API contracts & specs
+├── deployment/                  # Deployment guides
+└── reports/                     # Analysis & reports
+```
+
+---
+
+**Last Updated**: 2026-01-07

@@ -59,16 +59,8 @@ if (connectionString) {
   try {
     sequelize = new Sequelize(cleanConnectionString, {
       dialect: 'postgres',
-      logging: (msg, timing) => {
-        // Log all queries in development, slow queries (> 100ms) in production
-        if (process.env.NODE_ENV === 'development' || process.env.DB_QUERY_LOGGING === 'true') {
-          enterpriseLogger.debug('Sequelize Query', { query: msg, timing: timing ? `${timing}ms` : undefined });
-        } else if (timing && timing > 100) {
-          enterpriseLogger.warn('Slow Sequelize query detected', {
-            query: msg.substring(0, 200),
-            duration: `${timing}ms`,
-          });
-        }
+      logging: (sql) => {
+        console.log('\n[SEQUELIZE SQL]', sql, '\n');
       },
       benchmark: true, // Enable query timing
       dialectOptions: {
@@ -92,6 +84,11 @@ if (connectionString) {
       },
       // Set default schema search path to public
       schema: 'public',
+    });
+
+    // Add hook to track which model fires queries
+    sequelize.addHook('beforeQuery', (options) => {
+      console.log('[QUERY OPTIONS]', 'Model:', options?.model?.name, 'Type:', options?.type);
     });
   } catch (err) {
     console.error('SEQUELIZE INIT ERROR:', err);

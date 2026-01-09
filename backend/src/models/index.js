@@ -10,8 +10,8 @@ const Document = require('./Document');
 const { ServiceTicket } = require('./ServiceTicket');
 const { ServiceTicketMessage } = require('./ServiceTicketMessage');
 const { Invoice } = require('./Invoice');
+const AuditEvent = require('./AuditEvent');
 const UserSession = require('./UserSession');
-const AuditLog = require('./AuditLog');
 const PasswordResetToken = require('./PasswordResetToken');
 const CAFirm = require('./CAFirm');
 const Invite = require('./Invite');
@@ -40,6 +40,7 @@ const PricingPlan = require('./PricingPlan');
 const Coupon = require('./Coupon');
 const UserSegment = require('./UserSegment');
 const PlatformSettings = require('./PlatformSettings');
+const ERISubmissionAttempt = require('./ERISubmissionAttempt');
 
 // Define associations after all models are loaded
 require('./associations');
@@ -54,7 +55,7 @@ module.exports = {
   ServiceTicketMessage,
   Invoice,
   UserSession,
-  AuditLog,
+  AuditEvent,
   PasswordResetToken,
   CAFirm,
   Invite,
@@ -83,4 +84,5 @@ module.exports = {
   Coupon,
   UserSegment,
   PlatformSettings,
+  ERISubmissionAttempt,
 };

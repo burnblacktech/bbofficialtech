@@ -33,6 +33,7 @@ class AuthService {
   async logout() {
     try {
       const response = await apiClient.post('/auth/logout');
+      apiClient.clearAuthTokens();
       return response.data;
     } catch (error) {
       // Even if logout fails on server, clear local tokens

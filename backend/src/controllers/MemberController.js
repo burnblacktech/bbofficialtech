@@ -8,7 +8,14 @@ const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
-const auditService = require('../services/utils/AuditService');
+const auditService = require('../services/core/AuditService');
+const {
+  presentMember,
+  presentMemberWithStats,
+  presentFiling,
+  presentDocument,
+  isValidPAN,
+} = require('../presenters/member.presenter');
 
 class MemberController {
   constructor() {
@@ -16,10 +23,12 @@ class MemberController {
     enterpriseLogger.info('MemberController initialized');
 
     // Bind methods to preserve 'this' context
-    if (this.getMembers) { this.getMembers = this.getMembers.bind(this); }
-    if (this.createMember) { this.createMember = this.createMember.bind(this); }
-    if (this.updateMember) { this.updateMember = this.updateMember.bind(this); }
-    if (this.deleteMember) { this.deleteMember = this.deleteMember.bind(this); }
+    this.getMembers = this.getMembers.bind(this);
+    this.createMember = this.createMember.bind(this);
+    this.updateMember = this.updateMember.bind(this);
+    this.deleteMember = this.deleteMember.bind(this);
+    this.getMemberFilings = this.getMemberFilings.bind(this);
+    this.getMemberDocuments = this.getMemberDocuments.bind(this);
   }
 
   // =====================================================
@@ -53,7 +62,7 @@ class MemberController {
         order: [['createdAt', 'DESC']],
         attributes: [
           'id', 'userId', 'firstName', 'lastName', 'panNumber', 'relationship', 'dateOfBirth',
-          'gender', 'maritalStatus', 'phone', 'email', 'address', 'isActive', 'panVerified', 'createdAt', 'updatedAt',
+          'gender', 'isActive', 'panVerified', 'createdAt', 'updatedAt',
         ],
       });
 
@@ -69,10 +78,6 @@ class MemberController {
         dateOfBirth: member.dateOfBirth,
         gender: member.gender,
         genderLabel: this.getGenderLabel(member.gender),
-        maritalStatus: member.maritalStatus,
-        phone: member.phone,
-        email: member.email,
-        address: member.address,
         isActive: member.isActive,
         panVerified: member.panVerified,
         createdAt: member.createdAt,
@@ -127,27 +132,7 @@ class MemberController {
         this.getMemberDocumentStats(member.id),
       ]);
 
-      const memberDetails = {
-        id: member.id,
-        userId: member.userId,
-        fullName: member.fullName,
-        pan: member.pan,
-        relationship: member.relationship,
-        relationshipLabel: this.getRelationshipLabel(member.relationship),
-        dateOfBirth: member.dateOfBirth,
-        gender: member.gender,
-        genderLabel: this.getGenderLabel(member.gender),
-        status: member.status,
-        statusLabel: this.getStatusLabel(member.status),
-        statusColor: this.getStatusColor(member.status),
-        createdAt: member.createdAt,
-        updatedAt: member.updatedAt,
-        metadata: member.metadata,
-        statistics: {
-          filings: filingStats,
-          documents: documentStats,
-        },
-      };
+      const memberDetails = presentMemberWithStats(member, filingStats, documentStats);
 
       enterpriseLogger.info('Member details retrieved', { userId, memberId: id });
 
@@ -203,7 +188,7 @@ class MemberController {
       }
 
       // Validate PAN format (basic validation)
-      if (!this.isValidPAN(pan)) {
+      if (!isValidPAN(pan)) {
         throw new AppError('Invalid PAN format', 400);
       }
 
@@ -278,21 +263,7 @@ class MemberController {
         success: true,
         message: 'Member created successfully',
         data: {
-          member: {
-            id: member.id,
-            userId: member.userId,
-            fullName: member.fullName,
-            pan: member.pan,
-            relationship: member.relationship,
-            relationshipLabel: this.getRelationshipLabel(member.relationship),
-            dateOfBirth: member.dateOfBirth,
-            gender: member.gender,
-            genderLabel: this.getGenderLabel(member.gender),
-            status: member.status,
-            statusLabel: this.getStatusLabel(member.status),
-            createdAt: member.createdAt,
-            metadata: member.metadata,
-          },
+          member: presentMember(member),
         },
       });
 
@@ -349,7 +320,7 @@ class MemberController {
         updateData.lastName = lastName;
       }
       if (pan !== undefined) {
-        if (!this.isValidPAN(pan)) {
+        if (!isValidPAN(pan)) {
           throw new AppError('Invalid PAN format', 400);
         }
 
@@ -434,21 +405,7 @@ class MemberController {
         success: true,
         message: 'Member updated successfully',
         data: {
-          member: {
-            id: member.id,
-            userId: member.userId,
-            fullName: member.fullName,
-            pan: member.pan,
-            relationship: member.relationship,
-            relationshipLabel: this.getRelationshipLabel(member.relationship),
-            dateOfBirth: member.dateOfBirth,
-            gender: member.gender,
-            genderLabel: this.getGenderLabel(member.gender),
-            status: member.status,
-            statusLabel: this.getStatusLabel(member.status),
-            updatedAt: member.updatedAt,
-            metadata: member.metadata,
-          },
+          member: presentMember(member),
         },
       });
 
@@ -570,19 +527,7 @@ class MemberController {
         ],
       });
 
-      const filingList = filings.map(filing => ({
-        id: filing.id,
-        itrType: filing.itrType,
-        assessmentYear: filing.assessmentYear,
-        status: filing.status,
-        statusLabel: this.getFilingStatusLabel(filing.status),
-        statusColor: this.getFilingStatusColor(filing.status),
-        taxLiability: filing.taxLiability,
-        submittedAt: filing.submittedAt,
-        acknowledgedAt: filing.acknowledgedAt,
-        createdAt: filing.createdAt,
-        updatedAt: filing.updatedAt,
-      }));
+      const filingList = filings.map(presentFiling);
 
       enterpriseLogger.info('Member filings retrieved', {
         userId,
@@ -654,22 +599,7 @@ class MemberController {
         ],
       });
 
-      const documentList = documents.map(doc => ({
-        id: doc.id,
-        category: doc.category,
-        categoryLabel: this.getDocumentCategoryLabel(doc.category),
-        filename: doc.filename,
-        originalFilename: doc.originalFilename,
-        mimeType: doc.mimeType,
-        sizeBytes: doc.sizeBytes,
-        sizeFormatted: this.formatFileSize(doc.sizeBytes),
-        status: doc.status,
-        statusLabel: this.getDocumentStatusLabel(doc.status),
-        statusColor: this.getDocumentStatusColor(doc.status),
-        verified: doc.verified,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-      }));
+      const documentList = documents.map(presentDocument);
 
       enterpriseLogger.info('Member documents retrieved', {
         userId,
@@ -749,145 +679,6 @@ class MemberController {
     };
   }
 
-  /**
-   * Validate PAN format
-   */
-  isValidPAN(pan) {
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    return panRegex.test(pan.toUpperCase());
-  }
-
-  /**
-   * Format file size
-   */
-  formatFileSize(bytes) {
-    if (bytes === 0) { return '0 Bytes'; }
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  /**
-   * Get relationship label
-   */
-  getRelationshipLabel(relationship) {
-    const labels = {
-      'spouse': 'Spouse',
-      'child': 'Child',
-      'parent': 'Parent',
-      'sibling': 'Sibling',
-      'other': 'Other',
-    };
-    return labels[relationship] || 'Unknown';
-  }
-
-  /**
-   * Get gender label
-   */
-  getGenderLabel(gender) {
-    const labels = {
-      'male': 'Male',
-      'female': 'Female',
-      'other': 'Other',
-    };
-    return labels[gender] || 'Unknown';
-  }
-
-  /**
-   * Get status label
-   */
-  getStatusLabel(status) {
-    const labels = {
-      'active': 'Active',
-      'inactive': 'Inactive',
-    };
-    return labels[status] || 'Unknown';
-  }
-
-  /**
-   * Get status color
-   */
-  getStatusColor(status) {
-    const colors = {
-      'active': 'green',
-      'inactive': 'gray',
-    };
-    return colors[status] || 'gray';
-  }
-
-  /**
-   * Get filing status label
-   */
-  getFilingStatusLabel(status) {
-    const labels = {
-      'draft': 'Draft',
-      'submitted': 'Submitted',
-      'acknowledged': 'Acknowledged',
-      'processed': 'Processed',
-      'rejected': 'Rejected',
-    };
-    return labels[status] || 'Unknown';
-  }
-
-  /**
-   * Get filing status color
-   */
-  getFilingStatusColor(status) {
-    const colors = {
-      'draft': 'yellow',
-      'submitted': 'blue',
-      'acknowledged': 'green',
-      'processed': 'green',
-      'rejected': 'red',
-    };
-    return colors[status] || 'gray';
-  }
-
-  /**
-   * Get document category label
-   */
-  getDocumentCategoryLabel(category) {
-    const labels = {
-      'FORM_16': 'Form 16',
-      'BANK_STATEMENT': 'Bank Statement',
-      'INVESTMENT_PROOF': 'Investment Proof',
-      'RENT_RECEIPT': 'Rent Receipt',
-      'OTHER': 'Other',
-      'AADHAAR': 'Aadhaar',
-      'PAN': 'PAN',
-      'SALARY_SLIP': 'Salary Slip',
-    };
-    return labels[category] || 'Unknown';
-  }
-
-  /**
-   * Get document status label
-   */
-  getDocumentStatusLabel(status) {
-    const labels = {
-      'UPLOADED': 'Uploaded',
-      'SCANNING': 'Scanning',
-      'VERIFIED': 'Verified',
-      'FAILED': 'Failed',
-      'DELETED': 'Deleted',
-    };
-    return labels[status] || 'Unknown';
-  }
-
-  /**
-   * Get document status color
-   */
-  getDocumentStatusColor(status) {
-    const colors = {
-      'UPLOADED': 'blue',
-      'SCANNING': 'yellow',
-      'VERIFIED': 'green',
-      'FAILED': 'red',
-      'DELETED': 'gray',
-    };
-    return colors[status] || 'gray';
-  }
 }
 
 module.exports = new MemberController();

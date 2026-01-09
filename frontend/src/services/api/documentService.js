@@ -113,6 +113,28 @@ class DocumentService {
     }
   }
 
+  // Process Form 16A with OCR
+  async processForm16A(file) {
+    try {
+      const response = await apiClient.uploadFile('/documents/process-form16a', file);
+      return response.data;
+    } catch (error) {
+      errorHandler.handleServerError(error);
+      throw error;
+    }
+  }
+
+  // Process Form 16B with OCR
+  async processForm16B(file) {
+    try {
+      const response = await apiClient.uploadFile('/documents/process-form16b', file);
+      return response.data;
+    } catch (error) {
+      errorHandler.handleServerError(error);
+      throw error;
+    }
+  }
+
   // Process broker file
   async processBrokerFile(file) {
     try {

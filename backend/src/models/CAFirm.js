@@ -8,6 +8,9 @@ const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 
 const CAFirm = sequelize.define('CAFirm', {
+  // =====================================================
+  // IDENTITY
+  // =====================================================
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -20,32 +23,18 @@ const CAFirm = sequelize.define('CAFirm', {
       len: [2, 255],
     },
   },
-  gstNumber: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
-    validate: {
-      len: [15, 15], // GST number format validation
+
+  // =====================================================
+  // AUTHORITY
+  // =====================================================
+  ownerId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
     },
-    field: 'gst_number',
-  },
-  address: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  phone: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    validate: {
-      len: [10, 15],
-    },
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    validate: {
-      isEmail: true,
-    },
+    field: 'owner_id',
   },
   createdBy: {
     type: DataTypes.UUID,
@@ -56,77 +45,19 @@ const CAFirm = sequelize.define('CAFirm', {
     },
     field: 'created_by',
   },
+
+  // =====================================================
+  // LIFECYCLE
+  // =====================================================
   status: {
-    type: DataTypes.ENUM('active', 'inactive', 'suspended'),
+    type: DataTypes.ENUM('active', 'suspended', 'dissolved'),
     defaultValue: 'active',
     allowNull: false,
   },
-  specialization: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'specialization',
-    comment: 'Primary specialization (e.g., ITR Filing, GST Compliance)',
-  },
-  averageRating: {
-    type: DataTypes.DECIMAL(3, 2),
-    allowNull: true,
-    defaultValue: 0,
-    field: 'average_rating',
-    validate: {
-      min: 0,
-      max: 5,
-    },
-    comment: 'Average rating from reviews (0-5)',
-  },
-  reviewCount: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    defaultValue: 0,
-    field: 'review_count',
-    comment: 'Total number of reviews',
-  },
-  minPrice: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: true,
-    field: 'min_price',
-    comment: 'Minimum service price in INR',
-  },
-  location: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    field: 'location',
-    comment: 'Structured location data: {city, state, pincode, address}',
-  },
-  availability: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    field: 'availability',
-    comment: 'Booking calendar and available slots structure',
-  },
-  services: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: [],
-    field: 'services',
-    comment: 'Array of service offerings: [{name, price, description}]',
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-    field: 'description',
-    comment: 'Firm description for marketplace',
-  },
-  profileImageUrl: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'profile_image_url',
-    comment: 'URL to firm logo/profile image',
-  },
-  metadata: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {},
-  },
+
+  // =====================================================
+  // AUDIT
+  // =====================================================
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -145,35 +76,16 @@ const CAFirm = sequelize.define('CAFirm', {
   underscored: true,
   indexes: [
     {
-      unique: true,
-      fields: ['gst_number'],
-    },
-    {
-      fields: ['created_by'],
+      fields: ['owner_id'],
     },
     {
       fields: ['status'],
-    },
-    {
-      fields: ['name'],
-    },
-    {
-      fields: ['specialization'],
-    },
-    {
-      fields: ['average_rating'],
-    },
-    {
-      fields: ['location'],
-      using: 'gin',
-      name: 'idx_ca_firms_location_gin',
-      comment: 'GIN index for JSONB location queries',
     },
   ],
 });
 
 // Instance methods
-CAFirm.prototype.getStaffCount = async function() {
+CAFirm.prototype.getStaffCount = async function () {
   const { User } = require('./index');
   return await User.count({
     where: {
@@ -184,7 +96,7 @@ CAFirm.prototype.getStaffCount = async function() {
   });
 };
 
-CAFirm.prototype.getClientCount = async function() {
+CAFirm.prototype.getClientCount = async function () {
   const { User } = require('./index');
   return await User.count({
     where: {
@@ -195,7 +107,7 @@ CAFirm.prototype.getClientCount = async function() {
   });
 };
 
-CAFirm.prototype.getActiveFilingsCount = async function() {
+CAFirm.prototype.getActiveFilingsCount = async function () {
   const { ITRFiling } = require('./index');
   const { User } = require('./index');
 
@@ -215,7 +127,7 @@ CAFirm.prototype.getActiveFilingsCount = async function() {
 };
 
 // Class methods
-CAFirm.findByAdmin = async function(adminUserId) {
+CAFirm.findByAdmin = async function (adminUserId) {
   return await this.findOne({
     where: {
       createdBy: adminUserId,
@@ -224,7 +136,7 @@ CAFirm.findByAdmin = async function(adminUserId) {
   });
 };
 
-CAFirm.getFirmStats = async function(firmId) {
+CAFirm.getFirmStats = async function (firmId) {
   const firm = await this.findByPk(firmId);
   if (!firm) {
     throw new Error('CA Firm not found');

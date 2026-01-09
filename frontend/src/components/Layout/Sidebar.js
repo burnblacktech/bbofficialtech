@@ -31,7 +31,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
     },
     {
       name: 'Start Filing',
-      path: '/itr/select-person',
+      path: '/itr/start',
       icon: FileText,
     },
     {
@@ -76,7 +76,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
   };
 
   const sidebarClasses = `
-    fixed top-14 sm:top-16 lg:top-20 left-0 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] bg-white border-r border-slate-200 z-40
+    fixed top-14 sm:top-16 lg:top-20 left-0 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] bg-white border-r border-[var(--s29-border-light)] z-40
     transition-all duration-300 ease-in-out flex flex-col
     ${isMobile ? 'lg:hidden' : 'hidden lg:flex'}
     ${isCollapsed && !isMobile ? 'w-16' : 'w-64'}
@@ -99,13 +99,12 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
         <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 border-b border-slate-200">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-xl flex items-center justify-center shadow-card relative">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[var(--s29-primary)] rounded-xl flex items-center justify-center shadow-sm relative">
                 <img
                   src="/bb-logo.svg"
                   alt="BurnBlack Logo"
                   className="w-full h-full object-contain p-1"
                   onError={(e) => {
-                    // Fallback to text if logo fails to load
                     e.target.style.display = 'none';
                     const fallback = e.target.parentElement.querySelector('.logo-fallback');
                     if (fallback) fallback.style.display = 'block';
@@ -113,7 +112,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                 />
                 <span className="text-white font-bold text-body-small sm:text-body-regular hidden logo-fallback absolute inset-0 flex items-center justify-center">BB</span>
               </div>
-              <span className="text-body-large sm:text-body-large font-semibold text-slate-900">BurnBlack</span>
+              <span className="text-body-large sm:text-body-large font-bold text-[var(--s29-text-main)]">BurnBlack</span>
             </div>
           )}
           {isCollapsed && (
@@ -159,10 +158,9 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                     className={`
                       w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl
                       transition-all duration-200 text-body-regular sm:text-body-large
-                      ${
-                        active
-                          ? 'bg-gold-50 text-gold-700 font-medium'
-                          : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                      ${active
+                        ? 'bg-[var(--s29-primary-light)]/10 text-[var(--s29-primary)] font-semibold'
+                        : 'text-[var(--s29-text-muted)] hover:bg-[var(--s29-bg-alt)] hover:text-[var(--s29-text-main)]'
                       }
                       ${isCollapsed ? 'justify-center' : ''}
                     `}
@@ -170,7 +168,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                     aria-label={isCollapsed ? item.name : undefined}
                     aria-current={active ? 'page' : undefined}
                   >
-                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-gold-600' : ''}`} aria-hidden="true" />
+                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-[var(--s29-primary)]' : ''}`} aria-hidden="true" />
                     {!isCollapsed && <span className="text-body-regular sm:text-body-large">{item.name}</span>}
                   </button>
                 </li>
@@ -181,9 +179,9 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
 
         {/* User Info Footer */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4 border-t border-[var(--s29-border-light)]">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-aurora-gradient rounded-full flex items-center justify-center shadow-card">
+              <div className="w-10 h-10 bg-[var(--s29-primary)] rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-white text-body-regular font-medium">
                   {user?.fullName
                     ?.split(' ')
@@ -194,10 +192,10 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-body-regular font-medium text-slate-900 truncate">
+                <p className="text-body-regular font-bold text-[var(--s29-text-main)] truncate">
                   {user?.fullName || 'User'}
                 </p>
-                <p className="text-body-small text-slate-500 truncate">{user?.email || ''}</p>
+                <p className="text-body-small text-[var(--s29-text-muted)] truncate">{user?.email || ''}</p>
               </div>
             </div>
           </div>

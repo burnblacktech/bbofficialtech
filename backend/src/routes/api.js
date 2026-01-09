@@ -115,14 +115,9 @@ router.use('/auth', strictLimiter, require('./auth'));
 // =====================================================
 
 // ITR routes with general rate limiting
-router.use('/itr', generalLimiter, require('./itr'));
+// TODO: Create itr.js route file or remove this line
+// router.use('/itr', generalLimiter, require('./itr'));
 
-// =====================================================
-// USER ROUTES
-// =====================================================
-
-// User routes with general rate limiting
-router.use('/users', generalLimiter, require('./user'));
 
 // =====================================================
 // MEMBER ROUTES
@@ -132,81 +127,29 @@ router.use('/users', generalLimiter, require('./user'));
 router.use('/members', generalLimiter, require('./members'));
 
 // =====================================================
-// ADMIN ROUTES
+// FILING ROUTES (S12 Phase 8)
 // =====================================================
 
-// Admin routes with strict rate limiting
-router.use('/admin', strictLimiter, require('./admin'));
+// Filing orchestrator routes - canonical filing CRUD
+router.use('/filings', generalLimiter, require('./filings'));
 
-// =====================================================
-// DOCUMENT ROUTES
-// =====================================================
+// Employer/salary routes
+router.use('/employers', generalLimiter, require('./employers'));
 
-// Document management routes
+// Capital gains routes
+router.use('/capital-gains', generalLimiter, require('./capitalGains'));
+
+// Regime comparison routes
+router.use('/regime-comparison', generalLimiter, require('./regimeComparison'));
+
+// Filing safety routes
+router.use('/filing-safety', generalLimiter, require('./filingSafety'));
+
+// Document and OCR routes
 router.use('/documents', generalLimiter, require('./documents'));
 
-// =====================================================
-// OCR ROUTES
-// =====================================================
-
-// OCR routes for document processing
-router.use('/ocr', generalLimiter, require('./ocr'));
-
-// =====================================================
-// PUBLIC ROUTES
-// =====================================================
-
-// Public routes (stats, testimonials) - no rate limiting for landing page
-router.use('/public', require('./public'));
-
-// =====================================================
-// ANALYTICS ROUTES
-// =====================================================
-
-// Analytics routes (web vitals, performance tracking)
-router.use('/analytics', generalLimiter, require('./analytics'));
-
-// =====================================================
-// HELP ROUTES
-// =====================================================
-
-// Help content routes (public)
-router.use('/help', generalLimiter, require('./help'));
-
-// =====================================================
-// SUPPORT ROUTES
-// =====================================================
-
-// Support ticket routes (authenticated)
-router.use('/support', generalLimiter, require('./support'));
-
-// =====================================================
-// BROKER ROUTES
-// =====================================================
-
-// Broker file processing routes
-router.use('/broker', generalLimiter, require('./broker'));
-
-// =====================================================
-// NOTIFICATION ROUTES
-// =====================================================
-
-// Notification routes
-router.use('/notifications', generalLimiter, require('./notifications'));
-
-// =====================================================
-// CA MARKETPLACE ROUTES
-// =====================================================
-
-// CA marketplace routes (public browsing, authenticated actions)
-router.use('/ca-marketplace', generalLimiter, require('./ca-marketplace'));
-
-// =====================================================
-// FINANCE ROUTES
-// =====================================================
-
-// Finance routes (invoices, payments, reconciliation)
-router.use('/finance', generalLimiter, require('./finance'));
+// Analytics routes
+router.use('/analytics', require('./analytics'));
 
 // =====================================================
 // CA WORKSPACE ROUTES (V3)

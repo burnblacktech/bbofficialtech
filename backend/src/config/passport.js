@@ -1,5 +1,5 @@
 // =====================================================
-// PASSPORT CONFIGURATION - GOOGLE OAUTH
+// PASSPORT CONFIGURATION - CANONICAL EMAIL-BASED AUTH
 // =====================================================
 
 const passport = require('passport');
@@ -7,141 +7,64 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { User } = require('../models');
 const enterpriseLogger = require('../utils/logger');
 
-// Configure Google OAuth Strategy with CSRF protection
-// Only initialize if credentials are provided
+// Email-based Google OAuth (Option A - Canonical)
+// Email is primary identity, auth_provider is informational only
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   const callbackURL = process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback';
 
-  enterpriseLogger.info('Initializing Google OAuth Strategy', {
-    clientID: process.env.GOOGLE_CLIENT_ID.substring(0, 20) + '...',
-    callbackURL: callbackURL,
-    hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+  enterpriseLogger.info('Initializing email-based Google OAuth', {
+    callbackURL,
+    identityModel: 'email-primary',
   });
 
-  passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: callbackURL,
-    passReqToCallback: true, // Enable access to request object for state validation
-  }, async (req, accessToken, refreshToken, profile, done) => {
-    try {
-      // CSRF Protection: Validate state parameter
-      const state = req.query.state;
-      const sessionState = req.session?.oauthState;
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: callbackURL,
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          const email = profile.emails?.[0]?.value;
 
-      enterpriseLogger.info('OAuth state validation attempt', {
-        providedState: state,
-        sessionState: sessionState,
-        sessionId: req.sessionID,
-        ip: req.ip,
-        sessionExists: !!req.session,
-      });
+          if (!email) {
+            return done(new Error('Google account does not provide an email'));
+          }
 
-      if (!state || !sessionState || state !== sessionState) {
-        enterpriseLogger.warn('OAuth state validation failed', {
-          providedState: state,
-          sessionState: sessionState,
-          sessionId: req.sessionID,
-          ip: req.ip,
-          sessionExists: !!req.session,
-        });
-        return done(new Error('Invalid state parameter'), null);
-      }
+          // Email is primary identity - look up by email only
+          let user = await User.findOne({ where: { email } });
 
-      // Clear the state from session after validation
-      delete req.session.oauthState;
+          if (!user) {
+            // Create new user with Google auth
+            user = await User.create({
+              email,
+              fullName: profile.displayName,
+              authProvider: 'google',
+              role: 'END_USER',
+            });
 
-      enterpriseLogger.info('Google OAuth callback', {
-        googleId: profile.id,
-        email: profile.emails[0].value,
-        name: profile.displayName,
-        stateValidated: true,
-      });
+            enterpriseLogger.info('New Google user created', {
+              userId: user.id,
+              email: user.email,
+            });
+          } else {
+            enterpriseLogger.info('Existing user logged in via Google', {
+              userId: user.id,
+              email: user.email,
+            });
+          }
 
-      // Check if user already exists with this Google ID
-      let user = await User.findOne({
-        where: { providerId: profile.id, authProvider: 'GOOGLE' },
-      });
-
-      if (user) {
-        // Update last login
-        user.lastLoginAt = new Date();
-        await user.save();
-
-        enterpriseLogger.info('Existing Google user logged in', {
-          userId: user.id,
-          email: user.email,
-        });
-
-        return done(null, user);
-      }
-
-      // Check if user exists with same email
-      user = await User.findOne({
-        where: { email: profile.emails[0].value },
-      });
-
-      if (user) {
-        // IDEMPOTENT UPSERT (Link Account)
-        // If email matches, we update with Google details (Trusted Source)
-        user.providerId = profile.id;
-        user.authProvider = 'GOOGLE';
-        user.fullName = profile.displayName;
-        user.lastLoginAt = new Date();
-        user.emailVerified = true;
-
-        // Update profile picture in metadata
-        const currentMetadata = user.metadata || {};
-        if (profile.photos?.[0]?.value) {
-          user.metadata = {
-            ...currentMetadata,
-            profile_picture: profile.photos[0].value,
-          };
+          return done(null, user);
+        } catch (err) {
+          enterpriseLogger.error('Google OAuth error', {
+            error: err.message,
+          });
+          return done(err);
         }
-
-        await user.save();
-
-        enterpriseLogger.info('Existing user linked/updated with Google', {
-          userId: user.id,
-          email: user.email,
-        });
-
-        return done(null, user);
       }
-
-      // Create new user
-      user = await User.create({
-        providerId: profile.id,
-        email: profile.emails[0].value,
-        fullName: profile.displayName,
-        authProvider: 'GOOGLE',
-        role: 'END_USER',
-        status: 'active',
-        emailVerified: true,
-        lastLoginAt: new Date(),
-        metadata: {
-          profile_picture: profile.photos?.[0]?.value || null,
-        },
-      });
-
-      enterpriseLogger.info('New Google user created', {
-        userId: user.id,
-        email: user.email,
-        name: user.fullName,
-      });
-
-      return done(null, user);
-
-    } catch (error) {
-      enterpriseLogger.error('Google OAuth error', {
-        error: error.message,
-        googleId: profile.id,
-        email: profile.emails[0].value,
-      });
-
-      return done(error, null);
-    }
-  }));
+    )
+  );
 } else {
   enterpriseLogger.warn('Google OAuth not configured. Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET.');
 }

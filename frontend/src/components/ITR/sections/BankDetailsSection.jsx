@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SectionCard from '../../DesignSystem/SectionCard';
 import { CreditCard, Plus } from 'lucide-react';
-import { FormField } from '../../DesignSystem/components';
+import { Input } from '../../DesignSystem/components';
 
 // V1 Step 6 (Part 2): Bank Details
 const BankDetailsSection = ({
@@ -17,6 +17,10 @@ const BankDetailsSection = ({
         onUpdate('bankDetails', newData);
     };
 
+    const handleAccountNumberChange = (e) => handleChange('accountNumber', e.target.value);
+    const handleIfscChange = (e) => handleChange('ifsc', e.target.value.toUpperCase());
+    const handleBankNameChange = (e) => handleChange('bankName', e.target.value);
+
     return (
         <SectionCard
             {...props}
@@ -25,27 +29,27 @@ const BankDetailsSection = ({
             icon={CreditCard}
         >
             <div className="space-y-4">
-                <FormField
+                <Input
                     label="Account Number"
                     type="text"
                     value={localData.accountNumber || ''}
-                    onChange={(e) => handleChange('accountNumber', e.target.value)}
+                    onChange={handleAccountNumberChange}
                     placeholder="e.g. 1234567890"
                     required
                 />
-                <FormField
+                <Input
                     label="IFSC Code"
                     type="text"
                     value={localData.ifsc || ''}
-                    onChange={(e) => handleChange('ifsc', e.target.value.toUpperCase())}
+                    onChange={handleIfscChange}
                     placeholder="e.g. SBIN0001234"
                     required
                 />
-                <FormField
+                <Input
                     label="Bank Name"
                     type="text"
                     value={localData.bankName || ''}
-                    onChange={(e) => handleChange('bankName', e.target.value)}
+                    onChange={handleBankNameChange}
                     placeholder="e.g. State Bank of India"
                 />
             </div>

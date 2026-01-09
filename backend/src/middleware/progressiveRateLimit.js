@@ -3,7 +3,7 @@
 // =====================================================
 
 const rateLimit = require('express-rate-limit');
-const { AuditLog } = require('../models');
+const AuditService = require('../services/core/AuditService');
 const enterpriseLogger = require('../utils/logger');
 const redisService = require('../services/core/RedisService');
 
@@ -60,18 +60,17 @@ const progressiveRateLimit = (options = {}) => {
     if (isLockedOut && lockoutExpiry) {
       const remainingTime = Math.ceil((lockoutExpiry - now) / 1000 / 60);
 
-      await AuditLog.logAuthEvent({
-        userId: null,
-        action: 'rate_limit_exceeded',
-        resource: 'auth',
-        ipAddress: key,
-        userAgent: req.headers['user-agent'],
+      await AuditService.logEvent({
+        actorId: null,
+        actorRole: 'SYSTEM',
+        action: 'RATE_LIMIT_EXCEEDED',
+        entityType: 'AUTH_GATE',
+        entityId: null,
         metadata: {
+          ipAddress: key,
           reason: 'IP locked out',
           remainingMinutes: remainingTime,
         },
-        success: false,
-        errorMessage: `Too many failed attempts. Try again in ${remainingTime} minutes.`,
       });
 
       return res.status(429).json({
@@ -106,11 +105,11 @@ const progressiveRateLimit = (options = {}) => {
         const client = redisService.getClient();
         const attemptsKey = `rate_limit:attempts:${key}`;
         const attemptsData = await client.get(attemptsKey);
-        
+
         if (attemptsData) {
           attempts = JSON.parse(attemptsData);
         }
-        
+
         // Reset if window has passed
         if (now - attempts.firstAttempt > windowMs) {
           attempts.count = 0;
@@ -137,13 +136,13 @@ const progressiveRateLimit = (options = {}) => {
     if (attempts.count >= maxAttempts) {
       // Lock out the IP (Redis or fallback)
       const lockoutExpiry = now + lockoutDuration;
-      
+
       if (redisService.isReady()) {
         try {
           const client = redisService.getClient();
           const lockoutKey = `rate_limit:lockout:${key}`;
           await client.setex(lockoutKey, Math.ceil(lockoutDuration / 1000), lockoutExpiry.toString());
-          
+
           // Clear attempts
           const attemptsKey = `rate_limit:attempts:${key}`;
           await client.del(attemptsKey);
@@ -158,18 +157,17 @@ const progressiveRateLimit = (options = {}) => {
         failedAttempts.delete(key);
       }
 
-      await AuditLog.logAuthEvent({
-        userId: null,
-        action: 'ip_locked_out',
-        resource: 'auth',
-        ipAddress: key,
-        userAgent: req.headers['user-agent'],
+      await AuditService.logEvent({
+        actorId: null,
+        actorRole: 'SYSTEM',
+        action: 'IP_LOCKED_OUT',
+        entityType: 'AUTH_GATE',
+        entityId: null,
         metadata: {
+          ipAddress: key,
           reason: 'Max failed attempts exceeded',
           lockoutDuration: lockoutDuration / 1000 / 60,
         },
-        success: false,
-        errorMessage: 'IP address locked out due to excessive failed attempts',
       });
 
       enterpriseLogger.warn('IP address locked out', {
@@ -223,17 +221,17 @@ const recordFailedAttempt = async (req, res, next) => {
       const client = redisService.getClient();
       const attemptsKey = `rate_limit:attempts:${key}`;
       const attemptsData = await client.get(attemptsKey);
-      
+
       if (attemptsData) {
         attempts = JSON.parse(attemptsData);
       }
-      
+
       // Increment failed attempts
       attempts.count++;
       if (attempts.count === 1) {
         attempts.firstAttempt = now;
       }
-      
+
       // Store back to Redis
       const windowMs = 15 * 60 * 1000;
       await client.setex(
@@ -260,18 +258,17 @@ const recordFailedAttempt = async (req, res, next) => {
     failedAttempts.set(key, attempts);
   }
 
-  await AuditLog.logAuthEvent({
-    userId: null,
-    action: 'failed_auth_attempt',
-    resource: 'auth',
-    ipAddress: key,
-    userAgent: req.headers['user-agent'],
+  await AuditService.logEvent({
+    actorId: null,
+    actorRole: 'ANONYMOUS',
+    action: 'FAILED_AUTH_ATTEMPT',
+    entityType: 'AUTH_GATE',
+    entityId: null,
     metadata: {
+      ipAddress: key,
       attemptCount: attempts.count,
       timeSinceFirstAttempt: now - attempts.firstAttempt,
     },
-    success: false,
-    errorMessage: 'Failed authentication attempt',
   });
 
   enterpriseLogger.warn('Failed authentication attempt', {
@@ -316,16 +313,16 @@ const clearFailedAttempts = async (req, res, next) => {
 
   if (hasAttempts) {
 
-    await AuditLog.logAuthEvent({
-      userId: req.user?.userId || null,
-      action: 'failed_attempts_cleared',
-      resource: 'auth',
-      ipAddress: key,
-      userAgent: req.headers['user-agent'],
+    await AuditService.logEvent({
+      actorId: req.user?.userId,
+      actorRole: req.user?.role || 'USER',
+      action: 'FAILED_ATTEMPTS_CLEARED',
+      entityType: 'AUTH_GATE',
+      entityId: req.user?.userId,
       metadata: {
+        ipAddress: key,
         reason: 'Successful authentication',
       },
-      success: true,
     });
 
     enterpriseLogger.info('Failed attempts cleared', {
@@ -365,18 +362,16 @@ const standardRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: async (req, res) => {
-    await AuditLog.logAuthEvent({
-      userId: req.user?.userId || null,
-      action: 'rate_limit_exceeded',
-      resource: 'api',
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'],
+    await AuditService.logEvent({
+      actorId: req.user?.userId,
+      actorRole: req.user?.role || 'ANONYMOUS',
+      action: 'STANDARD_RATE_LIMIT_EXCEEDED',
+      entityType: 'API_GATE',
+      entityId: req.user?.userId,
       metadata: {
-        reason: 'Standard rate limit exceeded',
+        ipAddress: req.ip || req.connection.remoteAddress,
         endpoint: req.originalUrl,
       },
-      success: false,
-      errorMessage: 'Too many requests from this IP',
     });
 
     res.status(429).json({
@@ -398,18 +393,16 @@ const strictRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: async (req, res) => {
-    await AuditLog.logAuthEvent({
-      userId: req.user?.userId || null,
-      action: 'strict_rate_limit_exceeded',
-      resource: 'sensitive',
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'],
+    await AuditService.logEvent({
+      actorId: req.user?.userId,
+      actorRole: req.user?.role || 'ANONYMOUS',
+      action: 'STRICT_RATE_LIMIT_EXCEEDED',
+      entityType: 'SENSITIVE_GATE',
+      entityId: req.user?.userId,
       metadata: {
-        reason: 'Strict rate limit exceeded',
+        ipAddress: req.ip || req.connection.remoteAddress,
         endpoint: req.originalUrl,
       },
-      success: false,
-      errorMessage: 'Too many requests to sensitive endpoint',
     });
 
     res.status(429).json({

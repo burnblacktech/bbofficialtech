@@ -10,12 +10,16 @@ const morgan = require('morgan');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+console.log('TRACE: session loaded');
 // RedisStore is loaded lazily when Redis is available (see server.js)
 const passport = require('./config/passport');
+console.log('TRACE: passport loaded');
 const enterpriseLogger = require('./utils/logger');
+console.log('TRACE: logger loaded');
 const redisService = require('./services/core/RedisService');
-const routes = require('./routes');
+console.log('TRACE: redis service loaded');
 const { globalErrorHandler } = require('./middleware/errorHandler');
+console.log('TRACE: error handler loaded');
 
 // =====================================================
 // EXPRESS APP INITIALIZATION;
@@ -268,13 +272,6 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-// Unhandled promise rejection handler;
-process.on('unhandledRejection', (reason, promise) => {
-  enterpriseLogger.error('Unhandled Promise Rejection', {
-    reason: reason,
-    promise: promise,
-  });
-});
 
 // Uncaught exception handler;
 process.on('uncaughtException', error => {

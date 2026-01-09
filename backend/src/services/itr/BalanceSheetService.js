@@ -3,7 +3,7 @@
 // Handles balance sheet operations for ITR-3
 // =====================================================
 
-const { query: dbQuery } = require('../../utils/dbQuery');
+const { ITRFiling } = require('../../models');
 const enterpriseLogger = require('../../utils/logger');
 
 class BalanceSheetService {
@@ -14,18 +14,17 @@ class BalanceSheetService {
    */
   async getBalanceSheet(filingId) {
     try {
-      const query = `
-        SELECT json_payload->'balanceSheet' as balance_sheet
-        FROM itr_filings
-        WHERE id = $1
-      `;
-      const result = await dbQuery(query, [filingId]);
+      const filing = await ITRFiling.findByPk(filingId, {
+        attributes: ['jsonPayload']
+      });
 
-      if (result.rows.length === 0) {
+      if (!filing) {
         return null;
       }
 
-      return result.rows[0].balance_sheet || {
+      const balanceSheet = filing.jsonPayload?.income?.business?.balanceSheet;
+
+      return balanceSheet || {
         hasBalanceSheet: false,
         assets: {
           currentAssets: { cash: 0, bank: 0, inventory: 0, receivables: 0, other: 0, total: 0 },
@@ -58,18 +57,21 @@ class BalanceSheetService {
    */
   async updateBalanceSheet(filingId, balanceSheetData) {
     try {
-      // Get current filing data
-      const getQuery = `
-        SELECT json_payload FROM itr_filings WHERE id = $1
-      `;
-      const current = await dbQuery(getQuery, [filingId]);
+      const filing = await ITRFiling.findByPk(filingId);
 
-      if (current.rows.length === 0) {
+      if (!filing) {
         throw new Error('Filing not found');
       }
 
-      const jsonPayload = current.rows[0].json_payload || {};
-      jsonPayload.balanceSheet = balanceSheetData;
+      // Sync to jsonPayload (SSOT)
+      if (!filing.jsonPayload) filing.jsonPayload = {};
+      if (!filing.jsonPayload.income) filing.jsonPayload.income = {};
+      if (!filing.jsonPayload.income.business) filing.jsonPayload.income.business = {};
+
+      filing.jsonPayload.income.business.balanceSheet = balanceSheetData;
+
+      // Explicitly mark jsonPayload as changed for Postgres JSONB update
+      filing.changed('jsonPayload', true);
 
       // Validate balance sheet
       const validation = this.validateBalanceSheet(balanceSheetData);
@@ -77,18 +79,11 @@ class BalanceSheetService {
         throw new Error(`Balance sheet validation failed: ${validation.errors.join(', ')}`);
       }
 
-      // Update filing
-      const updateQuery = `
-        UPDATE itr_filings
-        SET json_payload = $1, updated_at = NOW()
-        WHERE id = $2
-        RETURNING json_payload->'balanceSheet' as balance_sheet
-      `;
-      const result = await dbQuery(updateQuery, [JSON.stringify(jsonPayload), filingId]);
+      await filing.save();
 
-      enterpriseLogger.info('Balance sheet updated', { filingId });
+      enterpriseLogger.info('Balance sheet updated via model', { filingId });
 
-      return result.rows[0].balance_sheet;
+      return filing.jsonPayload.balanceSheet;
     } catch (error) {
       enterpriseLogger.error('Update balance sheet failed', {
         error: error.message,
@@ -211,4 +206,3 @@ class BalanceSheetService {
 }
 
 module.exports = new BalanceSheetService();
-

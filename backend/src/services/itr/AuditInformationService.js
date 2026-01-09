@@ -3,7 +3,7 @@
 // Handles audit information operations for ITR-3
 // =====================================================
 
-const { query: dbQuery } = require('../../utils/dbQuery');
+const { ITRFiling } = require('../../models');
 const enterpriseLogger = require('../../utils/logger');
 
 class AuditInformationService {
@@ -14,20 +14,16 @@ class AuditInformationService {
    */
   async getAuditInformation(filingId) {
     try {
-      const query = `
-        SELECT json_payload->'auditInfo' as audit_info,
-               json_payload->'income'->'business' as business_income,
-               json_payload->'income'->'professional' as professional_income
-        FROM itr_filings
-        WHERE id = $1
-      `;
-      const result = await dbQuery(query, [filingId]);
+      const filing = await ITRFiling.findByPk(filingId, {
+        attributes: ['jsonPayload']
+      });
 
-      if (result.rows.length === 0) {
+      if (!filing) {
         return null;
       }
 
-      const auditInfo = result.rows[0].audit_info || {
+      const payload = filing.jsonPayload || {};
+      const auditInfo = payload.auditInfo || {
         isAuditApplicable: false,
         auditReason: '',
         auditReportNumber: '',
@@ -43,9 +39,11 @@ class AuditInformationService {
       };
 
       // Check audit applicability
+      const businessIncome = payload.income?.business;
+      const professionalIncome = payload.income?.professional;
       const applicability = this.checkAuditApplicability(
-        result.rows[0].business_income,
-        result.rows[0].professional_income
+        businessIncome,
+        professionalIncome
       );
 
       return {
@@ -69,18 +67,15 @@ class AuditInformationService {
    */
   async updateAuditInformation(filingId, auditData) {
     try {
-      // Get current filing data
-      const getQuery = `
-        SELECT json_payload FROM itr_filings WHERE id = $1
-      `;
-      const current = await dbQuery(getQuery, [filingId]);
+      const filing = await ITRFiling.findByPk(filingId);
 
-      if (current.rows.length === 0) {
+      if (!filing) {
         throw new Error('Filing not found');
       }
 
-      const jsonPayload = current.rows[0].json_payload || {};
-      jsonPayload.auditInfo = auditData;
+      // Sync to jsonPayload (SSOT)
+      if (!filing.jsonPayload) filing.jsonPayload = {};
+      filing.jsonPayload.auditInfo = auditData;
 
       // Validate audit information if applicable
       if (auditData.isAuditApplicable) {
@@ -90,18 +85,13 @@ class AuditInformationService {
         }
       }
 
-      // Update filing
-      const updateQuery = `
-        UPDATE itr_filings
-        SET json_payload = $1, updated_at = NOW()
-        WHERE id = $2
-        RETURNING json_payload->'auditInfo' as audit_info
-      `;
-      const result = await dbQuery(updateQuery, [JSON.stringify(jsonPayload), filingId]);
+      // Explicitly mark jsonPayload as changed for Postgres JSONB update
+      filing.changed('jsonPayload', true);
+      await filing.save();
 
-      enterpriseLogger.info('Audit information updated', { filingId });
+      enterpriseLogger.info('Audit information updated via model', { filingId });
 
-      return result.rows[0].audit_info;
+      return filing.jsonPayload.auditInfo;
     } catch (error) {
       enterpriseLogger.error('Update audit information failed', {
         error: error.message,
@@ -209,4 +199,3 @@ class AuditInformationService {
 }
 
 module.exports = new AuditInformationService();
-
