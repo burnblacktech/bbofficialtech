@@ -724,147 +724,149 @@ router.get('/google/callback',
   googleOAuthCallbackLimiter,
   checkGoogleOAuthConfig,
   (req, res, next) => {
-    passport.authenticate('google', { session: false }, (err, user, info) => {
-      if (err) {
-        enterpriseLogger.error('Google OAuth authentication error', {
-          error: err.message,
-          errorStack: err.stack,
-          query: req.query,
-          ip: req.ip,
-        });
+    const frontendUrl = getOAuthFrontendUrl(req);
 
-        const frontendUrl = getOAuthFrontendUrl(req);
+    enterpriseLogger.error('Google OAuth Handshake Failed', {
+      error: err.message,
+      errorStack: err.stack,
+      callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+      requestId: req.id,
+      ip: req.ip,
+      sessionId: req.sessionID,
+      hasSessionData: !!req.session,
+      hasOAuthState: !!req.session?.oauthState,
+    });
 
-        // Handle specific error types
-        // ACCOUNT_LINKING_REQUIRED is handled via auto-link now, so we removed that check.
+    // Handle specific error types
+    // ACCOUNT_LINKING_REQUIRED is handled via auto-link now, so we removed that check.
 
-        // Handle Google rate limit errors
-        if (err.message && (
-          err.message.includes('too many requests') ||
-          err.message.includes('rate limit') ||
-          err.message.includes('quota') ||
-          err.code === 429 ||
-          err.status === 429
-        )) {
-          enterpriseLogger.warn('Google OAuth rate limit hit', {
-            ip: req.ip,
-            error: err.message,
-          });
-          return res.redirect(`${frontendUrl}/login?error=oauth_rate_limit&message=${encodeURIComponent('Too many requests to Google. Please wait 15-30 minutes before trying again.')}`);
-        }
+    // Handle Google rate limit errors
+    if (err.message && (
+      err.message.includes('too many requests') ||
+      err.message.includes('rate limit') ||
+      err.message.includes('quota') ||
+      err.code === 429 ||
+      err.status === 429
+    )) {
+      enterpriseLogger.warn('Google OAuth rate limit hit', {
+        ip: req.ip,
+        error: err.message,
+      });
+      return res.redirect(`${frontendUrl}/login?error=oauth_rate_limit&message=${encodeURIComponent('Too many requests to Google. Please wait 15-30 minutes before trying again.')}`);
+    }
 
-        // Redirect to error page with error message
-        const errorMessage = encodeURIComponent(err.message || 'Authentication failed');
-        return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
-      }
+    // Redirect to error page with error message
+    const errorMessage = encodeURIComponent(err.message || 'Authentication failed');
+    return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
+  }
 
       if (!user) {
-        enterpriseLogger.warn('Google OAuth authentication returned no user', {
-          info: info,
-          query: req.query,
-          ip: req.ip,
-        });
+  enterpriseLogger.warn('Google OAuth authentication returned no user', {
+    info: info,
+    query: req.query,
+    ip: req.ip,
+  });
 
-        const frontendUrl = getOAuthFrontendUrl(req);
-        const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
-        return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
-      }
+  const frontendUrl = getOAuthFrontendUrl(req);
+  const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
+  return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
+}
 
-      // Attach user to request and continue
-      req.user = user;
-      req.authInfo = info;
-      next();
-    })(req, res, next);
+// Attach user to request and continue
+req.user = user;
+req.authInfo = info;
+next();
+    }) (req, res, next);
   },
-  async (req, res) => {
-    try {
-      // Check for account linking error - Removed as per U1.1 (Auto-link)
-      // if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') { ... }
+async (req, res) => {
+  try {
+    // Check for account linking error - Removed as per U1.1 (Auto-link)
+    // if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') { ... }
 
-      const user = req.user;
+    const user = req.user;
 
-      // Generate JWT token (canonical payload only)
-      const token = jwt.sign(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role,
-          caFirmId: user.caFirmId || null,
-        },
-        process.env.JWT_SECRET || 'fallback-secret',
-        { expiresIn: '1h' },
-      );
-
-      // Generate refresh token
-      const refreshToken = uuidv4();
-      const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
-
-      // Check concurrent session limit BEFORE creating new session
-      const maxConcurrentSessions = parseInt(process.env.MAX_CONCURRENT_SESSIONS) || 3;
-      await UserSession.enforceConcurrentLimit(user.id, maxConcurrentSessions, user.email);
-
-      // Create session
-      await UserSession.create({
-        userId: user.id,
-        refreshTokenHash,
-        deviceInfo: req.headers['user-agent'] || 'Unknown',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.headers['user-agent'],
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      });
-
-      // Update last login
-      await user.update({ lastLoginAt: new Date() });
-
-      // Log audit event
-      AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
-
-      enterpriseLogger.info('Google OAuth login successful', {
+    // Generate JWT token (canonical payload only)
+    const token = jwt.sign(
+      {
         userId: user.id,
         email: user.email,
         role: user.role,
-      });
+        caFirmId: user.caFirmId || null,
+      },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '1h' },
+    );
 
-      // Set refresh token in HttpOnly cookie
-      setRefreshTokenCookie(res, refreshToken);
+    // Generate refresh token
+    const refreshToken = uuidv4();
+    const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
 
-      // Redirect to frontend with token
-      const frontendUrl = getOAuthFrontendUrl(req);
-      const userData = {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        role: user.role,
-        status: user.status,
-        authProvider: user.authProvider,
-        hasPassword: !!user.passwordHash,
+    // Check concurrent session limit BEFORE creating new session
+    const maxConcurrentSessions = parseInt(process.env.MAX_CONCURRENT_SESSIONS) || 3;
+    await UserSession.enforceConcurrentLimit(user.id, maxConcurrentSessions, user.email);
 
-        profile_picture: user.metadata?.profile_picture,
-      };
-      const redirectUrl = `${frontendUrl}/auth/google/success?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(userData))}`;
+    // Create session
+    await UserSession.create({
+      userId: user.id,
+      refreshTokenHash,
+      deviceInfo: req.headers['user-agent'] || 'Unknown',
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'],
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
 
-      // --- START DEBUGGING ---
-      enterpriseLogger.info('Google OAuth redirect URL constructed', {
-        frontendUrl,
-        token: token ? `${token.substring(0, 20)}...` : 'null',
-        refreshToken: refreshToken ? `${refreshToken.substring(0, 20)}...` : 'null',
-        userData,
-        redirectUrl: redirectUrl.substring(0, 200) + '...',
-      });
-      // --- END DEBUGGING ---
+    // Update last login
+    await user.update({ lastLoginAt: new Date() });
 
-      res.redirect(redirectUrl);
+    // Log audit event
+    AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
 
-    } catch (error) {
-      enterpriseLogger.error('Google OAuth callback error', {
-        error: error.message,
-        stack: error.stack,
-      });
+    enterpriseLogger.info('Google OAuth login successful', {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
-      const frontendUrl = getOAuthFrontendUrl(req);
-      res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent(error.message)}`);
-    }
-  },
+    // Set refresh token in HttpOnly cookie
+    setRefreshTokenCookie(res, refreshToken);
+
+    // Redirect to frontend with token
+    const frontendUrl = getOAuthFrontendUrl(req);
+    const userData = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
+      status: user.status,
+      authProvider: user.authProvider,
+      hasPassword: !!user.passwordHash,
+
+      profile_picture: user.metadata?.profile_picture,
+    };
+    const redirectUrl = `${frontendUrl}/auth/google/success?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(userData))}`;
+
+    // --- START DEBUGGING ---
+    enterpriseLogger.info('Google OAuth redirect URL constructed', {
+      frontendUrl,
+      token: token ? `${token.substring(0, 20)}...` : 'null',
+      refreshToken: refreshToken ? `${refreshToken.substring(0, 20)}...` : 'null',
+      userData,
+      redirectUrl: redirectUrl.substring(0, 200) + '...',
+    });
+    // --- END DEBUGGING ---
+
+    res.redirect(redirectUrl);
+
+  } catch (error) {
+    enterpriseLogger.error('Google OAuth callback error', {
+      error: error.message,
+      stack: error.stack,
+    });
+
+    const frontendUrl = getOAuthFrontendUrl(req);
+    res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent(error.message)}`);
+  }
+},
 );
 
 // =====================================================

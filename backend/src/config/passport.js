@@ -23,6 +23,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: callbackURL,
+        proxy: true, // Required for trust proxy/Vercel
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
