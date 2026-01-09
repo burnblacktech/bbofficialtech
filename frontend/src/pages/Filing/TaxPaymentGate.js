@@ -20,6 +20,7 @@ const TaxPaymentGate = () => {
     const [loading, setLoading] = useState(true);
     const [filing, setFiling] = useState(null);
     const [payableAmount, setPayableAmount] = useState(0);
+    const [showRedirectModal, setShowRedirectModal] = useState(false);
 
     const [challan, setChallan] = useState({
         bsrCode: '',
@@ -158,15 +159,13 @@ const TaxPaymentGate = () => {
                             </div>
                         ))}
 
-                        <a
-                            href="https://eportal.incometax.gov.in/iec/foservices/#/login/e-pay-tax"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() => setShowRedirectModal(true)}
                             className="mt-6 w-full flex items-center justify-center gap-2 bg-[var(--s29-text-main)] text-white py-4 rounded-[var(--s29-radius-main)] font-bold hover:bg-black transition-all shadow-md group"
                         >
                             Pay on Income Tax Website
                             <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -241,6 +240,55 @@ const TaxPaymentGate = () => {
                         Self-Assessment Tax • Code 300
                     </p>
                 </div>
+
+                {/* Redirect Modal */}
+                {showRedirectModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-[2rem] max-w-lg w-full p-8 shadow-2xl animate-in zoom-in duration-200">
+                            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                                <ExternalLink className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-4">Leaving Burnblack</h3>
+                            <p className="text-slate-600 mb-6 leading-relaxed">
+                                You’ll be taken to the official Income Tax portal in a new tab to complete your payment. This usually takes <span className="font-bold text-slate-900">5–7 minutes</span>.
+                            </p>
+
+                            <div className="space-y-4 mb-8">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">What you'll need</h4>
+                                <div className="flex items-center gap-3 text-slate-700 font-medium">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                    Internet Banking or Debit Card
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-700 font-medium">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                    Bank Account Details
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-700 font-medium">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                    A few minutes of focus
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-3">
+                                <a
+                                    href="https://eportal.incometax.gov.in/iec/foservices/#/login/e-pay-tax"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => setShowRedirectModal(false)}
+                                    className="w-full bg-[var(--s29-primary)] text-white py-4 rounded-2xl font-bold text-center hover:bg-[var(--s29-primary-dark)] transition-all shadow-lg"
+                                >
+                                    Go to ITD Portal
+                                </a>
+                                <button
+                                    onClick={() => setShowRedirectModal(false)}
+                                    className="w-full py-4 text-slate-500 font-medium hover:text-slate-800 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

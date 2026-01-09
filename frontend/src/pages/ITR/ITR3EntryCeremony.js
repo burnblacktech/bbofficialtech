@@ -49,7 +49,7 @@ const ITR3EntryCeremony = () => {
         {
             icon: Clock,
             title: 'Time Commitment',
-            desc: 'This filing typically takes 60-90 minutes of focused data entry.',
+            desc: 'This return usually takes 45–90 minutes of focused data entry.',
             color: 'text-orange-600 bg-orange-50',
         },
         {
@@ -112,6 +112,9 @@ const ITR3EntryCeremony = () => {
                                 <h5 className="font-bold text-amber-900 mb-1">Expectation Setting</h5>
                                 <p className="text-sm text-amber-800 leading-relaxed italic">
                                     "Trying to make ITR-3 'simple' is bad design. Good design here means clarity, pacing, and informed consent. We will not rush or hide legal requirements."
+                                </p>
+                                <p className="text-[10px] text-amber-700 mt-2 font-medium">
+                                    We’ll block submission automatically if this return becomes invalid later.
                                 </p>
                             </div>
                         </div>

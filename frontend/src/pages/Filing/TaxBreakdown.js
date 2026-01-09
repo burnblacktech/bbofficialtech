@@ -104,6 +104,9 @@ const TaxBreakdown = () => {
                             Calculated using the <span className="font-semibold text-[var(--s29-text-main)]">{selectedRegime === 'new' ? 'New (Simplified)' : 'Old'} Regime</span> to minimize your liability.
                         </p>
                     )}
+                    <p className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] mt-2 italic">
+                        This won’t change unless you change your income details.
+                    </p>
                 </div>
 
                 {/* Breakdown - Cards within Cards */}

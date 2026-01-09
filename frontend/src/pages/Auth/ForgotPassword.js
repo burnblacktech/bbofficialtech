@@ -56,9 +56,9 @@ const ForgotPassword = () => {
         navigate('/reset-password', { state: { phone: phone.replace(/\D/g, ''), method: 'mobile' } });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Failed to send reset link. Please try again.';
-      setError(errorMessage);
-      toast.error(errorMessage);
+      // S13: Soft landing for non-existent users
+      setSuccess(true);
+      toast.success('If an account exists, we’ve sent a reset link.');
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
               Check Your Email
             </h2>
             <p className="mt-2 text-body-md text-slate-600">
-              We've sent a password reset link to {email}
+              If an account exists, we’ve sent a reset link.
             </p>
           </div>
 
@@ -125,10 +125,10 @@ const ForgotPassword = () => {
             Back to login
           </button>
           <h2 className="text-center text-heading-xl text-slate-900">
-            Forgot Password?
+            Reset your password
           </h2>
           <p className="mt-2 text-center text-body-md text-slate-600">
-            No worries! Enter your email or mobile to reset your password
+            Enter your email. We’ll send you a secure reset link.
           </p>
         </div>
 
@@ -151,11 +151,10 @@ const ForgotPassword = () => {
                 setMethod('email');
                 setError('');
               }}
-              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium ${
-                method === 'email'
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium ${method === 'email'
                   ? 'bg-gold-500 text-white'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-              }`}
+                }`}
             >
               <Mail className="w-4 h-4 inline mr-2" />
               Email
@@ -166,11 +165,10 @@ const ForgotPassword = () => {
                 setMethod('mobile');
                 setError('');
               }}
-              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium ${
-                method === 'mobile'
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium ${method === 'mobile'
                   ? 'bg-gold-500 text-white'
                   : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-              }`}
+                }`}
             >
               <Phone className="w-4 h-4 inline mr-2" />
               Mobile

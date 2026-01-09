@@ -22,6 +22,7 @@ const PANVerification = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [isValidating, setIsValidating] = useState(false);
+    const [retriesLeft, setRetriesLeft] = useState(3);
 
     const validatePAN = (val) => {
         const regex = /^[A-Z]{5}[0-9]{4}[A-Z]$/i;
@@ -31,6 +32,11 @@ const PANVerification = () => {
     const handleVerify = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (retriesLeft <= 0) {
+            setError('Maximum verification attempts reached. Please try again later.');
+            return;
+        }
 
         if (!pan || !validatePAN(pan)) {
             setError('Please enter a valid 10-digit PAN (e.g., ABCDE1234F)');
@@ -72,7 +78,21 @@ const PANVerification = () => {
 
         } catch (err) {
             console.error('Identity verification failed:', err);
-            setError(err.response?.data?.error || 'Verification failed. Please check your PAN and Date of Birth.');
+            const errorCode = err.response?.data?.errorCode;
+            const apiError = err.response?.data?.error;
+
+            let displayError = 'Verification failed. Please check your PAN and Date of Birth.';
+
+            if (errorCode === 'IDENTITY_MISMATCH') {
+                displayError = 'DOB doesn’t match PAN records';
+            } else if (errorCode === 'PAN_NOT_FOUND') {
+                displayError = 'PAN format valid but not found in records';
+            } else if (apiError) {
+                displayError = apiError;
+            }
+
+            setRetriesLeft(prev => prev - 1);
+            setError(`${displayError}. (${retriesLeft - 1} attempts left)`);
         } finally {
             setLoading(false);
             setIsValidating(false);
@@ -81,18 +101,13 @@ const PANVerification = () => {
 
     return (
         <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center p-6">
-            {/* Step Indicator */}
-            <div className="mb-8 text-center">
-                <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
-                    Step 1 of 5
-                </span>
-                <div className="flex gap-2 mt-2">
-                    <div className="h-1 w-8 bg-[var(--s29-primary)] rounded-full" />
-                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
-                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
-                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
-                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
-                </div>
+            <div className="text-center mb-8">
+                <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mb-2">
+                    Verify your identity
+                </h1>
+                <p className="text-[var(--s29-text-muted)]">
+                    This is required before we can fetch or submit tax information.
+                </p>
             </div>
 
             <SectionCard
@@ -111,8 +126,8 @@ const PANVerification = () => {
                             className="w-full px-4 py-3 rounded-[var(--s29-radius-main)] border border-[var(--s29-border-light)] bg-white focus:border-[var(--s29-primary)] outline-none transition-all"
                             disabled={loading}
                         >
-                            <option value="2024-25">2024-25 (Latest)</option>
-                            <option value="2023-24">2023-24</option>
+                            <option value="2024-25">Assessment Year 2024-25 (Income earned Apr 2023 – Mar 2024)</option>
+                            <option value="2023-24">Assessment Year 2023-24 (Income earned Apr 2022 – Mar 2023)</option>
                         </select>
                         <InlineHint>Choose the year for which you want to file returns.</InlineHint>
                     </div>
@@ -179,11 +194,11 @@ const PANVerification = () => {
                         {loading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                Securely Verifying...
+                                Verifying...
                             </>
                         ) : (
                             <>
-                                Continue to Filing
+                                Verify & continue
                                 <ArrowRight className="w-5 h-5" />
                             </>
                         )}

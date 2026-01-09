@@ -148,6 +148,17 @@ class AuthService {
     }
   }
 
+  // Resend verification email
+  async resendVerificationEmail() {
+    try {
+      const response = await apiClient.post('/auth/resend-verification');
+      return response.data;
+    } catch (error) {
+      errorHandler.handle(error);
+      throw error;
+    }
+  }
+
   // Persist onboarding completion server-side (preferred over localStorage-only)
   async completeOnboarding() {
     try {

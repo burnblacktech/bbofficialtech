@@ -86,10 +86,9 @@ const FilingHeader = ({
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-body-regular">
                 {getStatusIcon()}
-                <span className={`font-medium ${
-                  filingStatus === 'completed' ? 'text-green-600' :
-                  filingStatus === 'error' ? 'text-error-600' : 'text-blue-600'
-                }`}>
+                <span className={`font-medium ${filingStatus === 'completed' ? 'text-green-600' :
+                    filingStatus === 'error' ? 'text-error-600' : 'text-blue-600'
+                  }`}>
                   {getStatusText()}
                 </span>
               </div>
@@ -120,12 +119,10 @@ const FilingHeader = ({
 
                   <div className="flex-1 h-px bg-gray-300 mx-2"></div>
 
-                  <div className={`flex items-center space-x-2 ${
-                    step >= 2 ? 'text-blue-600' : 'text-slate-400'
-                  }`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      step >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                  <div className={`flex items-center space-x-2 ${step >= 2 ? 'text-blue-600' : 'text-slate-400'
                     }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                      }`}>
                       2
                     </div>
                     <span className="text-body-regular font-medium">Income Details</span>
@@ -133,12 +130,10 @@ const FilingHeader = ({
 
                   <div className="flex-1 h-px bg-gray-300 mx-2"></div>
 
-                  <div className={`flex items-center space-x-2 ${
-                    step >= 3 ? 'text-blue-600' : 'text-slate-400'
-                  }`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      step >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                  <div className={`flex items-center space-x-2 ${step >= 3 ? 'text-blue-600' : 'text-slate-400'
                     }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                      }`}>
                       3
                     </div>
                     <span className="text-body-regular font-medium">Deductions</span>
@@ -146,12 +141,10 @@ const FilingHeader = ({
 
                   <div className="flex-1 h-px bg-gray-300 mx-2"></div>
 
-                  <div className={`flex items-center space-x-2 ${
-                    step >= 4 ? 'text-blue-600' : 'text-slate-400'
-                  }`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      step >= 4 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                  <div className={`flex items-center space-x-2 ${step >= 4 ? 'text-blue-600' : 'text-slate-400'
                     }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 4 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                      }`}>
                       4
                     </div>
                     <span className="text-body-regular font-medium">Tax Summary</span>
@@ -159,12 +152,10 @@ const FilingHeader = ({
 
                   <div className="flex-1 h-px bg-gray-300 mx-2"></div>
 
-                  <div className={`flex items-center space-x-2 ${
-                    step >= 5 ? 'text-blue-600' : 'text-slate-400'
-                  }`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      step >= 5 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                  <div className={`flex items-center space-x-2 ${step >= 5 ? 'text-blue-600' : 'text-slate-400'
                     }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step >= 5 ? 'bg-blue-600 text-white' : 'bg-slate-200'
+                      }`}>
                       5
                     </div>
                     <span className="text-body-regular font-medium">Review & File</span>
@@ -181,9 +172,12 @@ const FilingHeader = ({
           {/* Additional Info */}
           <div className="mt-4 flex items-center justify-between">
             <div className="flex items-center space-x-6 text-body-regular text-slate-600">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
-                <span>Assessment Year: 2024-25</span>
+              <div className="flex flex-col">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="w-4 h-4" />
+                  <span className="font-semibold">Assessment Year 2024-25</span>
+                </div>
+                <span className="text-[10px] text-slate-500 italic ml-6 lg:ml-0">Income earned Apr 2023 – Mar 2024</span>
               </div>
 
               <div className="flex items-center space-x-2">

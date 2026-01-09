@@ -73,15 +73,15 @@ const EmailVerification = () => {
   const handleResendVerification = async () => {
     setIsLoading(true);
     try {
-      // TODO: Implement API call to resend verification email
-      // const response = await authService.resendVerificationEmail();
-
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      toast.success('Verification email sent! Please check your inbox.');
+      const response = await authService.resendVerificationEmail();
+      if (response.success) {
+        toast.success('Verification email sent! Please check your inbox.');
+      } else {
+        toast.error(response.message || 'Failed to resend verification email.');
+      }
     } catch (error) {
-      toast.error('Failed to resend verification email. Please try again.');
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Failed to resend verification email. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

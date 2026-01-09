@@ -97,9 +97,12 @@ const YearSelector = ({ selectedYear, onYearChange, assessmentYear = '2024-25' }
 
         {currentYearInfo && (
           <div className="bg-slate-50 rounded-xl p-3 space-y-2 text-body-regular">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-600">Assessment Year:</span>
-              <span className="font-semibold text-slate-900">{currentYearInfo.assessmentYear}</span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">Assessment Year:</span>
+                <span className="font-semibold text-slate-900">{currentYearInfo.assessmentYear}</span>
+              </div>
+              <span className="text-[10px] text-slate-500 italic">Income earned Apr {currentYearInfo.fy.split('-')[0]} – Mar 20{currentYearInfo.fy.split('-')[1]}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-600">Due Date:</span>

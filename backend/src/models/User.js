@@ -71,6 +71,17 @@ const User = sequelize.define('User', {
     defaultValue: 'active',
     allowNull: false,
   },
+  emailVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+    field: 'email_verified',
+  },
+  verificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'verification_token',
+  },
 
   // =====================================================
   // AUDIT

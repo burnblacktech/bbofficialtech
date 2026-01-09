@@ -173,10 +173,10 @@ const ResetPassword = () => {
               <CheckCircle className="h-8 w-8 text-success-600" />
             </div>
             <h2 className="text-heading-xl text-slate-900">
-              Password Reset Successful!
+              Password updated
             </h2>
             <p className="mt-2 text-body-md text-slate-600">
-              Your password has been reset. Redirecting to login...
+              You can now sign in with your new password.
             </p>
           </div>
 
@@ -281,11 +281,10 @@ const ResetPassword = () => {
                   {[0, 1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className={`h-1 flex-1 rounded ${
-                        i < passwordStrength.score
+                      className={`h-1 flex-1 rounded ${i < passwordStrength.score
                           ? getPasswordStrengthColor()
                           : 'bg-slate-200'
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -335,7 +334,7 @@ const ResetPassword = () => {
               disabled={isLoading}
               className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
-              {isLoading ? 'Resetting...' : 'Reset Password'}
+              {isLoading ? 'Updating...' : 'Update password'}
             </button>
           </div>
 

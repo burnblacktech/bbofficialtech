@@ -754,7 +754,10 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       {/* Short-term Capital Gains */}
       <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-semibold text-slate-900">Short-term Capital Gains (STCG)</h4>
+          <div>
+            <h4 className="font-semibold text-slate-900">Held for less than 1 year</h4>
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Short-term Capital Gains (STCG)</p>
+          </div>
           <button
             onClick={addSTCGEntry}
             className="flex items-center px-3 py-1.5 text-body-regular bg-blue-600 text-white rounded-xl hover:bg-blue-700"
@@ -877,7 +880,10 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
       {/* Long-term Capital Gains */}
       <div className="border border-slate-200 rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-semibold text-slate-900">Long-term Capital Gains (LTCG)</h4>
+          <div>
+            <h4 className="font-semibold text-slate-900">Held for more than 1 year</h4>
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Long-term Capital Gains (LTCG)</p>
+          </div>
           <button
             onClick={addLTCGEntry}
             className="flex items-center px-3 py-1.5 text-body-regular bg-blue-600 text-white rounded-xl hover:bg-blue-700"

@@ -7,6 +7,7 @@
 import { lazy } from 'react';
 
 // Lazy load components
+const StartFilingGate = lazy(() => import('../pages/ITR/StartFilingGate'));
 const PANVerification = lazy(() => import('../pages/ITR/PANVerification'));
 const IncomeSourcesSelection = lazy(() => import('../pages/ITR/IncomeSourcesSelection'));
 const ITRDetermination = lazy(() => import('../pages/ITR/ITRDetermination'));
@@ -24,9 +25,15 @@ export const FILING_ROUTES = {
     entry: [
         {
             path: '/itr/start',
+            component: StartFilingGate,
+            protected: true,
+            title: 'Welcome',
+        },
+        {
+            path: '/itr/verify-identity',
             component: PANVerification,
             protected: true,
-            title: 'Verify PAN',
+            title: 'Verify Identity',
         },
         {
             path: '/itr/confirm-sources',

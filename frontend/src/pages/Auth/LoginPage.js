@@ -120,7 +120,7 @@ const LoginPage = () => {
 
       const result = await login({ email, password });
       if (!result.success) {
-        setError(result.message || 'Login failed. Please try again.');
+        setError('Email or password doesn’t match. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -139,16 +139,18 @@ const LoginPage = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-heading-1 font-extrabold text-black">
-            Sign in to your account
+            Sign in to your tax account
           </h2>
+          <p className="mt-2 text-center text-body-md text-slate-600">
+            Your data is encrypted and never shared without your permission.
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleManualLogin}>
           {error && (
-            <div className={`px-4 py-3 rounded-xl flex items-start space-x-3 ${
-              error.includes('rate limit') || error.includes('too many requests')
+            <div className={`px-4 py-3 rounded-xl flex items-start space-x-3 ${error.includes('rate limit') || error.includes('too many requests')
                 ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
                 : 'bg-error-50 border border-red-200 text-error-600'
-            }`}>
+              }`}>
               {error.includes('rate limit') || error.includes('too many requests') ? (
                 <Clock className="h-5 w-5 mt-0.5 flex-shrink-0" />
               ) : (
@@ -157,11 +159,6 @@ const LoginPage = () => {
               <div className="flex-1">
                 <p className="font-medium">{error.includes('rate limit') || error.includes('too many requests') ? 'Rate Limit Exceeded' : 'Authentication Error'}</p>
                 <p className="text-body-regular mt-1">{error}</p>
-                {(error.includes('rate limit') || error.includes('too many requests')) && (
-                  <p className="text-body-small mt-2 opacity-80">
-                    This is a temporary restriction from Google. Please wait before trying again.
-                  </p>
-                )}
               </div>
             </div>
           )}
@@ -176,9 +173,8 @@ const LoginPage = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
-                  emailError ? 'border-error-300' : 'border-slate-300'
-                } placeholder-gray-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${emailError ? 'border-error-300' : 'border-slate-300'
+                  } placeholder-gray-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
                 value={email}
                 onChange={handleEmailChange}
@@ -198,9 +194,8 @@ const LoginPage = () => {
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border ${
-                  passwordError ? 'border-error-300' : 'border-slate-300'
-                } placeholder-gray-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border ${passwordError ? 'border-error-300' : 'border-slate-300'
+                  } placeholder-gray-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
@@ -244,7 +239,7 @@ const LoginPage = () => {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-body-regular font-medium rounded-xl text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? 'Continuing...' : 'Continue'}
             </button>
           </div>
 

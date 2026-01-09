@@ -112,6 +112,8 @@ const PropertySaleDetails = lazy(() => import('./pages/Filing/PropertySaleDetail
 const TaxPaymentGate = lazy(() => import('./pages/Filing/TaxPaymentGate'));
 const PresumptiveIncomeStory = lazy(() => import('./pages/Filing/PresumptiveIncomeStory'));
 const AddPresumptiveIncome = lazy(() => import('./pages/Filing/AddPresumptiveIncome'));
+const StartFilingGate = lazy(() => import('./pages/ITR/StartFilingGate'));
+const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
 const ITR3EntryCeremony = lazy(() => import('./pages/ITR/ITR3EntryCeremony'));
 const HousePropertyStory = lazy(() => import('./pages/Filing/HousePropertyStory'));
 const AddHouseProperty = lazy(() => import('./pages/Filing/AddHouseProperty'));

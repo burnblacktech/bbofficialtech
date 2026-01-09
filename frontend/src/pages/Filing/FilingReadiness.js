@@ -152,7 +152,7 @@ const FilingReadiness = () => {
                 <div className="mb-8">
                     <ReassuranceBanner
                         type="safety"
-                        message="Submission is a permanent legal act. If you identify errors later, BurnBlack will assist you in filing a Revised Return."
+                        message="Once submitted, this return becomes legally final. If you identify errors later, BurnBlack will assist you in filing a Revised Return."
                     />
                 </div>
 
