@@ -66,7 +66,7 @@ const sessionConfig = {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 15 * 60 * 1000, // 15 minutes for OAuth state
-    sameSite: 'lax', // Allow cross-site requests for OAuth
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' required for cross-site cookie if API/Frontend are different domains
   },
 };
 
