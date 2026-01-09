@@ -165,7 +165,7 @@ const UserDashboardV2 = () => {
                         Hello, {user?.fullName?.split(' ')[0] || 'there'}.
                     </h1>
                     <p className="text-lg text-[var(--s29-text-muted)] font-medium">
-                        Your filing control room.
+                        Your tax records for the current year.
                     </p>
                 </div>
 

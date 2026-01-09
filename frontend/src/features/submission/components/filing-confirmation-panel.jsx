@@ -5,7 +5,7 @@
 // =====================================================
 
 import React from 'react';
-import { FileCheck, AlertTriangle, X, Calculator, Calendar, IndianRupee, CheckCircle } from 'lucide-react';
+import { FileCheck, AlertTriangle, X, Calculator, Calendar, IndianRupee, CheckCircle, Download } from 'lucide-react';
 import { formatIndianCurrency } from '../../../lib/format';
 
 /**
@@ -35,6 +35,7 @@ const FilingConfirmationPanel = ({
     isSubmitting,
     onConfirm,
     onCancel,
+    downloadUrl,
 }) => {
     // Derive values from blueprint or taxComputation
     const taxPayable = taxComputation?.finalTaxLiability ||
@@ -166,6 +167,26 @@ const FilingConfirmationPanel = ({
                             </div>
                         </div>
                     </div>
+
+                    {/* Download Nudge */}
+                    {downloadUrl && (
+                        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                            <div className="flex items-center gap-3">
+                                <Download className="w-5 h-5 text-blue-600" />
+                                <div className="text-body-small text-blue-900">
+                                    <p className="font-semibold">Optional: Archive your return</p>
+                                    <p className="text-[10px]">Download a copy for your personal records.</p>
+                                </div>
+                            </div>
+                            <a
+                                href={downloadUrl}
+                                download
+                                className="text-body-small font-bold text-blue-600 hover:text-blue-700 underline"
+                            >
+                                Download JSON
+                            </a>
+                        </div>
+                    )}
                 </div>
 
                 {/* Actions */}

@@ -171,8 +171,11 @@ const SubmissionStatus = () => {
                             Filing Outcome
                         </span>
                         <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mt-2">
-                            Submission Status
+                            Filing Submitted
                         </h1>
+                        <p className="text-[var(--s29-text-muted)] mt-1">
+                            We’re monitoring this for you. No further action needed.
+                        </p>
                     </div>
                     <div className="bg-white px-4 py-2 rounded-full border border-[var(--s29-border-light)] shadow-sm flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${status.state === 'SUCCESS' ? 'bg-emerald-500' : status.state === 'FAILED' ? 'bg-red-500' : 'bg-blue-500 animate-pulse'}`} />

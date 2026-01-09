@@ -56,7 +56,7 @@ class ITRDataPrefetchService {
               profileDob: normalizedProfileDob,
               providedDob: normalizedProvidedDob
             });
-            throw new AppError('Date of Birth does not match our records. Please verify.', 400, 'IDENTITY_MISMATCH');
+            throw new AppError('Date of Birth does not match PAN records.', 400, 'IDENTITY_MISMATCH');
           }
         }
       }
@@ -68,6 +68,11 @@ class ITRDataPrefetchService {
           lastSync: new Date().toISOString(),
           data: eriData.value,
         };
+      } else if (eriData.status === 'rejected') {
+        const errorMsg = eriData.reason?.message || 'ERI connection failed';
+        if (errorMsg.toLowerCase().includes('not found') || errorMsg.toLowerCase().includes('invalid pan')) {
+          throw new AppError('PAN format valid but not found in records.', 404, 'PAN_NOT_FOUND');
+        }
       }
 
       // Process AIS data
@@ -112,6 +117,8 @@ class ITRDataPrefetchService {
         sources,
       };
     } catch (error) {
+      if (error instanceof AppError) throw error;
+
       enterpriseLogger.error('ITR data prefetch failed', {
         userId,
         pan,
@@ -119,7 +126,7 @@ class ITRDataPrefetchService {
         error: error.message,
         stack: error.stack,
       });
-      throw new AppError(`Data prefetch failed: ${error.message}`, 500);
+      throw new AppError(`Data prefetch failed: ${error.message}`, 500, 'PREFETCH_FAILURE');
     }
   }
 

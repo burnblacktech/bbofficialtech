@@ -51,7 +51,9 @@ class ITRDraftService {
                         lifecycleState: 'draft',
                         status: 'draft',
                         idempotencyKey,
-                        jsonPayload: {}
+                        jsonPayload: {
+                            schemaVersion: "1.0"
+                        }
                     }, { transaction });
                 }
             } else {
@@ -176,6 +178,9 @@ class ITRDraftService {
         }
 
         // Mark as changed for Sequelize
+        // Ensure schema versioning
+        payload.schemaVersion = payload.schemaVersion || "1.0";
+
         filing.jsonPayload = payload;
         filing.changed('jsonPayload', true);
 

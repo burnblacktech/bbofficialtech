@@ -130,6 +130,9 @@ router.post('/register',
       const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
       const passwordHash = await bcrypt.hash(password, saltRounds);
 
+      // Generate verification token
+      const verificationToken = uuidv4();
+
       // Create user
       const newUser = await User.create({
         email: email.toLowerCase(),
@@ -139,7 +142,18 @@ router.post('/register',
         role: 'END_USER', // Default role for all public signups
         authProvider: 'local', // Canonical: lowercase
         status: 'active',
-        emailVerified: true,
+        emailVerified: false,
+        verificationToken: verificationToken,
+      });
+
+      // Send verification email (non-blocking)
+      const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/email-verification?token=${verificationToken}`;
+      emailService.sendVerificationEmail(newUser.email, verificationUrl).catch(err => {
+        enterpriseLogger.error('Failed to send verification email on signup', {
+          userId: newUser.id,
+          email: newUser.email,
+          error: err.message
+        });
       });
 
       enterpriseLogger.info('User registered successfully', {
@@ -170,6 +184,114 @@ router.post('/register',
       });
     }
   });
+
+// Verify email with token
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: 'Verification token is required',
+      });
+    }
+
+    const user = await User.findOne({
+      where: {
+        verificationToken: token,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid or expired verification token',
+      });
+    }
+
+    if (user.emailVerified) {
+      return res.json({
+        success: true,
+        message: 'Email already verified',
+      });
+    }
+
+    await user.update({
+      emailVerified: true,
+      verificationToken: null,
+    });
+
+    enterpriseLogger.info('Email verified successfully', {
+      userId: user.id,
+      email: user.email,
+    });
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully',
+    });
+  } catch (error) {
+    enterpriseLogger.error('Email verification failed', {
+      error: error.message,
+    });
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+});
+
+// Resend verification email
+router.post('/resend-verification', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    if (user.emailVerified) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email is already verified',
+      });
+    }
+
+    // Generate new token if needed or reuse existing
+    const verificationToken = user.verificationToken || uuidv4();
+    if (!user.verificationToken) {
+      await user.update({ verificationToken });
+    }
+
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/email-verification?token=${verificationToken}`;
+
+    await emailService.sendVerificationEmail(user.email, verificationUrl);
+
+    enterpriseLogger.info('Verification email resent', {
+      userId: user.id,
+      email: user.email,
+    });
+
+    res.json({
+      success: true,
+      message: 'Verification email sent successfully',
+    });
+  } catch (error) {
+    enterpriseLogger.error('Resend verification failed', {
+      error: error.message,
+      userId: req.user?.userId,
+    });
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+});
 
 // =====================================================
 // LOGIN ROUTES
@@ -724,149 +846,147 @@ router.get('/google/callback',
   googleOAuthCallbackLimiter,
   checkGoogleOAuthConfig,
   (req, res, next) => {
-    const frontendUrl = getOAuthFrontendUrl(req);
+    passport.authenticate('google', { session: false }, (err, user, info) => {
+      if (err) {
+        const frontendUrl = getOAuthFrontendUrl(req);
 
-    enterpriseLogger.error('Google OAuth Handshake Failed', {
-      error: err.message,
-      errorStack: err.stack,
-      callbackUrl: process.env.GOOGLE_CALLBACK_URL,
-      requestId: req.id,
-      ip: req.ip,
-      sessionId: req.sessionID,
-      hasSessionData: !!req.session,
-      hasOAuthState: !!req.session?.oauthState,
-    });
+        enterpriseLogger.error('Google OAuth Handshake Failed', {
+          error: err.message,
+          errorStack: err.stack,
+          callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+          requestId: req.id,
+          ip: req.ip,
+          sessionId: req.sessionID,
+          hasSessionData: !!req.session,
+          hasOAuthState: !!req.session?.oauthState,
+        });
 
-    // Handle specific error types
-    // ACCOUNT_LINKING_REQUIRED is handled via auto-link now, so we removed that check.
+        // Handle specific error types
+        if (err.message && (
+          err.message.includes('too many requests') ||
+          err.message.includes('rate limit') ||
+          err.message.includes('quota') ||
+          err.code === 429 ||
+          err.status === 429
+        )) {
+          enterpriseLogger.warn('Google OAuth rate limit hit', {
+            ip: req.ip,
+            error: err.message,
+          });
+          return res.redirect(`${frontendUrl}/login?error=oauth_rate_limit&message=${encodeURIComponent('Too many requests to Google. Please wait 15-30 minutes before trying again.')}`);
+        }
 
-    // Handle Google rate limit errors
-    if (err.message && (
-      err.message.includes('too many requests') ||
-      err.message.includes('rate limit') ||
-      err.message.includes('quota') ||
-      err.code === 429 ||
-      err.status === 429
-    )) {
-      enterpriseLogger.warn('Google OAuth rate limit hit', {
-        ip: req.ip,
-        error: err.message,
-      });
-      return res.redirect(`${frontendUrl}/login?error=oauth_rate_limit&message=${encodeURIComponent('Too many requests to Google. Please wait 15-30 minutes before trying again.')}`);
-    }
-
-    // Redirect to error page with error message
-    const errorMessage = encodeURIComponent(err.message || 'Authentication failed');
-    return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
-  }
+        const errorMessage = encodeURIComponent(err.message || 'Authentication failed');
+        return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
+      }
 
       if (!user) {
-  enterpriseLogger.warn('Google OAuth authentication returned no user', {
-    info: info,
-    query: req.query,
-    ip: req.ip,
-  });
+        enterpriseLogger.warn('Google OAuth authentication returned no user', {
+          info: info,
+          query: req.query,
+          ip: req.ip,
+        });
 
-  const frontendUrl = getOAuthFrontendUrl(req);
-  const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
-  return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
-}
+        const frontendUrl = getOAuthFrontendUrl(req);
+        const errorMessage = encodeURIComponent(info?.message || 'Authentication failed');
+        return res.redirect(`${frontendUrl}/auth/google/error?message=${errorMessage}`);
+      }
 
-// Attach user to request and continue
-req.user = user;
-req.authInfo = info;
-next();
-    }) (req, res, next);
+      // Attach user to request and continue
+      req.user = user;
+      req.authInfo = info;
+      next();
+    })(req, res, next);
   },
-async (req, res) => {
-  try {
-    // Check for account linking error - Removed as per U1.1 (Auto-link)
-    // if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') { ... }
+  async (req, res) => {
+    try {
+      // Check for account linking error - Removed as per U1.1 (Auto-link)
+      // if (req.authInfo && req.authInfo.message === 'ACCOUNT_LINKING_REQUIRED') { ... }
 
-    const user = req.user;
+      const user = req.user;
 
-    // Generate JWT token (canonical payload only)
-    const token = jwt.sign(
-      {
+      // Generate JWT token (canonical payload only)
+      const token = jwt.sign(
+        {
+          userId: user.id,
+          email: user.email,
+          role: user.role,
+          caFirmId: user.caFirmId || null,
+        },
+        process.env.JWT_SECRET || 'fallback-secret',
+        { expiresIn: '1h' },
+      );
+
+      // Generate refresh token
+      const refreshToken = uuidv4();
+      const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
+
+      // Check concurrent session limit BEFORE creating new session
+      const maxConcurrentSessions = parseInt(process.env.MAX_CONCURRENT_SESSIONS) || 3;
+      await UserSession.enforceConcurrentLimit(user.id, maxConcurrentSessions, user.email);
+
+      // Create session
+      await UserSession.create({
+        userId: user.id,
+        refreshTokenHash,
+        deviceInfo: req.headers['user-agent'] || 'Unknown',
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.headers['user-agent'],
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      });
+
+      // Update last login
+      await user.update({ lastLoginAt: new Date() });
+
+      // Log audit event
+      AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
+
+      enterpriseLogger.info('Google OAuth login successful', {
         userId: user.id,
         email: user.email,
         role: user.role,
-        caFirmId: user.caFirmId || null,
-      },
-      process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '1h' },
-    );
+      });
 
-    // Generate refresh token
-    const refreshToken = uuidv4();
-    const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
+      // Set refresh token in HttpOnly cookie
+      setRefreshTokenCookie(res, refreshToken);
 
-    // Check concurrent session limit BEFORE creating new session
-    const maxConcurrentSessions = parseInt(process.env.MAX_CONCURRENT_SESSIONS) || 3;
-    await UserSession.enforceConcurrentLimit(user.id, maxConcurrentSessions, user.email);
+      // Redirect to frontend with token
+      const frontendUrl = getOAuthFrontendUrl(req);
+      const userData = {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+        status: user.status,
+        authProvider: user.authProvider,
+        hasPassword: !!user.passwordHash,
 
-    // Create session
-    await UserSession.create({
-      userId: user.id,
-      refreshTokenHash,
-      deviceInfo: req.headers['user-agent'] || 'Unknown',
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'],
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    });
+        profile_picture: user.metadata?.profile_picture,
+      };
+      const redirectUrl = `${frontendUrl}/auth/google/success?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(userData))}`;
 
-    // Update last login
-    await user.update({ lastLoginAt: new Date() });
+      // --- START DEBUGGING ---
+      enterpriseLogger.info('Google OAuth redirect URL constructed', {
+        frontendUrl,
+        token: token ? `${token.substring(0, 20)}...` : 'null',
+        refreshToken: refreshToken ? `${refreshToken.substring(0, 20)}...` : 'null',
+        userData,
+        redirectUrl: redirectUrl.substring(0, 200) + '...',
+      });
+      // --- END DEBUGGING ---
 
-    // Log audit event
-    AuditService.logAuthEvent({ actorId: user.id, action: "AUTH_EVENT", metadata: {} }).catch(err => enterpriseLogger.error("Audit failed", { error: err.message }));
+      res.redirect(redirectUrl);
 
-    enterpriseLogger.info('Google OAuth login successful', {
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    } catch (error) {
+      enterpriseLogger.error('Google OAuth callback error', {
+        error: error.message,
+        stack: error.stack,
+      });
 
-    // Set refresh token in HttpOnly cookie
-    setRefreshTokenCookie(res, refreshToken);
-
-    // Redirect to frontend with token
-    const frontendUrl = getOAuthFrontendUrl(req);
-    const userData = {
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      status: user.status,
-      authProvider: user.authProvider,
-      hasPassword: !!user.passwordHash,
-
-      profile_picture: user.metadata?.profile_picture,
-    };
-    const redirectUrl = `${frontendUrl}/auth/google/success?token=${token}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(userData))}`;
-
-    // --- START DEBUGGING ---
-    enterpriseLogger.info('Google OAuth redirect URL constructed', {
-      frontendUrl,
-      token: token ? `${token.substring(0, 20)}...` : 'null',
-      refreshToken: refreshToken ? `${refreshToken.substring(0, 20)}...` : 'null',
-      userData,
-      redirectUrl: redirectUrl.substring(0, 200) + '...',
-    });
-    // --- END DEBUGGING ---
-
-    res.redirect(redirectUrl);
-
-  } catch (error) {
-    enterpriseLogger.error('Google OAuth callback error', {
-      error: error.message,
-      stack: error.stack,
-    });
-
-    const frontendUrl = getOAuthFrontendUrl(req);
-    res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent(error.message)}`);
-  }
-},
+      const frontendUrl = getOAuthFrontendUrl(req);
+      res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent(error.message)}`);
+    }
+  },
 );
 
 // =====================================================

@@ -14,8 +14,32 @@ class EmailService {
 
   initializeTransporter() {
     try {
-      // For development, use a test account or mock
-      if (process.env.NODE_ENV === 'development') {
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      // Check if real SMTP config exists
+      const hasSmtpConfig = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+
+      if (!isProduction && !hasSmtpConfig && !process.env.ETHEREAL_USER) {
+        // Log that we're using a limited mock because Ethereal credentials are not configured
+        enterpriseLogger.warn('Email service: Using placeholder Ethereal credentials. Emails may not be successfully sent to Ethereal. Please set ETHEREAL_USER/PASS or real SMTP credentials for testing.');
+      }
+
+      if (isProduction || hasSmtpConfig) {
+        // Production email service or explicitly configured SMTP
+        this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || 'smtp.gmail.com',
+          port: parseInt(process.env.SMTP_PORT) || 587,
+          secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+          auth: {
+            user: process.env.SMTP_USER || process.env.ETHEREAL_USER,
+            pass: process.env.SMTP_PASS || process.env.ETHEREAL_PASS,
+          },
+          tls: {
+            rejectUnauthorized: isProduction, // Allow self-signed certs in dev
+          }
+        });
+      } else {
+        // Fallback to Ethereal if no SMTP config is provided (standard nodal development)
         this.transporter = nodemailer.createTransport({
           host: 'smtp.ethereal.email',
           port: 587,
@@ -25,21 +49,11 @@ class EmailService {
             pass: process.env.ETHEREAL_PASS || 'ethereal.pass',
           },
         });
-      } else {
-        // Production email service (AWS SES, SendGrid, etc.)
-        this.transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST || 'smtp.gmail.com',
-          port: process.env.SMTP_PORT || 587,
-          secure: process.env.SMTP_SECURE === 'true',
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        });
       }
 
       enterpriseLogger.info('Email service initialized', {
         environment: process.env.NODE_ENV,
+        method: hasSmtpConfig ? 'SMTP' : 'Ethereal',
         hasTransporter: !!this.transporter,
       });
     } catch (error) {
@@ -144,6 +158,75 @@ class EmailService {
       This link will expire in 1 hour for your security.
       
       If you didn't request this password reset, please ignore this email.
+      
+      Best regards,
+      BurnBlack ITR Platform Team
+    `;
+
+    return await this.sendEmail({
+      to: email,
+      subject,
+      html,
+      text,
+    });
+  }
+
+  async sendVerificationEmail(email, verificationUrl) {
+    const subject = 'Verify Your Email - BurnBlack ITR Platform';
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verification</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #1f2937; color: white; padding: 20px; text-align: center; }
+          .content { padding: 30px 20px; background: #f9fafb; }
+          .button { display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+          .footer { padding: 20px; text-align: center; color: #6b7280; font-size: 14px; }
+          .info { background: #eff6ff; border: 1px solid #3b82f6; padding: 15px; border-radius: 6px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>BurnBlack ITR Platform</h1>
+          </div>
+          <div class="content">
+            <h2>Welcome to BurnBlack!</h2>
+            <p>Hello,</p>
+            <p>Thank you for signing up for BurnBlack ITR Platform. Please verify your email address to get started.</p>
+            <div class="info">
+              <strong>Why verify?</strong> Verification helps secure your account and ensures you receive important updates about your tax filings.
+            </div>
+            <p>Click the button below to verify your email:</p>
+            <a href="${verificationUrl}" class="button">Verify Email</a>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #6b7280;">${verificationUrl}</p>
+          </div>
+          <div class="footer">
+            <p>This email was sent from BurnBlack ITR Platform. Please do not reply to this email.</p>
+            <p>&copy; 2024 BurnBlack. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const text = `
+      Verify Your Email - BurnBlack ITR Platform
+      
+      Hello,
+      
+      Thank you for signing up for BurnBlack ITR Platform. Please verify your email address to get started.
+      
+      Click the following link to verify your email:
+      ${verificationUrl}
+      
+      If you didn't sign up for an account, please ignore this email.
       
       Best regards,
       BurnBlack ITR Platform Team
@@ -729,7 +812,7 @@ class EmailService {
   async sendReminderEmail(email, deadline, daysRemaining) {
     const urgencyColor = daysRemaining <= 1 ? '#dc2626' : daysRemaining <= 7 ? '#f59e0b' : '#3b82f6';
     const urgencyText = daysRemaining <= 1 ? 'URGENT' : daysRemaining <= 7 ? 'SOON' : 'UPCOMING';
-    
+
     const subject = `${urgencyText}: ${deadline.title} - ${daysRemaining} Day${daysRemaining !== 1 ? 's' : ''} Remaining - BurnBlack ITR Platform`;
     const html = `
       <!DOCTYPE html>

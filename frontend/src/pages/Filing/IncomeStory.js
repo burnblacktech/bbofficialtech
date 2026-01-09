@@ -179,7 +179,7 @@ const IncomeStory = () => {
                                             )}
                                             <span className="text-[var(--s29-border-light)]">•</span>
                                             <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] italic">
-                                                {section.status === 'NOT_STARTED' ? 'Not started' : section.status === 'IN_PROGRESS' ? 'In progress' : 'Ready'}
+                                                {section.status === 'NOT_STARTED' ? 'Not added yet' : section.status === 'IN_PROGRESS' ? 'We need a few details' : 'Looks good'}
                                             </span>
                                         </div>
                                     </div>

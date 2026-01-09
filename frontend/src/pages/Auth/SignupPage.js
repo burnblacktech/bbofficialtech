@@ -11,10 +11,11 @@ import { AlertCircle, CheckCircle, Mail, Lock, User, CreditCard } from 'lucide-r
 import toast from 'react-hot-toast';
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginWithOAuth } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPasswordRules, setShowPasswordRules] = useState(false);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -130,7 +131,9 @@ const SignupPage = () => {
           });
 
           if (loginResponse.success) {
-            login(loginResponse.user, loginResponse.accessToken, loginResponse.refreshToken);
+            // Use loginWithOAuth to set the authenticated state with the returned tokens
+            await loginWithOAuth(loginResponse.user, loginResponse.accessToken, loginResponse.refreshToken);
+            // navigate is handled by loginWithOAuth, but we want to go to verification
             navigate('/email-verification');
           }
         } catch (loginError) {
@@ -169,7 +172,7 @@ const SignupPage = () => {
             Create your account
           </h2>
           <p className="mt-2 text-center text-body-md text-slate-600">
-            Start filing your ITR in minutes
+            You can explore freely. Filing happens only when you confirm.
           </p>
         </div>
 
@@ -256,9 +259,10 @@ const SignupPage = () => {
                   placeholder="Create a strong password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
+                  onFocus={() => setShowPasswordRules(true)}
                 />
               </div>
-              {formData.password && (
+              {showPasswordRules && formData.password && (
                 <div className="mt-2">
                   <div className="flex space-x-1 mb-1">
                     {[0, 1, 2, 3].map((i) => (
@@ -334,7 +338,7 @@ const SignupPage = () => {
               disabled={isLoading}
               className="w-full py-3 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? 'Continuing...' : 'Continue'}
             </button>
           </div>
 

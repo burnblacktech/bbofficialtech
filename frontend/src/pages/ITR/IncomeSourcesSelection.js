@@ -135,10 +135,10 @@ const IncomeSourcesSelection = () => {
                 {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-3xl md:text-4xl font-serif font-medium text-slate-900 mb-4">
-                        Tell us how you earned income this year
+                        How did you earn income this year?
                     </h1>
                     <p className="text-lg text-slate-600">
-                        Select all that apply. We'll take care of the rest.
+                        Select everything that applies. You can add specific details later.
                     </p>
                 </div>
 

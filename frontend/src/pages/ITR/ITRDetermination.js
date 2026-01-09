@@ -178,6 +178,9 @@ const ITRDetermination = () => {
                     <p className="text-[var(--s29-text-main)] text-[var(--s29-font-size-small)] italic">
                         "{determination.implication}"
                     </p>
+                    <p className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] mt-2 font-medium">
+                        This won’t change unless you change your income details.
+                    </p>
                 </div>
 
                 <button
