@@ -4,7 +4,7 @@
 // =====================================================
 
 const { ITRFiling, User } = require('../../models');
-const auditService = require('../utils/AuditService');
+const auditService = require('../core/AuditService');
 const enterpriseLogger = require('../../utils/logger');
 const { AppError } = require('../../middleware/errorHandler');
 
