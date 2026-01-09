@@ -15,7 +15,8 @@ import {
     PlusCircle,
     Info,
     CheckCircle2,
-    AlertTriangle
+    AlertTriangle,
+    ShieldCheck,
 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -38,9 +39,9 @@ const ITR3ProfitLoss = () => {
             professionalFees: 0,
             marketing: 0,
             travel: 0,
-            other: 0
+            other: 0,
         },
-        userDeclaredNetProfit: 0
+        userDeclaredNetProfit: 0,
     });
 
     useEffect(() => {
@@ -55,7 +56,7 @@ const ITR3ProfitLoss = () => {
                 if (plData) {
                     setForm(prev => ({
                         ...prev,
-                        ...plData
+                        ...plData,
                     }));
                 }
             } catch (err) {
@@ -75,10 +76,8 @@ const ITR3ProfitLoss = () => {
     }, [form]);
 
     const handleSave = async () => {
-        // Validation: PM says "We guide, not invent."
-        // We must ensure the user confirms the profit.
         if (Math.abs(computedNetProfit - Number(form.userDeclaredNetProfit)) > 10) {
-            toast.error("Your declared net profit does not match the computed values. Please reconcile.");
+            toast.error('Your declared net profit does not match the computed values. Please reconcile.');
             return;
         }
 
@@ -98,20 +97,20 @@ const ITR3ProfitLoss = () => {
                         ...filing.jsonPayload.income.business,
                         profitLoss: {
                             ...form,
-                            computedNetProfit
-                        }
-                    }
-                }
+                            computedNetProfit,
+                        },
+                    },
+                },
             };
 
             await axios.put(`${API_BASE_URL}/filings/${filingId}`, {
-                jsonPayload: updatedPayload
+                jsonPayload: updatedPayload,
             }, { headers });
 
-            toast.success("Profit & Loss saved.");
+            toast.success('Profit & Loss saved.');
             navigate(`/filing/${filingId}/income/business/bs`);
         } catch (err) {
-            toast.error("Failed to save P&L.");
+            toast.error('Failed to save P&L.');
         } finally {
             setSaving(false);
         }
@@ -137,7 +136,7 @@ const ITR3ProfitLoss = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden mb-8">
                     {/* Status Bar */}
                     <div className="bg-slate-900 p-8 text-white flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -205,7 +204,7 @@ const ITR3ProfitLoss = () => {
                                             value={form.expenses[key]}
                                             onChange={(e) => setForm({
                                                 ...form,
-                                                expenses: { ...form.expenses, [key]: e.target.value }
+                                                expenses: { ...form.expenses, [key]: e.target.value },
                                             })}
                                             className="w-full px-5 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary-50 transition-all font-mono"
                                         />
@@ -240,7 +239,6 @@ const ITR3ProfitLoss = () => {
                                 />
                             </div>
                         </div>
-
                         {Math.abs(computedNetProfit - Number(form.userDeclaredNetProfit)) > 10 && (
                             <div className="mt-6 flex items-center gap-3 text-red-600 bg-red-50 p-4 rounded-xl text-sm border border-red-100">
                                 <AlertTriangle className="w-5 h-5" />
@@ -248,34 +246,34 @@ const ITR3ProfitLoss = () => {
                             </div>
                         )}
                     </div>
+                </div>
 
-                    {/* Professional Support Guardrail */}
-                    <div className="mx-8 mb-8 p-8 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 text-center">
-                        <p className="text-sm text-slate-500 mb-4 font-medium">Overwhelmed by professional schedules?</p>
-                        <button
-                            onClick={() => navigate(`/ca/marketplace`)}
-                            className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm bg-white px-6 py-3 rounded-xl border border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
-                        >
-                            <TrendingUp className="w-4 h-4" />
-                            Pause & Export to a CA
-                        </button>
-                    </div>
+                {/* Professional Support Guardrail */}
+                <div className="mx-auto max-w-2xl mb-8 p-8 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 text-center">
+                    <p className="text-sm text-slate-500 mb-4 font-medium">Overwhelmed by professional schedules?</p>
+                    <button
+                        onClick={() => navigate('/ca/marketplace')}
+                        className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm bg-white px-6 py-3 rounded-xl border border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
+                    >
+                        <TrendingUp className="w-4 h-4" />
+                        Pause & Export to a CA
+                    </button>
+                </div>
 
-                    {/* Action Bar */}
-                    <div className="px-8 py-8 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-400">
-                            <Info className="w-4 h-4" />
-                            <span className="text-xs font-medium uppercase tracking-widest">Section Legally Required</span>
-                        </div>
-                        <button
-                            onClick={handleSave}
-                            disabled={saving}
-                            className={`px-10 py-5 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all ${Math.abs(computedNetProfit - Number(form.userDeclaredNetProfit)) < 1 ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
-                        >
-                            {saving ? 'Saving...' : 'Confirm & Proceed to Balance Sheet'}
-                            <CheckCircle2 className="w-5 h-5" />
-                        </button>
+                {/* Action Bar */}
+                <div className="px-8 py-8 bg-slate-50 border-t border-slate-100 flex items-center justify-between rounded-2xl shadow-sm">
+                    <div className="flex items-center gap-2 text-slate-400">
+                        <Info className="w-4 h-4" />
+                        <span className="text-xs font-medium uppercase tracking-widest">Section Legally Required</span>
                     </div>
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className={`px-10 py-5 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all ${Math.abs(computedNetProfit - Number(form.userDeclaredNetProfit)) < 1 ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                    >
+                        {saving ? 'Saving...' : 'Confirm & Proceed to Balance Sheet'}
+                        <CheckCircle2 className="w-5 h-5" />
+                    </button>
                 </div>
             </div>
         </div>

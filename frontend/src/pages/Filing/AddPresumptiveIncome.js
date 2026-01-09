@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Shield, ArrowLeft, Save, Info, Calculator, Sparkles } from 'lucide-react';
+import { Shield, ArrowLeft, Save, Info, Calculator, Sparkles, Check } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
@@ -85,11 +85,13 @@ const AddPresumptiveIncome = () => {
 
         // Validation against minimums
         if (type === 'professional' && income < receipts * 0.50) {
+            // eslint-disable-next-line no-alert
             if (!window.confirm('Your declared income is less than 50% of receipts. This may require an audit. Proceed anyway?')) {
                 return;
             }
         }
         if (type === 'business' && income < receipts * 0.06) {
+            // eslint-disable-next-line no-alert
             if (!window.confirm('Your declared income is less than 6% of receipts. This may require an audit. Proceed anyway?')) {
                 return;
             }
@@ -140,8 +142,8 @@ const AddPresumptiveIncome = () => {
         <div className="min-h-screen bg-slate-50 py-12 px-6">
             <div className="max-w-2xl mx-auto">
                 <button
-                    onClick={() => navigate(`/filing/${filingId}/income/presumptive`)}
-                    className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-8 transition-colors"
+                    onClick={() => navigate('/ca/marketplace')}
+                    className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm bg-white px-6 py-3 rounded-xl border border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Back

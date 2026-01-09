@@ -20,8 +20,8 @@ class ITR3ScheduleBuilders {
    */
   buildScheduleBP(sectionSnapshot, computationResult = {}) {
     const income = sectionSnapshot.income || {};
-    const businessIncome = income.businessIncome || {};
-    const professionalIncome = income.professionalIncome || {};
+    const businessIncome = income.business || {};
+    const professionalIncome = income.professional || {};
 
     const businesses = [];
     const professions = [];
@@ -33,9 +33,9 @@ class ITR3ScheduleBuilders {
       for (const business of businessIncome.businesses) {
         const pnl = business.pnl || {};
         const netProfit = parseFloat(pnl.netProfit || 0);
-        
+
         // If netProfit not provided, calculate it
-        const calculatedNetProfit = netProfit !== 0 ? netProfit : 
+        const calculatedNetProfit = netProfit !== 0 ? netProfit :
           BusinessIncomeCalculator.calculateNetBusinessIncome(business);
 
         totalBusinessIncome += calculatedNetProfit;
@@ -57,7 +57,7 @@ class ITR3ScheduleBuilders {
       for (const profession of professionalIncome.professions) {
         const pnl = profession.pnl || {};
         const netIncome = parseFloat(pnl.netIncome || pnl.netProfit || 0);
-        
+
         // If netIncome not provided, calculate it
         const calculatedNetIncome = netIncome !== 0 ? netIncome :
           ProfessionalIncomeCalculator.calculateNetProfessionalIncome(profession);
@@ -90,8 +90,8 @@ class ITR3ScheduleBuilders {
    */
   buildProfitAndLoss(sectionSnapshot, computationResult = {}) {
     const income = sectionSnapshot.income || {};
-    const businessIncome = income.businessIncome || {};
-    const professionalIncome = income.professionalIncome || {};
+    const businessIncome = income.business || {};
+    const professionalIncome = income.professional || {};
 
     // Aggregate P&L from all businesses and professions
     let totalTurnover = 0;
@@ -175,7 +175,9 @@ class ITR3ScheduleBuilders {
    * @returns {object} PartA_BS structure
    */
   buildBalanceSheet(sectionSnapshot, computationResult = {}) {
-    const balanceSheet = sectionSnapshot.balanceSheet || sectionSnapshot.balance_sheet || {};
+    const income = sectionSnapshot.income || {};
+    const business = income.business || {};
+    const balanceSheet = business.balanceSheet || {};
     const assets = balanceSheet.assets || {};
     const liabilities = balanceSheet.liabilities || {};
 

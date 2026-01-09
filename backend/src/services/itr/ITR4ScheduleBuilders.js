@@ -14,9 +14,10 @@ class ITR4ScheduleBuilders {
    */
   buildScheduleBP_Presumptive(sectionSnapshot, computationResult = {}) {
     const income = sectionSnapshot.income || {};
-    const presumptiveBusiness = income.presumptiveBusiness || income.presumptive_business || {};
-    const presumptiveProfessional = income.presumptiveProfessional || income.presumptive_professional || {};
-    const goodsCarriage = income.goodsCarriage || sectionSnapshot.goodsCarriage || {};
+    const presumptive = income.presumptive || {};
+    const presumptiveBusiness = presumptive.business || {};
+    const presumptiveProfessional = presumptive.professional || {};
+    const goodsCarriage = presumptive.goodsCarriage || {};
 
     // Section 44AD: Business Presumptive Income
     let natOfBus44AD = 'NO';

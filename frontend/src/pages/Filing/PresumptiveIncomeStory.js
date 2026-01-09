@@ -3,7 +3,7 @@
 // Overview of Business/Professional Income (44AD/44ADA)
 // =====================================================
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Building2, Briefcase, Plus, Edit, Trash2, ArrowRight, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
@@ -37,6 +37,7 @@ const PresumptiveIncomeStory = () => {
     }, [filingId]);
 
     const handleDelete = async (sectionKey) => {
+        // eslint-disable-next-line no-alert
         if (!window.confirm('Are you sure you want to remove this income?')) return;
 
         try {

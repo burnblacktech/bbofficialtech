@@ -5,7 +5,7 @@
 
 const enterpriseLogger = require('../../utils/logger');
 const { AppError } = require('../../middleware/errorHandler');
-const { query: dbQuery } = require('../../utils/dbQuery');
+const { ITRFiling, RefundTracking } = require('../../models');
 const eriIntegrationService = require('../eri/ERIIntegrationService');
 
 class RefundTrackingService {
@@ -16,66 +16,44 @@ class RefundTrackingService {
    */
   async getRefundStatus(filingId) {
     try {
-      const query = `
-        SELECT 
-          rt.*,
-          f.ack_number,
-          f.assessment_year,
-          f.refund_amount as expected_amount
-        FROM refund_tracking rt
-        RIGHT JOIN itr_filings f ON rt.filing_id = f.id
-        WHERE f.id = $1
-        ORDER BY rt.status_date DESC
-        LIMIT 1
-      `;
+      const refund = await RefundTracking.findOne({
+        where: { filingId },
+        include: [{
+          model: ITRFiling,
+          as: 'filing',
+          attributes: ['ackNumber', 'assessmentYear', 'refundAmount']
+        }],
+        order: [['statusDate', 'DESC']]
+      });
 
-      const result = await dbQuery(query, [filingId]);
-
-      if (result.rows.length === 0) {
-        throw new AppError('Filing not found', 404);
-      }
-
-      const row = result.rows[0];
-
-      // If no refund tracking record exists, create one
-      if (!row.id) {
-        return await this.initializeRefundTracking(filingId, row.expected_amount);
+      if (!refund) {
+        // Check if filing exists to initialize tracking
+        const filing = await ITRFiling.findByPk(filingId);
+        if (!filing) {
+          throw new AppError('Filing not found', 404);
+        }
+        return await this.initializeRefundTracking(filingId, filing.refundAmount);
       }
 
       return {
-        id: row.id,
-        filingId: row.filing_id,
-        expectedAmount: parseFloat(row.expected_amount || 0),
-        status: row.status,
-        statusDate: row.status_date,
-        bankAccount: row.bank_account ? JSON.parse(row.bank_account) : null,
-        refundReference: row.refund_reference,
-        interestAmount: parseFloat(row.interest_amount || 0),
-        timeline: row.timeline ? JSON.parse(row.timeline) : [],
-        ackNumber: row.ack_number,
-        assessmentYear: row.assessment_year,
+        id: refund.id,
+        filingId: refund.filingId,
+        expectedAmount: parseFloat(refund.expectedAmount || 0),
+        status: refund.status,
+        statusDate: refund.statusDate,
+        bankAccount: refund.bankAccount,
+        refundReference: refund.refundReference,
+        interestAmount: parseFloat(refund.interestAmount || 0),
+        timeline: refund.timeline || [],
+        ackNumber: refund.filing?.ackNumber,
+        assessmentYear: refund.filing?.assessmentYear,
       };
     } catch (error) {
-      // Handle case where refund_tracking table doesn't exist yet
-      if (error.message && (
-        error.message.includes('does not exist') ||
-        error.message.includes('relation') ||
-        error.message.includes('refund_tracking')
-      )) {
-        enterpriseLogger.warn('Refund tracking table does not exist yet, initializing tracking', {
-          filingId,
-          error: error.message,
-        });
-        // Try to initialize refund tracking (will fail if table doesn't exist, but that's okay)
-        // The table should be created via Sequelize sync
-        throw new AppError('Refund tracking table not initialized. Please sync database models.', 503);
-      }
-
       enterpriseLogger.error('Failed to get refund status', {
         filingId,
         error: error.message,
       });
-      throw new AppError(`Failed to get refund status: ${error.message}`, 500);
+      throw error instanceof AppError ? error : new AppError(`Failed to get refund status: ${error.message}`, 500);
     }
   }
 
@@ -87,33 +65,17 @@ class RefundTrackingService {
    */
   async initializeRefundTracking(filingId, expectedAmount) {
     try {
-      // Get filing details
-      const filingQuery = `
-        SELECT id, ack_number, assessment_year, json_payload
-        FROM itr_filings
-        WHERE id = $1
-      `;
-      const filing = await dbQuery(filingQuery, [filingId]);
+      const filing = await ITRFiling.findByPk(filingId);
 
-      if (filing.rows.length === 0) {
+      if (!filing) {
         throw new AppError('Filing not found', 404);
       }
 
-      const formData = JSON.parse(filing.rows[0].json_payload || '{}');
-      const bankAccount = formData.bank_details?.accounts?.find(
-        acc => acc.is_refund_account || acc.isRefundAccount
-      ) || formData.bankDetails?.accounts?.find(
-        acc => acc.is_refund_account || acc.isRefundAccount
+      // S28: Derivce bank account from jsonPayload (SSOT)
+      const formData = filing.jsonPayload || {};
+      const bankAccount = (formData.bankDetails?.accounts || []).find(
+        acc => acc.isRefundAccount || acc.is_refund_account
       );
-
-      const insertQuery = `
-        INSERT INTO refund_tracking (
-          filing_id, expected_amount, status, status_date,
-          bank_account, timeline
-        )
-        VALUES ($1, $2, 'processing', NOW(), $3, $4)
-        RETURNING *
-      `;
 
       const timeline = [{
         status: 'processing',
@@ -121,32 +83,34 @@ class RefundTrackingService {
         message: 'Refund processing initiated',
       }];
 
-      const result = await dbQuery(insertQuery, [
+      const refund = await RefundTracking.create({
         filingId,
-        expectedAmount || 0,
-        bankAccount ? JSON.stringify(bankAccount) : null,
-        JSON.stringify(timeline),
-      ]);
+        expectedAmount: expectedAmount || 0,
+        status: 'processing',
+        statusDate: new Date(),
+        bankAccount: bankAccount || null,
+        timeline,
+      });
 
       return {
-        id: result.rows[0].id,
+        id: refund.id,
         filingId,
         expectedAmount: parseFloat(expectedAmount || 0),
         status: 'processing',
-        statusDate: result.rows[0].status_date,
+        statusDate: refund.statusDate,
         bankAccount: bankAccount || null,
         refundReference: null,
         interestAmount: 0,
         timeline,
-        ackNumber: filing.rows[0].ack_number,
-        assessmentYear: filing.rows[0].assessment_year,
+        ackNumber: filing.ackNumber,
+        assessmentYear: filing.assessmentYear,
       };
     } catch (error) {
       enterpriseLogger.error('Failed to initialize refund tracking', {
         filingId,
         error: error.message,
       });
-      throw error;
+      throw error instanceof AppError ? error : new AppError(`Failed to initialize refund tracking: ${error.message}`, 500);
     }
   }
 
@@ -158,60 +122,39 @@ class RefundTrackingService {
    */
   async getRefundHistory(userId, assessmentYear = null) {
     try {
-      let query = `
-        SELECT 
-          rt.*,
-          f.ack_number,
-          f.assessment_year,
-          f.itr_type,
-          f.submitted_at
-        FROM refund_tracking rt
-        JOIN itr_filings f ON rt.filing_id = f.id
-        WHERE f.user_id = $1
-      `;
-      const params = [userId];
-
+      const where = {};
       if (assessmentYear) {
-        query += ' AND f.assessment_year = $2';
-        params.push(assessmentYear);
+        where.assessmentYear = assessmentYear;
       }
 
-      query += ' ORDER BY f.submitted_at DESC';
+      // S28: Use model associations instead of raw SQL joins
+      const filings = await ITRFiling.findAll({
+        where: { ...where, createdBy: userId },
+        include: [{
+          model: RefundTracking,
+          as: 'refundTracking'
+        }],
+        order: [['submittedAt', 'DESC']]
+      });
 
-      const result = await dbQuery(query, params);
-
-      return result.rows.map(row => ({
-        id: row.id,
-        filingId: row.filing_id,
-        expectedAmount: parseFloat(row.expected_amount || 0),
-        status: row.status,
-        statusDate: row.status_date,
-        bankAccount: row.bank_account ? JSON.parse(row.bank_account) : null,
-        refundReference: row.refund_reference,
-        interestAmount: parseFloat(row.interest_amount || 0),
-        timeline: row.timeline ? JSON.parse(row.timeline) : [],
-        ackNumber: row.ack_number,
-        assessmentYear: row.assessment_year,
-        itrType: row.itr_type,
-        submittedAt: row.submitted_at,
-      }));
+      return filings
+        .filter(f => f.refundTracking)
+        .map(f => ({
+          id: f.refundTracking.id,
+          filingId: f.id,
+          expectedAmount: parseFloat(f.refundTracking.expectedAmount || 0),
+          status: f.refundTracking.status,
+          statusDate: f.refundTracking.statusDate,
+          bankAccount: f.refundTracking.bankAccount,
+          refundReference: f.refundTracking.refundReference,
+          interestAmount: parseFloat(f.refundTracking.interestAmount || 0),
+          timeline: f.refundTracking.timeline || [],
+          ackNumber: f.ackNumber,
+          assessmentYear: f.assessmentYear,
+          itrType: f.itrType,
+          submittedAt: f.submittedAt,
+        }));
     } catch (error) {
-      // Handle case where refund_tracking table doesn't exist yet
-      if (error.message && (
-        error.message.includes('does not exist') ||
-        error.message.includes('relation') ||
-        error.message.includes('refund_tracking')
-      )) {
-        // Only log as warning, not error - this is expected if table hasn't been created yet
-        enterpriseLogger.warn('Refund tracking table does not exist yet, returning empty array', {
-          userId,
-          assessmentYear,
-          error: error.message,
-        });
-        return [];
-      }
-
-      // For other errors, log and throw
       enterpriseLogger.error('Failed to get refund history', {
         userId,
         assessmentYear,
@@ -235,11 +178,12 @@ class RefundTrackingService {
         throw new AppError(`Invalid refund status: ${status}`, 400);
       }
 
-      // Get current refund tracking
-      const current = await this.getRefundStatus(filingId);
-      const timeline = current.timeline || [];
+      const refund = await RefundTracking.findOne({ where: { filingId } });
+      if (!refund) {
+        throw new AppError('Refund tracking not found', 404);
+      }
 
-      // Add new timeline entry
+      const timeline = refund.timeline || [];
       timeline.push({
         status,
         date: new Date().toISOString(),
@@ -247,34 +191,12 @@ class RefundTrackingService {
         ...additionalData,
       });
 
-      const updateQuery = `
-        UPDATE refund_tracking
-        SET 
-          status = $1,
-          status_date = NOW(),
-          refund_reference = COALESCE($2, refund_reference),
-          interest_amount = COALESCE($3, interest_amount),
-          timeline = $4
-        WHERE filing_id = $5
-        RETURNING *
-      `;
-
-      const result = await dbQuery(updateQuery, [
+      await refund.update({
         status,
-        additionalData.refundReference || null,
-        additionalData.interestAmount || null,
-        JSON.stringify(timeline),
-        filingId,
-      ]);
-
-      if (result.rows.length === 0) {
-        throw new AppError('Refund tracking not found', 404);
-      }
-
-      enterpriseLogger.info('Refund status updated', {
-        filingId,
-        oldStatus: current.status,
-        newStatus: status,
+        statusDate: new Date(),
+        refundReference: additionalData.refundReference || refund.refundReference,
+        interestAmount: additionalData.interestAmount || refund.interestAmount,
+        timeline
       });
 
       return await this.getRefundStatus(filingId);
@@ -284,7 +206,7 @@ class RefundTrackingService {
         status,
         error: error.message,
       });
-      throw new AppError(`Failed to update refund status: ${error.message}`, 500);
+      throw error instanceof AppError ? error : new AppError(`Failed to update refund status: ${error.message}`, 500);
     }
   }
 
@@ -296,19 +218,12 @@ class RefundTrackingService {
    */
   async updateRefundBankAccount(filingId, bankAccount) {
     try {
-      const updateQuery = `
-        UPDATE refund_tracking
-        SET bank_account = $1
-        WHERE filing_id = $2
-        RETURNING *
-      `;
+      const [updatedCount] = await RefundTracking.update(
+        { bankAccount },
+        { where: { filingId } }
+      );
 
-      const result = await dbQuery(updateQuery, [
-        JSON.stringify(bankAccount),
-        filingId,
-      ]);
-
-      if (result.rows.length === 0) {
+      if (updatedCount === 0) {
         throw new AppError('Refund tracking not found', 404);
       }
 
@@ -323,7 +238,7 @@ class RefundTrackingService {
         filingId,
         error: error.message,
       });
-      throw new AppError(`Failed to update refund bank account: ${error.message}`, 500);
+      throw error instanceof AppError ? error : new AppError(`Failed to update refund bank account: ${error.message}`, 500);
     }
   }
 
@@ -336,17 +251,12 @@ class RefundTrackingService {
     try {
       enterpriseLogger.info('Checking refund status with ITD', { ackNumber });
 
-      // Get filing by ack number
-      const filingQuery = `
-        SELECT id FROM itr_filings WHERE ack_number = $1
-      `;
-      const filing = await dbQuery(filingQuery, [ackNumber]);
-
-      if (filing.rows.length === 0) {
+      const filing = await ITRFiling.findOne({ where: { ackNumber } });
+      if (!filing) {
         throw new AppError('Filing not found', 404);
       }
 
-      const filingId = filing.rows[0].id;
+      const filingId = filing.id;
 
       // In live mode, fetch from ERI
       // For now, return mock data
@@ -357,7 +267,6 @@ class RefundTrackingService {
         source: 'MOCK',
       };
 
-      // Update refund tracking if status changed
       const currentStatus = await this.getRefundStatus(filingId);
       if (mockRefundStatus.status !== currentStatus.status) {
         await this.updateRefundStatus(filingId, mockRefundStatus.status, {
@@ -371,7 +280,7 @@ class RefundTrackingService {
         ackNumber,
         error: error.message,
       });
-      throw new AppError(`Failed to check refund with ITD: ${error.message}`, 500);
+      throw error instanceof AppError ? error : new AppError(`Failed to check refund with ITD: ${error.message}`, 500);
     }
   }
 }

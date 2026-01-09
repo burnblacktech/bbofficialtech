@@ -13,9 +13,8 @@ import {
     Layers,
     Warehouse,
     Coins,
-    CheckCircle2,
-    AlertCircle,
-    Info
+    ShieldCheck,
+    Info,
 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -35,7 +34,7 @@ const ITR3BalanceSheet = () => {
             securedLoans: 0,
             unsecuredLoans: 0,
             sundryCreditors: 0,
-            otherLiabilities: 0
+            otherLiabilities: 0,
         },
         assets: {
             fixedAssets: 0,
@@ -43,8 +42,8 @@ const ITR3BalanceSheet = () => {
             sundryDebtors: 0,
             cashInHand: 0,
             bankBalances: 0,
-            otherAssets: 0
-        }
+            otherAssets: 0,
+        },
     });
 
     useEffect(() => {
@@ -59,7 +58,7 @@ const ITR3BalanceSheet = () => {
                 if (bsData) {
                     setForm(prev => ({
                         ...prev,
-                        ...bsData
+                        ...bsData,
                     }));
                 }
             } catch (err) {
@@ -85,7 +84,7 @@ const ITR3BalanceSheet = () => {
 
     const handleSave = async () => {
         if (!isBalanced) {
-            toast.error("Balance Sheet does not match! Assets must equal Liabilities + Capital.");
+            toast.error('Balance Sheet does not match! Assets must equal Liabilities + Capital.');
             return;
         }
 
@@ -106,20 +105,20 @@ const ITR3BalanceSheet = () => {
                         balanceSheet: {
                             ...form,
                             totalAssets,
-                            totalLiabilities
-                        }
-                    }
-                }
+                            totalLiabilities,
+                        },
+                    },
+                },
             };
 
             await axios.put(`${API_BASE_URL}/filings/${filingId}`, {
-                jsonPayload: updatedPayload
+                jsonPayload: updatedPayload,
             }, { headers });
 
-            toast.success("Balance Sheet saved.");
+            toast.success('Balance Sheet saved.');
             navigate(`/filing/${filingId}/income/business/al`);
         } catch (err) {
-            toast.error("Failed to save Balance Sheet.");
+            toast.error('Failed to save Balance Sheet.');
         } finally {
             setSaving(false);
         }
@@ -200,7 +199,7 @@ const ITR3BalanceSheet = () => {
                                                 value={form.liabilities[key]}
                                                 onChange={(e) => setForm({
                                                     ...form,
-                                                    liabilities: { ...form.liabilities, [key]: e.target.value }
+                                                    liabilities: { ...form.liabilities, [key]: e.target.value },
                                                 })}
                                                 className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary-50 transition-all font-mono"
                                             />
@@ -229,7 +228,7 @@ const ITR3BalanceSheet = () => {
                                                 value={form.assets[key]}
                                                 onChange={(e) => setForm({
                                                     ...form,
-                                                    assets: { ...form.assets, [key]: e.target.value }
+                                                    assets: { ...form.assets, [key]: e.target.value },
                                                 })}
                                                 className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-primary-50 transition-all font-mono"
                                             />
@@ -244,7 +243,7 @@ const ITR3BalanceSheet = () => {
                     <div className="mx-10 mb-10 p-8 rounded-[2rem] flex items-center justify-between border-2 transition-all shadow-inner overflow-hidden relative">
                         {isBalanced ? (
                             <div className="flex items-center gap-4 text-emerald-700">
-                                <CheckCircle2 className="w-8 h-8" />
+                                <ShieldCheck className="w-8 h-8" />
                                 <div>
                                     <p className="text-lg font-bold">Equation Balanced</p>
                                     <p className="text-sm opacity-80">Liabilities + Capital exactly match Assets. Legal integrity maintained.</p>
@@ -253,7 +252,7 @@ const ITR3BalanceSheet = () => {
                             </div>
                         ) : (
                             <div className="flex items-center gap-4 text-red-700">
-                                <AlertCircle className="w-8 h-8" />
+                                <Info className="w-8 h-8" />
                                 <div>
                                     <p className="text-lg font-bold">Unbalanced Balance Sheet</p>
                                     <p className="text-sm opacity-80">Difference: ₹{Math.abs(totalLiabilities - totalAssets).toLocaleString('en-IN')}</p>
@@ -267,7 +266,7 @@ const ITR3BalanceSheet = () => {
                     <div className="mx-10 mb-10 p-8 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 text-center">
                         <p className="text-sm text-slate-500 mb-4 font-medium">Overwhelmed by professional schedules?</p>
                         <button
-                            onClick={() => navigate(`/ca/marketplace`)}
+                            onClick={() => navigate('/ca/marketplace')}
                             className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm bg-white px-6 py-3 rounded-xl border border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
                         >
                             <Library className="w-4 h-4" />

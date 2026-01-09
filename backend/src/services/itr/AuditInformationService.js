@@ -39,9 +39,11 @@ class AuditInformationService {
       };
 
       // Check audit applicability
+      const businessIncome = payload.income?.business;
+      const professionalIncome = payload.income?.professional;
       const applicability = this.checkAuditApplicability(
-        payload.income?.business,
-        payload.income?.professional
+        businessIncome,
+        professionalIncome
       );
 
       return {
@@ -71,8 +73,9 @@ class AuditInformationService {
         throw new Error('Filing not found');
       }
 
-      const jsonPayload = filing.jsonPayload || {};
-      jsonPayload.auditInfo = auditData;
+      // Sync to jsonPayload (SSOT)
+      if (!filing.jsonPayload) filing.jsonPayload = {};
+      filing.jsonPayload.auditInfo = auditData;
 
       // Validate audit information if applicable
       if (auditData.isAuditApplicable) {
@@ -82,8 +85,7 @@ class AuditInformationService {
         }
       }
 
-      // Update filing via model
-      filing.jsonPayload = jsonPayload;
+      // Explicitly mark jsonPayload as changed for Postgres JSONB update
       filing.changed('jsonPayload', true);
       await filing.save();
 

@@ -1,16 +1,16 @@
 // =====================================================
-// TAX BREAKDOWN - Screen 3 (CORRECTED)
+// TAX BREAKDOWN - Screen 3 (S29 Hardened)
 // "How Your Tax Was Calculated"
-// Two-column comparison: Old vs New Regime
-// Pure projection from /api/filings/:filingId/tax-breakdown
-// and /api/regime-comparison/:filingId
 // =====================================================
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calculator, Info, CheckCircle } from 'lucide-react';
+import { Calculator, Info, CheckCircle2, ChevronRight, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import SectionCard from '../../components/common/SectionCard';
+import ReassuranceBanner from '../../components/common/ReassuranceBanner';
+import InlineHint from '../../components/common/InlineHint';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 
 const API_BASE_URL = getApiBaseUrl();
@@ -18,18 +18,19 @@ const API_BASE_URL = getApiBaseUrl();
 const TaxBreakdown = () => {
     const { filingId } = useParams();
     const navigate = useNavigate();
-    const [comparison, setComparison] = useState(null);
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchComparison = async () => {
+        const fetchTaxBreakdown = async () => {
             try {
                 const token = localStorage.getItem('accessToken');
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-                const response = await axios.get(`${API_BASE_URL}/regime-comparison/${filingId}`, { headers });
-                setComparison(response.data.data);
+                // Use the enriched /tax-breakdown endpoint (includes regime comparison + net liability)
+                const response = await axios.get(`${API_BASE_URL}/filings/${filingId}/tax-breakdown`, { headers });
+                setData(response.data.data);
             } catch (err) {
                 const errorMsg = err.response?.data?.error || 'Failed to load tax breakdown';
                 setError(errorMsg);
@@ -39,188 +40,161 @@ const TaxBreakdown = () => {
             }
         };
 
-        fetchComparison();
+        fetchTaxBreakdown();
     }, [filingId]);
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div className="text-slate-600">Calculating your tax...</div>
+            <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-12 h-12 animate-spin text-[var(--s29-primary)]" />
+                <p className="text-[var(--s29-text-muted)] font-medium">Applying tax laws and comparing regimes...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div className="text-red-600">{error}</div>
+            <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6">
+                <SectionCard title="Something went wrong">
+                    <p className="text-red-600 mb-6">{error}</p>
+                    <button
+                        onClick={() => navigate(`/filing/${filingId}/income-story`)}
+                        className="w-full py-3 bg-slate-100 text-slate-700 rounded-lg font-medium"
+                    >
+                        Go back to Income Story
+                    </button>
+                </SectionCard>
             </div>
         );
     }
 
-    const { oldRegime, newRegime, comparison: comparisonData } = comparison;
-    const selectedRegime = comparisonData.recommendedRegime;
+    const { selectedRegime, recommendedRegime, savings, oldRegime, newRegime, steps } = data;
+    const { finalLiability } = steps;
+    const isZeroTax = finalLiability.totalTax === 0;
 
     return (
-        <div className="min-h-screen bg-slate-50 py-8 px-4">
-            <div className="max-w-6xl mx-auto">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-serif font-medium text-slate-900 mb-2">
-                        How Your Tax Was Calculated
+        <div className="min-h-screen bg-[var(--s29-bg-page)] py-12 px-6">
+            <div className="max-w-2xl mx-auto">
+                <header className="mb-10 text-center">
+                    <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
+                        Step 4 of 5
+                    </span>
+                    <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mt-2">
+                        Tax Calculation
                     </h1>
-                    <p className="text-slate-600">
-                        Based on what you declared, this is how tax law applies.
-                    </p>
+                </header>
+
+                {/* Hero Celebration / Summary */}
+                <div className="bg-white border border-[var(--s29-border-light)] rounded-[var(--s29-radius-large)] p-8 shadow-sm mb-8 text-center overflow-hidden relative">
+                    {isZeroTax && (
+                        <div className="absolute top-0 left-0 w-full h-1 bg-[var(--s29-success)]" />
+                    )}
+                    <h2 className="text-[var(--s29-text-muted)] font-medium mb-1 uppercase tracking-wide text-xs">
+                        {finalLiability.refundOrPayable > 0 ? 'Estimated Tax Refund' : 'Total Tax Payable'}
+                    </h2>
+                    <div className={`text-4xl md:text-5xl font-bold mb-4 ${isZeroTax || finalLiability.refundOrPayable > 0 ? 'text-[var(--s29-success)]' : 'text-[var(--s29-text-main)]'}`}>
+                        ₹{Math.abs(finalLiability.refundOrPayable).toLocaleString('en-IN')}
+                    </div>
+                    {isZeroTax ? (
+                        <p className="text-[var(--s29-text-muted)] max-w-sm mx-auto">
+                            Great news! Your income falls within the tax-free limit. No tax is payable for this year.
+                        </p>
+                    ) : (
+                        <p className="text-[var(--s29-text-muted)] max-w-sm mx-auto">
+                            Calculated using the <span className="font-semibold text-[var(--s29-text-main)]">{selectedRegime === 'new' ? 'New (Simplified)' : 'Old'} Regime</span> to minimize your liability.
+                        </p>
+                    )}
                 </div>
 
-                {/* Two-Column Comparison */}
-                <div className="grid grid-cols-2 gap-6 mb-6">
-                    {/* Old Regime */}
-                    <div className={`bg-white rounded-xl shadow-sm border-2 p-6 ${selectedRegime === 'old' ? 'border-primary-500' : 'border-slate-200'
-                        }`}>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold text-slate-900">Old Regime</h2>
-                            {selectedRegime === 'old' && (
-                                <CheckCircle className="w-5 h-5 text-primary-600" />
-                            )}
+                {/* Breakdown - Cards within Cards */}
+                <SectionCard title="Taxable Income Calculation">
+                    <div className="space-y-4">
+                        <div className="bg-[var(--s29-bg-page)] p-4 rounded-[var(--s29-radius-main)] border border-[var(--s29-border-light)]">
+                            <div className="flex justify-between items-center mb-1">
+                                <span className="text-[var(--s29-text-muted)] text-sm font-medium">Gross Total Income</span>
+                                <span className="font-bold text-[var(--s29-text-main)]">₹{steps.taxableIncome.grossTotalIncome.toLocaleString('en-IN')}</span>
+                            </div>
+                            <p className="text-[var(--s29-text-muted)] text-xs italic">Sum of all your income sources</p>
                         </div>
 
-                        <div className="space-y-3 text-sm">
-                            <div className="flex justify-between py-2 border-b border-slate-100">
-                                <span className="text-slate-600">Total income you're taxed on</span>
-                                <span className="font-medium text-slate-900">
-                                    ₹{oldRegime.taxableIncome.toLocaleString('en-IN')}
-                                </span>
-                            </div>
-                            <div className="flex justify-between py-2 border-b border-slate-100">
-                                <span className="text-slate-600">Income tax</span>
-                                <span className="font-medium text-slate-900">
-                                    ₹{oldRegime.taxOnIncome.toLocaleString('en-IN')}
-                                </span>
-                            </div>
-                            {oldRegime.rebate > 0 && (
-                                <div className="flex justify-between py-2 border-b border-slate-100">
-                                    <span className="text-slate-600">Tax discount</span>
-                                    <span className="font-medium text-green-600">
-                                        - ₹{oldRegime.rebate.toLocaleString('en-IN')}
-                                    </span>
+                        <div className="flex justify-center my-2">
+                            <div className="h-4 border-l-2 border-dashed border-[var(--s29-border-light)]" />
+                        </div>
+
+                        <div className="bg-white p-4 rounded-[var(--s29-radius-main)] border border-[var(--s29-border-light)] relative">
+                            <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-[var(--s29-border-light)] rounded-full flex items-center justify-center text-[var(--s29-text-muted)] text-[10px] font-bold">−</div>
+                            <div className="flex justify-between items-center mb-1">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[var(--s29-text-muted)] text-sm font-medium">Total Deductions</span>
+                                    <div className="group relative">
+                                        <Info className="w-3.5 h-3.5 text-[var(--s29-text-muted)] cursor-help" />
+                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-800 text-white text-[10px] rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                            Includes 80C, 80D, and other tax-saving investments that reduce your taxable income.
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                            {oldRegime.surcharge > 0 && (
-                                <div className="flex justify-between py-2 border-b border-slate-100">
-                                    <span className="text-slate-600">Additional tax for high income</span>
-                                    <span className="font-medium text-slate-900">
-                                        ₹{oldRegime.surcharge.toLocaleString('en-IN')}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex justify-between py-2 border-b border-slate-100">
-                                <span className="text-slate-600">Health & education fee</span>
-                                <span className="font-medium text-slate-900">
-                                    ₹{oldRegime.cess.toLocaleString('en-IN')}
-                                </span>
+                                <span className="font-bold text-[var(--s29-success)]">- ₹{steps.taxableIncome.deductions.toLocaleString('en-IN')}</span>
                             </div>
-                            <div className="flex justify-between py-3 bg-slate-50 rounded-lg px-3 mt-3">
-                                <span className="font-semibold text-slate-900">Total tax you pay</span>
-                                <span className="font-semibold text-slate-900 text-lg">
-                                    ₹{oldRegime.finalTaxLiability.toLocaleString('en-IN')}
-                                </span>
+                            <p className="text-[var(--s29-text-muted)] text-xs italic">Tax-free investments and allowances</p>
+                        </div>
+
+                        <div className="flex justify-center my-2">
+                            <div className="h-4 border-l-2 border-dashed border-[var(--s29-border-light)]" />
+                        </div>
+
+                        <div className="bg-[var(--s29-primary-light)]/10 p-4 rounded-[var(--s29-radius-main)] border border-[var(--s29-primary-light)]">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[var(--s29-primary)] text-sm font-bold uppercase tracking-wider">Taxable Income</span>
+                                <span className="font-bold text-[var(--s29-primary)] text-lg">₹{steps.taxableIncome.totalIncome.toLocaleString('en-IN')}</span>
                             </div>
                         </div>
                     </div>
+                </SectionCard>
 
-                    {/* New Regime */}
-                    <div className={`bg-white rounded-xl shadow-sm border-2 p-6 ${selectedRegime === 'new' ? 'border-primary-500' : 'border-slate-200'
-                        }`}>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold text-slate-900">New (Simplified) Regime</h2>
-                            {selectedRegime === 'new' && (
-                                <CheckCircle className="w-5 h-5 text-primary-600" />
-                            )}
-                        </div>
-
-                        <div className="space-y-3 text-sm">
-                            <div className="flex justify-between py-2 border-b border-slate-100">
-                                <span className="text-slate-600">Total income you're taxed on</span>
-                                <span className="font-medium text-slate-900">
-                                    ₹{newRegime.taxableIncome.toLocaleString('en-IN')}
-                                </span>
+                {/* Final Calculation Reassurance */}
+                <div className="my-8 space-y-4">
+                    <ReassuranceBanner
+                        type="safety"
+                        message={`We compared both regimes for you. The ${selectedRegime === 'new' ? 'New' : 'Old'} Regime saves you ₹${savings.toLocaleString('en-IN')} compared to the alternative.`}
+                    />
+                    {finalLiability.tdsDeducted > 0 && (
+                        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-[var(--s29-radius-main)] flex justify-between items-center">
+                            <div>
+                                <h4 className="text-emerald-900 font-semibold text-sm">TDS Already Paid</h4>
+                                <p className="text-emerald-700 text-xs">Tax deducted at source by your employers/banks.</p>
                             </div>
-                            <div className="flex justify-between py-2 border-b border-slate-100">
-                                <span className="text-slate-600">Income tax</span>
-                                <span className="font-medium text-slate-900">
-                                    ₹{newRegime.taxOnIncome.toLocaleString('en-IN')}
-                                </span>
-                            </div>
-                            {newRegime.rebate > 0 && (
-                                <div className="flex justify-between py-2 border-b border-slate-100">
-                                    <span className="text-slate-600">Tax discount</span>
-                                    <span className="font-medium text-green-600">
-                                        - ₹{newRegime.rebate.toLocaleString('en-IN')}
-                                    </span>
-                                </div>
-                            )}
-                            {newRegime.surcharge > 0 && (
-                                <div className="flex justify-between py-2 border-b border-slate-100">
-                                    <span className="text-slate-600">Additional tax for high income</span>
-                                    <span className="font-medium text-slate-900">
-                                        ₹{newRegime.surcharge.toLocaleString('en-IN')}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex justify-between py-2 border-b border-slate-100">
-                                <span className="text-slate-600">Health & education fee</span>
-                                <span className="font-medium text-slate-900">
-                                    ₹{newRegime.cess.toLocaleString('en-IN')}
-                                </span>
-                            </div>
-                            <div className="flex justify-between py-3 bg-slate-50 rounded-lg px-3 mt-3">
-                                <span className="font-semibold text-slate-900">Total tax you pay</span>
-                                <span className="font-semibold text-slate-900 text-lg">
-                                    ₹{newRegime.finalTaxLiability.toLocaleString('en-IN')}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Selected Regime & Reason */}
-                <div className="bg-primary-50 border border-primary-200 rounded-xl p-6 mb-6 text-center">
-                    <h3 className="font-semibold text-primary-900 mb-2">
-                        Tax saving found!
-                    </h3>
-                    <p className="text-primary-800">
-                        We picked the {selectedRegime === 'old' ? 'Old Regime' : 'New Regime'} because it saves you ₹{comparisonData.savings.toLocaleString('en-IN')} in tax.
-                    </p>
-                    {comparison.steps?.finalLiability?.refundOrPayable < 0 && (
-                        <div className="mt-4 p-3 bg-red-100 border border-red-200 rounded-lg text-red-800 font-medium">
-                            Attention: You have a pending tax liability of ₹{Math.abs(comparison.steps.finalLiability.refundOrPayable).toLocaleString('en-IN')}.
+                            <span className="text-emerald-600 font-bold">₹{finalLiability.tdsDeducted.toLocaleString('en-IN')}</span>
                         </div>
                     )}
                 </div>
 
-                {/* Navigation */}
-                <div className="flex flex-col gap-4">
+                <div className="space-y-4">
                     <button
                         onClick={() => {
-                            if (comparison.steps?.finalLiability?.refundOrPayable < 0) {
+                            if (finalLiability.refundOrPayable < 0) {
                                 navigate(`/filing/${filingId}/tax-payment`);
                             } else {
                                 navigate(`/filing/${filingId}/readiness`);
                             }
                         }}
-                        className="w-full bg-emerald-600 text-white py-4 px-6 rounded-xl font-bold text-xl hover:bg-emerald-700 transition-all shadow-md flex items-center justify-center gap-3"
+                        className="w-full py-4 bg-[var(--s29-primary)] text-white rounded-[var(--s29-radius-main)] font-bold text-lg hover:bg-[var(--s29-primary-dark)] shadow-md transition-all flex items-center justify-center gap-2"
                     >
-                        <CheckCircle className="w-6 h-6" />
-                        {comparison.steps?.finalLiability?.refundOrPayable < 0 ? 'Pay My Tax & Submit' : 'Submit My Return'}
+                        {finalLiability.refundOrPayable < 0 ? 'Pay Remaining Tax' : 'Final Review'}
+                        <ArrowRight className="w-5 h-5" />
                     </button>
+
                     <button
                         onClick={() => navigate(`/filing/${filingId}/income-story`)}
-                        className="w-full bg-white text-slate-600 py-3 px-6 rounded-xl font-medium border border-slate-200 hover:bg-slate-50 transition-colors"
+                        className="w-full text-[var(--s29-text-muted)] py-2 text-sm hover:text-[var(--s29-text-main)] transition-colors"
                     >
-                        ← Wait, I need to edit something
+                        Wait, let me double check my income
                     </button>
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-[var(--s29-border-light)]">
+                    <InlineHint icon={<Calculator className="w-4 h-4" />}>
+                        Calculations are based on Income Tax Act rules for Financial Year 2023-24 (AY 2024-25).
+                    </InlineHint>
                 </div>
             </div>
         </div>

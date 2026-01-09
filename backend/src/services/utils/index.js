@@ -3,7 +3,7 @@
 // Utility and support services
 // =====================================================
 
-const AuditService = require('./AuditService');
+const { AuditService } = require('../core');
 const NotificationService = require('./NotificationService');
 
 module.exports = {

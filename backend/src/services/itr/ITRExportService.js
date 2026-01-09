@@ -48,7 +48,7 @@ class ITRExportService {
             throw { statusCode: 400, message: 'Tax computation not found. Please compute tax before exporting.' };
         }
 
-        const draftData = filing.draft?.data || {};
+        const jsonPayloadSource = filing.jsonPayload || {};
         const computation = filing.taxComputation;
         const assessmentYear = filing.assessmentYear || getDefaultAssessmentYear();
         const itrType = filing.itrType;
@@ -64,7 +64,7 @@ class ITRExportService {
             case 'ITR-1':
             case 'ITR1':
                 // ITR1 pipeline
-                const itr1Json = ITR1JsonBuilder.buildITR1(draftData, computation, assessmentYear, user); // Form16 aggregation? Controller passed `aggregatedSalary`. 
+                const itr1Json = ITR1JsonBuilder.buildITR1(jsonPayloadSource, computation, assessmentYear, user);
                 // We don't have aggregatedSalary here easily without running Form16AggregationService?
                 // But `ITR1JsonBuilder.buildITR1` logic handles null `aggregatedSalary`.
                 // Ideally we should run aggregation if we want perfect export.
@@ -81,7 +81,7 @@ class ITRExportService {
 
             case 'ITR-2':
             case 'ITR2':
-                const res2 = await ITR2JsonBuilder.buildITR2(draftData, computation, assessmentYear, user);
+                const res2 = await ITR2JsonBuilder.buildITR2(jsonPayloadSource, computation, assessmentYear, user);
                 jsonPayload = res2.json;
                 schemaValidationResult = validateITRJson(jsonPayload, 'ITR-2');
                 businessValidationResult = { isValid: true }; // await ITRBusinessValidator.validateITR2BusinessRules(jsonPayload, draftData, computation);
@@ -89,7 +89,7 @@ class ITRExportService {
 
             case 'ITR-3':
             case 'ITR3':
-                const res3 = await ITR3JsonBuilder.buildITR3(draftData, computation, assessmentYear, user);
+                const res3 = await ITR3JsonBuilder.buildITR3(jsonPayloadSource, computation, assessmentYear, user);
                 jsonPayload = res3.json;
                 schemaValidationResult = validateITRJson(jsonPayload, 'ITR-3');
                 businessValidationResult = { isValid: true }; // await ITRBusinessValidator.validateITR3BusinessRules(jsonPayload, draftData, computation);
@@ -97,7 +97,7 @@ class ITRExportService {
 
             case 'ITR-4':
             case 'ITR4':
-                const res4 = await ITR4JsonBuilder.buildITR4(draftData, computation, assessmentYear, user);
+                const res4 = await ITR4JsonBuilder.buildITR4(jsonPayloadSource, computation, assessmentYear, user);
                 jsonPayload = res4.json;
                 schemaValidationResult = validateITRJson(jsonPayload, 'ITR-4');
                 businessValidationResult = { isValid: true }; // await ITRBusinessValidator.validateITR4BusinessRules(jsonPayload, draftData, computation);

@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, FileText, CheckCircle, XCircle, Clock, ArrowRight, Download } from 'lucide-react';
+import { Calendar, FileText, CheckCircle, XCircle, Clock, ArrowRight, Download, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import ReassuranceBanner from '../../components/ReassuranceBanner';
 import { getApiBaseUrl } from '../../utils/apiConfig';
@@ -40,23 +40,30 @@ const FilingOverview = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div className="text-slate-600">Loading your financial year...</div>
+            <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-12 h-12 animate-spin text-[var(--s29-primary)]" />
+                <p className="text-[var(--s29-text-muted)] font-medium">Preparing your financial summary...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div className="text-red-600">{error}</div>
+            <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6">
+                <div className="max-w-md w-full bg-white p-8 rounded-[var(--s29-radius-large)] shadow-xl border border-[var(--s29-border-light)] text-center">
+                    <XCircle className="w-12 h-12 text-[var(--s29-error)] mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-[var(--s29-text-main)] mb-2">Error</h2>
+                    <p className="text-[var(--s29-text-muted)] mb-6">{error}</p>
+                    <button onClick={() => navigate('/itr/start')} className="w-full bg-[var(--s29-primary)] text-white py-3 rounded-[var(--s29-radius-main)] font-medium">
+                        Return to ID Verification
+                    </button>
+                </div>
             </div>
         );
     }
 
     const { identity, incomeSummary, eligibilityBadge, missingBlocks } = data;
 
-    // Determine what income sources user indicated
     const hasIncome = (type) => {
         if (type === 'salary') return incomeSummary.salary > 0;
         if (type === 'capitalGains') return incomeSummary.capitalGains > 0;
@@ -66,135 +73,115 @@ const FilingOverview = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 py-8 px-4">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen bg-[var(--s29-bg-page)] py-12 px-6">
+            <div className="max-w-3xl mx-auto">
                 {/* Header: Context Lock-in */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-serif font-medium text-slate-900 mb-2">
-                        Your Financial Year at a Glance
+                <header className="mb-10">
+                    <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
+                        Step 1 of 5
+                    </span>
+                    <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mt-2">
+                        Your Year at a Glance
                     </h1>
-                    <p className="text-sm text-slate-500">
-                        Assessment Year {identity.assessmentYear}
-                    </p>
-                    <p className="text-sm text-slate-500">
-                        Filing for income earned between Apr 2023 – Mar 2024
-                    </p>
-                </div>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                        <div className="px-4 py-2 bg-white border border-[var(--s29-border-light)] rounded-full text-xs font-semibold text-[var(--s29-text-muted)] flex items-center gap-2">
+                            <Calendar className="w-3 h-3" />
+                            AY {identity.assessmentYear}
+                        </div>
+                        <div className="px-4 py-2 bg-white border border-[var(--s29-border-light)] rounded-full text-xs font-semibold text-[var(--s29-text-muted)] flex items-center gap-2">
+                            <FileText className="w-3 h-3" />
+                            {identity.taxpayerPan}
+                        </div>
+                    </div>
+                </header>
 
-                {/* Reassurance: Nothing Bad Will Happen */}
-                <div className="mb-6">
+                {/* Reassurance: Safety First */}
+                <div className="mb-8">
                     <ReassuranceBanner
                         type="safety"
-                        message="We will never submit without your confirmation. You can add or edit information at any time."
+                        message="We prioritize accuracy and truth. Nothing is submitted without your final permission."
                     />
                 </div>
 
-                {/* What we know so far */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-                    <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                        What we know so far
-                    </h2>
-                    <p className="text-slate-700 mb-3">
-                        Based on what you've told us, you have:
-                    </p>
-                    <ul className="space-y-2 mb-4">
-                        {hasIncome('salary') && (
-                            <li className="flex items-center gap-2 text-slate-700">
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                                Salary income
-                            </li>
-                        )}
-                        {hasIncome('capitalGains') && (
-                            <li className="flex items-center gap-2 text-slate-700">
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                                Capital gains
-                            </li>
-                        )}
-                        {hasIncome('business') && (
-                            <li className="flex items-center gap-2 text-slate-700">
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                                Business income
-                            </li>
-                        )}
-                        {hasIncome('other') && (
-                            <li className="flex items-center gap-2 text-slate-700">
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                                Other income
-                            </li>
-                        )}
-                    </ul>
-                    <p className="text-sm text-slate-500">
-                        You can add or change this later.
-                    </p>
-                </div>
-
-                {/* Return Type (De-emphasised) */}
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-slate-600 mb-1">
-                        <span className="font-medium">Return type (automatically selected):</span> {identity.itrType}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                        (You don't need to worry about this)
-                    </p>
-                </div>
-
-                {/* Status Snapshot (Progress, not checklist) */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-                    <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                        Status Snapshot
-                    </h2>
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between py-2">
-                            <span className="text-slate-700">Income details</span>
-                            <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-yellow-600" />
-                                <span className="text-sm text-slate-600">Not added yet</span>
-                            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Income Declaration Snapshot */}
+                    <div className="bg-white rounded-[var(--s29-radius-large)] border border-[var(--s29-border-light)] p-8 shadow-sm">
+                        <h2 className="text-sm font-bold text-[var(--s29-text-muted)] uppercase tracking-wider mb-6 flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-[var(--s29-success)]" />
+                            Income Identified
+                        </h2>
+                        <div className="space-y-4">
+                            {['salary', 'capitalGains', 'business', 'other'].map(type => (
+                                <div key={type} className="flex items-center justify-between">
+                                    <span className="text-[var(--s29-text-main)] font-medium capitalize">
+                                        {type.replace(/([A-Z])/g, ' $1')}
+                                    </span>
+                                    {hasIncome(type) ? (
+                                        <div className="px-2 py-1 bg-[var(--s29-success)]/10 text-[var(--s29-success)] rounded text-[10px] font-bold uppercase tracking-tighter">
+                                            Identified
+                                        </div>
+                                    ) : (
+                                        <div className="px-2 py-1 bg-slate-100 text-slate-400 rounded text-[10px] font-bold uppercase tracking-tighter">
+                                            Not Found
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                        <div className="flex items-center justify-between py-2">
-                            <span className="text-slate-700">Tax calculation</span>
-                            <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-yellow-600" />
-                                <span className="text-sm text-slate-600">Pending</span>
+                    </div>
+
+                    {/* Readiness Snapshot */}
+                    <div className="bg-white rounded-[var(--s29-radius-large)] border border-[var(--s29-border-light)] p-8 shadow-sm">
+                        <h2 className="text-sm font-bold text-[var(--s29-text-muted)] uppercase tracking-wider mb-6 flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-[var(--s29-primary)]" />
+                            Filing Status
+                        </h2>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[var(--s29-text-main)] font-medium">Income Details</span>
+                                <span className="text-xs text-[var(--s29-text-muted)] font-medium">In Progress</span>
                             </div>
-                        </div>
-                        <div className="flex items-center justify-between py-2">
-                            <span className="text-slate-700">Readiness to file</span>
-                            <div className="flex items-center gap-2">
-                                <XCircle className="w-4 h-4 text-red-600" />
-                                <span className="text-sm text-slate-600">Not ready</span>
+                            <div className="flex items-center justify-between">
+                                <span className="text-[var(--s29-text-main)] font-medium">Tax Computation</span>
+                                <span className="text-xs text-[var(--s29-text-muted)] font-medium">Awaiting Data</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-[var(--s29-text-main)] font-medium">Readiness Check</span>
+                                <span className="text-xs text-[var(--s29-error)] font-bold uppercase tracking-tighter">Not Ready</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Reassurance: Self-Paced */}
-                <div className="mb-6">
-                    <ReassuranceBanner
-                        type="time"
-                        message="You can come back anytime. We've saved everything so far."
-                    />
+                {/* Return Type Recommendation Banner */}
+                <div className="bg-[var(--s29-primary-light)]/10 border border-[var(--s29-primary-light)] rounded-[var(--s29-radius-main)] p-6 mb-8 flex items-start gap-4">
+                    <div className="bg-white p-2 rounded-xl shadow-sm">
+                        <FileText className="w-6 h-6 text-[var(--s29-primary)]" />
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-[var(--s29-text-main)] mb-1">Return Type Decision</h3>
+                        <p className="text-sm text-[var(--s29-text-muted)]">
+                            Based on your financial activity, we've selected <span className="font-bold text-[var(--s29-primary)]">{identity.itrType}</span> as the safest and most efficient form for you.
+                        </p>
+                    </div>
                 </div>
 
-                {/* Navigation: Primary CTA (only ONE) */}
-                <div className="flex flex-col gap-3">
-                    <button
-                        onClick={() => navigate(`/filing/${filingId}/income-story`)}
-                        className="w-full flex items-center justify-center gap-3 py-4 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors"
-                    >
-                        Continue → Add income details
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
+                {/* Primary CTA */}
+                <button
+                    onClick={() => navigate(`/filing/${filingId}/income-story`)}
+                    className="w-full py-5 bg-[var(--s29-primary)] text-white rounded-[var(--s29-radius-main)] font-bold text-xl hover:bg-[var(--s29-primary-dark)] shadow-lg shadow-[var(--s29-primary-light)]/30 transition-all flex items-center justify-center gap-3 active:scale-[0.99]"
+                >
+                    Start Income Story
+                    <ArrowRight className="w-6 h-6" />
+                </button>
 
-                    {/* Secondary (quiet) */}
-                    <button
-                        onClick={() => window.open(`/api/filings/${filingId}/export/json`, '_blank')}
-                        className="w-full flex items-center justify-center gap-2 py-3 text-slate-600 hover:text-slate-900 transition-colors"
-                    >
-                        <Download className="w-4 h-4" />
-                        <span className="text-sm">Download current data (JSON)</span>
-                    </button>
-                </div>
+                <button
+                    onClick={() => window.open(`${API_BASE_URL}/filings/${filingId}/export/json`, '_blank')}
+                    className="w-full mt-4 flex items-center justify-center gap-2 py-3 text-[var(--s29-text-muted)] hover:text-[var(--s29-text-main)] transition-colors text-sm font-medium"
+                >
+                    <Download className="w-4 h-4" />
+                    Download Draft Progress (JSON)
+                </button>
             </div>
         </div>
     );

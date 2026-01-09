@@ -1,7 +1,6 @@
 const { sequelize } = require('../../config/database');
 const { QueryTypes } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
-const { query: dbQuery } = require('../../utils/dbQuery');
 const enterpriseLogger = require('../../utils/logger');
 const { getDefaultAssessmentYear } = require('../../constants/assessmentYears');
 const { validateITRType } = require('../../utils/validationUtils');

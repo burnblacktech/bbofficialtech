@@ -306,14 +306,52 @@ class PreviousYearCopyService {
   // Helpers
   extractTotalIncome(payload) {
     const income = payload.income || {};
-    return (
-      (income.salary?.totalSalary || 0) +
-      (income.houseProperty?.netRentalIncome || 0) +
-      (income.capitalGains?.total || 0) +
-      (income.otherSources?.total || 0) +
-      (income.business?.totalIncome || 0) +
-      (income.professional?.totalIncome || 0)
-    );
+
+    // Robust extraction similar to FinancialStoryService
+    const salary = this._getSalaryTotal(income.salary);
+    const houseProperty = parseFloat(income.houseProperty?.annualRentalIncome || income.houseProperty?.netRentalIncome || income.houseProperty || 0);
+    const capitalGains = this._getCapitalGainsTotal(income.capitalGains);
+    const otherSources = parseFloat(income.otherSources?.total || income.otherIncome || income.interestIncome || 0);
+    const business = this._getBusinessTotal(income.business);
+    const presumptive = this._getPresumptiveTotal(income.presumptive);
+
+    return salary + houseProperty + capitalGains + otherSources + business + presumptive;
+  }
+
+  _getSalaryTotal(salaryData) {
+    if (!salaryData) return 0;
+    if (typeof salaryData === 'number') return salaryData;
+    if (Array.isArray(salaryData.employers)) {
+      return salaryData.employers.reduce((sum, emp) => sum + (parseFloat(emp.gross || emp.grossSalary || 0)), 0);
+    }
+    return parseFloat(salaryData.totalSalary || salaryData.grossSalary || 0);
+  }
+
+  _getCapitalGainsTotal(cgData) {
+    if (!cgData) return 0;
+    if (typeof cgData === 'number') return cgData;
+    if (Array.isArray(cgData.transactions)) {
+      return cgData.transactions.reduce((sum, txn) =>
+        sum + (parseFloat(txn.saleValue || 0) - parseFloat(txn.purchaseValue || 0) - parseFloat(txn.expenses || 0)), 0);
+    }
+    return parseFloat(cgData.total || 0);
+  }
+
+  _getBusinessTotal(businessData) {
+    if (!businessData) return 0;
+    if (typeof businessData === 'number') return businessData;
+    if (Array.isArray(businessData.businesses)) {
+      return businessData.businesses.reduce((sum, biz) => sum + (parseFloat(biz.netProfit || 0)), 0);
+    }
+    // Deep fallback for standardised ITR-3 path
+    return parseFloat(businessData.profitLoss?.netProfit || businessData.totalIncome || businessData.netProfit || 0);
+  }
+
+  _getPresumptiveTotal(presumptiveData) {
+    if (!presumptiveData) return 0;
+    const bIncome = parseFloat(presumptiveData.business?.presumptiveIncome || 0);
+    const pIncome = parseFloat(presumptiveData.professional?.presumptiveIncome || 0);
+    return bIncome + pIncome;
   }
 
   extractSections(payload) {
@@ -344,25 +382,25 @@ class PreviousYearCopyService {
 
   mapIncome(income, targetITRType) {
     if (!income) return {};
-    return { ...income }; // Simplified for now
+    return JSON.parse(JSON.stringify(income)); // Deep clone
   }
 
   mapDeductions(deductions) {
-    return deductions ? { ...deductions } : {};
+    return deductions ? JSON.parse(JSON.stringify(deductions)) : {};
   }
 
   mapTaxesPaid(taxesPaid) {
     if (!taxesPaid) return {};
     return {
-      tds: Array.isArray(taxesPaid.tds) ? taxesPaid.tds : [],
-      advanceTax: Array.isArray(taxesPaid.advanceTax) ? taxesPaid.advanceTax : [],
-      selfAssessmentTax: Array.isArray(taxesPaid.selfAssessmentTax) ? taxesPaid.selfAssessmentTax : [],
-      tcs: Array.isArray(taxesPaid.tcs) ? taxesPaid.tcs : [],
+      tds: Array.isArray(taxesPaid.tds) ? [...taxesPaid.tds] : [],
+      advanceTax: Array.isArray(taxesPaid.advanceTax) ? [...taxesPaid.advanceTax] : [],
+      selfAssessmentTax: Array.isArray(taxesPaid.selfAssessmentTax) ? [...taxesPaid.selfAssessmentTax] : [],
+      tcs: Array.isArray(taxesPaid.tcs) ? [...taxesPaid.tcs] : [],
     };
   }
 
   mapBankDetails(bankDetails) {
-    return bankDetails || null;
+    return bankDetails ? JSON.parse(JSON.stringify(bankDetails)) : null;
   }
 
   mapERIDataToITRFormat(eriData, assessmentYear) {

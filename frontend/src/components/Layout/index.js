@@ -25,7 +25,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-[var(--s29-bg-main)] flex flex-col">
       {/* Header */}
       <Header
         onMenuClick={handleMenuClick}

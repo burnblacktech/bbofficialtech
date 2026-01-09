@@ -174,12 +174,30 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
             throw new AppError('Not authorized to update this filing', 403);
         }
 
+        // S32: Freeze Enforcement
+        // If the filing is not in draft, it is frozen for updates to payload or regime
+        if (filing.lifecycleState !== STATES.DRAFT) {
+            if (jsonPayload !== undefined || selectedRegime !== undefined) {
+                throw new AppError(
+                    `Filing is frozen in state: ${filing.lifecycleState}. No further updates allowed to payload or regime choice.`,
+                    403,
+                    'FILING_FROZEN'
+                );
+            }
+        }
+
+        // Direct lifecycleState updates via PUT are deprecated in favor of State Machine
+        if (lifecycleState !== undefined && lifecycleState !== filing.lifecycleState) {
+            throw new AppError(
+                'Direct state updates are forbidden. Use formal submission or transition endpoints.',
+                400,
+                'DIRECT_STATE_UPDATE_FORBIDDEN'
+            );
+        }
+
         // Update fields
         if (jsonPayload !== undefined) {
             filing.jsonPayload = jsonPayload;
-        }
-        if (lifecycleState !== undefined) {
-            filing.lifecycleState = lifecycleState;
         }
         if (selectedRegime !== undefined) {
             filing.selectedRegime = selectedRegime;
@@ -388,19 +406,25 @@ router.get('/:filingId/tax-breakdown', authenticateToken, async (req, res, next)
         }
 
         const snapshot = await FilingSnapshotService.getLatestSnapshot(filingId);
-        const snapshotFacts = TaxRegimeCalculatorV2._prepareSnapshotFacts(snapshot?.jsonPayload || {});
-        const regime = filing.selectedRegime || 'old';
+        const jsonPayload = snapshot?.jsonPayload || {};
+        const selectedRegime = filing.selectedRegime || 'old';
 
-        const result = regime === 'old'
-            ? TaxRegimeAssembly.computeOldRegime(snapshotFacts)
-            : TaxRegimeAssembly.computeNewRegime(snapshotFacts);
+        // S24: Use formal comparison engine to get both regimes
+        const comparison = TaxRegimeCalculatorV2.compareRegimes(jsonPayload);
+        const result = selectedRegime === 'old' ? comparison.oldRegime : comparison.newRegime;
+        const alternativeResult = selectedRegime === 'old' ? comparison.newRegime : comparison.oldRegime;
 
-        const tdsDeducted = FinancialStoryService.extractTDS(snapshot?.jsonPayload || {});
+        const tdsDeducted = FinancialStoryService.extractTDS(jsonPayload);
+        const refundOrPayable = tdsDeducted - result.finalTaxLiability;
 
         res.status(200).json({
             success: true,
             data: {
-                regime,
+                selectedRegime,
+                recommendedRegime: comparison.comparison.recommendedRegime,
+                savings: comparison.comparison.savings,
+                oldRegime: comparison.oldRegime,
+                newRegime: comparison.newRegime,
                 steps: {
                     taxableIncome: {
                         grossTotalIncome: result.grossTotalIncome,
@@ -419,8 +443,8 @@ router.get('/:filingId/tax-breakdown', authenticateToken, async (req, res, next)
                     finalLiability: {
                         totalTax: result.finalTaxLiability,
                         tdsDeducted,
-                        refundOrPayable: tdsDeducted - result.finalTaxLiability,
-                        isRefund: tdsDeducted > result.finalTaxLiability
+                        refundOrPayable,
+                        isRefund: refundOrPayable > 0
                     }
                 },
                 notes: result.notes

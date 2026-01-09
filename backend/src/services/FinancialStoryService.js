@@ -92,7 +92,23 @@ class FinancialStoryService {
      * Extract business income story
      */
     static extractBusinessStory(businessData) {
-        if (!businessData || !businessData.businesses || businessData.businesses.length === 0) {
+        if (!businessData) return null;
+
+        // ITR-3 Standardised Path
+        if (businessData.profitLoss) {
+            return {
+                businesses: [{
+                    name: 'Business',
+                    natureOfBusiness: businessData.profile?.natureOfBusiness || 'General',
+                    turnover: parseFloat(businessData.profitLoss.turnover || 0),
+                    netProfit: parseFloat(businessData.profitLoss.netProfit || 0)
+                }],
+                total: parseFloat(businessData.profitLoss.netProfit || 0)
+            };
+        }
+
+        // ITR-2/Legacy Array Path
+        if (!businessData.businesses || businessData.businesses.length === 0) {
             return null;
         }
 
@@ -100,10 +116,10 @@ class FinancialStoryService {
             businesses: businessData.businesses.map(biz => ({
                 name: biz.name,
                 natureOfBusiness: biz.natureOfBusiness,
-                turnover: biz.turnover || 0,
-                netProfit: biz.netProfit || 0
+                turnover: parseFloat(biz.turnover || 0),
+                netProfit: parseFloat(biz.netProfit || 0)
             })),
-            total: businessData.businesses.reduce((sum, biz) => sum + (biz.netProfit || 0), 0)
+            total: businessData.businesses.reduce((sum, biz) => sum + (parseFloat(biz.netProfit || 0)), 0)
         };
     }
 
@@ -111,10 +127,11 @@ class FinancialStoryService {
      * Extract other income story
      */
     static extractOtherIncomeStory(income) {
+        const otherSources = income.otherSources || {};
         return {
-            interest: income.interestIncome || income.otherSources?.totalInterestIncome || 0,
-            dividend: income.dividendIncome || 0,
-            total: (income.interestIncome || 0) + (income.dividendIncome || 0) + (income.otherIncome || 0)
+            interest: parseFloat(otherSources.interestIncome || otherSources.totalInterestIncome || income.interestIncome || 0),
+            dividend: parseFloat(income.dividendIncome || 0),
+            total: (parseFloat(otherSources.interestIncome || 0) + parseFloat(income.dividendIncome || 0) + parseFloat(income.otherIncome || 0))
         };
     }
 
@@ -132,16 +149,16 @@ class FinancialStoryService {
             sections.push({
                 section: '44AD',
                 name: business.businessName || 'Business',
-                receipts: business.grossReceipts || 0,
-                income: business.presumptiveIncome || 0
+                receipts: parseFloat(business.grossReceipts || 0),
+                income: parseFloat(business.presumptiveIncome || 0)
             });
         }
         if (professional) {
             sections.push({
                 section: '44ADA',
                 name: professional.professionName || 'Profession',
-                receipts: professional.grossReceipts || 0,
-                income: professional.presumptiveIncome || 0
+                receipts: parseFloat(professional.grossReceipts || 0),
+                income: parseFloat(professional.presumptiveIncome || 0)
             });
         }
 
@@ -156,7 +173,7 @@ class FinancialStoryService {
      * Derive completion checklist from missing blocks and active blockers
      */
     static deriveChecklist(missingBlocks = [], blockers = []) {
-        const hasTaxBlocker = blockers.some(b => b.code === 'TAX_PAYMENT_PENDING');
+        const hasTaxBlocker = (blockers || []).some(b => b.code === 'TAX_PAYMENT_PENDING');
 
         return {
             salaryDetails: !missingBlocks.includes('income.salary'),
@@ -197,7 +214,7 @@ class FinancialStoryService {
         const tds = taxes.tds || [];
 
         if (Array.isArray(tds)) {
-            return tds.reduce((sum, entry) => sum + (entry.amount || 0), 0);
+            return tds.reduce((sum, entry) => sum + (parseFloat(entry.amount || 0)), 0);
         }
 
         return 0;
@@ -206,15 +223,14 @@ class FinancialStoryService {
     // Private helpers
 
     static _extractSalaryTotal(salaryData) {
-        if (!salaryData || typeof salaryData === 'number') {
-            return salaryData || 0;
-        }
+        if (!salaryData) return 0;
+        if (typeof salaryData === 'number') return salaryData;
 
         if (salaryData.employers && Array.isArray(salaryData.employers)) {
-            return salaryData.employers.reduce((sum, emp) => sum + (emp.gross || emp.grossSalary || 0), 0);
+            return salaryData.employers.reduce((sum, emp) => sum + (parseFloat(emp.gross || emp.grossSalary || 0)), 0);
         }
 
-        return 0;
+        return parseFloat(salaryData.grossSalary || 0);
     }
 
     static _extractCapitalGainsTotal(cgData) {
@@ -223,18 +239,24 @@ class FinancialStoryService {
 
         if (cgData.transactions && Array.isArray(cgData.transactions)) {
             return cgData.transactions.reduce((sum, txn) =>
-                sum + (txn.saleValue - txn.purchaseValue - (txn.expenses || 0)), 0);
+                sum + (parseFloat(txn.saleValue || 0) - parseFloat(txn.purchaseValue || 0) - parseFloat(txn.expenses || 0)), 0);
         }
 
-        return 0;
+        return parseFloat(cgData.total || 0);
     }
 
     static _extractBusinessTotal(businessData) {
         if (!businessData) return 0;
         if (typeof businessData === 'number') return businessData;
 
+        // ITR-3 Standardised Path
+        if (businessData.profitLoss && typeof businessData.profitLoss.netProfit !== 'undefined') {
+            return parseFloat(businessData.profitLoss.netProfit || 0);
+        }
+
+        // ITR-2/Legacy Array Path
         if (businessData.businesses && Array.isArray(businessData.businesses)) {
-            return businessData.businesses.reduce((sum, biz) => sum + (biz.netProfit || 0), 0);
+            return businessData.businesses.reduce((sum, biz) => sum + (parseFloat(biz.netProfit || 0)), 0);
         }
 
         return 0;

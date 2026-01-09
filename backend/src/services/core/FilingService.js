@@ -8,7 +8,7 @@ const { sequelize } = require('../../config/database');
 const ITRFiling = require('../../models/ITRFiling');
 const CompletionChecklistService = require('../itr/CompletionChecklistService');
 const FilingSafetyService = require('../itr/FilingSafetyService');
-// const AuditService = require('../core/AuditService'); // TODO: Implement canonical AuditService
+const AuditService = require('../core/AuditService');
 const enterpriseLogger = require('../../utils/logger');
 
 class FilingService {
@@ -59,18 +59,17 @@ class FilingService {
                 intelligenceOverrides: [],
             }, { transaction });
 
-            // Audit - TODO: Implement canonical AuditService for audit_events table
-            // await AuditService.logEvent({
-            //     entityType: 'ITRFiling',
-            //     entityId: filing.id,
-            //     eventType: 'FILING_CREATED',
-            //     actorId: user.userId,
-            //     actorRole: user.role,
-            //     metadata: {
-            //         assessmentYear,
-            //         taxpayerPan,
-            //     },
-            // }, transaction);
+            // Audit - Canonical AuditService
+            await AuditService.logEvent({
+                entityType: 'ITRFiling',
+                entityId: filing.id,
+                action: 'FILING_CREATED',
+                actorId: user.userId,
+                metadata: {
+                    assessmentYear,
+                    taxpayerPan,
+                },
+            }, transaction);
 
             await transaction.commit();
 

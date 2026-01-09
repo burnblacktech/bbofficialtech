@@ -6,7 +6,6 @@
 
 const enterpriseLogger = require('../../utils/logger');
 const { AppError } = require('../../middleware/errorHandler');
-const { query: dbQuery } = require('../../utils/dbQuery');
 const TaxPayment = require('../../models/TaxPayment');
 const ITRFiling = require('../../models/ITRFiling');
 const Razorpay = require('razorpay');
@@ -514,7 +513,7 @@ class TaxPaymentService {
     // Placeholder for ITD payment gateway URL generation
     // Actual implementation would require ITD gateway API integration
     const baseUrl = process.env.ITD_PAYMENT_GATEWAY_URL || 'https://www.incometax.gov.in/iec/foportal/help/online-payment';
-    
+
     // Construct payment URL with challan details
     const params = new URLSearchParams({
       challan: taxPayment.challanNumber,

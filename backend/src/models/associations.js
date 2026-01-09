@@ -11,12 +11,13 @@ const ITRFiling = require('./ITRFiling');
 const Assignment = require('./Assignment');
 const { ServiceTicket } = require('./ServiceTicket');
 const Document = require('./Document');
-// const AuditLog = require('./AuditLog'); // LEGACY - removed
+const AuditEvent = require('./AuditEvent');
 const Notification = require('./Notification');
 const HelpArticle = require('./HelpArticle');
 const CAMarketplaceInquiry = require('./CAMarketplaceInquiry');
 const CABooking = require('./CABooking');
 const CAFirmReview = require('./CAFirmReview');
+const RefundTracking = require('./RefundTracking');
 
 const enterpriseLogger = require('../utils/logger');
 
@@ -67,12 +68,12 @@ User.hasMany(ServiceTicket, {
   onDelete: 'SET NULL',
 });
 
-// User has many Audit Logs - LEGACY REMOVED
-// User.hasMany(AuditLog, {
-//   foreignKey: 'userId',
-//   as: 'auditLogs',
-//   onDelete: 'SET NULL',
-// });
+// User has many Audit Events
+User.hasMany(AuditEvent, {
+  foreignKey: 'actorId',
+  as: 'auditTrail',
+  onDelete: 'SET NULL',
+});
 
 // User has many Notifications
 User.hasMany(Notification, {
@@ -307,6 +308,24 @@ ITRVProcessing.belongsTo(ITRFiling, {
 ITRFiling.hasOne(ITRVProcessing, {
   foreignKey: 'filingId',
   as: 'itrvProcessing',
+  onDelete: 'CASCADE',
+});
+
+// =====================================================
+// REFUND TRACKING ASSOCIATIONS
+// =====================================================
+
+// RefundTracking belongs to ITRFiling
+RefundTracking.belongsTo(ITRFiling, {
+  foreignKey: 'filingId',
+  as: 'filing',
+  onDelete: 'CASCADE',
+});
+
+// ITRFiling has one RefundTracking
+ITRFiling.hasOne(RefundTracking, {
+  foreignKey: 'filingId',
+  as: 'refundTracking',
   onDelete: 'CASCADE',
 });
 

@@ -10,8 +10,8 @@ const Document = require('./Document');
 const { ServiceTicket } = require('./ServiceTicket');
 const { ServiceTicketMessage } = require('./ServiceTicketMessage');
 const { Invoice } = require('./Invoice');
+const AuditEvent = require('./AuditEvent');
 const UserSession = require('./UserSession');
-// const AuditLog = require('./AuditLog'); // LEGACY - uses user_id instead of canonical audit_events
 const PasswordResetToken = require('./PasswordResetToken');
 const CAFirm = require('./CAFirm');
 const Invite = require('./Invite');
@@ -55,7 +55,7 @@ module.exports = {
   ServiceTicketMessage,
   Invoice,
   UserSession,
-  // AuditLog, // REMOVED - legacy model
+  AuditEvent,
   PasswordResetToken,
   CAFirm,
   Invite,

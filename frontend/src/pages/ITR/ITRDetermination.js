@@ -1,6 +1,5 @@
 // =====================================================
-// ITR DETERMINATION - The "Ceremony" Screen
-// Step 3 in S26 Canonical Journey
+// ITR DETERMINATION - The "Ceremony" Screen (S29 Hardened)
 // Explicitly tells the user which ITR they are filing and why
 // =====================================================
 
@@ -10,6 +9,8 @@ import { ShieldCheck, Info, ArrowRight, Loader2, CheckCircle2, AlertCircle } fro
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import SectionCard from '../../components/common/SectionCard';
+import ReassuranceBanner from '../../components/common/ReassuranceBanner';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -20,7 +21,7 @@ const ITRDetermination = () => {
 
     const { pan, dob, ay, prefillData, selectedSources } = location.state || {};
 
-    // Logic to determine ITR type (Simplified S22 logic for frontend ceremony)
+    // Logic to determine ITR type
     const determination = useMemo(() => {
         if (!selectedSources) return null;
 
@@ -29,50 +30,54 @@ const ITRDetermination = () => {
         const hasRental = selectedSources.includes('rental');
         const hasBusinessPresumptive = selectedSources.includes('business_presumptive');
         const hasBusinessFull = selectedSources.includes('business_full');
-        const hasOther = selectedSources.includes('other');
 
         let type = 'ITR-1';
         const reasons = [];
+        let implication = 'Ideal for salaried individuals and simple income profiles.';
 
         if (hasBusinessFull) {
             type = 'ITR-3';
-            reasons.push('Business or Professional Income (Full Books required)');
+            reasons.push('You have business or professional income requiring full audit trails.');
+            reasons.push('You maintain specialized books of accounts.');
+            implication = 'This is a comprehensive form for entrepreneurs and high-value professionals.';
         } else if (hasBusinessPresumptive) {
             type = 'ITR-4';
-            reasons.push('Business or Professional Income (Presumptive Scheme)');
+            reasons.push('You have business income under the presumptive scheme (Section 44AD/ADA).');
+            reasons.push('Your turnover is within presumptive limits.');
+            implication = 'A simplified form that doesn’t require maintenance of detailed books.';
         } else if (hasCapitalGains) {
             type = 'ITR-2';
-            reasons.push('Income from Capital Gains (Shares/Property)');
+            reasons.push('You have income from capital gains (Sale of shares, property, etc.).');
+            reasons.push('You own more than one house property.');
+            implication = 'Suitable for individuals with investment income but no business profits.';
         } else if (hasRental) {
             type = 'ITR-2';
-            reasons.push('Income from House Property');
+            reasons.push('You have income from house property.');
+            reasons.push('Your income exceeds simplified ITR-1 limits.');
+            implication = 'Standard return for homeowners with diverse income sources.';
         } else if (hasSalary) {
             type = 'ITR-1';
-            reasons.push('Salary or Pension Income');
+            reasons.push('Your primary income is from Salary or Pension.');
+            reasons.push('You are a resident individual.');
+            implication = 'The simplest return form for 90% of individual taxpayers.';
         }
 
-        if (reasons.length === 0 && hasOther) {
-            reasons.push('Income from Other Sources');
-        }
-
-        return { type, reasons };
+        return { type, reasons, implication };
     }, [selectedSources]);
 
-    if (!pan || !selectedSources) {
-        // Redirect back if journey state is lost
+    if (!pan || !selectedSources || !determination) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-center">
-                <div className="max-w-md">
-                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h2 className="text-xl font-semibold mb-2">Journey Interrupted</h2>
-                    <p className="text-slate-600 mb-6">We lost your progress. Please start again from the beginning.</p>
+            <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6 text-center">
+                <SectionCard title="Journey Blocked">
+                    <AlertCircle className="w-12 h-12 text-[var(--s29-error)] mx-auto mb-4" />
+                    <p className="text-[var(--s29-text-muted)] mb-6">Filing state not found. Please verify your PAN again.</p>
                     <button
                         onClick={() => navigate('/itr/start')}
-                        className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium"
+                        className="bg-[var(--s29-primary)] text-white px-6 py-3 rounded-[var(--s29-radius-main)] font-semibold"
                     >
-                        Restart Journey
+                        Return to ID Verification
                     </button>
-                </div>
+                </SectionCard>
             </div>
         );
     }
@@ -83,7 +88,6 @@ const ITRDetermination = () => {
             const token = localStorage.getItem('accessToken');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-            // Official Filing Creation Moment
             const response = await axios.post(`${API_BASE_URL}/filings`, {
                 assessmentYear: ay,
                 taxpayerPan: pan,
@@ -92,7 +96,6 @@ const ITRDetermination = () => {
             const filingId = response.data.data?.id || response.data.id;
 
             if (filingId) {
-                // Initialize the filing with the selected intent and prefill data
                 const incomeIntent = {
                     salary: selectedSources.includes('salary'),
                     capitalGains: selectedSources.includes('capitalGains'),
@@ -105,29 +108,19 @@ const ITRDetermination = () => {
                 await axios.put(`${API_BASE_URL}/filings/${filingId}`, {
                     jsonPayload: {
                         prefill: prefillData,
-                        itrType: determination.type, // Explicitly tag the determined ITR type
+                        itrType: determination.type,
                         income: {
-                            salary: incomeIntent.salary ? {
-                                intent: true,
-                                prefill: prefillData?.income?.salary || 0,
-                            } : null,
+                            salary: incomeIntent.salary ? { intent: true, prefill: prefillData?.income?.salary || 0 } : null,
                             capitalGains: incomeIntent.capitalGains ? { intent: true } : null,
                             houseProperty: incomeIntent.rental ? { intent: true } : null,
                             presumptive: incomeIntent.businessPresumptive ? { intent: true } : null,
                             business: incomeIntent.businessFull ? { intent: true } : null,
-                            otherSources: incomeIntent.other ? {
-                                intent: true,
-                                prefill: {
-                                    interest: prefillData?.income?.interestIncome || 0,
-                                    dividend: prefillData?.income?.dividendIncome || 0,
-                                    other: prefillData?.income?.otherIncome || 0,
-                                },
-                            } : null,
+                            otherSources: incomeIntent.other ? { intent: true } : null,
                         },
                     },
                 }, { headers });
 
-                toast.success(`Filing created for ${determination.type}!`);
+                toast.success('Filing started');
 
                 if (determination.type === 'ITR-3') {
                     navigate('/itr/itr3-ceremony', { state: { filingId, pan, ay } });
@@ -137,89 +130,80 @@ const ITRDetermination = () => {
             }
         } catch (error) {
             console.error('Filing creation failed:', error);
-            toast.error(error.response?.data?.error || 'Could not start filing.');
+            toast.error('Could not prepare your return. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-            <div className="max-w-2xl w-full">
-                {/* Authority Header */}
-                <div className="text-center mb-10">
-                    <div className="w-20 h-20 bg-primary-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary-200">
-                        <ShieldCheck className="w-10 h-10" />
+        <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center p-6">
+            {/* Step Indicator */}
+            <div className="mb-8 text-center">
+                <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
+                    Step 2 of 5
+                </span>
+                <div className="flex gap-2 mt-2">
+                    <div className="h-1 w-8 bg-[var(--s29-success)] rounded-full" />
+                    <div className="h-1 w-8 bg-[var(--s29-primary)] rounded-full" />
+                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
+                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
+                    <div className="h-1 w-8 bg-[var(--s29-border-light)] rounded-full" />
+                </div>
+            </div>
+
+            <SectionCard>
+                <div className="text-center">
+                    <div className="w-16 h-16 bg-[var(--s29-primary-light)] text-[var(--s29-primary)] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <ShieldCheck className="w-8 h-8" />
                     </div>
-                    <h1 className="text-4xl font-serif font-medium text-slate-900 mb-3">
-                        Your Return Type
+                    <p className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-small)] font-semibold uppercase tracking-wider mb-2">
+                        Profile Analyzed
+                    </p>
+                    <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mb-2">
+                        Based on what you told us, you’ll file <span className="text-[var(--s29-primary)]">{determination.type}</span>.
                     </h1>
-                    <p className="text-lg text-slate-600">
-                        Based on your income profile, our engine has determined your correct ITR form.
+                </div>
+
+                <div className="mt-8 space-y-4">
+                    {determination.reasons.map((reason, idx) => (
+                        <div key={idx} className="flex items-start gap-3 p-4 bg-white border border-[var(--s29-border-light)] rounded-[var(--s29-radius-main)]">
+                            <span className="text-[var(--s29-success)] mt-0.5">✓</span>
+                            <span className="text-[var(--s29-text-main)] text-[var(--s29-font-size-body)]">{reason}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-6 p-4 bg-[var(--s29-bg-page)] rounded-[var(--s29-radius-main)]">
+                    <p className="text-[var(--s29-text-main)] text-[var(--s29-font-size-small)] italic">
+                        "{determination.implication}"
                     </p>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all hover:scale-[1.01]">
-                    <div className="bg-primary-900 px-8 py-10 text-white text-center">
-                        <p className="text-primary-300 uppercase tracking-widest text-sm font-bold mb-2">You will be filing</p>
-                        <h2 className="text-6xl font-serif font-bold mb-4">{determination.type}</h2>
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full text-sm backdrop-blur-sm">
-                            <CheckCircle2 className="w-4 h-4 text-primary-400" />
-                            <span>AY {ay} Verified</span>
-                        </div>
-                    </div>
+                <button
+                    onClick={handleCreateFiling}
+                    disabled={loading}
+                    className="w-full mt-10 bg-[var(--s29-primary)] text-white py-4 rounded-[var(--s29-radius-main)] font-semibold text-lg hover:bg-[var(--s29-primary-dark)] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
+                >
+                    {loading ? (
+                        <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Preparing Return...
+                        </>
+                    ) : (
+                        <>
+                            I understand & continue
+                            <ArrowRight className="w-5 h-5" />
+                        </>
+                    )}
+                </button>
 
-                    <div className="px-8 py-10">
-                        <div className="mb-8">
-                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <Info className="w-4 h-4" />
-                                Why {determination.type}?
-                            </h3>
-                            <ul className="space-y-4">
-                                {determination.reasons.map((reason, idx) => (
-                                    <li key={idx} className="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                        <div className="p-2 bg-white rounded-lg shadow-sm">
-                                            <div className="w-2 h-2 bg-primary-500 rounded-full" />
-                                        </div>
-                                        <div>
-                                            <p className="text-slate-900 font-medium">{reason}</p>
-                                            <p className="text-sm text-slate-500">Auto-detected for PAN {pan}</p>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 mb-10">
-                            <p className="text-blue-800 text-sm leading-relaxed">
-                                <strong>Don't worry about the form.</strong> We've custom-tailored the journey for {determination.type}. You only need to answer simple questions about your income.
-                            </p>
-                        </div>
-
-                        <button
-                            onClick={handleCreateFiling}
-                            disabled={loading}
-                            className="w-full bg-primary-600 text-white py-5 rounded-2xl font-bold text-xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-200 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="w-7 h-7 animate-spin" />
-                                    Preparing your {determination.type}...
-                                </>
-                            ) : (
-                                <>
-                                    Start My Filing
-                                    <ArrowRight className="w-6 h-6" />
-                                </>
-                            )}
-                        </button>
-                    </div>
+                <div className="mt-8">
+                    <ReassuranceBanner
+                        message="Don’t worry about the form selection. We handle the complexity of the law so you can focus on the simple questions."
+                    />
                 </div>
-
-                <p className="text-center mt-8 text-slate-400 text-sm">
-                    Verified Identity: {pan} ({dob}) • AY {ay} Lock Active
-                </p>
-            </div>
+            </SectionCard>
         </div>
     );
 };

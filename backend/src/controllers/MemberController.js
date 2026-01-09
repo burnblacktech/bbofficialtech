@@ -8,7 +8,7 @@ const { Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
-const auditService = require('../services/utils/AuditService');
+const auditService = require('../services/core/AuditService');
 const {
   presentMember,
   presentMemberWithStats,
@@ -23,10 +23,12 @@ class MemberController {
     enterpriseLogger.info('MemberController initialized');
 
     // Bind methods to preserve 'this' context
-    if (this.getMembers) { this.getMembers = this.getMembers.bind(this); }
-    if (this.createMember) { this.createMember = this.createMember.bind(this); }
-    if (this.updateMember) { this.updateMember = this.updateMember.bind(this); }
-    if (this.deleteMember) { this.deleteMember = this.deleteMember.bind(this); }
+    this.getMembers = this.getMembers.bind(this);
+    this.createMember = this.createMember.bind(this);
+    this.updateMember = this.updateMember.bind(this);
+    this.deleteMember = this.deleteMember.bind(this);
+    this.getMemberFilings = this.getMemberFilings.bind(this);
+    this.getMemberDocuments = this.getMemberDocuments.bind(this);
   }
 
   // =====================================================

@@ -15,7 +15,7 @@ import {
     Landmark,
     CheckCircle2,
     Info,
-    ShieldAlert
+    ShieldAlert,
 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -32,17 +32,17 @@ const ITR3AssetsLiabilities = () => {
     const [form, setForm] = useState({
         immovableAssets: {
             land: 0,
-            building: 0
+            building: 0,
         },
         movableAssets: {
             cashInHand: 0,
             jewellery: 0,
             vehicles: 0,
             yachts: 0, // Canonical schedule field
-            insurancePolicies: 0
+            insurancePolicies: 0,
         },
         liabilities: 0,
-        complete: true
+        complete: true,
     });
 
     useEffect(() => {
@@ -57,7 +57,7 @@ const ITR3AssetsLiabilities = () => {
                 if (alData) {
                     setForm(prev => ({
                         ...prev,
-                        ...alData
+                        ...alData,
                     }));
                 }
             } catch (err) {
@@ -86,19 +86,19 @@ const ITR3AssetsLiabilities = () => {
                     business: {
                         ...filing.jsonPayload.income.business,
                         assetsLiabilities: form,
-                        complete: true // Mark the whole business section as complete
-                    }
-                }
+                        complete: true, // Mark the whole business section as complete
+                    },
+                },
             };
 
             await axios.put(`${API_BASE_URL}/filings/${filingId}`, {
-                jsonPayload: updatedPayload
+                jsonPayload: updatedPayload,
             }, { headers });
 
-            toast.success("Schedule AL saved. Business section complete.");
+            toast.success('Schedule AL saved. Business section complete.');
             navigate(`/filing/${filingId}/income-story`);
         } catch (err) {
-            toast.error("Failed to save Schedule AL.");
+            toast.error('Failed to save Schedule AL.');
         } finally {
             setSaving(false);
         }
@@ -176,7 +176,7 @@ const ITR3AssetsLiabilities = () => {
                                             value={form.movableAssets[key]}
                                             onChange={(e) => setForm({
                                                 ...form,
-                                                movableAssets: { ...form.movableAssets, [key]: e.target.value }
+                                                movableAssets: { ...form.movableAssets, [key]: e.target.value },
                                             })}
                                             className="w-full px-5 py-3 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-primary-50 transition-all font-mono"
                                         />
@@ -206,7 +206,7 @@ const ITR3AssetsLiabilities = () => {
                         <div className="p-8 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 text-center">
                             <p className="text-sm text-slate-500 mb-4 font-medium">Overwhelmed by professional schedules?</p>
                             <button
-                                onClick={() => navigate(`/ca/marketplace`)}
+                                onClick={() => navigate('/ca/marketplace')}
                                 className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm bg-white px-6 py-3 rounded-xl border border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
                             >
                                 <Gem className="w-4 h-4" />

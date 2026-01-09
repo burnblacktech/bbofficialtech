@@ -22,7 +22,7 @@ class BalanceSheetService {
         return null;
       }
 
-      const balanceSheet = filing.jsonPayload?.balanceSheet;
+      const balanceSheet = filing.jsonPayload?.income?.business?.balanceSheet;
 
       return balanceSheet || {
         hasBalanceSheet: false,
@@ -64,10 +64,13 @@ class BalanceSheetService {
       }
 
       // Sync to jsonPayload (SSOT)
-      const payload = { ...(filing.jsonPayload || {}) };
-      payload.balanceSheet = balanceSheetData;
+      if (!filing.jsonPayload) filing.jsonPayload = {};
+      if (!filing.jsonPayload.income) filing.jsonPayload.income = {};
+      if (!filing.jsonPayload.income.business) filing.jsonPayload.income.business = {};
 
-      filing.jsonPayload = payload;
+      filing.jsonPayload.income.business.balanceSheet = balanceSheetData;
+
+      // Explicitly mark jsonPayload as changed for Postgres JSONB update
       filing.changed('jsonPayload', true);
 
       // Validate balance sheet

@@ -105,7 +105,8 @@ class ITRApplicabilityService {
         if (contract.conditions) {
             // Resident condition
             if (contract.conditions.resident !== undefined) {
-                const isResident = filing.isResident !== false; // Default to true if not specified
+                // S22: Derive residency from jsonPayload.personalInfo
+                const isResident = payload.personalInfo?.isResident !== false;
                 if (contract.conditions.resident && !isResident) {
                     return {
                         eligible: false,
@@ -117,7 +118,11 @@ class ITRApplicabilityService {
 
             // Max income condition
             if (contract.conditions.maxIncome !== undefined) {
-                const totalIncome = filing.totalIncome || 0;
+                // S22: Derive total income from taxComputation cache or payload
+                const totalIncome = filing.taxLiability !== null ?
+                    (filing.taxComputation?.summary?.totalIncome || 0) :
+                    (payload.income?.summary?.totalIncome || 0);
+
                 if (totalIncome > contract.conditions.maxIncome) {
                     return {
                         eligible: false,
@@ -129,7 +134,8 @@ class ITRApplicabilityService {
 
             // Max turnover condition (for ITR-4)
             if (contract.conditions.maxTurnover !== undefined) {
-                const turnover = filing.turnover || 0;
+                // S22: Derive turnover from presumptive income payload
+                const turnover = payload.income?.presumptive?.totalTurnover || 0;
                 if (turnover > contract.conditions.maxTurnover) {
                     return {
                         eligible: false,

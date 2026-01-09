@@ -14,7 +14,7 @@ import {
     AlertCircle,
     BookOpen,
     Scale,
-    Check
+    Check,
 } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -33,7 +33,7 @@ const ITR3BusinessProfile = () => {
         natureOfBusiness: '',
         accountingMethod: 'mercantile', // mercantile or cash
         auditApplicable: false,
-        booksMaintained: true
+        booksMaintained: true,
     });
 
     useEffect(() => {
@@ -48,7 +48,7 @@ const ITR3BusinessProfile = () => {
                 if (businessData) {
                     setForm(prev => ({
                         ...prev,
-                        ...businessData.profile
+                        ...businessData.profile,
                     }));
                 }
             } catch (err) {
@@ -63,7 +63,7 @@ const ITR3BusinessProfile = () => {
 
     const handleSave = async () => {
         if (!form.businessName || !form.natureOfBusiness) {
-            toast.error("Business name and nature are required for ITR-3.");
+            toast.error('Business name and nature are required for ITR-3.');
             return;
         }
 
@@ -83,19 +83,19 @@ const ITR3BusinessProfile = () => {
                     business: {
                         ...filing.jsonPayload.income.business,
                         profile: form,
-                        intent: true
-                    }
-                }
+                        intent: true,
+                    },
+                },
             };
 
             await axios.put(`${API_BASE_URL}/filings/${filingId}`, {
-                jsonPayload: updatedPayload
+                jsonPayload: updatedPayload,
             }, { headers });
 
-            toast.success("Business profile saved.");
+            toast.success('Business profile saved.');
             navigate(`/filing/${filingId}/income/business/pl`);
         } catch (err) {
-            toast.error("Failed to save profile.");
+            toast.error('Failed to save profile.');
         } finally {
             setSaving(false);
         }
@@ -230,24 +230,18 @@ const ITR3BusinessProfile = () => {
                                         <p className="text-xs text-slate-500">Mandatory for ITR-3. If No, you should consider ITR-4.</p>
                                     </div>
                                 </div>
-                                <button
-                                    className={`w-14 h-8 rounded-full transition-all relative bg-primary-600 cursor-default`}
+                                <div
+                                    className="w-14 h-8 rounded-full transition-all relative bg-primary-600 flex items-center px-1"
                                 >
-                                    <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all left-7`} />
-                                </button>
+                                    <div className="w-6 h-6 bg-white rounded-full transition-all ml-auto" />
+                                </div>
                             </div>
                         </div>
 
                         {/* Professional Support Guardrail */}
                         <div className="p-8 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 mb-10 text-center">
-                            <p className="text-sm text-slate-500 mb-4 font-medium">Overwhelmed by professional schedules?</p>
-                            <button
-                                onClick={() => navigate(`/ca/marketplace`)}
-                                className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm bg-white px-6 py-3 rounded-xl border border-primary-100 hover:bg-primary-50 transition-all shadow-sm"
-                            >
-                                <Scale className="w-4 h-4" />
-                                Pause & Export to a CA
-                            </button>
+                            <Scale className="w-4 h-4 mx-auto mb-2 text-primary-600" />
+                            <p className="text-sm text-slate-500 font-medium">Overwhelmed by professional schedules? Pause & Export to a CA.</p>
                         </div>
 
                         {/* Guardrail Message */}

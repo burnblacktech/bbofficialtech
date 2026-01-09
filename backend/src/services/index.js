@@ -4,7 +4,7 @@
 // =====================================================
 
 // Core business logic services
-const { TaxComputationEngine, ValidationEngine, DocumentService } = require('./core');
+const { TaxComputationEngine, DocumentService, FilingService } = require('./core');
 
 // Integration services (external APIs)
 const { S3Service, EmailService, AIService } = require('./integration');
@@ -32,8 +32,8 @@ const { AuditService, NotificationService } = require('./utils');
 module.exports = {
   // Core services
   TaxComputationEngine,
-  ValidationEngine,
   DocumentService,
+  FilingService,
 
   // Integration services
   S3Service,
@@ -58,8 +58,8 @@ module.exports = {
   // Service categories
   core: {
     TaxComputationEngine,
-    ValidationEngine,
     DocumentService,
+    FilingService,
   },
   integration: {
     S3Service,

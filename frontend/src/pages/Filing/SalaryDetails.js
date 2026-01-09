@@ -126,7 +126,7 @@ const SalaryDetails = () => {
     };
 
     const handleDeleteEmployer = async (index) => {
-        // eslint-disable-next-line no-alert, no-restricted-globals
+        // eslint-disable-next-line no-alert
         if (!window.confirm('Remove this employer?')) return;
 
         try {

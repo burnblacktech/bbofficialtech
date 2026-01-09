@@ -48,6 +48,7 @@ const HousePropertyStory = () => {
     };
 
     const handleDeleteProperty = async (propertyId) => {
+        // eslint-disable-next-line no-alert
         if (!window.confirm('Remove this property?')) return;
 
         try {
@@ -143,8 +144,8 @@ const HousePropertyStory = () => {
                                                 </h3>
                                                 <div className="flex flex-wrap gap-2 mb-2">
                                                     <span className={`text-xs px-2 py-1 rounded ${property.type === 'self_occupied'
-                                                            ? 'bg-blue-100 text-blue-700'
-                                                            : 'bg-green-100 text-green-700'
+                                                        ? 'bg-blue-100 text-blue-700'
+                                                        : 'bg-green-100 text-green-700'
                                                         }`}>
                                                         {property.type === 'self_occupied' ? 'Self Occupied' : 'Let Out'}
                                                     </span>
