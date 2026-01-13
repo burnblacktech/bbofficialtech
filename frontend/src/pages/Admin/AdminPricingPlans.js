@@ -14,11 +14,15 @@ import {
   AlertCircle,
   X,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import Badge from '../../components/DesignSystem/components/Badge';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminPricingPlans = () => {
   const [loading, setLoading] = useState(true);
@@ -192,6 +196,7 @@ const AdminPricingPlans = () => {
   const filteredPlans = plans.filter((plan) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         plan.name?.toLowerCase().includes(searchLower) ||
         plan.description?.toLowerCase().includes(searchLower)
@@ -412,6 +417,7 @@ const AdminPricingPlans = () => {
                     />
                   </div>
                 </div>
+
                 <div>
                   <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Description

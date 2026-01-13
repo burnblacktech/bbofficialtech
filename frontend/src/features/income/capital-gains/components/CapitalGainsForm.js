@@ -1061,7 +1061,7 @@ const CapitalGainsForm = ({ filingId, data, onUpdate, selectedITR, onDataUploade
                 toast.success('LTCG offset applied successfully');
               }
             } else if (suggestion.type === 'carryforward') {
-              toast.info('Loss carry forward will be handled automatically in your filing');
+              toast('Loss carry forward will be handled automatically in your filing', { icon: 'ℹ️' });
             }
           }}
         />

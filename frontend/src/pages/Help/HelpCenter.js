@@ -9,6 +9,10 @@ import { Search, BookOpen, MessageCircle, FileText, Video, HelpCircle, Bug, Ligh
 import HelpSearch from '../../components/Help/HelpSearch';
 import CategoryGrid from '../../components/Help/CategoryGrid';
 import ArticleCard from '../../components/Help/ArticleCard';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const HelpCenter = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,48 +25,42 @@ const HelpCenter = () => {
       description: 'Learn how to file your ITR',
       icon: BookOpen,
       color: 'bg-gold-100 text-gold-600',
-      articles: 12,
-    },
+      articles: 12 },
     {
       id: 'filing',
       title: 'ITR Filing',
       description: 'Step-by-step filing guides',
       icon: FileText,
       color: 'bg-primary-100 text-primary-600',
-      articles: 25,
-    },
+      articles: 25 },
     {
       id: 'tax-deductions',
       title: 'Tax & Deductions',
       description: 'Understand tax calculations',
       icon: HelpCircle,
       color: 'bg-success-100 text-success-600',
-      articles: 18,
-    },
+      articles: 18 },
     {
       id: 'documents',
       title: 'Documents',
       description: 'Upload and manage documents',
       icon: FileText,
       color: 'bg-primary-100 text-primary-600',
-      articles: 15,
-    },
+      articles: 15 },
     {
       id: 'account',
       title: 'Account & Settings',
       description: 'Manage your account',
       icon: HelpCircle,
       color: 'bg-slate-100 text-slate-600',
-      articles: 10,
-    },
+      articles: 10 },
     {
       id: 'troubleshooting',
       title: 'Troubleshooting',
       description: 'Common issues and solutions',
       icon: HelpCircle,
       color: 'bg-error-100 text-error-600',
-      articles: 8,
-    },
+      articles: 8 },
   ];
 
   const quickLinks = [
@@ -133,8 +131,7 @@ const HelpCenter = () => {
                 key={article.id}
                 article={{
                   ...article,
-                  category: categories.find(c => c.id === article.category)?.title,
-                }}
+                  category: categories.find(c => c.id === article.category)?.title }}
                 showCategory={true}
                 showStats={true}
               />

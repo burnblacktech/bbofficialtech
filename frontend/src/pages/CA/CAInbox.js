@@ -8,6 +8,10 @@ import Layout from '../../components/Layout'; // Generic Layout
 import CAInboxTable from '../../components/CA/CAInboxTable';
 import apiClient from '../../services/core/APIClient'; // Generic API client
 import { Loader } from 'lucide-react';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAInbox = () => {
     const [loading, setLoading] = useState(true);
@@ -31,7 +35,7 @@ const CAInbox = () => {
         }
     };
 
-    return (
+  return (
         <Layout>
             {/* Simple Header for V3.1 */}
             <div className="bg-slate-50 min-h-screen">

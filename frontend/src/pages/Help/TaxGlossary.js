@@ -7,6 +7,10 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ArrowLeft, BookOpen, Info, ExternalLink } from 'lucide-react';
 import HelpSearch from '../../components/Help/HelpSearch';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const TaxGlossary = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -208,11 +212,10 @@ const TaxGlossary = () => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedLetter('all')}
-              className={`px-3 py-1 rounded-xl text-body-sm font-medium ${
-                selectedLetter === 'all'
-                  ? 'bg-gold-500 text-white'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-              }`}
+              className={`px-3 py-1 rounded-xl text-body-sm font-medium ${selectedLetter === 'all'
+                ? 'bg-gold-500 text-white'
+                : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                }`}
             >
               All
             </button>
@@ -220,11 +223,10 @@ const TaxGlossary = () => {
               <button
                 key={letter}
                 onClick={() => setSelectedLetter(letter)}
-                className={`px-3 py-1 rounded-xl text-body-sm font-medium ${
-                  selectedLetter === letter
-                    ? 'bg-gold-500 text-white'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                }`}
+                className={`px-3 py-1 rounded-xl text-body-sm font-medium ${selectedLetter === letter
+                  ? 'bg-gold-500 text-white'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  }`}
               >
                 {letter}
               </button>
@@ -234,9 +236,9 @@ const TaxGlossary = () => {
 
         {/* Glossary Terms */}
         {Object.keys(groupedByCategory).length === 0 ? (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Card>
             <p className="text-body-md text-slate-600">No terms found matching your search.</p>
-          </div>
+          </Card>
         ) : (
           <div className="space-y-8">
             {Object.entries(groupedByCategory).map(([category, terms]) => (

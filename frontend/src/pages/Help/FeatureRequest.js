@@ -7,6 +7,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lightbulb, ArrowLeft, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const FeatureRequest = () => {
   const navigate = useNavigate();
@@ -16,8 +20,7 @@ const FeatureRequest = () => {
     description: '',
     useCase: '',
     category: 'filing',
-    priority: 'medium',
-  });
+    priority: 'medium' });
 
   const categories = [
     { id: 'filing', name: 'ITR Filing' },

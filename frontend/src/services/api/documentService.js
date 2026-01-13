@@ -35,9 +35,36 @@ class DocumentService {
       const response = await apiClient.uploadFile('/documents/upload', file, null, {
         onUploadProgress: metadata.onProgress,
         headers: {
-          'X-Document-Type': metadata.documentType,
-          'X-Category': metadata.category,
+          'X-Document-Type': metadata.documentType || '',
+          'X-Category': metadata.category || '',
           'X-Filing-ID': metadata.filingId || '',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      errorHandler.handle(error);
+      throw error;
+    }
+  }
+
+  // Upload file with progress tracking
+  async uploadFileWithProgress(file, category, filingId = null, memberId = null, onProgress = null) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', category);
+      if (filingId) formData.append('filingId', filingId);
+      if (memberId) formData.append('memberId', memberId);
+
+      const response = await apiClient.post('/documents/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(percentCompleted);
+          }
         },
       });
       return response.data;

@@ -8,6 +8,10 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { authService } from '../../services';
 import { Phone, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const MobileVerification = () => {
   const navigate = useNavigate();
@@ -31,6 +35,7 @@ const MobileVerification = () => {
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+
       return () => clearTimeout(timer);
     }
   }, [countdown]);
@@ -132,131 +137,129 @@ const MobileVerification = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
-          {/* Pending/Verifying State */}
-          {(status === 'pending' || status === 'verifying') && (
-            <form onSubmit={handleVerifyOTP} className="space-y-4">
-              {error && (
-                <div className="px-4 py-3 rounded-xl bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
-                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-medium">Error</p>
-                    <p className="text-body-regular mt-1">{error}</p>
+        <Card>
+          <div className="p-6">
+            {/* Pending/Verifying State */}
+            {(status === 'pending' || status === 'verifying') && (
+              <form onSubmit={handleVerifyOTP} className="space-y-4">
+                {error && (
+                  <div className="px-4 py-3 rounded-xl bg-error-50 border border-error-200 text-error-600 flex items-start space-x-3">
+                    <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">Error</p>
+                      <p className="text-body-regular mt-1">{error}</p>
+                    </div>
                   </div>
+                )}
+
+                <div>
+                  <label htmlFor="otp" className="block text-label-md text-slate-700 mb-1">
+                    Enter Verification Code
+                  </label>
+                  <input
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    required
+                    maxLength={6}
+                    className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 text-center text-heading-2 tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
+                    placeholder="000000"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    disabled={isLoading || status === 'verifying'}
+                  />
+                  {phone && (
+                    <p className="mt-2 text-center text-body-sm text-slate-600">
+                      Code sent to {formatPhone(phone)}
+                    </p>
+                  )}
                 </div>
-              )}
 
-              <div>
-                <label htmlFor="otp" className="block text-label-md text-slate-700 mb-1">
-                  Enter Verification Code
-                </label>
-                <input
-                  id="otp"
-                  name="otp"
-                  type="text"
-                  required
-                  maxLength={6}
-                  className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-xl placeholder-gray-400 text-slate-900 text-center text-heading-2 tracking-widest focus:outline-none focus:ring-gold-500 focus:border-gold-500 sm:text-body-regular"
-                  placeholder="000000"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  disabled={isLoading || status === 'verifying'}
-                />
-                {phone && (
-                  <p className="mt-2 text-center text-body-sm text-slate-600">
-                    Code sent to {formatPhone(phone)}
-                  </p>
-                )}
-              </div>
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={handleResendOTP}
+                    disabled={countdown > 0 || isLoading || status === 'verifying'}
+                    className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-slate-400 disabled:cursor-not-allowed"
+                  >
+                    {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
+                  </button>
+                </div>
 
-              <div className="text-center">
                 <button
-                  type="button"
-                  onClick={handleResendOTP}
-                  disabled={countdown > 0 || isLoading || status === 'verifying'}
-                  className="text-body-sm text-gold-600 hover:text-gold-500 disabled:text-slate-400 disabled:cursor-not-allowed"
+                  type="submit"
+                  disabled={isLoading || otp.length !== 6 || status === 'verifying'}
+                  className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
                 >
-                  {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
+                  {status === 'verifying' ? (
+                    <span className="flex items-center justify-center">
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Verifying...
+                    </span>
+                  ) : (
+                    'Verify OTP'
+                  )}
                 </button>
-              </div>
+              </form>
+            )}
 
-              <button
-                type="submit"
-                disabled={isLoading || otp.length !== 6 || status === 'verifying'}
-                className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
-              >
-                {status === 'verifying' ? (
-                  <span className="flex items-center justify-center">
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    Verifying...
-                  </span>
-                ) : (
-                  'Verify OTP'
-                )}
-              </button>
-            </form>
-          )}
+            {/* Success State */}
+            {status === 'success' && (
+              <div className="text-center space-y-4">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-success-100">
+                  <CheckCircle className="h-6 w-6 text-success-600" />
+                </div>
+                <div>
+                  <h3 className="text-heading-md text-slate-900 mb-2">
+                    Mobile Verified!
+                  </h3>
+                  <p className="text-body-sm text-slate-600 mb-4">
+                    Your mobile number has been successfully verified. Redirecting to dashboard...
+                  </p>
+                </div>
+                <Link
+                  to="/dashboard"
+                  className="block w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
+                >
+                  Go to Dashboard
+                </Link>
+              </div>
+            )}
 
-          {/* Success State */}
-          {status === 'success' && (
-            <div className="text-center space-y-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-success-100">
-                <CheckCircle className="h-6 w-6 text-success-600" />
-              </div>
-              <div>
-                <h3 className="text-heading-md text-slate-900 mb-2">
-                  Mobile Verified!
-                </h3>
-                <p className="text-body-sm text-slate-600 mb-4">
-                  Your mobile number has been successfully verified. Redirecting to dashboard...
-                </p>
-              </div>
-              <Link
-                to="/dashboard"
-                className="block w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500"
-              >
-                Go to Dashboard
-              </Link>
-            </div>
-          )}
-
-          {/* Error State */}
-          {status === 'error' && (
-            <div className="text-center space-y-4">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error-100">
-                <AlertCircle className="h-6 w-6 text-error-600" />
-              </div>
-              <div>
-                <h3 className="text-heading-md text-slate-900 mb-2">
-                  Verification Failed
-                </h3>
-                <p className="text-body-sm text-slate-600 mb-4">
-                  {error || 'Invalid OTP. Please try again.'}
-                </p>
-              </div>
-              <div className="space-y-3">
-                <button
-                  onClick={() => {
+            {/* Error State */}
+            {status === 'error' && (
+              <div className="text-center space-y-4">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-error-100">
+                  <AlertCircle className="h-6 w-6 text-error-600" />
+                </div>
+                <div>
+                  <h3 className="text-heading-md text-slate-900 mb-2">
+                    Verification Failed
+                  </h3>
+                  <p className="text-body-sm text-slate-600 mb-4">
+                    {error || 'Invalid OTP. Please try again.'}
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <Button variant="primary" onClick={() => {
                     setStatus('pending');
                     setOtp('');
                     setError('');
                     handleSendOTP();
-                  }}
-                  disabled={isLoading}
-                  className="w-full py-2 px-4 border border-transparent rounded-xl shadow-elevation-1 text-body-regular font-medium text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
-                >
-                  Try Again
-                </button>
-                <Link
-                  to="/login"
-                  className="block w-full py-2 px-4 text-center text-body-regular font-medium text-slate-600 hover:text-slate-900"
-                >
-                  Back to Login
-                </Link>
+                  }}>
+                    Try Again
+                  </Button>
+                  <Link
+                    to="/login"
+                    className="block w-full py-2 px-4 text-center text-body-regular font-medium text-slate-600 hover:text-slate-900"
+                  >
+                    Back to Login
+                  </Link>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </Card>
 
         <div className="text-center">
           <p className="text-body-sm text-slate-600">
@@ -272,4 +275,3 @@ const MobileVerification = () => {
 };
 
 export default MobileVerification;
-

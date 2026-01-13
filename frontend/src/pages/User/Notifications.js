@@ -26,9 +26,12 @@ import {
   MarkAsUnread,
   ChevronRight,
   FileText,
-  User,
-} from 'lucide-react';
+  User } from 'lucide-react';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const Notifications = () => {
   const { user } = useAuth();
@@ -61,8 +64,7 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['notifications', user?.user_id]);
-    },
-  });
+    } });
 
   // Mark all as read mutation
   const markAllAsReadMutation = useMutation({
@@ -72,8 +74,7 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['notifications', user?.user_id]);
-    },
-  });
+    } });
 
   // Delete notification mutation
   const deleteNotificationMutation = useMutation({
@@ -83,8 +84,7 @@ const Notifications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['notifications', user?.user_id]);
-    },
-  });
+    } });
 
   const handleMarkAsRead = (notificationId) => {
     markAsReadMutation.mutate(notificationId);
@@ -145,7 +145,8 @@ const Notifications = () => {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
@@ -231,7 +232,7 @@ const Notifications = () => {
 
           {/* Filter Options */}
           {showFilters && (
-            <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
+            <Card>
               {/* Type Filter */}
               <div>
                 <label className="text-body-small font-medium text-slate-700 mb-2 block">Type</label>
@@ -261,7 +262,7 @@ const Notifications = () => {
                   <option value="read">Read</option>
                 </select>
               </div>
-            </div>
+                </Card>
           )}
         </div>
 
@@ -310,8 +311,7 @@ const Notifications = () => {
                             <span>
                               {new Date(notification.created_at).toLocaleTimeString([], {
                                 hour: '2-digit',
-                                minute: '2-digit',
-                              })}
+                                minute: '2-digit' })}
                             </span>
                           </div>
                         </div>

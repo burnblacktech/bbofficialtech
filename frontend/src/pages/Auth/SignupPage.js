@@ -9,6 +9,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
 import { AlertCircle, CheckCircle, Mail, Lock, User, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 const SignupPage = () => {
   const navigate = useNavigate();
   const { login, loginWithOAuth } = useAuth();
@@ -24,13 +28,11 @@ const SignupPage = () => {
     phone: '',
     password: '',
     confirmPassword: '',
-    acceptTerms: false,
-  });
+    acceptTerms: false });
 
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
-    feedback: [],
-  });
+    feedback: [] });
 
   // Calculate password strength
   const calculatePasswordStrength = (password) => {
@@ -117,8 +119,7 @@ const SignupPage = () => {
         fullName: formData.fullName,
         email: formData.email.toLowerCase(),
         phone: formData.phone.replace(/\D/g, ''),
-        password: formData.password,
-      });
+        password: formData.password });
 
       if (response.success) {
         toast.success('Account created successfully! Please verify your email.');
@@ -127,8 +128,7 @@ const SignupPage = () => {
         try {
           const loginResponse = await authService.login({
             email: formData.email.toLowerCase(),
-            password: formData.password,
-          });
+            password: formData.password });
 
           if (loginResponse.success) {
             // Use loginWithOAuth to set the authenticated state with the returned tokens
@@ -139,8 +139,7 @@ const SignupPage = () => {
         } catch (loginError) {
           // If auto-login fails, redirect to login
           navigate('/login', {
-            state: { message: 'Account created. Please login to continue.' },
-          });
+            state: { message: 'Account created. Please login to continue.' } });
         }
       }
     } catch (error) {

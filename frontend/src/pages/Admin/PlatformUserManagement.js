@@ -34,6 +34,8 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const PlatformUserManagement = () => {
   const { user } = useAuth();
@@ -211,6 +213,7 @@ const PlatformUserManagement = () => {
   });
 
   if (isLoading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -357,16 +360,14 @@ const PlatformUserManagement = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    selectedTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                  }`}
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${selectedTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
                 >
                   <span>{tab.name}</span>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    selectedTab === tab.id ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'
-                  }`}>
+                  <span className={`px-2 py-1 text-xs rounded-full ${selectedTab === tab.id ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'
+                    }`}>
                     {tab.count}
                   </span>
                 </button>

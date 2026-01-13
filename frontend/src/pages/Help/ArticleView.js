@@ -10,6 +10,10 @@ import { useArticleDetails, useSubmitArticleFeedback, useArticlesByCategory } fr
 import ArticleCard from '../../components/Help/ArticleCard';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ArticleView = () => {
   const { articleId } = useParams();
@@ -53,6 +57,7 @@ const ArticleView = () => {
   };
 
   if (isLoading) {
+
     return (
       <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,9 +71,9 @@ const ArticleView = () => {
     return (
       <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Card>
             <h2 className="text-heading-lg text-slate-900 mb-2">Article Not Found</h2>
-            <p className="text-body-md text-slate-600 mb-6">The article you're looking for doesn't exist.</p>
+            <p className="text-body-md text-slate-600 mb-6">The article you're looking for doesn\'t exist.</p>
             <Link
               to="/help"
               className="inline-flex items-center px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
@@ -76,7 +81,7 @@ const ArticleView = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Help Center
             </Link>
-          </div>
+          </Card>
         </div>
       </div>
     );
@@ -94,7 +99,7 @@ const ArticleView = () => {
         </Link>
 
         {/* Article Header */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-8 mb-6">
+        <Card>
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               {article.category && (
@@ -135,10 +140,10 @@ const ArticleView = () => {
               <Share2 className="h-5 w-5" />
             </button>
           </div>
-        </div>
+        </Card>
 
         {/* Article Content */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-8 mb-6">
+        <Card>
           <div
             className="prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{ __html: article.content || article.body }}
@@ -180,7 +185,7 @@ const ArticleView = () => {
               </div>
             )}
           </div>
-        </div>
+        </Card>
 
         {/* Related Articles */}
         {(relatedArticles.length > 0 || (categoryArticles?.data?.articles?.length > 0)) && (

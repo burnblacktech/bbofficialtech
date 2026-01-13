@@ -7,11 +7,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Crown, Building2, Users, Shield, CheckCircle, ArrowRight,
-  Star, Zap, Target, TrendingUp, IndianRupee, Clock,
-} from 'lucide-react';
+  Star, Zap, Target, TrendingUp, IndianRupee, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const UpgradeToProfessional = () => {
   const navigate = useNavigate();
@@ -26,54 +29,46 @@ const UpgradeToProfessional = () => {
     pincode: '',
     phone: '',
     website: '',
-    description: '',
-  });
+    description: '' });
 
   const benefits = [
     {
       icon: Users,
       title: 'Client Management',
       description: 'Manage multiple clients and their tax filings from one dashboard',
-      color: 'text-blue-600',
-    },
+      color: 'text-blue-600' },
     {
       icon: Building2,
       title: 'Firm Setup',
       description: 'Create and manage your professional CA firm profile',
-      color: 'text-purple-600',
-    },
+      color: 'text-purple-600' },
     {
       icon: Shield,
       title: 'Team Collaboration',
       description: 'Invite team members and collaborate on client work',
-      color: 'text-green-600',
-    },
+      color: 'text-green-600' },
     {
       icon: TrendingUp,
       title: 'Advanced Reporting',
       description: 'Get detailed analytics and reports for your practice',
-      color: 'text-gold-600',
-    },
+      color: 'text-gold-600' },
     {
       icon: IndianRupee,
       title: 'Billing Management',
       description: 'Track invoices, payments, and client billing',
-      color: 'text-error-600',
-    },
+      color: 'text-error-600' },
     {
       icon: Zap,
       title: 'Priority Support',
       description: 'Get priority customer support for professional users',
-      color: 'text-yellow-600',
-    },
+      color: 'text-yellow-600' },
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value,
-    }));
+      [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -91,8 +86,7 @@ const UpgradeToProfessional = () => {
           updateUser({
             ...user,
             role: 'CA_FIRM_ADMIN',
-            firmId: response.firmId,
-          });
+            firmId: response.firmId });
         }
 
         // Redirect to CA dashboard

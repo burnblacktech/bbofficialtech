@@ -6,8 +6,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   Building2,
   Users,
@@ -169,6 +173,7 @@ const SubscriptionPlans = () => {
   };
 
   if (loading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -195,31 +200,29 @@ const SubscriptionPlans = () => {
 
         {/* Billing Cycle Toggle */}
         <div className="flex items-center justify-center mb-8">
-          <div className="bg-white rounded-xl p-1 border border-neutral-200">
+          <Card>
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                billingCycle === 'monthly'
-                  ? 'bg-primary-500 text-white'
-                  : 'text-neutral-600 hover:text-neutral-900'
-              }`}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${billingCycle === 'monthly'
+                ? 'bg-primary-500 text-white'
+                : 'text-neutral-600 hover:text-neutral-900'
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingCycle('annual')}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                billingCycle === 'annual'
-                  ? 'bg-primary-500 text-white'
-                  : 'text-neutral-600 hover:text-neutral-900'
-              }`}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${billingCycle === 'annual'
+                ? 'bg-primary-500 text-white'
+                : 'text-neutral-600 hover:text-neutral-900'
+                }`}
             >
               Annual
               <span className="ml-1 px-2 py-0.5 bg-success-100 text-success-600 text-body-small rounded-full">
                 Save 20%
               </span>
             </button>
-          </div>
+          </Card>
         </div>
 
         {/* Plans Grid */}
@@ -228,13 +231,12 @@ const SubscriptionPlans = () => {
             <StaggerItem key={plan.id}>
               <motion.div
                 whileHover={{ y: -5 }}
-                className={`relative bg-white rounded-xl shadow-elevation-3 border-2 transition-all duration-200 ${
-                  selectedPlan?.id === plan.id
-                    ? 'border-primary-500 shadow-primary-200'
-                    : plan.popular
+                className={`relative bg-white rounded-xl shadow-elevation-3 border-2 transition-all duration-200 ${selectedPlan?.id === plan.id
+                  ? 'border-primary-500 shadow-primary-200'
+                  : plan.popular
                     ? 'border-secondary-500 shadow-secondary-200'
                     : 'border-neutral-200 hover:border-neutral-300'
-                }`}
+                  }`}
               >
                 {/* Popular Badge */}
                 {plan.popular && (
@@ -302,13 +304,12 @@ const SubscriptionPlans = () => {
                   {/* Select Button */}
                   <button
                     onClick={() => handleSelectPlan(plan)}
-                    className={`w-full py-3 px-4 rounded-xl font-medium transition-colors ${
-                      selectedPlan?.id === plan.id
-                        ? 'bg-primary-500 text-white'
-                        : plan.popular
+                    className={`w-full py-3 px-4 rounded-xl font-medium transition-colors ${selectedPlan?.id === plan.id
+                      ? 'bg-primary-500 text-white'
+                      : plan.popular
                         ? 'bg-secondary-500 text-white hover:bg-secondary-600'
                         : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                    }`}
+                      }`}
                   >
                     {selectedPlan?.id === plan.id ? 'Selected' : 'Select Plan'}
                   </button>

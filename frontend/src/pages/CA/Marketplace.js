@@ -8,6 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, MapPin, Star, Users, Briefcase, DollarSign, X } from 'lucide-react';
 import { useCAFirms } from '../../features/ca-marketplace/hooks/use-ca-marketplace';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAMarketplace = () => {
   const navigate = useNavigate();
@@ -60,6 +64,7 @@ const CAMarketplace = () => {
   };
 
   if (error) {
+
     return (
       <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,7 +88,7 @@ const CAMarketplace = () => {
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4 mb-6">
+        <Card>
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -215,7 +220,7 @@ const CAMarketplace = () => {
               )}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Results */}
         {isLoading ? (
@@ -224,19 +229,16 @@ const CAMarketplace = () => {
             <p className="text-body-md text-slate-600">Loading CA firms...</p>
           </div>
         ) : firms.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Card>
             <Briefcase className="h-16 w-16 text-slate-400 mx-auto mb-4" />
             <h3 className="text-heading-md text-slate-900 mb-2">No CA firms found</h3>
             <p className="text-body-md text-slate-600 mb-4">
               Try adjusting your filters or search terms
             </p>
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
-            >
+            <Button variant="primary" onClick={clearFilters}>
               Clear All Filters
-            </button>
-          </div>
+            </Button>
+          </Card>
         ) : (
           <>
             {/* Results Count */}
@@ -289,34 +291,28 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
   const location = firm.address?.split(',')[0] || 'Location not specified';
 
   return (
-    <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 hover:shadow-elevation-2 transition-shadow cursor-pointer"
-         onClick={() => onViewProfile(firm.id)}>
+    <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => onViewProfile(firm.id)}>
       {/* Header */}
       <div className="mb-4">
         <h3 className="text-heading-md font-semibold text-slate-900 mb-2">{firm.name}</h3>
-        <div className="flex items-center gap-2 text-body-sm text-slate-600">
+        <div className="flex items-center gap-2 text-body-sm text-slate-600 mb-2">
           <MapPin className="h-4 w-4" />
           <span>{location}</span>
         </div>
-      </div>
-
-      {/* Rating */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
-              className={`h-4 w-4 ${
-                star <= Math.round(rating)
-                  ? 'text-gold-500 fill-current'
-                  : 'text-slate-300'
-              }`}
+              className={`h-4 w-4 ${star <= Math.round(rating)
+                ? 'text-gold-500 fill-current'
+                : 'text-slate-300'
+                }`}
             />
           ))}
+          <span className="text-body-sm text-slate-600 ml-1">
+            {rating.toFixed(1)} ({reviewCount} reviews)
+          </span>
         </div>
-        <span className="text-body-sm text-slate-600">
-          {rating.toFixed(1)} ({reviewCount} reviews)
-        </span>
       </div>
 
       {/* Specialization */}
@@ -345,17 +341,17 @@ const CAFirmCard = ({ firm, onViewProfile }) => {
             {typeof price === 'number' ? `₹${price.toLocaleString('en-IN')}` : price}
           </span>
         </div>
-        <button
+        <Button
+          variant="primary"
           onClick={(e) => {
             e.stopPropagation();
             onViewProfile(firm.id);
           }}
-          className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600 text-body-sm font-medium"
         >
           View Profile
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 };
 

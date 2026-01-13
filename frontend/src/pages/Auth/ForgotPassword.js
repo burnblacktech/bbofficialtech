@@ -8,6 +8,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../services';
 import { Mail, Phone, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -65,7 +69,8 @@ const ForgotPassword = () => {
   };
 
   if (success && method === 'email') {
-    return (
+
+  return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
@@ -80,7 +85,7 @@ const ForgotPassword = () => {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <Card>
             <div className="space-y-4">
               <p className="text-body-sm text-slate-600">
                 Click the link in the email to reset your password. The link will expire in 1 hour.
@@ -107,7 +112,7 @@ const ForgotPassword = () => {
                 Back to Login
               </Link>
             </div>
-          </div>
+                </Card>
         </div>
       </div>
     );

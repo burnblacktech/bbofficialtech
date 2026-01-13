@@ -199,7 +199,7 @@ class FormDataService {
    */
   async saveProfileData(profileData) {
     try {
-      const response = await apiClient.put('/users/profile', profileData);
+      const response = await apiClient.put('/auth/profile', profileData);
       return response.data;
     } catch (error) {
       enterpriseLogger.error('Failed to save profile data', { error });
@@ -213,7 +213,7 @@ class FormDataService {
    */
   async loadProfileData() {
     try {
-      const response = await apiClient.get('/users/profile');
+      const response = await apiClient.get('/auth/profile');
       return response.data?.user || response.data || {};
     } catch (error) {
       enterpriseLogger.error('Failed to load profile data', { error });

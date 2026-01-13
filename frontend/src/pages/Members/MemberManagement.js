@@ -13,6 +13,8 @@ import Modal from '../../components/common/Modal';
 import apiClient from '../../services';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../../utils/logger';
+import { DataEntryPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const MemberManagement = () => {
   const navigate = useNavigate();
@@ -33,8 +35,7 @@ const MemberManagement = () => {
     relationship: '',
     dateOfBirth: '',
     gender: '',
-    metadata: {},
-  });
+    metadata: {} });
 
   useEffect(() => {
     loadMembers();
@@ -60,8 +61,7 @@ const MemberManagement = () => {
       relationship: '',
       dateOfBirth: '',
       gender: '',
-      metadata: {},
-    });
+      metadata: {} });
     setShowAddModal(true);
   };
 
@@ -73,8 +73,7 @@ const MemberManagement = () => {
       relationship: member.relationship,
       dateOfBirth: member.dateOfBirth || '',
       gender: member.gender || '',
-      metadata: member.metadata || {},
-    });
+      metadata: member.metadata || {} });
     setShowEditModal(true);
   };
 
@@ -129,8 +128,7 @@ const MemberManagement = () => {
   const getStatusColor = (status) => {
     const colors = {
       'active': 'green',
-      'inactive': 'gray',
-    };
+      'inactive': 'gray' };
     return colors[status] || 'gray';
   };
 
@@ -140,8 +138,7 @@ const MemberManagement = () => {
       'child': 'Child',
       'parent': 'Parent',
       'sibling': 'Sibling',
-      'other': 'Other',
-    };
+      'other': 'Other' };
     return labels[relationship] || 'Unknown';
   };
 
@@ -151,7 +148,8 @@ const MemberManagement = () => {
   };
 
   if (loading) {
-    return (
+
+  return (
       <div className="member-management">
         <LoadingState message="Loading members..." fullScreen={false} />
       </div>
@@ -234,7 +232,7 @@ const MemberManagement = () => {
                   <span className="label">Added:</span>
                   <span className="value">{formatDate(member.createdAt)}</span>
                 </div>
-              </div>
+                </Card>
 
               <div className="member-actions">
                 <Button
@@ -256,7 +254,7 @@ const MemberManagement = () => {
                   Delete
                 </Button>
               </div>
-            </Card>
+            </div>
           ))
         ) : (
           <div className="empty-state">

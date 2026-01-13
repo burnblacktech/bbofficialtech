@@ -33,10 +33,13 @@ import {
   Crown,
   Star,
   Activity,
-  IndianRupee,
-} from 'lucide-react';
+  IndianRupee } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAFirmStaffManagement = () => {
   const { user } = useAuth();
@@ -87,8 +90,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to add staff member: ${error.message}`);
-    },
-  });
+    } });
 
   // Update staff status mutation
   const updateStatusMutation = useMutation({
@@ -103,8 +105,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update staff status: ${error.message}`);
-    },
-  });
+    } });
 
   // Update staff role mutation
   const updateRoleMutation = useMutation({
@@ -119,8 +120,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update staff role: ${error.message}`);
-    },
-  });
+    } });
 
   // Delete staff mutation
   const deleteStaffMutation = useMutation({
@@ -135,8 +135,7 @@ const CAFirmStaffManagement = () => {
     },
     onError: (error) => {
       toast.error(`Failed to remove staff member: ${error.message}`);
-    },
-  });
+    } });
 
   const handleStatusUpdate = (staffId, newStatus) => {
     updateStatusMutation.mutate({ staffId, status: newStatus });
@@ -231,7 +230,8 @@ const CAFirmStaffManagement = () => {
   });
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
@@ -573,8 +573,7 @@ const AddStaffForm = ({ onClose, onSubmit, isLoading }) => {
     department: '',
     joining_date: '',
     salary: '',
-    is_verified: false,
-  });
+    is_verified: false });
 
   const handleSubmit = (e) => {
     e.preventDefault();

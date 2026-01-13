@@ -7,13 +7,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Sparkles, Clock } from 'lucide-react';
 import SectionCard from '../../components/common/SectionCard';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const StartFilingGate = () => {
     const navigate = useNavigate();
 
-    return (
-        <div className="min-h-screen bg-[var(--s29-bg-page)] py-12 px-6 flex items-center justify-center">
-            <div className="max-w-2xl w-full">
+  return (
+        <div className="min-h-screen bg-[var(--s29-bg-page)] py-8 px-6">
+            <div className="max-w-2xl mx-auto">
                 <SectionCard className="p-10 border-none shadow-elevation-2">
                     <div className="text-center mb-10">
                         <div className="w-20 h-20 bg-gold-50 text-gold-600 rounded-full flex items-center justify-center mx-auto mb-6">

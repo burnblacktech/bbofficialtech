@@ -121,13 +121,12 @@ const CAFirmReview = sequelize.define('CAFirmReview', {
       unique: true,
       fields: ['firm_id', 'user_id'],
       name: 'unique_user_review_per_firm',
-      comment: 'One review per user per firm',
     },
   ],
 });
 
 // Instance methods
-CAFirmReview.prototype.incrementHelpful = async function() {
+CAFirmReview.prototype.incrementHelpful = async function () {
   try {
     await this.increment('helpfulCount');
     return this;
@@ -141,7 +140,7 @@ CAFirmReview.prototype.incrementHelpful = async function() {
 };
 
 // Class methods
-CAFirmReview.findByFirm = async function(firmId, options = {}) {
+CAFirmReview.findByFirm = async function (firmId, options = {}) {
   try {
     const { rating, limit = 20, offset = 0 } = options;
     const whereClause = { firmId };
@@ -165,7 +164,7 @@ CAFirmReview.findByFirm = async function(firmId, options = {}) {
   }
 };
 
-CAFirmReview.calculateAverageRating = async function(firmId) {
+CAFirmReview.calculateAverageRating = async function (firmId) {
   try {
     const result = await CAFirmReview.findAll({
       where: { firmId },

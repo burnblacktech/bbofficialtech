@@ -6,13 +6,18 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { OrientationPage } from '../components/templates';
+import { Card } from '../components/UI/Card';
+import { Button } from '../components/UI/Button';
+import { typography, spacing, components, layout } from '../styles/designTokens';
 
 const HomeRedirect = () => {
   const { user, isLoading } = useAuth();
 
   // Show loading state while authentication is being determined
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>

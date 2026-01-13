@@ -14,6 +14,9 @@ import Button from '../../components/DesignSystem/components/Button';
 import { cn } from '../../utils';
 import { enterpriseLogger } from '../../utils/logger';
 import itrService from '../../services/api/itrService';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const RefundTracking = () => {
   const [searchParams] = useSearchParams();
@@ -99,8 +102,7 @@ const RefundTracking = () => {
     try {
       setUpdating(true);
       const response = await apiClient.post(`/itr/filings/${filingId}/refund/update-account`, {
-        bankAccount,
-      });
+        bankAccount });
 
       if (response.data.success) {
         setRefund(response.data?.data?.refund || null);
@@ -121,8 +123,7 @@ const RefundTracking = () => {
     try {
       setUpdating(true);
       const response = await apiClient.post(`/itr/filings/${filingId}/refund/reissue-request`, {
-        reason,
-      });
+        reason });
 
       if (response.data.success) {
         setRefund(response.data?.data?.refund || null);
@@ -138,7 +139,8 @@ const RefundTracking = () => {
   };
 
   if (loading) {
-    return (
+
+  return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin text-gold-500 mx-auto mb-4" aria-hidden="true" />
@@ -180,7 +182,7 @@ const RefundTracking = () => {
 
         {/* Pick a filing (if missing filingId) */}
         {!filingId && recentCompletedFilings.length > 0 && (
-          <div className="mb-8 bg-white rounded-xl border border-slate-200 p-4">
+          <Card>
             <h2 className="text-heading-lg text-slate-900 mb-2">View current status for a filing</h2>
             <p className="text-body-md text-slate-600 mb-3">
               Select a recent filed return to see its current refund status.
@@ -196,7 +198,7 @@ const RefundTracking = () => {
                 </button>
               ))}
             </div>
-          </div>
+                </Card>
         )}
 
         {/* Current Refund Status */}

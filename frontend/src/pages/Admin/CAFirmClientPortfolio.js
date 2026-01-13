@@ -35,10 +35,13 @@ import {
   IndianRupee,
   FileText,
   MapPin,
-  Plus,
-} from 'lucide-react';
+  Plus } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAFirmClientPortfolio = () => {
   const { user } = useAuth();
@@ -89,8 +92,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to add client: ${error.message}`);
-    },
-  });
+    } });
 
   // Update client status mutation
   const updateStatusMutation = useMutation({
@@ -105,8 +107,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update client: ${error.message}`);
-    },
-  });
+    } });
 
   // Update client tier mutation
   const updateTierMutation = useMutation({
@@ -121,8 +122,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update client tier: ${error.message}`);
-    },
-  });
+    } });
 
   // Delete client mutation
   const deleteClientMutation = useMutation({
@@ -137,8 +137,7 @@ const CAFirmClientPortfolio = () => {
     },
     onError: (error) => {
       toast.error(`Failed to remove client: ${error.message}`);
-    },
-  });
+    } });
 
   const handleStatusUpdate = (clientId, newStatus) => {
     updateStatusMutation.mutate({ clientId, status: newStatus });
@@ -225,7 +224,8 @@ const CAFirmClientPortfolio = () => {
   });
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
@@ -568,8 +568,7 @@ const AddClientForm = ({ onClose, onSubmit, isLoading }) => {
     aadhaar_number: '',
     tier: 'basic',
     status: 'pending',
-    is_verified: false,
-  });
+    is_verified: false });
 
   const handleSubmit = (e) => {
     e.preventDefault();

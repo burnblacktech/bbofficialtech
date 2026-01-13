@@ -8,10 +8,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Briefcase, TrendingUp, Home, Building2, DollarSign, ChevronRight, CheckCircle2, Clock, Info, Loader2, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import SectionCard from '../../components/common/SectionCard';
 import ReassuranceBanner from '../../components/common/ReassuranceBanner';
-import InlineHint from '../../components/common/InlineHint';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { PageContent } from '../../components/Layout';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -40,6 +43,7 @@ const IncomeStory = () => {
     }, [filingId]);
 
     if (loading) {
+
         return (
             <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-[var(--s29-primary)]" />
@@ -50,9 +54,9 @@ const IncomeStory = () => {
     if (!filing) {
         return (
             <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center">
-                <SectionCard title="Not Found">
+                <Card padding="lg">
                     <p className="text-[var(--s29-text-muted)]">Could not find this filing. Please start again.</p>
-                </SectionCard>
+                </Card>
             </div>
         );
     }
@@ -74,6 +78,7 @@ const IncomeStory = () => {
             icon: Briefcase,
             time: '2 mins',
             status: getSectionStatus(incomeIntent.salary),
+            path: `/filing/${filingId}/income/salary`,
         });
     }
 
@@ -85,6 +90,7 @@ const IncomeStory = () => {
             icon: TrendingUp,
             time: '5 mins',
             status: getSectionStatus(incomeIntent.capitalGains),
+            path: `/filing/${filingId}/capital-gains-story`,
         });
     }
 
@@ -96,6 +102,7 @@ const IncomeStory = () => {
             icon: Home,
             time: '3 mins',
             status: getSectionStatus(incomeIntent.houseProperty),
+            path: `/filing/${filingId}/house-properties`,
         });
     }
 
@@ -107,6 +114,7 @@ const IncomeStory = () => {
             icon: Building2,
             time: '4 mins',
             status: getSectionStatus(incomeIntent.presumptive),
+            path: `/filing/${filingId}/business-profession`,
         });
     }
 
@@ -118,6 +126,7 @@ const IncomeStory = () => {
             icon: Building2,
             time: '15 mins',
             status: getSectionStatus(incomeIntent.business),
+            path: `/filing/${filingId}/business-profession`,
         });
     }
 
@@ -129,6 +138,7 @@ const IncomeStory = () => {
             icon: DollarSign,
             time: '1 min',
             status: getSectionStatus(incomeIntent.otherSources),
+            path: `/filing/${filingId}/other-income-sources`,
         });
     }
 
@@ -136,56 +146,50 @@ const IncomeStory = () => {
     const allSectionsComplete = sections.every(s => s.status === 'COMPLETED');
 
     return (
-        <div className="min-h-screen bg-[var(--s29-bg-page)] py-12 px-6">
-            <div className="max-w-xl mx-auto">
-                <header className="mb-10 text-center">
-                    <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
-                        Step 3 of 5
-                    </span>
-                    <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mt-2">
-                        Your Income Story
-                    </h1>
-                    <p className="text-[var(--s29-text-muted)] mt-1">
-                        Tell us about your earnings. One section at a time.
-                    </p>
-                </header>
-
-                <div className="space-y-4 mb-10">
+        <OrientationPage
+            title="Your Income Story"
+            subtitle="Tell us about your earnings. One section at a time."
+        >
+            <PageContent spacing="section">
+                <div className={layout.blockGap}>
                     {sections.map((section) => {
                         const Icon = section.icon;
                         return (
-                            <div
+                            <Card
                                 key={section.id}
-                                onClick={() => navigate(`/filing/${filingId}/income/${section.id}`)}
-                                className="group bg-white border border-[var(--s29-border-light)] p-5 rounded-[var(--s29-radius-large)] hover:border-[var(--s29-primary)] hover:shadow-sm transition-all cursor-pointer flex items-center justify-between"
+                                padding="lg"
+                                className="hover:border-gold-500 cursor-pointer transition-colors"
+                                onClick={() => navigate(section.path)}
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-[var(--s29-bg-page)] rounded-full flex items-center justify-center text-[var(--s29-text-muted)] group-hover:text-[var(--s29-primary)] transition-colors">
-                                        <Icon className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-[var(--s29-text-main)]">{section.title}</h3>
-                                        <div className="flex items-center gap-3 mt-1">
-                                            {section.status === 'COMPLETED' ? (
-                                                <span className="text-[var(--s29-success)] text-[var(--s29-font-size-xs)] font-medium flex items-center gap-1">
-                                                    <CheckCircle2 className="w-3 h-3" />
-                                                    Completed
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 group-hover:text-gold-500 transition-colors">
+                                            <Icon className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className={typography.cardTitle}>{section.title}</h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                {section.status === 'COMPLETED' ? (
+                                                    <span className="text-emerald-600 text-[10px] font-bold uppercase flex items-center gap-1">
+                                                        <CheckCircle2 className="w-3 h-3" />
+                                                        Completed
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-slate-400 text-[10px] uppercase font-medium flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" />
+                                                        {section.time}
+                                                    </span>
+                                                )}
+                                                <span className="text-slate-200">•</span>
+                                                <span className="text-slate-400 text-[10px] italic">
+                                                    {section.status === 'NOT_STARTED' ? 'Not added yet' : section.status === 'IN_PROGRESS' ? 'In progress' : 'Verified'}
                                                 </span>
-                                            ) : (
-                                                <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] flex items-center gap-1">
-                                                    <Clock className="w-3 h-3" />
-                                                    {section.time}
-                                                </span>
-                                            )}
-                                            <span className="text-[var(--s29-border-light)]">•</span>
-                                            <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] italic">
-                                                {section.status === 'NOT_STARTED' ? 'Not added yet' : section.status === 'IN_PROGRESS' ? 'We need a few details' : 'Looks good'}
-                                            </span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <ChevronRight className="w-5 h-5 text-slate-300" />
                                 </div>
-                                <ChevronRight className="w-5 h-5 text-[var(--s29-border-light)] group-hover:text-[var(--s29-primary)] transition-colors" />
-                            </div>
+                            </Card>
                         );
                     })}
                 </div>
@@ -194,8 +198,11 @@ const IncomeStory = () => {
                     message="You can save progress and come back anytime. Your draft is automatically saved."
                 />
 
-                <div className="mt-12 flex flex-col gap-4">
-                    <button
+                <div className="flex flex-col gap-3">
+                    <Button
+                        variant="primary"
+                        fullWidth
+                        disabled={!allSectionsComplete}
                         onClick={() => {
                             if (allSectionsComplete) {
                                 navigate(`/filing/${filingId}/tax-breakdown`);
@@ -203,30 +210,27 @@ const IncomeStory = () => {
                                 toast('Complete all sections to see your tax calculation', { icon: '⏳' });
                             }
                         }}
-                        className={`w-full py-4 rounded-[var(--s29-radius-main)] font-semibold text-lg transition-all flex items-center justify-center gap-2 ${allSectionsComplete
-                            ? 'bg-[var(--s29-primary)] text-white hover:bg-[var(--s29-primary-dark)] shadow-md'
-                            : 'bg-white border border-[var(--s29-border-light)] text-[var(--s29-text-muted)] cursor-not-allowed'
-                            }`}
                     >
                         Review Tax Calculation
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
 
-                    <button
+                    <Button
+                        variant="ghost"
+                        fullWidth
                         onClick={() => navigate(`/filing/${filingId}/overview`)}
-                        className="w-full text-[var(--s29-text-muted)] py-2 text-sm hover:text-[var(--s29-text-main)] transition-colors"
                     >
-                        Go back to Dashboard
-                    </button>
+                        Go back to Overview
+                    </Button>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-[var(--s29-border-light)]">
-                    <InlineHint icon={<Info className="w-4 h-4" />}>
+                <div className="pt-8 border-t border-slate-100">
+                    <p className={typography.bodySmallMuted}>
                         Why am I seeing these sections? Based on your profile summary for PAN {filing.taxpayerPan}, these are the required income disclosures for {filing.jsonPayload?.itrType}.
-                    </InlineHint>
+                    </p>
                 </div>
-            </div>
-        </div>
+            </PageContent>
+        </OrientationPage>
     );
 };
 

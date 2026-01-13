@@ -17,6 +17,9 @@ import { enterpriseLogger } from '../../utils/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Modal from '../../components/common/Modal';
 import itrService from '../../services/api/itrService';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ITRVTracking = () => {
   const [searchParams] = useSearchParams();
@@ -127,6 +130,7 @@ const ITRVTracking = () => {
   };
 
   if (isLoading) {
+
     return (
       <div>
         <div className="text-center py-12">
@@ -140,7 +144,7 @@ const ITRVTracking = () => {
   if (isError) {
     return (
       <div>
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-error-200 p-6">
+        <Card>
           <div className="flex items-center gap-3 mb-4">
             <AlertCircle className="w-6 h-6 text-error-600" />
             <h3 className="text-heading-4 font-semibold text-error-900">Error Loading ITR-V Status</h3>
@@ -152,11 +156,8 @@ const ITRVTracking = () => {
             <Button variant="primary" onClick={() => refetch()}>
               Retry
             </Button>
-            <Button variant="secondary" onClick={() => navigate(-1)} icon={<ArrowLeft className="w-4 h-4" />}>
-              Go Back
-            </Button>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -164,7 +165,7 @@ const ITRVTracking = () => {
   if (!itrvData && !filingId) {
     return (
       <div>
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+        <Card>
           <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
           <h3 className="text-heading-4 font-semibold text-slate-900 mb-2 text-center">Select a filing</h3>
           <p className="text-body-regular text-slate-600 mb-4 text-center">
@@ -190,7 +191,7 @@ const ITRVTracking = () => {
               </Button>
             </div>
           )}
-        </div>
+        </Card>
       </div>
     );
   }
@@ -207,7 +208,7 @@ const ITRVTracking = () => {
             Back
           </Button>
         </div>
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 text-center">
+        <Card>
           <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
           <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">ITR-V Tracking Not Initialized</h3>
           <p className="text-body-regular text-slate-600 mb-4">
@@ -221,96 +222,95 @@ const ITRVTracking = () => {
           >
             {initializeMutation.isPending ? 'Initializing...' : 'Initialize ITR-V Tracking'}
           </Button>
-        </div>
+        </Card>
       </div>
     );
   }
 
   return (
     <div>
-        {/* Header */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            icon={<ArrowLeft className="w-4 h-4" />}
-            className="mb-4"
-          >
-            Back
-          </Button>
-          <h1 className="text-heading-2 font-bold text-slate-900 mb-2">ITR-V Tracking</h1>
-          <p className="text-body-regular text-slate-600">
-            Track the status of your ITR-V processing and verification
-          </p>
-        </div>
+      {/* Header */}
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          icon={<ArrowLeft className="w-4 h-4" />}
+          className="mb-4"
+        >
+          Back
+        </Button>
+        <h1 className="text-heading-2 font-bold text-slate-900 mb-2">ITR-V Tracking</h1>
+        <p className="text-body-regular text-slate-600">
+          Track the status of your ITR-V processing and verification
+        </p>
+      </div>
 
-        {/* Status Card */}
-        <div className="mb-6">
-          <ITRVStatusCard
-            itrv={itrvData}
-            onCheckStatus={handleCheckStatus}
-            onDownload={handleDownload}
-            onVerify={handleVerify}
-          />
-        </div>
+      {/* Status Card */}
+      <div className="mb-6">
+        <ITRVStatusCard
+          itrv={itrvData}
+          onCheckStatus={handleCheckStatus}
+          onDownload={handleDownload}
+          onVerify={handleVerify}
+        />
+      </div>
 
-        {/* Timeline */}
-        {itrvData.timeline && itrvData.timeline.length > 0 && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Processing Timeline</h2>
-            <ITRVTimeline timeline={itrvData.timeline} />
-          </div>
-        )}
+      {/* Timeline */}
+      {itrvData.timeline && itrvData.timeline.length > 0 && (
+        <Card>
+          <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Processing Timeline</h2>
+          <ITRVTimeline timeline={itrvData.timeline} />
+        </Card>
+      )}
 
-        {/* Verify Modal */}
-        {showVerifyModal && (
-          <Modal
-            isOpen={showVerifyModal}
-            onClose={() => {
-              setShowVerifyModal(false);
-              setVerificationMethod('');
-            }}
-            title="Verify ITR-V"
-          >
-            <div className="space-y-4">
-              <p className="text-body-regular text-slate-600">
-                Select the verification method you used to verify your ITR-V:
-              </p>
-              <Select
-                label="Verification Method"
-                value={verificationMethod}
-                onChange={(e) => setVerificationMethod(e.target.value)}
-                options={[
-                  { value: '', label: 'Select method...' },
-                  { value: 'AADHAAR_OTP', label: 'Aadhaar OTP' },
-                  { value: 'NETBANKING', label: 'Net Banking' },
-                  { value: 'DSC', label: 'Digital Signature Certificate (DSC)' },
-                  { value: 'EVC', label: 'Bank Account EVC' },
-                  { value: 'MANUAL', label: 'Manual Verification' },
-                ]}
-              />
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setShowVerifyModal(false);
-                    setVerificationMethod('');
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleVerifySubmit}
-                  disabled={!verificationMethod || verifyMutation.isPending}
-                  icon={verifyMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                >
-                  {verifyMutation.isPending ? 'Verifying...' : 'Mark as Verified'}
-                </Button>
-              </div>
+      {/* Verify Modal */}
+      {showVerifyModal && (
+        <Modal
+          isOpen={showVerifyModal}
+          onClose={() => {
+            setShowVerifyModal(false);
+            setVerificationMethod('');
+          }}
+          title="Verify ITR-V"
+        >
+          <div className="space-y-4">
+            <p className="text-body-regular text-slate-600">
+              Select the verification method you used to verify your ITR-V:
+            </p>
+            <Select
+              label="Verification Method"
+              value={verificationMethod}
+              onChange={(e) => setVerificationMethod(e.target.value)}
+              options={[
+                { value: '', label: 'Select method...' },
+                { value: 'AADHAAR_OTP', label: 'Aadhaar OTP' },
+                { value: 'NETBANKING', label: 'Net Banking' },
+                { value: 'DSC', label: 'Digital Signature Certificate (DSC)' },
+                { value: 'EVC', label: 'Bank Account EVC' },
+                { value: 'MANUAL', label: 'Manual Verification' },
+              ]}
+            />
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowVerifyModal(false);
+                  setVerificationMethod('');
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleVerifySubmit}
+                disabled={!verificationMethod || verifyMutation.isPending}
+                icon={verifyMutation.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+              >
+              </Button>
             </div>
-          </Modal>
-        )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

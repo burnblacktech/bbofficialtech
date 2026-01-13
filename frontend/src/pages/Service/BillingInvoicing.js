@@ -16,15 +16,17 @@ import {
   Settings,
   CheckCircle,
   Clock,
-  XCircle,
-} from 'lucide-react';
+  XCircle } from 'lucide-react';
 import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard,
-} from '../../components/DesignSystem/EnterpriseComponents';
+  EnterpriseStatCard } from '../../components/DesignSystem/EnterpriseComponents';
 import api from '../../services/api';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const BillingInvoicing = () => {
   const [invoices, setInvoices] = useState([]);
@@ -38,8 +40,7 @@ const BillingInvoicing = () => {
     page: 1,
     limit: 20,
     total: 0,
-    totalPages: 0,
-  });
+    totalPages: 0 });
 
   // Fetch invoices data
   const fetchInvoices = async (page = 1) => {
@@ -49,8 +50,7 @@ const BillingInvoicing = () => {
         page: page.toString(),
         limit: pagination.limit.toString(),
         ...(searchTerm && { search: searchTerm }),
-        ...(statusFilter && { status: statusFilter }),
-      });
+        ...(statusFilter && { status: statusFilter }) });
 
       const response = await api.get(`/billing/invoices?${params}`);
 
@@ -100,7 +100,7 @@ const BillingInvoicing = () => {
       fetchInvoices(1);
     }, 500);
 
-    return () => clearTimeout(debounceTimer);
+  return () => clearTimeout(debounceTimer);
   }, [searchTerm, statusFilter]);
 
   const handlePageChange = (newPage) => {
@@ -147,8 +147,7 @@ const BillingInvoicing = () => {
   const handleDownloadInvoice = async (invoiceId) => {
     try {
       const response = await api.get(`/billing/invoices/${invoiceId}/download`, {
-        responseType: 'blob',
-      });
+        responseType: 'blob' });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
@@ -188,16 +187,14 @@ const BillingInvoicing = () => {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+      maximumFractionDigits: 0 }).format(amount);
   };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-    });
+      day: 'numeric' });
   };
 
   return (
@@ -232,7 +229,7 @@ const BillingInvoicing = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-xl">
               <IndianRupee className="h-6 w-6 text-green-600" />
@@ -243,10 +240,10 @@ const BillingInvoicing = () => {
                 {formatCurrency(statistics.total_revenue || 0)}
               </p>
             </div>
-          </div>
+                </Card>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-xl">
               <FileText className="h-6 w-6 text-blue-600" />
@@ -255,10 +252,9 @@ const BillingInvoicing = () => {
               <p className="text-body-regular font-medium text-slate-600">Total Invoices</p>
               <p className="text-heading-2 font-bold text-slate-900">{statistics.total_invoices || 0}</p>
             </div>
-          </div>
-        </div>
+                </Card>
 
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-yellow-100 rounded-xl">
               <Clock className="h-6 w-6 text-yellow-600" />
@@ -269,10 +265,10 @@ const BillingInvoicing = () => {
                 {formatCurrency(statistics.pending_amount || 0)}
               </p>
             </div>
-          </div>
+                </Card>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-error-100 rounded-xl">
               <TrendingUp className="h-6 w-6 text-error-600" />
@@ -283,12 +279,11 @@ const BillingInvoicing = () => {
                 {formatCurrency(statistics.overdue_amount || 0)}
               </p>
             </div>
-          </div>
-        </div>
+                </Card>
       </div>
 
       {/* Billing Configuration Summary */}
-      <div className="bg-white p-6 rounded-xl shadow-elevation-1 border mb-6">
+      <Card>
         <h3 className="text-heading-4 font-medium text-slate-900 mb-4">Billing Configuration</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
@@ -305,7 +300,7 @@ const BillingInvoicing = () => {
               <p>ITR-3: {formatCurrency(billingConfig.itr_3_rate || 1200)}</p>
               <p>ITR-4: {formatCurrency(billingConfig.itr_4_rate || 1000)}</p>
             </div>
-          </div>
+                </Card>
           <div>
             <p className="text-body-regular font-medium text-slate-600">Monthly Subscription</p>
             <p className="text-body-large font-semibold text-slate-900">
@@ -316,7 +311,7 @@ const BillingInvoicing = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-xl shadow-elevation-1 border mb-6">
+      <Card>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -329,7 +324,7 @@ const BillingInvoicing = () => {
                 className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
-          </div>
+                </Card>
           <div className="sm:w-48">
             <select
               value={statusFilter}
@@ -568,8 +563,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
     amount: '',
     taxAmount: '0',
     description: '',
-    dueDate: '',
-  });
+    dueDate: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -579,8 +573,7 @@ const CreateInvoiceModal = ({ onClose, onCreate, billingConfig }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
-    });
+      [e.target.name]: e.target.value });
   };
 
   return (

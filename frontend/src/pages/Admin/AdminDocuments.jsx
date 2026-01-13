@@ -28,6 +28,10 @@ import {
   useReprocessAdminDocument,
 } from '../../features/admin/documents/hooks/use-documents';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminDocuments = () => {
   const navigate = useNavigate();
@@ -158,7 +162,7 @@ const AdminDocuments = () => {
       {/* Storage Stats */}
       {storage && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="bg-white rounded-xl border border-neutral-200 p-4">
+          <Card className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Database className="h-5 w-5 text-primary-600" />
@@ -178,14 +182,14 @@ const AdminDocuments = () => {
                 />
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-4 mb-6">
+        <Card className="p-6 mb-8">
           <div className="flex items-center space-x-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
@@ -253,16 +257,16 @@ const AdminDocuments = () => {
               </div>
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Documents List */}
         {isLoading ? (
-          <div className="bg-white rounded-xl border border-neutral-200 p-12 text-center">
+          <Card className="p-8 text-center">
             <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-neutral-600">Loading documents...</p>
-          </div>
+          </Card>
         ) : documents.length === 0 ? (
-          <div className="bg-white rounded-xl border border-neutral-200 p-12 text-center">
+          <Card className="p-8 text-center">
             <FileText className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
             <h3 className="text-heading-4 font-semibold text-neutral-900 mb-2">No documents found</h3>
             <p className="text-body-regular text-neutral-500">
@@ -270,7 +274,7 @@ const AdminDocuments = () => {
                 ? 'No documents match your filters'
                 : 'No documents available'}
             </p>
-          </div>
+          </Card>
         ) : (
           <>
             <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">

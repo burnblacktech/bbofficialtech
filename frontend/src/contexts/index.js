@@ -7,20 +7,22 @@ import React from 'react';
 import { AuthProvider } from './AuthContext';
 import { ITRProvider } from './ITRContext';
 import { AppProvider } from './AppContext';
-import { NotificationProvider } from './NotificationContext';
+import { DocumentProvider } from './DocumentContext';
 
 /**
  * Combined Context Provider
- * Provides all 4 strategic contexts in a single wrapper
+ * Provides all 5 strategic contexts (including Documents)
  */
 export const ContextProvider = ({ children }) => {
   return (
     <AppProvider>
       <AuthProvider>
         <ITRProvider>
-          <NotificationProvider>
-            {children}
-          </NotificationProvider>
+          <DocumentProvider>
+            <NotificationProvider>
+              {children}
+            </NotificationProvider>
+          </DocumentProvider>
         </ITRProvider>
       </AuthProvider>
     </AppProvider>
@@ -34,6 +36,7 @@ export { AuthProvider } from './AuthContext';
 export { ITRProvider } from './ITRContext';
 export { AppProvider } from './AppContext';
 export { NotificationProvider } from './NotificationContext';
+export { DocumentProvider } from './DocumentContext';
 
 /**
  * Hook exports
@@ -42,6 +45,7 @@ export { useAuth } from './AuthContext';
 export { useITR } from './ITRContext';
 export { useApp } from './AppContext';
 export { useNotificationContext } from './NotificationContext';
+export { useDocumentContext } from './DocumentContext';
 
 /**
  * Context type definitions for TypeScript (if using)

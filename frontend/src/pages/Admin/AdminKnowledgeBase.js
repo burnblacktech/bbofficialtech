@@ -13,12 +13,16 @@ import {
   BookOpen,
   HelpCircle,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import Badge from '../../components/DesignSystem/components/Badge';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../../utils/logger';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminKnowledgeBase = () => {
   const [articles, setArticles] = useState([]);
@@ -82,7 +86,7 @@ const AdminKnowledgeBase = () => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       if (!article.title.toLowerCase().includes(searchLower) &&
-          !article.content.toLowerCase().includes(searchLower)) {
+        !article.content.toLowerCase().includes(searchLower)) {
         return false;
       }
     }
@@ -160,7 +164,7 @@ const AdminKnowledgeBase = () => {
           </CardContent>
         </Card>
 
-        {/* Loading State */}
+        {/* Loading State or Article List */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-500 rounded-full animate-spin" />

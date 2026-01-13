@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import apiClient from '../../services/core/APIClient';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   useAdminFilings,
@@ -32,6 +32,10 @@ import {
   Activity,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminFilings = () => {
   const navigate = useNavigate();
@@ -120,6 +124,7 @@ const AdminFilings = () => {
   ];
 
   if (isLoading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -157,11 +162,10 @@ const AdminFilings = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    selectedTab === tab.id
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                  }`}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${selectedTab === tab.id
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                    }`}
                 >
                   <tab.icon className="h-4 w-4" />
                   <span>{tab.name}</span>
@@ -530,62 +534,64 @@ const AdminFilings = () => {
 
         {/* Reports Tab */}
         {selectedTab === 'reports' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Filing Reports</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-info-100 rounded-xl flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-info-600" />
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Filing Reports</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-info-100 rounded-xl flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-info-600" />
+                      </div>
+                      <div>
+                        <Typography.Body className="font-medium">Filing Summary Report</Typography.Body>
+                        <Typography.Small className="text-neutral-500">Complete overview of all filings</Typography.Small>
+                      </div>
                     </div>
-                    <div>
-                      <Typography.Body className="font-medium">Filing Summary Report</Typography.Body>
-                      <Typography.Small className="text-neutral-500">Complete overview of all filings</Typography.Small>
-                    </div>
-                  </div>
-                </button>
+                  </button>
 
-                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-success-100 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="h-5 w-5 text-success-600" />
+                  <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-success-100 rounded-xl flex items-center justify-center">
+                        <TrendingUp className="h-5 w-5 text-success-600" />
+                      </div>
+                      <div>
+                        <Typography.Body className="font-medium">Performance Report</Typography.Body>
+                        <Typography.Small className="text-neutral-500">CA and system performance metrics</Typography.Small>
+                      </div>
                     </div>
-                    <div>
-                      <Typography.Body className="font-medium">Performance Report</Typography.Body>
-                      <Typography.Small className="text-neutral-500">CA and system performance metrics</Typography.Small>
-                    </div>
-                  </div>
-                </button>
+                  </button>
 
-                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-secondary-100 rounded-xl flex items-center justify-center">
-                      <IndianRupee className="h-5 w-5 text-secondary-600" />
+                  <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-secondary-100 rounded-xl flex items-center justify-center">
+                        <IndianRupee className="h-5 w-5 text-secondary-600" />
+                      </div>
+                      <div>
+                        <Typography.Body className="font-medium">Revenue Report</Typography.Body>
+                        <Typography.Small className="text-neutral-500">Financial performance analysis</Typography.Small>
+                      </div>
                     </div>
-                    <div>
-                      <Typography.Body className="font-medium">Revenue Report</Typography.Body>
-                      <Typography.Small className="text-neutral-500">Financial performance analysis</Typography.Small>
-                    </div>
-                  </div>
-                </button>
+                  </button>
 
-                <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-warning-100 rounded-xl flex items-center justify-center">
-                      <Calendar className="h-5 w-5 text-warning-600" />
+                  <button className="p-4 border border-neutral-200 rounded-xl hover:bg-neutral-50 transition-colors text-left">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-warning-100 rounded-xl flex items-center justify-center">
+                        <Calendar className="h-5 w-5 text-warning-600" />
+                      </div>
+                      <div>
+                        <Typography.Body className="font-medium">Monthly Report</Typography.Body>
+                        <Typography.Small className="text-neutral-500">Monthly filing statistics</Typography.Small>
+                      </div>
                     </div>
-                    <div>
-                      <Typography.Body className="font-medium">Monthly Report</Typography.Body>
-                      <Typography.Small className="text-neutral-500">Monthly filing statistics</Typography.Small>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </CardContent>
-          </Card>
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </PageTransition>

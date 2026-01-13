@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   IndianRupee,
@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminRefundManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -129,6 +131,7 @@ const AdminRefundManagement = () => {
   const filteredRefunds = refunds.filter((refund) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         refund.id?.toLowerCase().includes(searchLower) ||
         refund.user?.fullName?.toLowerCase().includes(searchLower) ||

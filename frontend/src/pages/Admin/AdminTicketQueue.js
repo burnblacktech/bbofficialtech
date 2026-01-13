@@ -16,11 +16,14 @@ import {
   X,
   AlertCircle,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import Badge from '../../components/DesignSystem/components/Badge';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminTicketQueue = () => {
   const [tickets, setTickets] = useState([]);
@@ -58,6 +61,7 @@ const AdminTicketQueue = () => {
         setPagination({ ...pagination, offset: 0 });
       }
     }, 500);
+
     return () => clearTimeout(timer);
   }, [searchTerm]);
 

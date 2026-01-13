@@ -36,6 +36,10 @@ import {
   useAddAdminFilingNotes,
 } from '../../features/admin/filings/hooks/use-filings';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminFilingDetails = () => {
   const { filingId } = useParams();
@@ -149,6 +153,7 @@ const AdminFilingDetails = () => {
   };
 
   if (isLoading) {
+
     return (
       <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="text-center">
@@ -165,7 +170,7 @@ const AdminFilingDetails = () => {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-error-500 mx-auto mb-4" />
           <h3 className="text-heading-4 font-semibold text-neutral-900 mb-2">Filing not found</h3>
-          <p className="text-body-regular text-neutral-500 mb-4">The filing you're looking for doesn't exist.</p>
+          <p className="text-body-regular text-neutral-500 mb-4">The filing you're looking for doesn\'t exist.</p>
           <button
             onClick={() => navigate('/admin/filings')}
             className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors"
@@ -291,11 +296,10 @@ const AdminFilingDetails = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
-                  }`}
+                  className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{tab.label}</span>
@@ -309,7 +313,7 @@ const AdminFilingDetails = () => {
       {/* Tab Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'overview' && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+          <Card className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <p className="text-body-regular text-neutral-500 mb-1">User</p>
@@ -382,19 +386,19 @@ const AdminFilingDetails = () => {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
         )}
 
         {activeTab === 'data' && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+          <Card className="p-6">
             <pre className="text-body-small bg-neutral-50 p-4 rounded-xl overflow-x-auto">
               {JSON.stringify(filing.data || filing, null, 2)}
             </pre>
-          </div>
+          </Card>
         )}
 
         {activeTab === 'documents' && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+          <Card className="p-6">
             {documents.length === 0 ? (
               <div className="text-center py-12">
                 <File className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
@@ -425,11 +429,11 @@ const AdminFilingDetails = () => {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         )}
 
         {activeTab === 'timeline' && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+          <Card className="p-6">
             <div className="space-y-4">
               {auditLog.length === 0 ? (
                 <div className="text-center py-12">
@@ -462,20 +466,20 @@ const AdminFilingDetails = () => {
                 ))
               )}
             </div>
-          </div>
+          </Card>
         )}
 
         {activeTab === 'discrepancies' && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+          <Card className="p-6">
             <div className="text-center py-12">
               <AlertCircle className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
               <p className="text-neutral-500">No discrepancies found</p>
             </div>
-          </div>
+          </Card>
         )}
 
         {activeTab === 'audit' && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-6">
+          <Card className="p-6">
             <div className="space-y-3">
               {auditLog.length === 0 ? (
                 <div className="text-center py-12">
@@ -533,7 +537,7 @@ const AdminFilingDetails = () => {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
         )}
       </main>
     </div>

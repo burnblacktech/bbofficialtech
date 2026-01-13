@@ -18,6 +18,10 @@ import NotificationList from '../../components/Notifications/NotificationList';
 import NotificationFilters from '../../components/Notifications/NotificationFilters';
 import { ConfirmationDialog } from '../../components/UI/ConfirmationDialog';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const NotificationsCenter = () => {
   const navigate = useNavigate();
@@ -91,7 +95,6 @@ const NotificationsCenter = () => {
       navigate(notification.actionUrl);
     }
   };
-
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,7 +144,7 @@ const NotificationsCenter = () => {
             <p className="text-body-md text-slate-600">Loading notifications...</p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Card>
             <Bell className="h-16 w-16 text-slate-400 mx-auto mb-4" />
             <h3 className="text-heading-md text-slate-900 mb-2">No Notifications</h3>
             <p className="text-body-md text-slate-600">
@@ -149,7 +152,7 @@ const NotificationsCenter = () => {
                 ? 'You have no unread notifications'
                 : 'You\'re all caught up! No notifications to display.'}
             </p>
-          </div>
+          </Card>
         ) : (
           <>
             <NotificationList

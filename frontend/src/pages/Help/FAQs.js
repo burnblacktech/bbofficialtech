@@ -8,6 +8,10 @@ import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Search, ArrowLeft, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import HelpSearch from '../../components/Help/HelpSearch';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const FAQs = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -104,7 +108,7 @@ const FAQs = () => {
     if (helpful) {
       toast.success('Thank you for your feedback!');
     } else {
-      toast.info('We\'ll work on improving this answer.');
+      toast('We\'ll work on improving this answer.', { icon: 'ℹ️' });
     }
   };
 
@@ -155,11 +159,10 @@ const FAQs = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-xl text-body-sm font-medium transition-colors ${
-                  selectedCategory === category.id
-                    ? 'bg-gold-500 text-white'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                }`}
+                className={`px-4 py-2 rounded-xl text-body-sm font-medium transition-colors ${selectedCategory === category.id
+                  ? 'bg-gold-500 text-white'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  }`}
               >
                 {category.name} ({category.count})
               </button>
@@ -168,7 +171,7 @@ const FAQs = () => {
         </div>
 
         {/* FAQs List */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 divide-y divide-gray-200">
+        <Card>
           {filteredFAQs.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-body-md text-slate-600">No FAQs found matching your search.</p>
@@ -255,7 +258,7 @@ const FAQs = () => {
               </div>
             ))
           )}
-        </div>
+        </Card>
 
         {/* Still need help */}
         <div className="mt-8 bg-gold-50 border border-gold-200 rounded-xl p-6">

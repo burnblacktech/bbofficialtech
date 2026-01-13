@@ -132,19 +132,16 @@ const HelpArticle = sequelize.define('HelpArticle', {
       fields: ['tags'],
       using: 'gin',
       name: 'idx_help_articles_tags_gin',
-      comment: 'GIN index for array tag queries',
     },
     {
       fields: ['title'],
-      using: 'gin',
-      name: 'idx_help_articles_title_gin',
-      comment: 'GIN index for full-text search on title',
+      name: 'idx_help_articles_title_btree',
     },
   ],
 });
 
 // Instance methods
-HelpArticle.prototype.incrementViews = async function() {
+HelpArticle.prototype.incrementViews = async function () {
   try {
     await this.increment('views');
     return this;
@@ -157,7 +154,7 @@ HelpArticle.prototype.incrementViews = async function() {
   }
 };
 
-HelpArticle.prototype.recordFeedback = async function(helpful) {
+HelpArticle.prototype.recordFeedback = async function (helpful) {
   try {
     if (helpful) {
       await this.increment('helpfulCount');
@@ -174,7 +171,7 @@ HelpArticle.prototype.recordFeedback = async function(helpful) {
   }
 };
 
-HelpArticle.prototype.publish = async function() {
+HelpArticle.prototype.publish = async function () {
   try {
     await this.update({
       published: true,
@@ -191,7 +188,7 @@ HelpArticle.prototype.publish = async function() {
 };
 
 // Class methods
-HelpArticle.findPublished = async function(options = {}) {
+HelpArticle.findPublished = async function (options = {}) {
   try {
     const { category, tags, search, limit = 20, offset = 0 } = options;
     const whereClause = {
@@ -230,7 +227,7 @@ HelpArticle.findPublished = async function(options = {}) {
   }
 };
 
-HelpArticle.findByCategory = async function(category, options = {}) {
+HelpArticle.findByCategory = async function (category, options = {}) {
   try {
     const { limit = 20, offset = 0 } = options;
     return await HelpArticle.findAndCountAll({

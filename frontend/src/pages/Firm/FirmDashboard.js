@@ -21,6 +21,8 @@ import Button from '../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { enterpriseLogger } from '../../utils/logger';
+import { OrientationPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const FirmDashboard = () => {
   const navigate = useNavigate();
@@ -67,6 +69,7 @@ const FirmDashboard = () => {
   };
 
   if (loading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <Loader className="w-8 h-8 animate-spin text-primary-600" />
@@ -184,7 +187,7 @@ const FirmDashboard = () => {
               </Button>
             </div>
           </Card>
-        </div>
+        </div> {/* Closing the Stats Overview grid */}
 
         {/* Quick Actions */}
         <Card className="p-6">
@@ -247,4 +250,3 @@ const FirmDashboard = () => {
 };
 
 export default FirmDashboard;
-

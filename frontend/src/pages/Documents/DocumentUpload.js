@@ -12,6 +12,8 @@ import { LoadingState, InlineLoader } from '../../components/DesignSystem';
 import apiClient from '../../services';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../../utils/logger';
+import { OrientationPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const DocumentUpload = () => {
   // State management
@@ -79,15 +81,13 @@ const DocumentUpload = () => {
 
         const response = await apiClient.post('/documents/upload', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+            'Content-Type': 'multipart/form-data' },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total,
             );
             setUploadProgress(percentCompleted);
-          },
-        });
+          } });
 
         return {
           id: response.data.data.document.id,
@@ -96,8 +96,7 @@ const DocumentUpload = () => {
           category: selectedCategory,
           size: file.size,
           status: 'UPLOADED',
-          uploadedAt: new Date().toISOString(),
-        };
+          uploadedAt: new Date().toISOString() };
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
@@ -119,11 +118,9 @@ const DocumentUpload = () => {
     onDrop,
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
-      'application/pdf': ['.pdf'],
-    },
+      'application/pdf': ['.pdf'] },
     multiple: true,
-    disabled: uploading || !selectedCategory,
-  });
+    disabled: uploading || !selectedCategory });
 
   // Format file size
   const formatFileSize = (bytes) => {
@@ -141,8 +138,7 @@ const DocumentUpload = () => {
       'SCANNING': 'yellow',
       'VERIFIED': 'green',
       'FAILED': 'red',
-      'DELETED': 'gray',
-    };
+      'DELETED': 'gray' };
     return colors[status] || 'gray';
   };
 
@@ -177,7 +173,7 @@ const DocumentUpload = () => {
             </div>
           ))}
         </div>
-      </Card>
+                </Card>
 
       {/* Upload Area */}
       {selectedCategory && (
@@ -196,7 +192,7 @@ const DocumentUpload = () => {
                     className="progress-fill"
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
-                </div>
+                </Card>
                 <p>Uploading... {uploadProgress}%</p>
               </div>
             ) : (
@@ -233,7 +229,7 @@ const DocumentUpload = () => {
                     <h4>{file.originalFilename}</h4>
                     <p>{getCategoryLabel(file.category)} • {formatFileSize(file.size)}</p>
                   </div>
-                </div>
+                </Card>
                 <div className="file-status">
                   <StatusBadge
                     status={file.status}
@@ -243,7 +239,7 @@ const DocumentUpload = () => {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Instructions */}
@@ -256,7 +252,7 @@ const DocumentUpload = () => {
               <h4>File Formats</h4>
               <p>Upload documents in JPG, PNG, PDF, or WebP format only</p>
             </div>
-          </div>
+                </Card>
           <div className="instruction-item">
             <span className="instruction-icon">📏</span>
             <div className="instruction-content">
@@ -278,8 +274,7 @@ const DocumentUpload = () => {
               <p>All documents are encrypted and stored securely</p>
             </div>
           </div>
-        </div>
-      </Card>
+            </Card>
 
       {/* Actions */}
       <div className="actions-section">

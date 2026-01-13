@@ -22,6 +22,10 @@ import { bankDetailsService } from '../../features/bank-details/services/bank-de
 import useAutoSave from '../../hooks/useAutoSave';
 import formDataService from '../../services/FormDataService';
 import fieldLockService, { VERIFICATION_STATUS } from '../../services/FieldLockService';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ProfileSettings = () => {
   const { user, updateProfile, isLoading: authLoading } = useAuth();
@@ -70,7 +74,7 @@ const ProfileSettings = () => {
         // If PAN changed, update it separately (backend will verify via SurePass)
         if (data.panNumber && data.panNumber !== user?.panNumber && data.panNumber.length === 10) {
           try {
-            await apiClient.patch('/users/pan', { panNumber: data.panNumber });
+            await apiClient.patch('/auth/pan', { panNumber: data.panNumber });
           } catch (error) {
             throw new Error(error.response?.data?.error || 'Failed to update PAN');
           }
@@ -79,7 +83,10 @@ const ProfileSettings = () => {
         const updateData = {
           fullName: data.fullName,
           phone: data.phone,
-          dateOfBirth: data.dateOfBirth,
+          // Ensure dateOfBirth is valid or null to prevent "Invalid date" error
+          dateOfBirth: (data.dateOfBirth && data.dateOfBirth !== 'Invalid date' && !isNaN(new Date(data.dateOfBirth).getTime()))
+            ? data.dateOfBirth
+            : null,
           addressLine1: data.addressLine1,
           addressLine2: data.addressLine2,
           city: data.city,
@@ -90,8 +97,8 @@ const ProfileSettings = () => {
         if (updateData.fullName || updateData.phone || updateData.dateOfBirth !== undefined ||
           updateData.addressLine1 !== undefined || updateData.addressLine2 !== undefined ||
           updateData.city !== undefined || updateData.state !== undefined || updateData.pincode !== undefined) {
-          const response = await apiClient.put('/users/profile', updateData);
-          if (!response.data.success) {
+          const response = await apiClient.put('/auth/profile', updateData);
+          if (!response.data.success && response.status !== 200) {
             throw new Error(response.data.error || 'Failed to update profile');
           }
         }
@@ -143,7 +150,6 @@ const ProfileSettings = () => {
         return null;
     }
   };
-
   return (
     <div>
       {/* Header */}
@@ -184,8 +190,8 @@ const ProfileSettings = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${activeTab === tab.id
-                      ? 'border-gold-500 text-gold-600'
-                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    ? 'border-gold-500 text-gold-600'
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}
                 >
                   <Icon className="w-4 h-4 mr-2" />
@@ -504,22 +510,35 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
     }
   };
 
-  const handlePANVerified = (verificationResult) => {
-    setPanVerified(true);
-    setShowPANVerification(false);
-    setOriginalPAN(formData.panNumber);
-
-    // Auto-populate DOB if available and current DOB is empty
-    if (verificationResult.dateOfBirth && !formData.dateOfBirth) {
+  // Handle PAN verification success
+  const handlePANVerified = useCallback(async (verificationData) => {
+    try {
+      // Update local state and backend
       setFormData(prev => ({
         ...prev,
-        dateOfBirth: verificationResult.dateOfBirth,
+        panNumber: verificationData.pan,
+        dateOfBirth: verificationData.dateOfBirth || prev.dateOfBirth,
+        panVerified: true,
+        dobVerified: true,
       }));
-      toast.success('PAN verified successfully! Date of Birth auto-populated.');
-    } else {
-      toast.success('PAN verified successfully!');
+
+      // Update basic status states
+      setPanVerified(true);
+      setShowPANVerification(false);
+      setOriginalPAN(verificationData.pan);
+
+      // Update backend via patch
+      await apiClient.patch('/auth/pan', {
+        panNumber: verificationData.pan,
+        dateOfBirth: verificationData.dateOfBirth,
+      });
+
+      toast.success('Identity verified via PAN successfully');
+    } catch (error) {
+      console.error('Failed to handle PAN verification success', { error });
+      toast.error('Identity verified but failed to update profile');
     }
-  };
+  }, [apiClient]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -651,7 +670,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
           <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-300 ${completionPercentage === 100 ? 'bg-success-500' :
-                  completionPercentage >= 70 ? 'bg-gold-500' : 'bg-warning-500'
+                completionPercentage >= 70 ? 'bg-gold-500' : 'bg-warning-500'
                 }`}
               style={{ width: `${completionPercentage}%` }}
             ></div>
@@ -704,7 +723,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 }}
                 disabled={isLoading || isDataLoading || (user?.emailVerified && fieldLockService.shouldLockField('personalInfo', 'name', VERIFICATION_STATUS.VERIFIED).locked)}
                 className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.fullName ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-slate-300'
+                  fieldValidations.fullName && formData.fullName ? 'border-success-300' : 'border-slate-300'
                   }`}
                 required
                 placeholder="Enter your full name"
@@ -758,7 +777,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                 }}
                 disabled={isLoading || isDataLoading}
                 className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.phone ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-slate-300'
+                  fieldValidations.phone && formData.phone && formData.phone.length === 10 ? 'border-success-300' : 'border-slate-300'
                   }`}
                 placeholder="10 digit phone number"
               />
@@ -849,10 +868,10 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   validateField('dateOfBirth', formData.dateOfBirth);
                   // Auto-save is handled by useAutoSave hook via formData changes
                 }}
-                disabled={isLoading || isDataLoading}
+                disabled={isLoading || isDataLoading || user?.dobVerified || formData.dobVerified}
                 max={new Date().toISOString().split('T')[0]}
                 className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.dateOfBirth ? 'border-error-300 focus:border-error-500' :
-                    fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-slate-300'
+                  fieldValidations.dateOfBirth && formData.dateOfBirth ? 'border-success-300' : 'border-slate-300'
                   }`}
               />
               {fieldValidations.dateOfBirth && formData.dateOfBirth && !fieldErrors.dateOfBirth && (
@@ -920,7 +939,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   }}
                   disabled={isLoading || isDataLoading}
                   className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.addressLine1 ? 'border-error-300 focus:border-error-500' :
-                      fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-slate-300'
+                    fieldValidations.addressLine1 && formData.addressLine1 ? 'border-success-300' : 'border-slate-300'
                     }`}
                   required
                   placeholder="Street address, P.O. box"
@@ -970,7 +989,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   }}
                   disabled={isLoading || isDataLoading}
                   className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.city ? 'border-error-300 focus:border-error-500' :
-                      fieldValidations.city && formData.city ? 'border-success-300' : 'border-slate-300'
+                    fieldValidations.city && formData.city ? 'border-success-300' : 'border-slate-300'
                     }`}
                   required
                   placeholder="City"
@@ -1007,7 +1026,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   }}
                   disabled={isLoading || isDataLoading}
                   className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.state ? 'border-error-300 focus:border-error-500' :
-                      fieldValidations.state && formData.state ? 'border-success-300' : 'border-slate-300'
+                    fieldValidations.state && formData.state ? 'border-success-300' : 'border-slate-300'
                     }`}
                   required
                   placeholder="State"
@@ -1047,7 +1066,7 @@ const ProfileTab = ({ user, onSave, isLoading }) => {
                   }}
                   disabled={isLoading || isDataLoading}
                   className={`w-full px-4 py-3 pr-10 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 disabled:bg-slate-50 disabled:cursor-not-allowed ${fieldErrors.pincode ? 'border-error-300 focus:border-error-500' :
-                      fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-slate-300'
+                    fieldValidations.pincode && formData.pincode && formData.pincode.length === 6 ? 'border-success-300' : 'border-slate-300'
                     }`}
                   required
                   placeholder="6 digit pincode (e.g., 400001)"
@@ -1326,8 +1345,8 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                 value={formData.currentPassword}
                 onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
                 className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${validationErrors.currentPassword
-                    ? 'border-error-300'
-                    : 'border-slate-300'
+                  ? 'border-error-300'
+                  : 'border-slate-300'
                   }`}
                 required={hasPassword}
               />
@@ -1356,10 +1375,10 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               value={formData.newPassword}
               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
               className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${validationErrors.newPassword
-                  ? 'border-error-300'
-                  : formData.newPassword && passwordStrength.score >= 2
-                    ? 'border-success-300'
-                    : 'border-slate-300'
+                ? 'border-error-300'
+                : formData.newPassword && passwordStrength.score >= 2
+                  ? 'border-success-300'
+                  : 'border-slate-300'
                 }`}
               required
               minLength={8}
@@ -1388,8 +1407,8 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
                   <div
                     key={i}
                     className={`h-2 flex-1 rounded ${i < passwordStrength.score
-                        ? getPasswordStrengthColor()
-                        : 'bg-slate-200'
+                      ? getPasswordStrengthColor()
+                      : 'bg-slate-200'
                       }`}
                   />
                 ))}
@@ -1430,10 +1449,10 @@ const SecurityTab = ({ user, onSave, isLoading }) => {
               value={formData.confirmPassword}
               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
               className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-gold-500 ${validationErrors.confirmPassword
-                  ? 'border-error-300'
-                  : formData.confirmPassword && formData.newPassword === formData.confirmPassword
-                    ? 'border-success-300'
-                    : 'border-slate-300'
+                ? 'border-error-300'
+                : formData.confirmPassword && formData.newPassword === formData.confirmPassword
+                  ? 'border-success-300'
+                  : 'border-slate-300'
                 }`}
               required
               minLength={8}
@@ -1954,10 +1973,10 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                   }}
                   required
                   className={`w-full px-3 py-2 border rounded-xl font-mono ${validationErrors.ifsc
-                      ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
-                      : formData.ifsc && !validationErrors.ifsc && formData.ifsc.length === 11
-                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
+                    : formData.ifsc && !validationErrors.ifsc && formData.ifsc.length === 11
+                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                     }`}
                   placeholder="HDFC0001234"
                   maxLength={11}
@@ -1998,10 +2017,10 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                   }}
                   required
                   className={`w-full px-3 py-2 border rounded-xl ${validationErrors.bankName
-                      ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
-                      : formData.bankName && !validationErrors.bankName
-                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
+                    : formData.bankName && !validationErrors.bankName
+                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                     }`}
                   placeholder="Enter bank name"
                 />
@@ -2035,10 +2054,10 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                   }}
                   required
                   className={`w-full px-3 py-2 border rounded-xl ${validationErrors.accountNumber
-                      ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
-                      : formData.accountNumber && !validationErrors.accountNumber
-                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
+                    : formData.accountNumber && !validationErrors.accountNumber
+                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                     }`}
                   placeholder="Enter account number"
                   minLength={9}
@@ -2075,10 +2094,10 @@ const BankAccountsTab = ({ onSave, isLoading }) => {
                   }}
                   required
                   className={`w-full px-3 py-2 border rounded-xl ${validationErrors.accountHolderName
-                      ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
-                      : formData.accountHolderName && !validationErrors.accountHolderName
-                        ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
-                        : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
+                    ? 'border-error-300 focus:ring-error-500 focus:border-error-500'
+                    : formData.accountHolderName && !validationErrors.accountHolderName
+                      ? 'border-success-300 focus:ring-success-500 focus:border-success-500'
+                      : 'border-slate-300 focus:ring-gold-500 focus:border-gold-500'
                     }`}
                   placeholder="Enter account holder name"
                 />
@@ -2471,15 +2490,11 @@ const FilingsTab = () => {
   const handleFilingClick = (filing) => {
     const filingObj = filing.filing || filing;
     if (filing.status === 'draft' || filing.status === 'paused') {
-      // Navigate to computation page to continue editing
-      navigate(`/itr/computation?filingId=${filing.id}`, {
-        state: { filing: filingObj },
-      });
+      // Navigate to overview page to continue editing
+      navigate(`/filing/${filing.id}/overview`);
     } else {
       // Navigate to filing history/details
-      navigate('/filing-history', {
-        state: { filingId: filing.id, filing: filingObj },
-      });
+      navigate(`/filing/${filing.id}/overview`);
     }
   };
 

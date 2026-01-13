@@ -18,9 +18,12 @@ import {
   Globe,
   Volume2,
   Bot,
-  Loader2,
-} from 'lucide-react';
+  Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CABotPage = () => {
   const navigate = useNavigate();
@@ -33,15 +36,13 @@ const CABotPage = () => {
     currentStep,
     createSession,
     destroySession,
-    resetConversation,
-  } = useCABot();
+    resetConversation } = useCABot();
 
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState({
     userType: 'educated',
     language: 'en',
-    voiceEnabled: false,
-  });
+    voiceEnabled: false });
 
   // Initialize bot session on mount
   useEffect(() => {
@@ -56,8 +57,7 @@ const CABotPage = () => {
       await createSession({
         userType: settings.userType,
         language: settings.language,
-        voiceEnabled: settings.voiceEnabled,
-      });
+        voiceEnabled: settings.voiceEnabled });
 
       toast.success('CA Bot session started successfully!');
     } catch (error) {
@@ -114,8 +114,7 @@ const CABotPage = () => {
     return {
       current: currentIndex + 1,
       total: steps.length,
-      percentage: ((currentIndex + 1) / steps.length) * 100,
-    };
+      percentage: ((currentIndex + 1) / steps.length) * 100 };
   };
 
   // Get user type display
@@ -123,15 +122,15 @@ const CABotPage = () => {
     const types = {
       non_educated: { label: 'Simple', color: 'bg-green-100 text-green-800' },
       educated: { label: 'Balanced', color: 'bg-blue-100 text-blue-800' },
-      ultra_educated: { label: 'Advanced', color: 'bg-purple-100 text-purple-800' },
-    };
+      ultra_educated: { label: 'Advanced', color: 'bg-purple-100 text-purple-800' } };
 
     return types[userType] || types.educated;
   };
 
   // Loading state
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
@@ -270,7 +269,7 @@ const CABotPage = () => {
 
             {/* Features grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+              <Card>
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-blue-600" />
                 </div>
@@ -282,7 +281,7 @@ const CABotPage = () => {
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+              <Card>
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
                   <Globe className="w-6 h-6 text-green-600" />
                 </div>
@@ -294,7 +293,7 @@ const CABotPage = () => {
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+              <Card>
                 <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
                   <Volume2 className="w-6 h-6 text-purple-600" />
                 </div>
@@ -304,9 +303,9 @@ const CABotPage = () => {
                 <p className="text-slate-600">
                   Speak naturally and get voice responses. Perfect for hands-free filing experience.
                 </p>
-              </div>
+              </Card>
 
-              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+              <Card>
                 <div className="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mb-4">
                   <Calculator className="w-6 h-6 text-gold-600" />
                 </div>
@@ -318,7 +317,7 @@ const CABotPage = () => {
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+              <Card>
                 <div className="w-12 h-12 bg-error-100 rounded-xl flex items-center justify-center mb-4">
                   <FileText className="w-6 h-6 text-error-600" />
                 </div>
@@ -328,9 +327,9 @@ const CABotPage = () => {
                 <p className="text-slate-600">
                   AI-powered suggestions for deductions, exemptions, and tax optimization strategies.
                 </p>
-              </div>
+              </Card>
 
-              <div className="bg-white rounded-xl p-6 shadow-elevation-1 border border-slate-200">
+              <Card>
                 <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
                   <Bot className="w-6 h-6 text-indigo-600" />
                 </div>
@@ -341,10 +340,10 @@ const CABotPage = () => {
                   Mimics real CA consultation with professional guidance and personalized attention.
                 </p>
               </div>
-            </div>
+                </Card>
 
             {/* How it works */}
-            <div className="bg-white rounded-xl p-8 shadow-elevation-1 border border-slate-200">
+            <Card>
               <h2 className="text-heading-2 font-bold text-slate-900 mb-6 text-center">
                 How It Works
               </h2>
@@ -372,7 +371,7 @@ const CABotPage = () => {
                   <p className="text-slate-600 text-body-regular">
                     Answer questions naturally - the AI adapts to your communication style.
                   </p>
-                </div>
+                </Card>
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -397,7 +396,7 @@ const CABotPage = () => {
                     Submit your ITR and track the status with real-time updates.
                   </p>
                 </div>
-              </div>
+                </Card>
             </div>
           </div>
         )}

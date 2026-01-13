@@ -11,6 +11,10 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import ReassuranceBanner from '../../components/ReassuranceBanner';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -61,14 +65,14 @@ const CapitalGainsStory = () => {
     const handleAddEvent = (assetType) => {
         setShowAssetTypeModal(false);
         if (assetType === 'property') {
-            navigate(`/filing/${filingId}/income/property-sale`);
+            navigate(`/filing/${filingId}/property-sale`);
         } else {
-            navigate(`/filing/${filingId}/income/capital-gains/add?type=${assetType}`);
+            navigate(`/filing/${filingId}/capital-gains/add?type=${assetType}`);
         }
     };
 
     const handleEditEvent = (eventId) => {
-        navigate(`/filing/${filingId}/income/capital-gains/edit/${eventId}`);
+        navigate(`/filing/${filingId}/capital-gains/edit/${eventId}`);
     };
 
     const handleDeleteEvent = async (eventId) => {
@@ -119,6 +123,7 @@ const CapitalGainsStory = () => {
         .reduce((sum, e) => sum + (e.taxAmount || 0), 0);
 
     if (loading) {
+
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
                 <div className="text-slate-600">Loading...</div>
@@ -156,7 +161,7 @@ const CapitalGainsStory = () => {
                 </div>
 
                 {/* Events List */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <Card>
                     <h2 className="text-lg font-semibold text-slate-900 mb-4">
                         Your sales this year
                     </h2>
@@ -227,11 +232,11 @@ const CapitalGainsStory = () => {
                         <Plus className="w-5 h-5" />
                         Add a sale
                     </button>
-                </div>
+                </Card>
 
                 {/* Summary */}
                 {events.length > 0 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <Card>
                         <h2 className="text-lg font-semibold text-slate-900 mb-4">Summary</h2>
                         <div className="space-y-2">
                             {stcgTotal > 0 && (
@@ -255,7 +260,7 @@ const CapitalGainsStory = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Navigation */}
@@ -376,7 +381,7 @@ const CapitalGainsStory = () => {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

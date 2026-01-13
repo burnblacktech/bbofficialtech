@@ -19,6 +19,8 @@ import Button from '../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { enterpriseLogger } from '../../utils/logger';
+import { ReviewPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAReviewQueue = () => {
   const navigate = useNavigate();
@@ -110,6 +112,7 @@ const CAReviewQueue = () => {
   };
 
   if (loading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <Loader className="w-8 h-8 animate-spin text-primary-600" />
@@ -149,8 +152,8 @@ const CAReviewQueue = () => {
                   key={f}
                   onClick={() => setFilter(f)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filter === f
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1).replace('_', ' ')}
@@ -172,64 +175,20 @@ const CAReviewQueue = () => {
             queueItems.map((ticket) => (
               <Card key={ticket.id} className="p-6">
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      {getStatusIcon(ticket.status)}
-                      <h3 className="text-heading-4 font-semibold text-slate-900">{ticket.subject}</h3>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
-                        {ticket.priority}
-                      </span>
-                    </div>
-                    <p className="text-body-regular text-slate-600 mb-2">{ticket.description}</p>
-                    {ticket.filing && (
-                      <div className="text-body-small text-slate-500">
-                        <span>ITR: {ticket.filing.itrType}</span>
-                        <span className="mx-2">•</span>
-                        <span>AY: {ticket.filing.assessmentYear}</span>
-                      </div>
-                    )}
-                    {ticket.assignedTo && (
-                      <p className="text-body-small text-slate-500 mt-2">Assigned to: {ticket.assignedUser?.fullName || 'N/A'}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {ticket.status === 'OPEN' && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => navigate(`/firm/${firmId}/review-queue/${ticket.id}/assign`)}
-                      >
-                        Assign Reviewer
-                      </Button>
-                    )}
-                    {ticket.status === 'IN_PROGRESS' && (
-                      <div className="flex space-x-2">
-                        {ticket.filingId && (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => navigate(`/itr/computation?filingId=${ticket.filingId}`)}
-                          >
-                            View Filing
-                          </Button>
-                        )}
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => handleCompleteReview(ticket.id, 'approved', '')}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleCompleteReview(ticket.id, 'rejected', '')}
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleCompleteReview(ticket.id, 'approved', '')}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleCompleteReview(ticket.id, 'rejected', '')}
+                  >
+                    Reject
+                  </Button>
                 </div>
               </Card>
             ))

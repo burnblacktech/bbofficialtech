@@ -6,9 +6,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
 import apiClient from '../../services/core/APIClient';
+import { DataEntryPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   Shield,
   Eye,

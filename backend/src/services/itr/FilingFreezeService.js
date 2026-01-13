@@ -14,6 +14,7 @@ class FilingFreezeService {
      */
     isFrozen(filing) {
         const frozenStates = [
+            'ready_for_submission', // S27: Frozen after payment gate
             'review_pending',
             'reviewed',
             'approved',
@@ -68,12 +69,12 @@ class FilingFreezeService {
             };
         }
 
-        // Cannot unfreeze after ERI submission
-        const permanentlyFrozen = ['submitted_to_eri', 'eri_success', 'eri_failed'];
+        // Cannot unfreeze after payment gate or ERI submission
+        const permanentlyFrozen = ['ready_for_submission', 'submitted_to_eri', 'eri_success', 'eri_failed'];
         if (permanentlyFrozen.includes(filing.lifecycleState)) {
             return {
                 allowed: false,
-                reason: 'Cannot unfreeze after ERI submission'
+                reason: 'Cannot unfreeze after payment gate clearance or ERI submission'
             };
         }
 
@@ -86,6 +87,7 @@ class FilingFreezeService {
      */
     getFrozenStates() {
         return [
+            'ready_for_submission',
             'review_pending',
             'reviewed',
             'approved',

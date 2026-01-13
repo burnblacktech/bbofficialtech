@@ -11,6 +11,8 @@ import { Plus, Users, User, Edit, Trash2, Phone, Mail, CheckCircle, AlertCircle,
 import toast from 'react-hot-toast';
 import memberService from '../../services/memberService';
 import PANVerificationInline from '../../components/ITR/PANVerificationInline';
+import { DataEntryPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AddMembers = () => {
   const { user: _user } = useAuth();
@@ -185,6 +187,7 @@ const AddMembers = () => {
   };
 
   if (loading) {
+
     return (
       <div className="min-h-screen bg-neutral-50 p-4 lg:p-6">
         <div className="max-w-4xl mx-auto">
@@ -295,11 +298,6 @@ const AddMembers = () => {
                           <span>PAN Verified: {panVerificationResult.name}</span>
                         </div>
                       )}
-                      {formData.panNumber && formData.panNumber.length === 10 && !formData.panVerified && (
-                        <p className="text-body-small text-slate-500">
-                          Optional: Verify PAN to ensure accuracy
-                        </p>
-                      )}
                     </div>
                   </div>
 
@@ -402,162 +400,161 @@ const AddMembers = () => {
         )}
 
         {/* Members List */}
-        {members.length === 0 ? (
-          <Card>
-            <div className="p-12 text-center">
-              <Users className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-heading-3 font-semibold text-neutral-900 mb-2">
-                No family members added
-              </h3>
-              <p className="text-neutral-600 mb-6">
-                Add family members to file ITR for them
-              </p>
-              <Button
-                variant="primary"
-                onClick={() => setShowAddForm(true)}
-                className="flex items-center gap-2 mx-auto"
-              >
-                <Plus className="w-4 h-4" />
-                Add First Member
-              </Button>
-            </div>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {members.map((member) => (
-              <Card key={member.id}>
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                        <User className="w-6 h-6 text-primary-600" />
-                      </div>
+        {
+          members.length === 0 ? (
+            <Card>
+              <div className="p-12 text-center">
+                <Users className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+                <h3 className="text-heading-3 font-semibold text-neutral-900 mb-2">
+                  No family members added
+                </h3>
+                <p className="text-neutral-600 mb-6">
+                  Add family members to file ITR for them
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={() => setShowAddForm(true)}
+                  className="flex items-center gap-2 mx-auto"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add First Member
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {members.map((member) => (
+                <Card key={member.id}>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
                       <div>
                         <h3 className="text-heading-4 font-semibold text-neutral-900">
                           {member.firstName} {member.lastName}
                         </h3>
-                        <p className="text-body-regular text-neutral-600 capitalize">
+                        <p className="text-body-small text-neutral-500 capitalize">
                           {member.relationship}
                         </p>
                       </div>
-                    </div>
 
-                    <div className="flex gap-2">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleEdit(member)}
-                        className="flex items-center gap-1"
-                      >
-                        <Edit className="w-3 h-3" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleDelete(member.id)}
-                        className="flex items-center gap-1 text-error-600 hover:text-error-700"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 text-body-regular text-neutral-600">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">PAN:</span>
-                        <span className="font-mono">{member.panNumber}</span>
-                      </div>
-                      {member.panVerified ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-green-100 text-green-700">
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          Verified
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setEditingMember(member);
-                            setFormData({
-                              firstName: member.firstName || '',
-                              lastName: member.lastName || '',
-                              panNumber: member.panNumber || '',
-                              dateOfBirth: member.dateOfBirth || '',
-                              relationship: member.relationship || '',
-                              phoneNumber: member.phoneNumber || '',
-                              email: member.email || '',
-                              panVerified: member.panVerified || false,
-                              panVerifiedAt: member.panVerifiedAt || null,
-                            });
-                            setShowAddForm(true);
-                            setShowPANVerification(true);
-                          }}
-                          className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors"
+                      <div className="flex gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleEdit(member)}
+                          className="flex items-center gap-1"
                         >
-                          <AlertCircle className="w-3 h-3 mr-1" />
-                          Verify PAN
-                        </button>
+                          <Edit className="w-3 h-3" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleDelete(member.id)}
+                          className="flex items-center gap-1 text-error-600 hover:text-error-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 text-body-regular text-neutral-600">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">PAN:</span>
+                          <span className="font-mono">{member.panNumber}</span>
+                        </div>
+                        {member.panVerified ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-green-100 text-green-700">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Verified
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setEditingMember(member);
+                              setFormData({
+                                firstName: member.firstName || '',
+                                lastName: member.lastName || '',
+                                panNumber: member.panNumber || '',
+                                dateOfBirth: member.dateOfBirth || '',
+                                relationship: member.relationship || '',
+                                phoneNumber: member.phoneNumber || '',
+                                email: member.email || '',
+                                panVerified: member.panVerified || false,
+                                panVerifiedAt: member.panVerifiedAt || null,
+                              });
+                              setShowAddForm(true);
+                              setShowPANVerification(true);
+                            }}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-body-small font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition-colors"
+                          >
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                            Verify PAN
+                          </button>
+                        )}
+                      </div>
+
+                      {member.dateOfBirth && (
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">DOB:</span>
+                          <span>{new Date(member.dateOfBirth).toLocaleDateString()}</span>
+                        </div>
+                      )}
+
+                      {member.phoneNumber && (
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          <span>{member.phoneNumber}</span>
+                        </div>
+                      )}
+
+                      {member.email && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          <span>{member.email}</span>
+                        </div>
                       )}
                     </div>
-
-                    {member.dateOfBirth && (
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">DOB:</span>
-                        <span>{new Date(member.dateOfBirth).toLocaleDateString()}</span>
-                      </div>
-                    )}
-
-                    {member.phoneNumber && (
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        <span>{member.phoneNumber}</span>
-                      </div>
-                    )}
-
-                    {member.email && (
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4" />
-                        <span>{member.email}</span>
-                      </div>
-                    )}
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
+                </Card>
+              ))}
+            </div>
+          )
+        }
 
         {/* Delete Confirmation Modal */}
-        {memberToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-elevation-4 max-w-md w-full p-6">
-              <div className="flex items-center mb-4">
-                <AlertCircle className="h-6 w-6 text-error-600 mr-3" />
-                <h3 className="text-heading-4 font-semibold text-slate-900">Delete Family Member</h3>
-              </div>
-              <p className="text-slate-600 mb-6">
-                Are you sure you want to delete this family member? This action cannot be undone.
-              </p>
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={cancelDelete}
-                  className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmDelete}
-                  className="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors"
-                >
-                  Delete
-                </button>
+        {
+          memberToDelete && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-xl shadow-elevation-4 max-w-md w-full p-6">
+                <div className="flex items-center mb-4">
+                  <AlertCircle className="h-6 w-6 text-error-600 mr-3" />
+                  <h3 className="text-heading-4 font-semibold text-slate-900">Delete Family Member</h3>
+                </div>
+                <p className="text-slate-600 mb-6">
+                  Are you sure you want to delete this family member? This action cannot be undone.
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={cancelDelete}
+                    className="px-4 py-2 text-slate-700 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          )
+        }
+      </div >
+    </div >
   );
 };
 

@@ -7,6 +7,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiClient } from '../../services';
 import { toast } from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   Building2,
   Users,
@@ -17,8 +21,7 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
-  AlertCircle,
-} from 'lucide-react';
+  AlertCircle } from 'lucide-react';
 
 const CAFirmAdminDashboard = () => {
   const { user } = useAuth();
@@ -94,7 +97,8 @@ const CAFirmAdminDashboard = () => {
   };
 
   if (loading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>

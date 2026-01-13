@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   BarChart3,
@@ -12,10 +12,14 @@ import {
   TrendingUp,
   IndianRupee,
   Activity,
-  RefreshCw,
+  RefreshCw
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminPlatformOverview = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -47,6 +51,7 @@ const AdminPlatformOverview = () => {
   ];
 
   if (loading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

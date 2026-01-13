@@ -7,21 +7,30 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useITR } from '../../contexts/ITRContext';
-import { 
-  Mic, 
-  MicOff, 
-  Send, 
-  User, 
-  Bot, 
-  Settings, 
+import {
+  Mic,
+  MicOff,
+  Send,
+  User,
+  Bot,
+  Settings,
   Globe,
   Volume2,
   VolumeX,
-  RotateCcw
+  RotateCcw,
+  Plus
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { enterpriseLogger } from '../../utils/logger';
 
 // Types
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 interface Message {
   id: string;
   type: 'user' | 'bot' | 'system';
@@ -36,7 +45,7 @@ interface Message {
 
 enum UserType {
   NON_EDUCATED = 'non_educated',
-  EDUCATED = 'educated', 
+  EDUCATED = 'educated',
   ULTRA_EDUCATED = 'ultra_educated'
 }
 
@@ -50,11 +59,12 @@ interface FilingState {
 
 const CABot: React.FC = () => {
   const { currentFiling } = useITR();
-  
+
   // State management
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [filingState, setFilingState] = useState<FilingState>({
     currentStep: 'greeting',
     collectedData: {},
@@ -62,60 +72,33 @@ const CABot: React.FC = () => {
     language: 'en',
     isVoiceEnabled: false
   });
-  
+
   // UI state
   const [isListening, setIsListening] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<any>(null);
 
-  // Initialize speech recognition and synthesis
-  useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = filingState.language === 'hi' ? 'hi-IN' : 'en-IN';
-      
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInputValue(transcript);
-        setIsListening(false);
-      };
-      
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-        toast.error('Speech recognition failed');
-      };
-    }
-    
-    if ('speechSynthesis' in window) {
-      synthesisRef.current = window.speechSynthesis;
+  // --- Helper Functions and Callbacks (Defined before use in Effects) ---
+
+  // Speak message
+  const speakMessage = useCallback((text: string) => {
+    if (synthesisRef.current) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = filingState.language === 'hi' ? 'hi-IN' : 'en-IN';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+
+      synthesisRef.current.speak(utterance);
     }
   }, [filingState.language]);
-
-  // Auto-scroll to bottom
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  // Initialize conversation
-  useEffect(() => {
-    if (messages.length === 0) {
-      startConversation();
-    }
-  }, [messages.length, startConversation]);
-
-  // Start conversation with greeting
-  const startConversation = useCallback(() => {
-    const greetingMessage = getGreetingMessage();
-    addMessage('bot', greetingMessage);
-  }, [filingState.language, filingState.userType, addMessage, getGreetingMessage]);
 
   // Add message to conversation
   const addMessage = useCallback((type: 'user' | 'bot' | 'system', content: string, metadata?: any) => {
@@ -126,14 +109,14 @@ const CABot: React.FC = () => {
       timestamp: new Date(),
       metadata
     };
-    
+
     setMessages(prev => [...prev, message]);
-    
+
     // Speak bot messages if voice is enabled
     if (type === 'bot' && filingState.isVoiceEnabled) {
       speakMessage(content);
     }
-  }, [filingState.isVoiceEnabled]);
+  }, [filingState.isVoiceEnabled, speakMessage]);
 
   // Get greeting message based on user type and language
   const getGreetingMessage = useCallback(() => {
@@ -151,25 +134,71 @@ const CABot: React.FC = () => {
         hi: "नमस्कार! मैं आपका CA सहायक हूं। मैं आपको उन्नत अनुकूलन विकल्पों के साथ ITR फाइलिंग प्रक्रिया के माध्यम से मार्गदर्शन करूंगा। क्या आप अपने लिए फाइल कर रहे हैं या परिवार के सदस्यों के लिए?"
       }
     };
-    
+
     return greetings[filingState.userType][filingState.language];
   }, [filingState.userType, filingState.language]);
+
+  // Start conversation with greeting
+  const startConversation = useCallback(() => {
+    const greetingMessage = getGreetingMessage();
+    addMessage('bot', greetingMessage);
+  }, [getGreetingMessage, addMessage]);
+
+  // --- Effects ---
+
+  // Initialize speech recognition and synthesis
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = filingState.language === 'hi' ? 'hi-IN' : 'en-IN';
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(transcript);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+        toast.error('Speech recognition failed');
+      };
+    }
+
+    if ('speechSynthesis' in window) {
+      synthesisRef.current = window.speechSynthesis;
+    }
+  }, [filingState.language]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Initialize conversation
+  useEffect(() => {
+    if (messages.length === 0) {
+      startConversation();
+    }
+  }, [messages.length, startConversation]);
 
   // Detect user type from input
   const detectUserType = (input: string): UserType => {
     const technicalTerms = ['section 80c', 'hra exemption', 'ltcg', 'stcg', 'depreciation', 'p&l', 'balance sheet'];
     const simpleTerms = ['kitna', 'kya', 'kaise', 'kab', 'kahan'];
-    
+
     const lowerInput = input.toLowerCase();
-    
+
     if (technicalTerms.some(term => lowerInput.includes(term))) {
       return UserType.ULTRA_EDUCATED;
     }
-    
+
     if (simpleTerms.some(term => lowerInput.includes(term))) {
       return UserType.NON_EDUCATED;
     }
-    
+
     return UserType.EDUCATED;
   };
 
@@ -190,21 +219,21 @@ const CABot: React.FC = () => {
     try {
       // Generate bot response based on current step and user type
       const response = await generateBotResponse(input, filingState);
-      
+
       // Simulate typing delay
       setTimeout(() => {
         addMessage('bot', response.content, response.metadata);
         setIsTyping(false);
-        
+
         // Update filing state
         if (response.metadata?.filingStep) {
-          setFilingState(prev => ({ 
-            ...prev, 
-            currentStep: response.metadata.filingStep 
+          setFilingState(prev => ({
+            ...prev,
+            currentStep: response.metadata.filingStep
           }));
         }
       }, 1000 + Math.random() * 2000);
-      
+
     } catch (error) {
       enterpriseLogger.error('Error processing user input', { error });
       setIsTyping(false);
@@ -216,9 +245,9 @@ const CABot: React.FC = () => {
   const generateBotResponse = async (input: string, state: FilingState) => {
     // This would integrate with OpenAI API in production
     // For now, using rule-based responses
-    
+
     const lowerInput = input.toLowerCase();
-    
+
     // Filing context detection
     if (lowerInput.includes('self') || lowerInput.includes('myself') || lowerInput.includes('apne')) {
       return {
@@ -226,14 +255,14 @@ const CABot: React.FC = () => {
         metadata: { filingStep: 'personal_info', userType: state.userType }
       };
     }
-    
+
     if (lowerInput.includes('family') || lowerInput.includes('parivar') || lowerInput.includes('ghar')) {
       return {
         content: getContextResponse('family', state),
         metadata: { filingStep: 'family_selection', userType: state.userType }
       };
     }
-    
+
     // Income questions
     if (lowerInput.includes('salary') || lowerInput.includes('income') || lowerInput.includes('paisa')) {
       return {
@@ -241,7 +270,7 @@ const CABot: React.FC = () => {
         metadata: { filingStep: 'income_details', userType: state.userType }
       };
     }
-    
+
     // Default response
     return {
       content: getDefaultResponse(state),
@@ -281,7 +310,7 @@ const CABot: React.FC = () => {
         }
       }
     };
-    
+
     return responses[context][state.userType][state.language];
   };
 
@@ -301,7 +330,7 @@ const CABot: React.FC = () => {
         hi: "आइए आपकी वेतन आय को अनुकूलित करें। कृपया प्रदान करें: बुनियादी वेतन, HRA, भत्ते, और कोई छूट। सटीक गणना के लिए क्या आपके पास Form 16 है?"
       }
     };
-    
+
     return responses[state.userType][state.language];
   };
 
@@ -321,7 +350,7 @@ const CABot: React.FC = () => {
         hi: "मैं उन्नत कर योजना में आपकी सहायता के लिए तैयार हूं। अनुकूलतम मार्गदर्शन के लिए कृपया अपनी आवश्यकताएं निर्दिष्ट करें।"
       }
     };
-    
+
     return responses[state.userType][state.language];
   };
 
@@ -336,20 +365,6 @@ const CABot: React.FC = () => {
     }
   };
 
-  // Speak message
-  const speakMessage = (text: string) => {
-    if (synthesisRef.current) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = filingState.language === 'hi' ? 'hi-IN' : 'en-IN';
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-      
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      
-      synthesisRef.current.speak(utterance);
-    }
-  };
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -362,27 +377,27 @@ const CABot: React.FC = () => {
 
   // Toggle language
   const toggleLanguage = () => {
-    setFilingState(prev => ({ 
-      ...prev, 
-      language: prev.language === 'en' ? 'hi' : 'en' 
+    setFilingState(prev => ({
+      ...prev,
+      language: prev.language === 'en' ? 'hi' : 'en'
     }));
   };
 
   // Toggle voice
   const toggleVoice = () => {
-    setFilingState(prev => ({ 
-      ...prev, 
-      isVoiceEnabled: !prev.isVoiceEnabled 
+    setFilingState(prev => ({
+      ...prev,
+      isVoiceEnabled: !prev.isVoiceEnabled
     }));
   };
 
   // Reset conversation
   const resetConversation = () => {
     setMessages([]);
-    setFilingState(prev => ({ 
-      ...prev, 
+    setFilingState(prev => ({
+      ...prev,
       currentStep: 'greeting',
-      collectedData: {} 
+      collectedData: {}
     }));
     startConversation();
   };
@@ -405,7 +420,7 @@ const CABot: React.FC = () => {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {/* Language Toggle */}
             <button
@@ -415,15 +430,14 @@ const CABot: React.FC = () => {
             >
               <Globe className="w-5 h-5 text-slate-600" />
             </button>
-            
+
             {/* Voice Toggle */}
             <button
               onClick={toggleVoice}
-              className={`p-2 rounded-xl transition-colors ${
-                filingState.isVoiceEnabled 
-                  ? 'bg-gold-100 text-gold-600' 
-                  : 'hover:bg-slate-100 text-slate-600'
-              }`}
+              className={`p-2 rounded-xl transition-colors ${filingState.isVoiceEnabled
+                ? 'bg-gold-100 text-gold-600'
+                : 'hover:bg-slate-100 text-slate-600'
+                }`}
               title={filingState.isVoiceEnabled ? 'Disable Voice' : 'Enable Voice'}
             >
               {filingState.isVoiceEnabled ? (
@@ -432,7 +446,7 @@ const CABot: React.FC = () => {
                 <VolumeX className="w-5 h-5" />
               )}
             </button>
-            
+
             {/* Settings */}
             <button
               onClick={() => setShowSettings(!showSettings)}
@@ -441,7 +455,7 @@ const CABot: React.FC = () => {
             >
               <Settings className="w-5 h-5 text-slate-600" />
             </button>
-            
+
             {/* Reset */}
             <button
               onClick={resetConversation}
@@ -452,24 +466,23 @@ const CABot: React.FC = () => {
             </button>
           </div>
         </div>
-        
+
         {/* User Type Indicator */}
         <div className="mt-2 flex items-center space-x-2">
           <span className="text-body-small text-slate-500">
             {filingState.language === 'hi' ? 'उपयोगकर्ता प्रकार:' : 'User Type:'}
           </span>
-          <span className={`text-xs px-2 py-1 rounded-full ${
-            filingState.userType === UserType.NON_EDUCATED 
-              ? 'bg-green-100 text-green-800'
-              : filingState.userType === UserType.EDUCATED
+          <span className={`text-xs px-2 py-1 rounded-full ${filingState.userType === UserType.NON_EDUCATED
+            ? 'bg-green-100 text-green-800'
+            : filingState.userType === UserType.EDUCATED
               ? 'bg-gold-100 text-gold-800'
               : 'bg-gold-100 text-gold-800'
-          }`}>
-            {filingState.userType === UserType.NON_EDUCATED 
+            }`}>
+            {filingState.userType === UserType.NON_EDUCATED
               ? (filingState.language === 'hi' ? 'सरल' : 'Simple')
               : filingState.userType === UserType.EDUCATED
-              ? (filingState.language === 'hi' ? 'संतुलित' : 'Balanced')
-              : (filingState.language === 'hi' ? 'उन्नत' : 'Advanced')
+                ? (filingState.language === 'hi' ? 'संतुलित' : 'Balanced')
+                : (filingState.language === 'hi' ? 'उन्नत' : 'Advanced')
             }
           </span>
         </div>
@@ -483,13 +496,12 @@ const CABot: React.FC = () => {
             className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${
-                message.type === 'user'
-                  ? 'bg-gold-500 text-white'
-                  : message.type === 'bot'
+              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${message.type === 'user'
+                ? 'bg-gold-500 text-white'
+                : message.type === 'bot'
                   ? 'bg-white text-slate-900 shadow-elevation-1 border border-slate-200'
                   : 'bg-yellow-50 text-yellow-800 border border-yellow-200'
-              }`}
+                }`}
             >
               <div className="flex items-start space-x-2">
                 {message.type === 'bot' && (
@@ -508,7 +520,7 @@ const CABot: React.FC = () => {
             </div>
           </div>
         ))}
-        
+
         {/* Typing Indicator */}
         {isTyping && (
           <div className="flex justify-start">
@@ -524,7 +536,7 @@ const CABot: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -538,24 +550,23 @@ const CABot: React.FC = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={
-                filingState.language === 'hi' 
-                  ? 'अपना संदेश टाइप करें...' 
+                filingState.language === 'hi'
+                  ? 'अपना संदेश टाइप करें...'
                   : 'Type your message...'
               }
               className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent"
               disabled={isTyping}
             />
           </div>
-          
+
           {/* Voice Input */}
           <button
             type="button"
             onClick={handleVoiceInput}
-            className={`p-2 rounded-xl transition-colors ${
-              isListening 
-                ? 'bg-error-100 text-error-600' 
-                : 'hover:bg-slate-100 text-slate-600'
-            }`}
+            className={`p-2 rounded-xl transition-colors ${isListening
+              ? 'bg-error-100 text-error-600'
+              : 'hover:bg-slate-100 text-slate-600'
+              }`}
             disabled={isTyping}
           >
             {isListening ? (
@@ -564,7 +575,7 @@ const CABot: React.FC = () => {
               <Mic className="w-5 h-5" />
             )}
           </button>
-          
+
           {/* Send */}
           <button
             type="submit"

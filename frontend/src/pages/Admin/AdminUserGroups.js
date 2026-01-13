@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   Users,
@@ -18,10 +18,14 @@ import {
   Eye,
   X,
   UserPlus,
-  UserMinus,
+  UserMinus
 } from 'lucide-react';
 import { adminUsersService } from '../../features/admin/users/services/users.service';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminUserGroups = () => {
   const navigate = useNavigate();
@@ -35,7 +39,7 @@ const AdminUserGroups = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    color: '#3B82F6',
+    color: '#3B82F6'
   });
   const [processing, setProcessing] = useState(false);
 
@@ -112,7 +116,7 @@ const AdminUserGroups = () => {
     setFormData({
       name: '',
       description: '',
-      color: '#3B82F6',
+      color: '#3B82F6'
     });
     setSelectedGroup(null);
   };
@@ -120,6 +124,7 @@ const AdminUserGroups = () => {
   const filteredGroups = groups.filter((group) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         group.name?.toLowerCase().includes(searchLower) ||
         group.description?.toLowerCase().includes(searchLower)
@@ -208,7 +213,7 @@ const AdminUserGroups = () => {
                           </Typography.Small>
                         )}
                         <div className="flex flex-wrap gap-2">
-                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-body-small rounded">
+                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded">
                             {group.memberCount || 0} members
                           </span>
                         </div>
@@ -352,7 +357,7 @@ const AdminUserGroups = () => {
                           <Typography.Small className="text-neutral-500">{member.email}</Typography.Small>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-body-small rounded">
+                          <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded">
                             {member.role}
                           </span>
                           <Button

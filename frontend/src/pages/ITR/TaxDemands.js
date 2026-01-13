@@ -19,6 +19,9 @@ import { enterpriseLogger } from '../../utils/logger';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Modal from '../../components/common/Modal';
 import { formatIndianCurrency } from '../../lib/format';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const TaxDemands = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -129,6 +132,7 @@ const TaxDemands = () => {
   const totalPaid = demands.reduce((sum, d) => sum + (d.paidAmount || 0), 0);
 
   if (isLoading) {
+
     return (
       <div className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -145,7 +149,7 @@ const TaxDemands = () => {
     return (
       <div className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-error-200 p-6">
+          <Card>
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle className="w-6 h-6 text-error-600" />
               <h3 className="text-heading-4 font-semibold text-error-900">Error Loading Demands</h3>
@@ -153,10 +157,8 @@ const TaxDemands = () => {
             <p className="text-body-regular text-slate-600 mb-4">
               {error?.response?.data?.message || error?.message || 'An unexpected error occurred.'}
             </p>
-            <Button variant="primary" onClick={() => refetch()}>
-              Retry
-            </Button>
-          </div>
+            <Button onClick={() => refetch()} variant="primary">Retry</Button>
+          </Card>
         </div>
       </div>
     );
@@ -165,161 +167,164 @@ const TaxDemands = () => {
   // Detail View
   if (demandId && demandDetail) {
     return (
-      <div>
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSearchParams({});
-              setSelectedDemand(null);
-            }}
-            icon={<RefreshCw className="w-4 h-4" />}
-          >
-            Back to Demands
-          </Button>
-        </div>
-
-        <DemandCard
-          demand={demandDetail}
-          onPay={handlePay}
-          onDispute={handleDispute}
-        />
-
-        {/* Breakdown */}
-        {demandDetail.breakdown && Object.keys(demandDetail.breakdown).length > 0 && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mt-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Amount Breakdown</h2>
-            <div className="space-y-2">
-              {Object.entries(demandDetail.breakdown).map(([key, value]) => (
-                <div key={key} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
-                  <span className="text-body-regular text-slate-600 capitalize">{key.replace(/_/g, ' ')}</span>
-                  <span className="text-body-regular font-medium text-slate-900">
-                    {formatIndianCurrency(parseFloat(value))}
-                  </span>
-                </div>
-              ))}
-            </div>
+      <div className="min-h-screen bg-neutral-50 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSearchParams({});
+                setSelectedDemand(null);
+              }}
+              icon={<RefreshCw className="w-4 h-4" />}
+            >
+              Back to Demands
+            </Button>
           </div>
-        )}
 
-        {/* Payment History */}
-        {demandDetail.paymentHistory && demandDetail.paymentHistory.length > 0 && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mt-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Payment History</h2>
-            <div className="space-y-3">
-              {demandDetail.paymentHistory.map((payment, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-200">
-                  <div>
-                    <p className="text-body-regular font-medium text-slate-900">
-                      {formatIndianCurrency(payment.amount)}
-                    </p>
-                    <p className="text-body-small text-slate-500 mt-1">
-                      {payment.paymentMethod} • {new Date(payment.paymentDate).toLocaleDateString('en-IN')}
-                    </p>
-                    {payment.transactionId && (
-                      <p className="text-body-small text-slate-400 mt-1">
-                        Txn ID: {payment.transactionId}
+          <DemandCard
+            demand={demandDetail}
+            onPay={handlePay}
+            onDispute={handleDispute}
+          />
+
+          {/* Breakdown */}
+          {demandDetail.breakdown && Object.keys(demandDetail.breakdown).length > 0 && (
+            <Card className="mt-6">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Amount Breakdown</h2>
+              <div className="space-y-2">
+                {Object.entries(demandDetail.breakdown).map(([key, value]) => (
+                  <div key={key} className="flex justify-between py-2 border-b border-gray-100 last:border-0">
+                    <span className="text-body-regular text-slate-600 capitalize">{key.replace(/_/g, ' ')}</span>
+                    <span className="text-body-regular font-medium text-slate-900">
+                      {formatIndianCurrency(parseFloat(value))}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* Payment History */}
+          {demandDetail.paymentHistory && demandDetail.paymentHistory.length > 0 && (
+            <Card className="mt-6">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Payment History</h2>
+              <div className="space-y-3">
+                {demandDetail.paymentHistory.map((payment, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-200">
+                    <div>
+                      <p className="text-body-regular font-medium text-slate-900">
+                        {formatIndianCurrency(payment.amount)}
                       </p>
-                    )}
+                      <p className="text-body-small text-slate-500 mt-1">
+                        {payment.paymentMethod} • {new Date(payment.paymentDate).toLocaleDateString('en-IN')}
+                      </p>
+                      {payment.transactionId && (
+                        <p className="text-body-small text-slate-400 mt-1">
+                          Txn ID: {payment.transactionId}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* Timeline */}
+          {demandDetail.timeline && demandDetail.timeline.length > 0 && (
+            <Card className="mt-6">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Timeline</h2>
+              <NoticeTimeline timeline={demandDetail.timeline} />
+            </Card>
+          )}
+
+          {/* Dispute Info */}
+          {demandDetail.status === 'disputed' && demandDetail.disputeReason && (
+            <Card className="mt-6">
+              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Dispute Information</h2>
+              <div className="mb-4">
+                <p className="text-body-regular font-medium text-slate-700 mb-2">Dispute Status</p>
+                <StatusBadge status={demandDetail.disputeStatus || 'pending'} size="md" />
+              </div>
+              <div>
+                <p className="text-body-regular font-medium text-slate-700 mb-2">Dispute Reason</p>
+                <p className="text-body-regular text-slate-700 whitespace-pre-wrap">{demandDetail.disputeReason}</p>
+              </div>
+              {demandDetail.disputeDocuments && demandDetail.disputeDocuments.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-body-regular font-medium text-slate-700 mb-2">Supporting Documents</p>
+                  <div className="space-y-2">
+                    {demandDetail.disputeDocuments.map((doc, index) => (
+                      <a
+                        key={index}
+                        href={doc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-body-regular text-primary-600 hover:text-primary-700"
+                      >
+                        <FileText className="w-4 h-4" />
+                        Document {index + 1}
+                      </a>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              )}
+            </Card>
+          )}
 
-        {/* Timeline */}
-        {demandDetail.timeline && demandDetail.timeline.length > 0 && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mt-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Timeline</h2>
-            <NoticeTimeline timeline={demandDetail.timeline} />
-          </div>
-        )}
-
-        {/* Dispute Info */}
-        {demandDetail.status === 'disputed' && demandDetail.disputeReason && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-warning-200 p-6 mt-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Dispute Information</h2>
-            <div className="mb-4">
-              <p className="text-body-regular font-medium text-slate-700 mb-2">Dispute Status</p>
-              <StatusBadge status={demandDetail.disputeStatus || 'pending'} size="md" />
-            </div>
-            <div>
-              <p className="text-body-regular font-medium text-slate-700 mb-2">Dispute Reason</p>
-              <p className="text-body-regular text-slate-700 whitespace-pre-wrap">{demandDetail.disputeReason}</p>
-            </div>
-            {demandDetail.disputeDocuments && demandDetail.disputeDocuments.length > 0 && (
-              <div className="mt-4">
-                <p className="text-body-regular font-medium text-slate-700 mb-2">Supporting Documents</p>
-                <div className="space-y-2">
-                  {demandDetail.disputeDocuments.map((doc, index) => (
-                    <a
-                      key={index}
-                      href={doc}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-body-regular text-primary-600 hover:text-primary-700"
-                    >
-                      <FileText className="w-4 h-4" />
-                      Document {index + 1}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Payment Modal */}
-        {showPaymentModal && selectedDemand && (
-          <Modal
-            isOpen={showPaymentModal}
-            onClose={() => {
-              setShowPaymentModal(false);
-              setSelectedDemand(null);
-            }}
-            title="Record Payment"
-            size="large"
-          >
-            <DemandPaymentForm
-              demand={selectedDemand}
-              onSubmit={handleSubmitPayment}
-              onCancel={() => {
+          {/* Payment Modal */}
+          {showPaymentModal && selectedDemand && (
+            <Modal
+              isOpen={showPaymentModal}
+              onClose={() => {
                 setShowPaymentModal(false);
                 setSelectedDemand(null);
               }}
-            />
-          </Modal>
-        )}
+              title="Record Payment"
+              size="large"
+            >
+              <DemandPaymentForm
+                demand={selectedDemand}
+                onSubmit={handleSubmitPayment}
+                onCancel={() => {
+                  setShowPaymentModal(false);
+                  setSelectedDemand(null);
+                }}
+              />
+            </Modal>
+          )}
 
-        {/* Dispute Modal */}
-        {showDisputeModal && selectedDemand && (
-          <Modal
-            isOpen={showDisputeModal}
-            onClose={() => {
-              setShowDisputeModal(false);
-              setSelectedDemand(null);
-            }}
-            title="Dispute Tax Demand"
-            size="large"
-          >
-            <DemandDisputeForm
-              demand={selectedDemand}
-              onSubmit={handleSubmitDispute}
-              onCancel={() => {
+          {/* Dispute Modal */}
+          {showDisputeModal && selectedDemand && (
+            <Modal
+              isOpen={showDisputeModal}
+              onClose={() => {
                 setShowDisputeModal(false);
                 setSelectedDemand(null);
               }}
-            />
-          </Modal>
-        )}
+              title="Dispute Tax Demand"
+              size="large"
+            >
+              <DemandDisputeForm
+                demand={selectedDemand}
+                onSubmit={handleSubmitDispute}
+                onCancel={() => {
+                  setShowDisputeModal(false);
+                  setSelectedDemand(null);
+                }}
+              />
+            </Modal>
+          )}
+        </div>
       </div>
     );
   }
 
   // List View
   return (
-    <div>
+    <div className="min-h-screen bg-neutral-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-heading-2 font-bold text-slate-900 mb-2">Tax Demands</h1>
@@ -330,7 +335,7 @@ const TaxDemands = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4">
+          <Card>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-info-50 rounded-xl">
                 <TrendingUp className="w-5 h-5 text-info-600" />
@@ -340,8 +345,8 @@ const TaxDemands = () => {
                 <p className="text-heading-2 font-bold text-slate-900">{demands.length}</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-error-200 p-4">
+          </Card>
+          <Card>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-error-50 rounded-xl">
                 <IndianRupee className="w-5 h-5 text-error-600" />
@@ -353,8 +358,8 @@ const TaxDemands = () => {
                 </p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-warning-200 p-4">
+          </Card>
+          <Card>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-warning-50 rounded-xl">
                 <AlertCircle className="w-5 h-5 text-warning-600" />
@@ -364,8 +369,8 @@ const TaxDemands = () => {
                 <p className="text-heading-2 font-bold text-slate-900">{pendingCount}</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-success-200 p-4">
+          </Card>
+          <Card>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-success-50 rounded-xl">
                 <CheckCircle className="w-5 h-5 text-success-600" />
@@ -377,11 +382,11 @@ const TaxDemands = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4 mb-6">
+        <Card className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-body-regular font-medium text-slate-700 mb-1">Status</label>
@@ -426,11 +431,11 @@ const TaxDemands = () => {
               />
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Demands List */}
         {demands.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
+          <Card className="text-center py-12">
             <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
             <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No Demands Found</h3>
             <p className="text-body-regular text-slate-600">
@@ -438,7 +443,7 @@ const TaxDemands = () => {
                 ? 'No demands match your filters. Try adjusting your search criteria.'
                 : 'You don\'t have any tax demands yet.'}
             </p>
-          </div>
+          </Card>
         ) : (
           <div className="space-y-4">
             {demands.map((demand) => (
@@ -496,6 +501,7 @@ const TaxDemands = () => {
             />
           </Modal>
         )}
+      </div>
     </div>
   );
 };

@@ -13,30 +13,34 @@ module.exports = {
         // =====================================================
         // NEW PRIMARY BRAND FAMILY (THE AURORA) - Solar Gold + Ember Amber
         // =====================================================
-        
-        // GOLD (Primary Brand) - newUI.md Section 5.1
+
+        // GOLD (Primary Brand) - Updated to match S29 tokens
         primary: {
-          50: '#FFF8E7',   // Gold-100
-          100: '#FFF8E7',  // Gold-100
-          200: '#FFE4A0',  // Gold-300 (approximate)
-          300: '#FFE4A0',  // Gold-300
-          400: '#E5C158',  // Gold-400 (dark mode)
-          500: '#D4AF37',  // ← MAIN: Gold-500 (newUI.md primary)
-          600: '#B8960C',  // Gold-700 (hover)
-          700: '#B8960C',  // Gold-700
-          800: '#7A6508',  // Gold-900
-          900: '#7A6508',  // Gold-900
+          50: '#FEF3C7',   // Gold-50 (lightest)
+          100: '#FEF3C7',  // Gold-100
+          200: '#FDE68A',  // Gold-200
+          300: '#FCD34D',  // Gold-300
+          400: '#FBBF24',  // Gold-400
+          500: '#F59E0B',  // ← MAIN: Gold-500 (S29 primary)
+          600: '#D97706',  // Gold-600 (hover/dark)
+          700: '#B45309',  // Gold-700
+          800: '#92400E',  // Gold-800
+          900: '#78350F',  // Gold-900 (darkest)
         },
-        // GOLD (explicit) - newUI.md Section 5.1
+        // GOLD (explicit) - Updated to match S29 tokens
         gold: {
-          100: '#FFF8E7',
-          300: '#FFE4A0',
-          400: '#E5C158',  // For dark mode
-          500: '#D4AF37',  // Main primary color
-          700: '#B8960C',
-          900: '#7A6508',
+          50: '#FEF3C7',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B',  // Main primary color (S29)
+          600: '#D97706',  // Hover state
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
         },
-        
+
         // EMBER AMBER (Secondary accent, hover states, warm highlights)
         ember: {
           50: '#FFF6ED',   // Subtle background
@@ -50,13 +54,13 @@ module.exports = {
           800: '#8C4D00',  // Dark variant
           900: '#663800',  // Darkest variant
         },
-        
+
         // Note: orange colors deprecated - use gold (primary) or ember (secondary accent) instead
-        
+
         // =====================================================
         // SUPPORTING BRAND COLORS
         // =====================================================
-        
+
         // SLATE CHARCOAL (Primary text/surfaces)
         slate: {
           50: '#F8FAFC',   // Page background
@@ -71,7 +75,7 @@ module.exports = {
           900: '#0F172A',  // Headings, dark cards
           950: '#020617',  // True black
         },
-        
+
         // PORCELAIN WHITE (Light-mode foundation)
         porcelain: {
           50: '#FCFCFD',   // Page base
@@ -79,14 +83,14 @@ module.exports = {
           200: '#EFEFF2',  // Muted panels
           300: '#E0E0E7',  // Borders, table stripes
         },
-        
+
         // CONTRAST INK (Dark-mode foundation)
         ink: {
           700: '#1D1D28',
           800: '#12121A',
           900: '#0B0B0F',
         },
-        
+
         // BurnBlack Legacy (keeping for backward compatibility)
         burnblack: {
           50: '#f5f5f5',
@@ -100,7 +104,7 @@ module.exports = {
           800: '#030303',
           900: '#000000',
         },
-        
+
         // Legacy colors (keeping for backward compatibility)
         emerald: {
           50: '#e8f8f5',
@@ -150,7 +154,7 @@ module.exports = {
           800: '#1a5177',
           900: '#154360',
         },
-        
+
         // NEUTRAL (Black to White) - newUI.md Section 5.1
         neutral: {
           50: '#FAFAFA',
@@ -176,7 +180,7 @@ module.exports = {
           level2: '#262626',   // Hover state
           level3: '#363636',   // Modal background
         },
-        
+
         // =====================================================
         // SEMANTIC COLORS (Functional)
         // =====================================================
@@ -214,18 +218,18 @@ module.exports = {
           700: '#FBC02D',
           900: '#F57F17',
         },
-        // WARNING - newUI.md Section 5.2 (Uses Gold, brand-aligned)
+        // WARNING - Uses Gold (brand-aligned)
         warning: {
-          50: '#FFF8E7',   // Warning-Light (Gold-100)
-          100: '#FFF8E7',  // Warning-Light (Gold-100)
-          200: '#D4AF37',  // Warning-Base (Gold-500)
-          300: '#D4AF37',  // Warning-Base (Gold-500)
-          400: '#D4AF37',  // Warning-Base (Gold-500)
-          500: '#D4AF37',  // ← Icons, warning text (Gold-500)
-          600: '#92750C',  // Warning-Dark
-          700: '#92750C',  // Warning-Dark
-          800: '#92750C',  // Warning-Dark
-          900: '#92750C',  // Warning-Dark
+          50: '#FEF3C7',   // Warning-Light (Gold-100)
+          100: '#FEF3C7',  // Warning-Light (Gold-100)
+          200: '#F59E0B',  // Warning-Base (Gold-500)
+          300: '#F59E0B',  // Warning-Base (Gold-500)
+          400: '#F59E0B',  // Warning-Base (Gold-500)
+          500: '#F59E0B',  // ← Icons, warning text (Gold-500)
+          600: '#D97706',  // Warning-Dark
+          700: '#B45309',  // Warning-Dark
+          800: '#92400E',  // Warning-Dark
+          900: '#78350F',  // Warning-Dark
         },
         // INFO - newUI.md Section 5.2
         info: {
@@ -240,13 +244,13 @@ module.exports = {
           800: '#1E40AF',  // Info-Dark
           900: '#1E40AF',  // Info-Dark
         },
-        
+
         // REGIME COMPARISON COLORS
         regime: {
           old: '#6366F1',   // Indigo
           new: '#8B5CF6',   // Violet
         },
-        
+
         // DATA PROVENANCE COLORS
         source: {
           form16: '#3B82F6',
@@ -255,7 +259,7 @@ module.exports = {
           broker: '#8B5CF6',
           manual: '#737373',
         },
-        
+
         // Legacy neutral (keeping for backward compatibility)
         neutral: {
           50: '#ffffff',
@@ -269,7 +273,7 @@ module.exports = {
           800: '#0a0a0a',
           900: '#050505',
         },
-        
+
         // Legacy secondary (keeping for backward compatibility)
         secondary: {
           50: '#fffdf7',
@@ -381,8 +385,8 @@ module.exports = {
         'elevation-3': '0 10px 15px rgba(0,0,0,0.10), 0 4px 6px rgba(0,0,0,0.08)',
         // Level 4: modals, dialogs
         'elevation-4': '0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.10)',
-        // Gold Accent Shadow - newUI.md Section 8.0
-        'gold-accent': '0 4px 14px rgba(212, 175, 55, 0.4)', // Primary CTAs, selected states
+        // Gold Accent Shadow
+        'gold-accent': '0 4px 14px rgba(245, 158, 11, 0.4)', // Primary CTAs, selected states
         // Legacy aliases (backward compatibility)
         'card': '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)',
         'card-hover': '0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06)',
@@ -395,27 +399,26 @@ module.exports = {
         'strong': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
         'glow-success': '0 0 20px rgba(16, 185, 129, 0.3)',
-        'glow-warning': '0 0 20px rgba(212, 175, 55, 0.3)', // Updated to Gold
-        'glow-error': '0 0 20px rgba(239, 68, 68, 0.3)',
+        'glow-warning': '0 0 20px rgba(245, 158, 11, 0.3)',
         // Primary brand glows (Gold)
-        'primary-glow': '0 0 25px rgba(212, 175, 55, 0.4)', // Updated to Gold-500
+        'primary-glow': '0 0 25px rgba(245, 158, 11, 0.4)',
         'ember-glow': '0 0 25px rgba(255, 152, 0, 0.4)',
-        'aurora-glow': '0 0 30px rgba(212, 175, 55, 0.3), 0 0 60px rgba(255, 152, 0, 0.2)',
+        'aurora-glow': '0 0 30px rgba(245, 158, 11, 0.3), 0 0 60px rgba(255, 152, 0, 0.2)',
         // BurnBlack specific shadows (legacy)
         'burnblack-glow': '0 0 30px rgba(11, 11, 11, 0.4)',
-        'gold-glow': '0 0 25px rgba(212, 175, 55, 0.4)',
+        'gold-glow': '0 0 25px rgba(245, 158, 11, 0.4)',
         'emerald-glow': '0 0 25px rgba(16, 185, 129, 0.4)',
         'sunset-glow': '0 0 25px rgba(230, 126, 34, 0.4)',
         'crimson-glow': '0 0 25px rgba(192, 57, 43, 0.4)',
         'royal-glow': '0 0 25px rgba(41, 128, 185, 0.4)',
       },
       backgroundImage: {
-        // NEW: Aurora Gradient (Gold → Ember → Flame) - Updated to use Gold-500
-        'aurora-gradient': 'linear-gradient(135deg, #D4AF37 0%, #FF9800 65%, #FF6B00 100%)',
+        // Aurora Gradient (Gold → Ember → Flame)
+        'aurora-gradient': 'linear-gradient(135deg, #F59E0B 0%, #FF9800 65%, #FF6B00 100%)',
         // Legacy burn gradient (keeping for backward compatibility)
-        'burn-gradient': 'linear-gradient(135deg, #FF6B00 0%, #D4AF37 100%)',
-        // Additional gradients - Updated to use Gold-500
-        'primary-gradient': 'linear-gradient(135deg, #D4AF37 0%, #FF9800 100%)',
+        'burn-gradient': 'linear-gradient(135deg, #FF6B00 0%, #F59E0B 100%)',
+        // Additional gradients
+        'primary-gradient': 'linear-gradient(135deg, #F59E0B 0%, #FF9800 100%)',
         'ember-gradient': 'linear-gradient(135deg, #FF9800 0%, #FF6B00 100%)',
         // Legacy gradients (keeping for backward compatibility)
         'gradient-burnblack-gold': 'linear-gradient(135deg, #0b0b0b 0%, #d4af37 100%)',
@@ -572,7 +575,7 @@ module.exports = {
   },
   plugins: [
     // Custom utility plugin for micro-interactions
-    function({ addUtilities, theme }) {
+    function ({ addUtilities, theme }) {
       const newUtilities = {
         // Smooth transitions
         '.transition-smooth': {
@@ -590,7 +593,7 @@ module.exports = {
           transitionDuration: '300ms',
           transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
         },
-        
+
         // Hover effects
         '.hover-lift': {
           transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -602,7 +605,7 @@ module.exports = {
         '.hover-glow': {
           transition: 'box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            boxShadow: '0 0 25px rgba(212, 175, 55, 0.3)', // Updated to Gold-500
+            boxShadow: '0 0 25px rgba(245, 158, 11, 0.3)',
           },
         },
         '.hover-scale': {
@@ -617,7 +620,7 @@ module.exports = {
             transform: 'scale(1.01)',
           },
         },
-        
+
         // Active/Press effects
         '.active-press': {
           '&:active': {
@@ -629,21 +632,21 @@ module.exports = {
             transform: 'scale(0.95)',
           },
         },
-        
+
         // Focus effects - Updated to use Gold-500
         '.focus-ring': {
           '&:focus-visible': {
             outline: 'none',
-            boxShadow: '0 0 0 3px rgba(212, 175, 55, 0.4)', // Gold-500
+            boxShadow: '0 0 0 3px rgba(245, 158, 11, 0.4)',
           },
         },
         '.focus-glow': {
           '&:focus-visible': {
             outline: 'none',
-            boxShadow: '0 0 0 2px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.2)', // Gold-500
+            boxShadow: '0 0 0 2px rgba(245, 158, 11, 0.5), 0 0 20px rgba(245, 158, 11, 0.2)',
           },
         },
-        
+
         // Glassmorphism
         '.glass': {
           backgroundColor: 'rgba(255, 255, 255, 0.8)',
@@ -660,7 +663,7 @@ module.exports = {
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
         },
-        
+
         // Hide scrollbar
         '.hide-scrollbar': {
           '-ms-overflow-style': 'none',
@@ -669,12 +672,12 @@ module.exports = {
             display: 'none',
           },
         },
-        
+
         // Smooth scrolling
         '.scroll-smooth': {
           scrollBehavior: 'smooth',
         },
-        
+
         // Scroll snap
         '.scroll-snap-x': {
           scrollSnapType: 'x mandatory',
@@ -685,17 +688,17 @@ module.exports = {
         '.scroll-snap-start': {
           scrollSnapAlign: 'start',
         },
-        
+
         // Tabular numbers
         '.tabular-nums': {
           fontVariantNumeric: 'tabular-nums',
         },
-        
+
         // Text balance
         '.text-balance': {
           textWrap: 'balance',
         },
-        
+
         // Skeleton loading
         '.skeleton': {
           backgroundColor: theme('colors.slate.200'),
@@ -703,7 +706,7 @@ module.exports = {
           backgroundSize: '200% 100%',
           animation: 'shimmer 1.5s infinite',
         },
-        
+
         // Pulse dot
         '.pulse-dot': {
           '&::after': {
@@ -719,7 +722,7 @@ module.exports = {
           },
         },
       };
-      
+
       addUtilities(newUtilities, ['responsive', 'hover', 'focus']);
     },
     require('@tailwindcss/forms'),

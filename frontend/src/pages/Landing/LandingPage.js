@@ -22,10 +22,15 @@ import {
   Loader2,
 } from 'lucide-react';
 import landingService from '../../services/api/landingService';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 // Memoized components for better performance
 const TrustIndicators = memo(({ stats, isLoading }) => {
   if (isLoading) {
+
     return (
       <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
         {[...Array(4)].map((_, i) => (
@@ -46,23 +51,34 @@ const TrustIndicators = memo(({ stats, isLoading }) => {
   };
 
   return (
-    <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
-      <div className="text-center">
-        <div className="text-number-lg text-gold-500">{statsData.totalUsersFormatted}</div>
-        <div className="text-body-sm text-slate-600">Users Trust Us</div>
-      </div>
-      <div className="text-center">
-        <div className="text-number-lg text-gold-500">{statsData.totalRefundsFormatted}</div>
-        <div className="text-body-sm text-slate-600">Refunds Generated</div>
-      </div>
-      <div className="text-center">
-        <div className="text-number-lg text-gold-500">{statsData.successRateFormatted}</div>
-        <div className="text-body-sm text-slate-600">Success Rate</div>
-      </div>
-      <div className="text-center">
-        <div className="text-number-lg text-gold-500">{statsData.supportAvailability}</div>
-        <div className="text-body-sm text-slate-600">Support</div>
-      </div>
+    <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+      <Card>
+        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Users className="w-6 h-6 text-gold-600" />
+        </div>
+        <div className="text-number-lg text-gold-600 font-bold">{statsData.totalUsersFormatted}</div>
+        <div className="text-body-sm text-slate-600 mt-1">Users Trust Us</div>
+      </Card>
+      <Card>
+        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <TrendingUp className="w-6 h-6 text-gold-600" />
+        </div>
+        <div className="text-number-lg text-gold-600 font-bold">{statsData.totalRefundsFormatted}</div>
+        <div className="text-body-sm text-slate-600 mt-1">Refunds Generated</div>
+      </Card>
+      <Card>
+        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <CheckCircle className="w-6 h-6 text-gold-600" />
+        </div>
+        <div className="text-number-lg text-gold-600 font-bold">{statsData.successRateFormatted}</div>
+        <div className="text-body-sm text-slate-600 mt-1">Success Rate</div>
+      </Card>
+      <Card>
+        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Clock className="w-6 h-6 text-gold-600" />
+        </div>
+        <div className="text-number-lg text-gold-600 font-bold">{statsData.supportAvailability}</div>
+      </Card>
     </div>
   );
 });
@@ -288,10 +304,10 @@ const LandingPage = () => {
               </p>
             </div>
 
-            {/* Feature 3 */}
+            {/* Feature 3 - Bank-Grade Security */}
             <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-info-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-info-500" />
+              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Shield className="w-8 h-8 text-gold-600" />
               </div>
               <h3 className="text-heading-lg mb-4">Bank-Grade Security</h3>
               <p className="text-body-md text-slate-600">
@@ -324,10 +340,10 @@ const LandingPage = () => {
               </p>
             </div>
 
-            {/* Feature 6 */}
+            {/* Feature 6 - Family Management */}
             <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-info-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-info-600" />
+              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="w-8 h-8 text-gold-600" />
               </div>
               <h3 className="text-heading-lg mb-4">Family Management</h3>
               <p className="text-body-md text-slate-600">

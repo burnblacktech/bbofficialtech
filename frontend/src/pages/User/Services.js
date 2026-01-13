@@ -27,9 +27,12 @@ import {
   ChevronRight,
   ChevronDown,
   Star,
-  MessageCircle,
-} from 'lucide-react';
+  MessageCircle } from 'lucide-react';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const Services = () => {
   const { user } = useAuth();
@@ -62,8 +65,7 @@ const Services = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['userServices', user?.user_id]);
-    },
-  });
+    } });
 
   const handleStatusChange = (serviceId, newStatus) => {
     updateServiceMutation.mutate({ serviceId, status: newStatus });
@@ -162,7 +164,8 @@ const Services = () => {
   ];
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
@@ -219,7 +222,7 @@ const Services = () => {
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
+          <Card>
             {/* Status Filter */}
             <div>
               <label className="text-body-small font-medium text-slate-700 mb-2 block">Status</label>
@@ -247,13 +250,13 @@ const Services = () => {
                 ))}
               </select>
             </div>
-          </div>
+                </Card>
         )}
 
         {/* Services List */}
         <div className="space-y-3">
           {filteredServices.length === 0 ? (
-            <div className="bg-white rounded-xl p-8 text-center border border-slate-200">
+            <Card>
               <FileText className="h-12 w-12 text-slate-400 mx-auto mb-4" />
               <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No services found</h3>
               <p className="text-body-regular text-slate-500 mb-4">
@@ -293,9 +296,9 @@ const Services = () => {
                             High Priority
                           </span>
                         )}
-                      </div>
+                      </Card>
                     </div>
-                  </div>
+                </Card>
 
                   <div className="flex items-center space-x-1">
                     <button

@@ -1,218 +1,390 @@
 // =====================================================
-// PAN VERIFICATION - ITR Filing Entry Point (S29 Hardened)
+// MEMBER SELECTION HUB - "Who is filing today?"
+// Replaces simple PAN Verification with multi-user selection
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ArrowRight } from 'lucide-react';
-import axios from 'axios';
+import { User, Users, Plus, Shield, CheckCircle, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getApiBaseUrl } from '../../utils/apiConfig';
 import SectionCard from '../../components/common/SectionCard';
-import ReassuranceBanner from '../../components/common/ReassuranceBanner';
-import InlineHint from '../../components/common/InlineHint';
+import PANVerificationInline from '../../components/ITR/PANVerificationInline';
+import { useAuth } from '../../contexts/AuthContext';
+import memberService from '../../services/memberService';
+import api from '../../services/api';
 
-const API_BASE_URL = getApiBaseUrl();
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
-const PANVerification = () => {
+const MemberSelection = () => {
     const navigate = useNavigate();
-    const [pan, setPan] = useState('');
-    const [dob, setDob] = useState('');
-    const [ay, setAy] = useState('2024-25');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [isValidating, setIsValidating] = useState(false);
-    const [retriesLeft, setRetriesLeft] = useState(3);
+    const { user, refreshProfile } = useAuth();
+    const [members, setMembers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [addingMember, setAddingMember] = useState(false);
 
-    const validatePAN = (val) => {
-        const regex = /^[A-Z]{5}[0-9]{4}[A-Z]$/i;
-        return regex.test(val);
-    };
+    // New Member Form State
+    const [newMember, setNewMember] = useState({
+        firstName: '',
+        lastName: '',
+        panNumber: '',
+        dateOfBirth: '',
+        relationship: '',
+    });
+    const [newMemberLoading, setNewMemberLoading] = useState(false);
+    const [assessmentYear, setAssessmentYear] = useState('2024-25');
 
-    const handleVerify = async (e) => {
-        e.preventDefault();
-        setError('');
+    // Load family members on mount
+    useEffect(() => {
+        loadMembers();
+    }, []);
 
-        if (retriesLeft <= 0) {
-            setError('Maximum verification attempts reached. Please try again later.');
-            return;
-        }
-
-        if (!pan || !validatePAN(pan)) {
-            setError('Please enter a valid 10-digit PAN (e.g., ABCDE1234F)');
-            return;
-        }
-
-        if (!dob) {
-            setError('Date of Birth is required');
-            return;
-        }
-
+    const loadMembers = async () => {
         try {
             setLoading(true);
-            setIsValidating(true);
+            const response = await memberService.getMembers();
+            const membersArray = response.data?.members || response.members || response.data || [];
+            setMembers(Array.isArray(membersArray) ? membersArray : []);
+        } catch (error) {
+            console.error('Failed to load members:', error);
+            // Don't show toast error here to avoid noise, just log it
+        } finally {
+            setLoading(false);
+        }
+    };
 
-            // S29: Delayed success (200ms) -> feels deliberate
-            await new Promise(resolve => setTimeout(resolve, 600));
+    const handleStartFiling = async (selectedPerson) => {
+        // Person object should have: panNumber, dateOfBirth (verified or not)
+        // If unverified, we might still proceed but warn? Or strictly require verification?
+        // User requested: "locked as verified... if I start filing... needs self/family options"
+        // We'll proceed to confirm-sources which fetches prefill data
 
+        try {
+            // S29: Simulate deliberate loading
+            const loadingToast = toast.loading('Initializing filing...');
+
+            // Call prefill API to initialize filing session
+            // Note: Use existing endpoint logic from old PANVerification.js
             const token = localStorage.getItem('accessToken');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-            const response = await axios.post(`${API_BASE_URL}/filings/prefill`, {
-                pan: pan.toUpperCase(),
-                dob: dob,
-                assessmentYear: ay,
-            }, { headers });
+            // We use the selected person's details
+            const response = await api.post('/filings/prefill', {
+                pan: selectedPerson.panNumber,
+                dob: selectedPerson.dateOfBirth, // Required by backend
+                assessmentYear,
+            });
 
-            toast.success('Identity verified');
+            toast.dismiss(loadingToast);
+            toast.success(`Filing started for ${selectedPerson.firstName || selectedPerson.name} (AY ${assessmentYear})`);
 
             navigate('/itr/confirm-sources', {
                 state: {
-                    pan: pan.toUpperCase(),
-                    dob: dob,
-                    ay: ay,
+                    pan: selectedPerson.panNumber,
+                    dob: selectedPerson.dateOfBirth,
+                    ay: assessmentYear,
                     prefillData: response.data.data,
                     sources: response.data.sources,
+                    filingFor: selectedPerson.type === 'self' ? 'self' : 'family',
+                    memberId: selectedPerson.id, // null for self
+                    memberName: selectedPerson.firstName || selectedPerson.name,
                 },
             });
 
-        } catch (err) {
-            console.error('Identity verification failed:', err);
-            const errorCode = err.response?.data?.errorCode;
-            const apiError = err.response?.data?.error;
-
-            let displayError = 'Verification failed. Please check your PAN and Date of Birth.';
-
-            if (errorCode === 'IDENTITY_MISMATCH') {
-                displayError = 'DOB doesn’t match PAN records';
-            } else if (errorCode === 'PAN_NOT_FOUND') {
-                displayError = 'PAN format valid but not found in records';
-            } else if (apiError) {
-                displayError = apiError;
-            }
-
-            setRetriesLeft(prev => prev - 1);
-            setError(`${displayError}. (${retriesLeft - 1} attempts left)`);
-        } finally {
-            setLoading(false);
-            setIsValidating(false);
+        } catch (error) {
+            toast.dismiss();
+            console.error('Filing init failed:', error);
+            toast.error(error.response?.data?.error || 'Failed to start filing. Please check details.');
         }
     };
 
-    return (
-        <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center p-6">
-            <div className="text-center mb-8">
-                <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mb-2">
-                    Verify your identity
-                </h1>
-                <p className="text-[var(--s29-text-muted)]">
-                    This is required before we can fetch or submit tax information.
-                </p>
-            </div>
+    const handleAddMember = async (e) => {
+        e.preventDefault();
+        setNewMemberLoading(true);
 
-            <SectionCard
-                title="Verify Identity"
-                description="We use this only to identify your return. Nothing is submitted yet."
-            >
-                <form onSubmit={handleVerify} className="space-y-8">
-                    {/* Assessment Year selection */}
-                    <div className="space-y-2">
-                        <label className="text-[var(--s29-font-size-small)] font-semibold text-[var(--s29-text-main)]">
-                            Assessment Year (AY)
-                        </label>
-                        <select
-                            value={ay}
-                            onChange={(e) => setAy(e.target.value)}
-                            className="w-full px-4 py-3 rounded-[var(--s29-radius-main)] border border-[var(--s29-border-light)] bg-white focus:border-[var(--s29-primary)] outline-none transition-all"
-                            disabled={loading}
-                        >
-                            <option value="2024-25">Assessment Year 2024-25 (Income earned Apr 2023 – Mar 2024)</option>
-                            <option value="2023-24">Assessment Year 2023-24 (Income earned Apr 2022 – Mar 2023)</option>
-                        </select>
-                        <InlineHint>Choose the year for which you want to file returns.</InlineHint>
-                    </div>
+        try {
+            // 1. Verify PAN first (or just add and verify later? User asked for inline verify option)
+            // We'll treat "Add" as "Add verified member" if possible, or just add logic
 
-                    {/* PAN Input */}
-                    <div className="space-y-2">
-                        <label className="text-[var(--s29-font-size-small)] font-semibold text-[var(--s29-text-main)]">
-                            Permanent Account Number (PAN)
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={pan}
-                                onChange={(e) => {
-                                    setPan(e.target.value.toUpperCase());
-                                    if (error) setError('');
-                                }}
-                                placeholder="ABCDE1234F"
-                                className={`w-full px-4 py-3 rounded-[var(--s29-radius-main)] border transition-all outline-none font-mono uppercase tracking-widest ${error ? 'border-[var(--s29-error)] bg-[var(--s29-error-light)]' : 'border-[var(--s29-border-light)] focus:border-[var(--s29-primary)]'
-                                    }`}
-                                maxLength={10}
-                                disabled={loading}
-                                autoFocus
-                            />
-                            {validatePAN(pan) && !error && (
-                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--s29-success)] animate-in fade-in zoom-in duration-300">
-                                    ✓
-                                </span>
-                            )}
-                        </div>
-                        <InlineHint>Format: 5 letters, 4 numbers, 1 letter.</InlineHint>
-                    </div>
+            // Add member via service
+            await memberService.addMember(newMember);
 
-                    {/* DOB Input */}
-                    <div className="space-y-2">
-                        <label className="text-[var(--s29-font-size-small)] font-semibold text-[var(--s29-text-main)]">
-                            Date of Birth
-                        </label>
-                        <input
-                            type="date"
-                            value={dob}
-                            onChange={(e) => {
-                                setDob(e.target.value);
-                                if (error) setError('');
-                            }}
-                            className={`w-full px-4 py-3 rounded-[var(--s29-radius-main)] border transition-all outline-none ${error && !dob ? 'border-[var(--s29-error)] bg-[var(--s29-error-light)]' : 'border-[var(--s29-border-light)] focus:border-[var(--s29-primary)]'
-                                }`}
-                            disabled={loading}
-                        />
-                        <InlineHint>Required as per PAN records to verify identity.</InlineHint>
-                    </div>
+            toast.success('Member added successfully');
+            setAddingMember(false);
+            setNewMember({
+                firstName: '',
+                lastName: '',
+                panNumber: '',
+                dateOfBirth: '',
+                relationship: '',
+            });
+            loadMembers(); // Refresh list
+        } catch (error) {
+            toast.error(error.response?.data?.error || 'Failed to add member');
+        } finally {
+            setNewMemberLoading(false);
+        }
+    };
 
-                    {error && (
-                        <div className="p-3 bg-[var(--s29-error-light)] border border-[var(--s29-error)] rounded-[var(--s29-radius-main)] text-[var(--s29-error)] text-[var(--s29-font-size-small)]">
-                            {error}
-                        </div>
-                    )}
+    const handleNewMemberInput = (e) => {
+        const { name, value } = e.target;
+        setNewMember(prev => ({
+            ...prev,
+            [name]: name === 'panNumber' ? value.toUpperCase() : value,
+        }));
+    };
 
-                    <button
-                        type="submit"
-                        disabled={loading || !pan || !dob}
-                        className="w-full bg-[var(--s29-primary)] text-white py-4 rounded-[var(--s29-radius-main)] font-semibold text-lg hover:bg-[var(--s29-primary-dark)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {loading ? (
-                            <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                Verifying...
-                            </>
-                        ) : (
-                            <>
-                                Verify & continue
-                                <ArrowRight className="w-5 h-5" />
-                            </>
-                        )}
-                    </button>
-                </form>
+    if (loading) {
 
-                <div className="mt-8">
-                    <ReassuranceBanner
-                        message="Your data is protected. We use official linkages for high-fidelity tax fetching."
-                    />
+        return (
+            <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-[var(--s29-primary)] mx-auto mb-2" />
+                    <p className="text-[var(--s29-text-muted)]">Loading filing profiles...</p>
                 </div>
-            </SectionCard>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-[var(--s29-bg-page)] py-8 px-4 lg:px-8">
+            <div className="max-w-4xl mx-auto space-y-8">
+                {/* Header */}
+                <div className="text-center">
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2">Who is filing today?</h1>
+                    <p className="text-slate-500 text-sm">
+                        Select yourself or a family member to start their tax return.
+                    </p>
+                </div>
+
+                {/* AY Selection */}
+                <div className="max-w-xs mx-auto mb-8">
+                    <select
+                        value={assessmentYear}
+                        onChange={(e) => setAssessmentYear(e.target.value)}
+                        className="w-full px-4 py-2 rounded-xl border border-slate-200 bg-white text-center font-medium focus:ring-2 focus:ring-blue-100 outline-none"
+                    >
+                        <option value="2024-25">Returns for 2023-24 (AY 2024-25)</option>
+                        <option value="2023-24">Returns for 2022-23 (AY 2023-24)</option>
+                    </select>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* 1. SELF CARD */}
+                    <div className={`relative group transition-all duration-300 ${user?.panVerified ? 'hover:shadow-lg' : ''}`}>
+                        <SectionCard className="h-full border border-slate-200 hover:border-blue-300 transition-colors">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="p-3 bg-blue-50 rounded-full">
+                                    <User className="w-6 h-6 text-blue-600" />
+                                </div>
+                                {user?.panVerified && (
+                                    <div className="flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                        <CheckCircle className="w-3 h-3" />
+                                        Verified
+                                    </div>
+                                )}
+                            </div>
+
+                            <h3 className="text-lg font-bold text-slate-900 mb-1">
+                                {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Myself'}
+                            </h3>
+                            <p className="text-sm text-slate-500 mb-6">
+                                PAN: <span className="font-mono font-medium">{user?.panNumber || 'Not added'}</span>
+                            </p>
+
+                            {user?.panVerified ? (
+                                <Button
+                                    variant="primary"
+                                    fullWidth
+                                    onClick={() => handleStartFiling({
+                                        ...user,
+                                        name: user.fullName || user.firstName,
+                                        type: 'self',
+                                    })}
+                                >
+                                    Start Filing
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="p-3 bg-yellow-50 border border-yellow-100 rounded-xl text-xs text-yellow-800 flex gap-2">
+                                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                        <span>Please verify your identity to proceed with filing.</span>
+                                    </div>
+                                    <PANVerificationInline
+                                        panNumber={user?.panNumber || ''}
+                                        onVerified={(verifiedData) => {
+                                            refreshProfile();
+                                            toast.success('Identity verified! Starting filing...');
+
+                                            // Use verified data directly to avoid stale state issues
+                                            handleStartFiling({
+                                                ...user,
+                                                firstName: verifiedData.name?.split(' ')[0] || user.firstName,
+                                                lastName: verifiedData.name?.split(' ').slice(1).join(' ') || user.lastName,
+                                                name: verifiedData.name || user.fullName,
+                                                type: 'self',
+                                                panNumber: verifiedData.pan,
+                                                dateOfBirth: verifiedData.dateOfBirth || verifiedData.dob || user.dateOfBirth,
+                                            });
+                                        }}
+                                        compact={false}
+                                        memberType="self"
+                                    />
+                                </div>
+                            )}
+                        </SectionCard>
+                    </div>
+
+                    {/* 2. FAMILY MEMBERS CARDS */}
+                    {members.map(member => (
+                        <div key={member.id} className="relative group hover:shadow-lg transition-all duration-300">
+                            <SectionCard className="h-full border border-slate-200 hover:border-purple-300 transition-colors">
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="p-3 bg-purple-50 rounded-full">
+                                        <Users className="w-6 h-6 text-purple-600" />
+                                    </div>
+                                    {member.panVerified && (
+                                        <div className="flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                            <CheckCircle className="w-3 h-3" />
+                                            Verified
+                                        </div>
+                                    )}
+                                </div>
+
+                                <h3 className="text-lg font-bold text-slate-900 mb-1">
+                                    {member.firstName} {member.lastName}
+                                </h3>
+                                <p className="text-xs text-purple-600 font-medium uppercase tracking-wider mb-1">
+                                    {member.relationship}
+                                </p>
+                                <p className="text-sm text-slate-500 mb-6">
+                                    PAN: <span className="font-mono font-medium">{member.panNumber}</span>
+                                </p>
+
+                                {member.panVerified ? (
+                                    <Button
+                                        variant="primary"
+                                        fullWidth
+                                        onClick={() => handleStartFiling({ ...member, type: 'family' })}
+                                    >
+                                        File for {member.firstName}
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </Button>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <button
+                                            className="w-full py-2 border border-slate-300 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors text-sm"
+                                            onClick={() => {/* Toggle inline verify for this member? Or reuse inline comp directly */ }}
+                                        >
+                                            Verify Identity
+                                        </button>
+                                        {/* Simplified: Show inline verification always if not verified? */}
+                                        <PANVerificationInline
+                                            panNumber={member.panNumber}
+                                            memberType="family"
+                                            memberId={member.id}
+                                            onVerified={() => {
+                                                loadMembers();
+                                                toast.success('Member verified!');
+                                            }}
+                                            compact={true}
+                                        />
+                                    </div>
+                                )}
+                            </SectionCard>
+                        </div>
+                    ))}
+
+                    {/* 3. ADD MEMBER CARD */}
+                    {!addingMember ? (
+                        <button
+                            onClick={() => setAddingMember(true)}
+                            className="h-full min-h-[200px] rounded-2xl border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-3 group"
+                        >
+                            <div className="w-12 h-12 rounded-full bg-slate-100 group-hover:bg-blue-200 flex items-center justify-center transition-colors">
+                                <Plus className="w-6 h-6 text-slate-400 group-hover:text-blue-600" />
+                            </div>
+                            <span className="font-medium text-slate-600 group-hover:text-blue-700">Add Family Member</span>
+                        </button>
+                    ) : (
+                        <SectionCard className="border border-blue-200 shadow-md">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-bold text-slate-900">New Member Details</h3>
+                                <button onClick={() => setAddingMember(false)} className="text-slate-400 hover:text-slate-600">
+                                    <Plus className="w-5 h-5 rotate-45" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleAddMember} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input
+                                        name="firstName"
+                                        placeholder="First Name"
+                                        value={newMember.firstName}
+                                        onChange={handleNewMemberInput}
+                                        className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                                        required
+                                    />
+                                    <input
+                                        name="lastName"
+                                        placeholder="Last Name"
+                                        value={newMember.lastName}
+                                        onChange={handleNewMemberInput}
+                                        className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                                        required
+                                    />
+                                </div>
+                                <input
+                                    name="panNumber"
+                                    placeholder="PAN Number"
+                                    value={newMember.panNumber}
+                                    onChange={handleNewMemberInput}
+                                    className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none text-sm font-mono uppercase"
+                                    maxLength={10}
+                                    required
+                                />
+                                <div className="grid grid-cols-2 gap-3">
+                                    <input
+                                        name="dateOfBirth"
+                                        type="date"
+                                        value={newMember.dateOfBirth}
+                                        onChange={handleNewMemberInput}
+                                        className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                                        required
+                                    />
+                                    <select
+                                        name="relationship"
+                                        value={newMember.relationship}
+                                        onChange={handleNewMemberInput}
+                                        className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                                        required
+                                    >
+                                        <option value="">Relation</option>
+                                        <option value="spouse">Spouse</option>
+                                        <option value="parent">Parent</option>
+                                        <option value="child">Child</option>
+                                        <option value="sibling">Sibling</option>
+                                    </select>
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    variant="primary"
+                                    fullWidth
+                                    disabled={newMemberLoading}
+                                >
+                                    {newMemberLoading ? 'Adding...' : 'Add & Verify Member'}
+                                </Button>
+                            </form>
+                        </SectionCard>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
 
-export default PANVerification;
+export default MemberSelection;

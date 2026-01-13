@@ -11,6 +11,10 @@ import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 import SectionCard from '../../components/common/SectionCard';
 import ReassuranceBanner from '../../components/common/ReassuranceBanner';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -66,7 +70,8 @@ const ITRDetermination = () => {
     }, [selectedSources]);
 
     if (!pan || !selectedSources || !determination) {
-        return (
+
+  return (
             <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6 text-center">
                 <SectionCard title="Journey Blocked">
                     <AlertCircle className="w-12 h-12 text-[var(--s29-error)] mx-auto mb-4" />
@@ -90,10 +95,11 @@ const ITRDetermination = () => {
 
             const response = await axios.post(`${API_BASE_URL}/filings`, {
                 assessmentYear: ay,
-                taxpayerPan: pan,
-            }, { headers });
+                taxpayerPan: pan }, { headers });
 
-            const filingId = response.data.data?.id || response.data.id;
+            const filingData = response.data.data || response.data;
+            const filingId = filingData.id;
+            const existingPayload = filingData.jsonPayload || {};
 
             if (filingId) {
                 const incomeIntent = {
@@ -102,23 +108,26 @@ const ITRDetermination = () => {
                     rental: selectedSources.includes('rental'),
                     businessPresumptive: selectedSources.includes('business_presumptive'),
                     businessFull: selectedSources.includes('business_full'),
-                    other: selectedSources.includes('other'),
-                };
+                    other: selectedSources.includes('other') };
+
+                const newPayload = {
+                    ...existingPayload,
+                    selectedIncomeSources: selectedSources,
+                    prefill: prefillData,
+                    itrType: determination.type,
+                    income: {
+                        ...(existingPayload.income || {}),
+                        salary: incomeIntent.salary ? (existingPayload.income?.salary || { intent: true, prefill: prefillData?.income?.salary || 0 }) : existingPayload.income?.salary,
+                        capitalGains: incomeIntent.capitalGains ? (existingPayload.income?.capitalGains || { intent: true }) : existingPayload.income?.capitalGains,
+                        houseProperty: incomeIntent.rental ? (existingPayload.income?.houseProperty || { intent: true }) : existingPayload.income?.houseProperty,
+                        presumptive: incomeIntent.businessPresumptive ? (existingPayload.income?.presumptive || { intent: true }) : existingPayload.income?.presumptive,
+                        business: incomeIntent.businessFull ? (existingPayload.income?.business || { intent: true }) : existingPayload.income?.business,
+                        otherSources: incomeIntent.other ? (existingPayload.income?.otherSources || { intent: true }) : existingPayload.income?.otherSources } };
+
+                console.log('[ITR DETERMINATION] Updating filing with payload:', newPayload);
 
                 await axios.put(`${API_BASE_URL}/filings/${filingId}`, {
-                    jsonPayload: {
-                        prefill: prefillData,
-                        itrType: determination.type,
-                        income: {
-                            salary: incomeIntent.salary ? { intent: true, prefill: prefillData?.income?.salary || 0 } : null,
-                            capitalGains: incomeIntent.capitalGains ? { intent: true } : null,
-                            houseProperty: incomeIntent.rental ? { intent: true } : null,
-                            presumptive: incomeIntent.businessPresumptive ? { intent: true } : null,
-                            business: incomeIntent.businessFull ? { intent: true } : null,
-                            otherSources: incomeIntent.other ? { intent: true } : null,
-                        },
-                    },
-                }, { headers });
+                    jsonPayload: newPayload }, { headers });
 
                 toast.success('Filing started');
 

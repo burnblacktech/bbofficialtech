@@ -143,7 +143,7 @@ class WebSocketService {
         break;
       case DASHBOARD_EVENTS.ERI_STATUS:
         if (payload.showToast !== false) {
-          toast.info(`ERI Status: ${payload.status}`);
+          toast(`ERI Status: ${payload.status}`, { icon: 'ℹ️' });
         }
         break;
       case DASHBOARD_EVENTS.SYSTEM_ALERT:

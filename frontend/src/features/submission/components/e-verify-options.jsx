@@ -145,7 +145,7 @@ const EVerifyOptions = ({
     try {
       // In real implementation, this would open a bank login flow
       // For now, we'll use a simplified approach
-      toast.info('Net banking verification will redirect to your bank');
+      toast('Net banking verification will redirect to your bank', { icon: 'ℹ️' });
       const result = await verifyNetBanking({
         bankName: formData?.bank_details?.[0]?.bankName || '',
       });

@@ -119,6 +119,31 @@ class ITRComputationService {
 
             await transaction.commit();
 
+            // Create financial snapshot for analytics (async, non-blocking)
+            // This runs after transaction commit to not block the main flow
+            try {
+                const FinancialStoryService = require('../analytics/FinancialStoryService');
+                const TimelineService = require('../analytics/TimelineService');
+                const InsightsEngine = require('../analytics/InsightsEngine');
+
+                // Create snapshot from filing
+                await FinancialStoryService.createSnapshotFromFiling(filingId);
+
+                // Detect milestones
+                await TimelineService.detectMilestones(userId, filingId);
+
+                // Generate insights
+                await InsightsEngine.generateInsights(userId, filing.assessmentYear);
+
+                enterpriseLogger.info('Financial analytics generated', { filingId, assessmentYear: filing.assessmentYear });
+            } catch (analyticsError) {
+                // Log but don't fail the computation if analytics fail
+                enterpriseLogger.error('Failed to generate financial analytics', {
+                    filingId,
+                    error: analyticsError.message,
+                });
+            }
+
             return {
                 success: true,
                 filingId,

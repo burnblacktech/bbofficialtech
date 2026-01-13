@@ -14,6 +14,10 @@ import ReassuranceBanner from '../../components/ReassuranceBanner';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 import FileUpload from '../../components/Documents/FileUpload';
 import documentService from '../../services/api/documentService';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -105,7 +109,7 @@ const PropertySaleDetails = () => {
             }, { headers });
 
             toast.success('Property sale added');
-            navigate(`/filing/${filingId}/income/capital-gains`);
+            navigate(`/filing/${filingId}/capital-gains-story`);
         } catch (error) {
             toast.error('Failed to save details');
         }
@@ -183,7 +187,7 @@ const PropertySaleDetails = () => {
                 )}
 
                 {step === 2 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 space-y-6 animate-in fade-in slide-in-from-right-4">
+                    <Card>
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">Property Name/Address</label>
                             <input
@@ -258,11 +262,11 @@ const PropertySaleDetails = () => {
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {step === 3 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 space-y-6 animate-in fade-in slide-in-from-right-4">
+                    <Card>
                         <div className="p-4 bg-yellow-50 border border-yellow-100 rounded-lg">
                             <h3 className="text-yellow-800 font-semibold mb-1 flex items-center gap-2">
                                 <Landmark className="w-4 h-4" />
@@ -299,7 +303,7 @@ const PropertySaleDetails = () => {
                                 Back to details
                             </button>
                         </div>
-                    </div>
+                    </Card>
                 )}
             </div>
         </div>

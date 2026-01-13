@@ -9,6 +9,10 @@ import { MessageCircle, Mail, Phone, ArrowLeft, Send, Clock, Upload, X, AlertCir
 import toast from 'react-hot-toast';
 import { supportService } from '../../features/help/services/support.service';
 import { useMutation } from '@tanstack/react-query';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ContactSupport = () => {
   const [activeTab, setActiveTab] = useState('chat');
@@ -110,33 +114,30 @@ const ContactSupport = () => {
             <nav className="-mb-px flex space-x-8">
               <button
                 onClick={() => setActiveTab('chat')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                  activeTab === 'chat'
-                    ? 'border-gold-500 text-gold-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'chat'
+                  ? 'border-gold-500 text-gold-600'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Live Chat
               </button>
               <button
                 onClick={() => setActiveTab('email')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                  activeTab === 'email'
-                    ? 'border-gold-500 text-gold-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'email'
+                  ? 'border-gold-500 text-gold-600'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 <Mail className="w-5 h-5 mr-2" />
                 Email
               </button>
               <button
                 onClick={() => setActiveTab('phone')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                  activeTab === 'phone'
-                    ? 'border-gold-500 text-gold-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === 'phone'
+                  ? 'border-gold-500 text-gold-600'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 <Phone className="w-5 h-5 mr-2" />
                 Phone
@@ -147,7 +148,7 @@ const ContactSupport = () => {
 
         {/* Live Chat */}
         {activeTab === 'chat' && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <Card>
             <div className="mb-6">
               <h2 className="text-heading-lg text-slate-900 mb-2">Live Chat</h2>
               <p className="text-body-sm text-slate-600">
@@ -162,9 +163,9 @@ const ContactSupport = () => {
                     <span className="text-gold-600 text-body-regular font-medium">BB</span>
                   </div>
                   <div className="flex-1">
-                    <div className="bg-white rounded-xl p-3 shadow-elevation-1">
+                    <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200">
                       <p className="text-body-sm text-slate-900">
-                        Hi! How can I help you today?
+                        Hello! How can we help you today?
                       </p>
                     </div>
                     <p className="text-body-small text-slate-500 mt-1">Just now</p>
@@ -194,12 +195,12 @@ const ContactSupport = () => {
               <Clock className="w-4 h-4 mr-2" />
               <span>Support hours: Monday - Friday, 9 AM - 6 PM IST</span>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Email */}
         {activeTab === 'email' && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <Card>
             <div className="mb-6">
               <h2 className="text-heading-lg text-slate-900 mb-2">Email Support</h2>
               <p className="text-body-sm text-slate-600">
@@ -342,12 +343,12 @@ const ContactSupport = () => {
                 <strong>Response Time:</strong> Within 24 hours
               </p>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Phone */}
         {activeTab === 'phone' && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <Card>
             <div className="mb-6">
               <h2 className="text-heading-lg text-slate-900 mb-2">Phone Support</h2>
               <p className="text-body-sm text-slate-600">
@@ -389,7 +390,7 @@ const ContactSupport = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         )}
       </div>
     </div>
@@ -397,4 +398,3 @@ const ContactSupport = () => {
 };
 
 export default ContactSupport;
-

@@ -17,6 +17,10 @@ import {
     Lock,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ITR3EntryCeremony = () => {
     const navigate = useNavigate();
@@ -25,16 +29,17 @@ const ITR3EntryCeremony = () => {
     const { filingId, pan, ay } = location.state || {};
 
     if (!filingId) {
+
         return (
             <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6 text-center">
-                <div className="max-w-md bg-white p-8 rounded-[var(--s29-radius-large)] shadow-xl border border-[var(--s29-border-light)]">
+                <Card>
                     <ShieldAlert className="w-12 h-12 text-[var(--s29-error)] mx-auto mb-4" />
                     <h2 className="text-xl font-bold text-[var(--s29-text-main)] mb-2">Unauthorized Access</h2>
                     <p className="text-[var(--s29-text-muted)] mb-6">This professional ceremony requires a valid filing session.</p>
                     <button onClick={() => navigate('/itr/start')} className="w-full bg-[var(--s29-primary)] text-white py-3 rounded-[var(--s29-radius-main)] font-medium">
                         Return to Start
                     </button>
-                </div>
+                </Card>
             </div>
         );
     }

@@ -35,8 +35,8 @@
     "zustand": "^4.4.1"
   },
   "scripts": {
-    "start": "set PORT=3000 && react-scripts start",
-    "build": "CI=false react-scripts build",
+    "start": "set \"PORT=3000\" && react-scripts start",
+    "build": "set \"CI=false\" && react-scripts build",
     "build:analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
     "analyze": "npm run build && npx webpack-bundle-analyzer build/static/js/*.js",
     "test": "react-scripts test",

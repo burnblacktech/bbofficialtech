@@ -10,6 +10,10 @@ import apiClient from '../../services/core/APIClient';
 import AuditFilters from '../../features/admin/audit/components/AuditFilters';
 import AuditLogTable from '../../features/admin/audit/components/AuditLogTable';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminSecurityLogs = () => {
   const [filters, setFilters] = useState({
@@ -19,8 +23,7 @@ const AdminSecurityLogs = () => {
     resource: '',
     success: '',
     startDate: '',
-    endDate: '',
-  });
+    endDate: '' });
   const [offset, setOffset] = useState(0);
   const limit = 50;
 
@@ -35,8 +38,7 @@ const AdminSecurityLogs = () => {
 
       const response = await apiClient.get(`/admin/audit/security?${params.toString()}`);
       return response.data;
-    },
-  });
+    } });
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -64,8 +66,7 @@ const AdminSecurityLogs = () => {
       params.append('type', 'security');
 
       const response = await apiClient.get(`/admin/audit/export?${params.toString()}`, {
-        responseType: 'blob',
-      });
+        responseType: 'blob' });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');

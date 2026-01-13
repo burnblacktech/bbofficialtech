@@ -4,6 +4,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   Ticket,
   MessageSquare,
@@ -190,8 +194,8 @@ const ServiceTicketManagement = () => {
 
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ticket.ticketNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ticket.description.toLowerCase().includes(searchTerm.toLowerCase());
+      ticket.ticketNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.description.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = filterStatus === 'all' || ticket.status === filterStatus;
 
@@ -248,6 +252,7 @@ const ServiceTicketManagement = () => {
   ];
 
   if (loading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -271,19 +276,23 @@ const ServiceTicketManagement = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-xl">
                 <Ticket className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
                 <p className="text-body-regular font-medium text-slate-600">Total Tickets</p>
-                <p className="text-heading-2 font-bold text-slate-900">{tickets.length}</p>
+                <p className="text-heading-2 font-bold text-slate-900">
+                  {tickets.length}
+                </p>
               </div>
             </div>
-          </div>
+          </Card>
+        </div>
 
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+        <div>
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-xl">
                 <Clock className="h-6 w-6 text-yellow-600" />
@@ -295,9 +304,11 @@ const ServiceTicketManagement = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
+        </div>
 
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+        <div>
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-xl">
                 <CheckCircle className="h-6 w-6 text-green-600" />
@@ -309,9 +320,11 @@ const ServiceTicketManagement = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
+        </div>
 
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+        <div>
+          <Card>
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-xl">
                 <MessageSquare className="h-6 w-6 text-purple-600" />
@@ -321,49 +334,51 @@ const ServiceTicketManagement = () => {
                 <p className="text-heading-2 font-bold text-slate-900">2.5h</p>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-            <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search tickets..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Status Filter */}
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {statusOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+      {/* Filters */}
+      <Card>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search tickets..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
 
-            <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              New Ticket
-            </button>
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {statusOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
 
-        {/* Tickets List */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden">
-          {filteredTickets.length === 0 ? (
+          <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">
+            <Plus className="h-4 w-4 mr-2" />
+            New Ticket
+          </button>
+        </div>
+      </Card>
+
+      {/* Tickets List */}
+      <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 overflow-hidden">
+        {
+          filteredTickets.length === 0 ? (
             <div className="text-center py-12">
               <Ticket className="h-12 w-12 text-slate-400 mx-auto mb-4" />
               <h3 className="text-heading-4 font-medium text-slate-900 mb-2">No tickets found</h3>
@@ -446,11 +461,13 @@ const ServiceTicketManagement = () => {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          )
+        }
+      </div>
 
-        {/* Ticket Details Modal */}
-        {showTicketDetails && selectedTicket && (
+      {/* Ticket Details Modal */}
+      {
+        showTicketDetails && selectedTicket && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-elevation-3 rounded-xl bg-white">
               <div className="flex items-center justify-between mb-4">
@@ -528,8 +545,8 @@ const ServiceTicketManagement = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        )
+      }
     </div>
   );
 };

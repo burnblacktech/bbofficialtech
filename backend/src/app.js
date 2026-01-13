@@ -58,7 +58,7 @@ app.use(cookieParser());
 // Use Redis store if available, fallback to memory store
 // Note: Store initialization is deferred until Redis is ready (handled in server.js)
 const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   name: 'burnblack.sid', // Custom session name

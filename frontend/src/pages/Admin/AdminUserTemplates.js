@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   FileText,
@@ -17,10 +17,14 @@ import {
   Eye,
   X,
   Copy,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
 import { adminUsersService } from '../../features/admin/users/services/users.service';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminUserTemplates = () => {
   const [loading, setLoading] = useState(true);
@@ -35,8 +39,8 @@ const AdminUserTemplates = () => {
     config: {
       role: 'END_USER',
       status: 'active',
-      metadata: {},
-    },
+      metadata: {}
+    }
   });
   const [processing, setProcessing] = useState(false);
 
@@ -121,8 +125,8 @@ const AdminUserTemplates = () => {
       config: {
         role: 'END_USER',
         status: 'active',
-        metadata: {},
-      },
+        metadata: {}
+      }
     });
     setSelectedTemplate(null);
   };
@@ -130,6 +134,7 @@ const AdminUserTemplates = () => {
   const filteredTemplates = templates.filter((template) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         template.name?.toLowerCase().includes(searchLower) ||
         template.description?.toLowerCase().includes(searchLower)
@@ -215,12 +220,12 @@ const AdminUserTemplates = () => {
                         )}
                         <div className="flex flex-wrap gap-2">
                           {template.config?.role && (
-                            <span className="px-2 py-1 bg-info-100 text-info-700 text-body-small rounded">
+                            <span className="px-2 py-1 bg-info-100 text-info-700 text-xs rounded">
                               Role: {template.config.role}
                             </span>
                           )}
                           {template.config?.status && (
-                            <span className="px-2 py-1 bg-success-100 text-success-700 text-body-small rounded">
+                            <span className="px-2 py-1 bg-success-100 text-success-700 text-xs rounded">
                               Status: {template.config.status}
                             </span>
                           )}
@@ -318,7 +323,7 @@ const AdminUserTemplates = () => {
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            config: { ...formData.config, role: e.target.value },
+                            config: { ...formData.config, role: e.target.value }
                           })
                         }
                         className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
@@ -337,7 +342,7 @@ const AdminUserTemplates = () => {
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            config: { ...formData.config, status: e.target.value },
+                            config: { ...formData.config, status: e.target.value }
                           })
                         }
                         className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
@@ -388,38 +393,36 @@ const AdminUserTemplates = () => {
                   <X className="w-5 h-5" />
                 </button>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {selectedTemplate.description && (
-                    <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-1 block">Description</Typography.Small>
-                      <Typography.Body>{selectedTemplate.description}</Typography.Body>
-                    </div>
-                  )}
+              <CardContent className="space-y-4">
+                {selectedTemplate.description && (
                   <div>
-                    <Typography.Small className="font-medium text-neutral-700 mb-2 block">Configuration</Typography.Small>
-                    <pre className="bg-neutral-50 p-4 rounded-xl text-body-regular overflow-x-auto">
-                      {JSON.stringify(selectedTemplate.config || {}, null, 2)}
-                    </pre>
+                    <Typography.Small className="font-medium text-neutral-700 mb-1 block">Description</Typography.Small>
+                    <Typography.Body>{selectedTemplate.description}</Typography.Body>
                   </div>
-                  <div className="flex justify-end gap-3 pt-4 border-t border-neutral-200">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setShowViewModal(false);
-                        setSelectedTemplate(null);
-                      }}
-                    >
-                      Close
-                    </Button>
-                    <Button
-                      onClick={() => handleApply(selectedTemplate.id)}
-                      disabled={processing === selectedTemplate.id}
-                    >
-                      <Copy className="w-4 h-4 mr-2" />
-                      Apply Template
-                    </Button>
-                  </div>
+                )}
+                <div>
+                  <Typography.Small className="font-medium text-neutral-700 mb-2 block">Configuration</Typography.Small>
+                  <pre className="bg-neutral-50 p-4 rounded-xl text-xs overflow-x-auto">
+                    {JSON.stringify(selectedTemplate.config || {}, null, 2)}
+                  </pre>
+                </div>
+                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-200">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowViewModal(false);
+                      setSelectedTemplate(null);
+                    }}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => handleApply(selectedTemplate.id)}
+                    disabled={processing === selectedTemplate.id}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Apply Template
+                  </Button>
                 </div>
               </CardContent>
             </Card>

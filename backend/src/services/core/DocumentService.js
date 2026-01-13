@@ -1,15 +1,18 @@
-// =====================================================
-// DOCUMENT SERVICE
-// =====================================================
-
 const fs = require('fs').promises;
 const path = require('path');
 const multer = require('multer');
+let sharp = null;
+try {
+  sharp = require('sharp');
+} catch (error) {
+  console.warn('Sharp module not available - image compression disabled');
+}
+const { Document } = require('../../models');
 const enterpriseLogger = require('../../utils/logger');
 
 class DocumentService {
   constructor() {
-    this.uploadDir = path.join(__dirname, '../../uploads');
+    this.uploadDir = path.join(__dirname, '../../../uploads');
     this.allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
     this.maxFileSize = 10 * 1024 * 1024; // 10MB
     this.setupUpload();
@@ -19,10 +22,8 @@ class DocumentService {
    * Setup multer for file uploads
    */
   setupUpload() {
-    // Ensure upload directory exists
     this.ensureUploadDir();
 
-    // Configure storage
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
         cb(null, this.uploadDir);
@@ -33,7 +34,6 @@ class DocumentService {
       },
     });
 
-    // Configure file filter
     const fileFilter = (req, file, cb) => {
       if (this.allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -42,7 +42,6 @@ class DocumentService {
       }
     };
 
-    // Create multer instance
     this.upload = multer({
       storage,
       fileFilter,
@@ -60,15 +59,79 @@ class DocumentService {
       await fs.access(this.uploadDir);
     } catch (error) {
       await fs.mkdir(this.uploadDir, { recursive: true });
-      enterpriseLogger.info('Created upload directory', { path: this.uploadDir });
+    }
+  }
+
+  /**
+   * Compress image if applicable
+   */
+  async compressImage(buffer, mimeType) {
+    try {
+      if (!sharp) {
+        enterpriseLogger.warn('Sharp not available - skipping compression');
+        return buffer;
+      }
+
+      if (!mimeType.startsWith('image/')) {
+        return buffer;
+      }
+
+      // Compress and optimize image
+      const compressed = await sharp(buffer)
+        .resize(2000, 2000, {
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .jpeg({
+          quality: 85,
+          progressive: true,
+        })
+        .toBuffer();
+
+      const originalSize = buffer.length;
+      const compressedSize = compressed.length;
+      const savings = ((originalSize - compressedSize) / originalSize * 100).toFixed(2);
+
+      enterpriseLogger.info('Image compressed', {
+        originalSize,
+        compressedSize,
+        savingsPercent: savings,
+      });
+
+      return compressed;
+    } catch (error) {
+      enterpriseLogger.warn('Image compression failed, using original', { error: error.message });
+      return buffer;
+    }
+  }
+
+  /**
+   * Generate thumbnail for images
+   */
+  async generateThumbnail(buffer, mimeType) {
+    try {
+      if (!mimeType.startsWith('image/')) {
+        return null;
+      }
+
+      const thumbnail = await sharp(buffer)
+        .resize(200, 200, {
+          fit: 'cover',
+        })
+        .jpeg({
+          quality: 80,
+        })
+        .toBuffer();
+
+      return thumbnail;
+    } catch (error) {
+      enterpriseLogger.warn('Thumbnail generation failed', { error: error.message });
+      return null;
     }
   }
 
   /**
    * Upload document
-   * @param {Object} file - Uploaded file
-   * @param {Object} metadata - File metadata
-   * @returns {Object} Upload result
    */
   async uploadDocument(file, metadata = {}) {
     try {
@@ -76,283 +139,165 @@ class DocumentService {
         throw new Error('No file provided');
       }
 
-      // Validate file
-      const validation = this.validateFile(file);
-      if (!validation.isValid) {
-        throw new Error(validation.error);
+      // Compress image if enabled and applicable
+      const enableCompression = process.env.ENABLE_IMAGE_COMPRESSION !== 'false';
+      let processedFile = file;
+
+      if (enableCompression && file.mimetype.startsWith('image/')) {
+        try {
+          const fileBuffer = await fs.readFile(file.path);
+          const compressedBuffer = await this.compressImage(fileBuffer, file.mimetype);
+
+          // Save compressed version
+          await fs.writeFile(file.path, compressedBuffer);
+          processedFile = {
+            ...file,
+            size: compressedBuffer.length,
+          };
+
+          // Generate and save thumbnail
+          const thumbnail = await this.generateThumbnail(compressedBuffer, file.mimetype);
+          if (thumbnail) {
+            const thumbnailPath = file.path.replace(/(\.[^.]+)$/, '-thumb$1');
+            await fs.writeFile(thumbnailPath, thumbnail);
+          }
+        } catch (compressionError) {
+          enterpriseLogger.warn('Compression failed, using original file', {
+            error: compressionError.message,
+          });
+        }
       }
 
-      // Generate document ID
-      const documentId = this.generateDocumentId();
+      const document = await Document.create({
+        userId: metadata.userId,
+        filingId: metadata.filingId || null,
+        memberId: metadata.memberId || null,
+        category: metadata.category || 'OTHER',
+        filename: processedFile.filename,
+        originalFilename: processedFile.originalname,
+        localPath: processedFile.path,
+        mimeType: processedFile.mimetype,
+        sizeBytes: processedFile.size,
+        uploadedBy: metadata.userId,
+      });
 
-      // Create document record
-      const document = {
-        id: documentId,
-        originalName: file.originalname,
-        filename: file.filename,
-        path: file.path,
-        size: file.size,
-        mimetype: file.mimetype,
-        uploadedAt: new Date().toISOString(),
-        metadata: {
-          ...metadata,
-          uploadedBy: metadata.userId,
-          category: metadata.category || 'general',
-        },
-      };
-
-      // Save document metadata (in a real app, this would be saved to database)
-      await this.saveDocumentMetadata(document);
-
-      enterpriseLogger.info('Document uploaded successfully', {
-        documentId,
-        filename: file.filename,
-        size: file.size,
-        mimetype: file.mimetype,
+      enterpriseLogger.info('Document uploaded and saved to DB', {
+        documentId: document.id,
+        userId: metadata.userId,
+        compressed: enableCompression && file.mimetype.startsWith('image/'),
       });
 
       return {
         success: true,
-        documentId,
-        filename: file.filename,
-        size: file.size,
-        mimetype: file.mimetype,
-        uploadedAt: document.uploadedAt,
+        document,
       };
     } catch (error) {
-      enterpriseLogger.error('Document upload error', {
-        error: error.message,
-        stack: error.stack,
-      });
-
+      enterpriseLogger.error('Document upload error', { error: error.message });
       throw error;
     }
   }
 
   /**
    * Get document by ID
-   * @param {string} documentId - Document ID
-   * @returns {Object} Document information
    */
-  async getDocument(documentId) {
+  async getDocument(documentId, userId) {
     try {
-      const document = await this.getDocumentMetadata(documentId);
+      const document = await Document.findOne({
+        where: { id: documentId, userId, isDeleted: false },
+      });
+
       if (!document) {
         throw new Error('Document not found');
       }
 
-      // Check if file exists
-      const filePath = path.join(this.uploadDir, document.filename);
-      try {
-        await fs.access(filePath);
-      } catch (error) {
-        throw new Error('Document file not found');
-      }
-
-      return {
-        ...document,
-        filePath,
-      };
+      return document;
     } catch (error) {
-      enterpriseLogger.error('Get document error', {
-        documentId,
-        error: error.message,
-      });
-
+      enterpriseLogger.error('Get document error', { documentId, error: error.message });
       throw error;
     }
   }
 
   /**
-   * Delete document
-   * @param {string} documentId - Document ID
-   * @returns {Object} Deletion result
+   * Delete document (soft delete)
    */
-  async deleteDocument(documentId) {
+  async deleteDocument(documentId, userId) {
     try {
-      const document = await this.getDocumentMetadata(documentId);
+      const document = await Document.findOne({
+        where: { id: documentId, userId, isDeleted: false },
+      });
+
       if (!document) {
         throw new Error('Document not found');
       }
 
-      // Delete file
-      const filePath = path.join(this.uploadDir, document.filename);
-      try {
-        await fs.unlink(filePath);
-      } catch (error) {
-        enterpriseLogger.warn('File deletion failed', {
-          documentId,
-          filePath,
-          error: error.message,
-        });
-      }
+      await document.softDelete(userId);
 
-      // Delete metadata
-      await this.deleteDocumentMetadata(documentId);
-
-      enterpriseLogger.info('Document deleted successfully', { documentId });
-
-      return {
-        success: true,
-        documentId,
-        deletedAt: new Date().toISOString(),
-      };
+      return { success: true };
     } catch (error) {
-      enterpriseLogger.error('Document deletion error', {
-        documentId,
-        error: error.message,
-      });
-
+      enterpriseLogger.error('Document deletion error', { documentId, error: error.message });
       throw error;
     }
   }
 
   /**
    * List documents
-   * @param {Object} filters - Filter options
-   * @returns {Array} List of documents
    */
-  async listDocuments(filters = {}) {
+  async listDocuments(userId, filters = {}) {
     try {
-      // In a real app, this would query the database
-      // For now, return empty array
-      return [];
-    } catch (error) {
-      enterpriseLogger.error('List documents error', {
-        error: error.message,
-      });
-
-      throw error;
-    }
-  }
-
-  /**
-   * Validate uploaded file
-   * @param {Object} file - Uploaded file
-   * @returns {Object} Validation result
-   */
-  validateFile(file) {
-    try {
-      // Check file type
-      if (!this.allowedTypes.includes(file.mimetype)) {
-        return {
-          isValid: false,
-          error: 'Invalid file type. Allowed types: ' + this.allowedTypes.join(', '),
-        };
-      }
-
-      // Check file size
-      if (file.size > this.maxFileSize) {
-        return {
-          isValid: false,
-          error: `File size exceeds limit of ${this.maxFileSize / (1024 * 1024)}MB`,
-        };
-      }
-
-      // Check file name
-      if (!file.originalname || file.originalname.trim() === '') {
-        return {
-          isValid: false,
-          error: 'Invalid file name',
-        };
-      }
-
-      return { isValid: true };
-    } catch (error) {
-      return {
-        isValid: false,
-        error: 'File validation error: ' + error.message,
+      const whereClause = {
+        userId,
+        isDeleted: false,
       };
-    }
-  }
 
-  /**
-   * Generate unique document ID
-   * @returns {string} Document ID
-   */
-  generateDocumentId() {
-    return 'doc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  }
+      if (filters.category) {
+        whereClause.category = filters.category;
+      }
 
-  /**
-   * Save document metadata
-   * @param {Object} document - Document metadata
-   */
-  async saveDocumentMetadata(document) {
-    try {
-      // In a real app, this would save to database
-      // For now, just log the action
-      enterpriseLogger.info('Document metadata saved', {
-        documentId: document.id,
-        filename: document.filename,
+      if (filters.filingId) {
+        whereClause.filingId = filters.filingId;
+      }
+
+      if (filters.memberId) {
+        whereClause.memberId = filters.memberId;
+      }
+
+      const documents = await Document.findAll({
+        where: whereClause,
+        order: [['created_at', 'DESC']],
       });
+
+      return documents;
     } catch (error) {
-      enterpriseLogger.error('Save document metadata error', {
-        error: error.message,
-      });
+      enterpriseLogger.error('List documents error', { userId, error: error.message });
       throw error;
     }
   }
 
   /**
-   * Get document metadata
-   * @param {string} documentId - Document ID
-   * @returns {Object} Document metadata
+   * Get document statistics
    */
-  async getDocumentMetadata(documentId) {
+  async getDocumentStats(userId) {
     try {
-      // In a real app, this would query the database
-      // For now, return null
-      return null;
+      const stats = await Document.getUserStorageStats(userId);
+      const limit = 100 * 1024 * 1024; // 100MB limit
+
+      return {
+        ...stats,
+        maxStorageBytes: limit,
+        storageUsedPercentage: Math.round((stats.totalSize / limit) * 100),
+      };
     } catch (error) {
-      enterpriseLogger.error('Get document metadata error', {
-        documentId,
-        error: error.message,
-      });
+      enterpriseLogger.error('Get document stats error', { userId, error: error.message });
       throw error;
     }
   }
 
   /**
-   * Delete document metadata
-   * @param {string} documentId - Document ID
+   * Get Multer middleware
    */
-  async deleteDocumentMetadata(documentId) {
-    try {
-      // In a real app, this would delete from database
-      // For now, just log the action
-      enterpriseLogger.info('Document metadata deleted', { documentId });
-    } catch (error) {
-      enterpriseLogger.error('Delete document metadata error', {
-        documentId,
-        error: error.message,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Get multer upload middleware
-   * @param {string} fieldName - Form field name
-   * @param {number} maxCount - Maximum number of files
-   * @returns {Function} Multer middleware
-   */
-  getUploadMiddleware(fieldName = 'document', maxCount = 1) {
+  getUploadMiddleware(fieldName = 'file') {
     return this.upload.single(fieldName);
-  }
-
-  /**
-   * Get multer upload middleware for multiple files
-   * @param {string} fieldName - Form field name
-   * @param {number} maxCount - Maximum number of files
-   * @returns {Function} Multer middleware
-   */
-  getMultipleUploadMiddleware(fieldName = 'documents', maxCount = 5) {
-    return this.upload.array(fieldName, maxCount);
   }
 }
 
-// Create singleton instance
-const documentService = new DocumentService();
-
-module.exports = documentService;
+module.exports = new DocumentService();

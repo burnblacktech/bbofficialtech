@@ -8,6 +8,10 @@ import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-do
 import { authService } from '../../services';
 import { Lock, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -28,19 +32,18 @@ const ResetPassword = () => {
 
   const [formData, setFormData] = useState({
     password: '',
-    confirmPassword: '',
-  });
+    confirmPassword: '' });
 
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
-    feedback: [],
-  });
+    feedback: [] });
 
   // Countdown timer for OTP resend
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
+
+  return () => clearTimeout(timer);
     }
   }, [countdown]);
 

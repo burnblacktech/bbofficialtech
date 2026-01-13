@@ -9,6 +9,10 @@ import FilingPreferences from '../../components/Settings/FilingPreferences';
 import NotificationPreferences from '../../components/Settings/NotificationPreferences';
 import PrivacySettings from '../../components/Settings/PrivacySettings';
 import AccessibilitySettings from '../../components/Settings/AccessibilitySettings';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const Preferences = () => {
   const [activeTab, setActiveTab] = useState('filing');
@@ -35,7 +39,7 @@ const Preferences = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 mb-6">
+        <Card>
           <div className="border-b border-slate-200">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {tabs.map((tab) => {
@@ -70,7 +74,7 @@ const Preferences = () => {
             {activeTab === 'privacy' && <PrivacySettings />}
             {activeTab === 'accessibility' && <AccessibilitySettings />}
           </div>
-        </div>
+                </Card>
       </div>
     </div>
   );

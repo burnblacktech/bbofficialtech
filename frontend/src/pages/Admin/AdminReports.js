@@ -24,10 +24,14 @@ import {
   Database,
   Shield,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import api from '../../services/api';
 import ReportBuilder from '../../features/admin/reports/components/ReportBuilder';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminReports = () => {
   const { user } = useAuth();
@@ -239,11 +243,10 @@ const AdminReports = () => {
             <StaggerItem key={type.id}>
               <div
                 onClick={() => setSelectedReport(type.id)}
-                className={`p-4 border-2 rounded-xl cursor-pointer transition-colors ${
-                  selectedReport === type.id
+                className={`p-4 border-2 rounded-xl cursor-pointer transition-colors ${selectedReport === type.id
                     ? 'border-primary-500 bg-primary-50'
                     : 'border-neutral-200 hover:border-neutral-300 bg-white'
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getColorClasses(type.color)}`}>

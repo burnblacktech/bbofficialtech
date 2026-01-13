@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   Building2,
@@ -32,6 +32,10 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../components/UI';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminCAFirms = () => {
   const { user } = useAuth();
@@ -157,6 +161,7 @@ const AdminCAFirms = () => {
   };
 
   if (isLoading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -214,6 +219,7 @@ const AdminCAFirms = () => {
                   <div className="ml-4">
                     <Typography.Small className="text-neutral-500">Active</Typography.Small>
                     <Typography.H3>{stats.active || 0}</Typography.H3>
+                    <Typography.H3>{stats.active || 0}</Typography.H3>
                   </div>
                 </div>
               </CardContent>
@@ -245,6 +251,7 @@ const AdminCAFirms = () => {
                   </div>
                   <div className="ml-4">
                     <Typography.Small className="text-neutral-500">Total CAs</Typography.Small>
+                    <Typography.H3>{stats.total_cas || 0}</Typography.H3>
                     <Typography.H3>{stats.total_cas || 0}</Typography.H3>
                   </div>
                 </div>
