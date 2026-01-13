@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   Shield,
@@ -16,10 +16,14 @@ import {
   Clock,
   AlertCircle,
   Filter,
-  RefreshCw,
+  RefreshCw
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminVerificationQueue = () => {
   const [loading, setLoading] = useState(true);
@@ -73,7 +77,7 @@ const AdminVerificationQueue = () => {
     try {
       const endpoint = `/admin/verification/${selectedVerification.type}/${selectedVerification.id}/${actionType}`;
       const payload = actionType === 'reject' ? { reason } : { reason: reason || 'Approved by admin' };
-      
+
       await api.post(endpoint, payload);
       toast.success(`Verification ${actionType === 'approve' ? 'approved' : 'rejected'} successfully`);
       setShowActionModal(false);
@@ -115,8 +119,8 @@ const AdminVerificationQueue = () => {
     }
   };
 
-  const filteredVerifications = filterType === 'all' 
-    ? verifications 
+  const filteredVerifications = filterType === 'all'
+    ? verifications
     : verifications.filter(v => v.type === filterType);
 
   return (
@@ -142,43 +146,39 @@ const AdminVerificationQueue = () => {
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilterType('all')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  filterType === 'all'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filterType === 'all'
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
               >
                 All ({verifications.length})
               </button>
               <button
                 onClick={() => setFilterType('email')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  filterType === 'email'
-                    ? 'bg-info-100 text-info-700'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filterType === 'email'
+                  ? 'bg-info-100 text-info-700'
+                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
               >
                 <Mail className="h-4 w-4 inline mr-2" />
                 Email ({verifications.filter(v => v.type === 'email').length})
               </button>
               <button
                 onClick={() => setFilterType('phone')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  filterType === 'phone'
-                    ? 'bg-success-100 text-success-700'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filterType === 'phone'
+                  ? 'bg-success-100 text-success-700'
+                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
               >
                 <Phone className="h-4 w-4 inline mr-2" />
                 Phone ({verifications.filter(v => v.type === 'phone').length})
               </button>
               <button
                 onClick={() => setFilterType('pan')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  filterType === 'pan'
-                    ? 'bg-warning-100 text-warning-700'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${filterType === 'pan'
+                  ? 'bg-warning-100 text-warning-700'
+                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
               >
                 <CreditCard className="h-4 w-4 inline mr-2" />
                 PAN ({verifications.filter(v => v.type === 'pan').length})
@@ -225,7 +225,7 @@ const AdminVerificationQueue = () => {
                             {verification.type === 'phone' && verification.userPhone}
                             {verification.type === 'pan' && verification.userPAN}
                           </Typography.Small>
-                          <div className="flex items-center gap-2 text-body-small text-neutral-500">
+                          <div className="flex items-center gap-2 text-xs text-neutral-500">
                             <Clock className="h-3 w-3" />
                             Submitted {new Date(verification.submittedAt).toLocaleDateString()}
                           </div>
@@ -296,7 +296,7 @@ const AdminVerificationQueue = () => {
                   </Typography.Small>
                 </div>
                 <div>
-                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
                     {actionType === 'reject' ? 'Rejection Reason' : 'Notes'} <span className="text-error-500">*</span>
                   </label>
                   <textarea
@@ -338,4 +338,3 @@ const AdminVerificationQueue = () => {
 };
 
 export default AdminVerificationQueue;
-

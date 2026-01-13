@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   Users,
@@ -19,6 +19,10 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminCAPerformance = () => {
   const { id } = useParams();
@@ -50,6 +54,7 @@ const AdminCAPerformance = () => {
   };
 
   if (loading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,8 +101,7 @@ const AdminCAPerformance = () => {
     clientSatisfactionScore,
     reviewCount,
     errorRate,
-    averageResponseTime,
-  } = performanceData;
+    averageResponseTime } = performanceData;
 
   const completionRate = totalFilings > 0
     ? ((completedFilings / totalFilings) * 100).toFixed(1)
@@ -239,9 +243,8 @@ const AdminCAPerformance = () => {
                   <AlertCircle className="w-5 h-5 text-neutral-500" />
                   <Typography.Body>Error Rate</Typography.Body>
                 </div>
-                <Typography.Body className={`font-semibold ${
-                  errorRate < 5 ? 'text-success-600' : errorRate < 10 ? 'text-warning-600' : 'text-error-600'
-                }`}>
+                <Typography.Body className={`font-semibold ${errorRate < 5 ? 'text-success-600' : errorRate < 10 ? 'text-warning-600' : 'text-error-600'
+                  }`}>
                   {errorRate}%
                 </Typography.Body>
               </div>

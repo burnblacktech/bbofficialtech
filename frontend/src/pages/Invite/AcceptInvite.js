@@ -8,13 +8,16 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiClient } from '../../services';
 import { toast } from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   UserPlus,
   Building,
   Mail,
   CheckCircle,
-  AlertTriangle,
-} from 'lucide-react';
+  AlertTriangle } from 'lucide-react';
 
 const AcceptInvite = () => {
   const navigate = useNavigate();
@@ -27,8 +30,7 @@ const AcceptInvite = () => {
     fullName: '',
     password: '',
     confirmPassword: '',
-    phone: '',
-  });
+    phone: '' });
 
   const token = searchParams.get('token');
 
@@ -48,8 +50,7 @@ const AcceptInvite = () => {
         setInvite(response.data.invite);
         setFormData((prev) => ({
           ...prev,
-          fullName: response.data.invite.metadata?.firmName || '',
-        }));
+          fullName: response.data.invite.metadata?.firmName || '' }));
       } else {
         toast.error('Invalid or expired invite');
         navigate('/login');
@@ -66,8 +67,7 @@ const AcceptInvite = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
-    }));
+      [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -90,8 +90,7 @@ const AcceptInvite = () => {
       const response = await apiClient.post(`/invites/accept/${token}`, {
         fullName: formData.fullName,
         password: formData.password,
-        phone: formData.phone,
-      });
+        phone: formData.phone });
 
       if (response.data.success) {
         toast.success('Account created successfully! Please login.');
@@ -105,7 +104,8 @@ const AcceptInvite = () => {
   };
 
   if (loading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>

@@ -20,6 +20,10 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -112,7 +116,7 @@ const ITR3AssetsLiabilities = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <button
-                        onClick={() => navigate(`/filing/${filingId}/income/business/bs`)}
+                        onClick={() => navigate(`/filing/${filingId}/business/bs`)}
                         className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />
@@ -124,7 +128,7 @@ const ITR3AssetsLiabilities = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
+                <Card>
                     <div className="bg-slate-900 p-8 text-white">
                         <h1 className="text-2xl font-bold font-serif mb-2">Schedule AL</h1>
                         <p className="text-slate-400 text-sm">Step 4 of 4: Assets & Liabilities at year-end</p>
@@ -239,7 +243,7 @@ const ITR3AssetsLiabilities = () => {
                             <CheckCircle2 className="w-6 h-6" />
                         </button>
                     </div>
-                </div>
+                </Card>
             </div>
 
             <p className="text-center mt-8 text-slate-400 text-xs">

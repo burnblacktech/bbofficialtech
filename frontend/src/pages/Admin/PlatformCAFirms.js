@@ -31,10 +31,12 @@ import {
   Crown,
   UserCheck,
   Activity,
-  BarChart3,
+  BarChart3
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const PlatformCAFirms = () => {
   const { user } = useAuth();
@@ -85,7 +87,7 @@ const PlatformCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to register CA firm: ${error.message}`);
-    },
+    }
   });
 
   // Update CA firm status mutation
@@ -101,7 +103,7 @@ const PlatformCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update CA firm: ${error.message}`);
-    },
+    }
   });
 
   // Update CA firm tier mutation
@@ -117,7 +119,7 @@ const PlatformCAFirms = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update CA firm tier: ${error.message}`);
-    },
+    }
   });
 
   const handleStatusUpdate = (firmId, newStatus) => {
@@ -202,6 +204,7 @@ const PlatformCAFirms = () => {
   });
 
   if (isLoading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -345,16 +348,14 @@ const PlatformCAFirms = () => {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    selectedTab === tab.id
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${selectedTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                  }`}
+                    }`}
                 >
                   <span>{tab.name}</span>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    selectedTab === tab.id ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'
-                  }`}>
+                  <span className={`px-2 py-1 text-xs rounded-full ${selectedTab === tab.id ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'
+                    }`}>
                     {tab.count}
                   </span>
                 </button>
@@ -542,7 +543,7 @@ const AddCAFirmForm = ({ onClose, onSubmit, isLoading }) => {
     pan_number: '',
     tier: 'basic',
     status: 'pending',
-    is_verified: false,
+    is_verified: false
   });
 
   const handleSubmit = (e) => {

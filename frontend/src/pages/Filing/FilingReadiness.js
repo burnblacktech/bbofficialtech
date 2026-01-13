@@ -8,10 +8,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle2, FileText, Send, Loader2, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import SectionCard from '../../components/common/SectionCard';
-import ReassuranceBanner from '../../components/common/ReassuranceBanner';
-import InlineHint from '../../components/common/InlineHint';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { PageContent } from '../../components/Layout';
+import { ReviewPage } from '../../components/templates';
+import ReassuranceBanner from '../../components/ReassuranceBanner';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -51,6 +54,7 @@ const FilingReadiness = () => {
     };
 
     if (loading) {
+
         return (
             <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center gap-4">
                 <Loader2 className="w-12 h-12 animate-spin text-[var(--s29-primary)]" />
@@ -77,12 +81,12 @@ const FilingReadiness = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6 text-center">
-                <div className="max-w-md w-full bg-white p-8 rounded-[var(--s29-radius-large)] shadow-xl border border-[var(--s29-border-light)]">
+                <Card>
                     <AlertCircle className="w-12 h-12 text-[var(--s29-error)] mx-auto mb-4" />
                     <h2 className="text-xl font-bold text-[var(--s29-text-main)] mb-2">Readiness Check Failed</h2>
                     <p className="text-[var(--s29-text-muted)] mb-6">{error}</p>
                     <button onClick={() => navigate('/dashboard')} className="w-full bg-[var(--s29-primary)] text-white py-3 rounded-[var(--s29-radius-main)] font-medium">Return Home</button>
-                </div>
+                </Card>
             </div>
         );
     }
@@ -90,30 +94,21 @@ const FilingReadiness = () => {
     const { completionChecklist, legalStatus, actions, snapshot, taxpayerPan } = data;
 
     return (
-        <div className="min-h-screen bg-[var(--s29-bg-page)] py-12 px-6">
-            <div className="max-w-xl mx-auto">
-                <header className="mb-10 text-center">
-                    <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
-                        Final Review
-                    </span>
-                    <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mt-2">
-                        Seal & Submit
-                    </h1>
-                    <p className="text-[var(--s29-text-muted)] mt-1">
-                        Please confirm your details before we file your return.
-                    </p>
-                </header>
-
-                <div className="bg-white rounded-[var(--s29-radius-large)] border border-[var(--s29-border-light)] p-8 shadow-sm mb-8">
-                    <div className="space-y-8">
+        <ReviewPage
+            title="Seal & Submit"
+            subtitle="Please confirm your details before we file your return."
+        >
+            <PageContent spacing="section">
+                <Card padding="lg">
+                    <div className={layout.blockGap}>
                         <div className="flex items-start gap-4 group">
                             <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                 <ShieldCheck className="w-6 h-6 text-emerald-600" />
                             </div>
                             <div>
-                                <h3 className='font-bold text-[var(--s29-text-main)]'>Identity & Context Locked</h3>
-                                <p className="text-sm text-[var(--s29-text-muted)] mt-1">
-                                    Filing for <span className="font-bold text-[var(--s29-text-main)]">{taxpayerPan}</span> • Assessment Year 2024-25. Information is immutable after this step.
+                                <h3 className={typography.cardTitle}>Identity & Context Locked</h3>
+                                <p className={typography.bodySmallMuted}>
+                                    Filing for <span className="font-bold text-slate-900">{taxpayerPan}</span> • Assessment Year 2024-25. Information is immutable after this step.
                                 </p>
                             </div>
                         </div>
@@ -123,79 +118,78 @@ const FilingReadiness = () => {
                                 <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-[var(--s29-text-main)]">Calculations Audited</h3>
-                                <p className="text-sm text-[var(--s29-text-muted)] mt-1">
+                                <h3 className={typography.cardTitle}>Calculations Audited</h3>
+                                <p className={typography.bodySmallMuted}>
                                     Computed against Income Tax Act Section 139(1). All tax exemptions and slabs have been optimized.
                                 </p>
                             </div>
                         </div>
 
                         <div className="flex items-start gap-4 group">
-                            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                <FileText className="w-6 h-6 text-blue-600" />
+                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <FileText className="w-6 h-6 text-slate-400" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-[var(--s29-text-main)]">Detailed Draft Generation</h3>
-                                <p className="text-sm text-[var(--s29-text-muted)] mt-1 mb-2">A technical preview of your ITR is ready for your audit.</p>
-                                <button
+                                <h3 className={typography.cardTitle}>Detailed Draft Generation</h3>
+                                <p className={typography.bodySmallMuted}>A technical preview of your ITR is ready for your audit.</p>
+                                <Button
+                                    variant="ghost"
+                                    size="small"
                                     onClick={() => window.open(`${API_BASE_URL}/filings/${filingId}/export/pdf`, '_blank')}
-                                    className="text-sm text-[var(--s29-primary)] font-bold hover:text-[var(--s29-primary-dark)] transition-colors flex items-center gap-1.5"
+                                    className="mt-2"
                                 >
                                     View Draft PDF (Read-only)
-                                    <ArrowRight className="w-3.5 h-3.5" />
-                                </button>
+                                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                                </Button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </Card>
 
-                <div className="mb-8">
-                    <ReassuranceBanner
-                        type="safety"
-                        message="Once submitted, this return becomes legally final. If you identify errors later, BurnBlack will assist you in filing a Revised Return."
-                    />
-                </div>
+                <ReassuranceBanner
+                    message="Once submitted, this return becomes legally final. If you identify errors later, BurnBlack will assist you in filing a Revised Return."
+                />
 
-                <div className="space-y-4">
-                    <button
-                        onClick={handleSubmit}
+                <div className="flex flex-col gap-3">
+                    <Button
+                        variant="primary"
+                        size="large"
+                        fullWidth
                         disabled={!actions.canSubmit}
-                        className={`w-full py-5 rounded-[var(--s29-radius-main)] font-bold text-xl transition-all flex items-center justify-center gap-3 shadow-lg ${actions.canSubmit
-                            ? 'bg-[var(--s29-primary)] text-white hover:bg-[var(--s29-primary-dark)] shadow-[var(--s29-primary-light)]/40 active:scale-[0.98]'
-                            : 'bg-white border border-[var(--s29-border-light)] text-[var(--s29-text-muted)] cursor-not-allowed opacity-60 shadow-none'
-                            }`}
+                        onClick={handleSubmit}
                     >
                         {actions.canSubmit ? 'Submit to Government' : 'Filing Locked'}
-                        <Send className="w-5 h-5 flex-shrink-0" />
-                    </button>
+                        <Send className="w-4 h-4 ml-2" />
+                    </Button>
 
-                    <button
+                    <Button
+                        variant="ghost"
+                        fullWidth
                         onClick={() => navigate(`/filing/${filingId}/tax-breakdown`)}
-                        className="w-full text-[var(--s29-text-muted)] py-3 text-sm hover:text-[var(--s29-text-main)] transition-colors font-medium"
                     >
                         Wait, let me double check my data
-                    </button>
+                    </Button>
                 </div>
 
                 {!actions.canSubmit && (
-                    <div className="mt-8 p-6 bg-amber-50 border border-amber-100 rounded-[var(--s29-radius-large)] flex gap-4 shadow-sm">
-                        <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-4">
+                        <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                         <div>
-                            <h4 className="font-bold text-amber-900 text-sm mb-1">Incomplete Requirements</h4>
-                            <p className="text-sm text-amber-800 leading-relaxed italic">
+                            <h4 className="font-bold text-amber-900 text-xs mb-1 uppercase tracking-wider">Incomplete Requirements</h4>
+                            <p className="text-xs text-amber-800 leading-relaxed italic">
                                 "{legalStatus.reason || 'Some sections of your filing are still missing critical truth-data. Please complete all sections before attempting submission.'}"
                             </p>
                         </div>
                     </div>
                 )}
 
-                <div className="mt-12 pt-8 border-t border-[var(--s29-border-light)] text-center">
-                    <InlineHint>
+                <div className="mt-8 pt-8 border-t border-slate-100 text-center">
+                    <p className={typography.bodySmallMuted}>
                         Secure AES-256 transmission in progress. Data is only accessible by the Income Tax Department's secure servers.
-                    </InlineHint>
+                    </p>
                 </div>
-            </div>
-        </div>
+            </PageContent>
+        </ReviewPage>
     );
 };
 

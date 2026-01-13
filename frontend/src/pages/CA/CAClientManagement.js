@@ -8,6 +8,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   ArrowLeft,
   Search,
@@ -34,8 +38,7 @@ import {
   UserPlus,
   FileCheck,
   TrendingUp,
-  X,
-} from 'lucide-react';
+  X } from 'lucide-react';
 
 const CAClientManagement = () => {
   const { user } = useAuth();
@@ -69,8 +72,7 @@ const CAClientManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['caClients']);
-    },
-  });
+    } });
 
   // Delete client mutation
   const deleteClientMutation = useMutation({
@@ -80,8 +82,7 @@ const CAClientManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['caClients']);
-    },
-  });
+    } });
 
   const handleStatusChange = (clientId, newStatus) => {
     updateClientMutation.mutate({ clientId, status: newStatus });
@@ -166,7 +167,8 @@ const CAClientManagement = () => {
   const typeOptions = ['all', 'individual', 'business', 'huf'];
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>

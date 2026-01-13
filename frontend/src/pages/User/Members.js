@@ -31,9 +31,12 @@ import {
   Shield,
   Star,
   MoreVertical,
-  X,
-} from 'lucide-react';
+  X } from 'lucide-react';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const Members = () => {
   const { user } = useAuth();
@@ -66,8 +69,7 @@ const Members = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['members', user?.user_id]);
-    },
-  });
+    } });
 
   // Delete member mutation
   const deleteMemberMutation = useMutation({
@@ -77,8 +79,7 @@ const Members = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['members', user?.user_id]);
-    },
-  });
+    } });
 
   const handleStatusChange = (memberId, newStatus) => {
     updateMemberMutation.mutate({ memberId, status: newStatus });
@@ -165,7 +166,8 @@ const Members = () => {
   const statusOptions = ['all', 'active', 'inactive', 'pending', 'suspended'];
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
@@ -222,7 +224,7 @@ const Members = () => {
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
+          <Card>
             {/* Role Filter */}
             <div>
               <label className="text-body-small font-medium text-slate-700 mb-2 block">Role</label>
@@ -254,13 +256,13 @@ const Members = () => {
                 ))}
               </select>
             </div>
-          </div>
+                </Card>
         )}
 
         {/* Members List */}
         <div className="space-y-3">
           {filteredMembers.length === 0 ? (
-            <div className="bg-white rounded-xl p-8 text-center border border-slate-200">
+            <Card>
               <Users className="h-12 w-12 text-slate-400 mx-auto mb-4" />
               <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No members found</h3>
               <p className="text-body-regular text-slate-500">
@@ -291,9 +293,9 @@ const Members = () => {
                           {getStatusIcon(member.status)}
                           <span className="capitalize">{member.status}</span>
                         </span>
-                      </div>
+                      </Card>
                     </div>
-                  </div>
+                </Card>
 
                   <div className="flex items-center space-x-1">
                     <button

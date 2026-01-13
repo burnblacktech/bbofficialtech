@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   Users,
@@ -19,6 +19,10 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminUserSegments = () => {
   const [loading, setLoading] = useState(true);
@@ -193,6 +197,7 @@ const AdminUserSegments = () => {
   const filteredSegments = segments.filter((segment) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         segment.name?.toLowerCase().includes(searchLower) ||
         segment.description?.toLowerCase().includes(searchLower)
@@ -285,9 +290,8 @@ const AdminUserSegments = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1">
                           <Typography.Body className="font-medium">{segment.name}</Typography.Body>
-                          <span className={`px-2 py-0.5 text-xs rounded-full ${
-                            segment.isActive ? 'bg-success-100 text-success-700' : 'bg-neutral-100 text-neutral-600'
-                          }`}>
+                          <span className={`px-2 py-0.5 text-xs rounded-full ${segment.isActive ? 'bg-success-100 text-success-700' : 'bg-neutral-100 text-neutral-600'
+                            }`}>
                             {segment.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>
@@ -571,9 +575,8 @@ const AdminUserSegments = () => {
                           <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-body-small rounded">
                             {member.role}
                           </span>
-                          <span className={`px-2 py-1 text-xs rounded ${
-                            member.status === 'ACTIVE' ? 'bg-success-100 text-success-700' : 'bg-neutral-100 text-neutral-600'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs rounded ${member.status === 'ACTIVE' ? 'bg-success-100 text-success-700' : 'bg-neutral-100 text-neutral-600'
+                            }`}>
                             {member.status}
                           </span>
                         </div>

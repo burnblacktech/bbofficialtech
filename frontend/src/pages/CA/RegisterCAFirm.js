@@ -25,9 +25,13 @@ import {
   Users,
   IndianRupee,
 } from 'lucide-react';
-import { Button, Card, Alert } from '../../components/UI';
+import { Alert } from '../../components/UI';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const RegisterCAFirm = () => {
   const navigate = useNavigate();
@@ -284,6 +288,7 @@ const RegisterCAFirm = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
+
         return (
           <Card className="p-6">
             <h2 className="text-heading-3 font-semibold mb-6">Basic Information</h2>
@@ -692,11 +697,10 @@ const RegisterCAFirm = () => {
                 {subscriptionPlans.map((plan) => (
                   <div
                     key={plan.id}
-                    className={`relative border rounded-xl p-4 cursor-pointer transition-all ${
-                      formData.selectedPlan === plan.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
+                    className={`relative border rounded-xl p-4 cursor-pointer transition-all ${formData.selectedPlan === plan.id
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                      }`}
                     onClick={() => setFormData(prev => ({ ...prev, selectedPlan: plan.id }))}
                   >
                     {plan.popular && (
@@ -729,21 +733,19 @@ const RegisterCAFirm = () => {
               <div className="mt-6 flex justify-center space-x-4">
                 <button
                   onClick={() => setFormData(prev => ({ ...prev, billingCycle: 'MONTHLY' }))}
-                  className={`px-6 py-2 rounded-xl ${
-                    formData.billingCycle === 'MONTHLY'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-200 text-slate-700'
-                  }`}
+                  className={`px-6 py-2 rounded-xl ${formData.billingCycle === 'MONTHLY'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-200 text-slate-700'
+                    }`}
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setFormData(prev => ({ ...prev, billingCycle: 'YEARLY' }))}
-                  className={`px-6 py-2 rounded-xl ${
-                    formData.billingCycle === 'YEARLY'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-200 text-slate-700'
-                  }`}
+                  className={`px-6 py-2 rounded-xl ${formData.billingCycle === 'YEARLY'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-200 text-slate-700'
+                    }`}
                 >
                   Yearly (Save 10%)
                 </button>
@@ -833,18 +835,16 @@ const RegisterCAFirm = () => {
             {[1, 2, 3, 4, 5, 6].map((step) => (
               <div key={step} className="flex items-center">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep >= step
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-200 text-slate-600'
-                  }`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-200 text-slate-600'
+                    }`}
                 >
                   {step}
                 </div>
                 <div
-                  className={`h-1 w-16 mx-2 ${
-                    currentStep > step ? 'bg-blue-600' : 'bg-slate-200'
-                  }`}
+                  className={`h-1 w-16 mx-2 ${currentStep > step ? 'bg-blue-600' : 'bg-slate-200'
+                    }`}
                 />
               </div>
             ))}
@@ -875,11 +875,10 @@ const RegisterCAFirm = () => {
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-xl ${
-              currentStep === 1
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
-            }`}
+            className={`flex items-center space-x-2 px-6 py-3 rounded-xl ${currentStep === 1
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+              }`}
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Previous</span>

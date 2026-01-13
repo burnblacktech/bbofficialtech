@@ -1,15 +1,9 @@
-// =====================================================
-// FILE MANAGER COMPONENT
-// =====================================================
-
 import React, { useState, useEffect } from 'react';
 import Card from '../common/Card';
 import Button from '../DesignSystem/components/Button';
 import StatusBadge from '../DesignSystem/StatusBadge';
 import Modal from '../common/Modal';
-import documentService from '../../services/documentService';
-import { enterpriseLogger } from '../../utils/logger';
-import toast from 'react-hot-toast';
+import { useDocumentContext } from '../../contexts/DocumentContext';
 
 const FileManager = ({
   filingId = null,
@@ -17,86 +11,28 @@ const FileManager = ({
   onFileDelete,
   className = '',
 }) => {
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    documents,
+    stats,
+    loading,
+    categories,
+    loadDocuments,
+    loadStats,
+    deleteDocument,
+    downloadDocument,
+  } = useDocumentContext();
+
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
-  const [stats, setStats] = useState(null);
-
-  const categories = [
-    { key: 'ALL', label: 'All Documents', icon: '📁' },
-    { key: 'FORM_16', label: 'Form 16', icon: '📄' },
-    { key: 'BANK_STATEMENT', label: 'Bank Statement', icon: '🏦' },
-    { key: 'INVESTMENT_PROOF', label: 'Investment Proof', icon: '📈' },
-    { key: 'RENT_RECEIPTS', label: 'Rent Receipts', icon: '🏠' },
-    { key: 'CAPITAL_GAINS', label: 'Capital Gains', icon: '💰' },
-    { key: 'BUSINESS_INCOME', label: 'Business Income', icon: '🏢' },
-    { key: 'HOUSE_PROPERTY', label: 'House Property', icon: '🏘️' },
-    { key: 'OTHER', label: 'Other', icon: '📎' },
-  ];
 
   useEffect(() => {
-    loadDocuments();
+    loadDocuments({ filingId });
     loadStats();
-  }, [filingId, selectedCategory]);
-
-  const loadDocuments = async () => {
-    try {
-      setLoading(true);
-
-      const params = {
-        filingId,
-        category: selectedCategory !== 'ALL' ? selectedCategory : undefined,
-      };
-
-      const response = await documentService.getUserDocuments(params);
-      setDocuments(response.data || []);
-
-      enterpriseLogger.info('Documents loaded', {
-        count: response.data?.length || 0,
-        filingId,
-        category: selectedCategory,
-      });
-    } catch (error) {
-      enterpriseLogger.error('Failed to load documents', { error: error.message });
-      toast.error('Failed to load documents');
-      setDocuments([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadStats = async () => {
-    try {
-      const response = await documentService.getDocumentStats();
-      setStats(response.data);
-    } catch (error) {
-      enterpriseLogger.error('Failed to load document stats', { error: error.message });
-      toast.error('Failed to load document stats');
-    }
-  };
+  }, [filingId, loadDocuments, loadStats]);
 
   const handleDownload = async (document) => {
-    try {
-      const response = await documentService.getDownloadUrl(document.id);
-      const downloadUrl = response.data.downloadUrl;
-
-      // Open download URL in new tab
-      window.open(downloadUrl, '_blank');
-
-      toast.success('Download started');
-      enterpriseLogger.info('Document download initiated', {
-        documentId: document.id,
-        filename: document.originalFilename,
-      });
-    } catch (error) {
-      enterpriseLogger.error('Failed to download document', {
-        error: error.message,
-        documentId: document.id,
-      });
-      toast.error('Failed to download document');
-    }
+    await downloadDocument(document.id, document.originalFilename);
   };
 
   const handleDelete = (document) => {
@@ -106,35 +42,16 @@ const FileManager = ({
 
   const confirmDelete = async () => {
     if (!fileToDelete) return;
-
-    try {
-      await documentService.deleteDocument(fileToDelete.id);
-
-      // Remove from local state
-      setDocuments(prev => prev.filter(doc => doc.id !== fileToDelete.id));
-
-      // Call parent callback
+    const success = await deleteDocument(fileToDelete.id);
+    if (success) {
       onFileDelete?.(fileToDelete);
-
-      toast.success('Document deleted successfully');
-      enterpriseLogger.info('Document deleted', {
-        documentId: fileToDelete.id,
-        filename: fileToDelete.originalFilename,
-      });
-    } catch (error) {
-      enterpriseLogger.error('Failed to delete document', {
-        error: error.message,
-        documentId: fileToDelete.id,
-      });
-      toast.error('Failed to delete document');
-    } finally {
-      setShowDeleteModal(false);
-      setFileToDelete(null);
     }
+    setShowDeleteModal(false);
+    setFileToDelete(null);
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));

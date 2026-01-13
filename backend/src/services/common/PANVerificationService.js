@@ -139,6 +139,7 @@ class PANVerificationService {
         pan,
         isValid: verificationResult.isValid,
         name: verificationResult.name,
+        dateOfBirth: verificationResult.dateOfBirth,
         userId,
       });
 
@@ -434,7 +435,7 @@ class PANVerificationService {
       isValid: true,
       name: this.generateMockName(pan),
       status: 'Active',
-      dateOfBirth: null, // Mock doesn't include DOB - would need to be provided separately
+      dateOfBirth: this.generateMockDOB(pan),
       lastUpdated: new Date().toISOString(),
       source: 'SUREPASS_MOCK',
       verifiedAt: new Date().toISOString(),
@@ -474,6 +475,20 @@ class PANVerificationService {
     const index = seed % mockNames.length;
 
     return mockNames[index];
+  }
+
+  /**
+   * Generate mock DOB based on PAN
+   * @param {string} pan - PAN number
+   * @returns {string} - Mock DOB (YYYY-MM-DD)
+   */
+  generateMockDOB(pan) {
+    // Generate a semi-consistent date between 1970 and 2000
+    const seed = pan.charCodeAt(0) + pan.charCodeAt(1) + pan.charCodeAt(2);
+    const year = 1970 + (seed % 31);
+    const month = String(1 + (seed % 12)).padStart(2, '0');
+    const day = String(1 + (seed % 28)).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   /**

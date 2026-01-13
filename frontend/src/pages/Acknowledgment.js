@@ -10,18 +10,20 @@ import {
   Shield,
   ArrowLeft,
   Printer,
-  Mail,
-} from 'lucide-react';
+  Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../utils/logger';
 import itrService from '../services/api/itrService';
 import { ensureJourneyStart, trackEvent } from '../utils/analyticsEvents';
+import { OrientationPage } from '../components/templates';
+import { Card } from '../components/UI/Card';
+import { Button } from '../components/UI/Button';
+import { typography, spacing, components, layout } from '../styles/designTokens';
 import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard,
-} from '../components/DesignSystem/EnterpriseComponents';
+  EnterpriseStatCard } from '../components/DesignSystem/EnterpriseComponents';
 
 const Acknowledgment = () => {
   const { filingId } = useParams();
@@ -41,8 +43,7 @@ const Acknowledgment = () => {
     ensureJourneyStart();
     trackEvent('itr_ack_view', {
       filingId: filingId || null,
-      ackNumber: ackNumberFromState || null,
-    });
+      ackNumber: ackNumberFromState || null });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -55,8 +56,7 @@ const Acknowledgment = () => {
       onError: (error) => {
         toast.error('Failed to load filing details');
         enterpriseLogger.error('Failed to load filing details', { error, filingId });
-      },
-    },
+      } },
   );
 
   const filing = filingResponse?.filing || null;
@@ -130,7 +130,8 @@ const Acknowledgment = () => {
 
   // Loading state - Justification: Better UX during data fetching
   if (filingLoading) {
-    return (
+
+  return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>

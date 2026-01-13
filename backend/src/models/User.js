@@ -64,6 +64,50 @@ const User = sequelize.define('User', {
   },
 
   // =====================================================
+  // PERSONAL INFO
+  // =====================================================
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  dateOfBirth: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'date_of_birth',
+  },
+  gender: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  panNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'pan_number',
+  },
+  panVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+    field: 'pan_verified',
+  },
+  panVerifiedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'pan_verified_at',
+  },
+  dobVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+    field: 'dob_verified',
+  },
+  dobVerifiedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'dob_verified_at',
+  },
+
+  // =====================================================
   // LIFECYCLE
   // =====================================================
   status: {
@@ -81,6 +125,17 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
     field: 'verification_token',
+  },
+  googleId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
+    field: 'google_id',
+  },
+  metadata: {
+    type: DataTypes.JSONB,
+    defaultValue: {},
+    allowNull: false,
   },
 
   // =====================================================

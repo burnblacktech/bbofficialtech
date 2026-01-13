@@ -6,7 +6,7 @@
 
 import { useState, useMemo } from 'react';
 import { useAdminAnalytics, useAdminCAAnalytics } from '../../features/admin/analytics/hooks/use-analytics';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   ArrowLeft,
@@ -46,6 +46,10 @@ import {
   Area,
 } from 'recharts';
 import * as XLSX from 'xlsx';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const COLORS = ['#D4AF37', '#8B7355', '#6B5B73', '#4A5568', '#2D3748'];
 
@@ -225,8 +229,8 @@ const AdminAnalytics = () => {
   return (
     <PageTransition className="min-h-screen bg-neutral-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        {/* Header and Controls Row */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => window.history.back()}
@@ -256,773 +260,791 @@ const AdminAnalytics = () => {
                     </span>
                   )}
                 </div>
+                <Typography.Body className="text-neutral-600">
+                  Platform Insights & Performance Metrics
+                </Typography.Body>
               </div>
-              <Typography.Body className="text-neutral-600">
-                Platform Insights & Performance Metrics
-              </Typography.Body>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Button onClick={handleRefresh} variant="outline" size="sm">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+              <Button onClick={handleExportCSV} variant="primary" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <Button onClick={handleRefresh} variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-            <Button onClick={handleExportCSV} variant="primary" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </div>
-        </div>
-
-        {/* Time Range & Metric Type Selectors */}
-        <div className="space-y-4 mb-8">
-          {/* Time Range */}
-          <div className="flex flex-wrap gap-2">
-            {['7d', '30d', '90d', '1y'].map(range => (
-              <button
-                key={range}
-                onClick={() => {
-                  setTimeRange(range);
-                  setShowCustomDate(false);
-                }}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  timeRange === range && !showCustomDate
+          {/* Time Range & Metric Type Selectors */}
+          <div className="space-y-4 mb-8">
+            {/* Time Range */}
+            <div className="flex flex-wrap gap-2">
+              {['7d', '30d', '90d', '1y'].map(range => (
+                <button
+                  key={range}
+                  onClick={() => {
+                    setTimeRange(range);
+                    setShowCustomDate(false);
+                  }}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${timeRange === range && !showCustomDate
                     ? 'bg-primary-500 text-white shadow-elevation-1'
                     : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
-                }`}
-              >
-                {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '1 Year'}
-              </button>
-            ))}
-            <button
-              onClick={() => setShowCustomDate(!showCustomDate)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
-                showCustomDate
+                    }`}
+                >
+                  {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '1 Year'}
+                </button>
+              ))}
+              <button
+                onClick={() => setShowCustomDate(!showCustomDate)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${showCustomDate
                   ? 'bg-primary-500 text-white shadow-elevation-1'
                   : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
-              }`}
-            >
-              <Calendar className="h-4 w-4" />
-              Custom
-            </button>
-          </div>
+                  }`}
+              >
+                <Calendar className="h-4 w-4" />
+                Custom
+              </button>
+            </div>
 
-          {showCustomDate && (
-            <Card className="p-4">
-              <div className="flex flex-wrap gap-3 items-center">
-                <input
-                  type="date"
-                  value={customDateFrom}
-                  onChange={(e) => setCustomDateFrom(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <Typography.Small className="text-neutral-500">to</Typography.Small>
-                <input
-                  type="date"
-                  value={customDateTo}
-                  onChange={(e) => setCustomDateTo(e.target.value)}
-                  className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <Button
-                  onClick={() => {
-                    if (customDateFrom && customDateTo) {
-                      setTimeRange('custom');
-                      refetch();
-                    }
-                  }}
-                  variant="primary"
-                  size="sm"
-                >
-                  Apply
-                </Button>
-              </div>
-            </Card>
-          )}
+            {showCustomDate && (
+              <Card className="p-4">
+                <div className="flex flex-wrap gap-3 items-center">
+                  <input
+                    type="date"
+                    value={customDateFrom}
+                    onChange={(e) => setCustomDateFrom(e.target.value)}
+                    className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <Typography.Small className="text-neutral-500">to</Typography.Small>
+                  <input
+                    type="date"
+                    value={customDateTo}
+                    onChange={(e) => setCustomDateTo(e.target.value)}
+                    className="px-3 py-2 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <Button
+                    onClick={() => {
+                      if (customDateFrom && customDateTo) {
+                        setTimeRange('custom');
+                        refetch();
+                      }
+                    }}
+                    variant="primary"
+                    size="sm"
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </Card>
+            )}
 
-          {/* Metric Type */}
-          <div className="flex flex-wrap gap-2">
-            {['overview', 'users', 'filings', 'revenue', 'ca'].map(type => (
-              <button
-                key={type}
-                onClick={() => setMetricType(type)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  metricType === type
+            {/* Metric Type */}
+            <div className="flex flex-wrap gap-2">
+              {['overview', 'users', 'filings', 'revenue', 'ca'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => setMetricType(type)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${metricType === type
                     ? 'bg-secondary-500 text-white shadow-elevation-1'
                     : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
-                }`}
-              >
-                {type === 'ca' ? 'CA/B2B' : type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
+                    }`}
+                >
+                  {type === 'ca' ? 'CA/B2B' : type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Overview Metrics */}
-        {metricType === 'overview' && (
-          <>
-            {/* Key Performance Indicators */}
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Total Users
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(overview.totalUsers)}
-                        </Typography.H3>
-                        <div className="flex items-center mt-1">
-                          {overview.userGrowth > 0 ? (
-                            <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
-                          ) : (
-                            <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
-                          )}
-                          <Typography.Small className={overview.userGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
-                            {Math.abs(overview.userGrowth || 0).toFixed(1)}%
+        {
+          metricType === 'overview' && (
+            <>
+              {/* Key Performance Indicators */}
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Total Users
                           </Typography.Small>
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                        <Users className="w-6 h-6 text-primary-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Total Filings
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(overview.totalFilings)}
-                        </Typography.H3>
-                        <div className="flex items-center mt-1">
-                          {overview.filingGrowth > 0 ? (
-                            <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
-                          ) : (
-                            <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
-                          )}
-                          <Typography.Small className={overview.filingGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
-                            {Math.abs(overview.filingGrowth || 0).toFixed(1)}%
-                          </Typography.Small>
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
-                        <FileText className="w-6 h-6 text-success-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Revenue
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatCurrency(overview.revenue)}
-                        </Typography.H3>
-                        <div className="flex items-center mt-1">
-                          {overview.revenueGrowth > 0 ? (
-                            <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
-                          ) : (
-                            <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
-                          )}
-                          <Typography.Small className={overview.revenueGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
-                            {Math.abs(overview.revenueGrowth || 0).toFixed(1)}%
-                          </Typography.Small>
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
-                        <IndianRupee className="w-6 h-6 text-secondary-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Active Users
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(overview.activeUsers)}
-                        </Typography.H3>
-                        <div className="flex items-center mt-1">
-                          <Typography.Small className="text-neutral-500">
-                            {overview.totalUsers > 0 ? ((overview.activeUsers / overview.totalUsers) * 100).toFixed(1) : 0}% of total
-                          </Typography.Small>
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
-                        <Activity className="w-6 h-6 text-warning-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            </StaggerContainer>
-
-            {/* Trends Chart */}
-            {trendChartData.length > 0 && (
-              <StaggerItem>
-                <Card className="mb-8">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center space-x-2">
-                        <BarChart3 className="w-5 h-5 text-primary-600" />
-                        <span>Trends</span>
-                      </CardTitle>
-                      <Typography.Small className="text-neutral-500">Last {timeRange}</Typography.Small>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <AreaChart data={trendChartData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
-                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
-                        <Tooltip contentStyle={tooltipStyle} />
-                        <Legend />
-                        <Area type="monotone" dataKey="users" stackId="1" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} name="Users" />
-                        <Area type="monotone" dataKey="filings" stackId="1" stroke="#8B7355" fill="#8B7355" fillOpacity={0.6} name="Filings" />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            )}
-
-            {/* Top Metrics */}
-            {topMetrics.length > 0 && (
-              <StaggerItem>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Target className="w-5 h-5 text-primary-600" />
-                      <span>Top Metrics</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {topMetrics.map((metric, index) => (
-                        <div key={metric.name || index} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-secondary-100 rounded-xl flex items-center justify-center">
-                              <Typography.Small className="font-semibold text-secondary-600">{index + 1}</Typography.Small>
-                            </div>
-                            <Typography.Small className="font-medium text-neutral-700">{metric.name}</Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(overview.totalUsers)}
+                          </Typography.H3>
+                          <div className="flex items-center mt-1">
+                            {overview.userGrowth > 0 ? (
+                              <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
+                            )}
+                            <Typography.Small className={overview.userGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
+                              {Math.abs(overview.userGrowth || 0).toFixed(1)}%
+                            </Typography.Small>
                           </div>
-                          <Typography.Small className="font-semibold text-neutral-900">{metric.value}</Typography.Small>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            )}
-          </>
-        )}
+                        <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                          <Users className="w-6 h-6 text-primary-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Total Filings
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(overview.totalFilings)}
+                          </Typography.H3>
+                          <div className="flex items-center mt-1">
+                            {overview.filingGrowth > 0 ? (
+                              <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
+                            )}
+                            <Typography.Small className={overview.filingGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
+                              {Math.abs(overview.filingGrowth || 0).toFixed(1)}%
+                            </Typography.Small>
+                          </div>
+                        </div>
+                        <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-success-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Revenue
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatCurrency(overview.revenue)}
+                          </Typography.H3>
+                          <div className="flex items-center mt-1">
+                            {overview.revenueGrowth > 0 ? (
+                              <TrendingUp className="h-3 w-3 text-success-600 mr-1" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3 text-error-600 mr-1" />
+                            )}
+                            <Typography.Small className={overview.revenueGrowth > 0 ? 'text-success-600' : 'text-error-600'}>
+                              {Math.abs(overview.revenueGrowth || 0).toFixed(1)}%
+                            </Typography.Small>
+                          </div>
+                        </div>
+                        <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
+                          <IndianRupee className="w-6 h-6 text-secondary-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Active Users
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(overview.activeUsers)}
+                          </Typography.H3>
+                          <div className="flex items-center mt-1">
+                            <Typography.Small className="text-neutral-500">
+                              {overview.totalUsers > 0 ? ((overview.activeUsers / overview.totalUsers) * 100).toFixed(1) : 0}% of total
+                            </Typography.Small>
+                          </div>
+                        </div>
+                        <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
+                          <Activity className="w-6 h-6 text-warning-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              </StaggerContainer>
+
+              {/* Trends Chart */}
+              {
+                trendChartData.length > 0 && (
+                  <StaggerItem>
+                    <Card className="mb-8">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center space-x-2">
+                            <BarChart3 className="w-5 h-5 text-primary-600" />
+                            <span>Trends</span>
+                          </CardTitle>
+                          <Typography.Small className="text-neutral-500">Last {timeRange}</Typography.Small>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <AreaChart data={trendChartData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                            <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                            <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                            <Tooltip contentStyle={tooltipStyle} />
+                            <Legend />
+                            <Area type="monotone" dataKey="users" stackId="1" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} name="Users" />
+                            <Area type="monotone" dataKey="filings" stackId="1" stroke="#8B7355" fill="#8B7355" fillOpacity={0.6} name="Filings" />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+                  </StaggerItem>
+                )
+              }
+
+              {/* Top Metrics */}
+              {
+                topMetrics.length > 0 && (
+                  <StaggerItem>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <Target className="w-5 h-5 text-primary-600" />
+                          <span>Top Metrics</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {topMetrics.map((metric, index) => (
+                            <div key={metric.name || index} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-secondary-100 rounded-xl flex items-center justify-center">
+                                  <Typography.Small className="font-semibold text-secondary-600">{index + 1}</Typography.Small>
+                                </div>
+                                <Typography.Small className="font-medium text-neutral-700">{metric.name}</Typography.Small>
+                              </div>
+                              <Typography.Small className="font-semibold text-neutral-900">{metric.value}</Typography.Small>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </StaggerItem>
+                )
+              }
+            </>
+          )}
 
         {/* User Metrics */}
-        {metricType === 'users' && (
-          <div className="space-y-6">
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          New Users
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(userMetrics.newUsers)}
-                        </Typography.H3>
+        {
+          metricType === 'users' && (
+            <div className="space-y-6">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            New Users
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(userMetrics.newUsers)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                          <Users className="w-6 h-6 text-primary-600" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                        <Users className="w-6 h-6 text-primary-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
 
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Retention Rate
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {(userMetrics.retentionRate || 0).toFixed(1)}%
-                        </Typography.H3>
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Retention Rate
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {(userMetrics.retentionRate || 0).toFixed(1)}%
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                          <Target className="w-6 h-6 text-success-600" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
-                        <Target className="w-6 h-6 text-success-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            </StaggerContainer>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              </StaggerContainer>
 
-            {/* User Activity Chart */}
-            {userMetrics.acquisitionTrends && userMetrics.acquisitionTrends.length > 0 && (
+              {/* User Activity Chart */}
+              {userMetrics.acquisitionTrends && userMetrics.acquisitionTrends.length > 0 && (
+                <StaggerItem>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <TrendingUp className="w-5 h-5 text-primary-600" />
+                        <span>User Acquisition</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <LineChart data={userMetrics.acquisitionTrends}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                          <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                          <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                          <Tooltip contentStyle={tooltipStyleSimple} />
+                          <Line type="monotone" dataKey="count" stroke="#D4AF37" strokeWidth={2} dot={{ fill: '#D4AF37' }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              )}
+
               <StaggerItem>
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <TrendingUp className="w-5 h-5 text-primary-600" />
-                      <span>User Acquisition</span>
+                      <Activity className="w-5 h-5 text-primary-600" />
+                      <span>User Activity</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={userMetrics.acquisitionTrends}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
-                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
-                        <Tooltip contentStyle={tooltipStyleSimple} />
-                        <Line type="monotone" dataKey="count" stroke="#D4AF37" strokeWidth={2} dot={{ fill: '#D4AF37' }} />
-                      </LineChart>
-                    </ResponsiveContainer>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Daily Active Users</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.dailyActive)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Weekly Active Users</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.weeklyActive)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Monthly Active Users</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.monthlyActive)}</Typography.Small>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </StaggerItem>
-            )}
 
-            <StaggerItem>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Activity className="w-5 h-5 text-primary-600" />
-                    <span>User Activity</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Daily Active Users</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.dailyActive)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Weekly Active Users</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.weeklyActive)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Monthly Active Users</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(userMetrics.monthlyActive)}</Typography.Small>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-
-            {/* User Distribution Pie Chart */}
-            {charts.userDistribution && charts.userDistribution.length > 0 && (
-              <StaggerItem>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Users className="w-5 h-5 text-primary-600" />
-                      <span>User Distribution by Role</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <RechartsPieChart>
-                        <Pie
-                          data={charts.userDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {charts.userDistribution.map((entry) => (
-                            <Cell key={`cell-${entry.name}`} fill={COLORS[charts.userDistribution.indexOf(entry) % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            )}
-          </div>
-        )}
+              {/* User Distribution Pie Chart */}
+              {charts.userDistribution && charts.userDistribution.length > 0 && (
+                <StaggerItem>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Users className="w-5 h-5 text-primary-600" />
+                        <span>User Distribution by Role</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <RechartsPieChart>
+                          <Pie
+                            data={charts.userDistribution}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {charts.userDistribution.map((entry) => (
+                              <Cell key={`cell-${entry.name}`} fill={COLORS[charts.userDistribution.indexOf(entry) % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              )}
+            </div>
+          )
+        }
 
         {/* Filing Metrics */}
-        {metricType === 'filings' && (
-          <div className="space-y-6">
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Completed
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(filingMetrics.completed)}
-                        </Typography.H3>
+        {
+          metricType === 'filings' && (
+            <div className="space-y-6">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Completed
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(filingMetrics.completed)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-success-600" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
-                        <FileText className="w-6 h-6 text-success-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
 
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          In Progress
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(filingMetrics.inProgress)}
-                        </Typography.H3>
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            In Progress
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(filingMetrics.inProgress)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
+                          <Clock className="w-6 h-6 text-warning-600" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 bg-warning-100 rounded-xl flex items-center justify-center">
-                        <Clock className="w-6 h-6 text-warning-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            </StaggerContainer>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              </StaggerContainer>
 
-            {/* Filing Trends Chart */}
-            {filingMetrics.trends && filingMetrics.trends.length > 0 && (
+              {/* Filing Trends Chart */}
+              {
+                filingMetrics.trends && filingMetrics.trends.length > 0 && (
+                  <StaggerItem>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <BarChart3 className="w-5 h-5 text-primary-600" />
+                          <span>Filing Trends</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <BarChart data={filingMetrics.trends}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                            <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                            <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                            <Tooltip contentStyle={tooltipStyleSimple} />
+                            <Bar dataKey="count" fill="#D4AF37" radius={[4, 4, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+                  </StaggerItem>
+                )
+              }
+
               <StaggerItem>
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <BarChart3 className="w-5 h-5 text-primary-600" />
-                      <span>Filing Trends</span>
+                      <FileText className="w-5 h-5 text-primary-600" />
+                      <span>Filing Status</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={filingMetrics.trends}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
-                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
-                        <Tooltip contentStyle={tooltipStyleSimple} />
-                        <Bar dataKey="count" fill="#D4AF37" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Pending</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatNumber(filingMetrics.pending)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Success Rate</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{(filingMetrics.successRate || 0).toFixed(1)}%</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Average Processing Time</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{filingMetrics.averageCompletionTime || 0} days</Typography.Small>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </StaggerItem>
-            )}
 
-            <StaggerItem>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="w-5 h-5 text-primary-600" />
-                    <span>Filing Status</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Pending</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(filingMetrics.pending)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Success Rate</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{(filingMetrics.successRate || 0).toFixed(1)}%</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Average Processing Time</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{filingMetrics.averageCompletionTime || 0} days</Typography.Small>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-
-            {/* Filing Status Distribution */}
-            {charts.filingDistribution && charts.filingDistribution.length > 0 && (
-              <StaggerItem>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <BarChart3 className="w-5 h-5 text-primary-600" />
-                      <span>Filing Status Distribution</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <RechartsPieChart>
-                        <Pie
-                          data={charts.filingDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {charts.filingDistribution.map((entry) => (
-                            <Cell key={`cell-${entry.name}`} fill={COLORS[charts.filingDistribution.indexOf(entry) % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            )}
-          </div>
-        )}
+              {/* Filing Status Distribution */}
+              {
+                charts.filingDistribution && charts.filingDistribution.length > 0 && (
+                  <StaggerItem>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <BarChart3 className="w-5 h-5 text-primary-600" />
+                          <span>Filing Status Distribution</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <RechartsPieChart>
+                            <Pie
+                              data={charts.filingDistribution}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {charts.filingDistribution.map((entry) => (
+                                <Cell key={`cell-${entry.name}`} fill={COLORS[charts.filingDistribution.indexOf(entry) % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </RechartsPieChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+                  </StaggerItem>
+                )
+              }
+            </div>
+          )
+        }
 
         {/* Revenue Metrics */}
-        {metricType === 'revenue' && (
-          <div className="space-y-6">
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Total Revenue
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatCurrency(revenueMetrics.total)}
-                        </Typography.H3>
+        {
+          metricType === 'revenue' && (
+            <div className="space-y-6">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Total Revenue
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatCurrency(revenueMetrics.total)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
+                          <IndianRupee className="w-6 h-6 text-secondary-600" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
-                        <IndianRupee className="w-6 h-6 text-secondary-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
 
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          ARPU
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatCurrency(revenueMetrics.arpu)}
-                        </Typography.H3>
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            ARPU
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatCurrency(revenueMetrics.arpu)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                          <Zap className="w-6 h-6 text-success-600" />
+                        </div>
                       </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
-                        <Zap className="w-6 h-6 text-success-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            </StaggerContainer>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              </StaggerContainer>
 
-            {/* Revenue Trends Chart */}
-            {revenueMetrics.trends && revenueMetrics.trends.length > 0 && (
+              {/* Revenue Trends Chart */}
+              {
+                revenueMetrics.trends && revenueMetrics.trends.length > 0 && (
+                  <StaggerItem>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <TrendingUp className="w-5 h-5 text-primary-600" />
+                          <span>Revenue Trends</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <AreaChart data={revenueMetrics.trends}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                            <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
+                            <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
+                            <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={tooltipStyleSimple} />
+                            <Area type="monotone" dataKey="value" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+                  </StaggerItem>
+                )
+              }
+
               <StaggerItem>
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <TrendingUp className="w-5 h-5 text-primary-600" />
-                      <span>Revenue Trends</span>
+                      <IndianRupee className="w-5 h-5 text-primary-600" />
+                      <span>Revenue Breakdown</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <AreaChart data={revenueMetrics.trends}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#737373" />
-                        <YAxis tick={{ fontSize: 12 }} stroke="#737373" />
-                        <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={tooltipStyleSimple} />
-                        <Area type="monotone" dataKey="value" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.6} />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">ITR Filing Fees</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.itrFees)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Consultation Fees</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.consultationFees)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Premium Services</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.premiumServices)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">LTV (Lifetime Value)</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.ltv)}</Typography.Small>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </StaggerItem>
-            )}
 
-            <StaggerItem>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <IndianRupee className="w-5 h-5 text-primary-600" />
-                    <span>Revenue Breakdown</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">ITR Filing Fees</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.itrFees)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Consultation Fees</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.consultationFees)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Premium Services</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.premiumServices)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">LTV (Lifetime Value)</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(revenueMetrics.ltv)}</Typography.Small>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-
-            {/* Revenue Distribution */}
-            {charts.revenueDistribution && charts.revenueDistribution.length > 0 && (
-              <StaggerItem>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <BarChart3 className="w-5 h-5 text-primary-600" />
-                      <span>Revenue by Type</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <RechartsPieChart>
-                        <Pie
-                          data={charts.revenueDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {charts.revenueDistribution.map((entry) => (
-                            <Cell key={`cell-${entry.name}`} fill={COLORS[charts.revenueDistribution.indexOf(entry) % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => formatCurrency(value)} />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            )}
-          </div>
-        )}
+              {/* Revenue Distribution */}
+              {
+                charts.revenueDistribution && charts.revenueDistribution.length > 0 && (
+                  <StaggerItem>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <BarChart3 className="w-5 h-5 text-primary-600" />
+                          <span>Revenue by Type</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <RechartsPieChart>
+                            <Pie
+                              data={charts.revenueDistribution}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {charts.revenueDistribution.map((entry) => (
+                                <Cell key={`cell-${entry.name}`} fill={COLORS[charts.revenueDistribution.indexOf(entry) % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => formatCurrency(value)} />
+                          </RechartsPieChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+                  </StaggerItem>
+                )
+              }
+            </div>
+          )
+        }
 
         {/* CA/B2B Metrics */}
-        {metricType === 'ca' && caAnalytics && (
-          <div className="space-y-6">
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {
+          metricType === 'ca' && caAnalytics && (
+            <div className="space-y-6">
+              <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Total CAs
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(caAnalytics.totalCAs)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                          <Building2 className="w-6 h-6 text-primary-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+
+                <StaggerItem>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography.Small className="text-neutral-600 mb-1">
+                            Verified CAs
+                          </Typography.Small>
+                          <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
+                            {formatNumber(caAnalytics.verifiedCAs)}
+                          </Typography.H3>
+                        </div>
+                        <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
+                          <Target className="w-6 h-6 text-success-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </StaggerItem>
+              </StaggerContainer>
+
               <StaggerItem>
                 <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Total CAs
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(caAnalytics.totalCAs)}
-                        </Typography.H3>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Building2 className="w-5 h-5 text-primary-600" />
+                      <span>CA Metrics</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Active CAs</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.activeCAs)}</Typography.Small>
                       </div>
-                      <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                        <Building2 className="w-6 h-6 text-primary-600" />
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">New Registrations</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.newRegistrations)}</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">Verification Rate</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{(caAnalytics.verificationRate || 0).toFixed(1)}%</Typography.Small>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-600">B2B Revenue</Typography.Small>
+                        <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(caAnalytics.b2bRevenue)}</Typography.Small>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </StaggerItem>
-
-              <StaggerItem>
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Typography.Small className="text-neutral-600 mb-1">
-                          Verified CAs
-                        </Typography.Small>
-                        <Typography.H3 className="text-heading-2 font-bold text-neutral-900">
-                          {formatNumber(caAnalytics.verifiedCAs)}
-                        </Typography.H3>
-                      </div>
-                      <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center">
-                        <Target className="w-6 h-6 text-success-600" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            </StaggerContainer>
-
-            <StaggerItem>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Building2 className="w-5 h-5 text-primary-600" />
-                    <span>CA Metrics</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Active CAs</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.activeCAs)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">New Registrations</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatNumber(caAnalytics.newRegistrations)}</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">Verification Rate</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{(caAnalytics.verificationRate || 0).toFixed(1)}%</Typography.Small>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
-                      <Typography.Small className="text-neutral-600">B2B Revenue</Typography.Small>
-                      <Typography.Small className="font-semibold text-neutral-900">{formatCurrency(caAnalytics.b2bRevenue)}</Typography.Small>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-          </div>
-        )}
+            </div>
+          )
+        }
       </div>
     </PageTransition>
   );

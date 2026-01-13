@@ -29,12 +29,12 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-white border-t border-[var(--s29-border-light)] mt-auto">
+    <footer className="bg-white border-t border-slate-200 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 lg:gap-8">
-          {/* Brand Section - Full width on mobile, spans 2 columns on tablet */}
-          <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="col-span-1 md:col-span-2 xl:col-span-1">
             <div className="flex items-center space-x-2.5 mb-3 sm:mb-4">
               <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[var(--s29-primary)] rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                 <span className="text-white font-bold text-body-regular sm:text-body-large">BB</span>

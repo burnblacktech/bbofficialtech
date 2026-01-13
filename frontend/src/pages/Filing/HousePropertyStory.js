@@ -10,6 +10,10 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import ReassuranceBanner from '../../components/ReassuranceBanner';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -78,6 +82,7 @@ const HousePropertyStory = () => {
     };
 
     if (loading) {
+
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
                 <div className="text-slate-600">Loading your property data...</div>
@@ -107,15 +112,21 @@ const HousePropertyStory = () => {
                 </div>
 
                 {/* Reassurance */}
-                <div className="mb-6">
+                <div className="mb-6 space-y-3">
                     <ReassuranceBanner
                         type="default"
                         message="Most people have one home. If you're paying a loan, you might get a tax break."
                     />
+                    {properties.filter(p => p.type === 'self_occupied').length >= 2 && (
+                        <ReassuranceBanner
+                            type="warning"
+                            message="Tax Law: Only ONE self-occupied property gets full tax benefit. For the 2nd property onwards, it's treated as 'deemed let out' and taxed accordingly."
+                        />
+                    )}
                 </div>
 
                 {/* Properties List */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                <Card>
                     <h2 className="text-lg font-semibold text-slate-900 mb-4">
                         Your properties
                     </h2>
@@ -172,7 +183,7 @@ const HousePropertyStory = () => {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <button
-                                                onClick={() => navigate(`/filing/${filingId}/income/house-property/edit/${property.id}`)}
+                                                onClick={() => navigate(`/filing/${filingId}/house-property/edit/${property.id}`)}
                                                 className="p-2 text-slate-600 hover:text-primary-600 transition-colors"
                                             >
                                                 <Edit className="w-4 h-4" />
@@ -191,13 +202,13 @@ const HousePropertyStory = () => {
                     )}
 
                     <button
-                        onClick={() => navigate(`/filing/${filingId}/income/house-property/add`)}
+                        onClick={() => navigate(`/filing/${filingId}/house-property/add`)}
                         className="mt-4 w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-primary-400 hover:text-primary-600 transition-colors"
                     >
                         <Plus className="w-5 h-5" />
                         Add a property
                     </button>
-                </div>
+                </Card>
 
                 {/* Navigation */}
                 <div className="flex gap-4">

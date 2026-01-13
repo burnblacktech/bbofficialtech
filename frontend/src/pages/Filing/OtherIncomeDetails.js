@@ -13,6 +13,10 @@ import ReassuranceBanner from '../../components/ReassuranceBanner';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 import FileUpload from '../../components/Documents/FileUpload';
 import documentService from '../../services/api/documentService';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -106,6 +110,7 @@ const OtherIncomeDetails = () => {
     };
 
     if (loading) {
+
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
                 <div className="text-slate-600">Loading...</div>
@@ -162,7 +167,7 @@ const OtherIncomeDetails = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 space-y-8">
+                <Card>
                     <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
                             Interest Income
@@ -211,7 +216,7 @@ const OtherIncomeDetails = () => {
                             />
                         </div>
                     </div>
-                </div>
+                </Card>
 
                 <div className="mt-8 flex gap-4">
                     <button

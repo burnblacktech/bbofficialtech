@@ -14,11 +14,15 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import Badge from '../../components/DesignSystem/components/Badge';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminCouponManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -450,7 +454,7 @@ const AdminCouponManagement = () => {
                 </button>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Coupon Code <span className="text-error-500">*</span>
@@ -478,7 +482,8 @@ const AdminCouponManagement = () => {
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Discount Value <span className="text-error-500">*</span>
@@ -507,7 +512,8 @@ const AdminCouponManagement = () => {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                       Start Date <span className="text-error-500">*</span>
@@ -531,6 +537,7 @@ const AdminCouponManagement = () => {
                     />
                   </div>
                 </div>
+
                 <div>
                   <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     Minimum Order Value
@@ -545,6 +552,7 @@ const AdminCouponManagement = () => {
                     placeholder="0"
                   />
                 </div>
+
                 <div>
                   <label className="block text-body-regular font-medium text-neutral-700 mb-2">
                     User Type Restrictions
@@ -582,6 +590,7 @@ const AdminCouponManagement = () => {
                     ))}
                   </div>
                 </div>
+
                 <div>
                   <label className="flex items-center cursor-pointer">
                     <input
@@ -601,6 +610,7 @@ const AdminCouponManagement = () => {
                     <span className="text-body-regular text-neutral-700">New Users Only</span>
                   </label>
                 </div>
+
                 <div className="flex gap-3 justify-end pt-4 border-t border-neutral-200">
                   <Button
                     variant="outline"

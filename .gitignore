@@ -6,6 +6,8 @@ frontend/node_modules/
 # Build outputs
 frontend/build/
 backend/dist/
+dist/
+build/
 
 # Environment variables
 .env
@@ -13,6 +15,8 @@ backend/dist/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*
+!.env.example
 
 # Logs
 logs/
@@ -22,9 +26,30 @@ yarn-debug.log*
 yarn-error.log*
 backend/logs/
 
+# Results and temporary files
+*.txt
+*.py
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!jsconfig.json
+!.eslintrc*
+!.prettierrc*
+!vercel.json
+!*.types.json
+!**/src/**/*.json
+!**/src/**/*.py
+lint-results.json
+
+# Scripts and tools (if not intended for commit)
+# frontend/batch_fixer_*.py
+# frontend/fix_*.py
+
 # IDE
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -45,3 +70,4 @@ tmp/
 temp/
 backend/uploads/
 frontend/public/uploads/
+BBDocs/

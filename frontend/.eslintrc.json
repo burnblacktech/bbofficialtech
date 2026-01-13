@@ -1,0 +1,22 @@
+{
+    "extends": [
+        "react-app"
+    ],
+    "rules": {
+        "react/jsx-no-bind": "off"
+    },
+    "overrides": [
+        {
+            "files": [
+                "src/pages/Filing/ForeignIncomeDetails.js",
+                "src/pages/Filing/GoodsCarriageDetails.js",
+                "src/pages/Filing/HousePropertiesDetails.js",
+                "src/pages/Filing/ITR3DepreciationSchedule.js"
+            ],
+            "rules": {
+                "no-alert": "off",
+                "camelcase": "off"
+            }
+        }
+    ]
+}

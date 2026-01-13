@@ -34,9 +34,12 @@ import {
   List,
   SortAsc,
   SortDesc,
-  Settings,
-} from 'lucide-react';
+  Settings } from 'lucide-react';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const Documents = () => {
   const { user } = useAuth();
@@ -69,14 +72,12 @@ const Documents = () => {
   const uploadDocumentMutation = useMutation({
     mutationFn: async (formData) => {
       const response = await api.post('/documents/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+        headers: { 'Content-Type': 'multipart/form-data' } });
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['documents', user?.user_id]);
-    },
-  });
+    } });
 
   // Delete document mutation
   const deleteDocumentMutation = useMutation({
@@ -86,8 +87,7 @@ const Documents = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['documents', user?.user_id]);
-    },
-  });
+    } });
 
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadErrors, setUploadErrors] = useState({});
@@ -116,7 +116,7 @@ const Documents = () => {
       const fileName = file.name.toLowerCase();
       if (fileName.includes('form16') || fileName.includes('form_16')) {
         category = fileName.includes('part_a') || fileName.includes('parta') ? 'FORM_16_PART_A' :
-                   fileName.includes('part_b') || fileName.includes('partb') ? 'FORM_16_PART_B' : 'FORM_16';
+          fileName.includes('part_b') || fileName.includes('partb') ? 'FORM_16_PART_B' : 'FORM_16';
       } else if (fileName.includes('ais') || fileName.includes('annual information')) {
         category = 'AIS';
       } else if (fileName.includes('26as') || fileName.includes('26_as')) {
@@ -204,7 +204,7 @@ const Documents = () => {
 
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesType = filterType === 'all' || doc.type === filterType;
     const matchesCategory = filterCategory === 'all' || doc.category === filterCategory;
@@ -259,7 +259,8 @@ const Documents = () => {
   };
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>
@@ -346,7 +347,7 @@ const Documents = () => {
 
           {/* Filter Options */}
           {showFilters && (
-            <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
+            <Card>
               {/* Type Filter */}
               <div>
                 <label className="text-body-small font-medium text-slate-700 mb-2 block">File Type</label>
@@ -398,7 +399,7 @@ const Documents = () => {
                   <option value="size">Size</option>
                 </select>
               </div>
-            </div>
+                </Card>
           )}
         </div>
 
@@ -444,9 +445,8 @@ const Documents = () => {
                       <p className="text-body-small text-slate-500">{docs.length} files</p>
                     </div>
                   </div>
-                  <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform ${
-                    expandedFolders.has(category) ? 'rotate-90' : ''
-                  }`} />
+                  <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform ${expandedFolders.has(category) ? 'rotate-90' : ''
+                    }`} />
                 </button>
 
                 {/* Documents in Category */}
@@ -474,7 +474,7 @@ const Documents = () => {
                             onClick={() => {
                               if (doc.extractedData) {
                                 // Show extracted data preview modal
-                                toast.info('Extracted data preview coming soon');
+                                toast('Extracted data preview coming soon', { icon: 'ℹ️' });
                               } else {
                                 window.open(doc.url, '_blank');
                               }

@@ -5,6 +5,7 @@
 /* S29 — UI EXCELLENCE FOUNDATION */
 @import './styles/tokens.css';
 @import './styles/mobile-first.css';
+@import './styles/buttons.css';
 
 @layer base {
   :root {

@@ -152,6 +152,8 @@ class FilingService {
                 assessmentYear: filing.assessmentYear,
                 taxpayerPan: filing.taxpayerPan,
                 lifecycleState: filing.lifecycleState,
+                jsonPayload: filing.jsonPayload,
+                selectedRegime: filing.selectedRegime,
                 createdAt: filing.createdAt,
                 updatedAt: filing.updatedAt,
                 completion,

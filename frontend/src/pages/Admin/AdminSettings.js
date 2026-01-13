@@ -14,6 +14,10 @@ import SecuritySettings from '../../features/admin/settings/components/SecurityS
 import IntegrationSettings from '../../features/admin/settings/components/IntegrationSettings';
 import NotificationSettings from '../../features/admin/settings/components/NotificationSettings';
 import FeatureFlagsSettings from '../../features/admin/settings/components/FeatureFlagsSettings';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState('general');

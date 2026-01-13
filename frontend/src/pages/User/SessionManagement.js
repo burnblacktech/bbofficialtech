@@ -10,6 +10,10 @@ import { Monitor, Smartphone, Tablet, LogOut, AlertCircle, CheckCircle } from 'l
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { ConfirmationDialog } from '../../components/UI/ConfirmationDialog/ConfirmationDialog';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const SessionManagement = () => {
   const { user, logout } = useAuth();
@@ -123,16 +127,16 @@ const SessionManagement = () => {
   };
 
   if (isLoading) {
+
     return (
       <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
+          <Card>
             <div className="animate-pulse space-y-4">
               <div className="h-8 bg-slate-200 rounded w-1/3"></div>
               <div className="h-32 bg-slate-200 rounded"></div>
-              <div className="h-32 bg-slate-200 rounded"></div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     );
@@ -158,7 +162,7 @@ const SessionManagement = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200">
+        <Card>
           <div className="p-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div>
@@ -178,9 +182,8 @@ const SessionManagement = () => {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
-                    <div className={`flex-shrink-0 p-3 rounded-xl ${
-                      session.isCurrent ? 'bg-gold-100 text-gold-600' : 'bg-slate-100 text-slate-600'
-                    }`}>
+                    <div className={`flex-shrink-0 p-3 rounded-xl ${session.isCurrent ? 'bg-gold-100 text-gold-600' : 'bg-slate-100 text-slate-600'
+                      }`}>
                       {getDeviceIcon(session.deviceType)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -234,7 +237,6 @@ const SessionManagement = () => {
               </p>
             </div>
           )}
-
           <div className="p-6 border-t border-slate-200 bg-slate-50">
             <div className="flex items-center justify-between">
               <div>
@@ -252,7 +254,7 @@ const SessionManagement = () => {
               </button>
             </div>
           </div>
-        </div>
+        </Card>
 
         <div className="mt-6 bg-info-50 border border-info-200 rounded-xl p-4">
           <div className="flex">

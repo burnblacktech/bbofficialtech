@@ -18,7 +18,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
+const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose, isOpenMobile }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -30,8 +30,8 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
       icon: LayoutDashboard,
     },
     {
-      name: 'Start Filing',
-      path: '/itr/start',
+      name: 'My Filings',
+      path: '/filing/history',
       icon: FileText,
     },
     {
@@ -40,24 +40,9 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
       icon: Folder,
     },
     {
-      name: 'Family Members',
-      path: '/add-members',
-      icon: Users,
-    },
-    {
-      name: 'Filing History',
-      path: '/filing-history',
-      icon: History,
-    },
-    {
-      name: 'Profile Settings',
+      name: 'Settings',
       path: '/profile',
       icon: User,
-    },
-    {
-      name: 'Help & Support',
-      path: '/help',
-      icon: HelpCircle,
     },
   ];
 
@@ -76,17 +61,16 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose }) => {
   };
 
   const sidebarClasses = `
-    fixed top-14 sm:top-16 lg:top-20 left-0 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)] bg-white border-r border-[var(--s29-border-light)] z-40
+    fixed left-0 bottom-0 z-40 bg-white border-r border-slate-200
     transition-all duration-300 ease-in-out flex flex-col
-    ${isMobile ? 'lg:hidden' : 'hidden lg:flex'}
-    ${isCollapsed && !isMobile ? 'w-16' : 'w-64'}
-    ${isMobile && !isCollapsed ? 'translate-x-0' : isMobile ? '-translate-x-full' : ''}
+    ${isMobile ? '' : 'top-14 sm:top-16 lg:top-20'}
+    ${isMobile ? (isOpenMobile ? 'w-64 translate-x-0 shadow-2xl' : 'w-64 -translate-x-full') : (isCollapsed ? 'w-16' : 'w-64')}
   `;
 
   return (
     <>
       {/* Mobile Overlay */}
-      {isMobile && !isCollapsed && (
+      {isMobile && isOpenMobile && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={onClose}

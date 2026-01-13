@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
 import {
   FileText,
@@ -24,6 +24,8 @@ import {
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../../utils/logger';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const InvoiceManagement = () => {
   const [invoices, setInvoices] = useState([]);
@@ -86,9 +88,9 @@ const InvoiceManagement = () => {
 
   const filteredInvoices = invoices.filter(invoice => {
     const matchesSearch = invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.user.pan.toLowerCase().includes(searchTerm.toLowerCase());
+      invoice.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.user.pan.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || invoice.status === filterStatus;
     const matchesType = filterType === 'all' || invoice.type === filterType;
 

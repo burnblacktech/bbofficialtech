@@ -7,6 +7,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bug, ArrowLeft, Upload, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ReportBug = () => {
   const navigate = useNavigate();
@@ -20,8 +24,7 @@ const ReportBug = () => {
     severity: 'medium',
     browser: '',
     device: '',
-    attachments: [],
-  });
+    attachments: [] });
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -31,15 +34,13 @@ const ReportBug = () => {
     const files = Array.from(e.target.files);
     setFormData(prev => ({
       ...prev,
-      attachments: [...prev.attachments, ...files],
-    }));
+      attachments: [...prev.attachments, ...files] }));
   };
 
   const handleRemoveFile = (index) => {
     setFormData(prev => ({
       ...prev,
-      attachments: prev.attachments.filter((_, i) => i !== index),
-    }));
+      attachments: prev.attachments.filter((_, i) => i !== index) }));
   };
 
   const handleSubmit = async (e) => {
@@ -174,7 +175,7 @@ const ReportBug = () => {
               onChange={(e) => handleInputChange('severity', e.target.value)}
               className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
             >
-              <option value="low">Low - Minor issue, doesn't affect functionality</option>
+              <option value="low">Low - Minor issue, doesn\'t affect functionality</option>
               <option value="medium">Medium - Affects some functionality</option>
               <option value="high">High - Major issue, affects core functionality</option>
               <option value="critical">Critical - System crash or data loss</option>

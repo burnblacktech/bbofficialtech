@@ -6,8 +6,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   useAdminUsers,
   useUpdateAdminUserStatus,
@@ -235,99 +237,99 @@ const AdminUserManagement = () => {
                   className="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
-
-              {/* Filters */}
-              {showFilters && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
-                  <select
-                    value={filterRole}
-                    onChange={(e) => setFilterRole(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    {roleOptions.map(role => (
-                      <option key={role} value={role}>
-                        {role === 'all' ? 'All Roles' : role.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    {statusOptions.map(status => (
-                      <option key={status} value={status}>
-                        {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={filterRegistrationSource}
-                    onChange={(e) => setFilterRegistrationSource(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="all">All Sources</option>
-                    <option value="LOCAL">Local</option>
-                    <option value="GOOGLE">Google</option>
-                    <option value="OTHER">Other</option>
-                  </select>
-                  <select
-                    value={filterHasFilings}
-                    onChange={(e) => setFilterHasFilings(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="all">All Users</option>
-                    <option value="true">Has Filings</option>
-                    <option value="false">No Filings</option>
-                  </select>
-                  <select
-                    value={filterHasPayments}
-                    onChange={(e) => setFilterHasPayments(e.target.value)}
-                    className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="all">All Users</option>
-                    <option value="true">Has Payments</option>
-                    <option value="false">No Payments</option>
-                  </select>
-                  <div>
-                    <label className="block text-body-small text-neutral-600 mb-1">Registration From</label>
-                    <input
-                      type="date"
-                      value={registrationDateFrom}
-                      onChange={(e) => setRegistrationDateFrom(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-small text-neutral-600 mb-1">Registration To</label>
-                    <input
-                      type="date"
-                      value={registrationDateTo}
-                      onChange={(e) => setRegistrationDateTo(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-small text-neutral-600 mb-1">Last Login From</label>
-                    <input
-                      type="date"
-                      value={lastLoginFrom}
-                      onChange={(e) => setLastLoginFrom(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-body-small text-neutral-600 mb-1">Last Login To</label>
-                    <input
-                      type="date"
-                      value={lastLoginTo}
-                      onChange={(e) => setLastLoginTo(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
+
+            {/* Filters */}
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
+                <select
+                  value={filterRole}
+                  onChange={(e) => setFilterRole(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  {roleOptions.map(role => (
+                    <option key={role} value={role}>
+                      {role === 'all' ? 'All Roles' : role.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  {statusOptions.map(status => (
+                    <option key={status} value={status}>
+                      {status === 'all' ? 'All Status' : status.charAt(0).toUpperCase() + status.slice(1)}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={filterRegistrationSource}
+                  onChange={(e) => setFilterRegistrationSource(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Sources</option>
+                  <option value="LOCAL">Local</option>
+                  <option value="GOOGLE">Google</option>
+                  <option value="OTHER">Other</option>
+                </select>
+                <select
+                  value={filterHasFilings}
+                  onChange={(e) => setFilterHasFilings(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Users</option>
+                  <option value="true">Has Filings</option>
+                  <option value="false">No Filings</option>
+                </select>
+                <select
+                  value={filterHasPayments}
+                  onChange={(e) => setFilterHasPayments(e.target.value)}
+                  className="px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Users</option>
+                  <option value="true">Has Payments</option>
+                  <option value="false">No Payments</option>
+                </select>
+                <div>
+                  <label className="block text-body-small text-neutral-600 mb-1">Registration From</label>
+                  <input
+                    type="date"
+                    value={registrationDateFrom}
+                    onChange={(e) => setRegistrationDateFrom(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-body-small text-neutral-600 mb-1">Registration To</label>
+                  <input
+                    type="date"
+                    value={registrationDateTo}
+                    onChange={(e) => setRegistrationDateTo(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-body-small text-neutral-600 mb-1">Last Login From</label>
+                  <input
+                    type="date"
+                    value={lastLoginFrom}
+                    onChange={(e) => setLastLoginFrom(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-body-small text-neutral-600 mb-1">Last Login To</label>
+                  <input
+                    type="date"
+                    value={lastLoginTo}
+                    onChange={(e) => setLastLoginTo(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-neutral-300 rounded-xl text-body-regular focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -540,11 +542,10 @@ const AdminUserManagement = () => {
                         setShowUserModal(false);
                       }}
                       disabled={selectedUser.status === status}
-                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${
-                        selectedUser.status === status
-                          ? 'bg-primary-100 text-primary-700 cursor-not-allowed'
-                          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                      }`}
+                      className={`p-2 rounded-xl text-sm font-medium transition-colors ${selectedUser.status === status
+                        ? 'bg-primary-100 text-primary-700 cursor-not-allowed'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                        }`}
                     >
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </button>

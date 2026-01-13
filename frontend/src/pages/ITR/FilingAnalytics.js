@@ -5,20 +5,21 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, TrendingDown, IndianRupee, FileText, Calendar, Award, BarChart3, PieChart, LineChart } from 'lucide-react';
+import { TrendingUp, TrendingDown, IndianRupee, FileText, Calendar, Award, BarChart3, PieChart, LineChart, RefreshCw } from 'lucide-react';
 import apiClient from '../../services/core/APIClient';
 import toast from 'react-hot-toast';
 import { formatIndianCurrency } from '../../lib/format';
 import { LineChart as RechartsLineChart, Line, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cn } from '../../utils';
-import Button from '../../components/DesignSystem/components/Button';
-import StatusBadge from '../../components/DesignSystem/StatusBadge';
+import { Button } from '../../components/UI/Button';
+import { Card } from '../../components/UI/Card';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const FilingAnalytics = () => {
   const [years, setYears] = useState(5);
   const [assessmentYear, setAssessmentYear] = useState('');
 
-  const { data: analytics, isLoading, isError, error } = useQuery({
+  const { data: analytics, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['filingAnalytics', { years, assessmentYear }],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -33,43 +34,57 @@ const FilingAnalytics = () => {
 
   if (isLoading) {
     return (
-      <div>
-        <div className="text-center py-12">
-          <BarChart3 className="w-8 h-8 animate-pulse text-primary-500 mx-auto mb-4" />
-          <p className="text-slate-600">Loading analytics...</p>
-        </div>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
+        <BarChart3 className="w-12 h-12 animate-pulse text-primary-500 mb-4" />
+        <p className="text-slate-600 font-medium">Loading your financial story...</p>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div>
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-error-200 p-6">
-          <p className="text-error-600">Failed to load analytics: {error?.message}</p>
-        </div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full p-8 text-center">
+          <div className="w-16 h-16 bg-error-50 text-error-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <TrendingDown className="w-8 h-8" />
+          </div>
+          <h2 className="text-heading-3 font-bold text-slate-900 mb-2">Analytics Unavailable</h2>
+          <p className="text-slate-600 mb-8">
+            {error?.message || "We couldn't load your analytics right now."}
+          </p>
+          <Button variant="primary" onClick={() => refetch()} className="w-full">
+            Retry Loading
+          </Button>
+        </Card>
       </div>
     );
   }
 
-  if (!analytics || analytics.summary.totalFilings === 0) {
+  if (!analytics || !analytics.summary || analytics.summary.totalFilings === 0) {
     return (
-      <div>
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-12 text-center">
-          <BarChart3 className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-          <h3 className="text-heading-4 font-semibold text-slate-900 mb-2">No Filing Data Available</h3>
-          <p className="text-body-regular text-slate-600">
-            You need to file at least one ITR to see analytics.
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full p-8 text-center">
+          <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BarChart3 className="w-8 h-8" />
+          </div>
+          <h2 className="text-heading-3 font-bold text-slate-900 mb-2">No Filings Found</h2>
+          <p className="text-slate-600 mb-8">
+            Complete your first filing to unlock powerful financial insights and trends.
           </p>
-        </div>
+          <Button variant="primary" onClick={() => window.location.href = '/itr/start'} className="w-full">
+            Start First Filing
+          </Button>
+        </Card>
       </div>
     );
   }
 
   const { summary, yearOverYear, taxSavings, trends, incomeTrends, deductionTrends, refundHistory, complianceScore } = analytics;
 
-  // Prepare chart data
-  const yoyChartData = yearOverYear.map(y => ({
+  const COLORS = ['var(--s29-primary)', 'var(--s29-success)', 'var(--s29-warning)', 'var(--s29-error)', 'var(--s29-info)'];
+
+  // Map chart data
+  const yoyChartData = (yearOverYear || []).map(y => ({
     year: y.assessmentYear,
     income: y.totalIncome,
     deductions: y.totalDeductions,
@@ -77,116 +92,117 @@ const FilingAnalytics = () => {
     refund: y.refund,
   }));
 
-  const incomeSourceData = incomeTrends.topSources.map(s => ({
-    name: s.source.replace(/_/g, ' '),
+  const incomeSourceData = (incomeTrends?.topSources || []).map(s => ({
+    name: (s.source || 'Other').replace(/_/g, ' '),
     value: s.amount,
   }));
 
-  const deductionCategoryData = deductionTrends.topCategories.map(c => ({
-    name: c.category.replace(/_/g, ' '),
+  const deductionCategoryData = (deductionTrends?.topCategories || []).map(c => ({
+    name: (c.category || 'Other').replace(/_/g, ' '),
     value: c.amount,
   }));
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
-
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-heading-2 sm:text-heading-1 font-bold text-slate-900 mb-2">Filing Analytics</h1>
-          <p className="text-body-regular sm:text-body-large text-slate-600">
-            Comprehensive insights into your tax filing history and trends
-          </p>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-info-50 rounded-xl">
-                <FileText className="w-5 h-5 text-info-600" />
-              </div>
-              <div>
-                <p className="text-body-regular text-slate-600">Total Filings</p>
-                <p className="text-heading-2 font-bold text-slate-900">{summary.totalFilings}</p>
-              </div>
-            </div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <h1 className="text-display-sm font-bold text-slate-900 mb-2">Filing Analytics</h1>
+            <p className="text-body-large text-slate-600 max-w-2xl">
+              A high-fidelity view of your tax evolution, compliance health, and saving trends.
+            </p>
           </div>
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-success-50 rounded-xl">
-                <IndianRupee className="w-5 h-5 text-success-600" />
-              </div>
-              <div>
-                <p className="text-body-regular text-slate-600">Total Refund</p>
-                <p className="text-heading-2 font-bold text-slate-900">
-                  {formatIndianCurrency(summary.totalRefundReceived)}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-warning-50 rounded-xl">
-                <Award className="w-5 h-5 text-warning-600" />
-              </div>
-              <div>
-                <p className="text-body-regular text-slate-600">Tax Saved</p>
-                <p className="text-heading-2 font-bold text-slate-900">
-                  {formatIndianCurrency(taxSavings.totalSavings)}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary-50 rounded-xl">
-                <TrendingUp className="w-5 h-5 text-primary-600" />
-              </div>
-              <div>
-                <p className="text-body-regular text-slate-600">Compliance Score</p>
-                <p className="text-heading-2 font-bold text-slate-900">{complianceScore}/100</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <Button variant="secondary" onClick={() => refetch()} icon={<RefreshCw className="w-4 h-4" />}>
+              Refresh
+            </Button>
           </div>
         </div>
 
-        {/* Year-over-Year Comparison */}
-        {yoyChartData.length > 0 && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Year-over-Year Comparison</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <RechartsLineChart data={yoyChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" />
-                <YAxis />
-                <Tooltip formatter={(value) => formatIndianCurrency(value)} />
-                <Legend />
-                <Line type="monotone" dataKey="income" stroke="#0088FE" name="Income" />
-                <Line type="monotone" dataKey="deductions" stroke="#00C49F" name="Deductions" />
-                <Line type="monotone" dataKey="tax" stroke="#FF8042" name="Tax" />
-                <Line type="monotone" dataKey="refund" stroke="#FFBB28" name="Refund" />
-              </RechartsLineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+        {/* Summary Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <Card className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Total Filings</p>
+                <h3 className="text-display-xs font-bold text-slate-900">{summary.totalFilings}</h3>
+              </div>
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+                <FileText className="w-6 h-6" />
+              </div>
+            </div>
+          </Card>
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Income Sources */}
-          {incomeSourceData.length > 0 && (
-            <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
-              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Top Income Sources</h2>
-              <ResponsiveContainer width="100%" height={300}>
+          <Card className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Total Refund</p>
+                <h3 className="text-display-xs font-bold text-success-600">{formatIndianCurrency(summary.totalRefundReceived)}</h3>
+              </div>
+              <div className="p-3 bg-success-50 text-success-600 rounded-2xl">
+                <IndianRupee className="w-6 h-6" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Tax Savings</p>
+                <h3 className="text-display-xs font-bold text-warning-600">{formatIndianCurrency(taxSavings?.totalSavings || 0)}</h3>
+              </div>
+              <div className="p-3 bg-warning-50 text-warning-600 rounded-2xl">
+                <Award className="w-6 h-6" />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Compliance</p>
+                <h3 className="text-display-xs font-bold text-primary-600">{complianceScore}/100</h3>
+              </div>
+              <div className="p-3 bg-primary-50 text-primary-600 rounded-2xl">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Main Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+          <Card className="lg:col-span-2 p-8">
+            <h4 className="text-heading-4 font-bold text-slate-900 mb-8">Performance History</h4>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart data={yoyChartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                  <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} tickFormatter={(value) => `₹${value / 1000}k`} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                    formatter={(value) => formatIndianCurrency(value)}
+                  />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px' }} />
+                  <Line type="monotone" dataKey="income" stroke="var(--s29-primary)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} name="Income" />
+                  <Line type="monotone" dataKey="tax" stroke="var(--s29-error)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} name="Tax" />
+                </RechartsLineChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <h4 className="text-heading-4 font-bold text-slate-900 mb-8">Income Mix</h4>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
                 <RechartsPieChart>
                   <Pie
                     data={incomeSourceData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
                     dataKey="value"
                   >
                     {incomeSourceData.map((entry, index) => (
@@ -197,89 +213,72 @@ const FilingAnalytics = () => {
                 </RechartsPieChart>
               </ResponsiveContainer>
             </div>
-          )}
-
-          {/* Deduction Categories */}
-          {deductionCategoryData.length > 0 && (
-            <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
-              <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Top Deduction Categories</h2>
-              <ResponsiveContainer width="100%" height={300}>
-                <RechartsPieChart>
-                  <Pie
-                    data={deductionCategoryData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {deductionCategoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => formatIndianCurrency(value)} />
-                </RechartsPieChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </div>
-
-        {/* Trends */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6 mb-6">
-          <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Filing Trends</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-body-regular text-slate-600 mb-1">Filing Frequency</p>
-              <p className="text-body-large font-semibold text-slate-900">{trends.filingFrequency || 'N/A'}</p>
-            </div>
-            <div>
-              <p className="text-body-regular text-slate-600 mb-1">On-Time Filing Rate</p>
-              <p className="text-body-large font-semibold text-slate-900">{trends.onTimeFilingRate || 0}%</p>
-            </div>
-            <div>
-              <p className="text-body-regular text-slate-600 mb-1">Refund Trend</p>
-              <div className="flex items-center gap-2">
-                {trends.refundTrend === 'increasing' && <TrendingUp className="w-5 h-5 text-success-600" />}
-                {trends.refundTrend === 'decreasing' && <TrendingDown className="w-5 h-5 text-error-600" />}
-                <p className="text-body-large font-semibold text-slate-900 capitalize">
-                  {trends.refundTrend || 'stable'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Refund History */}
-        {refundHistory.history && refundHistory.history.length > 0 && (
-          <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-6">
-            <h2 className="text-heading-4 font-semibold text-slate-900 mb-4">Refund History</h2>
-            <div className="space-y-3">
-              {refundHistory.history.slice(0, 5).map((refund, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-200">
-                  <div>
-                    <p className="text-body-regular font-medium text-slate-900">
-                      AY {refund.assessmentYear}
-                    </p>
-                    <p className="text-body-small text-slate-500">
-                      {new Date(refund.statusDate).toLocaleDateString('en-IN')}
-                    </p>
+            <div className="mt-6 space-y-3">
+              {incomeSourceData.map((s, idx) => (
+                <div key={idx} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                    <span className="text-slate-600">{s.name}</span>
                   </div>
-                  <div className="text-right">
-                    <p className="text-body-regular font-semibold text-success-600">
-                      {formatIndianCurrency(refund.amount)}
-                    </p>
-                    <StatusBadge status={refund.status} size="sm" />
-                  </div>
+                  <span className="font-bold text-slate-900">{formatIndianCurrency(s.value)}</span>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+          <Card className="p-8">
+            <h4 className="text-heading-4 font-bold text-slate-900 mb-6">Filing Insights</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Frequency</p>
+                <p className="text-body-large font-bold text-slate-900">{trends.filingFrequency || 'N/A'}</p>
+              </div>
+              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">On-Time</p>
+                <p className="text-body-large font-bold text-success-600">{trends.onTimeFilingRate || 0}%</p>
+              </div>
+              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Refund Trend</p>
+                <div className="flex items-center gap-2 mt-1">
+                  {trends.refundTrend === 'increasing' ? (
+                    <TrendingUp className="w-5 h-5 text-success-600" />
+                  ) : (
+                    <TrendingDown className="w-5 h-5 text-error-600" />
+                  )}
+                  <span className="text-sm font-bold capitalize">{trends.refundTrend || 'Stable'}</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <h4 className="text-heading-4 font-bold text-slate-900 mb-6">Recent Refunds</h4>
+            <div className="space-y-4">
+              {(refundHistory?.history || []).slice(0, 4).map((refund, idx) => (
+                <div key={idx} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-success-50 text-success-600 rounded-xl flex items-center justify-center">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900">AY {refund.assessmentYear}</p>
+                      <p className="text-xs text-slate-500">{new Date(refund.statusDate).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <p className="text-body-large font-bold text-success-600">{formatIndianCurrency(refund.amount)}</p>
+                </div>
+              ))}
+              {(!refundHistory?.history || refundHistory.history.length === 0) && (
+                <p className="text-center py-6 text-slate-500 italic">No refund history available.</p>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default FilingAnalytics;
-

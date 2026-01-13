@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Button from '../../components/DesignSystem/components/Button';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const GoogleOAuthError = () => {
   const navigate = useNavigate();

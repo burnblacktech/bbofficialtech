@@ -6,9 +6,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import Card from '../common/Card';
 import Button from '../DesignSystem/components/Button';
 import StatusBadge from '../DesignSystem/StatusBadge';
-import documentService from '../../services/documentService';
-import { enterpriseLogger } from '../../utils/logger';
-import toast from 'react-hot-toast';
+import { useDocumentContext } from '../../contexts/DocumentContext';
 
 const FileUpload = ({
   onFileSelect,
@@ -22,12 +20,40 @@ const FileUpload = ({
   maxSize = 10 * 1024 * 1024, // 10MB
   className = '',
 }) => {
+  const {
+    uploadFiles,
+    uploading,
+    uploadProgress,
+    uploadResults,
+    clearUploadResults,
+  } = useDocumentContext();
+
   const [isDragOver, setIsDragOver] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadResults, setUploadResults] = useState([]);
   const fileInputRef = useRef(null);
+
+  const handleFiles = useCallback((files) => {
+    const validFiles = [];
+    const errors = [];
+
+    files.forEach(file => {
+      const validation = validateFile(file);
+      if (validation.isValid) {
+        validFiles.push(file);
+      } else {
+        errors.push(`${file.name}: ${validation.errors.join(', ')}`);
+      }
+    });
+
+    if (errors.length > 0) {
+      onUploadError?.(errors);
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(prev => [...prev, ...validFiles].slice(0, maxFiles));
+      onFileSelect?.(validFiles);
+    }
+  }, [maxFiles, onFileSelect, onUploadError]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -45,63 +71,22 @@ const FileUpload = ({
 
     const files = Array.from(e.dataTransfer.files);
     handleFiles(files);
-  }, []);
+  }, [handleFiles]);
 
   const handleFileSelect = useCallback((e) => {
     const files = Array.from(e.target.files);
     handleFiles(files);
-  }, []);
-
-  const handleFiles = useCallback((files) => {
-    const validFiles = [];
-    const errors = [];
-
-    files.forEach(file => {
-      const validation = validateFile(file);
-      if (validation.isValid) {
-        validFiles.push(file);
-      } else {
-        errors.push(`${file.name}: ${validation.errors.join(', ')}`);
-      }
-    });
-
-    if (errors.length > 0) {
-      enterpriseLogger.warn('File validation errors', { errors });
-      onUploadError?.(errors);
-    }
-
-    if (validFiles.length > 0) {
-      setSelectedFiles(prev => [...prev, ...validFiles].slice(0, maxFiles));
-      onFileSelect?.(validFiles);
-    }
-  }, [maxFiles, onFileSelect, onUploadError]);
+  }, [handleFiles]);
 
   const validateFile = (file) => {
     const errors = [];
-
-    // Check file size
-    if (file.size > maxSize) {
-      errors.push(`File size exceeds ${formatFileSize(maxSize)} limit`);
-    }
-
-    // Check file type
-    if (!allowedTypes.includes(file.type)) {
-      errors.push(`File type ${file.type} is not allowed`);
-    }
-
-    // Check filename
-    if (!file.name || file.name.length === 0) {
-      errors.push('Filename is required');
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+    if (file.size > maxSize) errors.push('File size exceeds limit');
+    if (!allowedTypes.includes(file.type)) errors.push('Invalid file type');
+    return { isValid: errors.length === 0, errors };
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -109,10 +94,9 @@ const FileUpload = ({
   };
 
   const getFileIcon = (file) => {
-    const type = file.type.toLowerCase();
+    const type = file.type?.toLowerCase() || '';
     if (type.includes('image')) return '🖼️';
     if (type.includes('pdf')) return '📄';
-    if (type.includes('word') || type.includes('document')) return '📝';
     return '📎';
   };
 
@@ -120,77 +104,25 @@ const FileUpload = ({
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const uploadFiles = async () => {
+  const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
+    const results = await uploadFiles(selectedFiles, category, filingId, memberId);
 
-    setUploading(true);
-    setUploadProgress(0);
-    setUploadResults([]);
+    const successfulUploads = results.filter(r => r.success);
+    const failedUploads = results.filter(r => !r.success);
 
-    try {
-      const results = [];
-
-      for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
-        const progress = ((i + 1) / selectedFiles.length) * 100;
-        setUploadProgress(progress);
-
-        try {
-          const result = await uploadSingleFile(file);
-          results.push({ file, result, success: true });
-        } catch (error) {
-          results.push({ file, error: error.message, success: false });
-        }
-      }
-
-      setUploadResults(results);
+    if (successfulUploads.length > 0) {
+      onUploadComplete?.(successfulUploads);
       setSelectedFiles([]);
-
-      const successfulUploads = results.filter(r => r.success);
-      const failedUploads = results.filter(r => !r.success);
-
-      if (successfulUploads.length > 0) {
-        onUploadComplete?.(successfulUploads);
-      }
-
-      if (failedUploads.length > 0) {
-        onUploadError?.(failedUploads.map(r => `${r.file.name}: ${r.error}`));
-      }
-
-      enterpriseLogger.info('File upload completed', {
-        totalFiles: selectedFiles.length,
-        successful: successfulUploads.length,
-        failed: failedUploads.length,
-      });
-
-    } catch (error) {
-      enterpriseLogger.error('File upload failed', { error: error.message });
-      onUploadError?.([error.message]);
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
     }
-  };
 
-  const uploadSingleFile = async (file) => {
-    try {
-      const result = await documentService.uploadFileWithProgress(
-        file,
-        category,
-        filingId,
-        memberId,
-      );
-
-      toast.success(`${file.name} uploaded successfully`);
-      return result;
-    } catch (error) {
-      toast.error(`Failed to upload ${file.name}`);
-      throw error;
+    if (failedUploads.length > 0) {
+      onUploadError?.(failedUploads.map(r => `${r.file.name}: ${r.error}`));
     }
   };
 
   const clearResults = () => {
-    setUploadResults([]);
+    clearUploadResults();
   };
 
   return (
@@ -281,7 +213,7 @@ const FileUpload = ({
           <div className="upload-actions">
             <Button
               variant="primary"
-              onClick={uploadFiles}
+              onClick={handleUpload}
               disabled={uploading}
               className="upload-button"
             >

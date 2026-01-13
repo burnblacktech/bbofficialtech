@@ -27,10 +27,13 @@ import {
   Clock,
   FileText,
   Settings,
-  X,
-} from 'lucide-react';
+  X } from 'lucide-react';
 import api from '../../services/api';
 import { enterpriseLogger } from '../../utils/logger';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const FamilyManagement = () => {
   const { user } = useAuth();
@@ -52,8 +55,7 @@ const FamilyManagement = () => {
     panNumber: '',
     aadharNumber: '',
     isDependent: true,
-    income: 0,
-  });
+    income: 0 });
 
   // Fetch family members
   const { data: familyData, isLoading } = useQuery({
@@ -78,8 +80,7 @@ const FamilyManagement = () => {
       queryClient.invalidateQueries(['familyMembers', user?.user_id]);
       setShowAddForm(false);
       resetForm();
-    },
-  });
+    } });
 
   // Update family member mutation
   const updateMemberMutation = useMutation({
@@ -91,8 +92,7 @@ const FamilyManagement = () => {
       queryClient.invalidateQueries(['familyMembers', user?.user_id]);
       setEditingMember(null);
       resetForm();
-    },
-  });
+    } });
 
   // Delete family member mutation
   const deleteMemberMutation = useMutation({
@@ -102,8 +102,7 @@ const FamilyManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['familyMembers', user?.user_id]);
-    },
-  });
+    } });
 
   const resetForm = () => {
     setMemberData({
@@ -116,16 +115,14 @@ const FamilyManagement = () => {
       panNumber: '',
       aadharNumber: '',
       isDependent: true,
-      income: 0,
-    });
+      income: 0 });
   };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setMemberData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+      [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
@@ -136,8 +133,7 @@ const FamilyManagement = () => {
       if (editingMember) {
         await updateMemberMutation.mutateAsync({
           memberId: editingMember.id,
-          memberData,
-        });
+          memberData });
       } else {
         await addMemberMutation.mutateAsync(memberData);
       }
@@ -160,8 +156,7 @@ const FamilyManagement = () => {
       panNumber: member.panNumber || '',
       aadharNumber: member.aadharNumber || '',
       isDependent: member.isDependent || true,
-      income: member.income || 0,
-    });
+      income: member.income || 0 });
     setShowAddForm(true);
   };
 
@@ -217,7 +212,8 @@ const FamilyManagement = () => {
   ];
 
   if (isLoading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-burnblack-white flex items-center justify-center p-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="loading-spinner"></div>

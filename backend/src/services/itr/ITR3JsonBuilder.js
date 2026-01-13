@@ -54,6 +54,11 @@ class ITR3JsonBuilder {
       const scheduleCYLA = ITR3ScheduleBuilders.buildScheduleCYLA(sectionSnapshot);
       const scheduleBFLA = ITR3ScheduleBuilders.buildScheduleBFLA(sectionSnapshot);
 
+      // Build new ITR-3 components (depreciation, reconciliation, audit)
+      const depreciationSchedule = ITR3ScheduleBuilders.buildDepreciationSchedule(sectionSnapshot);
+      const bookReconciliation = ITR3ScheduleBuilders.buildBookReconciliation(sectionSnapshot);
+      const auditInformation = ITR3ScheduleBuilders.buildAuditInformation(sectionSnapshot);
+
       // Conditional schedules
       const scheduleDEP = ITR3ScheduleBuilders.buildScheduleDEP(sectionSnapshot, partABS);
       const scheduleFA = await ITR2ScheduleBuilders.buildScheduleFA(sectionSnapshot, filingId);
@@ -106,6 +111,19 @@ class ITR3JsonBuilder {
         itr3Json.Form_ITR3.ScheduleFA = scheduleFA;
       }
 
+      // Conditionally add new ITR-3 components
+      if (depreciationSchedule) {
+        itr3Json.Form_ITR3.DepreciationSchedule = depreciationSchedule;
+      }
+
+      if (bookReconciliation) {
+        itr3Json.Form_ITR3.BookReconciliation = bookReconciliation;
+      }
+
+      if (auditInformation) {
+        itr3Json.Form_ITR3.AuditInformation = auditInformation;
+      }
+
       enterpriseLogger.info('ITR-3 JSON built successfully', { assessmentYear });
       return itr3Json;
     } catch (error) {
@@ -136,7 +154,7 @@ class ITR3JsonBuilder {
     } else {
       const income = sectionSnapshot.income || {};
       const salary = income.salary || {};
-      
+
       grossSalary = parseFloat(salary.grossSalary || salary.totalSalary || income.salary || 0);
       standardDeduction = parseFloat(salary.standardDeduction || 0);
       professionalTax = parseFloat(salary.professionalTax || 0);
@@ -161,7 +179,7 @@ class ITR3JsonBuilder {
   buildScheduleOS(sectionSnapshot) {
     const income = sectionSnapshot.income || {};
     const otherSources = income.otherSources || {};
-    
+
     const interestIncome = parseFloat(otherSources.totalInterestIncome || income.interestIncome || income.otherIncome || 0);
     const otherIncome = parseFloat(otherSources.totalOtherIncome || 0);
     const totalOS = interestIncome + otherIncome;
@@ -254,7 +272,7 @@ class ITR3JsonBuilder {
    */
   buildScheduleIT(sectionSnapshot) {
     const taxesPaid = sectionSnapshot.taxesPaid || sectionSnapshot.taxes_paid || {};
-    
+
     const advanceTax = parseFloat(taxesPaid.advanceTax || taxesPaid.advance_tax || 0);
     const selfAssessmentTax = parseFloat(taxesPaid.selfAssessmentTax || taxesPaid.self_assessment_tax || 0);
 

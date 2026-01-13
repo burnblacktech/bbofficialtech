@@ -8,6 +8,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   User,
   Mail,
@@ -25,8 +29,7 @@ import {
   LogOut,
   CheckCircle,
   AlertCircle,
-  ChevronRight,
-} from 'lucide-react';
+  ChevronRight } from 'lucide-react';
 
 const UserProfile = () => {
   // U3.6 Hotfix: Validation in-place, no redirect needed.
@@ -46,24 +49,22 @@ const UserProfile = () => {
     dateOfBirth: '',
     address: '',
     pan: '',
-    aadhar: '',
-  });
+    aadhar: '' });
 
   // Fetch user profile data
   const { data: fetchedProfileData, isLoading, error } = useQuery({
     queryKey: ['userProfile', user?.id],
     queryFn: async () => {
-      const response = await api.get('/users/profile');
+      const response = await api.get('/auth/profile');
       return response.data;
     },
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000,
-  });
+    staleTime: 5 * 60 * 1000 });
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (updatedData) => {
-      const response = await api.put('/users/profile', updatedData);
+      const response = await api.put('/auth/profile', updatedData);
       return response.data;
     },
     onSuccess: async () => {
@@ -78,16 +79,14 @@ const UserProfile = () => {
     onError: (error) => {
       setErrors(error.response?.data?.errors || { general: 'Failed to update profile' });
       toast.error('Failed to update profile');
-    },
-  });
+    } });
 
   const handleInputChange = (field, value) => {
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [field]: '',
-      }));
+        [field]: '' }));
     }
   };
 
@@ -129,8 +128,7 @@ const UserProfile = () => {
       dateOfBirth: '',
       address: '',
       pan: '',
-      aadhar: '',
-    });
+      aadhar: '' });
     setErrors({});
     setIsEditing(false);
   };
@@ -348,7 +346,7 @@ const UserProfile = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-xl p-4 shadow-elevation-1 border border-gray-100">
+          <Card>
             <h3 className="text-sm font-semibold text-slate-900 mb-3">Quick Actions</h3>
             <div className="space-y-2">
               <button
@@ -384,7 +382,7 @@ const UserProfile = () => {
                 <ChevronRight className="h-4 w-4 text-red-400" />
               </button>
             </div>
-          </div>
+                </Card>
         </main>
       )}
 

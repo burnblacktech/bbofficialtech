@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition } from '../../components/DesignSystem/Animations';
 import {
   UserPlus,
@@ -21,10 +21,12 @@ import {
   Crown,
   Star,
   User,
-  ArrowLeft,
+  ArrowLeft
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminAddUser = () => {
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ const AdminAddUser = () => {
     aadhaar_number: '',
     notes: '',
     send_welcome_email: true,
-    require_password_change: true,
+    require_password_change: true
   });
 
   const [errors, setErrors] = useState({});
@@ -74,7 +76,7 @@ const AdminAddUser = () => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       }
-    },
+    }
   });
 
   const handleInputChange = (field, value) => {
@@ -198,9 +200,8 @@ const AdminAddUser = () => {
                     required
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.name ? 'border-error-500' : 'border-neutral-300'
-                    }`}
+                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.name ? 'border-error-500' : 'border-neutral-300'
+                      }`}
                     placeholder="Enter full name"
                   />
                   {errors.name && (
@@ -219,9 +220,8 @@ const AdminAddUser = () => {
                       required
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className={`w-full pl-10 border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        errors.email ? 'border-error-500' : 'border-neutral-300'
-                      }`}
+                      className={`w-full pl-10 border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.email ? 'border-error-500' : 'border-neutral-300'
+                        }`}
                       placeholder="Enter email address"
                     />
                   </div>
@@ -240,9 +240,8 @@ const AdminAddUser = () => {
                       type="tel"
                       value={formData.mobile}
                       onChange={(e) => handleInputChange('mobile', e.target.value)}
-                      className={`w-full pl-10 border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        errors.mobile ? 'border-error-500' : 'border-neutral-300'
-                      }`}
+                      className={`w-full pl-10 border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.mobile ? 'border-error-500' : 'border-neutral-300'
+                        }`}
                       placeholder="Enter mobile number"
                     />
                   </div>
@@ -420,18 +419,16 @@ const AdminAddUser = () => {
                       <div
                         key={role.value}
                         onClick={() => handleInputChange('role', role.value)}
-                        className={`p-3 border-2 rounded-xl cursor-pointer transition-colors ${
-                          formData.role === role.value
-                            ? 'border-primary-500 bg-primary-50'
-                            : 'border-neutral-200 hover:border-neutral-300'
-                        }`}
+                        className={`p-3 border-2 rounded-xl cursor-pointer transition-colors ${formData.role === role.value
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-neutral-200 hover:border-neutral-300'
+                          }`}
                       >
                         <div className="flex items-start space-x-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
-                            formData.role === role.value
-                              ? 'border-primary-500 bg-primary-500'
-                              : 'border-neutral-300'
-                          }`}>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${formData.role === role.value
+                            ? 'border-primary-500 bg-primary-500'
+                            : 'border-neutral-300'
+                            }`}>
                             {formData.role === role.value && (
                               <CheckCircle className="h-3 w-3 text-white" />
                             )}
@@ -497,9 +494,8 @@ const AdminAddUser = () => {
                     type="text"
                     value={formData.pan_number}
                     onChange={(e) => handleInputChange('pan_number', e.target.value.toUpperCase())}
-                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.pan_number ? 'border-error-500' : 'border-neutral-300'
-                    }`}
+                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.pan_number ? 'border-error-500' : 'border-neutral-300'
+                      }`}
                     placeholder="Enter PAN number"
                     maxLength={10}
                   />
@@ -514,9 +510,8 @@ const AdminAddUser = () => {
                     type="text"
                     value={formData.aadhaar_number}
                     onChange={(e) => handleInputChange('aadhaar_number', e.target.value)}
-                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.aadhaar_number ? 'border-error-500' : 'border-neutral-300'
-                    }`}
+                    className={`w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.aadhaar_number ? 'border-error-500' : 'border-neutral-300'
+                      }`}
                     placeholder="Enter Aadhaar number"
                     maxLength={12}
                   />

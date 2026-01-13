@@ -18,9 +18,28 @@ const createITRVProcessingTable = require('./migrations/create-itrv-processing-t
 const createAssessmentNoticesTable = require('./migrations/create-assessment-notices-table');
 const createTaxDemandsTable = require('./migrations/create-tax-demands-table');
 const createDocumentTemplatesTable = require('./migrations/create-document-templates-table');
+const createAnalyticsTables = require('./migrations/create-analytics-tables');
 
 // Migration registry - defines all available migrations
 const MIGRATIONS = [
+  {
+    id: 'create-analytics-tables',
+    name: 'Create Analytics Tables',
+    description: 'Creates financial_snapshots, financial_milestones, and user_insights tables',
+    function: createAnalyticsTables,
+    dependencies: [],
+    checkQuery: `
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name IN ('financial_snapshots', 'financial_milestones', 'user_insights')
+    `,
+    isApplied: async function () {
+      const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
+      const tables = Array.isArray(result) ? result : [];
+      return tables.length === 3;
+    },
+  },
   {
     id: 'add-aadhaar-fields',
     name: 'Add Aadhaar Linking Fields',
@@ -34,7 +53,7 @@ const MIGRATIONS = [
       AND table_name = 'user_profiles'
       AND column_name IN ('aadhaar_linked', 'aadhaar_verified_at', 'aadhaar_verification_data')
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const columns = Array.isArray(result) ? result : [];
       return columns.length === 3; // All 3 columns must exist
@@ -52,7 +71,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'report_templates'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -70,7 +89,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'system_settings'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -88,7 +107,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'scenarios'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -106,7 +125,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'itrv_processing'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -124,7 +143,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'assessment_notices'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -142,7 +161,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'tax_demands'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -160,7 +179,7 @@ const MIGRATIONS = [
       WHERE table_schema = 'public' 
       AND table_name = 'document_templates'
     `,
-    isApplied: async function() {
+    isApplied: async function () {
       const result = await sequelize.query(this.checkQuery, { type: QueryTypes.SELECT });
       const tables = Array.isArray(result) ? result : [];
       return tables.length > 0;
@@ -170,19 +189,19 @@ const MIGRATIONS = [
 
 const runPendingMigrations = async (options = {}) => {
   const { dryRun = false, verbose = true } = options;
-  
+
   try {
     console.log('\n=== Unified Migration Runner ===\n');
-    
+
     // Test connection
     if (verbose) console.log('1. Testing database connection...');
     await sequelize.authenticate();
     if (verbose) console.log('✅ Connected to database\n');
-    
+
     // Check which migrations are already applied
     if (verbose) console.log('2. Checking migration status...\n');
     const migrationStatus = [];
-    
+
     for (const migration of MIGRATIONS) {
       const isApplied = await migration.isApplied.call(migration);
       migrationStatus.push({
@@ -190,48 +209,48 @@ const runPendingMigrations = async (options = {}) => {
         isApplied,
         needsRun: !isApplied,
       });
-      
+
       if (verbose) {
         const status = isApplied ? '✅' : '❌';
         console.log(`   ${status} ${migration.name} - ${isApplied ? 'Applied' : 'Pending'}`);
       }
     }
     console.log('');
-    
+
     // Filter pending migrations
     const pendingMigrations = migrationStatus.filter(m => m.needsRun);
-    
+
     if (pendingMigrations.length === 0) {
       console.log('✅ All migrations are already applied!\n');
       process.exit(0);
     }
-    
+
     console.log(`Found ${pendingMigrations.length} pending migration(s):\n`);
     pendingMigrations.forEach((m, index) => {
       console.log(`   ${index + 1}. ${m.name}`);
       console.log(`      ${m.description}\n`);
     });
-    
+
     if (dryRun) {
       console.log('🔍 DRY RUN MODE - No changes will be made\n');
       console.log('To apply migrations, run without --dry-run flag\n');
       process.exit(0);
     }
-    
+
     // Run pending migrations
     console.log('3. Running pending migrations...\n');
     const results = {
       successful: [],
       failed: [],
     };
-    
+
     for (const migration of pendingMigrations) {
       try {
         console.log(`Running: ${migration.name}...`);
-        
+
         // Run the migration function
         await migration.function();
-        
+
         // Verify it was applied (re-check using the same query)
         const isNowApplied = await migration.isApplied.call(migration);
         if (isNowApplied) {
@@ -250,21 +269,21 @@ const runPendingMigrations = async (options = {}) => {
           migration,
           error: error.message,
         });
-        
+
         // Ask if we should continue
         if (verbose) {
           console.log('⚠️  Migration failed. Continuing with remaining migrations...\n');
         }
       }
     }
-    
+
     // Summary
     console.log('=== Migration Summary ===\n');
     console.log(`✅ Successful: ${results.successful.length}`);
     results.successful.forEach(m => {
       console.log(`   - ${m.name}`);
     });
-    
+
     if (results.failed.length > 0) {
       console.log(`\n❌ Failed: ${results.failed.length}`);
       results.failed.forEach(({ migration, error }) => {
@@ -277,18 +296,18 @@ const runPendingMigrations = async (options = {}) => {
         console.log(`   node ${scriptPath}`);
       });
     }
-    
+
     console.log('');
-    
+
     // Log results
     enterpriseLogger.info('Migration runner completed', {
       successful: results.successful.length,
       failed: results.failed.length,
       total: pendingMigrations.length,
     });
-    
+
     process.exit(results.failed.length > 0 ? 1 : 0);
-    
+
   } catch (error) {
     console.error('\n❌ Migration runner failed:');
     console.error(`   Error: ${error.message}`);
@@ -300,12 +319,12 @@ const runPendingMigrations = async (options = {}) => {
     console.log('   2. Check Supabase project is active');
     console.log('   3. Verify database credentials');
     console.log('   4. Run individual migrations manually if needed\n');
-    
+
     enterpriseLogger.error('Migration runner failed', {
       error: error.message,
       stack: error.stack,
     });
-    
+
     process.exit(1);
   } finally {
     await sequelize.close();

@@ -13,16 +13,18 @@ import {
   FileText,
   MessageSquare,
   TrendingUp,
-  Building2,
-} from 'lucide-react';
+  Building2 } from 'lucide-react';
 import {
   EnterpriseCard,
   EnterpriseButton,
   EnterpriseBadge,
-  EnterpriseStatCard,
-} from '../../components/DesignSystem/EnterpriseComponents';
+  EnterpriseStatCard } from '../../components/DesignSystem/EnterpriseComponents';
 import api from '../../services/api';
 import { enterpriseLogger } from '../../utils/logger';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ClientManagement = () => {
   const [clients, setClients] = useState([]);
@@ -35,8 +37,7 @@ const ClientManagement = () => {
     page: 1,
     limit: 20,
     total: 0,
-    totalPages: 0,
-  });
+    totalPages: 0 });
 
   // Fetch clients data
   const fetchClients = async (page = 1) => {
@@ -46,8 +47,7 @@ const ClientManagement = () => {
         page: page.toString(),
         limit: pagination.limit.toString(),
         ...(searchTerm && { search: searchTerm }),
-        ...(statusFilter && { status: statusFilter }),
-      });
+        ...(statusFilter && { status: statusFilter }) });
 
       const response = await api.get(`/client-management/clients?${params}`);
 
@@ -84,7 +84,7 @@ const ClientManagement = () => {
       fetchClients(1);
     }, 500);
 
-    return () => clearTimeout(debounceTimer);
+  return () => clearTimeout(debounceTimer);
   }, [searchTerm, statusFilter]);
 
   const handlePageChange = (newPage) => {
@@ -172,7 +172,7 @@ const ClientManagement = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-xl">
               <Users className="h-6 w-6 text-blue-600" />
@@ -181,10 +181,10 @@ const ClientManagement = () => {
               <p className="text-body-regular font-medium text-slate-600">Total Clients</p>
               <p className="text-heading-2 font-bold text-slate-900">{statistics.total_clients || 0}</p>
             </div>
-          </div>
+                </Card>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-xl">
               <UserCheck className="h-6 w-6 text-green-600" />
@@ -193,10 +193,9 @@ const ClientManagement = () => {
               <p className="text-body-regular font-medium text-slate-600">Active Clients</p>
               <p className="text-heading-2 font-bold text-slate-900">{statistics.active_clients || 0}</p>
             </div>
-          </div>
-        </div>
+                </Card>
 
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-purple-100 rounded-xl">
               <FileText className="h-6 w-6 text-purple-600" />
@@ -205,10 +204,10 @@ const ClientManagement = () => {
               <p className="text-body-regular font-medium text-slate-600">Assigned Clients</p>
               <p className="text-heading-2 font-bold text-slate-900">{statistics.assigned_clients || 0}</p>
             </div>
-          </div>
+                </Card>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-elevation-1 border">
+        <Card>
           <div className="flex items-center">
             <div className="p-2 bg-gold-100 rounded-xl">
               <TrendingUp className="h-6 w-6 text-gold-600" />
@@ -217,12 +216,11 @@ const ClientManagement = () => {
               <p className="text-body-regular font-medium text-slate-600">Family Clients</p>
               <p className="text-heading-2 font-bold text-slate-900">{statistics.family_clients || 0}</p>
             </div>
-          </div>
-        </div>
+                </Card>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-xl shadow-elevation-1 border mb-6">
+      <Card>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -235,7 +233,7 @@ const ClientManagement = () => {
                 className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-          </div>
+                </Card>
           <div className="sm:w-48">
             <select
               value={statusFilter}
@@ -461,8 +459,7 @@ const AddClientModal = ({ onClose, onAdd }) => {
     clientName: '',
     clientEmail: '',
     clientMobile: '',
-    relationshipType: 'client',
-  });
+    relationshipType: 'client' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -472,8 +469,7 @@ const AddClientModal = ({ onClose, onAdd }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
-    });
+      [e.target.name]: e.target.value });
   };
 
   return (

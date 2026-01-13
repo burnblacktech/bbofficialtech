@@ -113,7 +113,7 @@ class AuthService {
   // Set password for OAuth users (first time)
   async setPassword(newPassword) {
     try {
-      const response = await apiClient.put('/users/set-password', {
+      const response = await apiClient.put('/auth/set-password', {
         newPassword,
       });
       return response.data;
@@ -126,7 +126,7 @@ class AuthService {
   // Change password
   async changePassword(currentPassword, newPassword) {
     try {
-      const response = await apiClient.put('/users/password', {
+      const response = await apiClient.put('/auth/set-password', {
         currentPassword,
         newPassword,
       });

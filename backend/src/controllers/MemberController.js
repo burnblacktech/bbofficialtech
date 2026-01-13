@@ -236,6 +236,8 @@ class MemberController {
         metadata,
         panVerified: true,
         panVerifiedAt: new Date(),
+        dobVerified: true,
+        dobVerifiedAt: new Date(),
       });
 
       // Log audit event
@@ -333,9 +335,11 @@ class MemberController {
             throw new AppError('PAN verification failed. Please enter a valid PAN number.', 400);
           }
 
-          // Set verified status for new PAN
+          // Set verified status for new PAN and DOB
           updateData.panVerified = true;
           updateData.panVerifiedAt = new Date();
+          updateData.dobVerified = true;
+          updateData.dobVerifiedAt = new Date();
         }
 
         oldValues.pan = member.panNumber;

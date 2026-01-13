@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   IndianRupee,
@@ -18,6 +18,10 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminCAPayouts = () => {
   const [loading, setLoading] = useState(true);
@@ -119,7 +123,7 @@ const AdminCAPayouts = () => {
   const filteredPayouts = payouts.filter(payout =>
     searchTerm
       ? payout.firmName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payout.firmEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+      payout.firmEmail?.toLowerCase().includes(searchTerm.toLowerCase())
       : true,
   );
 
@@ -260,9 +264,8 @@ const AdminCAPayouts = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
                           <Typography.Body className="font-semibold">{payout.firmName}</Typography.Body>
-                          <span className={`px-2 py-0.5 text-xs rounded-full ${
-                            payout.pendingAmount > 0 ? 'bg-warning-100 text-warning-700' : 'bg-success-100 text-success-700'
-                          }`}>
+                          <span className={`px-2 py-0.5 text-xs rounded-full ${payout.pendingAmount > 0 ? 'bg-warning-100 text-warning-700' : 'bg-success-100 text-success-700'
+                            }`}>
                             {payout.pendingAmount > 0 ? 'Pending' : 'Paid'}
                           </span>
                         </div>

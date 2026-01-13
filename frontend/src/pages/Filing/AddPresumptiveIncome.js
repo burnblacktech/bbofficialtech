@@ -9,6 +9,10 @@ import { Shield, ArrowLeft, Save, Info, Calculator, Sparkles, Check } from 'luci
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -126,7 +130,7 @@ const AddPresumptiveIncome = () => {
             await axios.put(`${API_BASE_URL}/filings/${filingId}`, { jsonPayload: payload }, { headers });
 
             toast.success(`${type === 'business' ? 'Business' : 'Professional'} details saved`);
-            navigate(`/filing/${filingId}/income/presumptive`);
+            navigate(`/filing/${filingId}/presumptive-income`);
         } catch (err) {
             toast.error('Failed to save details');
         } finally {
@@ -149,7 +153,7 @@ const AddPresumptiveIncome = () => {
                     Back
                 </button>
 
-                <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <Card>
                     <div className={`${isBusiness ? 'bg-orange-600' : 'bg-blue-600'} p-8 text-white`}>
                         <div className="flex items-center gap-4 mb-4">
                             <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
@@ -251,7 +255,7 @@ const AddPresumptiveIncome = () => {
                             </button>
                         </div>
                     </form>
-                </div>
+                </Card>
 
                 <div className="mt-12 p-6 bg-slate-900 rounded-3xl text-white flex gap-6 items-center">
                     <Shield className="w-12 h-12 text-primary-400 flex-shrink-0" />
@@ -264,7 +268,7 @@ const AddPresumptiveIncome = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

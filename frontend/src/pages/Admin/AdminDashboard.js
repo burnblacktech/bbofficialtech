@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   Users,
@@ -32,6 +32,10 @@ import {
 } from '../../features/admin/analytics/hooks/use-analytics';
 import adminService from '../../services/api/adminService';
 import useAdminDashboardRealtime from '../../hooks/useAdminDashboardRealtime';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminDashboard = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
@@ -175,6 +179,7 @@ const AdminDashboard = () => {
   };
 
   if (loading || !dashboardData) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -353,11 +358,10 @@ const AdminDashboard = () => {
               <div className="space-y-2">
                 {dashboardData.alerts.slice(0, 3).map((alert, index) => (
                   <div key={index} className="flex items-start space-x-3 p-3 bg-white rounded-xl">
-                    <AlertCircle className={`w-5 h-5 mt-0.5 ${
-                      alert.severity === 'critical' ? 'text-error-600' :
+                    <AlertCircle className={`w-5 h-5 mt-0.5 ${alert.severity === 'critical' ? 'text-error-600' :
                       alert.severity === 'warning' ? 'text-warning-600' :
-                      'text-info-600'
-                    }`} />
+                        'text-info-600'
+                      }`} />
                     <div className="flex-1">
                       <Typography.Small className="font-medium text-neutral-700">
                         {alert.title}
@@ -390,16 +394,14 @@ const AdminDashboard = () => {
                     Status
                   </Typography.Small>
                   <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      dashboardData.systemHealth.status === 'healthy' ? 'bg-success-500' :
+                    <div className={`w-2 h-2 rounded-full ${dashboardData.systemHealth.status === 'healthy' ? 'bg-success-500' :
                       dashboardData.systemHealth.status === 'degraded' ? 'bg-warning-500' :
-                      'bg-error-500'
-                    }`} />
-                    <Typography.Small className={`font-medium ${
-                      dashboardData.systemHealth.status === 'healthy' ? 'text-success-600' :
+                        'bg-error-500'
+                      }`} />
+                    <Typography.Small className={`font-medium ${dashboardData.systemHealth.status === 'healthy' ? 'text-success-600' :
                       dashboardData.systemHealth.status === 'degraded' ? 'text-warning-600' :
-                      'text-error-600'
-                    }`}>
+                        'text-error-600'
+                      }`}>
                       {dashboardData.systemHealth.status.toUpperCase()}
                     </Typography.Small>
                   </div>
@@ -435,11 +437,10 @@ const AdminDashboard = () => {
                   <div className="flex items-center space-x-2">
                     <div className="w-16 h-2 bg-neutral-200 rounded-full">
                       <div
-                        className={`h-2 rounded-full ${
-                          dashboardData.systemHealth.serverLoad < 50 ? 'bg-success-500' :
+                        className={`h-2 rounded-full ${dashboardData.systemHealth.serverLoad < 50 ? 'bg-success-500' :
                           dashboardData.systemHealth.serverLoad < 80 ? 'bg-warning-500' :
-                          'bg-error-500'
-                        }`}
+                            'bg-error-500'
+                          }`}
                         style={{ width: `${Math.min(dashboardData.systemHealth.serverLoad, 100)}%` }}
                       />
                     </div>
@@ -451,7 +452,6 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
-
           {/* Recent Activity */}
           <Card>
             <CardHeader>
@@ -499,7 +499,7 @@ const AdminDashboard = () => {
 
         {/* Top Performers */}
         {dashboardData.topPerformers && dashboardData.topPerformers.length > 0 && (
-          <Card>
+          <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BarChart3 className="w-5 h-5 text-primary-600" />
@@ -547,7 +547,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Quick Actions */}
-        <Card className="mt-8">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Settings className="w-5 h-5 text-primary-600" />

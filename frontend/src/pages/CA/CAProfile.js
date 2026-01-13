@@ -27,6 +27,10 @@ import {
 import CAInquiryModal from '../../components/CA/CAInquiryModal';
 import CABookingModal from '../../components/CA/CABookingModal';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAProfile = () => {
   const { firmId } = useParams();
@@ -63,6 +67,7 @@ const CAProfile = () => {
   };
 
   if (isLoadingFirm) {
+
     return (
       <div className="min-h-screen bg-slate-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,12 +86,9 @@ const CAProfile = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-error-50 border border-error-200 rounded-xl p-6 text-center">
             <p className="text-error-800">CA firm not found</p>
-            <button
-              onClick={() => navigate('/ca/marketplace')}
-              className="mt-4 px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
-            >
+            <Button variant="primary" onClick={() => navigate('/ca/marketplace')}>
               Back to Marketplace
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -106,8 +108,8 @@ const CAProfile = () => {
         </button>
 
         {/* Profile Header */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-8 mb-6">
-          <div className="flex flex-col md:flex-row gap-6">
+        <Card className="p-6 mb-8">
+          <div className="flex flex-col md:flex-row gap-8">
             {/* Left: Info */}
             <div className="flex-1">
               <h1 className="text-display-sm text-slate-900 font-bold mb-2">{firm.name}</h1>
@@ -122,11 +124,10 @@ const CAProfile = () => {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      className={`h-5 w-5 ${
-                        star <= Math.round(rating)
-                          ? 'text-gold-500 fill-current'
-                          : 'text-slate-300'
-                      }`}
+                      className={`h-5 w-5 ${star <= Math.round(rating)
+                        ? 'text-gold-500 fill-current'
+                        : 'text-slate-300'
+                        }`}
                     />
                   ))}
                 </div>
@@ -237,10 +238,10 @@ const CAProfile = () => {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Reviews Section */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 p-8">
+        <Card className="p-6">
           <h2 className="text-heading-lg font-semibold text-slate-900 mb-6">Reviews</h2>
           {isLoadingReviews ? (
             <div className="text-center py-8">
@@ -257,7 +258,7 @@ const CAProfile = () => {
               ))}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Modals */}
         {showInquiryModal && (
@@ -289,10 +290,10 @@ const ReviewCard = ({ review }) => {
   const userName = review.userName || 'Anonymous';
   const date = review.createdAt
     ? new Date(review.createdAt).toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
     : '';
 
   return (
@@ -305,9 +306,8 @@ const ReviewCard = ({ review }) => {
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={`h-4 w-4 ${
-                    star <= rating ? 'text-gold-500 fill-current' : 'text-slate-300'
-                  }`}
+                  className={`h-4 w-4 ${star <= rating ? 'text-gold-500 fill-current' : 'text-slate-300'
+                    }`}
                 />
               ))}
             </div>
@@ -323,4 +323,3 @@ const ReviewCard = ({ review }) => {
 };
 
 export default CAProfile;
-

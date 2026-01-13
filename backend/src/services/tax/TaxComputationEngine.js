@@ -267,6 +267,49 @@ class TaxComputationEngine {
     }
 
     /**
+     * Compute goods carriage income
+     * Section 44AE - Presumptive income for goods carriages
+     * ₹7,500 per vehicle per month (or actual income if higher)
+     */
+    static computeGoodsCarriageIncome(carriageFacts) {
+        if (!carriageFacts || !carriageFacts.vehicles || carriageFacts.vehicles.length === 0) {
+            return {
+                taxableAmount: 0,
+                breakdown: [],
+                notes: ['No goods carriage income']
+            };
+        }
+
+        const vehicles = carriageFacts.vehicles;
+        const breakdown = [];
+        let totalIncome = 0;
+
+        for (const vehicle of vehicles) {
+            const monthsOwned = vehicle.monthsOwned || 12;
+            const presumptiveIncome = 7500 * monthsOwned;
+
+            totalIncome += presumptiveIncome;
+
+            breakdown.push({
+                registrationNumber: vehicle.registrationNumber,
+                monthsOwned,
+                ratePerMonth: 7500,
+                presumptiveIncome
+            });
+        }
+
+        return {
+            taxableAmount: totalIncome,
+            breakdown,
+            notes: [
+                `Total goods carriage income (Section 44AE): ₹${totalIncome}`,
+                `Number of vehicles: ${vehicles.length}`,
+                `Rate: ₹7,500 per vehicle per month`
+            ]
+        };
+    }
+
+    /**
      * Compute Chapter VI-A deductions
      * Section 80C-80U
      */
@@ -391,6 +434,106 @@ class TaxComputationEngine {
             cess,
             rate: TAX_FACT_CONTRACT.cess.rate,
             notes: [`Health and Education Cess: ${TAX_FACT_CONTRACT.cess.rate}% = ₹${cess}`]
+        };
+    }
+
+    /**
+     * Compute foreign income
+     * ITR-2 specific - foreign income with DTAA support
+     */
+    static computeForeignIncome(foreignFacts) {
+        if (!foreignFacts || !Array.isArray(foreignFacts) || foreignFacts.length === 0) {
+            return {
+                taxableAmount: 0,
+                breakdown: [],
+                notes: ['No foreign income']
+            };
+        }
+
+        const breakdown = [];
+        let totalForeignIncome = 0;
+        let totalTaxPaidAbroad = 0;
+
+        for (const income of foreignFacts) {
+            const amountINR = income.amountINR || 0;
+            const taxPaid = income.taxPaidAbroad || 0;
+
+            totalForeignIncome += amountINR;
+            if (income.dtaaApplicable) {
+                totalTaxPaidAbroad += taxPaid;
+            }
+
+            breakdown.push({
+                country: income.country,
+                incomeType: income.incomeType,
+                amountINR,
+                taxPaidAbroad: taxPaid,
+                dtaaApplicable: income.dtaaApplicable || false
+            });
+        }
+
+        return {
+            taxableAmount: totalForeignIncome,
+            totalTaxPaidAbroad,
+            breakdown,
+            notes: [
+                `Total foreign income: ₹${totalForeignIncome}`,
+                `Tax paid abroad (DTAA eligible): ₹${totalTaxPaidAbroad}`
+            ]
+        };
+    }
+
+    /**
+     * Compute foreign tax credit (DTAA)
+     * Section 90/91 - Relief from double taxation
+     * Credit = Lower of (foreign tax paid, Indian tax on foreign income)
+     */
+    static computeForeignTaxCredit(foreignIncomes, totalIncome, taxOnIncome, regime = 'old') {
+        if (!foreignIncomes || !Array.isArray(foreignIncomes) || foreignIncomes.length === 0) {
+            return {
+                credit: 0,
+                breakdown: [],
+                notes: ['No foreign tax credit applicable']
+            };
+        }
+
+        const breakdown = [];
+        let totalCredit = 0;
+
+        for (const income of foreignIncomes) {
+            if (!income.dtaaApplicable || !income.taxPaidAbroad) {
+                continue;
+            }
+
+            const foreignIncome = income.amountINR || 0;
+            const foreignTaxPaid = income.taxPaidAbroad || 0;
+
+            // Calculate Indian tax on this foreign income
+            // Proportionate tax = (Foreign income / Total income) × Total tax
+            const proportionateTax = totalIncome > 0
+                ? Math.round((foreignIncome / totalIncome) * taxOnIncome)
+                : 0;
+
+            // Credit is lower of foreign tax paid or Indian tax on foreign income
+            const credit = Math.min(foreignTaxPaid, proportionateTax);
+            totalCredit += credit;
+
+            breakdown.push({
+                country: income.country,
+                foreignIncome,
+                foreignTaxPaid,
+                indianTaxOnForeign: proportionateTax,
+                creditAllowed: credit
+            });
+        }
+
+        return {
+            credit: totalCredit,
+            breakdown,
+            notes: [
+                `Foreign tax credit (DTAA): ₹${totalCredit}`,
+                'Credit = Lower of (foreign tax paid, Indian tax on foreign income)'
+            ]
         };
     }
 }

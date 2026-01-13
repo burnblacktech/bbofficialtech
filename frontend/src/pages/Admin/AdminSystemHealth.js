@@ -27,9 +27,11 @@ import {
   LineChart,
   PieChart,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import api from '../../services/api';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminSystemHealth = () => {
   const { user } = useAuth();
@@ -80,6 +82,7 @@ const AdminSystemHealth = () => {
       const interval = setInterval(() => {
         refetch();
       }, 30000);
+
       return () => clearInterval(interval);
     }
   }, [autoRefresh, refetch]);
@@ -147,14 +150,12 @@ const AdminSystemHealth = () => {
               <Typography.Small className="text-neutral-600">Auto Refresh</Typography.Small>
               <button
                 onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  autoRefresh ? 'bg-primary-500' : 'bg-neutral-200'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoRefresh ? 'bg-primary-500' : 'bg-neutral-200'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    autoRefresh ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoRefresh ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>

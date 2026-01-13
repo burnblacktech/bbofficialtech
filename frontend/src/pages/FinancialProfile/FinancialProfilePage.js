@@ -34,6 +34,10 @@ import {
   SortDesc,
 } from 'lucide-react';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 // =====================================================
 // FINANCIAL PROFILE PAGE - HISTORICAL FILINGS & INSIGHTS
@@ -200,6 +204,7 @@ const FinancialProfilePage = () => {
 
   // Loading state
   if (profileLoading || historyLoading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -218,12 +223,9 @@ const FinancialProfilePage = () => {
           <AlertCircle className="w-12 h-12 text-error-600 mx-auto mb-4" />
           <h2 className="text-heading-3 font-semibold text-black mb-2">Failed to Load Profile</h2>
           <p className="text-slate-700 mb-4">{profileError.message}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
-          >
+          <Button variant="primary" onClick={() => window.location.reload()}>
             Retry
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -245,12 +247,9 @@ const FinancialProfilePage = () => {
             <li>• There's an issue with data retrieval</li>
           </ul>
           <div className="space-x-4">
-            <button
-              onClick={() => navigate('/itr-selection')}
-              className="px-4 py-2 bg-gold-500 text-white rounded-xl hover:bg-gold-600"
-            >
+            <Button variant="primary" onClick={() => navigate('/itr-selection')}>
               Start Filing
-            </button>
+            </Button>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
@@ -302,7 +301,7 @@ const FinancialProfilePage = () => {
         {/* Summary Stats */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
+            <Card>
               <div className="flex items-center">
                 <div className="p-2 bg-royal-100 rounded-xl">
                   <FileText className="w-6 h-6 text-royal-600" />
@@ -312,9 +311,9 @@ const FinancialProfilePage = () => {
                   <p className="text-heading-2 font-bold text-black">{stats.totalFilings}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
+            <Card>
               <div className="flex items-center">
                 <div className="p-2 bg-green-100 rounded-xl">
                   <TrendingUp className="w-6 h-6 text-green-600" />
@@ -324,9 +323,9 @@ const FinancialProfilePage = () => {
                   <p className="text-heading-2 font-bold text-slate-900">₹{stats.totalIncome.toLocaleString()}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
+            <Card>
               <div className="flex items-center">
                 <div className="p-2 bg-purple-100 rounded-xl">
                   <Target className="w-6 h-6 text-purple-600" />
@@ -336,9 +335,9 @@ const FinancialProfilePage = () => {
                   <p className="text-heading-2 font-bold text-slate-900">₹{stats.totalDeductions.toLocaleString()}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
+            <Card>
               <div className="flex items-center">
                 <div className="p-2 bg-gold-100 rounded-xl">
                   <IndianRupee className="w-6 h-6 text-gold-600" />
@@ -348,14 +347,14 @@ const FinancialProfilePage = () => {
                   <p className="text-heading-2 font-bold text-slate-900">₹{stats.totalRefund.toLocaleString()}</p>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         )}
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Income Trend Chart */}
-          <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
+          <Card>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-heading-4 font-semibold text-slate-900">Income Trend</h3>
               <div className="flex items-center space-x-2">
@@ -371,10 +370,10 @@ const FinancialProfilePage = () => {
                 <p className="text-body-regular text-slate-500">Integration with charting library pending</p>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Deductions Breakdown */}
-          <div className="bg-white rounded-xl shadow-elevation-1 p-6 border border-slate-200">
+          <Card>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-heading-4 font-semibold text-black">Deductions Breakdown</h3>
               <div className="flex items-center space-x-2">
@@ -390,7 +389,7 @@ const FinancialProfilePage = () => {
                 <p className="text-body-regular text-slate-500">Integration with charting library pending</p>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Insights Section */}
@@ -432,7 +431,7 @@ const FinancialProfilePage = () => {
         )}
 
         {/* Filing History Table */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200">
+        <Card>
           <div className="p-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <h3 className="text-heading-4 font-semibold text-slate-900">Filing History</h3>
@@ -527,7 +526,7 @@ const FinancialProfilePage = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

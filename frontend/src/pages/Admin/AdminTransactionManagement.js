@@ -5,7 +5,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import Badge from '../../components/DesignSystem/components/Badge';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
@@ -31,6 +31,10 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminTransactionManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -242,6 +246,7 @@ const AdminTransactionManagement = () => {
   const filteredTransactions = transactions.filter((transaction) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         transaction.invoiceNumber?.toLowerCase().includes(searchLower) ||
         transaction.user?.fullName?.toLowerCase().includes(searchLower) ||
@@ -516,10 +521,6 @@ const AdminTransactionManagement = () => {
               >
                 Clear Filters
               </Button>
-              <Button variant="outline" size="sm" onClick={loadTransactions}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -628,367 +629,343 @@ const AdminTransactionManagement = () => {
           </CardContent>
         </Card>
 
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6">
-            <Typography.Small className="text-neutral-600">
-              Showing {pagination.offset + 1} to {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
-            </Typography.Small>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPagination({ ...pagination, offset: Math.max(0, pagination.offset - pagination.limit) })}
-                disabled={pagination.offset === 0}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPagination({ ...pagination, offset: pagination.offset + pagination.limit })}
-                disabled={pagination.offset + pagination.limit >= pagination.total}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
         {/* Transaction Detail Modal */}
-        {selectedTransaction && !showRefundModal && !showDisputeModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-              <CardHeader className="flex flex-row items-center justify-between sticky top-0 bg-white z-10 border-b">
-                <CardTitle className="flex items-center gap-2">
-                  Transaction Details
-                  {selectedTransaction.metadata?.disputed && (
-                    <Badge variant="error">Disputed</Badge>
-                  )}
-                </CardTitle>
-                <button onClick={() => setSelectedTransaction(null)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
-                  <X className="w-5 h-5" />
-                </button>
-              </CardHeader>
-              <CardContent className="space-y-6 p-6">
-                {/* Basic Info */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <Typography.Small className="text-neutral-500">Invoice Number</Typography.Small>
-                    <Typography.Body className="font-medium">{selectedTransaction.invoiceNumber}</Typography.Body>
-                  </div>
-                  <div>
-                    <Typography.Small className="text-neutral-500">Date</Typography.Small>
-                    <Typography.Body>{new Date(selectedTransaction.invoiceDate).toLocaleDateString()}</Typography.Body>
-                  </div>
-                  <div>
-                    <Typography.Small className="text-neutral-500">Status</Typography.Small>
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(selectedTransaction.status)}`}>
-                      {selectedTransaction.status}
-                    </span>
-                  </div>
-                  <div>
-                    <Typography.Small className="text-neutral-500">User</Typography.Small>
-                    <Typography.Body className="font-medium">{selectedTransaction.user?.fullName || 'N/A'}</Typography.Body>
-                    <Typography.Small className="text-neutral-400">{selectedTransaction.user?.email || 'N/A'}</Typography.Small>
-                  </div>
-                  <div>
-                    <Typography.Small className="text-neutral-500">Amount</Typography.Small>
-                    <Typography.H3>{formatCurrency(selectedTransaction.totalAmount)}</Typography.H3>
-                  </div>
-                  <div>
-                    <Typography.Small className="text-neutral-500">Payment Method</Typography.Small>
-                    <div className="flex items-center gap-2">
-                      {getPaymentMethodIcon(selectedTransaction.paymentMethod)}
-                      <Typography.Body className="capitalize">{selectedTransaction.paymentMethod || 'N/A'}</Typography.Body>
+        {
+          selectedTransaction && !showRefundModal && !showDisputeModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                <CardHeader className="flex flex-row items-center justify-between sticky top-0 bg-white z-10 border-b">
+                  <CardTitle className="flex items-center gap-2">
+                    Transaction Details
+                    {selectedTransaction.metadata?.disputed && (
+                      <Badge variant="error">Disputed</Badge>
+                    )}
+                  </CardTitle>
+                  <button onClick={() => setSelectedTransaction(null)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
+                    <X className="w-5 h-5" />
+                  </button>
+                </CardHeader>
+                <CardContent className="space-y-6 p-6">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <Typography.Small className="text-neutral-500">Invoice Number</Typography.Small>
+                      <Typography.Body className="font-medium">{selectedTransaction.invoiceNumber}</Typography.Body>
                     </div>
-                  </div>
-                </div>
-
-                {/* Filing Info */}
-                {selectedTransaction.filing && (
-                  <div className="p-4 bg-neutral-50 rounded-xl">
-                    <Typography.Small className="text-neutral-500 font-medium mb-2 block">Related Filing</Typography.Small>
-                    <div className="flex items-center gap-4">
-                      <Typography.Body>{selectedTransaction.filing.itrType}</Typography.Body>
-                      <Typography.Body className="text-neutral-500">AY {selectedTransaction.filing.assessmentYear}</Typography.Body>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(selectedTransaction.filing.status)}`}>
-                        {selectedTransaction.filing.status}
+                    <div>
+                      <Typography.Small className="text-neutral-500">Date</Typography.Small>
+                      <Typography.Body>{new Date(selectedTransaction.invoiceDate).toLocaleDateString()}</Typography.Body>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500">Status</Typography.Small>
+                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(selectedTransaction.status)}`}>
+                        {selectedTransaction.status}
                       </span>
                     </div>
-                  </div>
-                )}
-
-                {/* Dispute Info */}
-                {selectedTransaction.metadata?.disputed && (
-                  <div className="p-4 bg-error-50 rounded-xl border border-error-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <AlertTriangle className="w-5 h-5 text-error-600" />
-                      <Typography.Body className="font-medium text-error-700">Dispute Information</Typography.Body>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <Typography.Small className="text-error-600">Reason:</Typography.Small>
-                        <Typography.Body>{selectedTransaction.metadata.disputeReason}</Typography.Body>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-error-600">Status:</Typography.Small>
-                        <Typography.Body className="capitalize">{selectedTransaction.metadata.disputeStatus}</Typography.Body>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-error-600">Disputed At:</Typography.Small>
-                        <Typography.Body>{new Date(selectedTransaction.metadata.disputedAt).toLocaleString()}</Typography.Body>
-                      </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500">User</Typography.Small>
+                      <Typography.Body className="font-medium">{selectedTransaction.user?.fullName || 'N/A'}</Typography.Body>
+                      <Typography.Small className="text-neutral-400">{selectedTransaction.user?.email || 'N/A'}</Typography.Small>
                     </div>
                   </div>
-                )}
 
-                {/* Admin Notes */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <Typography.Body className="font-medium">Admin Notes</Typography.Body>
-                    <Button variant="outline" size="sm" onClick={() => setShowNotesModal(true)}>
-                      <MessageSquare className="w-4 h-4 mr-1" />
-                      Add Note
-                    </Button>
-                  </div>
-                  {selectedTransaction.metadata?.adminNotes?.length > 0 ? (
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {selectedTransaction.metadata.adminNotes.map((note) => (
-                        <div key={note.id} className="p-3 bg-neutral-50 rounded-xl">
-                          <Typography.Body>{note.content}</Typography.Body>
-                          <Typography.Small className="text-neutral-500">
-                            {note.addedByName} • {new Date(note.addedAt).toLocaleString()}
-                          </Typography.Small>
+                  {/* Filing Info */}
+                  {
+                    selectedTransaction.filing && (
+                      <div className="p-4 bg-neutral-50 rounded-xl">
+                        <Typography.Small className="text-neutral-500 font-medium mb-2 block">Related Filing</Typography.Small>
+                        <div className="flex items-center gap-4">
+                          <Typography.Body>{selectedTransaction.filing.itrType}</Typography.Body>
+                          <Typography.Body className="text-neutral-500">AY {selectedTransaction.filing.assessmentYear}</Typography.Body>
+                          <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(selectedTransaction.filing.status)}`}>
+                            {selectedTransaction.filing.status}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <Typography.Small className="text-neutral-500">No notes yet</Typography.Small>
-                  )}
-                </div>
+                      </div>
+                    )
+                  }
 
-                {/* Related Transactions */}
-                {selectedTransaction.relatedTransactions?.length > 0 && (
-                  <div>
-                    <Typography.Body className="font-medium mb-3">Related Transactions</Typography.Body>
-                    <div className="space-y-2">
-                      {selectedTransaction.relatedTransactions.map((related) => (
-                        <div key={related.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                  {/* Dispute Info */}
+                  {
+                    selectedTransaction.metadata?.disputed && (
+                      <div className="p-4 bg-error-50 rounded-xl border border-error-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertTriangle className="w-5 h-5 text-error-600" />
+                          <Typography.Body className="font-medium text-error-700">Dispute Information</Typography.Body>
+                        </div>
+                        <div className="space-y-2">
                           <div>
-                            <Typography.Body className="font-medium">{related.invoiceNumber}</Typography.Body>
+                            <Typography.Small className="text-error-600">Reason:</Typography.Small>
+                            <Typography.Body>{selectedTransaction.metadata.disputeReason}</Typography.Body>
+                          </div>
+                          <div>
+                            <Typography.Small className="text-error-600">Status:</Typography.Small>
+                            <Typography.Body className="capitalize">{selectedTransaction.metadata.disputeStatus}</Typography.Body>
+                          </div>
+                          <div>
+                            <Typography.Small className="text-error-600">Disputed At:</Typography.Small>
+                            <Typography.Body>{new Date(selectedTransaction.metadata.disputedAt).toLocaleString()}</Typography.Body>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  {/* Admin Notes */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography.Body className="font-medium">Admin Notes</Typography.Body>
+                      <Button variant="outline" size="sm" onClick={() => setShowNotesModal(true)}>
+                        <MessageSquare className="w-4 h-4 mr-1" />
+                        Add Note
+                      </Button>
+                    </div>
+                    {selectedTransaction.metadata?.adminNotes?.length > 0 ? (
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {selectedTransaction.metadata.adminNotes.map((note) => (
+                          <div key={note.id} className="p-3 bg-neutral-50 rounded-xl">
+                            <Typography.Body>{note.content}</Typography.Body>
                             <Typography.Small className="text-neutral-500">
-                              {new Date(related.invoiceDate).toLocaleDateString()}
+                              {note.addedByName} • {new Date(note.addedAt).toLocaleString()}
                             </Typography.Small>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Typography.Body>{formatCurrency(related.totalAmount)}</Typography.Body>
-                            <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(related.status)}`}>
-                              {related.status}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <Typography.Small className="text-neutral-500">No notes yet</Typography.Small>
+                    )}
                   </div>
-                )}
 
-                {/* Actions */}
-                <div className="flex flex-wrap gap-3 pt-4 border-t border-neutral-200">
-                  {selectedTransaction.paymentStatus === 'paid' && !selectedTransaction.metadata?.disputed && (
-                    <>
-                      <Button variant="error" onClick={() => setShowRefundModal(true)}>
-                        Process Refund
+                  {/* Related Transactions */}
+                  {
+                    selectedTransaction.relatedTransactions?.length > 0 && (
+                      <div>
+                        <Typography.Body className="font-medium mb-3">Related Transactions</Typography.Body>
+                        <div className="space-y-2">
+                          {selectedTransaction.relatedTransactions.map((related) => (
+                            <div key={related.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                              <div>
+                                <Typography.Body className="font-medium">{related.invoiceNumber}</Typography.Body>
+                                <Typography.Small className="text-neutral-500">
+                                  {new Date(related.invoiceDate).toLocaleDateString()}
+                                </Typography.Small>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Typography.Body>{formatCurrency(related.totalAmount)}</Typography.Body>
+                                <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(related.status)}`}>
+                                  {related.status}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap gap-3 pt-4 border-t border-neutral-200">
+                    {selectedTransaction.paymentStatus === 'paid' && !selectedTransaction.metadata?.disputed && (
+                      <>
+                        <Button variant="error" onClick={() => setShowRefundModal(true)}>
+                          Process Refund
+                        </Button>
+                        <Button variant="outline" onClick={() => setShowDisputeModal(true)}>
+                          <AlertTriangle className="w-4 h-4 mr-2" />
+                          Mark as Disputed
+                        </Button>
+                      </>
+                    )}
+                    {selectedTransaction.paymentStatus === 'failed' && (
+                      <Button variant="primary" onClick={() => handleRetryPayment(selectedTransaction.id)} disabled={processing}>
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Retry Payment
                       </Button>
-                      <Button variant="outline" onClick={() => setShowDisputeModal(true)}>
-                        <AlertTriangle className="w-4 h-4 mr-2" />
-                        Mark as Disputed
-                      </Button>
-                    </>
-                  )}
-                  {selectedTransaction.paymentStatus === 'failed' && (
-                    <Button variant="primary" onClick={() => handleRetryPayment(selectedTransaction.id)} disabled={processing}>
-                      <RotateCcw className="w-4 h-4 mr-2" />
-                      Retry Payment
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )
+        }
 
         {/* Add Notes Modal */}
-        {showNotesModal && selectedTransaction && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Add Note</CardTitle>
-                <button onClick={() => setShowNotesModal(false)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
-                  <X className="w-5 h-5" />
-                </button>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">Note</label>
-                  <textarea
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-                    rows={4}
-                    placeholder="Enter your note..."
-                  />
-                </div>
-                <div className="flex justify-end gap-3">
-                  <Button variant="outline" onClick={() => setShowNotesModal(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddNote} disabled={!newNote.trim() || processing}>
-                    {processing ? 'Adding...' : 'Add Note'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Dispute Modal */}
-        {showDisputeModal && selectedTransaction && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Mark as Disputed</CardTitle>
-                <button onClick={() => setShowDisputeModal(false)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
-                  <X className="w-5 h-5" />
-                </button>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
-                    Dispute Reason <span className="text-error-500">*</span>
-                  </label>
-                  <select
-                    value={disputeData.reason}
-                    onChange={(e) => setDisputeData({ ...disputeData, reason: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="">Select a reason</option>
-                    <option value="unauthorized_transaction">Unauthorized Transaction</option>
-                    <option value="duplicate_charge">Duplicate Charge</option>
-                    <option value="service_not_provided">Service Not Provided</option>
-                    <option value="incorrect_amount">Incorrect Amount</option>
-                    <option value="customer_complaint">Customer Complaint</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">Additional Details</label>
-                  <textarea
-                    value={disputeData.details}
-                    onChange={(e) => setDisputeData({ ...disputeData, details: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-                    rows={3}
-                    placeholder="Enter additional details..."
-                  />
-                </div>
-                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-200">
-                  <Button variant="outline" onClick={() => setShowDisputeModal(false)}>
-                    Cancel
-                  </Button>
-                  <Button variant="error" onClick={handleMarkAsDisputed} disabled={!disputeData.reason || processing}>
-                    {processing ? 'Processing...' : 'Mark as Disputed'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Refund Modal */}
-        {showRefundModal && selectedTransaction && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <Card className="w-full max-w-md">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Process Refund</CardTitle>
-                <button
-                  onClick={() => {
-                    setShowRefundModal(false);
-                    setRefundData({ amount: '', reason: '', refundType: 'full' });
-                  }}
-                  className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-neutral-50 rounded-xl">
-                  <Typography.Small className="text-neutral-500">Transaction Amount</Typography.Small>
-                  <Typography.H3>{formatCurrency(selectedTransaction.totalAmount)}</Typography.H3>
-                </div>
-                <div>
-                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">Refund Type</label>
-                  <select
-                    value={refundData.refundType}
-                    onChange={(e) => {
-                      const type = e.target.value;
-                      setRefundData({
-                        ...refundData,
-                        refundType: type,
-                        amount: type === 'full' ? selectedTransaction.totalAmount : '',
-                      });
-                    }}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="full">Full Refund</option>
-                    <option value="partial">Partial Refund</option>
-                  </select>
-                </div>
-                {refundData.refundType === 'partial' && (
+        {
+          showNotesModal && selectedTransaction && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <Card className="w-full max-w-md">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Add Note</CardTitle>
+                  <button onClick={() => setShowNotesModal(false)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
+                    <X className="w-5 h-5" />
+                  </button>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div>
-                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
-                      Refund Amount <span className="text-error-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max={selectedTransaction.totalAmount}
-                      value={refundData.amount}
-                      onChange={(e) => setRefundData({ ...refundData, amount: e.target.value })}
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">Note</label>
+                    <textarea
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
                       className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-                      placeholder={`Max: ₹${selectedTransaction.totalAmount}`}
+                      rows={4}
+                      placeholder="Enter your note..."
                     />
                   </div>
-                )}
-                <div>
-                  <label className="block text-body-regular font-medium text-neutral-700 mb-2">
-                    Refund Reason <span className="text-error-500">*</span>
-                  </label>
-                  <textarea
-                    value={refundData.reason}
-                    onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })}
-                    className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-                    rows={3}
-                    placeholder="Enter refund reason..."
-                  />
-                </div>
-                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-200">
-                  <Button
-                    variant="outline"
+                  <div className="flex justify-end gap-3">
+                    <Button variant="outline" onClick={() => setShowNotesModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleAddNote} disabled={!newNote.trim() || processing}>
+                      {processing ? 'Adding...' : 'Add Note'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )
+        }
+
+        {/* Dispute Modal */}
+        {
+          showDisputeModal && selectedTransaction && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <Card className="w-full max-w-md">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Mark as Disputed</CardTitle>
+                  <button onClick={() => setShowDisputeModal(false)} className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500">
+                    <X className="w-5 h-5" />
+                  </button>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
+                      Dispute Reason <span className="text-error-500">*</span>
+                    </label>
+                    <select
+                      value={disputeData.reason}
+                      onChange={(e) => setDisputeData({ ...disputeData, reason: e.target.value })}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="">Select a reason</option>
+                      <option value="unauthorized_transaction">Unauthorized Transaction</option>
+                      <option value="duplicate_charge">Duplicate Charge</option>
+                      <option value="service_not_provided">Service Not Provided</option>
+                      <option value="incorrect_amount">Incorrect Amount</option>
+                      <option value="customer_complaint">Customer Complaint</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">Additional Details</label>
+                    <textarea
+                      value={disputeData.details}
+                      onChange={(e) => setDisputeData({ ...disputeData, details: e.target.value })}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
+                      rows={3}
+                      placeholder="Enter additional details..."
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 pt-4 border-t border-neutral-200">
+                    <Button variant="outline" onClick={() => setShowDisputeModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button variant="error" onClick={handleMarkAsDisputed} disabled={!disputeData.reason || processing}>
+                      {processing ? 'Processing...' : 'Mark as Disputed'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )
+        }
+
+        {/* Refund Modal */}
+        {
+          showRefundModal && selectedTransaction && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <Card className="w-full max-w-md">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Process Refund</CardTitle>
+                  <button
                     onClick={() => {
                       setShowRefundModal(false);
                       setRefundData({ amount: '', reason: '', refundType: 'full' });
                     }}
+                    className="p-2 rounded-xl hover:bg-neutral-100 text-neutral-500"
                   >
-                    Cancel
-                  </Button>
-                  <Button variant="error" onClick={handleProcessRefund} disabled={!refundData.reason.trim() || processing}>
-                    {processing ? 'Processing...' : 'Process Refund'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                    <X className="w-5 h-5" />
+                  </button>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-neutral-50 rounded-xl">
+                    <Typography.Small className="text-neutral-500">Transaction Amount</Typography.Small>
+                    <Typography.H3>{formatCurrency(selectedTransaction.totalAmount)}</Typography.H3>
+                  </div>
+                  <div>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">Refund Type</label>
+                    <select
+                      value={refundData.refundType}
+                      onChange={(e) => {
+                        const type = e.target.value;
+                        setRefundData({
+                          ...refundData,
+                          refundType: type,
+                          amount: type === 'full' ? selectedTransaction.totalAmount : '',
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="full">Full Refund</option>
+                      <option value="partial">Partial Refund</option>
+                    </select>
+                  </div>
+                  {refundData.refundType === 'partial' && (
+                    <div>
+                      <label className="block text-body-regular font-medium text-neutral-700 mb-2">
+                        Refund Amount <span className="text-error-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max={selectedTransaction.totalAmount}
+                        value={refundData.amount}
+                        onChange={(e) => setRefundData({ ...refundData, amount: e.target.value })}
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
+                        placeholder={`Max: ₹${selectedTransaction.totalAmount}`}
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-body-regular font-medium text-neutral-700 mb-2">
+                      Refund Reason <span className="text-error-500">*</span>
+                    </label>
+                    <textarea
+                      value={refundData.reason}
+                      onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-xl focus:ring-2 focus:ring-primary-500"
+                      rows={3}
+                      placeholder="Enter refund reason..."
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 pt-4 border-t border-neutral-200">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowRefundModal(false);
+                        setRefundData({ amount: '', reason: '', refundType: 'full' });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="error" onClick={handleProcessRefund} disabled={!refundData.reason.trim() || processing}>
+                      {processing ? 'Processing...' : 'Process Refund'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )
+        }
       </div>
     </PageTransition>
   );

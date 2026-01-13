@@ -17,10 +17,12 @@ import {
   Eye,
   Trash2,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition } from '../../components/DesignSystem/Animations';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminControlPanel = () => {
   const { user } = useAuth();
@@ -276,9 +278,8 @@ const AdminControlPanel = () => {
                       <Typography.Small className="text-neutral-500">{firm.email}</Typography.Small>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        firm.status === 'active' ? 'bg-success-100 text-success-700' : 'bg-error-100 text-error-700'
-                      }`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${firm.status === 'active' ? 'bg-success-100 text-success-700' : 'bg-error-100 text-error-700'
+                        }`}>
                         {firm.status}
                       </span>
                     </td>
@@ -418,11 +419,10 @@ const AdminControlPanel = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${
-                      activeTab === tab.id
-                        ? 'border-primary-500 text-primary-600'
-                        : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
-                    }`}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors ${activeTab === tab.id
+                      ? 'border-primary-500 text-primary-600'
+                      : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
+                      }`}
                   >
                     <Icon className="h-5 w-5 mr-2" />
                     {tab.name}

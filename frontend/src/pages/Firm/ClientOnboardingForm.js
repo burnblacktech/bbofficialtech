@@ -20,6 +20,8 @@ import Button from '../../components/DesignSystem/components/Button';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { enterpriseLogger } from '../../utils/logger';
+import { DataEntryPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ClientOnboardingForm = () => {
   const navigate = useNavigate();

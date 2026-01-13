@@ -5,10 +5,14 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Building2, Briefcase, Plus, Edit, Trash2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Building2, Briefcase, Truck, Plus, Edit, Trash2, ArrowRight, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { OrientationPage } from '../../components/templates';
+import { Card, CardContent } from '../../components/UI';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -90,9 +94,8 @@ const PresumptiveIncomeStory = () => {
                 </div>
 
                 <div className="space-y-6">
-                    {/* Business Income Card (44AD) */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-6">
+                    <Card>
+                        <CardContent>
                             <div className="flex items-start justify-between mb-6">
                                 <div className="flex items-center gap-4">
                                     <div className="p-3 bg-orange-50 text-orange-600 rounded-xl">
@@ -106,7 +109,7 @@ const PresumptiveIncomeStory = () => {
                                 {hasBusiness ? (
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => navigate(`/filing/${filingId}/income/presumptive/add?type=business`)}
+                                            onClick={() => navigate(`/filing/${filingId}/presumptive/add?type=business`)}
                                             className="p-2 text-slate-400 hover:text-primary-600 hover:bg-slate-50 rounded-lg transition-all"
                                         >
                                             <Edit className="w-5 h-5" />
@@ -120,7 +123,7 @@ const PresumptiveIncomeStory = () => {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={() => navigate(`/filing/${filingId}/income/presumptive/add?type=business`)}
+                                        onClick={() => navigate(`/filing/${filingId}/presumptive/add?type=business`)}
                                         className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
                                     >
                                         <Plus className="w-4 h-4" />
@@ -149,12 +152,11 @@ const PresumptiveIncomeStory = () => {
                             ) : (
                                 <p className="text-sm text-slate-400 italic">No business income added yet.</p>
                             )}
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
 
-                    {/* Professional Income Card (44ADA) */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-6">
+                    <Card>
+                        <CardContent>
                             <div className="flex items-start justify-between mb-6">
                                 <div className="flex items-center gap-4">
                                     <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
@@ -168,7 +170,7 @@ const PresumptiveIncomeStory = () => {
                                 {hasProfessional ? (
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => navigate(`/filing/${filingId}/income/presumptive/add?type=professional`)}
+                                            onClick={() => navigate(`/filing/${filingId}/presumptive/add?type=professional`)}
                                             className="p-2 text-slate-400 hover:text-primary-600 hover:bg-slate-50 rounded-lg transition-all"
                                         >
                                             <Edit className="w-5 h-5" />
@@ -182,7 +184,7 @@ const PresumptiveIncomeStory = () => {
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={() => navigate(`/filing/${filingId}/income/presumptive/add?type=professional`)}
+                                        onClick={() => navigate(`/filing/${filingId}/presumptive/add?type=professional`)}
                                         className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
                                     >
                                         <Plus className="w-4 h-4" />
@@ -211,8 +213,8 @@ const PresumptiveIncomeStory = () => {
                             ) : (
                                 <p className="text-sm text-slate-400 italic">No professional income added yet.</p>
                             )}
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 <div className="mt-12">

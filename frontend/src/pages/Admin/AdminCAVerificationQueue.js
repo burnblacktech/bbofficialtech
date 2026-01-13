@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   CheckCircle,
@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminCAVerificationQueue = () => {
   const [loading, setLoading] = useState(true);
@@ -111,6 +113,7 @@ const AdminCAVerificationQueue = () => {
   const filteredQueue = verificationQueue.filter((firm) => {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
+
       return (
         firm.name?.toLowerCase().includes(searchLower) ||
         firm.email?.toLowerCase().includes(searchLower) ||

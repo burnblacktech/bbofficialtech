@@ -79,7 +79,10 @@ export async function trackEvent(name, properties = {}) {
     };
 
     // Fire-and-forget; do not block UI flows
-    await apiClient.post('/analytics/events', payload, { timeout: 3000 });
+    // Silently ignore if analytics endpoint doesn't exist
+    await apiClient.post('/analytics/events', payload, { timeout: 3000 }).catch(() => {
+      // Analytics endpoint not implemented yet - silently ignore
+    });
   } catch {
     // never throw from analytics
   }

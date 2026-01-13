@@ -7,17 +7,18 @@ import Card from '../../components/common/Card';
 import Button from '../../components/DesignSystem/components/Button';
 import StatusBadge from '../../components/DesignSystem/StatusBadge';
 import Modal from '../../components/common/Modal';
-import FileUpload from '../Documents/FileUpload';
-import FileManager from '../Documents/FileManager';
+import FileUpload from '../../components/Documents/FileUpload';
+import FileManager from '../../components/Documents/FileManager';
 import { useDocumentContext } from '../../contexts/DocumentContext';
 import { enterpriseLogger } from '../../utils/logger';
+import { OrientationPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const DocumentUploadPage = ({
   filingId = null,
   memberId = null,
   onDocumentsUploaded,
-  className = '',
-}) => {
+  className = '' }) => {
   const {
     documents,
     stats,
@@ -29,7 +30,6 @@ const DocumentUploadPage = ({
     error,
     loadDocuments,
     loadStats,
-    loadCategories,
     uploadFiles,
     deleteDocument,
     downloadDocument,
@@ -41,10 +41,8 @@ const DocumentUploadPage = ({
     getStorageUsagePercentage,
     isStorageQuotaExceeded,
     getSuccessfulUploads,
-    getFailedUploads,
-  } = useDocumentContext();
+    getFailedUploads } = useDocumentContext();
 
-  const [activeTab, setActiveTab] = useState('upload');
   const [selectedCategory, setSelectedCategory] = useState('OTHER');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -52,8 +50,7 @@ const DocumentUploadPage = ({
   useEffect(() => {
     loadDocuments({ filingId, memberId });
     loadStats();
-    loadCategories();
-  }, [filingId, memberId]);
+  }, [filingId, memberId, loadDocuments, loadStats]);
 
   const handleFileSelect = (files) => {
     setSelectedFiles(files);
@@ -68,9 +65,6 @@ const DocumentUploadPage = ({
         const successfulUploads = results.filter(r => r.success);
         onDocumentsUploaded(successfulUploads);
       }
-
-      // Switch to manager tab to show results
-      setActiveTab('manager');
 
       enterpriseLogger.info('Files uploaded successfully', {
         count: files.length,
@@ -142,8 +136,8 @@ const DocumentUploadPage = ({
   const relevantDocuments = filingId
     ? getDocumentsByFiling(filingId)
     : memberId
-    ? getDocumentsByMember(memberId)
-    : getFilteredDocuments();
+      ? getDocumentsByMember(memberId)
+      : getFilteredDocuments();
 
   return (
     <div className={`document-upload-page ${className}`}>
@@ -163,7 +157,7 @@ const DocumentUploadPage = ({
                   style={{
                     width: `${getStorageUsagePercentage()}%`,
                     backgroundColor: getStorageColor() === 'red' ? '#ef4444' :
-                                   getStorageColor() === 'orange' ? '#D4AF37' : '#10b981',
+                      getStorageColor() === 'orange' ? '#D4AF37' : '#10b981',
                   }}
                 ></div>
               </div>
@@ -202,121 +196,104 @@ const DocumentUploadPage = ({
         </Card>
       )}
 
-      {/* Tabs */}
-      <Card className="tabs-card">
-        <div className="tabs">
-          <Button
-            variant={activeTab === 'upload' ? 'primary' : 'outline'}
-            onClick={() => setActiveTab('upload')}
-            className="tab-button"
-          >
-            📤 Upload Documents
-          </Button>
-          <Button
-            variant={activeTab === 'manager' ? 'primary' : 'outline'}
-            onClick={() => setActiveTab('manager')}
-            className="tab-button"
-          >
-            📁 Manage Documents ({relevantDocuments.length})
-          </Button>
+      {/* Upload Section */}
+      <Card className="upload-section">
+        <div className="upload-header">
+          <h3>Upload New Documents</h3>
+          <div className="category-selector">
+            <Button
+              variant="outline"
+              onClick={() => setShowCategoryModal(true)}
+              className="category-button"
+            >
+              {getCategoryIcon(selectedCategory)} {getCategoryLabel(selectedCategory)}
+            </Button>
+          </div>
         </div>
-      </Card>
 
-      {/* Upload Tab */}
-      {activeTab === 'upload' && (
-        <Card className="upload-tab">
-          <div className="upload-header">
-            <h3>Upload New Documents</h3>
-            <div className="category-selector">
+        <FileUpload
+          onFileSelect={handleFileSelect}
+          onUploadComplete={handleUploadComplete}
+          onUploadError={handleUploadError}
+          category={selectedCategory}
+          filingId={filingId}
+          memberId={memberId}
+          maxFiles={10}
+          maxSize={10 * 1024 * 1024}
+        />
+
+        {/* Upload Progress */}
+        {uploading && (
+          <Card className="upload-progress-card">
+            <div className="progress-header">
+              <h4>Uploading Documents</h4>
+              <span className="progress-percentage">{Math.round(uploadProgress)}%</span>
+            </div>
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          </Card>
+        )}
+
+        {/* Upload Results */}
+        {uploadResults.length > 0 && (
+          <Card className="upload-results-card">
+            <div className="results-header">
+              <h4>Upload Results</h4>
               <Button
                 variant="outline"
-                onClick={() => setShowCategoryModal(true)}
-                className="category-button"
+                size="small"
+                onClick={clearUploadResults}
               >
-                {getCategoryIcon(selectedCategory)} {getCategoryLabel(selectedCategory)}
+                Clear
               </Button>
             </div>
-          </div>
 
-          <FileUpload
-            onFileSelect={handleFileSelect}
-            onUploadComplete={handleUploadComplete}
-            onUploadError={handleUploadError}
-            category={selectedCategory}
-            filingId={filingId}
-            memberId={memberId}
-            maxFiles={10}
-            maxSize={10 * 1024 * 1024} // 10MB
-          />
-
-          {/* Upload Progress */}
-          {uploading && (
-            <Card className="upload-progress-card">
-              <div className="progress-header">
-                <h4>Uploading Documents</h4>
-                <span className="progress-percentage">{Math.round(uploadProgress)}%</span>
+            <div className="results-summary">
+              <div className="result-stat">
+                <span className="stat-icon">✅</span>
+                <span className="stat-label">Successful:</span>
+                <span className="stat-value">{getSuccessfulUploads().length}</span>
               </div>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
+              <div className="result-stat">
+                <span className="stat-icon">❌</span>
+                <span className="stat-label">Failed:</span>
+                <span className="stat-value">{getFailedUploads().length}</span>
               </div>
-            </Card>
-          )}
+            </div>
 
-          {/* Upload Results */}
-          {uploadResults.length > 0 && (
-            <Card className="upload-results-card">
-              <div className="results-header">
-                <h4>Upload Results</h4>
-                <Button
-                  variant="outline"
-                  size="small"
-                  onClick={clearUploadResults}
-                >
-                  Clear
-                </Button>
+            {getFailedUploads().length > 0 && (
+              <div className="failed-uploads">
+                <h5>Failed Uploads:</h5>
+                <ul>
+                  {getFailedUploads().map((result, index) => (
+                    <li key={index}>
+                      {result.file.name}: {result.error}
+                    </li>
+                  ))}
+                </ul>
               </div>
+            )}
+          </Card>
+        )}
+      </Card>
 
-              <div className="results-summary">
-                <div className="result-stat">
-                  <span className="stat-icon">✅</span>
-                  <span className="stat-label">Successful:</span>
-                  <span className="stat-value">{getSuccessfulUploads().length}</span>
-                </div>
-                <div className="result-stat">
-                  <span className="stat-icon">❌</span>
-                  <span className="stat-label">Failed:</span>
-                  <span className="stat-value">{getFailedUploads().length}</span>
-                </div>
-              </div>
+      {/* Document Library Section */}
+      <div className="document-library-section">
+        <div className="section-header">
+          <h3>Document Library ({relevantDocuments.length})</h3>
+          <p>View and manage your already uploaded files</p>
+        </div>
 
-              {getFailedUploads().length > 0 && (
-                <div className="failed-uploads">
-                  <h5>Failed Uploads:</h5>
-                  <ul>
-                    {getFailedUploads().map((result, index) => (
-                      <li key={index}>
-                        {result.file.name}: {result.error}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Card>
-          )}
-        </Card>
-      )}
-
-      {/* Manager Tab */}
-      {activeTab === 'manager' && (
         <FileManager
           filingId={filingId}
           memberId={memberId}
           onFileDelete={handleFileDelete}
         />
-      )}
+      </div>
 
       {/* Category Selection Modal */}
       <Modal

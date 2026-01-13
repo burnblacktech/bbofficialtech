@@ -33,11 +33,15 @@ const PERMISSIONS = {
   // ITR Filing management
   'filings.create': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'PREPARER', 'REVIEWER', 'END_USER'],
   'filings.read': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'PREPARER', 'REVIEWER', 'END_USER'],
-  'filings.update': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'PREPARER', 'REVIEWER', 'END_USER'],
+  'filings.update': ['CA_FIRM_ADMIN', 'CA', 'PREPARER', 'REVIEWER', 'END_USER'], // REMOVED: SUPER_ADMIN, PLATFORM_ADMIN
   'filings.delete': ['SUPER_ADMIN', 'PLATFORM_ADMIN'],
   'filings.submit': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'REVIEWER'],
   'filings.review': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'REVIEWER'],
   'filings.approve': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'REVIEWER'],
+
+  // Admin-specific filing permissions (read-only oversight)
+  'filings.view_all': ['SUPER_ADMIN', 'PLATFORM_ADMIN'], // View any filing (read-only)
+  'filings.unlock_emergency': ['SUPER_ADMIN'], // Emergency unfreeze (logged, audited)
 
   // Document management
   'documents.create': ['SUPER_ADMIN', 'PLATFORM_ADMIN', 'CA_FIRM_ADMIN', 'CA', 'END_USER'],

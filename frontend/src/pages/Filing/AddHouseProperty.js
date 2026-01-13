@@ -10,6 +10,10 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -89,7 +93,7 @@ const AddHouseProperty = () => {
 
     const handleBack = () => {
         if (step === 1) {
-            navigate(`/filing/${filingId}/income/house-property`);
+            navigate(`/filing/${filingId}/house-properties`);
         } else {
             setStep(step - 1);
         }
@@ -123,7 +127,7 @@ const AddHouseProperty = () => {
             }, { headers });
 
             toast.success('Property details saved');
-            navigate(`/filing/${filingId}/income/house-property`);
+            navigate(`/filing/${filingId}/house-properties`);
         } catch (error) {
             toast.error('Failed to save property');
         }
@@ -158,49 +162,51 @@ const AddHouseProperty = () => {
 
                 {/* Step 1: Basic Info */}
                 {step === 1 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Give this property a name (e.g., Home in Bangalore)
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.propertyName}
-                                onChange={(e) => setFormData({ ...formData, propertyName: e.target.value })}
-                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                                placeholder="My Apartment"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-4">
-                                Is this home:
-                            </label>
-                            <div className="grid grid-cols-2 gap-4">
-                                <button
-                                    onClick={() => setFormData({ ...formData, type: 'self_occupied' })}
-                                    className={`p-4 border-2 rounded-xl text-left transition-all ${formData.type === 'self_occupied'
-                                        ? 'border-primary-600 bg-primary-50'
-                                        : 'border-slate-200 hover:border-slate-300'
-                                        }`}
-                                >
-                                    <Home className={`w-6 h-6 mb-2 ${formData.type === 'self_occupied' ? 'text-primary-600' : 'text-slate-400'}`} />
-                                    <div className="font-semibold text-slate-900">Self Occupied</div>
-                                    <div className="text-xs text-slate-500 mt-1">You or your family live here</div>
-                                </button>
-                                <button
-                                    onClick={() => setFormData({ ...formData, type: 'let_out' })}
-                                    className={`p-4 border-2 rounded-xl text-left transition-all ${formData.type === 'let_out'
-                                        ? 'border-primary-600 bg-primary-50'
-                                        : 'border-slate-200 hover:border-slate-300'
-                                        }`}
-                                >
-                                    <Building2 className={`w-6 h-6 mb-2 ${formData.type === 'let_out' ? 'text-primary-600' : 'text-slate-400'}`} />
-                                    <div className="font-semibold text-slate-900">Let Out</div>
-                                    <div className="text-xs text-slate-500 mt-1">Someone else lives here and pays rent</div>
-                                </button>
+                    <>
+                        <Card>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Give this property a name (e.g., Home in Bangalore)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.propertyName}
+                                    onChange={(e) => setFormData({ ...formData, propertyName: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                    placeholder="My Apartment"
+                                />
                             </div>
-                        </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-4">
+                                    Is this home:
+                                </label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        onClick={() => setFormData({ ...formData, type: 'self_occupied' })}
+                                        className={`p-4 border-2 rounded-xl text-left transition-all ${formData.type === 'self_occupied'
+                                            ? 'border-primary-600 bg-primary-50'
+                                            : 'border-slate-200 hover:border-slate-300'
+                                            }`}
+                                    >
+                                        <Home className={`w-6 h-6 mb-2 ${formData.type === 'self_occupied' ? 'text-primary-600' : 'text-slate-400'}`} />
+                                        <div className="font-semibold text-slate-900">Self Occupied</div>
+                                        <div className="text-xs text-slate-500 mt-1">You or your family live here</div>
+                                    </button>
+                                    <button
+                                        onClick={() => setFormData({ ...formData, type: 'let_out' })}
+                                        className={`p-4 border-2 rounded-xl text-left transition-all ${formData.type === 'let_out'
+                                            ? 'border-primary-600 bg-primary-50'
+                                            : 'border-slate-200 hover:border-slate-300'
+                                            }`}
+                                    >
+                                        <Building2 className={`w-6 h-6 mb-2 ${formData.type === 'let_out' ? 'text-primary-600' : 'text-slate-400'}`} />
+                                        <div className="font-semibold text-slate-900">Let Out</div>
+                                        <div className="text-xs text-slate-500 mt-1">Someone else lives here and pays rent</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </Card>
 
                         <button
                             onClick={handleNext}
@@ -210,12 +216,12 @@ const AddHouseProperty = () => {
                             Next: Financials
                             <ArrowRight className="w-5 h-5" />
                         </button>
-                    </div>
+                    </>
                 )}
 
                 {/* Step 2: Financial Details */}
                 {step === 2 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+                    <Card>
                         <h2 className="text-xl font-semibold text-slate-900">Financial Details</h2>
 
                         {formData.type === 'let_out' && (
@@ -273,12 +279,12 @@ const AddHouseProperty = () => {
                                 <ArrowRight className="w-5 h-5" />
                             </button>
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Step 3: Impact */}
                 {step === 3 && impact && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
+                    <Card>
                         <h2 className="text-xl font-semibold text-slate-900">Tax Impact</h2>
 
                         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
@@ -332,7 +338,7 @@ const AddHouseProperty = () => {
                                 Save & Continue
                             </button>
                         </div>
-                    </div>
+                    </Card>
                 )}
             </div>
         </div>

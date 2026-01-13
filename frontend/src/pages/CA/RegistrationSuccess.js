@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import Button from '../../components/DesignSystem/components/Button';
 import { Card } from '../../components/UI';
+import { OrientationPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const RegistrationSuccess = () => {
   const navigate = useNavigate();

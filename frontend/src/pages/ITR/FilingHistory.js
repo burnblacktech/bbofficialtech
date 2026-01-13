@@ -15,6 +15,8 @@ import PauseResumeButton from '../../components/ITR/PauseResumeButton';
 import { FileText, Eye, Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import itrService from '../../services/api/itrService';
+import { OrientationPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const FilingHistory = () => {
   const { user } = useAuth();
@@ -55,9 +57,7 @@ const FilingHistory = () => {
 
   const handleResumed = (updatedFiling) => {
     setFilings(prev => prev.map(f => f.id === updatedFiling.id ? updatedFiling : f));
-    navigate(`/itr/computation?filingId=${updatedFiling.id}`, {
-      state: { filing: updatedFiling },
-    });
+    navigate(`/filing/${updatedFiling.id}/overview`);
   };
 
   const ongoingStatuses = ['draft', 'paused'];
@@ -77,12 +77,11 @@ const FilingHistory = () => {
   });
 
   const handleViewFiling = (filing) => {
-    navigate(`/itr/computation?filingId=${filing.id}`, {
-      state: { filing, viewMode: 'readonly' },
-    });
+    navigate(`/filing/${filing.id}/overview`);
   };
 
   if (loading) {
+
     return (
       <div className="min-h-screen bg-[var(--s29-bg-main)] flex items-center justify-center">
         <div className="text-[var(--s29-text-muted)] font-medium animate-pulse">Loading filing history...</div>
@@ -127,8 +126,8 @@ const FilingHistory = () => {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`px-6 py-2 rounded-lg text-sm font-bold capitalize transition-all ${activeTab === tab
-                          ? 'bg-white text-[var(--s29-primary)] shadow-sm'
-                          : 'text-[var(--s29-text-muted)] hover:text-[var(--s29-text-main)]'
+                        ? 'bg-white text-[var(--s29-primary)] shadow-sm'
+                        : 'text-[var(--s29-text-muted)] hover:text-[var(--s29-text-main)]'
                         }`}
                     >
                       {tab}

@@ -5,13 +5,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calculator, Info, CheckCircle2, ChevronRight, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
+import { Calculator, Info, CheckCircle2, ChevronRight, AlertCircle, ArrowRight, Loader2, Zap, Shield, TrendingDown } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import SectionCard from '../../components/common/SectionCard';
-import ReassuranceBanner from '../../components/common/ReassuranceBanner';
-import InlineHint from '../../components/common/InlineHint';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { PageContent } from '../../components/Layout';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -27,8 +29,6 @@ const TaxBreakdown = () => {
             try {
                 const token = localStorage.getItem('accessToken');
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-                // Use the enriched /tax-breakdown endpoint (includes regime comparison + net liability)
                 const response = await axios.get(`${API_BASE_URL}/filings/${filingId}/tax-breakdown`, { headers });
                 setData(response.data.data);
             } catch (err) {
@@ -44,163 +44,175 @@ const TaxBreakdown = () => {
     }, [filingId]);
 
     if (loading) {
+
         return (
-            <div className="min-h-screen bg-[var(--s29-bg-page)] flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-12 h-12 animate-spin text-[var(--s29-primary)]" />
-                <p className="text-[var(--s29-text-muted)] font-medium">Applying tax laws and comparing regimes...</p>
+            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
+                <p className="text-slate-500 font-medium">Crunching your numbers...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen bg-[var(--s29-bg-page)] flex items-center justify-center p-6">
-                <SectionCard title="Something went wrong">
-                    <p className="text-red-600 mb-6">{error}</p>
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+                <Card>
+                    <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">Calculation Error</h3>
+                    <p className="text-slate-600 mb-8">{error}</p>
                     <button
-                        onClick={() => navigate(`/filing/${filingId}/income-story`)}
-                        className="w-full py-3 bg-slate-100 text-slate-700 rounded-lg font-medium"
+                        onClick={() => navigate(`/filing/${filingId}/overview`)}
+                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold"
                     >
-                        Go back to Income Story
+                        Go back to Overview
                     </button>
-                </SectionCard>
+                </Card>
             </div>
         );
     }
 
-    const { selectedRegime, recommendedRegime, savings, oldRegime, newRegime, steps } = data;
-    const { finalLiability } = steps;
+    const { selectedRegime, recommendedRegime, savings, steps } = data;
+    const { finalLiability, taxableIncome, taxCalculation } = steps;
     const isZeroTax = finalLiability.totalTax === 0;
 
     return (
-        <div className="min-h-screen bg-[var(--s29-bg-page)] py-12 px-6">
-            <div className="max-w-2xl mx-auto">
-                <header className="mb-10 text-center">
-                    <span className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] font-medium uppercase tracking-widest">
-                        Step 4 of 5
-                    </span>
-                    <h1 className="text-[var(--s29-font-size-h2)] font-bold text-[var(--s29-text-main)] mt-2">
-                        Tax Calculation
-                    </h1>
-                </header>
-
-                {/* Hero Celebration / Summary */}
-                <div className="bg-white border border-[var(--s29-border-light)] rounded-[var(--s29-radius-large)] p-8 shadow-sm mb-8 text-center overflow-hidden relative">
+        <OrientationPage
+            title="Tax Calculation"
+            subtitle="Here's how we arrived at your tax liability."
+        >
+            <PageContent spacing="section">
+                {/* Hero Result Section */}
+                <Card padding="lg" className="relative">
                     {isZeroTax && (
-                        <div className="absolute top-0 left-0 w-full h-1 bg-[var(--s29-success)]" />
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-6 py-1 rounded-b-xl text-[10px] font-black uppercase tracking-widest shadow-sm">Zero Tax Benefit Applied</div>
                     )}
-                    <h2 className="text-[var(--s29-text-muted)] font-medium mb-1 uppercase tracking-wide text-xs">
+                    <h2 className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-2">
                         {finalLiability.refundOrPayable > 0 ? 'Estimated Tax Refund' : 'Total Tax Payable'}
                     </h2>
-                    <div className={`text-4xl md:text-5xl font-bold mb-4 ${isZeroTax || finalLiability.refundOrPayable > 0 ? 'text-[var(--s29-success)]' : 'text-[var(--s29-text-main)]'}`}>
+                    <div className={`text-5xl font-black mb-6 tracking-tighter ${isZeroTax || finalLiability.refundOrPayable > 0 ? 'text-emerald-600' : 'text-slate-900'}`}>
                         ₹{Math.abs(finalLiability.refundOrPayable).toLocaleString('en-IN')}
                     </div>
-                    {isZeroTax ? (
-                        <p className="text-[var(--s29-text-muted)] max-w-sm mx-auto">
-                            Great news! Your income falls within the tax-free limit. No tax is payable for this year.
-                        </p>
-                    ) : (
-                        <p className="text-[var(--s29-text-muted)] max-w-sm mx-auto">
-                            Calculated using the <span className="font-semibold text-[var(--s29-text-main)]">{selectedRegime === 'new' ? 'New (Simplified)' : 'Old'} Regime</span> to minimize your liability.
-                        </p>
-                    )}
-                    <p className="text-[var(--s29-text-muted)] text-[var(--s29-font-size-xs)] mt-2 italic">
-                        This won’t change unless you change your income details.
-                    </p>
-                </div>
 
-                {/* Breakdown - Cards within Cards */}
-                <SectionCard title="Taxable Income Calculation">
-                    <div className="space-y-4">
-                        <div className="bg-[var(--s29-bg-page)] p-4 rounded-[var(--s29-radius-main)] border border-[var(--s29-border-light)]">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-[var(--s29-text-muted)] text-sm font-medium">Gross Total Income</span>
-                                <span className="font-bold text-[var(--s29-text-main)]">₹{steps.taxableIncome.grossTotalIncome.toLocaleString('en-IN')}</span>
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                        <div className={`px-3 py-1.5 rounded-lg flex items-center gap-2 border ${selectedRegime === 'new' ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-indigo-50 border-indigo-200 text-indigo-700'}`}>
+                            {selectedRegime === 'new' ? <Zap className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+                            <span className="text-[10px] font-bold uppercase tracking-wider">{selectedRegime} Tax Regime</span>
+                        </div>
+                        {savings > 0 && (
+                            <div className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-2">
+                                <TrendingDown className="w-3 h-3" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider">Saving ₹{savings.toLocaleString('en-IN')}</span>
                             </div>
-                            <p className="text-[var(--s29-text-muted)] text-xs italic">Sum of all your income sources</p>
-                        </div>
+                        )}
+                        <Button
+                            variant="secondary"
+                            onClick={() => navigate(`/filing/${filingId}/regime-comparison`)}
+                        >
+                            Compare Regimes
+                        </Button>
+                    </div>
+                </Card>
 
-                        <div className="flex justify-center my-2">
-                            <div className="h-4 border-l-2 border-dashed border-[var(--s29-border-light)]" />
-                        </div>
+                {/* Granular Breakdown */}
+                <div className={layout.blockGap}>
+                    {/* Taxable Income Breakdown */}
+                    <Card padding="lg">
+                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2 uppercase tracking-wider">
+                            <Calculator className="w-4 h-4 text-gold-600" />
+                            Income & Deductions
+                        </h3>
 
-                        <div className="bg-white p-4 rounded-[var(--s29-radius-main)] border border-[var(--s29-border-light)] relative">
-                            <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-[var(--s29-border-light)] rounded-full flex items-center justify-center text-[var(--s29-text-muted)] text-[10px] font-bold">−</div>
-                            <div className="flex justify-between items-center mb-1">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[var(--s29-text-muted)] text-sm font-medium">Total Deductions</span>
-                                    <div className="group relative">
-                                        <Info className="w-3.5 h-3.5 text-[var(--s29-text-muted)] cursor-help" />
-                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-800 text-white text-[10px] rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                            Includes 80C, 80D, and other tax-saving investments that reduce your taxable income.
-                                        </div>
-                                    </div>
+                        <div className="space-y-3">
+                            {taxableIncome.breakdown && Object.entries(taxableIncome.breakdown).map(([key, value]) => (
+                                <div key={key} className="flex justify-between items-center py-1">
+                                    <span className="text-xs font-medium text-slate-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+                                    <span className="text-xs font-bold text-slate-700">₹{value.toLocaleString('en-IN')}</span>
                                 </div>
-                                <span className="font-bold text-[var(--s29-success)]">- ₹{steps.taxableIncome.deductions.toLocaleString('en-IN')}</span>
+                            ))}
+                            <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+                                <span className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Gross Total Income</span>
+                                <span className="text-xs font-black text-slate-900">₹{taxableIncome.grossTotalIncome.toLocaleString('en-IN')}</span>
                             </div>
-                            <p className="text-[var(--s29-text-muted)] text-xs italic">Tax-free investments and allowances</p>
-                        </div>
-
-                        <div className="flex justify-center my-2">
-                            <div className="h-4 border-l-2 border-dashed border-[var(--s29-border-light)]" />
-                        </div>
-
-                        <div className="bg-[var(--s29-primary-light)]/10 p-4 rounded-[var(--s29-radius-main)] border border-[var(--s29-primary-light)]">
-                            <div className="flex justify-between items-center">
-                                <span className="text-[var(--s29-primary)] text-sm font-bold uppercase tracking-wider">Taxable Income</span>
-                                <span className="font-bold text-[var(--s29-primary)] text-lg">₹{steps.taxableIncome.totalIncome.toLocaleString('en-IN')}</span>
+                            <div className="flex justify-between items-center py-1">
+                                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Total Deductions</span>
+                                <span className="text-xs font-black text-emerald-600">- ₹{taxableIncome.deductions.toLocaleString('en-IN')}</span>
                             </div>
+                            <div className="pt-4 border-t-2 border-slate-900 flex justify-between items-center">
+                                <span className="text-xs font-black text-slate-900 uppercase tracking-widest">NET TAXABLE INCOME</span>
+                                <span className="text-lg font-black text-slate-900">₹{taxableIncome.totalIncome.toLocaleString('en-IN')}</span>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Tax Calculation Logic */}
+                    <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-5">
+                            <Shield className="w-32 h-32" />
+                        </div>
+                        <h3 className="text-xs font-bold mb-6 flex items-center gap-2 relative z-10 text-gold-400 uppercase tracking-widest">
+                            <Info className="w-4 h-4" />
+                            Final Tax Summary
+                        </h3>
+
+                        <div className="space-y-4 relative z-10">
+                            <div className="flex justify-between items-center text-slate-400">
+                                <span className="text-xs font-medium">Income Tax (Calculated on Slabs)</span>
+                                <span className="text-xs font-bold text-white">₹{taxCalculation.slabTax.toLocaleString('en-IN')}</span>
+                            </div>
+                            {taxCalculation.rebate > 0 && (
+                                <div className="flex justify-between items-center text-emerald-400">
+                                    <span className="text-xs font-medium">Rebate (Sec 87A)</span>
+                                    <span className="text-xs font-bold">- ₹{taxCalculation.rebate.toLocaleString('en-IN')}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between items-center text-slate-400">
+                                <span className="text-xs font-medium">Health & Education Cess (4%)</span>
+                                <span className="text-xs font-bold text-white">₹{taxCalculation.cess.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div className="pt-6 border-t border-slate-700 flex justify-between items-center">
+                                <span className="text-xs font-bold text-white uppercase tracking-widest">Total Tax Liability</span>
+                                <span className="text-2xl font-black text-gold-500">₹{taxCalculation.totalTax.toLocaleString('en-IN')}</span>
+                            </div>
+                            {finalLiability.tdsDeducted > 0 && (
+                                <div className="flex justify-between items-center pt-2 text-emerald-300">
+                                    <span className="text-[10px] font-bold italic uppercase tracking-widest">Less: TDS / Advance Tax Paid</span>
+                                    <span className="text-xs font-bold">- ₹{finalLiability.tdsDeducted.toLocaleString('en-IN')}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
-                </SectionCard>
-
-                {/* Final Calculation Reassurance */}
-                <div className="my-8 space-y-4">
-                    <ReassuranceBanner
-                        type="safety"
-                        message={`We compared both regimes for you. The ${selectedRegime === 'new' ? 'New' : 'Old'} Regime saves you ₹${savings.toLocaleString('en-IN')} compared to the alternative.`}
-                    />
-                    {finalLiability.tdsDeducted > 0 && (
-                        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-[var(--s29-radius-main)] flex justify-between items-center">
-                            <div>
-                                <h4 className="text-emerald-900 font-semibold text-sm">TDS Already Paid</h4>
-                                <p className="text-emerald-700 text-xs">Tax deducted at source by your employers/banks.</p>
-                            </div>
-                            <span className="text-emerald-600 font-bold">₹{finalLiability.tdsDeducted.toLocaleString('en-IN')}</span>
-                        </div>
-                    )}
                 </div>
 
-                <div className="space-y-4">
-                    <button
-                        onClick={() => {
-                            if (finalLiability.refundOrPayable < 0) {
-                                navigate(`/filing/${filingId}/tax-payment`);
-                            } else {
-                                navigate(`/filing/${filingId}/readiness`);
-                            }
-                        }}
-                        className="w-full py-4 bg-[var(--s29-primary)] text-white rounded-[var(--s29-radius-main)] font-bold text-lg hover:bg-[var(--s29-primary-dark)] shadow-md transition-all flex items-center justify-center gap-2"
+                {/* Footer Actions */}
+                <div className="flex flex-col gap-3">
+                    <Button
+                        variant="primary"
+                        fullWidth
+                        onClick={() => navigate(`/filing/${filingId}/readiness`)}
                     >
-                        {finalLiability.refundOrPayable < 0 ? 'Pay Remaining Tax' : 'Final Review'}
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
+                        Proceed to Final Review
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
 
-                    <button
-                        onClick={() => navigate(`/filing/${filingId}/income-story`)}
-                        className="w-full text-[var(--s29-text-muted)] py-2 text-sm hover:text-[var(--s29-text-main)] transition-colors"
+                    <Button
+                        variant="ghost"
+                        fullWidth
+                        onClick={() => navigate(`/filing/${filingId}/overview`)}
                     >
-                        Wait, let me double check my income
-                    </button>
+                        Wait, I need to edit my income details
+                    </Button>
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-[var(--s29-border-light)]">
-                    <InlineHint icon={<Calculator className="w-4 h-4" />}>
-                        Calculations are based on Income Tax Act rules for Financial Year 2023-24 (AY 2024-25).
-                    </InlineHint>
+                <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-center gap-6 opacity-50">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <Shield className="w-3 h-3" /> SECURE FILING
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <CheckCircle2 className="w-3 h-3" /> 100% ACCURATE
+                    </div>
                 </div>
-            </div>
-        </div>
+            </PageContent>
+        </OrientationPage>
     );
 };
 

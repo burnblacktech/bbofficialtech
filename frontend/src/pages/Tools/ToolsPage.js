@@ -5,12 +5,15 @@
 
 import React, { useState } from 'react';
 import { Calculator, Calendar, BookOpen, TrendingUp } from 'lucide-react';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   InvestmentPlanner,
   TaxCalendar,
   DeadlineList,
-  KnowledgeBase,
-} from '../../features/tools';
+  KnowledgeBase } from '../../features/tools';
 
 const ToolsPage = () => {
   const [activeTool, setActiveTool] = useState('investment-planning');
@@ -20,20 +23,17 @@ const ToolsPage = () => {
       id: 'investment-planning',
       label: 'Investment Planning',
       icon: TrendingUp,
-      component: InvestmentPlanner,
-    },
+      component: InvestmentPlanner },
     {
       id: 'deadlines',
       label: 'Deadlines & Calendar',
       icon: Calendar,
-      component: TaxCalendar,
-    },
+      component: TaxCalendar },
     {
       id: 'knowledge-base',
       label: 'Knowledge Base',
       icon: BookOpen,
-      component: KnowledgeBase,
-    },
+      component: KnowledgeBase },
   ];
 
   const ActiveComponent = tools.find((tool) => tool.id === activeTool)?.component;
@@ -49,7 +49,7 @@ const ToolsPage = () => {
         </div>
 
         {/* Tool Navigation */}
-        <div className="bg-white rounded-xl shadow-elevation-1 border border-slate-200 mb-6">
+        <Card>
           <div className="border-b border-slate-200">
             <nav className="flex space-x-8 px-6">
               {tools.map((tool) => {
@@ -85,7 +85,7 @@ const ToolsPage = () => {
               />
             )}
           </div>
-        </div>
+                </Card>
       </div>
     </div>
   );

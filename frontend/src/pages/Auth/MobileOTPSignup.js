@@ -9,6 +9,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
 import { AlertCircle, CheckCircle, Phone, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const MobileOTPSignup = () => {
   const navigate = useNavigate();
@@ -26,14 +30,14 @@ const MobileOTPSignup = () => {
     fullName: '',
     email: '',
     pan: '',
-    acceptTerms: false,
-  });
+    acceptTerms: false });
 
   // Countdown timer for OTP resend
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
+
+  return () => clearTimeout(timer);
     }
   }, [countdown]);
 
@@ -146,14 +150,12 @@ const MobileOTPSignup = () => {
         email: formData.email.toLowerCase(),
         phone: formData.phone.replace(/\D/g, ''),
         pan: formData.pan.toUpperCase(),
-        authMethod: 'MOBILE_OTP',
-      });
+        authMethod: 'MOBILE_OTP' });
 
       if (response.success) {
         toast.success('Account created successfully!');
         navigate('/login', {
-          state: { message: 'Account created. Please login to continue.' },
-        });
+          state: { message: 'Account created. Please login to continue.' } });
       }
     } catch (error) {
       const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Signup failed. Please try again.';

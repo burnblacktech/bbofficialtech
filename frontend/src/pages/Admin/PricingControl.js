@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
 import {
   IndianRupee,
@@ -19,18 +19,22 @@ import {
   CheckCircle,
   AlertCircle,
   TrendingUp,
-  BarChart3,
+  BarChart3
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
 import { enterpriseLogger } from '../../utils/logger';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const PricingControl = () => {
   const [pricingData, setPricingData] = useState({
     endUserFilingFee: 0,
     expertReviewFee: 0,
     caSubscriptionPlans: [],
-    pricingHistory: [],
+    pricingHistory: []
   });
   const [loading, setLoading] = useState(true);
   const [editingPlan, setEditingPlan] = useState(null);
@@ -40,7 +44,7 @@ const PricingControl = () => {
     clientLimit: '',
     monthlyPrice: '',
     annualPrice: '',
-    features: [],
+    features: []
   });
 
   // Fetch pricing data from API
@@ -51,11 +55,11 @@ const PricingControl = () => {
         // Get pricing plans
         const plansResponse = await adminService.getPricingPlans();
         const plans = plansResponse.plans || plansResponse.data || [];
-        
+
         // Get settings for end user fees
         const settingsResponse = await adminService.getSettings();
         const defaultItrRates = settingsResponse.defaultItrRates || {};
-        
+
         // Transform API response to match component expectations
         const transformedData = {
           endUserFilingFee: defaultItrRates.itr_1 || 2500,
@@ -68,7 +72,7 @@ const PricingControl = () => {
             annualPrice: plan.annualPrice || (plan.price * 10) || 0,
             features: plan.features || plan.featureList || [],
             activeSubscribers: plan.activeSubscribers || plan.subscriberCount || 0,
-            revenue: plan.revenue || 0,
+            revenue: plan.revenue || 0
           })),
           pricingHistory: [], // Would need separate endpoint for history
         };
@@ -82,7 +86,7 @@ const PricingControl = () => {
           endUserFilingFee: 2500,
           expertReviewFee: 500,
           caSubscriptionPlans: [],
-          pricingHistory: [],
+          pricingHistory: []
         });
       } finally {
         setLoading(false);
@@ -96,14 +100,14 @@ const PricingControl = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 0
     }).format(amount);
   };
 
   const handleSaveEndUserFee = (newFee) => {
     setPricingData(prev => ({
       ...prev,
-      endUserFilingFee: newFee,
+      endUserFilingFee: newFee
     }));
     // API call to save pricing
     enterpriseLogger.info('Saving end user filing fee:', { fee: newFee });
@@ -112,7 +116,7 @@ const PricingControl = () => {
   const handleSaveExpertReviewFee = (newFee) => {
     setPricingData(prev => ({
       ...prev,
-      expertReviewFee: newFee,
+      expertReviewFee: newFee
     }));
     // API call to save pricing
     enterpriseLogger.info('Saving expert review fee:', { fee: newFee });
@@ -123,7 +127,7 @@ const PricingControl = () => {
       ...prev,
       caSubscriptionPlans: prev.caSubscriptionPlans.map(p =>
         p.id === plan.id ? plan : p,
-      ),
+      )
     }));
     setEditingPlan(null);
     // API call to save plan
@@ -138,12 +142,12 @@ const PricingControl = () => {
       monthlyPrice: parseInt(newPlan.monthlyPrice),
       annualPrice: parseInt(newPlan.annualPrice),
       activeSubscribers: 0,
-      revenue: 0,
+      revenue: 0
     };
 
     setPricingData(prev => ({
       ...prev,
-      caSubscriptionPlans: [...prev.caSubscriptionPlans, plan],
+      caSubscriptionPlans: [...prev.caSubscriptionPlans, plan]
     }));
 
     setNewPlan({
@@ -151,7 +155,7 @@ const PricingControl = () => {
       clientLimit: '',
       monthlyPrice: '',
       annualPrice: '',
-      features: [],
+      features: []
     });
     setShowAddPlan(false);
     // API call to add plan
@@ -161,13 +165,14 @@ const PricingControl = () => {
   const handleDeletePlan = (planId) => {
     setPricingData(prev => ({
       ...prev,
-      caSubscriptionPlans: prev.caSubscriptionPlans.filter(p => p.id !== planId),
+      caSubscriptionPlans: prev.caSubscriptionPlans.filter(p => p.id !== planId)
     }));
     // API call to delete plan
     enterpriseLogger.info('Deleting plan:', { planId });
   };
 
   if (loading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -209,7 +214,7 @@ const PricingControl = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Typography.Small className="font-medium text-neutral-700 mb-2">
+                <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                   ITR Filing Fee
                 </Typography.Small>
                 <div className="flex items-center space-x-3">
@@ -223,13 +228,13 @@ const PricingControl = () => {
                     INR per filing
                   </Typography.Small>
                 </div>
-                <Typography.Small className="text-neutral-500 mt-1">
+                <Typography.Small className="text-neutral-500 mt-1 block">
                   This is the fee charged to end users for ITR filing
                 </Typography.Small>
               </div>
 
               <div>
-                <Typography.Small className="font-medium text-neutral-700 mb-2">
+                <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                   Expert Review Fee
                 </Typography.Small>
                 <div className="flex items-center space-x-3">
@@ -243,7 +248,7 @@ const PricingControl = () => {
                     INR per review
                   </Typography.Small>
                 </div>
-                <Typography.Small className="text-neutral-500 mt-1">
+                <Typography.Small className="text-neutral-500 mt-1 block">
                   Additional fee for expert review service
                 </Typography.Small>
               </div>
@@ -281,7 +286,7 @@ const PricingControl = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <Typography.H4 className="mb-2">{plan.name}</Typography.H4>
-                      <div className="flex items-center space-x-4 text-body-regular text-neutral-600">
+                      <div className="flex items-center space-x-4 text-xs text-neutral-600">
                         <span>Up to {plan.clientLimit} clients</span>
                         <span>•</span>
                         <span>{plan.activeSubscribers} active subscribers</span>
@@ -309,7 +314,7 @@ const PricingControl = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-3">
+                      <Typography.Small className="font-medium text-neutral-700 mb-3 block">
                         Pricing
                       </Typography.Small>
                       <div className="space-y-2">
@@ -329,7 +334,7 @@ const PricingControl = () => {
                     </div>
 
                     <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-3">
+                      <Typography.Small className="font-medium text-neutral-700 mb-3 block">
                         Features
                       </Typography.Small>
                       <ul className="space-y-1">
@@ -363,23 +368,23 @@ const PricingControl = () => {
               {pricingData.pricingHistory.map((entry, index) => (
                 <div key={index} className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
                   <div>
-                    <Typography.Small className="font-medium text-neutral-700">
+                    <Typography.Small className="font-medium text-neutral-700 block">
                       {entry.date.toLocaleDateString()}
                     </Typography.Small>
-                    <Typography.Small className="text-neutral-500">
+                    <Typography.Small className="text-neutral-500 block">
                       Pricing update
                     </Typography.Small>
                   </div>
                   <div className="flex items-center space-x-6">
                     <div className="text-center">
-                      <Typography.Small className="text-neutral-500">ITR Filing Fee</Typography.Small>
-                      <Typography.Small className="font-medium">
+                      <Typography.Small className="text-neutral-500 block">ITR Filing Fee</Typography.Small>
+                      <Typography.Small className="font-medium block">
                         {formatCurrency(entry.endUserFee)}
                       </Typography.Small>
                     </div>
                     <div className="text-center">
-                      <Typography.Small className="text-neutral-500">Expert Review Fee</Typography.Small>
-                      <Typography.Small className="font-medium">
+                      <Typography.Small className="text-neutral-500 block">Expert Review Fee</Typography.Small>
+                      <Typography.Small className="font-medium block">
                         {formatCurrency(entry.expertReviewFee)}
                       </Typography.Small>
                     </div>
@@ -417,7 +422,7 @@ const PricingControl = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <Typography.Small className="font-medium text-neutral-700 mb-2">
+                    <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                       Plan Name
                     </Typography.Small>
                     <input
@@ -431,7 +436,7 @@ const PricingControl = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-2">
+                      <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                         Client Limit
                       </Typography.Small>
                       <input
@@ -443,7 +448,7 @@ const PricingControl = () => {
                       />
                     </div>
                     <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-2">
+                      <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                         Monthly Price (INR)
                       </Typography.Small>
                       <input
@@ -455,7 +460,7 @@ const PricingControl = () => {
                       />
                     </div>
                     <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-2">
+                      <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                         Annual Price (INR)
                       </Typography.Small>
                       <input
@@ -469,7 +474,7 @@ const PricingControl = () => {
                   </div>
 
                   <div>
-                    <Typography.Small className="font-medium text-neutral-700 mb-2">
+                    <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                       Features
                     </Typography.Small>
                     <textarea

@@ -7,6 +7,10 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   ArrowLeft,
   BarChart3,
@@ -29,8 +33,7 @@ import {
   Award,
   CheckCircle,
   AlertCircle,
-  Clock3,
-} from 'lucide-react';
+  Clock3 } from 'lucide-react';
 
 const CAAnalytics = () => {
   const { user } = useAuth();
@@ -63,7 +66,9 @@ const CAAnalytics = () => {
   };
 
   const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000000)
+
+  return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num?.toString() || '0';
   };
@@ -73,8 +78,7 @@ const CAAnalytics = () => {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount || 0);
+      maximumFractionDigits: 0 }).format(amount || 0);
   };
 
   if (isLoading) {

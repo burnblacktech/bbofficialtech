@@ -1,0 +1,205 @@
+/* =====================================================
+   BUTTON STYLES - DESIGN SYSTEM EXTENSION
+   Additional button variants and styles
+   ===================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--s29-font-sans);
+    font-weight: 600;
+    border-radius: var(--s29-radius-main);
+    transition: all var(--s29-duration-fast) var(--s29-ease-out);
+    cursor: pointer;
+    border: 2px solid transparent;
+    text-decoration: none;
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--s29-primary);
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Sizes */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: var(--s29-font-size-small);
+}
+
+.btn-md {
+    padding: 0.75rem 1.5rem;
+    font-size: var(--s29-font-size-body);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: var(--s29-font-size-body);
+}
+
+.btn-xl {
+    padding: 1.25rem 2.5rem;
+    font-size: var(--s29-font-size-h3);
+}
+
+/* Variants */
+.btn-success {
+    background-color: var(--s29-success);
+    color: white;
+    border-color: var(--s29-success);
+}
+
+.btn-success:hover:not(:disabled) {
+    background-color: #059669;
+    border-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-warning {
+    background-color: var(--s29-warning);
+    color: white;
+    border-color: var(--s29-warning);
+}
+
+.btn-warning:hover:not(:disabled) {
+    background-color: var(--s29-primary-dark);
+    border-color: var(--s29-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-info {
+    background-color: #3B82F6;
+    color: white;
+    border-color: #3B82F6;
+}
+
+.btn-info:hover:not(:disabled) {
+    background-color: #2563EB;
+    border-color: #2563EB;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-light {
+    background-color: white;
+    color: var(--s29-text-main);
+    border-color: var(--s29-border-main);
+}
+
+.btn-light:hover:not(:disabled) {
+    background-color: var(--s29-bg-hover);
+    border-color: var(--s29-border-main);
+}
+
+.btn-dark {
+    background-color: var(--s29-text-heading);
+    color: white;
+    border-color: var(--s29-text-heading);
+}
+
+.btn-dark:hover:not(:disabled) {
+    background-color: var(--s29-text-main);
+    border-color: var(--s29-text-main);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    color: var(--s29-primary);
+    border-color: var(--s29-primary);
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+    background-color: var(--s29-primary-light);
+    border-color: var(--s29-primary-dark);
+    color: var(--s29-primary-dark);
+}
+
+.btn-ghost {
+    background-color: transparent;
+    color: var(--s29-primary);
+    border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background-color: var(--s29-primary-light);
+    color: var(--s29-primary-dark);
+}
+
+.btn-link {
+    background-color: transparent;
+    color: var(--s29-primary);
+    border-color: transparent;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 0.5rem 1rem;
+}
+
+.btn-link:hover:not(:disabled) {
+    color: var(--s29-primary-dark);
+    text-decoration: underline;
+}
+
+/* States */
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-full-width {
+    width: 100%;
+}
+
+/* Icon styles */
+.btn-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-icon-left {
+    margin-right: 0.25rem;
+}
+
+.btn-icon-right {
+    margin-left: 0.25rem;
+}
+
+/* Loading spinner */
+.btn-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -92,6 +92,17 @@ const FamilyMember = sequelize.define('FamilyMember', {
     allowNull: true,
     field: 'pan_verified_at',
   },
+  dobVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+    field: 'dob_verified',
+  },
+  dobVerifiedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'dob_verified_at',
+  },
   firmId: {
     type: DataTypes.UUID,
     allowNull: true,
@@ -153,12 +164,12 @@ const FamilyMember = sequelize.define('FamilyMember', {
 });
 
 // Instance methods
-FamilyMember.prototype.getFullName = function() {
+FamilyMember.prototype.getFullName = function () {
   return `${this.firstName} ${this.lastName}`;
 };
 
-FamilyMember.prototype.getAge = function() {
-  if (!this.dateOfBirth) {return null;}
+FamilyMember.prototype.getAge = function () {
+  if (!this.dateOfBirth) { return null; }
   const today = new Date();
   const birthDate = new Date(this.dateOfBirth);
   let age = today.getFullYear() - birthDate.getFullYear();
@@ -171,30 +182,30 @@ FamilyMember.prototype.getAge = function() {
   return age;
 };
 
-FamilyMember.prototype.isSeniorCitizen = function() {
+FamilyMember.prototype.isSeniorCitizen = function () {
   const age = this.getAge();
   return age >= 60;
 };
 
-FamilyMember.prototype.isSuperSeniorCitizen = function() {
+FamilyMember.prototype.isSuperSeniorCitizen = function () {
   const age = this.getAge();
   return age >= 80;
 };
 
 // Class methods
-FamilyMember.getTaxpayerType = function(age) {
-  if (age >= 80) {return 'superSeniorCitizen';}
-  if (age >= 60) {return 'seniorCitizen';}
+FamilyMember.getTaxpayerType = function (age) {
+  if (age >= 80) { return 'superSeniorCitizen'; }
+  if (age >= 60) { return 'seniorCitizen'; }
   return 'individual';
 };
 
-FamilyMember.validatePAN = function(pan) {
+FamilyMember.validatePAN = function (pan) {
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
   return panRegex.test(pan);
 };
 
 // Instance methods for assignments
-FamilyMember.prototype.getAssignments = async function() {
+FamilyMember.prototype.getAssignments = async function () {
   try {
     const { Assignment } = require('./index');
     return await Assignment.findAll({
@@ -213,7 +224,7 @@ FamilyMember.prototype.getAssignments = async function() {
   }
 };
 
-FamilyMember.prototype.isAssignedTo = async function(userId) {
+FamilyMember.prototype.isAssignedTo = async function (userId) {
   try {
     const { Assignment } = require('./index');
     const assignment = await Assignment.findOne({
@@ -234,7 +245,7 @@ FamilyMember.prototype.isAssignedTo = async function(userId) {
   }
 };
 
-FamilyMember.prototype.getAssignedUsers = async function(role = null) {
+FamilyMember.prototype.getAssignedUsers = async function (role = null) {
   try {
     const { Assignment, User } = require('./index');
     const whereClause = {
@@ -244,7 +255,7 @@ FamilyMember.prototype.getAssignedUsers = async function(role = null) {
     if (role) {
       whereClause.role = role;
     }
-    
+
     const assignments = await Assignment.findAll({
       where: whereClause,
       include: [{
@@ -253,7 +264,7 @@ FamilyMember.prototype.getAssignedUsers = async function(role = null) {
         attributes: ['id', 'fullName', 'email', 'role'],
       }],
     });
-    
+
     return assignments.map(a => ({
       assignment: a,
       user: a.user,

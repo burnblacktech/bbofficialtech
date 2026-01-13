@@ -6,8 +6,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 import {
   CreditCard,
   Shield,
@@ -548,8 +552,8 @@ const Checkout = () => {
               <CardContent>
                 <div className="space-y-4">
                   {/* Plan Details */}
-                  <div>
-                    <Typography.Small className="font-medium text-neutral-700 mb-2">
+                  <div className="pb-4 border-b border-neutral-200">
+                    <Typography.Small className="font-medium text-neutral-700 mb-2 block">
                       {plan.name}
                     </Typography.Small>
                     <div className="space-y-1">
@@ -571,9 +575,9 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  {/* Billing */}
-                  <div className="border-t border-neutral-200 pt-4">
-                    <div className="flex items-center justify-between mb-2">
+                  {/* Billing Details */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
                       <Typography.Small className="text-neutral-600">
                         Billing Cycle
                       </Typography.Small>
@@ -581,7 +585,7 @@ const Checkout = () => {
                         {billingCycle === 'monthly' ? 'Monthly' : 'Annual'}
                       </Typography.Small>
                     </div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between">
                       <Typography.Small className="text-neutral-600">
                         Client Limit
                       </Typography.Small>
@@ -589,22 +593,24 @@ const Checkout = () => {
                         {plan.clientLimit} clients
                       </Typography.Small>
                     </div>
-                    <div className="border-t border-neutral-200 pt-2">
-                      <div className="flex items-center justify-between">
-                        <Typography.Small className="font-medium text-neutral-700">
-                          Total Amount
-                        </Typography.Small>
-                        <Typography.Small className="font-bold text-body-large">
-                          {formatCurrency(billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice)}
-                        </Typography.Small>
-                      </div>
+                  </div>
+
+                  {/* Total */}
+                  <div className="pt-4 border-t border-neutral-200">
+                    <div className="flex items-center justify-between">
+                      <Typography.Small className="font-medium text-neutral-700">
+                        Total Amount
+                      </Typography.Small>
+                      <Typography.Small className="font-bold text-body-large text-primary-600">
+                        {formatCurrency(billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice)}
+                      </Typography.Small>
                     </div>
                   </div>
 
                   {/* Security Notice */}
-                  <div className="flex items-start space-x-3 p-3 bg-primary-50 border border-primary-200 rounded-xl">
+                  <div className="flex items-start space-x-3 p-3 bg-primary-50 border border-primary-200 rounded-xl mt-4">
                     <Shield className="w-4 h-4 text-primary-600 mt-0.5" />
-                    <Typography.Small className="text-primary-700">
+                    <Typography.Small className="text-primary-700 text-xs">
                       Your payment is processed securely through Razorpay. We do not store your payment information.
                     </Typography.Small>
                   </div>

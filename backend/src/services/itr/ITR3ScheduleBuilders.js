@@ -317,6 +317,90 @@ class ITR3ScheduleBuilders {
     return {};
   }
 
+  /**
+   * Build Depreciation Schedule (from manual CA input)
+   * @param {object} sectionSnapshot - Section snapshot
+   * @returns {object|null} Depreciation schedule or null
+   */
+  buildDepreciationSchedule(sectionSnapshot) {
+    const business = sectionSnapshot.income?.business || {};
+    const depreciation = business.depreciation || {};
+    const blocks = depreciation.blocks || [];
+
+    if (blocks.length === 0) {
+      return null;
+    }
+
+    const depreciationBlocks = blocks.map(block => ({
+      BlockName: block.blockName || '',
+      OpeningWDV: this.formatAmount(block.openingWDV || 0),
+      Additions: this.formatAmount(block.additions || 0),
+      Deletions: this.formatAmount(block.deletions || 0),
+      DepreciationRate: parseFloat(block.depreciationRate || 0),
+      DepreciationAmount: this.formatAmount(block.depreciationAmount || 0),
+      ClosingWDV: this.formatAmount(block.closingWDV || 0),
+    }));
+
+    const totalDepreciation = blocks.reduce((sum, b) => sum + parseFloat(b.depreciationAmount || 0), 0);
+
+    return {
+      Blocks: depreciationBlocks,
+      TotalDepreciation: this.formatAmount(totalDepreciation),
+    };
+  }
+
+  /**
+   * Build Book Reconciliation (from manual CA input)
+   * @param {object} sectionSnapshot - Section snapshot
+   * @returns {object|null} Book reconciliation or null
+   */
+  buildBookReconciliation(sectionSnapshot) {
+    const business = sectionSnapshot.income?.business || {};
+    const reconciliation = business.reconciliation || {};
+
+    // Only return if reconciliation data exists
+    if (!reconciliation.netProfitAsPerBooks && !reconciliation.taxableIncome) {
+      return null;
+    }
+
+    return {
+      NetProfitAsPerBooks: this.formatAmount(reconciliation.netProfitAsPerBooks || 0),
+      DepreciationAsPerBooks: this.formatAmount(reconciliation.depreciationAsPerBooks || 0),
+      DepreciationAsPerITAct: this.formatAmount(reconciliation.depreciationAsPerITAct || 0),
+      Disallowances40: this.formatAmount(reconciliation.disallowances40 || 0),
+      Disallowances40A: this.formatAmount(reconciliation.disallowances40A || 0),
+      Disallowances43B: this.formatAmount(reconciliation.disallowances43B || 0),
+      OtherAdditions: this.formatAmount(reconciliation.otherAdditions || 0),
+      ExemptIncome: this.formatAmount(reconciliation.exemptIncome || 0),
+      OtherDeductions: this.formatAmount(reconciliation.otherDeductions || 0),
+      TaxableIncome: this.formatAmount(reconciliation.taxableIncome || 0),
+    };
+  }
+
+  /**
+   * Build Audit Information (from manual CA input)
+   * @param {object} sectionSnapshot - Section snapshot
+   * @returns {object|null} Audit information or null
+   */
+  buildAuditInformation(sectionSnapshot) {
+    const business = sectionSnapshot.income?.business || {};
+    const audit = business.audit || {};
+
+    if (!audit.isAuditApplicable) {
+      return null;
+    }
+
+    return {
+      IsAuditApplicable: audit.isAuditApplicable ? 'YES' : 'NO',
+      AuditReportForm: audit.auditReportForm || '3CD',
+      AuditorName: audit.auditorName || '',
+      AuditorPAN: audit.auditorPAN || '',
+      AuditorMembershipNumber: audit.auditorMembershipNumber || '',
+      AuditReportDate: audit.auditReportDate || '',
+      AuditReportNumber: audit.auditReportNumber || '',
+    };
+  }
+
   // =====================================================
   // HELPER METHODS
   // =====================================================

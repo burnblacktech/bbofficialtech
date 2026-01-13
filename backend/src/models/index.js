@@ -41,6 +41,9 @@ const Coupon = require('./Coupon');
 const UserSegment = require('./UserSegment');
 const PlatformSettings = require('./PlatformSettings');
 const ERISubmissionAttempt = require('./ERISubmissionAttempt');
+const FinancialSnapshot = require('./FinancialSnapshot');
+const FinancialMilestone = require('./FinancialMilestone');
+const UserInsight = require('./UserInsight');
 
 // Define associations after all models are loaded
 require('./associations');
@@ -85,4 +88,7 @@ module.exports = {
   UserSegment,
   PlatformSettings,
   ERISubmissionAttempt,
+  FinancialSnapshot,
+  FinancialMilestone,
+  UserInsight,
 };

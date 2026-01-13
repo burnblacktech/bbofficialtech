@@ -21,6 +21,10 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -108,7 +112,7 @@ const ITR3ProfitLoss = () => {
             }, { headers });
 
             toast.success('Profit & Loss saved.');
-            navigate(`/filing/${filingId}/income/business/bs`);
+            navigate(`/filing/${filingId}/business/bs`);
         } catch (err) {
             toast.error('Failed to save P&L.');
         } finally {
@@ -124,7 +128,7 @@ const ITR3ProfitLoss = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <button
-                        onClick={() => navigate(`/filing/${filingId}/income/business`)}
+                        onClick={() => navigate(`/filing/${filingId}/business-profession`)}
                         className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />
@@ -136,7 +140,7 @@ const ITR3ProfitLoss = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden mb-8">
+                <Card>
                     {/* Status Bar */}
                     <div className="bg-slate-900 p-8 text-white flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -246,7 +250,7 @@ const ITR3ProfitLoss = () => {
                             </div>
                         )}
                     </div>
-                </div>
+                </Card>
 
                 {/* Professional Support Guardrail */}
                 <div className="mx-auto max-w-2xl mb-8 p-8 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200 text-center">
@@ -276,7 +280,7 @@ const ITR3ProfitLoss = () => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -10,6 +10,10 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -123,7 +127,7 @@ const AddCapitalGain = () => {
 
     const handleBack = () => {
         if (step === 1) {
-            navigate(`/filing/${filingId}/income/capital-gains`);
+            navigate(`/filing/${filingId}/capital-gains-story`);
         } else {
             setStep(step - 1);
         }
@@ -161,7 +165,7 @@ const AddCapitalGain = () => {
             }, { headers });
 
             toast.success('Sale added successfully');
-            navigate(`/filing/${filingId}/income/capital-gains`);
+            navigate(`/filing/${filingId}/capital-gains-story`);
         } catch (error) {
             toast.error('Failed to save sale');
         }
@@ -203,7 +207,7 @@ const AddCapitalGain = () => {
 
                 {/* Step 1: Asset Details */}
                 {step === 1 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <Card>
                         <h2 className="text-xl font-semibold text-slate-900 mb-4">
                             Stocks or mutual funds
                         </h2>
@@ -238,18 +242,21 @@ const AddCapitalGain = () => {
                                 />
                             </div>
 
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <p className="text-sm text-blue-800">
-                                    ℹ️ We'll calculate if this is short-term or long-term based on how long you held it.
-                                </p>
-                            </div>
                         </div>
-                    </div>
+
+                        <button
+                            onClick={handleNext}
+                            className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                        >
+                            Next: Purchase Details
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </Card>
                 )}
 
                 {/* Step 2: Purchase Details */}
                 {step === 2 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <Card>
                         <h2 className="text-xl font-semibold text-slate-900 mb-4">
                             Purchase details
                         </h2>
@@ -313,12 +320,20 @@ const AddCapitalGain = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
+
+                        <button
+                            onClick={handleNext}
+                            className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                        >
+                            Next: Sale Details
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </Card>
                 )}
 
                 {/* Step 3: Sale Details */}
                 {step === 3 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <Card>
                         <h2 className="text-xl font-semibold text-slate-900 mb-4">
                             Sale details
                         </h2>
@@ -383,12 +398,20 @@ const AddCapitalGain = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
+
+                        <button
+                            onClick={handleNext}
+                            className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                        >
+                            Calculate Tax
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </Card>
                 )}
 
                 {/* Step 4: Tax Impact */}
                 {step === 4 && taxCalculation && (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <Card>
                         <h2 className="text-xl font-semibold text-slate-900 mb-4">
                             Your tax on this sale
                         </h2>
@@ -453,7 +476,7 @@ const AddCapitalGain = () => {
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Navigation */}

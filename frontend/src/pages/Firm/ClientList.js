@@ -21,6 +21,8 @@ import ClientAssignmentModal from '../../components/Firm/ClientAssignmentModal';
 import toast from 'react-hot-toast';
 import apiClient from '../../services/core/APIClient';
 import { enterpriseLogger } from '../../utils/logger';
+import { OrientationPage } from '../../components/templates';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const ClientList = () => {
   const navigate = useNavigate();
@@ -59,6 +61,7 @@ const ClientList = () => {
   });
 
   if (loading) {
+
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <Loader className="w-8 h-8 animate-spin text-blue-600" />

@@ -19,6 +19,10 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { getApiBaseUrl } from '../../utils/apiConfig';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -93,7 +97,7 @@ const ITR3BusinessProfile = () => {
             }, { headers });
 
             toast.success('Business profile saved.');
-            navigate(`/filing/${filingId}/income/business/pl`);
+            navigate(`/filing/${filingId}/business/pl`);
         } catch (err) {
             toast.error('Failed to save profile.');
         } finally {
@@ -121,7 +125,7 @@ const ITR3BusinessProfile = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+                <Card>
                     <div className="bg-slate-900 p-8 text-white">
                         <div className="flex items-center gap-4 mb-2">
                             <div className="p-3 bg-white/10 rounded-xl">
@@ -262,13 +266,13 @@ const ITR3BusinessProfile = () => {
                             <Save className="w-5 h-5" />
                         </button>
                     </div>
-                </div>
+                </Card>
 
                 <p className="text-center mt-8 text-slate-400 text-xs">
                     Guidance Note: ITR-3 requires <strong>one heavy section per screen</strong> to ensure legal accuracy.
                 </p>
             </div>
-        </div>
+        </div >
     );
 };
 

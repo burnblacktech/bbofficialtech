@@ -4,6 +4,9 @@ import { authService } from '../../services';
 import { useSearchParams, Link } from 'react-router-dom';
 import { AlertCircle, Clock, Eye, EyeOff } from 'lucide-react';
 import { sanitizeEmail, sanitizePassword } from '../../utils/sanitize';
+import { OrientationPage } from '../../components/templates';
+import { Button } from '../../components/UI';
+import { typography, components } from '../../styles/designTokens';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +20,7 @@ const LoginPage = () => {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
 
-  // Check for error messages from URL params (e.g., OAuth errors)
+  // Check for error messages from URL params
   useEffect(() => {
     const errorParam = searchParams.get('error');
     const messageParam = searchParams.get('message');
@@ -31,7 +34,7 @@ const LoginPage = () => {
     }
   }, [searchParams]);
 
-  // Load remember me preference from localStorage
+  // Load remember me preference
   useEffect(() => {
     const savedEmail = localStorage.getItem('rememberedEmail');
     if (savedEmail) {
@@ -40,7 +43,6 @@ const LoginPage = () => {
     }
   }, []);
 
-  // Validate email format
   const validateEmail = (emailValue) => {
     if (!emailValue) {
       setEmailError('Email is required');
@@ -55,7 +57,6 @@ const LoginPage = () => {
     return true;
   };
 
-  // Validate password
   const validatePassword = (passwordValue) => {
     if (!passwordValue) {
       setPasswordError('Password is required');
@@ -69,11 +70,10 @@ const LoginPage = () => {
     return true;
   };
 
-  // Handle email change with sanitization and validation
   const handleEmailChange = (e) => {
     const sanitized = sanitizeEmail(e.target.value);
     setEmail(sanitized);
-    setError(''); // Clear general error when user types
+    setError('');
     if (sanitized) {
       validateEmail(sanitized);
     } else {
@@ -81,11 +81,10 @@ const LoginPage = () => {
     }
   };
 
-  // Handle password change with sanitization and validation
   const handlePasswordChange = (e) => {
     const sanitized = sanitizePassword(e.target.value);
     setPassword(sanitized);
-    setError(''); // Clear general error when user types
+    setError('');
     if (sanitized) {
       validatePassword(sanitized);
     } else {
@@ -95,12 +94,10 @@ const LoginPage = () => {
 
   const handleManualLogin = async (e) => {
     e.preventDefault();
-    // Clear previous errors
     setError('');
     setEmailError('');
     setPasswordError('');
 
-    // Validate inputs
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
 
@@ -111,7 +108,6 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Save email to localStorage if remember me is checked
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
       } else {
@@ -120,7 +116,7 @@ const LoginPage = () => {
 
       const result = await login({ email, password });
       if (!result.success) {
-        setError('Email or password doesn’t match. Please try again.');
+        setError('Email or password doesn\'t match.Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -135,21 +131,17 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-heading-1 font-extrabold text-black">
-            Sign in to your tax account
-          </h2>
-          <p className="mt-2 text-center text-body-md text-slate-600">
-            Your data is encrypted and never shared without your permission.
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleManualLogin}>
+    <OrientationPage
+      title="Sign in to your tax account"
+      subtitle="Your data is encrypted and never shared without your permission."
+    >
+      <div className="max-w-md mx-auto">
+        <form className="space-y-6" onSubmit={handleManualLogin}>
+          {/* Error Banner */}
           {error && (
             <div className={`px-4 py-3 rounded-xl flex items-start space-x-3 ${error.includes('rate limit') || error.includes('too many requests')
-                ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
-                : 'bg-error-50 border border-red-200 text-error-600'
+              ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
+              : 'bg-red-50 border border-red-200 text-red-600'
               }`}>
               {error.includes('rate limit') || error.includes('too many requests') ? (
                 <Clock className="h-5 w-5 mt-0.5 flex-shrink-0" />
@@ -157,46 +149,52 @@ const LoginPage = () => {
                 <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
               )}
               <div className="flex-1">
-                <p className="font-medium">{error.includes('rate limit') || error.includes('too many requests') ? 'Rate Limit Exceeded' : 'Authentication Error'}</p>
-                <p className="text-body-regular mt-1">{error}</p>
+                <p className="font-medium">
+                  {error.includes('rate limit') || error.includes('too many requests')
+                    ? 'Rate Limit Exceeded'
+                    : 'Authentication Error'}
+                </p>
+                <p className="text-sm mt-1">{error}</p>
               </div>
             </div>
           )}
-          <div className="rounded-xl shadow-elevation-1 -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${emailError ? 'border-error-300' : 'border-slate-300'
-                  } placeholder-gray-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
-                placeholder="Email address"
-                value={email}
-                onChange={handleEmailChange}
-                onBlur={() => validateEmail(email)}
-              />
-              {emailError && (
-                <p className="mt-1 text-body-regular text-error-600">{emailError}</p>
-              )}
-            </div>
+
+          {/* Email Input */}
+          <div>
+            <label htmlFor="email" className={typography.label}>
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              className={`${components.input} ${emailError ? 'border-red-300' : ''}`}
+              placeholder="you@example.com"
+              value={email}
+              onChange={handleEmailChange}
+              onBlur={() => validateEmail(email)}
+            />
+            {emailError && (
+              <p className="mt-1 text-sm text-red-600">{emailError}</p>
+            )}
+          </div>
+
+          {/* Password Input */}
+          <div>
+            <label htmlFor="password" className={typography.label}>
+              Password
+            </label>
             <div className="relative">
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
               <input
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border ${passwordError ? 'border-error-300' : 'border-slate-300'
-                  } placeholder-gray-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-gold-500 focus:border-gold-500 focus:z-10 sm:text-sm`}
-                placeholder="Password"
+                className={`${components.input} pr-10 ${passwordError ? 'border-red-300' : ''}`}
+                placeholder="••••••••"
                 value={password}
                 onChange={handlePasswordChange}
                 onBlur={() => validatePassword(password)}
@@ -213,12 +211,13 @@ const LoginPage = () => {
                   <Eye className="h-5 w-5 text-slate-400" />
                 )}
               </button>
-              {passwordError && (
-                <p className="mt-1 text-body-regular text-error-600">{passwordError}</p>
-              )}
             </div>
+            {passwordError && (
+              <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+            )}
           </div>
 
+          {/* Remember Me */}
           <div className="flex items-center">
             <input
               id="remember-me"
@@ -228,70 +227,57 @@ const LoginPage = () => {
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             />
-            <label htmlFor="remember-me" className="ml-2 block text-body-regular text-slate-900">
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-900">
               Remember me
             </label>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-body-regular font-medium rounded-xl text-white bg-gold-500 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 disabled:opacity-50"
-            >
-              {isLoading ? 'Continuing...' : 'Continue'}
-            </button>
-          </div>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            disabled={isLoading}
+          >
+            {isLoading ? 'Continuing...' : 'Continue'}
+          </Button>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-300" />
-              </div>
-              <div className="relative flex justify-center text-body-regular">
-                <span className="px-2 bg-slate-50 text-slate-500">Or continue with</span>
-              </div>
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-300" />
             </div>
-
-            <div className="mt-6">
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                className="w-full inline-flex justify-center py-2 px-4 border border-slate-300 rounded-xl shadow-elevation-1 bg-white text-body-regular font-medium text-slate-500 hover:bg-slate-50"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                <span className="ml-2">Continue with Google</span>
-              </button>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-slate-50 text-slate-500">Or continue with</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-body-regular">
-              <Link to="/forgot-password" className="font-medium text-gold-600 hover:text-gold-500">
-                Forgot password?
-              </Link>
-            </div>
+          {/* Google Login */}
+          <Button
+            type="button"
+            variant="secondary"
+            fullWidth
+            onClick={handleGoogleLogin}
+          >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            Continue with Google
+          </Button>
+
+          {/* Forgot Password Link */}
+          <div className="flex items-center justify-center">
+            <Link to="/forgot-password" className="text-sm font-medium text-gold-600 hover:text-gold-500">
+              Forgot password?
+            </Link>
           </div>
 
+          {/* Sign Up Link */}
           <div className="text-center">
-            <p className="text-body-sm text-slate-600">
+            <p className="text-sm text-slate-600">
               Don't have an account?{' '}
               <Link to="/signup" className="font-medium text-gold-600 hover:text-gold-500">
                 Sign up
@@ -300,7 +286,7 @@ const LoginPage = () => {
           </div>
         </form>
       </div>
-    </div>
+    </OrientationPage>
   );
 };
 

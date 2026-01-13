@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardHeader, CardTitle, CardContent, Typography } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, FadeInUp } from '../../components/DesignSystem/Animations';
 import {
   Users,
@@ -21,10 +21,14 @@ import {
   XCircle,
   Edit,
   Trash2,
-  Eye,
+  Eye
 } from 'lucide-react';
 import adminService from '../../services/api/adminService';
 import toast from 'react-hot-toast';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -46,12 +50,12 @@ const UserManagement = () => {
           limit: pagination.limit,
           ...(filterRole !== 'all' && { role: filterRole }),
           ...(filterStatus !== 'all' && { status: filterStatus }),
-          ...(searchTerm && { search: searchTerm }),
+          ...(searchTerm && { search: searchTerm })
         };
 
         const response = await adminService.getUsers(params);
         const usersData = response.users || response.data || [];
-        
+
         // Transform API response to match component expectations
         const transformedUsers = usersData.map(user => ({
           id: user.id,
@@ -67,13 +71,13 @@ const UserManagement = () => {
           totalRevenue: user.totalRevenue || 0,
           isVerified: user.emailVerified || user.panVerified || false,
           firmName: user.caFirm?.name || user.firmName,
-          subscriptionPlan: user.subscriptionPlan,
+          subscriptionPlan: user.subscriptionPlan
         }));
 
         setUsers(transformedUsers);
         setPagination(prev => ({
           ...prev,
-          total: response.total || response.count || transformedUsers.length,
+          total: response.total || response.count || transformedUsers.length
         }));
       } catch (error) {
         console.error('Failed to fetch users:', error);
@@ -89,8 +93,8 @@ const UserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.pan.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.pan.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
 
@@ -119,7 +123,7 @@ const UserManagement = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 0
     }).format(amount);
   };
 
@@ -127,7 +131,7 @@ const UserManagement = () => {
     return new Intl.DateTimeFormat('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
+      day: 'numeric'
     }).format(date);
   };
 
@@ -159,6 +163,7 @@ const UserManagement = () => {
   };
 
   if (loading) {
+
     return (
       <PageTransition className="min-h-screen bg-neutral-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -273,13 +278,13 @@ const UserManagement = () => {
                             </span>
                           </div>
                           <div>
-                            <Typography.Small className="font-medium text-neutral-700">
+                            <Typography.Small className="font-medium text-neutral-700 block">
                               {user.name}
                             </Typography.Small>
-                            <Typography.Small className="text-neutral-500">
+                            <Typography.Small className="text-neutral-500 block">
                               {user.email}
                             </Typography.Small>
-                            <Typography.Small className="text-neutral-500">
+                            <Typography.Small className="text-neutral-500 block">
                               PAN: {user.pan}
                             </Typography.Small>
                           </div>
@@ -290,7 +295,7 @@ const UserManagement = () => {
                           {user.role === 'ca_firm_admin' ? 'CA Firm' : user.role}
                         </span>
                         {user.firmName && (
-                          <Typography.Small className="text-neutral-500 mt-1">
+                          <Typography.Small className="text-neutral-500 mt-1 block">
                             {user.firmName}
                           </Typography.Small>
                         )}
@@ -349,159 +354,157 @@ const UserManagement = () => {
                               onClick={() => handleUserAction('activate', user)}
                               className="p-1 text-neutral-500 hover:text-success-600 transition-colors"
                               title="Activate User"
-                            >
-                              <CheckCircle className="w-4 h-4" />
                             </button>
                           )}
-                        </div>
-                      </td>
+                      </div>
+                    </td>
                     </motion.tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* User Details Modal */}
-        {showUserModal && selectedUser && (
+      {/* User Details Modal */}
+      {showUserModal && selectedUser && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setShowUserModal(false)}
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-            onClick={() => setShowUserModal(false)}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-elevation-4 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <Typography.H3>User Details</Typography.H3>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <Typography.H3>User Details</Typography.H3>
+                <button
+                  onClick={() => setShowUserModal(false)}
+                  className="p-1 text-neutral-500 hover:text-neutral-700 transition-colors"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <div>
+                  <Typography.Small className="font-medium text-neutral-700 mb-3 block">
+                    Basic Information
+                  </Typography.Small>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Name</Typography.Small>
+                      <Typography.Small className="font-medium block">{selectedUser.name}</Typography.Small>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Email</Typography.Small>
+                      <Typography.Small className="font-medium block">{selectedUser.email}</Typography.Small>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Phone</Typography.Small>
+                      <Typography.Small className="font-medium block">{selectedUser.phone}</Typography.Small>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">PAN</Typography.Small>
+                      <Typography.Small className="font-medium block">{selectedUser.pan}</Typography.Small>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Account Information */}
+                <div>
+                  <Typography.Small className="font-medium text-neutral-700 mb-3 block">
+                    Account Information
+                  </Typography.Small>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Role</Typography.Small>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(selectedUser.role)}`}>
+                        {selectedUser.role === 'ca_firm_admin' ? 'CA Firm' : selectedUser.role}
+                      </span>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Status</Typography.Small>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedUser.status)}`}>
+                        {selectedUser.status}
+                      </span>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Created</Typography.Small>
+                      <Typography.Small className="font-medium block">{formatDate(selectedUser.createdAt)}</Typography.Small>
+                    </div>
+                    <div>
+                      <Typography.Small className="text-neutral-500 block">Last Login</Typography.Small>
+                      <Typography.Small className="font-medium block">
+                        {selectedUser.lastLogin ? formatDate(selectedUser.lastLogin) : 'Never'}
+                      </Typography.Small>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CA Firm Information */}
+                {selectedUser.role === 'ca_firm_admin' && (
+                  <div>
+                    <Typography.Small className="font-medium text-neutral-700 mb-3 block">
+                      CA Firm Information
+                    </Typography.Small>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Typography.Small className="text-neutral-500 block">Firm Name</Typography.Small>
+                        <Typography.Small className="font-medium block">{selectedUser.firmName}</Typography.Small>
+                      </div>
+                      <div>
+                        <Typography.Small className="text-neutral-500 block">Subscription Plan</Typography.Small>
+                        <Typography.Small className="font-medium block">
+                          {selectedUser.subscriptionPlan || 'No plan selected'}
+                        </Typography.Small>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Suspension Information */}
+                {selectedUser.status === 'suspended' && selectedUser.suspensionReason && (
+                  <div>
+                    <Typography.Small className="font-medium text-neutral-700 mb-3 block">
+                      Suspension Information
+                    </Typography.Small>
+                    <div className="p-3 bg-error-50 border border-error-200 rounded-xl">
+                      <Typography.Small className="text-error-700 block">
+                        {selectedUser.suspensionReason}
+                      </Typography.Small>
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center justify-end space-x-3 pt-4 border-t">
                   <button
                     onClick={() => setShowUserModal(false)}
-                    className="p-1 text-neutral-500 hover:text-neutral-700 transition-colors"
+                    className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
                   >
-                    <XCircle className="w-5 h-5" />
+                    Close
+                  </button>
+                  <button
+                    onClick={() => handleUserAction('edit', selectedUser)}
+                    className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors"
+                  >
+                    Edit User
                   </button>
                 </div>
-
-                <div className="space-y-6">
-                  {/* Basic Information */}
-                  <div>
-                    <Typography.Small className="font-medium text-neutral-700 mb-3">
-                      Basic Information
-                    </Typography.Small>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Typography.Small className="text-neutral-500">Name</Typography.Small>
-                        <Typography.Small className="font-medium">{selectedUser.name}</Typography.Small>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-neutral-500">Email</Typography.Small>
-                        <Typography.Small className="font-medium">{selectedUser.email}</Typography.Small>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-neutral-500">Phone</Typography.Small>
-                        <Typography.Small className="font-medium">{selectedUser.phone}</Typography.Small>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-neutral-500">PAN</Typography.Small>
-                        <Typography.Small className="font-medium">{selectedUser.pan}</Typography.Small>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Account Information */}
-                  <div>
-                    <Typography.Small className="font-medium text-neutral-700 mb-3">
-                      Account Information
-                    </Typography.Small>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Typography.Small className="text-neutral-500">Role</Typography.Small>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(selectedUser.role)}`}>
-                          {selectedUser.role === 'ca_firm_admin' ? 'CA Firm' : selectedUser.role}
-                        </span>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-neutral-500">Status</Typography.Small>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedUser.status)}`}>
-                          {selectedUser.status}
-                        </span>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-neutral-500">Created</Typography.Small>
-                        <Typography.Small className="font-medium">{formatDate(selectedUser.createdAt)}</Typography.Small>
-                      </div>
-                      <div>
-                        <Typography.Small className="text-neutral-500">Last Login</Typography.Small>
-                        <Typography.Small className="font-medium">
-                          {selectedUser.lastLogin ? formatDate(selectedUser.lastLogin) : 'Never'}
-                        </Typography.Small>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CA Firm Information */}
-                  {selectedUser.role === 'ca_firm_admin' && (
-                    <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-3">
-                        CA Firm Information
-                      </Typography.Small>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Typography.Small className="text-neutral-500">Firm Name</Typography.Small>
-                          <Typography.Small className="font-medium">{selectedUser.firmName}</Typography.Small>
-                        </div>
-                        <div>
-                          <Typography.Small className="text-neutral-500">Subscription Plan</Typography.Small>
-                          <Typography.Small className="font-medium">
-                            {selectedUser.subscriptionPlan || 'No plan selected'}
-                          </Typography.Small>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Suspension Information */}
-                  {selectedUser.status === 'suspended' && selectedUser.suspensionReason && (
-                    <div>
-                      <Typography.Small className="font-medium text-neutral-700 mb-3">
-                        Suspension Information
-                      </Typography.Small>
-                      <div className="p-3 bg-error-50 border border-error-200 rounded-xl">
-                        <Typography.Small className="text-error-700">
-                          {selectedUser.suspensionReason}
-                        </Typography.Small>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Actions */}
-                  <div className="flex items-center justify-end space-x-3 pt-4 border-t">
-                    <button
-                      onClick={() => setShowUserModal(false)}
-                      className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
-                    >
-                      Close
-                    </button>
-                    <button
-                      onClick={() => handleUserAction('edit', selectedUser)}
-                      className="px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors"
-                    >
-                      Edit User
-                    </button>
-                  </div>
-                </div>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
-        )}
-      </div>
-    </PageTransition>
+        </motion.div>
+      )}
+    </div>
+    </PageTransition >
   );
 };
 

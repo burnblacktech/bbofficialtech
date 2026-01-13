@@ -60,8 +60,9 @@ const ITRFiling = sequelize.define('ITRFiling', {
       'draft',
       'review_pending',
       'reviewed',
-      'approved',
+      'approved_by_ca',
       'submitted_to_eri',
+      'eri_in_progress',
       'eri_success',
       'eri_failed'
     ),

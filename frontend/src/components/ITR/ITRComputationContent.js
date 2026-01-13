@@ -69,7 +69,7 @@ const ITRComputationContent = ({
                 toast.success('All auto-filled values accepted');
               }}
               onOverrideAll={() => {
-                toast.info('You can now manually edit all fields');
+                toast('You can now manually edit all fields', { icon: 'ℹ️' });
                 setAutoFilledFields({});
               }}
             />
@@ -109,7 +109,7 @@ const ITRComputationContent = ({
             <ScheduleFA
               key={activeSection.id}
               filingId={filingId || draftId}
-              onUpdate={() => {}}
+              onUpdate={() => { }}
             />
           ) : activeSection?.id === 'taxOptimizer' ? (
             <TaxOptimizer
@@ -130,7 +130,7 @@ const ITRComputationContent = ({
               icon={Icon}
               description={activeSection?.description}
               isExpanded={true}
-              onToggle={() => {}}
+              onToggle={() => { }}
               formData={formData[activeSection?.id] || {}}
               fullFormData={formData || {}}
               readOnly={isReadOnly}
@@ -166,7 +166,7 @@ const ITRComputationContent = ({
               toast.success('All auto-filled values accepted');
             }}
             onOverrideAll={() => {
-              toast.info('You can now manually edit all fields');
+              toast('You can now manually edit all fields', { icon: 'ℹ️' });
               setAutoFilledFields({});
             }}
           />
@@ -200,7 +200,7 @@ const ITRComputationContent = ({
             {section.id === 'scheduleFA' ? (
               <ScheduleFA
                 filingId={filingId || draftId}
-                onUpdate={() => {}}
+                onUpdate={() => { }}
               />
             ) : section.id === 'taxOptimizer' ? (
               <TaxOptimizer
@@ -219,7 +219,7 @@ const ITRComputationContent = ({
                 icon={sectionIcon}
                 description={section.description}
                 isExpanded={true}
-                onToggle={() => {}}
+                onToggle={() => { }}
                 formData={formData[section.id] || {}}
                 fullFormData={formData || {}}
                 readOnly={isReadOnly}

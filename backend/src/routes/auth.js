@@ -587,7 +587,23 @@ router.put('/profile', authenticateToken, async (req, res) => {
     // Update user fields
     if (fullName) { user.fullName = fullName; }
     if (phone) { user.phone = phone; }
-    if (dateOfBirth !== undefined) { user.dateOfBirth = dateOfBirth; }
+    if (dateOfBirth !== undefined) {
+      if (dateOfBirth === '' || dateOfBirth === null) {
+        user.dateOfBirth = null;
+      } else {
+        const parsedDate = new Date(dateOfBirth);
+        if (isNaN(parsedDate.getTime()) || dateOfBirth === 'Invalid date') {
+          // Skip invalid date or handle as needed
+          // For now, let's keep the existing DOB if the new one is invalid
+          enterpriseLogger.warn('Attempted to update profile with invalid date', {
+            userId,
+            dateOfBirth,
+          });
+        } else {
+          user.dateOfBirth = dateOfBirth;
+        }
+      }
+    }
     if (gender !== undefined) {
       // Validate gender value
       if (gender && !['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
@@ -624,10 +640,81 @@ router.put('/profile', authenticateToken, async (req, res) => {
         metadata: user.metadata || {},
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
+        panNumber: user.panNumber,
+        panVerified: user.panVerified,
       },
     });
   } catch (error) {
-    enterpriseLogger.error('Profile update failed', {
+    enterpriseLogger.error('Update profile error', {
+      error: error.message,
+      userId: req.user?.userId,
+    });
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * @route PATCH /api/auth/pan
+ * @desc Update user's PAN number (after verification)
+ * @access Private
+ */
+router.patch('/pan', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { panNumber, dateOfBirth } = req.body;
+
+    if (!panNumber || panNumber.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        error: 'Valid 10-character PAN number is required',
+      });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    // Update PAN and mark as verified
+    user.panNumber = panNumber.toUpperCase();
+    user.panVerified = true;
+    user.panVerifiedAt = new Date();
+
+    // If dateOfBirth is provided, update and verify it as well
+    // (Verification usually happens via SurePass PAN-comprehensive API which returns DOB)
+    if (dateOfBirth) {
+      user.dateOfBirth = dateOfBirth;
+      user.dobVerified = true;
+      user.dobVerifiedAt = new Date();
+    }
+
+    await user.save();
+
+    enterpriseLogger.info('User PAN and identity updated', {
+      userId,
+      pan: user.panNumber,
+      dobUpdated: !!dateOfBirth,
+    });
+
+    res.json({
+      success: true,
+      message: 'PAN and Identity updated successfully',
+      user: {
+        id: user.id,
+        panNumber: user.panNumber,
+        panVerified: user.panVerified,
+        dateOfBirth: user.dateOfBirth,
+        dobVerified: user.dobVerified,
+      },
+    });
+  } catch (error) {
+    enterpriseLogger.error('Update PAN error', {
       error: error.message,
       userId: req.user?.userId,
     });
@@ -651,6 +738,100 @@ router.post('/logout', authenticateToken, (req, res) => {
   res.json({
     message: 'Logout successful',
   });
+});
+
+// =====================================================
+// PASSWORD MANAGEMENT ROUTES
+// =====================================================
+
+/**
+ * @route PUT /api/auth/set-password
+ * @desc Set or update user password
+ * @access Private
+ */
+router.put('/set-password', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    // Validate new password
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 8 characters long',
+      });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    // If user already has a password, verify current password
+    if (user.passwordHash) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          error: 'Current password is required',
+        });
+      }
+
+      const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isValidPassword) {
+        enterpriseLogger.warn('Password update failed: Invalid current password', {
+          userId,
+          email: user.email,
+        });
+        return res.status(401).json({
+          success: false,
+          error: 'Current password is incorrect',
+        });
+      }
+    }
+
+    // Check if user had password before (for OAuth users setting password first time)
+    const hadPasswordBefore = !!user.passwordHash;
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+    user.passwordHash = newPasswordHash;
+
+    // If user was OAuth-only, update auth provider to local
+    if (user.authProvider === 'google' && !hadPasswordBefore) {
+      user.authProvider = 'local';
+    }
+
+    await user.save();
+
+    enterpriseLogger.info('User password updated', {
+      userId,
+      email: user.email,
+      hadPreviousPassword: hadPasswordBefore,
+    });
+
+    res.json({
+      success: true,
+      message: 'Password updated successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        hasPassword: true,
+        authProvider: user.authProvider,
+      },
+    });
+  } catch (error) {
+    enterpriseLogger.error('Set password error', {
+      error: error.message,
+      userId: req.user?.userId,
+    });
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
 });
 
 // =====================================================

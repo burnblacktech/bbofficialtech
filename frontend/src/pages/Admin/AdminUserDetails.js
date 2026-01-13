@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardContent, Typography, Button } from '../../components/DesignSystem/DesignSystem';
+import { CardHeaderTitleContent, Typography } from '../../components/DesignSystem/DesignSystem';
 import { PageTransition, StaggerContainer, StaggerItem } from '../../components/DesignSystem/Animations';
 import {
   useAdminUserDetails,
@@ -57,6 +57,10 @@ import {
   Tag,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DataEntryPage } from '../../components/templates';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const AdminUserDetails = () => {
   const { userId } = useParams();
@@ -259,7 +263,7 @@ const AdminUserDetails = () => {
               </div>
               <Typography.H3 className="mb-2">User Not Found</Typography.H3>
               <Typography.Body className="text-neutral-600 mb-6">
-                The user you're looking for doesn't exist or you don't have access to it.
+                The user you're looking for doesn\'t exist or you don't have access to it.
               </Typography.Body>
               <Button onClick={() => navigate('/admin/users')}>
                 Back to Users
@@ -387,11 +391,10 @@ const AdminUserDetails = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                  }`}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === tab.id
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                    }`}
                 >
                   <tab.icon className="h-4 w-4" />
                   <span>{tab.name}</span>
@@ -748,12 +751,11 @@ const AdminUserDetails = () => {
                       </div>
 
                       <div className="flex items-center space-x-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          filing.status === 'completed' ? 'bg-success-100 text-success-700' :
+                        <span className={`px-2 py-1 text-xs rounded-full ${filing.status === 'completed' ? 'bg-success-100 text-success-700' :
                           filing.status === 'in_progress' ? 'bg-info-100 text-info-700' :
-                          filing.status === 'pending' ? 'bg-warning-100 text-warning-700' :
-                          'bg-neutral-100 text-neutral-700'
-                        }`}>
+                            filing.status === 'pending' ? 'bg-warning-100 text-warning-700' :
+                              'bg-neutral-100 text-neutral-700'
+                          }`}>
                           {filing.status?.replace(/_/g, ' ')}
                         </span>
                         <Button
@@ -929,9 +931,8 @@ const AdminUserDetails = () => {
                   {notes.map((note) => (
                     <div
                       key={note.id}
-                      className={`p-4 rounded-xl border ${
-                        note.isPrivate ? 'bg-warning-50 border-warning-200' : 'bg-neutral-50 border-neutral-200'
-                      }`}
+                      className={`p-4 rounded-xl border ${note.isPrivate ? 'bg-warning-50 border-warning-200' : 'bg-neutral-50 border-neutral-200'
+                        }`}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">

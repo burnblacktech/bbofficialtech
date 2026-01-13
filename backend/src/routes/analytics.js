@@ -1,28 +1,35 @@
+// =====================================================
+// ANALYTICS ROUTES
+// Financial storytelling and insights API endpoints
+// =====================================================
+
 const express = require('express');
 const router = express.Router();
-const enterpriseLogger = require('../utils/logger');
+const AnalyticsController = require('../controllers/AnalyticsController');
+const { authenticateToken } = require('../middleware/auth');
 
-/**
- * Capture analytics events from frontend
- * POST /api/analytics/events
- */
-router.post('/events', async (req, res) => {
-    try {
-        const { event, properties, context } = req.body;
+// All analytics routes require authentication
+router.use(authenticateToken);
 
-        // Log event for internal monitoring
-        enterpriseLogger.info(`[Analytics] ${event}`, {
-            properties,
-            context,
-            userId: req.user?.userId || 'anonymous'
-        });
+// Financial Story
+router.get('/financial-story', AnalyticsController.getFinancialStory);
 
-        res.status(200).json({ success: true });
-    } catch (error) {
-        // Silently fail to not block UI
-        enterpriseLogger.error('Analytics error', error);
-        res.status(200).json({ success: true });
-    }
-});
+// Timeline
+router.get('/timeline', AnalyticsController.getTimeline);
+
+// Year Comparison
+router.get('/year-comparison', AnalyticsController.getYearComparison);
+
+// Insights
+router.get('/insights/:assessmentYear', AnalyticsController.getInsights);
+
+// Growth Metrics
+router.get('/growth-metrics', AnalyticsController.getGrowthMetrics);
+
+// Create Snapshot (called after filing computation)
+router.post('/snapshot/:filingId', AnalyticsController.createSnapshot);
+
+// Track Event (Frontend Analytics)
+router.post('/events', AnalyticsController.trackEvent);
 
 module.exports = router;

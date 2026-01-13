@@ -216,6 +216,39 @@ class TaxRegimeCalculatorV2 {
             }
         }
 
+        // 44AE: Goods Carriage
+        if (income.goodsCarriage) {
+            const goodsCarriage = income.goodsCarriage;
+            const vehicles = goodsCarriage.vehicles || [];
+
+            if (vehicles.length > 0) {
+                // Calculate total presumptive income from all vehicles
+                const totalPresumptiveIncome = vehicles.reduce((sum, vehicle) => {
+                    const monthsOwned = parseFloat(vehicle.monthsOwned || 12);
+                    const presumptiveIncome = parseFloat(vehicle.presumptiveIncome || 0);
+
+                    // If presumptive income not provided, calculate it
+                    if (presumptiveIncome > 0) {
+                        return sum + presumptiveIncome;
+                    } else {
+                        // Default: ₹7,500 per vehicle per month
+                        return sum + (7500 * monthsOwned);
+                    }
+                }, 0);
+
+                if (totalPresumptiveIncome > 0) {
+                    entryList.push({
+                        section: '44AE',
+                        businessName: 'Goods Carriage',
+                        grossReceipts: 0, // Not applicable for 44AE
+                        presumptiveRate: 0, // Fixed rate per vehicle
+                        declaredIncome: totalPresumptiveIncome,
+                        vehicleCount: vehicles.length
+                    });
+                }
+            }
+        }
+
         return entryList.length > 0 ? entryList : null;
     }
 

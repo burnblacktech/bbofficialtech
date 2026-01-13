@@ -19,11 +19,14 @@ import {
   Search,
   Filter,
   IndianRupee,
-  TrendingUp,
-} from 'lucide-react';
+  TrendingUp } from 'lucide-react';
 import itrService from '../../services/api/itrService';
 import FilingStatusBadge from '../../components/ITR/FilingStatusBadge';
 import InvoiceBadge from '../../components/ITR/InvoiceBadge';
+import { OrientationPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const CAStaffDashboard = () => {
   const { user } = useAuth();
@@ -38,8 +41,7 @@ const CAStaffDashboard = () => {
     totalRevenue: 0,
     paidRevenue: 0,
     pendingInvoices: 0,
-    overdueInvoices: 0,
-  });
+    overdueInvoices: 0 });
 
   useEffect(() => {
     loadDashboardData();
@@ -66,8 +68,7 @@ const CAStaffDashboard = () => {
           totalRevenue: 0,
           paidRevenue: 0,
           pendingInvoices: 0,
-          overdueInvoices: 0,
-        };
+          overdueInvoices: 0 };
 
         filings.forEach(filing => {
           if (filing.invoice) {
@@ -153,7 +154,8 @@ const CAStaffDashboard = () => {
   );
 
   if (loading) {
-    return (
+
+  return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>

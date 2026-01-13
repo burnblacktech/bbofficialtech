@@ -110,13 +110,11 @@ router.get('/status', (req, res) => {
 // Auth routes with strict rate limiting
 router.use('/auth', strictLimiter, require('./auth'));
 
-// =====================================================
-// ITR ROUTES
-// =====================================================
+// Public routes for landing page
+router.use('/public', generalLimiter, require('./public'));
 
 // ITR routes with general rate limiting
-// TODO: Create itr.js route file or remove this line
-// router.use('/itr', generalLimiter, require('./itr'));
+router.use('/itr', generalLimiter, require('./itr'));
 
 
 // =====================================================

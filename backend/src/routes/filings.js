@@ -327,6 +327,10 @@ router.get('/:filingId/overview', authenticateToken, async (req, res, next) => {
         const snapshot = await FilingSnapshotService.getLatestSnapshot(filingId);
         const applicability = ITRApplicabilityService.evaluate(filing);
 
+        // Extract selected income sources from jsonPayload
+        const jsonPayload = filing.jsonPayload || {};
+        const selectedIncomeSources = jsonPayload.selectedIncomeSources || [];
+
         res.status(200).json({
             success: true,
             data: {
@@ -335,7 +339,8 @@ router.get('/:filingId/overview', authenticateToken, async (req, res, next) => {
                     taxpayerPan: FinancialStoryService.maskPan(filing.taxpayerPan),
                     itrType: applicability.recommendedITR,
                     eligibleITRs: applicability.eligibleITRs,
-                    residencyStatus: filing.isResident ? 'resident' : 'non-resident'
+                    residencyStatus: filing.isResident ? 'resident' : 'non-resident',
+                    selectedIncomeSources: selectedIncomeSources
                 },
                 incomeSummary: FinancialStoryService.extractIncomeSummary(snapshot?.jsonPayload || {}),
                 eligibilityBadge: {
@@ -344,7 +349,8 @@ router.get('/:filingId/overview', authenticateToken, async (req, res, next) => {
                     caRequired: applicability.caRequired,
                     message: `${applicability.safeToSubmit ? 'Eligible for' : 'Incomplete for'} ${applicability.recommendedITR}`
                 },
-                missingBlocks: applicability.missingBlocks
+                missingBlocks: applicability.missingBlocks,
+                jsonPayload: filing.jsonPayload
             }
         });
     } catch (error) {

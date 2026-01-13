@@ -269,6 +269,39 @@ class TaxRegimeAssembly {
     static _roundToNearest10(amount) {
         return Math.round(amount / 10) * 10;
     }
+
+    /**
+     * Compute tax with agricultural income rate impact
+     * Agricultural income is exempt but affects the rate of tax
+     * 
+     * Method: Tax on (Total + Agri) - Tax on Agri
+     * This ensures agricultural income pushes total income into higher slabs
+     * but the agricultural portion itself is not taxed
+     * 
+     * @param {number} totalIncome - Total taxable income (excluding agricultural)
+     * @param {number} agriculturalIncome - Agricultural income (exempt)
+     * @param {string} regime - 'old' or 'new'
+     * @param {string} taxpayerAge - Age category
+     * @returns {number} Tax amount considering agricultural income rate impact
+     */
+    static computeWithAgriculturalIncome(totalIncome, agriculturalIncome, regime = 'old', taxpayerAge = 'below60') {
+        if (!agriculturalIncome || agriculturalIncome <= 0) {
+            // No agricultural income, compute tax normally
+            return this._computeSlabTax(totalIncome, regime, taxpayerAge);
+        }
+
+        // Step 1: Compute tax on (Total income + Agricultural income)
+        const combinedIncome = totalIncome + agriculturalIncome;
+        const taxOnCombined = this._computeSlabTax(combinedIncome, regime, taxpayerAge);
+
+        // Step 2: Compute tax on Agricultural income alone
+        const taxOnAgri = this._computeSlabTax(agriculturalIncome, regime, taxpayerAge);
+
+        // Step 3: Difference is the tax on total income with rate impact
+        const taxWithRateImpact = Math.max(0, taxOnCombined - taxOnAgri);
+
+        return taxWithRateImpact;
+    }
 }
 
 module.exports = TaxRegimeAssembly;

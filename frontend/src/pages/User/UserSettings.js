@@ -8,6 +8,10 @@ import SectionCard from '../../components/common/SectionCard';
 import { User, Bell, Shield, Key, Mail, Eye, EyeOff, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { DataEntryPage } from '../../components/templates';
+import { Card } from '../../components/UI/Card';
+import { Button } from '../../components/UI/Button';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const UserSettings = () => {
   const { user, updateUser } = useAuth();
@@ -20,15 +24,13 @@ const UserSettings = () => {
   const [profileData, setProfileData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
-    phone: user?.phone || '',
-  });
+    phone: user?.phone || '' });
 
   // Password change
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: '',
-  });
+    confirmPassword: '' });
 
   // Notification preferences
   const [notificationSettings, setNotificationSettings] = useState({
@@ -36,8 +38,7 @@ const UserSettings = () => {
     pushNotifications: true,
     filingReminders: true,
     documentUploads: true,
-    systemUpdates: false,
-  });
+    systemUpdates: false });
 
   useEffect(() => {
     loadUserSettings();
@@ -59,7 +60,7 @@ const UserSettings = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await api.put('/users/profile', profileData);
+      const response = await api.put('/auth/profile', profileData);
       if (response.data.success) {
         updateUser(response.data.data.user);
         toast.success('Profile updated successfully');
@@ -86,15 +87,13 @@ const UserSettings = () => {
       setLoading(true);
       const response = await api.put('/users/change-password', {
         currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      });
+        newPassword: passwordData.newPassword });
       if (response.data.success) {
         toast.success('Password changed successfully');
         setPasswordData({
           currentPassword: '',
           newPassword: '',
-          confirmPassword: '',
-        });
+          confirmPassword: '' });
       }
     } catch (error) {
       console.error('Error changing password:', error);
@@ -108,8 +107,7 @@ const UserSettings = () => {
     try {
       setLoading(true);
       const response = await api.put('/users/settings', {
-        notifications: notificationSettings,
-      });
+        notifications: notificationSettings });
       if (response.data.success) {
         toast.success('Notification settings updated');
       }
@@ -120,7 +118,6 @@ const UserSettings = () => {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-[var(--s29-bg-main)] py-8 px-4">
       <div className="max-w-4xl mx-auto">
@@ -144,8 +141,8 @@ const UserSettings = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-bold capitalize whitespace-nowrap border-b-2 transition-all ${activeTab === tab.id
-                    ? 'border-[var(--s29-primary)] text-[var(--s29-primary)] bg-[var(--s29-primary-light)]/5'
-                    : 'border-transparent text-[var(--s29-text-muted)] hover:text-[var(--s29-text-main)] hover:bg-[var(--s29-bg-alt)]'
+                  ? 'border-[var(--s29-primary)] text-[var(--s29-primary)] bg-[var(--s29-primary-light)]/5'
+                  : 'border-transparent text-[var(--s29-text-muted)] hover:text-[var(--s29-text-main)] hover:bg-[var(--s29-bg-alt)]'
                   }`}
               >
                 <tab.icon className="w-4 h-4" />

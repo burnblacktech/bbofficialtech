@@ -32,9 +32,11 @@ import {
   LineChart,
   Building2,
   Eye,
-  Download,
+  Download
 } from 'lucide-react';
 import api from '../../services/api';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from '../../components/UI';
+import { typography, spacing, components, layout } from '../../styles/designTokens';
 
 const PlatformSystemHealth = () => {
   const { user } = useAuth();
@@ -98,6 +100,7 @@ const PlatformSystemHealth = () => {
       const interval = setInterval(() => {
         refetch();
       }, 30000);
+
       return () => clearInterval(interval);
     }
   }, [autoRefresh, refetch]);
@@ -189,14 +192,12 @@ const PlatformSystemHealth = () => {
                 <label className="text-label-lg text-slate-600">Auto Refresh</label>
                 <button
                   onClick={() => setAutoRefresh(!autoRefresh)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    autoRefresh ? 'bg-gold-500' : 'bg-slate-200'
-                  }`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoRefresh ? 'bg-gold-500' : 'bg-slate-200'
+                    }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      autoRefresh ? 'translate-x-6' : 'translate-x-1'
-                    }`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoRefresh ? 'translate-x-6' : 'translate-x-1'
+                      }`}
                   />
                 </button>
               </div>
@@ -240,11 +241,10 @@ const PlatformSystemHealth = () => {
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-label-lg transition-colors ${
-                  selectedTab === tab.id
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-label-lg transition-colors ${selectedTab === tab.id
                     ? 'border-gold-500 text-gold-600'
                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
+                  }`}
               >
                 <tab.icon className="h-4 w-4" />
                 <span>{tab.name}</span>
@@ -464,11 +464,10 @@ const PlatformSystemHealth = () => {
               ) : (
                 <div className="space-y-3">
                   {alerts.slice(0, 5).map((alert) => (
-                    <div key={alert.id} className={`p-4 border rounded-xl ${
-                      alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
-                      alert.severity === 'warning' ? 'bg-gold-50 border-gold-200' :
-                      'bg-info-50 border-info-100'
-                    }`}>
+                    <div key={alert.id} className={`p-4 border rounded-xl ${alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
+                        alert.severity === 'warning' ? 'bg-gold-50 border-gold-200' :
+                          'bg-info-50 border-info-100'
+                      }`}>
                       <div className="flex items-start space-x-3">
                         <AlertTriangle className="h-4 w-4 text-error-500" />
                         <div className="flex-1">
@@ -509,11 +508,10 @@ const PlatformSystemHealth = () => {
                   {services.map((service) => (
                     <div key={service.id} className="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition-colors">
                       <div className="flex items-center space-x-3 mb-3">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                          service.status === 'running' ? 'bg-success-50' :
-                          service.status === 'stopped' ? 'bg-error-50' :
-                          'bg-warning-50'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${service.status === 'running' ? 'bg-success-50' :
+                            service.status === 'stopped' ? 'bg-error-50' :
+                              'bg-warning-50'
+                          }`}>
                           <div className={getServiceColor(service.status)}>
                             {getServiceIcon(service)}
                           </div>
@@ -527,11 +525,10 @@ const PlatformSystemHealth = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between text-body-regular">
                           <span className="text-slate-600">Status</span>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            service.status === 'running' ? 'bg-success-50 text-success-600' :
-                            service.status === 'stopped' ? 'bg-error-50 text-error-600' :
-                            'bg-warning-50 text-warning-600'
-                          }`}>
+                          <span className={`px-2 py-1 text-xs rounded-full ${service.status === 'running' ? 'bg-success-50 text-success-600' :
+                              service.status === 'stopped' ? 'bg-error-50 text-error-600' :
+                                'bg-warning-50 text-warning-600'
+                            }`}>
                             {service.status}
                           </span>
                         </div>
@@ -609,11 +606,10 @@ const PlatformSystemHealth = () => {
               ) : (
                 <div className="space-y-3">
                   {alerts.map((alert) => (
-                    <div key={alert.id} className={`p-4 border rounded-xl ${
-                      alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
-                      alert.severity === 'warning' ? 'bg-gold-50 border-gold-200' :
-                      'bg-info-50 border-info-100'
-                    }`}>
+                    <div key={alert.id} className={`p-4 border rounded-xl ${alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
+                        alert.severity === 'warning' ? 'bg-gold-50 border-gold-200' :
+                          'bg-info-50 border-info-100'
+                      }`}>
                       <div className="flex items-start space-x-3">
                         <AlertTriangle className="h-5 w-5 text-error-500 mt-0.5" />
                         <div className="flex-1">

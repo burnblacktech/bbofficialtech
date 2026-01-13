@@ -5,7 +5,7 @@
 // =====================================================
 
 import { Suspense, lazy, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
 
 // Core components (keep synchronous - needed immediately)
 import Layout from './components/Layout';
@@ -14,6 +14,7 @@ import { ErrorBoundary as DesignSystemErrorBoundary } from './components/DesignS
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteLoader from './components/UI/RouteLoader';
 import { ITRProvider } from './contexts/ITRContext';
+import { DocumentProvider } from './contexts/DocumentContext';
 import { FILING_ROUTES, getAllFilingRoutes } from './routes/filingRoutes';
 
 // Performance monitoring
@@ -96,7 +97,12 @@ const CAInbox = lazy(() => import('./pages/CA/CAInbox'));
 const CAFilingReview = lazy(() => import('./pages/CA/CAFilingReview'));
 
 // User pages
-const UserDashboardV2 = lazy(() => import('./pages/Dashboard/UserDashboardV2'));
+// User pages
+const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
+// const UserDashboardV2 = lazy(() => import('./pages/Dashboard/UserDashboardV2')); // Legacy to remove
+// const FinancialStoryDashboard = lazy(() => import('./pages/Dashboard/FinancialStoryDashboard')); // Legacy to remove
+// const CurrentYearStory = lazy(() => import('./pages/Dashboard/CurrentYearStory')); // Legacy to remove
+// const MultiYearComparison = lazy(() => import('./pages/Dashboard/MultiYearComparison')); // Legacy to remove
 
 // Financial Story UX screens
 const FilingOverview = lazy(() => import('./pages/Filing/FilingOverview'));
@@ -141,7 +147,7 @@ const UserSettings = lazy(() => import('./pages/User/UserSettings'));
 const ProfileSettings = lazy(() => import('./pages/User/ProfileSettings'));
 const Preferences = lazy(() => import('./pages/Settings/Preferences'));
 const NotificationsCenter = lazy(() => import('./pages/Notifications/NotificationsCenter'));
-const Documents = lazy(() => import('./pages/User/Documents'));
+const Documents = lazy(() => import('./pages/Documents/DocumentUploadPage'));
 const SessionManagement = lazy(() => import('./pages/User/SessionManagement'));
 
 // Help pages
@@ -366,11 +372,17 @@ const AppContent = () => {
             element={
               <Layout>
                 <Suspense fallback={<RouteLoader message="Loading dashboard..." />}>
-                  <UserDashboardV2 />
+                  <UserDashboard />
                 </Suspense>
               </Layout>
             }
           />
+
+          {/* Legacy Financial Story Routes - Removed
+          <Route path="/financial-story" ... />
+          <Route path="/financial-story/:year" ... />
+          <Route path="/financial-comparison" ... />
+          */}
 
           {/* Admin Routes */}
           <Route
@@ -771,205 +783,21 @@ const AppContent = () => {
           />
 
           {/* Centralized Filing Routes */}
-          {getAllFilingRoutes().map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={
-                <Layout>
-                  <Suspense fallback={<RouteLoader message={`Loading ${route.title || 'filing'}...`} />}>
-                    <route.component />
-                  </Suspense>
-                </Layout>
-              }
-            />
-          ))}
-
-          <Route
-            path="/filing-history"
-            element={
-              <Layout>
-                <ITRProvider>
-                  <Suspense fallback={<RouteLoader message="Loading filing history..." />}>
-                    <FilingHistory />
-                  </Suspense>
-                </ITRProvider>
-              </Layout>
-            }
-          />
-
-          {/* Financial Story UX Routes */}
-          <Route
-            path="/filing/:filingId/overview"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading filing overview..." />}>
-                  <FilingOverview />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/tax-payment"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Securing tax payment..." />}>
-                  <TaxPaymentGate />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/income-story"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading income story..." />}>
-                  <IncomeStory />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/tax-breakdown"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading tax breakdown..." />}>
-                  <TaxBreakdown />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/readiness"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading readiness check..." />}>
-                  <FilingReadiness />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          {/* S25: ERI Submission Outcome UX */}
-          <Route
-            path="/filing/:filingId/submission-status"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading submission status..." />}>
-                  <SubmissionStatus />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          {/* Income Story - Section Overview */}
-          <Route
-            path="/filing/:filingId/income-story"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading income story..." />}>
-                  <IncomeStory />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          {/* Income Section Details Routes */}
-          <Route
-            path="/filing/:filingId/income/salary"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading salary details..." />}>
-                  <SalaryDetails />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          <Route
-            path="/filing/:filingId/income/presumptive"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading business details..." />}>
-                  <PresumptiveIncomeStory />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/income/presumptive/add"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Opening presumptive form..." />}>
-                  <AddPresumptiveIncome />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/income/capital-gains"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading capital gains..." />}>
-                  <CapitalGainsStory />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          <Route
-            path="/filing/:filingId/income/capital-gains/add"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Adding capital gain..." />}>
-                  <AddCapitalGain />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          <Route
-            path="/filing/:filingId/income/other"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading other income..." />}>
-                  <OtherIncomeDetails />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          <Route
-            path="/filing/:filingId/income/house-property"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading house property..." />}>
-                  <HousePropertyStory />
-                </Suspense>
-              </Layout>
-            }
-          />
-          <Route
-            path="/filing/:filingId/income/house-property/add"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Adding house property..." />}>
-                  <AddHouseProperty />
-                </Suspense>
-              </Layout>
-            }
-          />
-
-          <Route
-            path="/filing/:filingId/income/property-sale"
-            element={
-              <Layout>
-                <Suspense fallback={<RouteLoader message="Loading property sale details..." />}>
-                  <PropertySaleDetails />
-                </Suspense>
-              </Layout>
-            }
-          />
+          <Route element={<ITRProvider><Outlet /></ITRProvider>}>
+            {getAllFilingRoutes().map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Suspense fallback={<RouteLoader message={`Loading ${route.title || 'filing'}...`} />}>
+                      <route.component />
+                    </Suspense>
+                  </Layout>
+                }
+              />
+            ))}
+          </Route>
 
           <Route
             path="/itr/refund-tracking"
@@ -1297,7 +1125,9 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <AppContent />
+      <DocumentProvider>
+        <AppContent />
+      </DocumentProvider>
     </ErrorBoundary>
   );
 };
