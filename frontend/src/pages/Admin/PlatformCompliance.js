@@ -30,7 +30,7 @@ import {
   IndianRupee,
   Globe,
   Lock,
-  Unlock
+  Unlock,
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -88,7 +88,7 @@ const PlatformCompliance = () => {
     mutationFn: async ({ complianceId, status, notes }) => {
       const response = await api.put(`/api/platform-admin/compliance/${complianceId}/status`, {
         status,
-        notes
+        notes,
       });
       return response.data;
     },
@@ -99,7 +99,7 @@ const PlatformCompliance = () => {
     },
     onError: (error) => {
       toast.error(`Failed to update compliance: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = (complianceId, newStatus, notes = '') => {
@@ -228,8 +228,8 @@ const PlatformCompliance = () => {
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-label-lg transition-colors ${selectedTab === tab.id
-                    ? 'border-gold-500 text-gold-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'border-gold-500 text-gold-600'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                   }`}
               >
                 <tab.icon className="h-4 w-4" />
@@ -536,9 +536,9 @@ const PlatformCompliance = () => {
                 <div className="space-y-3">
                   {alerts.map((alert) => (
                     <div key={alert.id} className={`p-4 border rounded-xl ${alert.severity === 'critical' ? 'bg-error-50 border-error-200' :
-                        alert.severity === 'high' ? 'bg-gold-50 border-gold-200' :
-                          alert.severity === 'medium' ? 'bg-warning-50 border-warning-200' :
-                            'bg-info-50 border-info-200'
+                      alert.severity === 'high' ? 'bg-gold-50 border-gold-200' :
+                        alert.severity === 'medium' ? 'bg-warning-50 border-warning-200' :
+                          'bg-info-50 border-info-200'
                       }`}>
                       <div className="flex items-start space-x-3">
                         {getSeverityIcon(alert.severity)}
