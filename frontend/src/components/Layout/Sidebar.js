@@ -7,13 +7,13 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  LayoutDashboard,
-  FileText,
-  Folder,
-  Users,
-  History,
-  User,
-  HelpCircle,
+  Home,
+  DollarSign,
+  Target,
+  FolderOpen,
+  CheckCircle,
+  Lightbulb,
+  Settings,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -23,26 +23,49 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose, isOpenMobile }) => 
   const location = useLocation();
   const { user } = useAuth();
 
+  // Optimized 7-item navigation (PRD v3.0)
   const navigationItems = [
     {
-      name: 'Dashboard',
+      name: 'Home',
       path: '/dashboard',
-      icon: LayoutDashboard,
+      icon: Home,
+      description: 'Financial Story Dashboard',
     },
     {
-      name: 'My Filings',
-      path: '/filing/history',
-      icon: FileText,
+      name: 'Income',
+      path: '/income',
+      icon: DollarSign,
+      description: 'Track all income sources',
+    },
+    {
+      name: 'Tax Planner',
+      path: '/tax-planner',
+      icon: Target,
+      description: 'Year-round optimization',
     },
     {
       name: 'Documents',
       path: '/documents',
-      icon: Folder,
+      icon: FolderOpen,
+      description: 'Upload & manage',
+    },
+    {
+      name: 'File ITR',
+      path: '/filing/streamlined',
+      icon: CheckCircle,
+      description: 'Streamlined 3-step filing',
+    },
+    {
+      name: 'Insights',
+      path: '/insights',
+      icon: Lightbulb,
+      description: 'Reports & recommendations',
     },
     {
       name: 'Settings',
-      path: '/profile',
-      icon: User,
+      path: '/settings',
+      icon: Settings,
+      description: 'Profile & preferences',
     },
   ];
 

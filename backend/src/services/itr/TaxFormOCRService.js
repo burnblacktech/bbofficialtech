@@ -62,15 +62,57 @@ class TaxFormOCRService {
     }
 
     parseForm16(text) {
-        const normalizedText = text.toUpperCase();
+        const normalizedText = text.toUpperCase().replace(/\s+/g, ' ');
+
         return {
             employer: {
-                name: this.extractPattern(normalizedText, [/(?:EMPLOYER|NAME OF EMPLOYER)(?:\s+NAME)?[\s:]+([A-Z \t]{3,50})/i]),
-                tan: this.extractPattern(normalizedText, [/(?:TAN|TAX DEDUCTION ACCOUNT NUMBER)[\s:]*([A-Z]{4}\d{5}[A-Z])/i]),
+                name: this.extractPattern(normalizedText, [
+                    /(?:NAME AND ADDRESS OF THE EMPLOYER|NAME OF THE EMPLOYER) ([A-Z0-9\s,.&]{3,100})/i,
+                    /(?:EMPLOYER NAME) ([A-Z0-9\s,.&]{3,100})/i
+                ]),
+                tan: this.extractPattern(normalizedText, [
+                    /(?:TAN OF THE DEDUCTOR|TAN) ([A-Z]{4}\d{5}[A-Z])/i,
+                    /([A-Z]{4}\d{5}[A-Z])/
+                ]),
+                pan: this.extractPattern(normalizedText, [
+                    /(?:PAN OF THE DEDUCTOR|EMPLOYER PAN) ([A-Z]{5}\d{4}[A-Z])/i
+                ])
+            },
+            employee: {
+                pan: this.extractPattern(normalizedText, [
+                    /(?:PAN OF THE EMPLOYEE|PAN OF THE DEDUCTEE) ([A-Z]{5}\d{4}[A-Z])/i,
+                    /(?:PAN) ([A-Z]{5}\d{4}[A-Z])/i
+                ])
             },
             financial: {
-                grossSalary: this.parseAmount(this.extractPattern(normalizedText, [/(?:GROSS SALARY|TOTAL EARNINGS)[\s:]*[₹]?[\s]*(\d{1,3}(?:[,\s]\d{2,3})*)/i])),
-                tds: this.parseAmount(this.extractPattern(normalizedText, [/(?:TDS|TAX DEDUCTED)[\s:]*[₹]?[\s]*(\d{1,3}(?:[,\s]\d{2,3})*)/i])),
+                assessmentYear: this.extractPattern(normalizedText, [
+                    /(?:ASSESSMENT YEAR) (\d{4}-\d{2})/i,
+                    /(\d{4}-\d{2})/
+                ]),
+                grossSalary: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:GROSS SALARY|TOTAL AMOUNT OF SALARY) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i,
+                    /(?:SECTION 17\(1\)) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ])),
+                standardDeduction: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:STANDARD DEDUCTION UNDER SECTION 16\(IA\)) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ])),
+                deductions80C: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:SECTION 80C) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i,
+                    /(?:LIFE INSURANCE PREMIUM|EPF|PPF|ELSS) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ])),
+                deductions80D: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:SECTION 80D|HEALTH INSURANCE) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ])),
+                totalTaxableIncome: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:TOTAL INCOME) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ])),
+                totalTax: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:TAX ON TOTAL INCOME) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ])),
+                tds: this.parseAmount(this.extractPattern(normalizedText, [
+                    /(?:TOTAL TAX DEDUCTED) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i,
+                    /(?:TAX DEDUCTED AT SOURCE) (?:RS[.]?\s*)?(\d{1,3}(?:,\d{2,3})*(?:\.\d{2})?)/i
+                ]))
             }
         };
     }

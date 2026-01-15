@@ -14,25 +14,25 @@ const DashboardKPI = ({ icon: Icon, label, value, subtext, trend, color = 'prima
 
     return (
         <motion.div
-            whileHover={{ y: -4 }}
-            className="bg-white p-4 rounded-xl border border-slate-200 shadow-elevation-1 hover:shadow-elevation-2 transition-all cursor-default"
+            whileHover={{ y: -2 }}
+            className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-default"
         >
-            <div className="flex items-start justify-between mb-2">
-                <div className={`p-2 rounded-lg border ${scheme.split(' ')[0]} ${scheme.split(' ')[2]} ${scheme.split(' ')[1]}`}>
-                    <Icon className="w-4 h-4" />
+            <div className="flex items-start justify-between mb-1.5">
+                <div className={`p-1.5 rounded-md border ${scheme.split(' ')[0]} ${scheme.split(' ')[2]} ${scheme.split(' ')[1]}`}>
+                    <Icon className="w-3.5 h-3.5" />
                 </div>
                 {trend && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${trend > 0 ? 'bg-success-100 text-success-700' : 'bg-error-100 text-error-700'}`}>
+                    <span className={`text-[9px] font-bold px-1 py-0.5 rounded-full ${trend > 0 ? 'bg-success-100 text-success-700' : 'bg-error-100 text-error-700'}`}>
                         {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
                     </span>
                 )}
             </div>
             <div>
-                <p className="text-body-small font-medium text-slate-500 mb-0.5">{label}</p>
+                <p className="text-xs font-medium text-slate-500 mb-0.5">{label}</p>
                 <div className="flex items-baseline gap-2">
-                    <h4 className="text-heading-3 font-bold text-slate-900 tabular-nums">{value}</h4>
+                    <h4 className="text-lg font-bold text-slate-900 tabular-nums">{value}</h4>
                 </div>
-                {subtext && <p className="text-[10px] text-slate-400 mt-1">{subtext}</p>}
+                {subtext && <p className="text-[10px] text-slate-400 mt-0.5">{subtext}</p>}
             </div>
         </motion.div>
     );

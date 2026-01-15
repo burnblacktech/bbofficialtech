@@ -110,19 +110,17 @@ router.get('/status', (req, res) => {
 // Auth routes with strict rate limiting
 router.use('/auth', strictLimiter, require('./auth'));
 
+// User routes (alias for auth routes for backward compatibility)
+router.use('/user', strictLimiter, require('./auth'));
+
 // Public routes for landing page
 router.use('/public', generalLimiter, require('./public'));
 
 // ITR routes with general rate limiting
 router.use('/itr', generalLimiter, require('./itr'));
 
-
-// =====================================================
-// MEMBER ROUTES
-// =====================================================
-
-// Member (family member) routes with general rate limiting
-router.use('/members', generalLimiter, require('./members'));
+// Dashboard routes
+router.use('/dashboard', require('./dashboard'));
 
 // =====================================================
 // FILING ROUTES (S12 Phase 8)
@@ -143,18 +141,24 @@ router.use('/regime-comparison', generalLimiter, require('./regimeComparison'));
 // Filing safety routes
 router.use('/filing-safety', generalLimiter, require('./filingSafety'));
 
+// Re-registering here for legacy reasons, keeping consistency
+router.use('/dashboard', generalLimiter, require('./dashboard'));
+
+// Income routes
+router.use('/income', generalLimiter, require('./income'));
+
+// Deduction routes
+router.use('/deductions', generalLimiter, require('./deductions'));
+
+// Tax calculation routes
+router.use('/tax', generalLimiter, require('./tax'));
+
 // Document and OCR routes
 router.use('/documents', generalLimiter, require('./documents'));
-
-// Analytics routes
-router.use('/analytics', require('./analytics'));
-
-// =====================================================
-// CA WORKSPACE ROUTES (V3)
-// =====================================================
-
-// CA routes (inbox, filing review)
 router.use('/ca', generalLimiter, require('./ca'));
+
+// Notification routes
+router.use('/notifications', generalLimiter, require('./notification'));
 
 // =====================================================
 // ERROR HANDLING

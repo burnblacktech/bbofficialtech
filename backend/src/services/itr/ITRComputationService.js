@@ -5,6 +5,7 @@ const DomainCore = require('../../domain/ITRDomainCore');
 const TaxRegimeAssembly = require('../tax/TaxRegimeAssembly');
 const TaxRegimeCalculatorV2 = require('./TaxRegimeCalculatorV2');
 const { ITRFiling, ITRDraft } = require('../../models');
+const TaxComputation = require('../../models/TaxComputation');
 
 class ITRComputationService {
     /**
@@ -95,6 +96,48 @@ class ITRComputationService {
                 draft.data = payload; // Align draft with updated payload
                 await draft.save({ transaction });
             }
+
+            // 4b. Persist to TaxComputation Table (Analytics & Audit)
+            // Remove old record for this filing to keep 1:1 sync (or use upsert logic if ID known)
+            // Since we want history, we could keep logs, but TaxComputation model is SSOT for current state.
+            // Let's destroy old and create new to ensure clean state.
+            await TaxComputation.destroy({
+                where: { filingId: filing.id },
+                transaction
+            });
+
+            await TaxComputation.create({
+                filingId: filing.id,
+                userId: userId,
+                regime: selectedRegime === 'new' ? 'NEW' : 'OLD',
+                assessmentYear: assessmentYear,
+
+                // Computed Values
+                grossTotalIncome: computationResult.grossTotalIncome || 0,
+                totalDeductions: computationResult.totalDeductions || 0,
+                totalTaxableIncome: computationResult.totalTaxableIncome || 0,
+
+                // Tax Components
+                taxOnIncome: computationResult.taxOnIncome || 0,
+                rebate87A: computationResult.rebate87A || 0,
+                surcharge: computationResult.surcharge || 0,
+                healthAndEducationCess: computationResult.cess || 0,
+                totalTaxLiability: computationResult.finalTaxLiability || 0,
+
+                // Final Status
+                tdsCredit: computationResult.tds || 0,
+                advanceTaxPaid: computationResult.advanceTax || 0,
+                selfAssessmentTaxPaid: computationResult.selfAssessmentTax || 0,
+
+                refundDue: computationResult.refundAmount || 0,
+                taxPayable: computationResult.taxPayable || 0,
+
+                // Metadata
+                computationLog: {
+                    comparison: comparison.comparison,
+                    breakdown: computationResult.breakdown
+                }
+            }, { transaction });
 
             // 5. Transition State (if needed)
             // If current state is DRAFT, move to COMPUTATION_DONE

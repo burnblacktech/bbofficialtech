@@ -119,6 +119,10 @@ class ValidationService {
           errors.push('Please enter a valid number');
         }
         break;
+
+      default:
+        // No specific validation for this type
+        break;
     }
 
     // Range validation
@@ -171,7 +175,7 @@ class ValidationService {
       results,
       errors: Object.entries(results)
         .filter(([, result]) => !result.isValid)
-        .flatMap(([field, result]) => result.errors),
+        .flatMap(([, result]) => result.errors),
     };
   }
 

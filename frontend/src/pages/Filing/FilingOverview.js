@@ -82,6 +82,17 @@ const FilingOverview = () => {
         }
     };
 
+    // Redirect to unified dashboard for streamlined experience (must be before conditional returns)
+    useEffect(() => {
+        if (data && !loading && !error) {
+            // Check if user prefers unified dashboard (default: yes)
+            const useUnifiedDashboard = localStorage.getItem('useUnifiedDashboard') !== 'false';
+            if (useUnifiedDashboard) {
+                navigate(`/filing/${filingId}/unified`, { replace: true });
+            }
+        }
+    }, [data, loading, error, filingId, navigate]);
+
     if (loading) {
 
         return (

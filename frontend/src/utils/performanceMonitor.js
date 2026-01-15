@@ -223,16 +223,18 @@ export const reportPerformance = async () => {
       }),
       keepalive: true,
     }).catch((error) => {
+      // eslint-disable-next-line no-console
       console.warn('Failed to report performance:', error);
     });
   } else {
+    // eslint-disable-next-line no-console
     console.log('Performance Metrics:', metrics);
   }
 
   return metrics;
 };
 
-export default {
+const performanceMonitor = {
   mark,
   measure,
   getMarks,
@@ -244,4 +246,6 @@ export default {
   getCLS,
   reportPerformance,
 };
+
+export default performanceMonitor;
 

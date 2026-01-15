@@ -185,8 +185,8 @@ export const createRetryFunction = (fn, maxRetries = 3, baseDelay = 1000) => {
 
         // Don't retry for certain error types
         if (error.type === ERROR_TYPES.AUTHENTICATION ||
-            error.type === ERROR_TYPES.PERMISSION ||
-            error.type === ERROR_TYPES.VALIDATION) {
+          error.type === ERROR_TYPES.PERMISSION ||
+          error.type === ERROR_TYPES.VALIDATION) {
           throw error;
         }
 
@@ -259,7 +259,11 @@ export const setupGlobalErrorHandler = () => {
   });
 
   window.addEventListener('online', () => {
-    console.info('Network connection restored');
+    // Network connection restored - could trigger reconnection logic
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.info('Network connection restored');
+    }
   });
 };
 
@@ -284,9 +288,8 @@ export const showSuccessToast = (message, toast) => {
 };
 
 // File upload error handling
-export const handleFileUploadError = (error, file) => {
+export const handleFileUploadError = (error) => {
   let message = 'File upload failed';
-  // let suggestion = 'Please try again'; // Removed unused variable
 
   if (error.code === 'FILE_TOO_LARGE') {
     message = 'File is too large';

@@ -57,15 +57,15 @@ const ActiveFilingCard = ({ filing }) => {
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`bg-white rounded-2xl border-2 ${config.borderColor} p-6 shadow-elevation-2 hover:shadow-elevation-3 transition-all relative overflow-hidden group`}
+            className={`bg-white rounded-xl border-2 ${config.borderColor} p-4 shadow-md hover:shadow-lg transition-all relative overflow-hidden group`}
         >
             {/* Ambient Background Glow */}
             <div className={`absolute -top-12 -right-12 w-48 h-48 ${config.bg} rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity`} />
 
             <div className="relative z-10">
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-4">
                     <div>
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-1.5">
                             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-900 text-white text-[10px] font-bold tracking-wider">
                                 AY {filing.assessmentYear}
                             </span>
@@ -74,25 +74,25 @@ const ActiveFilingCard = ({ filing }) => {
                                 {config.label}
                             </span>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-1">
+                        <h3 className="text-lg font-bold text-slate-900 mb-0.5">
                             Individual Income Tax Return
                         </h3>
-                        <p className="text-slate-500 text-sm">
+                        <p className="text-slate-500 text-xs">
                             Last activity on {new Date(filing.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                     </div>
                 </div>
 
                 {config.progress !== undefined ? (
-                    <div className="mb-8">
-                        <div className="flex justify-between items-end mb-2">
+                    <div className="mb-4">
+                        <div className="flex justify-between items-end mb-1.5">
                             <div>
-                                <p className="text-body-small font-medium text-slate-600 mb-1">Current Progress</p>
-                                <p className="text-body-regular text-slate-500">{config.description}</p>
+                                <p className="text-xs font-medium text-slate-600 mb-0.5">Current Progress</p>
+                                <p className="text-xs text-slate-500">{config.description}</p>
                             </div>
-                            <span className="text-heading-4 font-bold text-slate-900">{config.progress}%</span>
+                            <span className="text-base font-bold text-slate-900">{config.progress}%</span>
                         </div>
-                        <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-50">
+                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-50">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${config.progress}%` }}

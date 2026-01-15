@@ -1,351 +1,601 @@
-import React, { useEffect, useState } from 'react';
+/**
+ * User Dashboard - Financial Story Focus (PRD v3.0)
+ * Central hub for financial life overview
+ */
+
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-    Wallet, FileText, Users, Bell, ArrowRight, ShieldCheck,
-    Download, TrendingUp, Cpu, PieChart, Landmark, Shield,
-    UserPlus, History, HelpCircle, Sparkles, MessageSquare, Plus,
+    DollarSign,
+    TrendingUp,
+    Target,
+    Lightbulb,
+    Calendar,
+    FileText,
+    Upload,
+    ArrowRight,
+    Plus,
+    CheckCircle,
+    Users,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import DashboardKPI from '../../components/Dashboard/DashboardKPI';
-import ActiveFilingCard from '../../components/Dashboard/ActiveFilingCard';
-import FinancialStoryChart from '../../components/Dashboard/FinancialStoryChart';
-import apiClient from '../../services/core/APIClient';
+import dashboardService from '../../services/dashboardService';
 import memberService from '../../services/memberService';
-import { UIButton, Heading1, Heading2, BodySmall } from '../../components/UI';
+import { tokens } from '../../styles/tokens';
 
 const UserDashboard = () => {
-    const { user } = useAuth();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [activeFiling, setActiveFiling] = useState(null);
-    const [stats, setStats] = useState({
-        totalFilings: 0,
-        documents: 0,
-        familyMembers: 0,
-        taxSaved: '₹12,400',
-        reportedIncome: '₹0',
+    const { user } = useAuth();
+
+    const userName = user?.fullName || user?.name || 'User';
+
+    // Fetch dashboard data
+    const { data: dashboardData, isLoading, error } = useQuery({
+        queryKey: ['dashboard'],
+        queryFn: dashboardService.getDashboardData,
+        staleTime: 5 * 60 * 1000,
     });
 
-    useEffect(() => {
-        loadDashboardData();
-    }, []);
+    // Fetch members
+    const { data: membersData } = useQuery({
+        queryKey: ['members'],
+        queryFn: memberService.getAllMembers,
+        staleTime: 5 * 60 * 1000,
+    });
 
-    const loadDashboardData = async () => {
-        try {
-            const [filingsRes, membersRes] = await Promise.all([
-                apiClient.get('/filings'),
-                memberService.getMembers(),
-            ]);
+    const members = membersData?.data || [];
+    // Ensure "Self" is always counted or displayed if needed, but usually member service returns added members.
+    // We can assume user is always primary.
 
-            const filings = filingsRes.data.data || [];
-
-            // Find most recent active filing
-            const active = filings.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
-
-            let enhancedActive = null;
-            if (active) {
-                try {
-                    const readinessRes = await apiClient.get(`/filings/${active.id}/readiness`);
-                    enhancedActive = { ...active, readiness: readinessRes.data.data };
-                } catch (e) {
-                    enhancedActive = active;
-                }
-            }
-
-            setActiveFiling(enhancedActive);
-            setStats(prev => ({
-                ...prev,
-                totalFilings: filings.length,
-                familyMembers: (membersRes.data.members || []).length,
-                reportedIncome: enhancedActive?.totalIncome ? `₹${enhancedActive.totalIncome.toLocaleString()}` : '₹0',
-            }));
-
-        } catch (error) {
-            console.error('Dashboard load failed:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-            },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 },
-    };
-
-    if (loading) {
+    if (isLoading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                <div className="flex flex-col items-center">
-                    <div className="relative w-16 h-16">
-                        <div className="absolute inset-0 border-4 border-primary-100 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
-                    </div>
-                    <p className="mt-4 text-slate-500 font-medium animate-pulse">Building your tax profile...</p>
+            <div style={{
+                minHeight: '100vh',
+                backgroundColor: tokens.colors.neutral[50],
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{
+                        width: '48px',
+                        height: '48px',
+                        border: `4px solid ${tokens.colors.neutral[200]}`,
+                        borderTop: `4px solid ${tokens.colors.accent[600]}`,
+                        borderRadius: tokens.borderRadius.full,
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto',
+                        marginBottom: tokens.spacing.md,
+                    }} />
+                    <p style={{ color: tokens.colors.neutral[600] }}>Loading your financial story...</p>
                 </div>
             </div>
         );
     }
 
+    // Extract data from API response with fallbacks
+    const financialOverview = dashboardData?.data?.financialOverview || {
+        totalIncome: 0,
+        taxLiability: 0,
+        taxSaved: 0,
+        financialHealth: 0,
+        refund: 0,
+        payable: 0,
+    };
+
+    const recommendations = dashboardData?.data?.recommendations || [];
+    const incomeBreakdown = dashboardData?.data?.incomeBreakdown || [];
+    const upcomingDeadlines = dashboardData?.data?.deadlines || [];
+    const activeFiling = dashboardData?.data?.activeFiling;
+
+    // Show error state if API fails but allow viewing with empty data
+    const hasError = error && !dashboardData;
+    const hasData = financialOverview.totalIncome > 0 || incomeBreakdown.length > 0;
+
     return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="pb-12"
-        >
-            <div className="max-w-7xl mx-auto">
+        <div style={{
+            minHeight: '100vh',
+            backgroundColor: tokens.colors.neutral[50],
+            padding: tokens.spacing.xl,
+        }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                {/* Welcome Header */}
+                <div style={{ marginBottom: tokens.spacing.xl }}>
+                    <h1 style={{
+                        fontSize: tokens.typography.fontSize['3xl'],
+                        fontWeight: tokens.typography.fontWeight.bold,
+                        color: tokens.colors.neutral[900],
+                        marginBottom: tokens.spacing.xs,
+                    }}>
+                        Welcome back, {userName}! 👋
+                    </h1>
+                    <p style={{
+                        fontSize: tokens.typography.fontSize.lg,
+                        color: tokens.colors.neutral[600],
+                    }}>
+                        Here's your financial story for FY 2024-25
+                    </p>
+                </div>
 
-                {/* Header Section */}
-                <motion.div variants={itemVariants} className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-8">
-                    <div>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                            Command <span className="text-primary-600">Center</span>
-                        </h1>
-                        <p className="text-slate-500 font-medium mt-1">
-                            Welcome back, {user?.firstName}
-                        </p>
+                {/* Financial Overview Cards */}
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: tokens.spacing.lg,
+                    marginBottom: tokens.spacing.xl,
+                }}>
+                    {/* Total Income */}
+                    <div style={{
+                        padding: tokens.spacing.lg,
+                        backgroundColor: tokens.colors.neutral.white,
+                        borderRadius: tokens.borderRadius.lg,
+                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+                            <div>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                                    Total Income
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize['2xl'], fontWeight: tokens.typography.fontWeight.bold, color: tokens.colors.neutral[900] }}>
+                                    ₹{financialOverview.totalIncome.toLocaleString('en-IN')}
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.success[600] }}>
+                                    {hasData ? '+8% from last year' : 'No data yet'}
+                                </p>
+                            </div>
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                backgroundColor: `${tokens.colors.accent[600]}15`,
+                                borderRadius: tokens.borderRadius.md,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <DollarSign size={24} color={tokens.colors.accent[600]} />
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <UIButton
-                            variant="primary"
-                            className="bg-slate-900 shadow-glow-gold text-white hover:bg-slate-800"
-                            onClick={() => navigate('/itr/start')}
+
+                    {/* Tax Liability */}
+                    <div style={{
+                        padding: tokens.spacing.lg,
+                        backgroundColor: tokens.colors.neutral.white,
+                        borderRadius: tokens.borderRadius.lg,
+                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+                            <div>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                                    Tax Liability
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize['2xl'], fontWeight: tokens.typography.fontWeight.bold, color: tokens.colors.neutral[900] }}>
+                                    ₹{financialOverview.taxLiability.toLocaleString('en-IN')}
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: financialOverview.refund > 0 ? tokens.colors.success[600] : tokens.colors.warning[600] }}>
+                                    {financialOverview.refund > 0 ? `₹${financialOverview.refund.toLocaleString('en-IN')} refund ✓` : financialOverview.payable > 0 ? `₹${financialOverview.payable.toLocaleString('en-IN')} payable` : 'Balanced'}
+                                </p>
+                            </div>
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                backgroundColor: `${tokens.colors.warning[600]}15`,
+                                borderRadius: tokens.borderRadius.md,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <Target size={24} color={tokens.colors.warning[600]} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tax Saved */}
+                    <div style={{
+                        padding: tokens.spacing.lg,
+                        backgroundColor: tokens.colors.neutral.white,
+                        borderRadius: tokens.borderRadius.lg,
+                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+                            <div>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                                    Tax Saved
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize['2xl'], fontWeight: tokens.typography.fontWeight.bold, color: tokens.colors.success[600] }}>
+                                    ₹{financialOverview.taxSaved.toLocaleString('en-IN')}
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600] }}>
+                                    {financialOverview.totalIncome > 0 ? `${((financialOverview.taxSaved / financialOverview.totalIncome) * 100).toFixed(1)}% savings rate` : 'No data'}
+                                </p>
+                            </div>
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                backgroundColor: `${tokens.colors.success[600]}15`,
+                                borderRadius: tokens.borderRadius.md,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <TrendingUp size={24} color={tokens.colors.success[600]} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Financial Health */}
+                    <div style={{
+                        padding: tokens.spacing.lg,
+                        backgroundColor: tokens.colors.neutral.white,
+                        borderRadius: tokens.borderRadius.lg,
+                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.md }}>
+                            <div>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                                    Financial Health
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize['2xl'], fontWeight: tokens.typography.fontWeight.bold, color: tokens.colors.accent[600] }}>
+                                    {financialOverview.financialHealth}/100 ⭐
+                                </p>
+                                <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600] }}>
+                                    {financialOverview.financialHealth >= 70 ? 'Good standing' : financialOverview.financialHealth >= 50 ? 'Fair' : 'Needs improvement'}
+                                </p>
+                            </div>
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                backgroundColor: `${tokens.colors.info[600]}15`,
+                                borderRadius: tokens.borderRadius.md,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <CheckCircle size={24} color={tokens.colors.info[600]} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Smart Recommendations */}
+                <div style={{
+                    padding: tokens.spacing.lg,
+                    backgroundColor: `${tokens.colors.accent[600]}10`,
+                    border: `1px solid ${tokens.colors.accent[200]}`,
+                    borderRadius: tokens.borderRadius.lg,
+                    marginBottom: tokens.spacing.xl,
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: tokens.spacing.md }}>
+                        <Lightbulb size={24} color={tokens.colors.accent[600]} style={{ marginRight: tokens.spacing.sm }} />
+                        <h2 style={{
+                            fontSize: tokens.typography.fontSize.xl,
+                            fontWeight: tokens.typography.fontWeight.bold,
+                            color: tokens.colors.accent[900],
+                        }}>
+                            Smart Recommendations
+                        </h2>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.sm }}>
+                        {recommendations.map((rec, idx) => (
+                            <div key={idx} style={{
+                                padding: tokens.spacing.sm,
+                                backgroundColor: tokens.colors.neutral.white,
+                                borderRadius: tokens.borderRadius.md,
+                                fontSize: tokens.typography.fontSize.base,
+                                color: tokens.colors.neutral[700],
+                            }}>
+                                • {rec}
+                            </div>
+                        ))}
+                    </div>
+                    <button
+                        onClick={() => navigate('/insights')}
+                        style={{
+                            marginTop: tokens.spacing.md,
+                            padding: `${tokens.spacing.sm} ${tokens.spacing.md}`,
+                            backgroundColor: tokens.colors.accent[600],
+                            color: tokens.colors.neutral.white,
+                            border: 'none',
+                            borderRadius: tokens.borderRadius.md,
+                            fontSize: tokens.typography.fontSize.sm,
+                            fontWeight: tokens.typography.fontWeight.medium,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: tokens.spacing.xs,
+                        }}
+                    >
+                        View All Recommendations
+                        <ArrowRight size={16} />
+                    </button>
+                </div>
+
+                {/* Two Column Layout */}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: tokens.spacing.xl }}>
+                    {/* Income Breakdown */}
+                    <div style={{
+                        padding: tokens.spacing.lg,
+                        backgroundColor: tokens.colors.neutral.white,
+                        borderRadius: tokens.borderRadius.lg,
+                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                    }}>
+                        <h2 style={{
+                            fontSize: tokens.typography.fontSize.xl,
+                            fontWeight: tokens.typography.fontWeight.bold,
+                            marginBottom: tokens.spacing.lg,
+                        }}>
+                            Income Breakdown
+                        </h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.md }}>
+                            {incomeBreakdown.map((item) => (
+                                <div key={item.source}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.xs }}>
+                                        <span style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[700] }}>
+                                            {item.source}
+                                        </span>
+                                        <span style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold }}>
+                                            ₹{item.amount.toLocaleString('en-IN')} ({item.percentage}%)
+                                        </span>
+                                    </div>
+                                    <div style={{
+                                        width: '100%',
+                                        height: '8px',
+                                        backgroundColor: tokens.colors.neutral[200],
+                                        borderRadius: tokens.borderRadius.full,
+                                        overflow: 'hidden',
+                                    }}>
+                                        <div style={{
+                                            width: `${item.percentage}%`,
+                                            height: '100%',
+                                            backgroundColor: tokens.colors.accent[600],
+                                        }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button
+                            onClick={() => navigate('/income')}
+                            style={{
+                                marginTop: tokens.spacing.lg,
+                                padding: `${tokens.spacing.sm} ${tokens.spacing.md}`,
+                                backgroundColor: tokens.colors.neutral.white,
+                                color: tokens.colors.accent[600],
+                                border: `1px solid ${tokens.colors.accent[600]}`,
+                                borderRadius: tokens.borderRadius.md,
+                                fontSize: tokens.typography.fontSize.sm,
+                                fontWeight: tokens.typography.fontWeight.medium,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: tokens.spacing.xs,
+                            }}
                         >
-                            <Plus className="w-4 h-4 mr-2" /> Start Filing
-                        </UIButton>
+                            View Details
+                            <ArrowRight size={16} />
+                        </button>
                     </div>
-                </motion.div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Upcoming Deadlines */}
+                    <div style={{
+                        padding: tokens.spacing.lg,
+                        backgroundColor: tokens.colors.neutral.white,
+                        borderRadius: tokens.borderRadius.lg,
+                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: tokens.spacing.lg }}>
+                            <Calendar size={20} style={{ marginRight: tokens.spacing.sm }} />
+                            <h2 style={{
+                                fontSize: tokens.typography.fontSize.xl,
+                                fontWeight: tokens.typography.fontWeight.bold,
+                            }}>
+                                Upcoming Deadlines
+                            </h2>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.md }}>
+                            {upcomingDeadlines.map((deadline, idx) => (
+                                <div key={idx} style={{
+                                    padding: tokens.spacing.sm,
+                                    backgroundColor: tokens.colors.neutral[50],
+                                    borderRadius: tokens.borderRadius.md,
+                                }}>
+                                    <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                                        {deadline.date}
+                                    </p>
+                                    <p style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>
+                                        {deadline.title}
+                                    </p>
+                                    {deadline.amount && (
+                                        <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.accent[600] }}>
+                                            ₹{deadline.amount.toLocaleString('en-IN')} due
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
 
-                    {/* Left Column: KPIs and Insights */}
-                    <div className="lg:col-span-8 space-y-8">
+                {/* Family Members / Filing For Section */}
+                <div style={{
+                    marginTop: tokens.spacing.xl,
+                    padding: tokens.spacing.lg,
+                    backgroundColor: tokens.colors.neutral.white,
+                    borderRadius: tokens.borderRadius.lg,
+                    border: `1px solid ${tokens.colors.neutral[200]}`,
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: tokens.spacing.lg }}>
+                        <h2 style={{
+                            fontSize: tokens.typography.fontSize.xl,
+                            fontWeight: tokens.typography.fontWeight.bold,
+                        }}>
+                            Filing For (Family)
+                        </h2>
+                        <button
+                            onClick={() => navigate('/add-members')}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: tokens.spacing.xs,
+                                border: 'none',
+                                background: 'none',
+                                color: tokens.colors.accent[600],
+                                fontWeight: tokens.typography.fontWeight.medium,
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <Plus size={18} />
+                            Add Member
+                        </button>
+                    </div>
 
-                        {/* KPI Pulse Grid */}
-                        <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <DashboardKPI
-                                icon={Landmark}
-                                label="Reported Income"
-                                value={stats.reportedIncome}
-                                color="slate"
-                            />
-                            <DashboardKPI
-                                icon={TrendingUp}
-                                label="Tax Saved"
-                                value={stats.taxSaved}
-                                trend={12}
-                                color="success"
-                            />
-                            <DashboardKPI
-                                icon={FileText}
-                                label="Documents"
-                                value={stats.documents}
-                                subtext="4 processed"
-                                color="info"
-                            />
-                            <DashboardKPI
-                                icon={Users}
-                                label="Family"
-                                value={stats.familyMembers}
-                                subtext="Active members"
-                                color="ember"
-                            />
-                        </motion.div>
-
-                        {/* Financial Odyssey: YoY Story */}
-                        <motion.div variants={itemVariants} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-elevation-1">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div style={{ display: 'flex', gap: tokens.spacing.lg, overflowX: 'auto', paddingBottom: tokens.spacing.sm }}>
+                        {/* Primary User Card (Self) */}
+                        <div style={{
+                            minWidth: '200px',
+                            padding: tokens.spacing.md,
+                            backgroundColor: `${tokens.colors.accent[600]}10`,
+                            border: `1px solid ${tokens.colors.accent[200]}`,
+                            borderRadius: tokens.borderRadius.md,
+                            cursor: 'pointer',
+                        }} onClick={() => navigate('/profile')}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.xs }}>
+                                <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    backgroundColor: tokens.colors.accent[600],
+                                    color: tokens.colors.neutral.white,
+                                    borderRadius: tokens.borderRadius.full,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 'bold',
+                                    fontSize: tokens.typography.fontSize.sm,
+                                }}>
+                                    {userName.charAt(0)}
+                                </div>
                                 <div>
-                                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                        <TrendingUp className="w-5 h-5 text-primary-500" />
-                                        Financial Odyssey
-                                    </h2>
-                                    <p className="text-xs text-slate-500 mt-1">Your income and tax journey across assessment years</p>
+                                    <p style={{ fontWeight: tokens.typography.fontWeight.semibold, fontSize: tokens.typography.fontSize.base }}>Self</p>
+                                    <p style={{ color: tokens.colors.neutral[600], fontSize: tokens.typography.fontSize.xs }}>Primary</p>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-200 rounded-full">
-                                        <div className="w-2 h-2 bg-slate-900 rounded-full"></div>
-                                        <span className="text-[10px] font-bold text-slate-600 uppercase">Income</span>
+                            </div>
+                        </div>
+
+                        {/* Family Members */}
+                        {members.map((member) => (
+                            <div key={member.id} style={{
+                                minWidth: '200px',
+                                padding: tokens.spacing.md,
+                                backgroundColor: tokens.colors.neutral.white,
+                                border: `1px solid ${tokens.colors.neutral[300]}`,
+                                borderRadius: tokens.borderRadius.md,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                            }}
+                                onClick={() => navigate(`/members/${member.id}`)} // Or open modal
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+                                    <div style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        backgroundColor: tokens.colors.neutral[200],
+                                        color: tokens.colors.neutral[700],
+                                        borderRadius: tokens.borderRadius.full,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold',
+                                        fontSize: tokens.typography.fontSize.sm,
+                                    }}>
+                                        {member.name?.charAt(0)}
                                     </div>
-                                    <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-200 rounded-full">
-                                        <div className="w-2 h-2 bg-gold-500 rounded-full"></div>
-                                        <span className="text-[10px] font-bold text-slate-600 uppercase">Tax</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <FinancialStoryChart />
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 border-t border-slate-100 pt-6">
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-primary-200 transition-colors">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Income Growth</p>
-                                    <h4 className="text-lg font-bold text-slate-900">+18% YoY</h4>
-                                    <p className="text-[10px] text-slate-500 mt-1">Consistent upward trajectory in earnings.</p>
-                                </div>
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-success-200 transition-colors">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tax Efficiency</p>
-                                    <h4 className="text-lg font-bold text-success-600">8.4% Saved</h4>
-                                    <p className="text-[10px] text-slate-500 mt-1">Via optimized section 80C deductions.</p>
-                                </div>
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-ember-200 transition-colors">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">New Assets</p>
-                                    <h4 className="text-lg font-bold text-slate-900">+2 Profiles</h4>
-                                    <p className="text-[10px] text-slate-500 mt-1">Added 2 family members for joint filing.</p>
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Main Interaction Zone */}
-                        <motion.div variants={itemVariants}>
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <Cpu className="w-5 h-5 text-primary-500" />
-                                    Active Priorities
-                                </h2>
-                            </div>
-                            {activeFiling ? (
-                                <ActiveFilingCard filing={activeFiling} />
-                            ) : (
-                                <div className="bg-aurora-gradient rounded-3xl p-8 text-white relative overflow-hidden shadow-aurora-glow">
-                                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
-                                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                                        <div className="flex-1 text-center md:text-left">
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 rounded-full text-xs font-bold mb-4 backdrop-blur-md">
-                                                <Sparkles className="w-3 h-3 text-yellow-300" />
-                                                New Assessment Year Open
-                                            </div>
-                                            <h2 className="text-3xl font-bold mb-3 tracking-tight">AY 2024-25 Filing is LIVE</h2>
-                                            <p className="text-white/80 mb-6 text-lg">Our AI engine is ready to compute your taxes and maximize your returns with 100% accuracy.</p>
-                                            <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                                                <button
-                                                    onClick={() => navigate('/itr/start')}
-                                                    className="px-6 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
-                                                >
-                                                    Start My Return
-                                                    <ArrowRight className="w-4 h-4" />
-                                                </button>
-                                                <button className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-xl font-bold transition-all">
-                                                    Check Eligibility
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="w-48 h-48 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20 group cursor-pointer hover:scale-105 transition-transform">
-                                            <PieChart className="w-24 h-24 text-white opacity-80 group-hover:opacity-100" />
-                                        </div>
+                                    <div>
+                                        <p style={{ fontWeight: tokens.typography.fontWeight.semibold, fontSize: tokens.typography.fontSize.base }}>{member.name}</p>
+                                        <p style={{ color: tokens.colors.neutral[600], fontSize: tokens.typography.fontSize.xs }}>{member.relationship}</p>
                                     </div>
                                 </div>
-                            )}
-                        </motion.div>
-
-                        {/* Quick Navigation Sections */}
-                        <motion.div variants={itemVariants} className="space-y-4">
-                            <h2 className="text-xl font-bold text-slate-900">Workspace</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {[
-                                    { icon: History, label: 'Filing History', sub: 'Past returns', path: '/filing/history' },
-                                    { icon: UserPlus, label: 'Family Tree', sub: 'Manage members', path: '/add-members' },
-                                    { icon: Landmark, label: 'Tax Tools', sub: 'Calculators', path: '/tools' },
-                                    { icon: Shield, label: 'Compliance', sub: 'Check status', path: '/compliance' },
-                                ].map((box, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => navigate(box.path)}
-                                        className="p-4 bg-white border border-slate-200 rounded-2xl hover:border-primary-300 hover:shadow-elevation-2 transition-all group text-left"
-                                    >
-                                        <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                            <box.icon className="w-5 h-5 text-slate-600 group-hover:text-primary-600" />
-                                        </div>
-                                        <p className="font-bold text-slate-900 text-sm">{box.label}</p>
-                                        <p className="text-[10px] text-slate-500 mt-0.5">{box.sub}</p>
-                                    </button>
-                                ))}
                             </div>
-                        </motion.div>
+                        ))}
+
+                        {/* Add New Placeholder */}
+                        {members.length === 0 && (
+                            <div style={{
+                                minWidth: '200px',
+                                padding: tokens.spacing.md,
+                                border: `1px dashed ${tokens.colors.neutral[400]}`,
+                                borderRadius: tokens.borderRadius.md,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                color: tokens.colors.neutral[600],
+                                gap: tokens.spacing.xs,
+                            }} onClick={() => navigate('/add-members')}>
+                                <Plus size={18} />
+                                <span>Add Family Member</span>
+                            </div>
+                        )}
                     </div>
+                </div>
 
-                    {/* Right Column: AI Assistant & Security */}
-                    <div className="lg:col-span-4 space-y-8">
-
-                        {/* AI Insights Sidebar */}
-                        <motion.div variants={itemVariants} className="bg-slate-900 rounded-3xl p-6 text-white overflow-hidden relative shadow-elevation-4">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Cpu className="w-32 h-32" />
-                            </div>
-                            <div className="relative z-10">
-                                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-yellow-300" />
-                                    AI Tax Insights
-                                </h3>
-                                <div className="space-y-4">
-                                    <div className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors cursor-pointer">
-                                        <p className="text-xs font-bold text-primary-400 uppercase tracking-widest mb-1">Optimization</p>
-                                        <p className="text-sm text-white/90">Switching to the New Tax Regime could save you <span className="text-success-400 font-bold">₹8,500</span> this year.</p>
-                                    </div>
-                                    <div className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors cursor-pointer text-left w-full">
-                                        <p className="text-xs font-bold text-info-400 uppercase tracking-widest mb-1">compliance</p>
-                                        <p className="text-sm text-white/90">AIS data detected. Your Dividend Income (₹4,200) needs verification.</p>
-                                    </div>
-                                </div>
+                {/* Quick Actions */}
+                <div style={{
+                    marginTop: tokens.spacing.xl,
+                    padding: tokens.spacing.lg,
+                    backgroundColor: tokens.colors.neutral.white,
+                    borderRadius: tokens.borderRadius.lg,
+                    border: `1px solid ${tokens.colors.neutral[200]}`,
+                }}>
+                    <h2 style={{
+                        fontSize: tokens.typography.fontSize.xl,
+                        fontWeight: tokens.typography.fontWeight.bold,
+                        marginBottom: tokens.spacing.lg,
+                    }}>
+                        Quick Actions
+                    </h2>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: tokens.spacing.md }}>
+                        {[
+                            { icon: Upload, label: 'Upload Form 16', path: '/documents' },
+                            { icon: Plus, label: 'Add Income', path: '/income' },
+                            { icon: FileText, label: 'File ITR', path: '/filing/start' },
+                            { icon: TrendingUp, label: 'View Reports', path: '/insights' },
+                        ].map((action) => {
+                            const Icon = action.icon;
+                            return (
                                 <button
-                                    onClick={() => navigate('/ca-bot')}
-                                    className="w-full mt-6 py-3 bg-aurora-gradient rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                                    key={action.label}
+                                    onClick={() => navigate(action.path)}
+                                    style={{
+                                        padding: tokens.spacing.md,
+                                        backgroundColor: tokens.colors.neutral.white,
+                                        border: `1px solid ${tokens.colors.neutral[200]}`,
+                                        borderRadius: tokens.borderRadius.md,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: tokens.spacing.sm,
+                                        transition: 'all 0.2s',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderColor = tokens.colors.accent[600];
+                                        e.currentTarget.style.backgroundColor = `${tokens.colors.accent[600]}05`;
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderColor = tokens.colors.neutral[200];
+                                        e.currentTarget.style.backgroundColor = tokens.colors.neutral.white;
+                                    }}
                                 >
-                                    <MessageSquare className="w-4 h-4" />
-                                    Ask CA Spire
+                                    <Icon size={20} color={tokens.colors.accent[600]} />
+                                    <span style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.medium }}>
+                                        {action.label}
+                                    </span>
                                 </button>
-                            </div>
-                        </motion.div>
-
-                        {/* Security Pulse */}
-                        <motion.div variants={itemVariants} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-elevation-1">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 bg-success-50 rounded-2xl flex items-center justify-center">
-                                    <ShieldCheck className="w-6 h-6 text-success-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-900">Protected Mode</h4>
-                                    <p className="text-xs text-slate-500">Bank-grade encryption active</p>
-                                </div>
-                            </div>
-                            <div className="space-y-3 pb-4">
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="text-slate-500">Last login:</span>
-                                    <span className="text-slate-900 font-medium">10 mins ago</span>
-                                </div>
-                                <div className="flex items-center justify-between text-xs">
-                                    <span className="text-slate-500">Session IP:</span>
-                                    <span className="text-slate-900 font-medium">103.45.1XX.X</span>
-                                </div>
-                            </div>
-                            <button className="w-full py-2 bg-slate-50 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors">
-                                View Security Logs
-                            </button>
-                        </motion.div>
-
-                        {/* Help Desk Mini */}
-                        <motion.div variants={itemVariants} className="p-4 bg-primary-50 rounded-2xl border border-primary-100 flex items-center justify-between group cursor-pointer hover:bg-primary-100 transition-colors">
-                            <div className="flex items-center gap-3">
-                                <HelpCircle className="w-5 h-5 text-primary-600" />
-                                <span className="font-bold text-primary-900 text-sm">Need Help?</span>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-primary-600 group-hover:translate-x-1 transition-transform" />
-                        </motion.div>
-
+                            );
+                        })}
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 };
 

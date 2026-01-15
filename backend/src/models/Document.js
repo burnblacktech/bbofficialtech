@@ -39,6 +39,12 @@ const Document = sequelize.define('Document', {
       key: 'id',
     },
   },
+  financialYear: {
+    type: DataTypes.STRING(10),
+    allowNull: false,
+    defaultValue: '2024-25',
+    field: 'financial_year',
+  },
   category: {
     type: DataTypes.ENUM(
       'FORM_16',

@@ -54,6 +54,7 @@ lint-results.json
 *.swo
 *~
 
+
 # OS
 .DS_Store
 Thumbs.db
@@ -70,4 +71,8 @@ tmp/
 temp/
 backend/uploads/
 frontend/public/uploads/
+
+# Documentation
+*.md
+!README.md
 BBDocs/

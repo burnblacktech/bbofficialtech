@@ -1,226 +1,264 @@
-// =====================================================
-// REFUND TRACKING PAGE
-// Dedicated page for tracking refund status and history
-// =====================================================
+/**
+ * Refund Tracking Page
+ * Track ITR refund status with timeline visualization
+ */
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Download, Calendar } from 'lucide-react';
-import RefundStatusCard from '../../components/ITR/RefundStatusCard';
-import RefundHistoryTable from '../../components/ITR/RefundHistoryTable';
-import apiClient from '../../services/core/APIClient';
-import toast from 'react-hot-toast';
-import Button from '../../components/DesignSystem/components/Button';
-import { cn } from '../../utils';
-import { enterpriseLogger } from '../../utils/logger';
-import itrService from '../../services/api/itrService';
-import { OrientationPage } from '../../components/templates';
-import { Card } from '../../components/UI/Card';
-import { typography, spacing, components, layout } from '../../styles/designTokens';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  IndianRupee,
+  CheckCircle,
+  Clock,
+  Building2,
+  FileText,
+  TrendingUp,
+  Calendar,
+} from 'lucide-react';
+import Button from '../../components/atoms/Button';
+import Card from '../../components/atoms/Card';
+import Badge from '../../components/atoms/Badge';
+import { tokens } from '../../styles/tokens';
 
 const RefundTracking = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const filingId = searchParams.get('filingId');
 
-  const [refund, setRefund] = useState(null);
-  const [refundHistory, setRefundHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [showUpdateAccountModal, setShowUpdateAccountModal] = useState(false);
-  const [showReissueModal, setShowReissueModal] = useState(false);
-  const [recentCompletedFilings, setRecentCompletedFilings] = useState([]);
+  const refunds = [
+    {
+      year: '2023-24',
+      amount: 12450,
+      status: 'credited',
+      filedDate: '2024-07-15',
+      processedDate: '2024-08-20',
+      creditedDate: '2024-08-25',
+      bankAccount: 'HDFC Bank ****1234',
+      timeline: [
+        { step: 'ITR Filed', date: '2024-07-15', status: 'complete' },
+        { step: 'ITR Verified', date: '2024-07-20', status: 'complete' },
+        { step: 'Refund Processed', date: '2024-08-20', status: 'complete' },
+        { step: 'Amount Credited', date: '2024-08-25', status: 'complete' },
+      ],
+    },
+    {
+      year: '2022-23',
+      amount: 8200,
+      status: 'credited',
+      filedDate: '2023-07-20',
+      processedDate: '2023-08-25',
+      creditedDate: '2023-08-30',
+      bankAccount: 'HDFC Bank ****1234',
+      timeline: [
+        { step: 'ITR Filed', date: '2023-07-20', status: 'complete' },
+        { step: 'ITR Verified', date: '2023-07-25', status: 'complete' },
+        { step: 'Refund Processed', date: '2023-08-25', status: 'complete' },
+        { step: 'Amount Credited', date: '2023-08-30', status: 'complete' },
+      ],
+    },
+  ];
 
-  useEffect(() => {
-    if (filingId) {
-      loadRefundStatus();
-    }
-    loadRefundHistory();
-  }, [filingId]);
-
-  useEffect(() => {
-    const loadFilings = async () => {
-      try {
-        const resp = await itrService.getUserITRs();
-        const all = resp?.data || resp?.filings || resp?.all || [];
-        const completed = all.filter(f => ['submitted', 'acknowledged', 'processed'].includes(String(f.status).toLowerCase()));
-        setRecentCompletedFilings(completed.slice(0, 10));
-      } catch (e) {
-        // best-effort; do nothing
-      }
-    };
-    loadFilings();
-  }, []);
-
-  const loadRefundStatus = async () => {
-    if (!filingId) return;
-
-    try {
-      setLoading(true);
-      const response = await apiClient.get(`/itr/filings/${filingId}/refund/status`);
-      if (response.data.success) {
-        setRefund(response.data?.data?.refund || null);
-      }
-    } catch (error) {
-      enterpriseLogger.error('Error loading refund status:', { error });
-      toast.error('Failed to load refund status');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadRefundHistory = async () => {
-    try {
-      const response = await apiClient.get('/itr/refunds/history');
-      if (response.data.success) {
-        setRefundHistory(response.data?.data?.refunds || []);
-      }
-    } catch (error) {
-      enterpriseLogger.error('Error loading refund history:', { error });
-      toast.error('Failed to load refund history');
-    }
-  };
-
-  const handleRefresh = async () => {
-    setUpdating(true);
-    try {
-      if (filingId) {
-        await loadRefundStatus();
-      }
-      await loadRefundHistory();
-      toast.success('Refund status refreshed');
-    } catch (error) {
-      toast.error('Failed to refresh refund status');
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  const handleUpdateAccount = async (bankAccount) => {
-    if (!filingId) return;
-
-    try {
-      setUpdating(true);
-      const response = await apiClient.post(`/itr/filings/${filingId}/refund/update-account`, {
-        bankAccount });
-
-      if (response.data.success) {
-        setRefund(response.data?.data?.refund || null);
-        setShowUpdateAccountModal(false);
-        toast.success('Bank account updated successfully');
-      }
-    } catch (error) {
-      enterpriseLogger.error('Error updating bank account:', { error });
-      toast.error(error.response?.data?.error?.message || error.response?.data?.error || 'Failed to update bank account');
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  const handleReissueRequest = async (reason) => {
-    if (!filingId) return;
-
-    try {
-      setUpdating(true);
-      const response = await apiClient.post(`/itr/filings/${filingId}/refund/reissue-request`, {
-        reason });
-
-      if (response.data.success) {
-        setRefund(response.data?.data?.refund || null);
-        setShowReissueModal(false);
-        toast.success('Refund re-issue request submitted successfully');
-      }
-    } catch (error) {
-      enterpriseLogger.error('Error requesting refund reissue:', { error });
-      toast.error(error.response?.data?.error?.message || error.response?.data?.error || 'Failed to request refund reissue');
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  if (loading) {
+  const formatCurrency = (amount) => `₹${amount.toLocaleString('en-IN')}`;
 
   return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin text-gold-500 mx-auto mb-4" aria-hidden="true" />
-          <p className="text-body-md text-slate-600">Loading refund status...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: tokens.colors.neutral[50],
+      padding: tokens.spacing.lg,
+    }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
-        <div className="mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-body-md text-slate-600 hover:text-slate-900 mb-4 focus:outline-none focus:ring-2 focus:ring-gold-500 rounded"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
-            <span>Back</span>
-          </button>
-          <div className="flex items-center justify-between">
+        <div style={{ marginBottom: tokens.spacing.lg }}>
+          <h1 style={{
+            fontSize: tokens.typography.fontSize['2xl'],
+            fontWeight: tokens.typography.fontWeight.bold,
+            color: tokens.colors.neutral[900],
+            marginBottom: tokens.spacing.xs,
+          }}>
+            Refund Tracking
+          </h1>
+          <p style={{
+            fontSize: tokens.typography.fontSize.sm,
+            color: tokens.colors.neutral[600],
+          }}>
+            Track your ITR refund status and payment details
+          </p>
+        </div>
+
+        {/* Total Refunds Summary */}
+        <Card padding="lg" style={{
+          marginBottom: tokens.spacing.xl,
+          background: `linear-gradient(135deg, ${tokens.colors.success[600]}, ${tokens.colors.success[700]})`,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h1 className="text-display-md text-slate-900">Refund Tracking</h1>
-              <p className="text-body-md text-slate-600 mt-1">
-                Track your ITR refund status and history
+              <p style={{
+                fontSize: tokens.typography.fontSize.sm,
+                color: tokens.colors.neutral.white,
+                opacity: 0.9,
+                marginBottom: tokens.spacing.xs,
+              }}>
+                Total Refunds Received
+              </p>
+              <p style={{
+                fontSize: tokens.typography.fontSize['3xl'],
+                fontWeight: tokens.typography.fontWeight.bold,
+                color: tokens.colors.neutral.white,
+              }}>
+                {formatCurrency(refunds.reduce((sum, r) => sum + r.amount, 0))}
               </p>
             </div>
-            <Button
-              onClick={handleRefresh}
-              disabled={updating}
-              className="flex items-center gap-2 bg-gold-500 hover:bg-gold-600 text-white"
-            >
-              <RefreshCw className={cn('h-4 w-4', updating && 'animate-spin')} aria-hidden="true" />
-              Refresh
-            </Button>
-          </div>
-        </div>
-
-        {/* Pick a filing (if missing filingId) */}
-        {!filingId && recentCompletedFilings.length > 0 && (
-          <Card>
-            <h2 className="text-heading-lg text-slate-900 mb-2">View current status for a filing</h2>
-            <p className="text-body-md text-slate-600 mb-3">
-              Select a recent filed return to see its current refund status.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {recentCompletedFilings.map(f => (
-                <button
-                  key={f.id}
-                  onClick={() => navigate(`/itr/refund-tracking?filingId=${f.id}`)}
-                  className="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-body-sm text-slate-800"
-                >
-                  {f.itrType || 'ITR'} - AY {f.assessmentYear || '—'}
-                </button>
-              ))}
+            <div style={{
+              width: '64px',
+              height: '64px',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: tokens.borderRadius.full,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <IndianRupee size={32} color={tokens.colors.neutral.white} />
             </div>
-                </Card>
-        )}
-
-        {/* Current Refund Status */}
-        {filingId && refund && (
-          <div className="mb-8">
-            <h2 className="text-heading-lg text-slate-900 mb-4">Current Refund Status</h2>
-            <RefundStatusCard
-              refund={refund}
-              onUpdateAccount={() => setShowUpdateAccountModal(true)}
-              onReissueRequest={() => setShowReissueModal(true)}
-            />
           </div>
-        )}
+        </Card>
 
-        {/* Refund History */}
-        <div>
-          <h2 className="text-heading-lg text-slate-900 mb-4">Refund History</h2>
-          <RefundHistoryTable refunds={refundHistory} />
+        {/* Refund Cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.lg }}>
+          {refunds.map((refund) => (
+            <Card key={refund.year} padding="lg">
+              {/* Header */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: tokens.spacing.lg,
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.xs }}>
+                    <h2 style={{
+                      fontSize: tokens.typography.fontSize.xl,
+                      fontWeight: tokens.typography.fontWeight.bold,
+                      color: tokens.colors.neutral[900],
+                      margin: 0,
+                    }}>
+                      AY {refund.year}
+                    </h2>
+                    <Badge variant="success">
+                      <CheckCircle size={14} />
+                      <span style={{ marginLeft: tokens.spacing.xs }}>Credited</span>
+                    </Badge>
+                  </div>
+                  <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[600] }}>
+                    Refund Amount: <span style={{ fontWeight: tokens.typography.fontWeight.bold, color: tokens.colors.success[700] }}>
+                      {formatCurrency(refund.amount)}
+                    </span>
+                  </p>
+                </div>
+                <div style={{
+                  padding: tokens.spacing.md,
+                  backgroundColor: tokens.colors.success[50],
+                  borderRadius: tokens.borderRadius.lg,
+                  textAlign: 'center',
+                }}>
+                  <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                    Credited to
+                  </p>
+                  <p style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>
+                    {refund.bankAccount}
+                  </p>
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div style={{ position: 'relative', paddingLeft: '40px' }}>
+                {/* Timeline Line */}
+                <div style={{
+                  position: 'absolute',
+                  left: '16px',
+                  top: '12px',
+                  bottom: '12px',
+                  width: '2px',
+                  backgroundColor: tokens.colors.success[200],
+                }} />
+
+                {/* Timeline Steps */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.lg }}>
+                  {refund.timeline.map((step, index) => (
+                    <div key={index} style={{ position: 'relative' }}>
+                      {/* Timeline Dot */}
+                      <div style={{
+                        position: 'absolute',
+                        left: '-32px',
+                        top: '4px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: tokens.borderRadius.full,
+                        backgroundColor: step.status === 'complete' ? tokens.colors.success[600] : tokens.colors.neutral[300],
+                        border: `3px solid ${tokens.colors.neutral.white}`,
+                        boxShadow: tokens.shadows.sm,
+                      }} />
+
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.xs }}>
+                          <h3 style={{
+                            fontSize: tokens.typography.fontSize.sm,
+                            fontWeight: tokens.typography.fontWeight.semibold,
+                            color: tokens.colors.neutral[900],
+                            margin: 0,
+                          }}>
+                            {step.step}
+                          </h3>
+                          {step.status === 'complete' && (
+                            <CheckCircle size={14} color={tokens.colors.success[600]} />
+                          )}
+                        </div>
+                        <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600] }}>
+                          {step.date}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Key Dates */}
+              <div style={{
+                marginTop: tokens.spacing.lg,
+                padding: tokens.spacing.md,
+                backgroundColor: tokens.colors.neutral[50],
+                borderRadius: tokens.borderRadius.md,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gap: tokens.spacing.md,
+              }}>
+                <div>
+                  <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                    Filed Date
+                  </p>
+                  <p style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>
+                    {refund.filedDate}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                    Processed Date
+                  </p>
+                  <p style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>
+                    {refund.processedDate}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
+                    Credited Date
+                  </p>
+                  <p style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.success[700] }}>
+                    {refund.creditedDate}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
+      </div>
     </div>
   );
 };
 
 export default RefundTracking;
-

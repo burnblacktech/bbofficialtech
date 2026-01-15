@@ -6,6 +6,7 @@
 
 const { sequelize } = require('../../config/database');
 const ITRFiling = require('../../models/ITRFiling');
+const FilingSnapshot = require('../../models/FilingSnapshot');
 const CompletionChecklistService = require('../itr/CompletionChecklistService');
 const FilingSafetyService = require('../itr/FilingSafetyService');
 const AuditService = require('../core/AuditService');
@@ -200,6 +201,112 @@ class FilingService {
             throw error;
         }
     }
+
+    /**
+     * Update filing data and create snapshot
+     * S12 Phase 8 - Persist changes with versioning
+     * @param {String} filingId
+     * @param {String} userId
+     * @param {Object} data - { jsonPayload, status }
+     * @param {String} comment - Optional snapshot comment
+     */
+    async updateFiling(filingId, userId, data, comment = 'Auto-save') {
+        const transaction = await sequelize.transaction();
+
+        try {
+            const filing = await ITRFiling.findOne({
+                where: { id: filingId },
+                transaction,
+            });
+
+            if (!filing) {
+                throw new Error('Filing not found');
+            }
+
+            if (filing.createdBy !== userId) {
+                throw new Error('Access denied');
+            }
+
+            // Validations
+            if (filing.lifecycleState !== 'draft' && filing.lifecycleState !== 'review_pending') {
+                // In strict mode, we might block updates, but for now allows corrections
+                // throw new Error('Cannot update filing in current state'); 
+            }
+
+            // Update fields
+            if (data.jsonPayload) filing.jsonPayload = data.jsonPayload;
+            if (data.selectedRegime) filing.selectedRegime = data.selectedRegime;
+            if (data.taxComputation) filing.taxComputation = data.taxComputation;
+
+            // Auto Update Metadata
+            filing.changed('updatedAt', true);
+
+            await filing.save({ transaction });
+
+            // Create Snapshot (Versioning)
+            await this.createSnapshot(filing, userId, 'auto', comment, transaction);
+
+            await transaction.commit();
+
+            return filing;
+
+        } catch (error) {
+            await transaction.rollback();
+            enterpriseLogger.error('Update filing failed', {
+                error: error.message,
+                filingId,
+                userId,
+            });
+            throw error;
+        }
+    }
+
+    /**
+     * Create an immutable snapshot of the filing
+     * @param {Object} filing - Filing instance
+     * @param {String} userId
+     * @param {String} type - auto, manual, pre-submission
+     * @param {String} comment
+     * @param {Object} t - Transaction
+     */
+    async createSnapshot(filing, userId, type = 'auto', comment = '', t = null) {
+        try {
+            // Get last version number
+            const lastSnapshot = await FilingSnapshot.findOne({
+                where: { filingId: filing.id },
+                order: [['version', 'DESC']],
+                transaction: t,
+            });
+
+            const nextVersion = (lastSnapshot?.version || 0) + 1;
+
+            await FilingSnapshot.create({
+                filingId: filing.id,
+                createdBy: userId,
+                version: nextVersion,
+                snapshotType: type,
+                jsonPayload: filing.jsonPayload,
+                comment: comment,
+            }, { transaction: t });
+
+            enterpriseLogger.info('Filing snapshot created', {
+                filingId: filing.id,
+                version: nextVersion,
+                type,
+            });
+
+        } catch (error) {
+            // Non-blocking but logged
+            enterpriseLogger.error('Snapshot creation failed', {
+                error: error.message,
+                filingId: filing.id,
+            });
+            // We don't throw here to avoid failing the main update if snapshot fails (optional design choice)
+            // But for strict audit, maybe we should throw. Let's throw for now to ensure integrity.
+            throw error;
+        }
+    }
 }
+
 
 module.exports = new FilingService();

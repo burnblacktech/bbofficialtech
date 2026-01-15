@@ -188,6 +188,19 @@ class DocumentService {
       throw error;
     }
   }
+
+  /**
+   * Process Form 16 using OCR
+   */
+  async processForm16(documentId) {
+    try {
+      const response = await apiClient.post('/documents/process-form16', { documentId });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to process Form 16:', error);
+      throw error;
+    }
+  }
 }
 
 // Create singleton instance
