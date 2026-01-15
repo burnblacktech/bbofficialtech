@@ -137,6 +137,14 @@ const User = sequelize.define('User', {
     defaultValue: {},
     allowNull: false,
   },
+  verifiedPans: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+    allowNull: false,
+    field: 'verified_pans',
+    comment: 'Array of verified PANs with labels for multi-PAN support',
+    // Structure: [{ pan: String, label: String, verifiedAt: Date, isDefault: Boolean, metadata: {} }]
+  },
 
   // =====================================================
   // AUDIT

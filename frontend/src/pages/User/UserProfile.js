@@ -29,7 +29,8 @@ import {
   LogOut,
   CheckCircle,
   AlertCircle,
-  ChevronRight } from 'lucide-react';
+  ChevronRight
+} from 'lucide-react';
 
 const UserProfile = () => {
   // U3.6 Hotfix: Validation in-place, no redirect needed.
@@ -49,7 +50,8 @@ const UserProfile = () => {
     dateOfBirth: '',
     address: '',
     pan: '',
-    aadhar: '' });
+    aadhar: ''
+  });
 
   // Fetch user profile data
   const { data: fetchedProfileData, isLoading, error } = useQuery({
@@ -59,7 +61,20 @@ const UserProfile = () => {
       return response.data;
     },
     enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000 });
+    staleTime: 5 * 60 * 1000
+  });
+
+  // Fetch verified PANs
+  const { data: verifiedPans = [], isLoading: pansLoading } = useQuery({
+    queryKey: ['verifiedPans', user?.id],
+    queryFn: async () => {
+      const response = await api.get('/user/verified-pans');
+      return response.data.data || [];
+    },
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000
+  });
+
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -79,14 +94,16 @@ const UserProfile = () => {
     onError: (error) => {
       setErrors(error.response?.data?.errors || { general: 'Failed to update profile' });
       toast.error('Failed to update profile');
-    } });
+    }
+  });
 
   const handleInputChange = (field, value) => {
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [field]: '' }));
+        [field]: ''
+      }));
     }
   };
 
@@ -128,7 +145,8 @@ const UserProfile = () => {
       dateOfBirth: '',
       address: '',
       pan: '',
-      aadhar: '' });
+      aadhar: ''
+    });
     setErrors({});
     setIsEditing(false);
   };
@@ -326,23 +344,52 @@ const UserProfile = () => {
 
           {/* Document Information */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Documents</h3>
-            <div className="space-y-3">
-              <ProfileInfoCard
-                icon={Shield}
-                label="PAN Number"
-                value={profileData.pan}
-                editable={true}
-                field="pan"
-              />
-              <ProfileInfoCard
-                icon={Shield}
-                label="Aadhar Number"
-                value={profileData.aadhar}
-                editable={true}
-                field="aadhar"
-              />
-            </div>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3 px-1">Verified PANs</h3>
+            {pansLoading ? (
+              <div className="dashboard-card-burnblack">
+                <div className="flex items-center justify-center py-4">
+                  <div className="loading-spinner"></div>
+                  <p className="ml-3 text-neutral-600">Loading PANs...</p>
+                </div>
+              </div>
+            ) : verifiedPans.length > 0 ? (
+              <div className="space-y-3">
+                {verifiedPans.map((pan) => (
+                  <div key={pan.pan} className="dashboard-card-burnblack">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="stat-icon-burnblack">
+                          <Shield className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="text-body-small font-medium text-neutral-500">{pan.label}</p>
+                          {pan.name && (
+                            <p className="text-body-regular font-semibold text-burnblack-black">{pan.name}</p>
+                          )}
+                          <p className="text-body-small text-neutral-600 font-mono">{pan.pan}</p>
+                        </div>
+                      </div>
+                      {pan.isDefault && (
+                        <span className="text-xs px-2 py-1 bg-burnblack-gold bg-opacity-20 text-burnblack-gold rounded-lg font-medium">
+                          Default
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="dashboard-card-burnblack text-center py-6">
+                <Shield className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
+                <p className="text-body-small text-neutral-500 mb-3">No verified PANs</p>
+                <button
+                  onClick={() => navigate('/filing/start')}
+                  className="btn-burnblack text-sm"
+                >
+                  Add PAN
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -382,7 +429,7 @@ const UserProfile = () => {
                 <ChevronRight className="h-4 w-4 text-red-400" />
               </button>
             </div>
-                </Card>
+          </Card>
         </main>
       )}
 

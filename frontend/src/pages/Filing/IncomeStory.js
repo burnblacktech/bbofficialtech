@@ -78,7 +78,7 @@ const IncomeStory = () => {
             icon: Briefcase,
             time: '2 mins',
             status: getSectionStatus(incomeIntent.salary),
-            path: `/filing/${filingId}/income/salary`,
+            path: `/filing/${filingId}/unified?type=salary`,
         });
     }
 
@@ -90,19 +90,19 @@ const IncomeStory = () => {
             icon: TrendingUp,
             time: '5 mins',
             status: getSectionStatus(incomeIntent.capitalGains),
-            path: `/filing/${filingId}/capital-gains-story`,
+            path: `/filing/${filingId}/unified?type=capital_gains`,
         });
     }
 
     if (incomeIntent.houseProperty?.intent) {
         sections.push({
             id: 'house-property',
-            title: 'Rental Income',
+            title: 'House Property',
             description: 'Income from residential or commercial properties.',
             icon: Home,
             time: '3 mins',
             status: getSectionStatus(incomeIntent.houseProperty),
-            path: `/filing/${filingId}/house-properties`,
+            path: `/filing/${filingId}/unified?type=rental`,
         });
     }
 
@@ -114,7 +114,7 @@ const IncomeStory = () => {
             icon: Building2,
             time: '4 mins',
             status: getSectionStatus(incomeIntent.presumptive),
-            path: `/filing/${filingId}/business-profession`,
+            path: `/filing/${filingId}/unified?type=business`,
         });
     }
 
@@ -126,7 +126,7 @@ const IncomeStory = () => {
             icon: Building2,
             time: '15 mins',
             status: getSectionStatus(incomeIntent.business),
-            path: `/filing/${filingId}/business-profession`,
+            path: `/filing/${filingId}/unified?type=business`,
         });
     }
 
@@ -138,7 +138,7 @@ const IncomeStory = () => {
             icon: DollarSign,
             time: '1 min',
             status: getSectionStatus(incomeIntent.otherSources),
-            path: `/filing/${filingId}/other-income-sources`,
+            path: `/filing/${filingId}/unified?type=other`,
         });
     }
 

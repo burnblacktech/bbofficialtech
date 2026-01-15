@@ -3,7 +3,7 @@
 // Builds financial timeline with milestones
 // =====================================================
 
-const { FinancialMilestone, FinancialSnapshot, ITRFiling } = require('../../models');
+const { FinancialMilestone, FinancialSnapshot, ITRFiling, FinancialEvent } = require('../../models');
 const { Op } = require('sequelize');
 const enterpriseLogger = require('../../utils/logger');
 
@@ -210,6 +210,29 @@ class TimelineService {
             description: milestone.description,
             metadata: milestone.metadata,
         };
+    }
+
+    /**
+     * Log a granular financial event
+     * @param {Object} eventData
+     */
+    async logEvent(eventData) {
+        try {
+            await FinancialEvent.create({
+                userId: eventData.userId,
+                eventType: eventData.eventType, // income_added, etc.
+                eventDate: eventData.eventDate || new Date(),
+                entityType: eventData.entityType,
+                entityId: eventData.entityId,
+                amount: eventData.amount,
+                description: eventData.description,
+                source: eventData.source || 'manual',
+                metadata: eventData.metadata || {}
+            });
+        } catch (error) {
+            // Non-blocking log
+            console.error('Failed to log financial event', { error: error.message, userId: eventData.userId });
+        }
     }
 }
 

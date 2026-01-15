@@ -124,8 +124,15 @@ class ITRService {
   // Get user's ITR filings
   async getUserITRs(params = {}) {
     try {
-      const response = await apiClient.get('/itr/filings', { params });
-      return response.data;
+      const response = await apiClient.get('/filings', { params });
+      // Normalize response format for backward compatibility
+      // Backend returns: { success: true, data: [...filings] }
+      // We normalize to: { success: true, filings: [...], data: {...} }
+      return {
+        success: response.data.success,
+        filings: response.data.data || [],
+        data: response.data,
+      };
     } catch (error) {
       errorHandler.handle(error);
       throw error;

@@ -1,328 +1,245 @@
-// =====================================================
-// DOCUMENT UPLOAD PAGE
-// =====================================================
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  Upload,
+  File,
+  FileText,
+  Image,
+  Trash2,
+  Download,
+  Eye,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  X,
+  Zap,
+} from 'lucide-react';
+import Button from '../../components/atoms/Button';
+import Card from '../../components/atoms/Card';
+import Badge from '../../components/atoms/Badge';
+import documentService from '../../services/documentService';
+import incomeService from '../../services/incomeService';
+import deductionService from '../../services/deductionService';
+import { tokens } from '../../styles/tokens';
+import toast from 'react-hot-toast';
+import AutofillConfirmationModal from './components/AutofillConfirmationModal';
 
-import React, { useState, useEffect } from 'react';
-import Card from '../../components/common/Card';
-import Button from '../../components/DesignSystem/components/Button';
-import StatusBadge from '../../components/DesignSystem/StatusBadge';
-import Modal from '../../components/common/Modal';
-import FileUpload from '../../components/Documents/FileUpload';
-import FileManager from '../../components/Documents/FileManager';
-import { useDocumentContext } from '../../contexts/DocumentContext';
-import { enterpriseLogger } from '../../utils/logger';
-import { OrientationPage } from '../../components/templates';
-import { typography, spacing, components, layout } from '../../styles/designTokens';
+const DocumentUpload = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [dragActive, setDragActive] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [processingId, setProcessingId] = useState(null);
+  const [autofillData, setAutofillData] = useState(null);
+  const [showAutofillModal, setShowAutofillModal] = useState(false);
 
-const DocumentUploadPage = ({
-  filingId = null,
-  memberId = null,
-  onDocumentsUploaded,
-  className = '' }) => {
-  const {
-    documents,
-    stats,
-    categories,
-    loading,
-    uploading,
-    uploadProgress,
-    uploadResults,
-    error,
-    loadDocuments,
-    loadStats,
-    uploadFiles,
-    deleteDocument,
-    downloadDocument,
-    clearUploadResults,
-    clearError,
-    getFilteredDocuments,
-    getDocumentsByFiling,
-    getDocumentsByMember,
-    getStorageUsagePercentage,
-    isStorageQuotaExceeded,
-    getSuccessfulUploads,
-    getFailedUploads } = useDocumentContext();
+  // Fetch documents using React Query
+  const { data: documentsData, isLoading } = useQuery({
+    queryKey: ['documents'],
+    queryFn: () => documentService.getUserDocuments({ financialYear: '2024-25' }),
+    staleTime: 2 * 60 * 1000,
+  });
 
-  const [selectedCategory, setSelectedCategory] = useState('OTHER');
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const documents = documentsData?.data || [];
 
-  useEffect(() => {
-    loadDocuments({ filingId, memberId });
-    loadStats();
-  }, [filingId, memberId, loadDocuments, loadStats]);
+  // Mutations
+  const uploadMutation = useMutation({
+    mutationFn: ({ file, category }) => documentService.uploadFileWithProgress(file, category),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['documents']);
+      toast.success('Document uploaded successfully!');
+      setUploading(false);
+    },
+    onError: () => {
+      toast.error('Failed to upload document');
+      setUploading(false);
+    },
+  });
 
-  const handleFileSelect = (files) => {
-    setSelectedFiles(files);
-  };
+  const deleteMutation = useMutation({
+    mutationFn: (documentId) => documentService.deleteDocument(documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['documents']);
+      toast.success('Document deleted successfully!');
+    },
+  });
 
-  const handleUploadComplete = async (files) => {
+  const processMutation = useMutation({
+    mutationFn: (documentId) => documentService.processForm16(documentId),
+    onSuccess: (data) => {
+      setAutofillData(data.extractedData);
+      setShowAutofillModal(true);
+      setProcessingId(null);
+    },
+    onError: () => {
+      toast.error('Failed to analyze document');
+      setProcessingId(null);
+    },
+  });
+
+  const handleAutofillConfirm = async () => {
     try {
-      const results = await uploadFiles(files, selectedCategory, filingId, memberId);
-
-      // Call parent callback if provided
-      if (onDocumentsUploaded) {
-        const successfulUploads = results.filter(r => r.success);
-        onDocumentsUploaded(successfulUploads);
+      // 1. Save Salary Income
+      if (autofillData.financial?.grossSalary) {
+        await incomeService.createIncome({
+          sourceType: 'salary',
+          amount: autofillData.financial.grossSalary,
+          financialYear: '2024-25',
+          sourceData: {
+            employerName: autofillData.employer?.name,
+            employerTan: autofillData.employer?.tan,
+            employerPan: autofillData.employer?.pan,
+            tdsPaid: autofillData.financial.tds || 0,
+            standardDeduction: autofillData.financial.standardDeduction || 50000,
+          },
+        });
       }
 
-      enterpriseLogger.info('Files uploaded successfully', {
-        count: files.length,
-        category: selectedCategory,
-        filingId,
-        memberId,
-      });
+      // 2. Save Deductions
+      if (autofillData.financial?.deductions80C) {
+        await deductionService.createDeduction({
+          section: '80C',
+          amount: autofillData.financial.deductions80C,
+          financialYear: '2024-25',
+        });
+      }
+      if (autofillData.financial?.deductions80D) {
+        await deductionService.createDeduction({
+          section: '80D',
+          amount: autofillData.financial.deductions80D,
+          financialYear: '2024-25',
+        });
+      }
 
+      toast.success('Data applied to your profile successfully!');
+      setShowAutofillModal(false);
+      navigate('/income');
     } catch (error) {
-      enterpriseLogger.error('Failed to upload files', { error: error.message });
+      toast.error('Failed to apply data');
     }
   };
 
-  const handleUploadError = (errors) => {
-    enterpriseLogger.error('Upload errors', { errors });
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
+    else if (e.type === 'dragleave') setDragActive(false);
   };
 
-  const handleFileDelete = async (document) => {
-    try {
-      await deleteDocument(document.id);
-
-      enterpriseLogger.info('Document deleted', {
-        documentId: document.id,
-        filename: document.originalFilename,
-      });
-
-    } catch (error) {
-      enterpriseLogger.error('Failed to delete document', { error: error.message });
-    }
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFiles(e.dataTransfer.files);
   };
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setShowCategoryModal(false);
+  const handleFiles = async (files) => {
+    setUploading(true);
+    const file = files[0];
+    let category = 'OTHER';
+    if (file.name.toLowerCase().includes('form16')) category = 'FORM_16';
+    else if (file.name.toLowerCase().includes('form26')) category = 'BANK_STATEMENT';
+    uploadMutation.mutate({ file, category });
   };
 
-  const getCategoryIcon = (category) => {
-    const categoryData = categories.find(c => c.key === category);
-    return categoryData?.icon || '📎';
+  const getStatusIcon = (status) => {
+    if (status === 'VERIFIED') return <CheckCircle size={16} color={tokens.colors.success[600]} />;
+    if (status === 'SCANNING' || status === 'PENDING') return <Clock size={16} color={tokens.colors.warning[600]} />;
+    return <AlertCircle size={16} color={tokens.colors.error[600]} />;
   };
 
-  const getCategoryLabel = (category) => {
-    const categoryData = categories.find(c => c.key === category);
-    return categoryData?.label || 'Other';
+  const getStatusColor = (status) => {
+    if (status === 'VERIFIED') return 'success';
+    if (status === 'SCANNING' || status === 'PENDING') return 'warning';
+    return 'error';
   };
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  const getFileIcon = (name) => {
+    if (!name) return <File size={24} color={tokens.colors.neutral[600]} />;
+    if (name.toLowerCase().endsWith('.pdf')) return <FileText size={24} color={tokens.colors.error[600]} />;
+    if (name.toLowerCase().match(/\.(jpg|jpeg|png)$/)) return <Image size={24} color={tokens.colors.info[600]} />;
+    return <File size={24} color={tokens.colors.neutral[600]} />;
   };
 
-  const getStorageColor = () => {
-    const percentage = getStorageUsagePercentage();
-    if (percentage >= 90) return 'red';
-    if (percentage >= 75) return 'orange';
-    return 'green';
-  };
-
-  const getStorageStatus = () => {
-    const percentage = getStorageUsagePercentage();
-    if (percentage >= 90) return 'Critical';
-    if (percentage >= 75) return 'Warning';
-    return 'Good';
-  };
-
-  const relevantDocuments = filingId
-    ? getDocumentsByFiling(filingId)
-    : memberId
-      ? getDocumentsByMember(memberId)
-      : getFilteredDocuments();
+  if (isLoading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
 
   return (
-    <div className={`document-upload-page ${className}`}>
-      {/* Header */}
-      <Card className="page-header">
-        <div className="header-content">
-          <div className="header-info">
-            <h2>Document Management</h2>
-            <p>Upload and manage your tax documents</p>
-          </div>
+    <div style={{ minHeight: '100vh', backgroundColor: tokens.colors.neutral[50], padding: tokens.spacing.lg }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: tokens.typography.fontSize['2xl'], fontWeight: tokens.typography.fontWeight.bold, marginBottom: tokens.spacing.md }}>
+          Document Center
+        </h1>
 
-          {stats && (
-            <div className="storage-info">
-              <div className="storage-bar">
-                <div
-                  className="storage-fill"
-                  style={{
-                    width: `${getStorageUsagePercentage()}%`,
-                    backgroundColor: getStorageColor() === 'red' ? '#ef4444' :
-                      getStorageColor() === 'orange' ? '#D4AF37' : '#10b981',
-                  }}
-                ></div>
-              </div>
-              <div className="storage-details">
-                <span className="storage-used">{formatFileSize(stats.totalSize)}</span>
-                <span className="storage-separator">/</span>
-                <span className="storage-total">{formatFileSize(stats.maxStorageBytes)}</span>
-                <StatusBadge
-                  status={getStorageStatus()}
-                  color={getStorageColor()}
-                  className="storage-status"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Error Display */}
-      {error && (
-        <Card className="error-card">
-          <div className="error-content">
-            <div className="error-icon">⚠️</div>
-            <div className="error-message">
-              <h4>Error</h4>
-              <p>{error}</p>
-            </div>
-            <Button
-              variant="outline"
-              size="small"
-              onClick={clearError}
-            >
-              Dismiss
-            </Button>
-          </div>
+        <Card
+          onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
+          style={{
+            marginBottom: tokens.spacing.lg,
+            border: `2px dashed ${dragActive ? tokens.colors.accent[600] : tokens.colors.neutral[300]}`,
+            textAlign: 'center', padding: tokens.spacing.xl, opacity: uploading ? 0.6 : 1,
+          }}
+        >
+          <input type="file" id="file-upload" onChange={(e) => handleFiles(e.target.files)} style={{ display: 'none' }} accept=".pdf,.jpg,.jpeg,.png" />
+          <label htmlFor="file-upload" style={{ cursor: 'pointer' }}>
+            <Upload size={48} color={tokens.colors.accent[600]} style={{ margin: '0 auto 16px' }} />
+            <h3>{uploading ? 'Uploading...' : 'Upload Tax Documents'}</h3>
+            <p style={{ color: tokens.colors.neutral[500], fontSize: tokens.typography.fontSize.sm }}>Drag & drop or click to browse</p>
+          </label>
         </Card>
-      )}
 
-      {/* Upload Section */}
-      <Card className="upload-section">
-        <div className="upload-header">
-          <h3>Upload New Documents</h3>
-          <div className="category-selector">
-            <Button
-              variant="outline"
-              onClick={() => setShowCategoryModal(true)}
-              className="category-button"
-            >
-              {getCategoryIcon(selectedCategory)} {getCategoryLabel(selectedCategory)}
-            </Button>
-          </div>
-        </div>
-
-        <FileUpload
-          onFileSelect={handleFileSelect}
-          onUploadComplete={handleUploadComplete}
-          onUploadError={handleUploadError}
-          category={selectedCategory}
-          filingId={filingId}
-          memberId={memberId}
-          maxFiles={10}
-          maxSize={10 * 1024 * 1024}
-        />
-
-        {/* Upload Progress */}
-        {uploading && (
-          <Card className="upload-progress-card">
-            <div className="progress-header">
-              <h4>Uploading Documents</h4>
-              <span className="progress-percentage">{Math.round(uploadProgress)}%</span>
-            </div>
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-          </Card>
-        )}
-
-        {/* Upload Results */}
-        {uploadResults.length > 0 && (
-          <Card className="upload-results-card">
-            <div className="results-header">
-              <h4>Upload Results</h4>
-              <Button
-                variant="outline"
-                size="small"
-                onClick={clearUploadResults}
-              >
-                Clear
-              </Button>
-            </div>
-
-            <div className="results-summary">
-              <div className="result-stat">
-                <span className="stat-icon">✅</span>
-                <span className="stat-label">Successful:</span>
-                <span className="stat-value">{getSuccessfulUploads().length}</span>
-              </div>
-              <div className="result-stat">
-                <span className="stat-icon">❌</span>
-                <span className="stat-label">Failed:</span>
-                <span className="stat-value">{getFailedUploads().length}</span>
-              </div>
-            </div>
-
-            {getFailedUploads().length > 0 && (
-              <div className="failed-uploads">
-                <h5>Failed Uploads:</h5>
-                <ul>
-                  {getFailedUploads().map((result, index) => (
-                    <li key={index}>
-                      {result.file.name}: {result.error}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </Card>
-        )}
-      </Card>
-
-      {/* Document Library Section */}
-      <div className="document-library-section">
-        <div className="section-header">
-          <h3>Document Library ({relevantDocuments.length})</h3>
-          <p>View and manage your already uploaded files</p>
-        </div>
-
-        <FileManager
-          filingId={filingId}
-          memberId={memberId}
-          onFileDelete={handleFileDelete}
-        />
-      </div>
-
-      {/* Category Selection Modal */}
-      <Modal
-        isOpen={showCategoryModal}
-        onClose={() => setShowCategoryModal(false)}
-        title="Select Document Category"
-        size="medium"
-      >
-        <div className="category-grid">
-          {categories.map(category => (
-            <Button
-              key={category.key}
-              variant="outline"
-              onClick={() => handleCategorySelect(category.key)}
-              className="category-option"
-            >
-              <div className="category-option-content">
-                <span className="category-icon">{category.icon}</span>
-                <div className="category-details">
-                  <h4>{category.label}</h4>
-                  <p>{category.description}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.md }}>
+          {documents.map((doc) => (
+            <Card key={doc.id} padding="md">
+              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+                <div style={{ width: '48px', height: '48px', backgroundColor: tokens.colors.neutral[100], borderRadius: tokens.borderRadius.md, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {getFileIcon(doc.filename)}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+                    <h4 style={{ margin: 0 }}>{doc.filename}</h4>
+                    <Badge variant={getStatusColor(doc.verificationStatus)} size="sm">
+                      {getStatusIcon(doc.verificationStatus)} {doc.verificationStatus}
+                    </Badge>
+                  </div>
+                  <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[500], marginTop: '4px' }}>
+                    {doc.category} • {Math.round(doc.sizeBytes / 1024)} KB • {new Date(doc.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: tokens.spacing.xs }}>
+                  {doc.category === 'FORM_16' && (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => { setProcessingId(doc.id); processMutation.mutate(doc.id); }}
+                      disabled={processingId === doc.id}
+                    >
+                      <Zap size={14} style={{ marginRight: '4px' }} />
+                      {processingId === doc.id ? 'Analyzing...' : 'Magic Autofill'}
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}>
+                    <Download size={16} />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(doc.id)}>
+                    <Trash2 size={16} color={tokens.colors.error[600]} />
+                  </Button>
                 </div>
               </div>
-            </Button>
+            </Card>
           ))}
         </div>
-      </Modal>
+      </div>
+
+      <AutofillConfirmationModal
+        isOpen={showAutofillModal}
+        onClose={() => setShowAutofillModal(false)}
+        onConfirm={handleAutofillConfirm}
+        data={autofillData}
+        isLoading={processMutation.isLoading}
+      />
     </div>
   );
 };
 
-export default DocumentUploadPage;
+export default DocumentUpload;
+

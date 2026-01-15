@@ -6,6 +6,7 @@
 import { lazy } from 'react';
 
 // Common Filing Pages
+const UnifiedFilingDashboard = lazy(() => import('../pages/Filing/UnifiedFilingDashboard'));
 const FilingOverview = lazy(() => import('../pages/Filing/FilingOverview'));
 const SalaryStoryDetailed = lazy(() => import('../pages/Filing/IncomeStory'));
 const HousePropertyStory = lazy(() => import('../pages/Filing/HousePropertyStory'));
@@ -55,11 +56,11 @@ const GoodsCarriageDetails = lazy(() => import('../pages/Filing/GoodsCarriageDet
 const OtherIncomeSourcesDetails = lazy(() => import('../pages/Filing/OtherIncomeSourcesDetails'));
 const ForeignIncomeDetails = lazy(() => import('../pages/Filing/ForeignIncomeDetails'));
 const FilingHistory = lazy(() => import('../pages/ITR/FilingHistory'));
-const StartFilingGate = lazy(() => import('../pages/ITR/StartFilingGate'));
 const PANVerification = lazy(() => import('../pages/ITR/PANVerification'));
 const IncomeSourcesSelection = lazy(() => import('../pages/ITR/IncomeSourcesSelection'));
 const ITRDetermination = lazy(() => import('../pages/ITR/ITRDetermination'));
 const ITR3EntryCeremony = lazy(() => import('../pages/ITR/ITR3EntryCeremony'));
+const StreamlinedITRFlow = lazy(() => import('../pages/Filing/StreamlinedITR/StreamlinedITRFlow'));
 
 export const FILING_ROUTES = {
     entry: [
@@ -68,12 +69,6 @@ export const FILING_ROUTES = {
             component: FilingHistory,
             protected: true,
             title: 'Filing History',
-        },
-        {
-            path: '/itr/start',
-            component: StartFilingGate,
-            protected: true,
-            title: 'Start Filing',
         },
         {
             path: '/itr/verify-identity',
@@ -99,8 +94,20 @@ export const FILING_ROUTES = {
             protected: true,
             title: 'ITR-3 Welcome',
         },
+        {
+            path: '/filing/streamlined',
+            component: StreamlinedITRFlow,
+            protected: true,
+            title: 'Streamlined ITR Filing',
+        },
     ],
     filing: [
+        {
+            path: '/filing/:filingId/unified',
+            component: UnifiedFilingDashboard,
+            protected: true,
+            title: 'File Your Return',
+        },
         {
             path: '/filing/:filingId/overview',
             component: FilingOverview,

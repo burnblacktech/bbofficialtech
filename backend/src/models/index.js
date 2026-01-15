@@ -44,6 +44,9 @@ const ERISubmissionAttempt = require('./ERISubmissionAttempt');
 const FinancialSnapshot = require('./FinancialSnapshot');
 const FinancialMilestone = require('./FinancialMilestone');
 const UserInsight = require('./UserInsight');
+const FinancialEvent = require('./FinancialEvent');
+const IncomeSource = require('./IncomeSource');
+const Deduction = require('./Deduction');
 
 // Define associations after all models are loaded
 require('./associations');
@@ -91,4 +94,7 @@ module.exports = {
   FinancialSnapshot,
   FinancialMilestone,
   UserInsight,
+  FinancialEvent,
+  IncomeSource,
+  Deduction,
 };

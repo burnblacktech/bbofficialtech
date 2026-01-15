@@ -2351,7 +2351,8 @@ const FilingsTab = () => {
     queryKey: ['userFilings'],
     queryFn: async () => {
       const response = await itrService.getUserITRs();
-      return response.data || response;
+      // Service now returns normalized format: { success, filings, data }
+      return response;
     },
     refetchOnWindowFocus: false,
   });

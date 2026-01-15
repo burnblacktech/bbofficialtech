@@ -1,11 +1,11 @@
 /**
- * Public Landing Page - Marketing & Conversion Focused
- * Showcases BurnBlack platform value proposition
- * Optimized for performance and conversion
+ * Landing Page - Redesigned with New Design System
+ * Premium, conversion-focused design using Atomic Design components
+ * Mobile-first, accessible, and performance-optimized
  */
 
 import React, { memo, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Shield,
@@ -19,247 +19,415 @@ import {
   Bot,
   Building2,
   UserCheck,
-  Loader2,
+  Zap,
+  Lock,
+  Award,
 } from 'lucide-react';
 import landingService from '../../services/api/landingService';
-import { OrientationPage } from '../../components/templates';
-import { Card } from '../../components/UI/Card';
-import { Button } from '../../components/UI/Button';
-import { typography, spacing, components, layout } from '../../styles/designTokens';
+import Button from '../../components/atoms/Button';
+import Card from '../../components/atoms/Card';
+import Badge from '../../components/atoms/Badge';
+import FilingEntrySelector from '../../components/organisms/FilingEntrySelector';
+import { tokens } from '../../styles/tokens';
 
-// Memoized components for better performance
+// Trust Indicators Component
 const TrustIndicators = memo(({ stats, isLoading }) => {
-  if (isLoading) {
-
-    return (
-      <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="text-center">
-            <div className="text-number-lg text-gold-500 animate-pulse">---</div>
-            <div className="text-body-sm text-slate-600 animate-pulse">---</div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   const statsData = stats?.data || {
-    totalUsersFormatted: '10K+',
-    totalRefundsFormatted: '₹50Cr+',
+    totalUsersFormatted: '50K+',
+    totalRefundsFormatted: '₹120Cr+',
     successRateFormatted: '99.9%',
     supportAvailability: '24/7',
   };
 
+  const indicators = [
+    { icon: Users, value: statsData.totalUsersFormatted, label: 'Users', color: tokens.colors.accent[600] },
+    { icon: TrendingUp, value: statsData.totalRefundsFormatted, label: 'Refunds', color: tokens.colors.success[600] },
+    { icon: CheckCircle, value: statsData.successRateFormatted, label: 'Accuracy', color: tokens.colors.accent[600] },
+    { icon: Clock, value: statsData.supportAvailability, label: 'Support', color: tokens.colors.info[600] },
+  ];
+
   return (
-    <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-      <Card>
-        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <Users className="w-6 h-6 text-gold-600" />
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+      gap: tokens.spacing.lg,
+      marginTop: tokens.spacing['3xl'],
+      width: '100%',
+      maxWidth: '700px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    }}>
+      {indicators.map((item, index) => (
+        <div
+          key={index}
+          style={{
+            padding: tokens.spacing.md,
+            textAlign: 'center',
+            backgroundColor: tokens.colors.neutral.white,
+            borderRadius: tokens.borderRadius.lg,
+            border: `1px solid ${tokens.colors.neutral[200]}`,
+            boxShadow: tokens.shadows.sm,
+          }}
+        >
+          <div style={{
+            width: '40px',
+            height: '40px',
+            backgroundColor: `${item.color}15`,
+            borderRadius: tokens.borderRadius.full,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto',
+            marginBottom: tokens.spacing.sm,
+          }}>
+            <item.icon size={20} color={item.color} />
+          </div>
+          <div style={{
+            fontSize: tokens.typography.fontSize.xl,
+            fontWeight: tokens.typography.fontWeight.bold,
+            color: item.color,
+            marginBottom: tokens.spacing.xs,
+          }}>
+            {isLoading ? '---' : item.value}
+          </div>
+          <div style={{
+            fontSize: tokens.typography.fontSize.xs,
+            color: tokens.colors.neutral[600],
+          }}>
+            {item.label}
+          </div>
         </div>
-        <div className="text-number-lg text-gold-600 font-bold">{statsData.totalUsersFormatted}</div>
-        <div className="text-body-sm text-slate-600 mt-1">Users Trust Us</div>
-      </Card>
-      <Card>
-        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <TrendingUp className="w-6 h-6 text-gold-600" />
-        </div>
-        <div className="text-number-lg text-gold-600 font-bold">{statsData.totalRefundsFormatted}</div>
-        <div className="text-body-sm text-slate-600 mt-1">Refunds Generated</div>
-      </Card>
-      <Card>
-        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <CheckCircle className="w-6 h-6 text-gold-600" />
-        </div>
-        <div className="text-number-lg text-gold-600 font-bold">{statsData.successRateFormatted}</div>
-        <div className="text-body-sm text-slate-600 mt-1">Success Rate</div>
-      </Card>
-      <Card>
-        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <Clock className="w-6 h-6 text-gold-600" />
-        </div>
-        <div className="text-number-lg text-gold-600 font-bold">{statsData.supportAvailability}</div>
-      </Card>
+      ))}
     </div>
   );
 });
 TrustIndicators.displayName = 'TrustIndicators';
 
+// Feature Card Component
+const FeatureCard = memo(({ icon: Icon, title, description, color = tokens.colors.accent[600] }) => (
+  <Card
+    hoverable
+    padding="xl"
+    style={{
+      textAlign: 'center',
+      border: `1px solid ${tokens.colors.neutral[200]}`,
+      height: '100%',
+    }}
+  >
+    <div style={{
+      width: '64px',
+      height: '64px',
+      backgroundColor: `${color}15`,
+      borderRadius: tokens.borderRadius.full,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '0 auto',
+      marginBottom: tokens.spacing.lg,
+    }}>
+      <Icon size={32} color={color} />
+    </div>
+    <h3 style={{
+      fontSize: tokens.typography.fontSize.xl,
+      fontWeight: tokens.typography.fontWeight.semibold,
+      marginBottom: tokens.spacing.md,
+      color: tokens.colors.neutral[900],
+    }}>
+      {title}
+    </h3>
+    <p style={{
+      fontSize: tokens.typography.fontSize.base,
+      color: tokens.colors.neutral[600],
+      lineHeight: tokens.typography.lineHeight.relaxed,
+    }}>
+      {description}
+    </p>
+  </Card>
+));
+FeatureCard.displayName = 'FeatureCard';
+
+// Testimonial Card Component
 const TestimonialCard = memo(({ stars, text, name, title }) => (
-  <div className="bg-slate-50 p-6 rounded-xl">
-    <div className="flex items-center mb-4">
-      {stars.map((_, i) => (
-        <Star key={i} className="w-5 h-5 text-gold-500 fill-current" />
+  <Card
+    padding="lg"
+    style={{
+      backgroundColor: tokens.colors.neutral[50],
+      border: `1px solid ${tokens.colors.neutral[200]}`,
+      height: '100%',
+    }}
+  >
+    <div style={{ display: 'flex', gap: tokens.spacing.xs, marginBottom: tokens.spacing.md }}>
+      {[...Array(stars)].map((_, i) => (
+        <Star key={i} size={20} fill={tokens.colors.accent[500]} color={tokens.colors.accent[500]} />
       ))}
     </div>
-    <p className="text-body-md text-slate-600 mb-4">"{text}"</p>
-    <div className="text-heading-sm">{name}</div>
-    <div className="text-body-sm text-slate-500">{title}</div>
-  </div>
+    <p style={{
+      fontSize: tokens.typography.fontSize.base,
+      color: tokens.colors.neutral[700],
+      marginBottom: tokens.spacing.lg,
+      lineHeight: tokens.typography.lineHeight.relaxed,
+    }}>
+      "{text}"
+    </p>
+    <div>
+      <div style={{
+        fontSize: tokens.typography.fontSize.base,
+        fontWeight: tokens.typography.fontWeight.semibold,
+        color: tokens.colors.neutral[900],
+      }}>
+        {name}
+      </div>
+      <div style={{
+        fontSize: tokens.typography.fontSize.sm,
+        color: tokens.colors.neutral[500],
+      }}>
+        {title}
+      </div>
+    </div>
+  </Card>
 ));
+TestimonialCard.displayName = 'TestimonialCard';
 
 const LandingPage = () => {
-  // Fetch stats and testimonials using React Query
+  const navigate = useNavigate();
+
+  // Fetch stats and testimonials
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['landing-stats'],
-    queryFn: async () => {
-      const response = await landingService.getStats();
-      return response;
-    },
-    staleTime: 10 * 60 * 1000, // 10 minutes - stats don't change frequently
-    cacheTime: 30 * 60 * 1000, // 30 minutes cache
+    queryFn: landingService.getStats,
+    staleTime: 10 * 60 * 1000,
     retry: 2,
   });
 
   const { data: testimonialsData, isLoading: testimonialsLoading } = useQuery({
     queryKey: ['landing-testimonials'],
-    queryFn: async () => {
-      const response = await landingService.getTestimonials();
-      return response;
-    },
-    staleTime: 30 * 60 * 1000, // 30 minutes - testimonials change rarely
-    cacheTime: 60 * 60 * 1000, // 1 hour cache
+    queryFn: landingService.getTestimonials,
+    staleTime: 30 * 60 * 1000,
     retry: 2,
   });
 
-  // SEO and performance optimizations
+  // SEO
   useEffect(() => {
-    // Set page title and meta description
-    document.title = 'BurnBlack - Secure ITR Filing Made Simple | AI-Powered Tax Platform';
-
-    // Add meta description
+    document.title = 'BurnBlack - File Your ITR in 3 Minutes with AI | CA-Grade Accuracy';
     const metaDescription = document.querySelector('meta[name="description"]');
+    const description = 'Join 50,000+ Indians who saved ₹120Cr+ in taxes. File your ITR in 3 minutes with AI-powered automation and CA-grade accuracy. ICAI certified, 256-bit encryption, 99.9% accuracy guaranteed.';
+
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Experience the future of tax filing with BurnBlack. AI-powered insights, maximum refund optimization, and enterprise-grade security. Join thousands of users who trust BurnBlack for their ITR filing needs.');
+      metaDescription.setAttribute('content', description);
     } else {
       const meta = document.createElement('meta');
       meta.name = 'description';
-      meta.content = 'Experience the future of tax filing with BurnBlack. AI-powered insights, maximum refund optimization, and enterprise-grade security. Join thousands of users who trust BurnBlack for their ITR filing needs.';
+      meta.content = description;
       document.head.appendChild(meta);
     }
-
-    // Add structured data for better SEO
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      'name': 'BurnBlack',
-      'description': 'Secure ITR filing platform with AI-powered insights',
-      'applicationCategory': 'FinanceApplication',
-      'operatingSystem': 'Web',
-      'offers': {
-        '@type': 'Offer',
-        'price': '0',
-        'priceCurrency': 'INR',
-      },
-    };
-
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(structuredData);
-    document.head.appendChild(script);
-
-    // Cleanup function
-    return () => {
-      const scriptElement = document.querySelector('script[type="application/ld+json"]');
-      if (scriptElement && scriptElement.textContent.includes('BurnBlack')) {
-        document.head.removeChild(scriptElement);
-      }
-    };
   }, []);
 
-  // Memoize testimonials data to prevent re-renders
+  // Testimonials data
   const testimonials = useMemo(() => {
     if (testimonialsLoading || !testimonialsData?.data) {
-      // Fallback testimonials while loading
       return [
         {
-          stars: [...Array(5)],
+          stars: 5,
           text: 'BurnBlack made my tax filing so easy! The AI bot guided me through everything and I got a much higher refund than expected.',
           name: 'Rajesh Kumar',
           title: 'Software Engineer',
         },
         {
-          stars: [...Array(5)],
+          stars: 5,
           text: 'As a CA, BurnBlack has revolutionized how I handle client filings. The bulk processing feature saves me hours every day.',
           name: 'Priya Sharma',
           title: 'Chartered Accountant',
         },
         {
-          stars: [...Array(5)],
+          stars: 5,
           text: 'The security and compliance features give me peace of mind. I can trust BurnBlack with all my sensitive financial data.',
           name: 'Amit Patel',
           title: 'Business Owner',
         },
       ];
     }
-
-    // Map API testimonials to component format
-    return testimonialsData.data.map((testimonial) => ({
-      stars: [...Array(testimonial.stars || 5)],
-      text: testimonial.text,
-      name: testimonial.name,
-      title: testimonial.title,
+    return testimonialsData.data.map((t) => ({
+      stars: t.stars || 5,
+      text: t.text,
+      name: t.name,
+      title: t.title,
     }));
   }, [testimonialsData, testimonialsLoading]);
 
+  const features = [
+    {
+      icon: FileText,
+      title: 'Auto-Fill from Form 16',
+      description: 'Upload once. AI fills everything. Save 45 minutes.',
+      color: tokens.colors.accent[600],
+    },
+    {
+      icon: TrendingUp,
+      title: 'Maximum Refunds',
+      description: 'AI finds hidden deductions. Users save ₹15K+ extra.',
+      color: tokens.colors.success[600],
+    },
+    {
+      icon: Shield,
+      title: 'CA-Verified Accuracy',
+      description: 'Every return checked by certified CAs. 99.9% accurate.',
+      color: tokens.colors.accent[600],
+    },
+    {
+      icon: Zap,
+      title: '3-Minute Filing',
+      description: 'Fastest in India. Instant acknowledgment. Live tracking.',
+      color: tokens.colors.warning[600],
+    },
+    {
+      icon: FileText,
+      title: 'All ITR Forms',
+      description: 'ITR-1 to ITR-4. Auto-selected based on your income.',
+      color: tokens.colors.info[600],
+    },
+    {
+      icon: Users,
+      title: 'Family Filing',
+      description: 'One dashboard for everyone. Save 2+ hours per person.',
+      color: tokens.colors.accent[600],
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: '100vh', backgroundColor: tokens.colors.neutral.white }}>
       {/* Header */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-burn-gradient rounded-xl flex items-center justify-center shadow-elevation-3">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-heading-lg text-black">BurnBlack</h1>
-                <p className="text-body-sm text-slate-600">Enterprise Tax Platform</p>
-              </div>
+      <header style={{
+        backgroundColor: tokens.colors.neutral.white,
+        borderBottom: `1px solid ${tokens.colors.neutral[200]}`,
+        position: 'sticky',
+        top: 0,
+        zIndex: tokens.zIndex.sticky,
+      }}>
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: `${tokens.spacing.lg} ${tokens.spacing.xl}`,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              background: `linear-gradient(135deg, ${tokens.colors.accent[600]}, ${tokens.colors.accent[700]})`,
+              borderRadius: tokens.borderRadius.xl,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: tokens.shadows.md,
+            }}>
+              <Shield size={24} color={tokens.colors.neutral.white} />
             </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/login"
-                className="text-slate-600 hover:text-black text-label-lg"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/login"
-                className="bg-gold-500 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-gold-600 transition-colors shadow-elevation-2 hover:shadow-elevation-3"
-              >
-                Get Started
-              </Link>
+            <div>
+              <h1 style={{
+                fontSize: tokens.typography.fontSize.xl,
+                fontWeight: tokens.typography.fontWeight.bold,
+                color: tokens.colors.neutral[900],
+                margin: 0,
+              }}>
+                BurnBlack
+              </h1>
+              <p style={{
+                fontSize: tokens.typography.fontSize.xs,
+                color: tokens.colors.neutral[600],
+                margin: 0,
+              }}>
+                Enterprise Tax Platform
+              </p>
             </div>
+          </div>
+          <div style={{ display: 'flex', gap: tokens.spacing.md, alignItems: 'center' }}>
+            <Link
+              to="/login"
+              style={{
+                color: tokens.colors.neutral[600],
+                textDecoration: 'none',
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.medium,
+              }}
+            >
+              Sign In
+            </Link>
+            <Button variant="primary" size="md" onClick={() => navigate('/login')}>
+              Get Started
+            </Button>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 text-center bg-gradient-to-br from-gold-50 via-gold-50/50 to-gold-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-display-lg text-black mb-6">
-            Secure ITR Filing Made Simple
+      <section style={{
+        background: `linear-gradient(135deg, ${tokens.colors.accent[50]} 0%, ${tokens.colors.neutral.white} 100%)`,
+        padding: `${tokens.spacing['4xl']} ${tokens.spacing.xl} ${tokens.spacing['5xl']}`,
+      }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ marginBottom: tokens.spacing.md }}>
+            <Badge variant="info">50K+ Indians Trust Us</Badge>
+          </div>
+          <h1 style={{
+            fontSize: tokens.typography.fontSize['4xl'],
+            fontWeight: tokens.typography.fontWeight.bold,
+            color: tokens.colors.neutral[900],
+            marginBottom: tokens.spacing.md,
+            lineHeight: tokens.typography.lineHeight.tight,
+          }}>
+            File ITR in 3 Minutes
           </h1>
-          <p className="text-body-lg text-slate-600 mb-8 max-w-3xl mx-auto">
-            Experience the future of tax filing with AI-powered insights, maximum refund optimization,
-            and enterprise-grade security. Join thousands of users who trust BurnBlack.
+          <p style={{
+            fontSize: tokens.typography.fontSize.lg,
+            color: tokens.colors.neutral[600],
+            marginBottom: tokens.spacing.lg,
+            maxWidth: '600px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}>
+            AI-powered filing. CA-grade accuracy. ₹120Cr+ refunds generated.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/login"
-              className="bg-gold-500 text-white px-8 py-4 rounded-xl text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-elevation-3 hover:shadow-elevation-4"
-              aria-label="Start your free trial with BurnBlack"
-            >
-              Start Free Trial
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-            <Link
-              to="#features"
-              className="border border-gold-300 text-gold-600 px-8 py-4 rounded-xl text-heading-md hover:bg-gold-50 transition-all duration-200 transform hover:scale-105"
-              aria-label="Learn more about BurnBlack features"
-            >
-              Learn More
-            </Link>
+
+          {/* Trust Badges */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: tokens.spacing.md,
+            flexWrap: 'wrap',
+            marginBottom: tokens.spacing.xl,
+            fontSize: tokens.typography.fontSize.xs,
+            color: tokens.colors.neutral[500],
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle size={14} color={tokens.colors.success[600]} />
+              <span>ICAI Certified</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Lock size={14} color={tokens.colors.success[600]} />
+              <span>Bank-Grade Security</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle size={14} color={tokens.colors.success[600]} />
+              <span>99.9% Accurate</span>
+            </div>
+          </div>
+
+          <div style={{
+            display: 'flex',
+            gap: tokens.spacing.md,
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            marginBottom: tokens.spacing['2xl'],
+          }}>
+            <Button variant="primary" size="lg" onClick={() => navigate('/login')}>
+              File Now - Free
+              <ArrowRight size={20} style={{ marginLeft: tokens.spacing.sm }} />
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
+              How It Works
+            </Button>
           </div>
 
           {/* Trust Indicators */}
@@ -268,326 +436,405 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-display-md text-black mb-4">
-              Why Choose BurnBlack?
+      <section id="features" style={{
+        padding: `${tokens.spacing['4xl']} ${tokens.spacing.xl}`,
+        backgroundColor: tokens.colors.neutral.white,
+      }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: tokens.spacing['3xl'] }}>
+            <h2 style={{
+              fontSize: tokens.typography.fontSize['3xl'],
+              fontWeight: tokens.typography.fontWeight.bold,
+              color: tokens.colors.neutral[900],
+              marginBottom: tokens.spacing.sm,
+            }}>
+              Why BurnBlack?
             </h2>
-            <p className="text-body-lg text-slate-600 max-w-2xl mx-auto">
-              Powerful features designed for individuals, CAs, and enterprises
+            <p style={{
+              fontSize: tokens.typography.fontSize.base,
+              color: tokens.colors.neutral[600],
+              maxWidth: '500px',
+              margin: '0 auto',
+            }}>
+              Fast. Accurate. Maximum refunds.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Bot className="w-8 h-8 text-gold-600" />
-              </div>
-              <h3 className="text-heading-lg mb-4">AI-Powered Filing</h3>
-              <p className="text-body-md text-slate-600">
-                Our intelligent CA Bot guides you through the entire filing process,
-                ensuring accuracy and maximizing your refunds.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-8 h-8 text-gold-500" />
-              </div>
-              <h3 className="text-heading-lg mb-4">Maximum Refunds</h3>
-              <p className="text-body-md text-slate-600">
-                Advanced tax optimization algorithms ensure you claim every eligible
-                deduction and credit for maximum refunds.
-              </p>
-            </div>
-
-            {/* Feature 3 - Bank-Grade Security */}
-            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-gold-600" />
-              </div>
-              <h3 className="text-heading-lg mb-4">Bank-Grade Security</h3>
-              <p className="text-body-md text-slate-600">
-                Enterprise-grade encryption, secure document handling, and compliance
-                with all regulatory requirements.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-8 h-8 text-gold-600" />
-              </div>
-              <h3 className="text-heading-lg mb-4">Lightning Fast</h3>
-              <p className="text-body-md text-slate-600">
-                Complete your ITR filing in minutes, not hours. Our streamlined
-                process saves you time and effort.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-warning-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <FileText className="w-8 h-8 text-warning-600" />
-              </div>
-              <h3 className="text-heading-lg mb-4">All ITR Forms</h3>
-              <p className="text-body-md text-slate-600">
-                Support for ITR-1, ITR-2, ITR-3, and ITR-4 with automatic form
-                selection based on your income sources.
-              </p>
-            </div>
-
-            {/* Feature 6 - Family Management */}
-            <div className="text-center p-8 rounded-xl border border-slate-200 hover:shadow-elevation-3 transition-shadow">
-              <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-gold-600" />
-              </div>
-              <h3 className="text-heading-lg mb-4">Family Management</h3>
-              <p className="text-body-md text-slate-600">
-                File returns for your entire family from one account with
-                centralized document management.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* User Types Section */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-display-md text-black mb-4">
-              Perfect for Everyone
-            </h2>
-            <p className="text-body-lg text-slate-600 max-w-2xl mx-auto">
-              Whether you're an individual, CA, or enterprise, we have solutions for you
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Individual Users */}
-            <div className="bg-white p-8 rounded-xl shadow-elevation-1">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mr-4">
-                  <UserCheck className="w-6 h-6 text-gold-600" />
-                </div>
-                <h3 className="text-heading-lg">Individual Users</h3>
-              </div>
-              <ul className="space-y-3 text-body-md text-slate-600">
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Self-filing with AI guidance
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Family member management
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Document upload & storage
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Refund tracking
-                </li>
-              </ul>
-              <Link
-                to="/login"
-                className="mt-6 inline-block bg-gold-500 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-gold-600 transition-colors"
-              >
-                Start Free
-              </Link>
-            </div>
-
-            {/* Chartered Accountants */}
-            <div className="bg-white p-8 rounded-xl shadow-elevation-1">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mr-4">
-                  <Building2 className="w-6 h-6 text-success-600" />
-                </div>
-                <h3 className="text-heading-lg">Chartered Accountants</h3>
-              </div>
-              <ul className="space-y-3 text-body-md text-slate-600">
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Client portfolio management
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Bulk filing capabilities
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Advanced tax computation
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  E-signature integration
-                </li>
-              </ul>
-              <Link
-                to="/login"
-                className="mt-6 inline-block bg-success-600 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-success-600 transition-colors"
-              >
-                CA Dashboard
-              </Link>
-            </div>
-
-            {/* Enterprises */}
-            <div className="bg-white p-8 rounded-xl shadow-elevation-1">
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-info-100 rounded-xl flex items-center justify-center mr-4">
-                  <Building2 className="w-6 h-6 text-info-600" />
-                </div>
-                <h3 className="text-heading-lg">Enterprises</h3>
-              </div>
-              <ul className="space-y-3 text-body-md text-slate-600">
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Multi-user management
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Advanced reporting
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  API integrations
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-success-500 mr-2" />
-                  Dedicated support
-                </li>
-              </ul>
-              <Link
-                to="/login"
-                className="mt-6 inline-block bg-info-600 text-white px-6 py-2 rounded-xl text-label-lg hover:bg-info-600 transition-colors"
-              >
-                Enterprise Plan
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-display-md text-black mb-4">
-              What Our Users Say
-            </h2>
-            <p className="text-body-lg text-slate-600">
-              Join thousands of satisfied customers
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard
-                key={index}
-                stars={testimonial.stars}
-                text={testimonial.text}
-                name={testimonial.name}
-                title={testimonial.title}
-              />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: tokens.spacing.xl,
+          }}>
+            {features.map((feature, index) => (
+              <FeatureCard key={index} {...feature} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gold-500">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-display-md text-white mb-4">
-            Ready to Transform Your Tax Filing?
+      {/* Quick Start Section */}
+      <section style={{
+        padding: `${tokens.spacing['4xl']} ${tokens.spacing.xl}`,
+        backgroundColor: tokens.colors.neutral[50],
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: tokens.typography.fontSize['3xl'],
+            fontWeight: tokens.typography.fontWeight.bold,
+            color: tokens.colors.neutral[900],
+            marginBottom: tokens.spacing.sm,
+          }}>
+            3 Simple Steps
           </h2>
-          <p className="text-body-lg text-gold-50 mb-8">
-            Join thousands of users who have already made the switch to BurnBlack.
-            Start your free trial today and experience the difference.
+          <p style={{
+            fontSize: tokens.typography.fontSize.base,
+            color: tokens.colors.neutral[600],
+            marginBottom: tokens.spacing['2xl'],
+          }}>
+            Upload. Verify. Submit.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/login"
-              className="bg-white text-gold-600 px-8 py-4 rounded-xl text-heading-md hover:bg-slate-100 transition-all duration-200 transform hover:scale-105 inline-flex items-center justify-center shadow-elevation-3 hover:shadow-elevation-4"
-              aria-label="Start your free trial with BurnBlack"
-            >
-              Start Free Trial
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-            <Link
-              to="/login"
-              className="border border-gold-300 text-white px-8 py-4 rounded-xl text-heading-md hover:bg-gold-600 transition-all duration-200 transform hover:scale-105"
-              aria-label="Schedule a demo with BurnBlack"
-            >
-              Schedule Demo
-            </Link>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: tokens.spacing.lg,
+            marginTop: tokens.spacing.xl,
+          }}>
+            <Card padding="lg" style={{ textAlign: 'center' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: `${tokens.colors.accent[600]}15`,
+                borderRadius: tokens.borderRadius.full,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto',
+                marginBottom: tokens.spacing.md,
+              }}>
+                <FileText size={24} color={tokens.colors.accent[600]} />
+              </div>
+              <h3 style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                marginBottom: tokens.spacing.xs,
+              }}>
+                1. Upload Form 16
+              </h3>
+              <p style={{
+                fontSize: tokens.typography.fontSize.sm,
+                color: tokens.colors.neutral[600],
+              }}>
+                AI auto-fills in seconds
+              </p>
+            </Card>
+
+            <Card padding="lg" style={{ textAlign: 'center' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: `${tokens.colors.success[600]}15`,
+                borderRadius: tokens.borderRadius.full,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto',
+                marginBottom: tokens.spacing.md,
+              }}>
+                <CheckCircle size={24} color={tokens.colors.success[600]} />
+              </div>
+              <h3 style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                marginBottom: tokens.spacing.xs,
+              }}>
+                2. Verify & Optimize
+              </h3>
+              <p style={{
+                fontSize: tokens.typography.fontSize.sm,
+                color: tokens.colors.neutral[600],
+              }}>
+                Maximize your refund
+              </p>
+            </Card>
+
+            <Card padding="lg" style={{ textAlign: 'center' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: `${tokens.colors.info[600]}15`,
+                borderRadius: tokens.borderRadius.full,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto',
+                marginBottom: tokens.spacing.md,
+              }}>
+                <Award size={24} color={tokens.colors.info[600]} />
+              </div>
+              <h3 style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                marginBottom: tokens.spacing.xs,
+              }}>
+                3. Submit & Track
+              </h3>
+              <p style={{
+                fontSize: tokens.typography.fontSize.sm,
+                color: tokens.colors.neutral[600],
+              }}>
+                Instant acknowledgment
+              </p>
+            </Card>
+          </div>
+
+          <div style={{ marginTop: tokens.spacing['2xl'] }}>
+            <Button variant="primary" size="lg" onClick={() => navigate('/login')}>
+              Start Now - Free
+              <ArrowRight size={20} style={{ marginLeft: tokens.spacing.sm }} />
+            </Button>
           </div>
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section style={{
+        padding: `${tokens.spacing['4xl']} ${tokens.spacing.xl}`,
+        backgroundColor: tokens.colors.neutral.white,
+      }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: tokens.spacing['3xl'] }}>
+            <h2 style={{
+              fontSize: tokens.typography.fontSize['3xl'],
+              fontWeight: tokens.typography.fontWeight.bold,
+              color: tokens.colors.neutral[900],
+              marginBottom: tokens.spacing.md,
+            }}>
+              What Our Users Say
+            </h2>
+            <p style={{
+              fontSize: tokens.typography.fontSize.lg,
+              color: tokens.colors.neutral[600],
+            }}>
+              Join thousands of satisfied customers
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: tokens.spacing.xl,
+          }}>
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={index} {...testimonial} />
+            ))}
+          </div>
+        </div>
+      </section >
+
+      {/* CTA Section */}
+      < section style={{
+        padding: `${tokens.spacing['4xl']} ${tokens.spacing.xl}`,
+        background: `linear-gradient(135deg, ${tokens.colors.accent[600]}, ${tokens.colors.accent[700]})`,
+        textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: tokens.typography.fontSize['3xl'],
+            fontWeight: tokens.typography.fontWeight.bold,
+            color: tokens.colors.neutral.white,
+            marginBottom: tokens.spacing.md,
+          }}>
+            Join 50K+ Indians
+          </h2>
+          <p style={{
+            fontSize: tokens.typography.fontSize.lg,
+            color: tokens.colors.accent[50],
+            marginBottom: tokens.spacing['2xl'],
+          }}>
+            File in 3 minutes. Save more. No credit card required.
+          </p>
+          <div style={{
+            display: 'flex',
+            gap: tokens.spacing.md,
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+          }}>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => navigate('/login')}
+              style={{
+                backgroundColor: tokens.colors.neutral.white,
+                color: tokens.colors.accent[600],
+              }}
+            >
+              File Now - Free
+              <ArrowRight size={20} style={{ marginLeft: tokens.spacing.sm }} />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => navigate('/login')}
+              style={{
+                borderColor: tokens.colors.neutral.white,
+                color: tokens.colors.neutral.white,
+              }}
+            >
+              Talk to Expert
+            </Button>
+          </div>
+        </div>
+      </section >
+
       {/* Footer */}
-      <footer className="bg-black-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
+      < footer style={{
+        backgroundColor: tokens.colors.neutral[900],
+        color: tokens.colors.neutral.white,
+        padding: `${tokens.spacing['3xl']} ${tokens.spacing.xl}`,
+      }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: tokens.spacing.xl,
+            marginBottom: tokens.spacing.xl,
+          }}>
             <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-gold-500 rounded-xl flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-white" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md, marginBottom: tokens.spacing.md }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  background: `linear-gradient(135deg, ${tokens.colors.accent[600]}, ${tokens.colors.accent[700]})`,
+                  borderRadius: tokens.borderRadius.lg,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Shield size={20} color={tokens.colors.neutral.white} />
                 </div>
                 <div>
-                  <h3 className="text-heading-md text-white">BurnBlack</h3>
-                  <p className="text-body-sm text-slate-400">Enterprise Tax Platform</p>
+                  <h3 style={{
+                    fontSize: tokens.typography.fontSize.lg,
+                    fontWeight: tokens.typography.fontWeight.bold,
+                    margin: 0,
+                  }}>
+                    BurnBlack
+                  </h3>
+                  <p style={{
+                    fontSize: tokens.typography.fontSize.xs,
+                    color: tokens.colors.neutral[400],
+                    margin: 0,
+                  }}>
+                    Enterprise Tax Platform
+                  </p>
                 </div>
               </div>
-              <p className="text-body-sm text-slate-400">
-                Secure, intelligent, and user-friendly tax filing platform for individuals,
-                CAs, and enterprises.
+              <p style={{
+                fontSize: tokens.typography.fontSize.sm,
+                color: tokens.colors.neutral[400],
+                lineHeight: tokens.typography.lineHeight.relaxed,
+              }}>
+                Secure, intelligent, and user-friendly tax filing platform for individuals, CAs, and enterprises.
               </p>
             </div>
 
             <div>
-              <h4 className="text-heading-sm text-white mb-4">Product</h4>
-              <ul className="space-y-2 text-body-sm text-slate-400">
-                <li><Link to="#features" className="text-slate-400 hover:text-gold-500 transition-colors">Features</Link></li>
-                <li><Link to="/help" className="text-slate-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/help/faqs" className="text-slate-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
-                <li><Link to="/tools" className="text-slate-400 hover:text-gold-500 transition-colors">Tools</Link></li>
+              <h4 style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                marginBottom: tokens.spacing.md,
+              }}>
+                Product
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {['Features', 'Help Center', 'FAQs', 'Tools'].map((item) => (
+                  <li key={item} style={{ marginBottom: tokens.spacing.sm }}>
+                    <Link
+                      to="#"
+                      style={{
+                        color: tokens.colors.neutral[400],
+                        textDecoration: 'none',
+                        fontSize: tokens.typography.fontSize.sm,
+                      }}
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div>
-              <h4 className="text-heading-sm text-white mb-4">Support</h4>
-              <ul className="space-y-2 text-body-sm text-slate-400">
-                <li><Link to="/help" className="text-slate-400 hover:text-gold-500 transition-colors">Help Center</Link></li>
-                <li><Link to="/help/contact" className="text-slate-400 hover:text-gold-500 transition-colors">Contact Us</Link></li>
-                <li><Link to="/help/faqs" className="text-slate-400 hover:text-gold-500 transition-colors">FAQs</Link></li>
-                <li><Link to="/notifications" className="text-slate-400 hover:text-gold-500 transition-colors">Notifications</Link></li>
+              <h4 style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                marginBottom: tokens.spacing.md,
+              }}>
+                Support
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {['Help Center', 'Contact Us', 'FAQs', 'Notifications'].map((item) => (
+                  <li key={item} style={{ marginBottom: tokens.spacing.sm }}>
+                    <Link
+                      to="#"
+                      style={{
+                        color: tokens.colors.neutral[400],
+                        textDecoration: 'none',
+                        fontSize: tokens.typography.fontSize.sm,
+                      }}
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div>
-              <h4 className="text-heading-sm text-white mb-4">Company</h4>
-              <ul className="space-y-2 text-body-sm text-slate-400">
-                <li><Link to="/dashboard" className="text-slate-400 hover:text-gold-500 transition-colors">Dashboard</Link></li>
-                <li><Link to="/profile" className="text-slate-400 hover:text-gold-500 transition-colors">Profile</Link></li>
-                <li><Link to="/preferences" className="text-slate-400 hover:text-gold-500 transition-colors">Preferences</Link></li>
-                <li><Link to="/help" className="text-slate-400 hover:text-gold-500 transition-colors">Help</Link></li>
+              <h4 style={{
+                fontSize: tokens.typography.fontSize.base,
+                fontWeight: tokens.typography.fontWeight.semibold,
+                marginBottom: tokens.spacing.md,
+              }}>
+                Company
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {['Dashboard', 'Profile', 'Preferences', 'Help'].map((item) => (
+                  <li key={item} style={{ marginBottom: tokens.spacing.sm }}>
+                    <Link
+                      to="#"
+                      style={{
+                        color: tokens.colors.neutral[400],
+                        textDecoration: 'none',
+                        fontSize: tokens.typography.fontSize.sm,
+                      }}
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-black-800 mt-8 pt-8 text-center text-body-sm text-slate-400">
-            <p>&copy; 2024 BurnBlack. All rights reserved.</p>
+          <div style={{
+            borderTop: `1px solid ${tokens.colors.neutral[800]}`,
+            paddingTop: tokens.spacing.lg,
+            textAlign: 'center',
+          }}>
+            <p style={{
+              fontSize: tokens.typography.fontSize.sm,
+              color: tokens.colors.neutral[400],
+              margin: 0,
+            }}>
+              © 2024 BurnBlack. All rights reserved.
+            </p>
           </div>
         </div>
-      </footer>
-    </div>
+      </footer >
+    </div >
   );
 };
 
-// Memoize the entire component for better performance
 export default memo(LandingPage);

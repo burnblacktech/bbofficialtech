@@ -261,6 +261,10 @@ class DocumentService {
         whereClause.memberId = filters.memberId;
       }
 
+      if (filters.financialYear) {
+        whereClause.financialYear = filters.financialYear;
+      }
+
       const documents = await Document.findAll({
         where: whereClause,
         order: [['created_at', 'DESC']],

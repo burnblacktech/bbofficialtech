@@ -30,10 +30,12 @@ const sendToAnalytics = (metric) => {
       body,
       keepalive: true, // Ensure request completes even if page unloads
     }).catch((error) => {
+      // eslint-disable-next-line no-console
       console.warn('Failed to send web vitals:', error);
     });
   } else {
     // Log in development
+    // eslint-disable-next-line no-console
     console.log('Web Vital:', metric.name, {
       value: metric.value,
       rating: metric.rating,
@@ -56,7 +58,10 @@ export const initWebVitals = () => {
   // If your web-vitals version supports it, uncomment:
   // getINP(sendToAnalytics);
 
-  console.log('Web Vitals tracking initialized');
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.log('Web Vitals tracking initialized');
+  }
 };
 
 /**
@@ -107,11 +112,12 @@ export const getPerformanceScore = (metrics) => {
 
   return total > 0 ? Math.round((score / total) * 100) : 0;
 };
-
-export default {
+const webVitals = {
   initWebVitals,
   getPerformanceBudgets,
   checkPerformanceBudget,
   getPerformanceScore,
 };
+
+export default webVitals;
 

@@ -118,7 +118,6 @@ const PropertySaleDetails = lazy(() => import('./pages/Filing/PropertySaleDetail
 const TaxPaymentGate = lazy(() => import('./pages/Filing/TaxPaymentGate'));
 const PresumptiveIncomeStory = lazy(() => import('./pages/Filing/PresumptiveIncomeStory'));
 const AddPresumptiveIncome = lazy(() => import('./pages/Filing/AddPresumptiveIncome'));
-const StartFilingGate = lazy(() => import('./pages/ITR/StartFilingGate'));
 const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
 const ITR3EntryCeremony = lazy(() => import('./pages/ITR/ITR3EntryCeremony'));
 const HousePropertyStory = lazy(() => import('./pages/Filing/HousePropertyStory'));
@@ -127,6 +126,27 @@ const ITR3BusinessProfile = lazy(() => import('./pages/Filing/ITR3BusinessProfil
 const ITR3ProfitLoss = lazy(() => import('./pages/Filing/ITR3ProfitLoss'));
 const ITR3BalanceSheet = lazy(() => import('./pages/Filing/ITR3BalanceSheet'));
 const ITR3AssetsLiabilities = lazy(() => import('./pages/Filing/ITR3AssetsLiabilities'));
+
+// New Filing Flow Pages (Phase 1)
+const StartFilingPage = lazy(() => import('./pages/Filing/StartFilingPage'));
+// const SalaryIncomePage = lazy(() => import('./pages/Filing/SalaryIncomePage')); // Moved to Income module
+const DeductionsPage = lazy(() => import('./pages/Filing/DeductionsPage'));
+const TaxCalculationPage = lazy(() => import('./pages/Filing/TaxCalculationPage'));
+const ReviewSubmitPage = lazy(() => import('./pages/Filing/ReviewSubmitPage'));
+
+// ITR Determination Wizard
+const ITRDeterminationWizard = lazy(() => import('./pages/Filing/ITRDetermination/ITRDeterminationWizard'));
+const StreamlinedITRFlow = lazy(() => import('./pages/Filing/StreamlinedITR/StreamlinedITRFlow'));
+
+// New Navigation Pages (PRD v3.0)
+const UnifiedIncomePage = lazy(() => import('./pages/Income/UnifiedIncomePage'));
+const TaxPlannerPage = lazy(() => import('./pages/TaxPlanner/TaxPlannerPage'));
+const TaxCalculatorPage = lazy(() => import('./pages/TaxPlanner/TaxCalculatorPage'));
+const DeductionOptimizerPage = lazy(() => import('./pages/TaxPlanner/DeductionOptimizerPage'));
+const RegimeComparisonPage = lazy(() => import('./pages/TaxPlanner/RegimeComparisonPage'));
+const TaxCalendarPage = lazy(() => import('./pages/TaxPlanner/TaxCalendarPage'));
+const InsightsPage = lazy(() => import('./pages/Insights/InsightsPage'));
+const SettingsPage = lazy(() => import('./pages/Settings/SettingsPage'));
 
 // ITR Components (Restored)
 const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
@@ -883,10 +903,167 @@ const AppContent = () => {
 
           {/* User Management Routes */}
           <Route
+            path="/dashboard"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading dashboard..." />}>
+                  <UserDashboard />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          {/* New Filing Flow Routes (Phase 1) */}
+          <Route
+            path="/filing/start"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading filing wizard..." />}>
+                  <ITRDeterminationWizard />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/salary"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading salary details..." />}>
+                  <UnifiedIncomePage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/deductions"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading deductions..." />}>
+                  <DeductionsPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/filing/:filingId/tax-calculation"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading tax calculation..." />}>
+                  <TaxCalculationPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          {/* Review & Submit Page */}
+          <Route
+            path="/filing/:filingId/review"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading review..." />}>
+                  <ReviewSubmitPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          {/* New Navigation Routes (PRD v3.0) */}
+          <Route
+            path="/income"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading income..." />}>
+                  <UnifiedIncomePage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/tax-planner"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading tax planner..." />}>
+                  <TaxPlannerPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/tax-planner/calculator"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading tax calculator..." />}>
+                  <TaxCalculatorPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/tax-planner/optimizer"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading deduction optimizer..." />}>
+                  <DeductionOptimizerPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/tax-planner/comparison"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading regime comparison..." />}>
+                  <RegimeComparisonPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/tax-planner/calendar"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading tax calendar..." />}>
+                  <TaxCalendarPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/insights"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading insights..." />}>
+                  <InsightsPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading settings..." />}>
+                  <SettingsPage />
+                </Suspense>
+              </Layout>
+            }
+          />
+
+          {/* ITR Analytics */}
+          <Route
             path="/documents"
             element={
               <Layout>
                 <Suspense fallback={<RouteLoader message="Loading documents..." />}>
+                  <Documents />
+                </Suspense>
+              </Layout>
+            }
+          />
+          <Route
+            path="/documents/upload"
+            element={
+              <Layout>
+                <Suspense fallback={<RouteLoader message="Loading document upload..." />}>
                   <Documents />
                 </Suspense>
               </Layout>

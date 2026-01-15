@@ -1,13 +1,10 @@
-// =====================================================
-// ENTERPRISE COMPONENTS
-// High-level components for enterprise features
-// =====================================================
+// Stub - EnterpriseComponents
+export const EnterpriseCard = ({ children }) => <div>{children}</div>;
+export const EnterpriseStatCard = ({ children }) => <div>{children}</div>;
+export const EnterpriseTable = ({ children }) => <div>{children}</div>;
 
-import React from 'react';
-
-// Empty export to resolve import issues
-const EnterpriseComponents = {
-  // Placeholder for enterprise components
+export default {
+    EnterpriseCard,
+    EnterpriseStatCard,
+    EnterpriseTable,
 };
-
-export default EnterpriseComponents;

@@ -18,6 +18,8 @@ const CAMarketplaceInquiry = require('./CAMarketplaceInquiry');
 const CABooking = require('./CABooking');
 const CAFirmReview = require('./CAFirmReview');
 const RefundTracking = require('./RefundTracking');
+const IncomeSource = require('./IncomeSource');
+const Deduction = require('./Deduction');
 
 const enterpriseLogger = require('../utils/logger');
 
@@ -537,6 +539,36 @@ CAFirmReview.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user',
   onDelete: 'SET NULL',
+});
+
+// =====================================================
+// INCOME SOURCE AND DEDUCTION ASSOCIATIONS
+// =====================================================
+
+// User has many Income Sources
+User.hasMany(IncomeSource, {
+  foreignKey: 'userId',
+  as: 'incomeSources',
+  onDelete: 'CASCADE',
+});
+
+// IncomeSource belongs to User
+IncomeSource.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user',
+});
+
+// User has many Deductions
+User.hasMany(Deduction, {
+  foreignKey: 'userId',
+  as: 'deductions',
+  onDelete: 'CASCADE',
+});
+
+// Deduction belongs to User
+Deduction.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user',
 });
 
 // =====================================================

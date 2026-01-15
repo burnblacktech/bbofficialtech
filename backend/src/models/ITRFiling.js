@@ -98,6 +98,12 @@ const ITRFiling = sequelize.define('ITRFiling', {
       is: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i,
     },
   },
+  financialYear: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: '2024-25',
+    field: 'financial_year',
+  },
   itrType: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -236,6 +242,26 @@ const ITRFiling = sequelize.define('ITRFiling', {
   },
 
   // =====================================================
+  // PROGRESS TRACKING
+  // =====================================================
+  progress: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'progress',
+    validate: {
+      min: 0,
+      max: 100,
+    },
+    comment: 'Filing completion progress (0-100)',
+  },
+  lastUpdated: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'last_updated',
+  },
+
+  // =====================================================
   // AUDIT
   // =====================================================
   createdAt: {
@@ -245,34 +271,53 @@ const ITRFiling = sequelize.define('ITRFiling', {
   },
   updatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
-    field: 'updated_at',
+    allowNull: false
   },
 }, {
+  sequelize,
+  modelName: 'ITRFiling',
   tableName: 'itr_filings',
   timestamps: true,
-  // underscored removed - all fields explicitly mapped with field: 'snake_case'
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   indexes: [
     {
-      fields: ['ca_firm_id'],
+      fields: ['created_by', 'assessment_year'],
     },
     {
-      fields: ['created_by'],
+      fields: ['taxpayer_pan'],
     },
     {
       fields: ['lifecycle_state'],
     },
     {
-      fields: ['reviewed_by'],
-    },
-    {
-      fields: ['approved_by'],
-    },
-    {
-      fields: ['assessment_year'],
+      fields: ['ack_number'],
+      unique: true,
+      where: {
+        ack_number: {
+          [require('sequelize').Op.ne]: null,
+        },
+      },
     },
   ],
+  getterMethods: {
+    // Virtual field to access jsonPayload as filingData
+    filingData() {
+      return this.jsonPayload || {};
+    },
+  },
+  setterMethods: {
+    // Virtual setter to update jsonPayload via filingData
+    filingData(value) {
+      this.jsonPayload = value;
+    },
+  },
 });
+
+enterpriseLogger.info('ITRFiling model defined');
+
+module.exports = ITRFiling;
 
 // =====================================================
 // INSTANCE METHODS

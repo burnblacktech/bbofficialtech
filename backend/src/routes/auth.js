@@ -515,6 +515,12 @@ router.get('/profile', authenticateToken, async (req, res) => {
         'id',
         'email',
         'fullName',
+        'phone',
+        'dateOfBirth',
+        'gender',
+        'panNumber',
+        'panVerified',
+        'panVerifiedAt',
         'role',
         'status',
         'createdAt',
@@ -548,14 +554,31 @@ router.get('/profile', authenticateToken, async (req, res) => {
         authProvider: user.authProvider,
         hasPassword: !!user.passwordHash,
 
-        // PAN - TODO: Add to database schema
-        pan: null,
-        panVerified: false,
+        // Personal info from User model
+        phone: user.phone,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
 
-        // Profile data - TODO: Add columns to user_profiles table
-        dateOfBirth: null,
-        gender: null,
-        address: null,
+        // PAN info from User model
+        pan: user.panNumber,
+        panVerified: user.panVerified,
+        panVerifiedAt: user.panVerifiedAt,
+
+        // Profile data from UserProfile table (if exists)
+        address: userProfile ? {
+          line1: userProfile.addressLine1,
+          line2: userProfile.addressLine2,
+          city: userProfile.city,
+          state: userProfile.state,
+          pincode: userProfile.pincode,
+        } : null,
+
+        // Banking info from UserProfile table (if exists)
+        banking: userProfile ? {
+          bankName: userProfile.bankName,
+          accountNumber: userProfile.accountNumber,
+          ifscCode: userProfile.ifscCode,
+        } : null,
       },
     });
   } catch (error) {
@@ -721,6 +744,75 @@ router.patch('/pan', authenticateToken, async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Internal server error',
+    });
+  }
+});
+
+// =====================================================
+// PAN VERIFICATION ROUTE
+// =====================================================
+
+/**
+ * @route POST /api/user/verify-pan
+ * @desc Verify PAN number (mock verification for now)
+ * @access Private
+ */
+router.post('/verify-pan', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { pan } = req.body;
+
+    // Validate PAN format
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!pan || !panRegex.test(pan.toUpperCase())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid PAN format. Expected format: ABCDE1234F',
+      });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Mock verification (in production, integrate with SurePass or IT portal API)
+    const verifiedName = user.fullName || 'User Name';
+
+    // Update user's PAN if not already set
+    if (!user.panNumber) {
+      user.panNumber = pan.toUpperCase();
+      user.panVerified = true;
+      user.panVerifiedAt = new Date();
+      await user.save();
+    }
+
+    enterpriseLogger.info('PAN verified successfully', {
+      userId,
+      pan: pan.toUpperCase(),
+    });
+
+    res.json({
+      success: true,
+      message: 'PAN verified successfully',
+      data: {
+        name: verifiedName,
+        pan: pan.toUpperCase(),
+        verified: true,
+      },
+    });
+  } catch (error) {
+    enterpriseLogger.error('PAN verification failed', {
+      error: error.message,
+      userId: req.user?.userId,
+    });
+    res.status(500).json({
+      success: false,
+      message: 'PAN verification failed',
+      error: error.message,
     });
   }
 });
