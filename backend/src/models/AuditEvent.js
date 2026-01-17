@@ -43,13 +43,13 @@ const AuditEvent = sequelize.define('AuditEvent', {
     // =====================================================
     actorId: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true, // Allow NULL for anonymous/system actions
         references: {
             model: 'users',
             key: 'id',
         },
         field: 'actor_id',
-        comment: 'User who performed the action',
+        comment: 'User who performed the action (NULL for system/anonymous)',
     },
     actorRole: {
         type: DataTypes.STRING,

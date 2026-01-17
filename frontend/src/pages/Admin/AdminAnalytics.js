@@ -45,7 +45,7 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { OrientationPage } from '../../components/templates';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/UI/Card';
 import { Button } from '../../components/UI/Button';
@@ -116,8 +116,11 @@ const AdminAnalytics = () => {
     }).format(amount);
   };
 
-  // Export to CSV
-  const handleExportCSV = () => {
+  // Export to Excel using ExcelJS
+  const handleExportCSV = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Analytics');
+
     const data = [];
 
     if (metricType === 'overview') {
@@ -145,10 +148,28 @@ const AdminAnalytics = () => {
       data.push(['LTV', formatCurrency(revenueMetrics.ltv || 0)]);
     }
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Analytics');
-    XLSX.writeFile(wb, `analytics-${metricType}-${timeRange}-${new Date().toISOString().split('T')[0]}.xlsx`);
+    // Add data to worksheet
+    data.forEach(row => {
+      worksheet.addRow(row);
+    });
+
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFD4AF37' }, // BurnBlack primary color
+    };
+
+    // Generate and download file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analytics-${metricType}-${timeRange}-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
   };
 
   // Prepare chart data

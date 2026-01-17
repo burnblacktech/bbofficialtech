@@ -38,6 +38,7 @@
     "admin:test-login": "node src/scripts/testAdminLogin.js",
     "admin:check": "node src/scripts/checkAdminUser.js",
     "admin:test-query": "node src/scripts/testLoginQuery.js",
+    "gstin:create": "node src/scripts/createGSTINAdmin.js",
     "db:add-user-columns": "node src/scripts/addMissingUserColumns.js",
     "db:add-scalability-indexes": "node src/scripts/migrations/add-scalability-indexes.js"
   },
@@ -66,6 +67,7 @@
     "csv-parser": "^3.2.0",
     "detect-libc": "^2.1.2",
     "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
     "express": "^4.18.2",
     "express-rate-limit": "^7.5.1",
     "express-session": "^1.18.2",
@@ -95,8 +97,7 @@
     "twilio": "^4.19.0",
     "uuid": "^9.0.1",
     "winston": "^3.17.0",
-    "ws": "^8.18.3",
-    "xlsx": "^0.18.5"
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@babel/generator": "^7.28.3",

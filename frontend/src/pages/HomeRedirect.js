@@ -17,7 +17,7 @@ const HomeRedirect = () => {
   // Show loading state while authentication is being determined
   if (isLoading) {
 
-  return (
+    return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -35,6 +35,10 @@ const HomeRedirect = () => {
 
   // ENHANCED LOGIC - Multi-tenant role-based redirection
   switch (user.role) {
+    // GSTIN Admin - Special admin for GSTIN lookups only
+    case 'GSTIN_ADMIN':
+      return <Navigate to="/gstin-lookup" replace />;
+
     // Platform Administrators
     case 'SUPER_ADMIN':
       return <Navigate to="/admin/super" replace />;

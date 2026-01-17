@@ -367,7 +367,7 @@ class ReportBuilderService {
     // This would use a CSV library like 'csv-writer' or 'fast-csv'
     // For now, return a simple CSV string
     const rows = [];
-    
+
     if (Array.isArray(reportData)) {
       // Array of objects
       if (reportData.length > 0) {
@@ -381,8 +381,8 @@ class ReportBuilderService {
       // Object - flatten it
       rows.push('Key,Value');
       Object.keys(reportData).forEach(key => {
-        const value = typeof reportData[key] === 'object' 
-          ? JSON.stringify(reportData[key]) 
+        const value = typeof reportData[key] === 'object'
+          ? JSON.stringify(reportData[key])
           : reportData[key];
         rows.push(`${key},${value}`);
       });
@@ -395,14 +395,38 @@ class ReportBuilderService {
    * Export report to Excel format
    */
   async exportToExcel(reportData, filename = 'report') {
-    // This would use 'xlsx' library (already used in AdminAnalytics)
-    const XLSX = require('xlsx');
-    const worksheet = XLSX.utils.json_to_sheet(Array.isArray(reportData) ? reportData : [reportData]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
-    
-    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    // Using 'exceljs' library - secure alternative to xlsx
+    const ExcelJS = require('exceljs');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Report');
+
+    // Convert data to array format
+    const dataArray = Array.isArray(reportData) ? reportData : [reportData];
+
+    if (dataArray.length > 0) {
+      // Add headers
+      const headers = Object.keys(dataArray[0]);
+      worksheet.addRow(headers);
+
+      // Add data rows
+      dataArray.forEach(item => {
+        const row = headers.map(header => item[header] || '');
+        worksheet.addRow(row);
+      });
+
+      // Style the header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD4AF37' } // BurnBlack primary color
+      };
+    }
+
+    // Generate buffer
+    return await workbook.xlsx.writeBuffer();
   }
+
 }
 
 module.exports = new ReportBuilderService();

@@ -1,8 +1,10 @@
 import apiClient from './core/APIClient';
 
 class IncomeService {
-    async getIncomeSummary(params = {}) {
-        const response = await apiClient.get('/income/summary', { params });
+    async getIncomeSummary(financialYear = '2024-25') {
+        const response = await apiClient.get('/income/summary', {
+            params: { financialYear },
+        });
         return response.data;
     }
 

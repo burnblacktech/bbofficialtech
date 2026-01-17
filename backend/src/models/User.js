@@ -49,7 +49,7 @@ const User = sequelize.define('User', {
   // AUTHORIZATION
   // =====================================================
   role: {
-    type: DataTypes.ENUM('SUPER_ADMIN', 'CA', 'PREPARER', 'END_USER'),
+    type: DataTypes.ENUM('SUPER_ADMIN', 'GSTIN_ADMIN', 'CA', 'PREPARER', 'END_USER'),
     defaultValue: 'END_USER',
     allowNull: false,
   },
