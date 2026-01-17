@@ -58,7 +58,7 @@ class GSTINService {
             const normalizedGSTIN = gstinNumber.toUpperCase();
 
             // Step 1: Check database cache first
-            const GSTINLookup = require('../models/GSTINLookup');
+            const GSTINLookup = require('../../models/GSTINLookup');
             const cachedLookup = await GSTINLookup.findByGSTIN(normalizedGSTIN);
 
             if (cachedLookup && !cachedLookup.isExpired()) {
@@ -155,7 +155,7 @@ class GSTINService {
 
                 // Save failed lookup to database for audit
                 try {
-                    const GSTINLookup = require('../models/GSTINLookup');
+                    const GSTINLookup = require('../../models/GSTINLookup');
                     await GSTINLookup.createOrUpdate(
                         gstinNumber.toUpperCase(),
                         errorData,
