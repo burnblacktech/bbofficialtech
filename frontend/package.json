@@ -46,7 +46,8 @@
     "lint:fix": "eslint src/ --fix",
     "format:fix-trailing": "eslint src/ --fix --rule \"no-trailing-spaces: error\"",
     "format:all": "npm run format:fix-trailing && prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "dev": "set PORT=3000 && react-scripts start"
+    "dev": "set PORT=3000 && react-scripts start",
+    "vercel-build": "CI=false react-scripts build"
   },
   "browserslist": {
     "production": [

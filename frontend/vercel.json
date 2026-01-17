@@ -1,0 +1,7 @@
+# Vercel Configuration
+{
+    "buildCommand": "npm install --legacy-peer-deps && npm run vercel-build",
+    "installCommand": "npm install --legacy-peer-deps",
+    "framework": null,
+    "outputDirectory": "build"
+}
