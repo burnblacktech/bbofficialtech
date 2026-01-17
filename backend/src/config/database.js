@@ -70,6 +70,8 @@ if (connectionString) {
         },
         connectTimeout: 60000,
         requestTimeout: 60000,
+        // Force IPv4 to avoid Railway IPv6 issues
+        family: 4,
       },
       pool: {
         max: parseInt(process.env.DB_POOL_MAX) || 20,
@@ -133,6 +135,8 @@ if (connectionString) {
       requestTimeout: 60000,
       connectionTimeoutMillis: 60000,
       idleTimeoutMillis: 30000,
+      // Force IPv4 to avoid Railway IPv6 issues
+      family: 4,
       // Enable SSL for Supabase, disable for local
       ...(isSupabase ? {
         ssl: {
