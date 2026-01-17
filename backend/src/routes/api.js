@@ -160,6 +160,9 @@ router.use('/ca', generalLimiter, require('./ca'));
 // GSTIN lookup routes
 router.use('/gstin', generalLimiter, require('./gstin'));
 
+// Analytics routes
+router.use('/analytics', generalLimiter, require('./analytics'));
+
 // Notification routes
 router.use('/notifications', generalLimiter, require('./notification'));
 

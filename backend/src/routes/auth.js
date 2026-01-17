@@ -1908,4 +1908,42 @@ router.post('/upgrade-to-professional',
 // Complete onboarding
 
 
+// =====================================================
+// GET CURRENT USER PROFILE
+// =====================================================
+router.get('/profile', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['passwordHash', 'password'],
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      user: user.toJSON(),
+    });
+
+  } catch (error) {
+    enterpriseLogger.error('Profile fetch error', {
+      error: error.message,
+      userId: req.user?.userId,
+    });
+
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch profile',
+    });
+  }
+});
+
 module.exports = router;
