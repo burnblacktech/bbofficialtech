@@ -733,7 +733,7 @@ const AppContent = () => {
             }
           />
 
-          {/* GSTIN Lookup Route */}
+          {/* GSTIN Lookup Route - PUBLIC for testing */}
           <Route
             path="/gstin-lookup"
             element={
