@@ -1324,7 +1324,7 @@ router.post('/forgot-password',
       const user = await User.findOne({
         where: {
           email: email.toLowerCase(),
-          authProvider: 'LOCAL',
+          authProvider: 'local',
         },
       });
 

@@ -3,7 +3,7 @@
 // Processes Excel/CSV files from various brokers
 // =====================================================
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { enterpriseLogger } from '../utils/logger';
 
 export class BrokerFileProcessor {
@@ -49,12 +49,36 @@ export class BrokerFileProcessor {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          const buffer = e.target.result;
+          const workbook = new ExcelJS.Workbook();
+          await workbook.xlsx.load(buffer);
+
+          // Get first worksheet
+          const worksheet = workbook.worksheets[0];
+
+          // Convert to JSON
+          const jsonData = [];
+          const headers = [];
+
+          // Get headers from first row
+          worksheet.getRow(1).eachCell((cell, colNumber) => {
+            headers[colNumber - 1] = cell.value;
+          });
+
+          // Get data rows
+          worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber > 1) { // Skip header row
+              const rowData = {};
+              row.eachCell((cell, colNumber) => {
+                const header = headers[colNumber - 1];
+                rowData[header] = cell.value;
+              });
+              jsonData.push(rowData);
+            }
+          });
+
           resolve(jsonData);
         } catch (error) {
           reject(error);
