@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { Briefcase, Building, Home, TrendingUp, Wallet, ArrowRight } from 'lucide-react';
@@ -6,12 +6,16 @@ import { toast } from 'react-hot-toast';
 import { PageContent } from '../../components/Layout/PageContent';
 import Button from '../../components/atoms/Button';
 import IncomeSourceCard from '../../components/molecules/IncomeSourceCard';
+import FinancialYearSelector from '../../components/molecules/FinancialYearSelector';
+import TaxImpactSidebar from '../../components/organisms/TaxImpactSidebar';
 import Modal, { ModalHeader, ModalBody, ModalTitle } from '../../components/common/Modal';
 import DocumentUploadZone from '../../components/molecules/DocumentUploadZone';
 
 import BusinessIncomeModal from '../../components/organisms/BusinessIncomeModal';
 import CapitalGainsModal from '../../components/organisms/CapitalGainsModal';
 import HousePropertyModal from '../../components/organisms/HousePropertyModal';
+import SalaryIncomeModal from '../../components/organisms/SalaryIncomeModal';
+import ImportFromPreviousYearModal from '../../components/organisms/ImportFromPreviousYearModal';
 import incomeService from '../../services/incomeService';
 import { tokens } from '../../styles/tokens';
 
@@ -20,6 +24,8 @@ const UnifiedIncomePage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedIncomeType, setSelectedIncomeType] = useState(null);
     const [showUpload, setShowUpload] = useState(false);
+    const [selectedFY, setSelectedFY] = useState('2024-25'); // Default to current FY
+    const [showImportModal, setShowImportModal] = useState(false);
 
     // Initial load - Check URL param
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,10 +88,10 @@ const UnifiedIncomePage = () => {
         details: {},
     });
 
-    // Fetch income sources
+    // Fetch income sources for selected FY
     const { data: incomeSources, isLoading } = useQuery({
-        queryKey: ['income', 'summary'],
-        queryFn: () => incomeService.getIncomeSummary(),
+        queryKey: ['income', 'summary', selectedFY],
+        queryFn: () => incomeService.getIncomeSummary(selectedFY),
     });
 
     // Add income mutation
@@ -151,17 +157,40 @@ const UnifiedIncomePage = () => {
         return source ? source.count : 0;
     };
 
+    // Calculate total income for tax calculator
+    const totalIncome = useMemo(() => {
+        const sources = Array.isArray(incomeSources) ? incomeSources : (incomeSources?.data || []);
+        if (!Array.isArray(sources)) return 0;
+        return sources.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+    }, [incomeSources]);
+
     return (
         <PageContent
             title="Your Financial Story"
             subtitle="Let's build your financial profile for FY 2024-25. Add all your income sources below."
         >
-            {/* Financial Summary Banner (Placeholder) */}
-            <div className="mb-8 p-6 bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl text-white shadow-lg">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h2 className="text-2xl font-bold mb-1">Total Income Reported</h2>
-                        <div className="text-4xl font-bold text-emerald-400">
+            {/* Financial Year Selector */}
+            <FinancialYearSelector
+                selectedFY={selectedFY}
+                onFYChange={(fy) => {
+                    setSelectedFY(fy);
+                    toast.success(`Switched to FY ${fy}`);
+                }}
+                showCopyOption={true}
+                onCopyFromPrevious={(prevFY) => {
+                    setShowImportModal(true);
+                }}
+            />
+
+            {/* Financial Summary Banner */}
+            <div
+                className="mb-8 p-6 sm:p-8 bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl text-white shadow-xl hover:shadow-2xl transition-all duration-300 animate-fadeSlideIn"
+                style={{ animationDelay: '0.1s', animationFillMode: 'both' }}
+            >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="flex-1">
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2">Total Income Reported</h2>
+                        <div className="text-4xl sm:text-5xl font-bold text-emerald-400 mb-3 transition-all duration-200">
                             {/* Calculate total client-side if not provided in summary object */}
                             ₹{(() => {
                                 const sources = Array.isArray(incomeSources) ? incomeSources : (incomeSources?.data || []);
@@ -171,7 +200,8 @@ const UnifiedIncomePage = () => {
                                 return total.toLocaleString('en-IN');
                             })()}
                         </div>
-                        <p className="text-slate-400 mt-2 text-sm">
+                        <p className="text-slate-300 text-sm sm:text-base flex items-center gap-2">
+                            <span className="inline-block w-2 h-2 bg-emerald-400 rounded-full"></span>
                             Across {(() => {
                                 const sources = Array.isArray(incomeSources) ? incomeSources : (incomeSources?.data || []);
                                 return Array.isArray(sources) ? sources.length : 0;
@@ -179,34 +209,95 @@ const UnifiedIncomePage = () => {
                         </p>
                     </div>
                     {/* Placeholder for Mini Chart */}
-                    <div className="hidden md:block h-16 w-32 bg-white/10 rounded-lg backdrop-blur-sm flex items-center justify-center text-xs text-white/50">
-                        Growth Chart
+                    <div className="hidden md:flex h-20 w-40 bg-white/10 rounded-xl backdrop-blur-sm items-center justify-center">
+                        <div className="text-center">
+                            <div className="text-xs text-white/60 mb-1">FY {selectedFY}</div>
+                            <div className="text-sm text-white/80 font-semibold">Growth Chart</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Income Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {incomeTypes.map((type) => (
-                    <IncomeSourceCard
-                        key={type.id}
-                        title={type.label}
-                        icon={type.icon}
-                        color={type.color}
-                        amount={getAmountForType(type.id)}
-                        count={getCountForType(type.id)}
-                        onClick={() => handleCardClick(type)}
-                        isCompleted={getAmountForType(type.id) > 0}
+            {/* Income Grid with Tax Sidebar */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-8">
+                {/* Main Content - Income Cards */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        {incomeTypes.map((type, index) => (
+                            <div
+                                key={type.id}
+                                className="animate-fadeSlideIn"
+                                style={{
+                                    animationDelay: `${0.2 + index * 0.1}s`,
+                                    animationFillMode: 'both',
+                                }}
+                            >
+                                <IncomeSourceCard
+                                    title={type.label}
+                                    icon={type.icon}
+                                    color={type.color}
+                                    amount={getAmountForType(type.id)}
+                                    count={getCountForType(type.id)}
+                                    onClick={() => handleCardClick(type)}
+                                    isCompleted={getAmountForType(type.id) > 0}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Sidebar - Tax Calculator */}
+                <div
+                    className="lg:col-span-1 animate-fadeSlideIn"
+                    style={{
+                        animationDelay: '0.4s',
+                        animationFillMode: 'both',
+                    }}
+                >
+                    <TaxImpactSidebar
+                        totalIncome={totalIncome}
+                        deductions={0} // Will be updated when deductions are added
+                        isVisible={totalIncome > 0}
                     />
-                ))}
+                </div>
             </div>
 
             {/* Navigation Footer */}
-            <div className="flex justify-end pt-6 border-t border-slate-200">
-                <Button variant="primary" size="lg" className="flex items-center gap-2">
+            <div
+                className="flex justify-between items-center pt-8 border-t-2 border-slate-200 animate-fadeSlideIn"
+                style={{
+                    animationDelay: '0.6s',
+                    animationFillMode: 'both',
+                }}
+            >
+                <div className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-900">Next:</span> Add deductions to optimize your tax
+                </div>
+                <Button
+                    variant="primary"
+                    size="lg"
+                    className="flex items-center gap-2 min-h-[44px] transition-all duration-200 hover:shadow-lg hover:scale-105"
+                >
                     Continue to Deductions <ArrowRight size={20} />
                 </Button>
             </div>
+
+            <style jsx>{`
+                @keyframes fadeSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-fadeSlideIn {
+                    animation: fadeSlideIn 0.3s ease-out;
+                }
+            `}</style>
 
             {/* Unified Input Modal */}
             <Modal
@@ -230,52 +321,21 @@ const UnifiedIncomePage = () => {
                     {/* Dynamic Form Content */}
                     <form id="income-form" onSubmit={handleFormSubmit} className="space-y-6">
 
-                        {/* Salary Specific Options */}
+                        {/* Salary Specific Modal */}
                         {selectedIncomeType?.id === 'salary' && (
-                            <div className="space-y-4">
-                                {!showUpload ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div
-                                            onClick={() => setShowUpload(true)}
-                                            className="p-4 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
-                                        >
-                                            <div className="font-semibold text-slate-700">Upload Form 16</div>
-                                            <div className="text-sm text-slate-500">Auto-fill details instantly</div>
-                                        </div>
-                                        <div className="flex flex-col gap-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-slate-700 mb-1">Employer Name</label>
-                                                <input
-                                                    type="text"
-                                                    value={formData.employerName}
-                                                    onChange={(e) => setFormData({ ...formData, employerName: e.target.value })}
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                                    placeholder="e.g. Acme Corp"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-slate-700 mb-1">Gross Salary Amount</label>
-                                                <input
-                                                    type="number"
-                                                    value={formData.grossSalary}
-                                                    onChange={(e) => setFormData({ ...formData, grossSalary: e.target.value })}
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                                    placeholder="₹ 0"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <DocumentUploadZone
-                                        documentType="form16"
-                                        onExtractedData={(data) => {
-                                            setFormData({ ...formData, ...data });
-                                            setShowUpload(false);
-                                            toast.success('Data extracted!');
-                                        }}
-                                    />
-                                )}
-                            </div>
+                            <SalaryIncomeModal
+                                onClose={handleCloseModal}
+                                onSave={(payload) => {
+                                    const mutationPayload = {
+                                        sourceType: 'salary',
+                                        amount: payload.data.amount,
+                                        financialYear: '2024-25',
+                                        sourceData: payload.data,
+                                    };
+                                    addIncomeMutation.mutate(mutationPayload);
+                                }}
+                                isProcessing={addIncomeMutation.isPending}
+                            />
                         )}
 
                         {/* Business Specific Modal (NEW) */}
@@ -378,6 +438,31 @@ const UnifiedIncomePage = () => {
                     </Button>
                 </div>
             </Modal>
+
+            {/* Import from Previous Year Modal */}
+            <ImportFromPreviousYearModal
+                isOpen={showImportModal}
+                onClose={() => setShowImportModal(false)}
+                previousFY="2023-24"
+                currentFY={selectedFY}
+                onImport={async (sources) => {
+                    // Import sources to current FY
+                    for (const source of sources) {
+                        const payload = {
+                            sourceType: source.type,
+                            amount: source.adjustedAmount,
+                            financialYear: selectedFY,
+                            sourceData: {
+                                ...source,
+                                importedFrom: '2023-24',
+                                inflationApplied: source.inflationApplied,
+                            },
+                        };
+                        await incomeService.createIncome(payload);
+                    }
+                    queryClient.invalidateQueries(['income']);
+                }}
+            />
         </PageContent>
     );
 };

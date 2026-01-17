@@ -83,6 +83,7 @@ const AdminSettings = lazy(() => import('./pages/Admin/AdminSettings'));
 const AdminAuditLogs = lazy(() => import('./pages/Admin/AdminAuditLogs'));
 const AdminActivityLogs = lazy(() => import('./pages/Admin/AdminActivityLogs'));
 const AdminSecurityLogs = lazy(() => import('./pages/Admin/AdminSecurityLogs'));
+const GSTINLookupPage = lazy(() => import('./pages/Admin/GSTINLookupPage'));
 
 // CA Firm components
 const CAFirmAdminDashboard = lazy(() => import('./pages/Dashboard/CAFirmAdminDashboard'));
@@ -728,6 +729,16 @@ const AppContent = () => {
                     <AdminSecurityLogs />
                   </Suspense>
                 </AdminLayout>
+              </Suspense>
+            }
+          />
+
+          {/* GSTIN Lookup Route */}
+          <Route
+            path="/gstin-lookup"
+            element={
+              <Suspense fallback={<RouteLoader message="Loading GSTIN lookup..." />}>
+                <GSTINLookupPage />
               </Suspense>
             }
           />

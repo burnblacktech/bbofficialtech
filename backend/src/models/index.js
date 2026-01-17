@@ -47,6 +47,7 @@ const UserInsight = require('./UserInsight');
 const FinancialEvent = require('./FinancialEvent');
 const IncomeSource = require('./IncomeSource');
 const Deduction = require('./Deduction');
+const GSTINLookup = require('./GSTINLookup');
 
 // Define associations after all models are loaded
 require('./associations');
@@ -97,4 +98,5 @@ module.exports = {
   FinancialEvent,
   IncomeSource,
   Deduction,
+  GSTINLookup,
 };

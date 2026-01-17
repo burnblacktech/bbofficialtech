@@ -18,11 +18,10 @@ class AuditService {
     }
 
     static async logEvent({ actorId, action, entityType, entityId, metadata = {}, actorRole }, transaction = null) {
-        const systemId = '00000000-0000-4000-8000-000000000000';
         try {
             // S13: Structured logging for runtime visibility
             enterpriseLogger.info('AUDIT_EVENT', {
-                actorId: actorId || systemId,
+                actorId: actorId || null,
                 action,
                 entityType,
                 entityId,
@@ -34,11 +33,11 @@ class AuditService {
 
             // Canonical schema mapping: action -> eventType
             return await AuditEvent.create({
-                actorId: actorId || systemId,
-                actorRole: actorRole || (actorId ? 'USER' : 'SYSTEM'), // Mandatory field in schema
+                actorId: actorId || null, // NULL for anonymous/system actions
+                actorRole: actorRole || (actorId ? 'USER' : 'ANONYMOUS'), // ANONYMOUS instead of SYSTEM
                 eventType: action || 'UNKNOWN',   // Canonical field is event_type
                 entityType: entityType ? entityType.toUpperCase() : 'SYSTEM',
-                entityId: entityId ? String(entityId) : systemId, // Default UUID if missing
+                entityId: entityId ? String(entityId) : null, // NULL if missing
                 metadata,
             }, transaction ? { transaction } : {});
         } catch (error) {

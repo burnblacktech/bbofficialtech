@@ -157,6 +157,9 @@ router.use('/tax', generalLimiter, require('./tax'));
 router.use('/documents', generalLimiter, require('./documents'));
 router.use('/ca', generalLimiter, require('./ca'));
 
+// GSTIN lookup routes
+router.use('/gstin', generalLimiter, require('./gstin'));
+
 // Notification routes
 router.use('/notifications', generalLimiter, require('./notification'));
 
