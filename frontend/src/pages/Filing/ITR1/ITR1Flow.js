@@ -13,6 +13,7 @@ import {
   Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
 } from 'lucide-react';
 import api from '../../../services/api';
+import { useAuth } from '../../../contexts/AuthContext';
 import { validateBankAccount } from '../../../utils/itrValidation';
 import toast from 'react-hot-toast';
 import './itr-hud.css';
@@ -54,6 +55,7 @@ export default function ITR1Flow() {
   const { filingId } = useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { user } = useAuth();
 
   const { data: filing, isLoading } = useQuery({
     queryKey: ['filing', filingId],
@@ -169,6 +171,13 @@ export default function ITR1Flow() {
     <div className="hud">
       {/* ── Left Panel ── */}
       <aside className="hud-panel">
+        {/* Filing Info Header */}
+        <div className="hud-filing-info">
+          <div className="hud-filing-name">{user?.fullName || 'Taxpayer'}</div>
+          <div className="hud-filing-detail">PAN: {filing?.taxpayerPan || '---'}</div>
+          <div className="hud-filing-detail">AY {filing?.assessmentYear || '---'}</div>
+        </div>
+
         {/* ITR Badge */}
         <div className="hud-itr-badge">
           <span className="hud-itr-type">{itrType}</span>

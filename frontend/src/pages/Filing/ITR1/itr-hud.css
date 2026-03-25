@@ -1,19 +1,27 @@
-/* ITR Filing HUD — Game-style layout */
+/* ITR Filing HUD — Works inside main Layout content area */
 
-.hud { display: flex; min-height: 100vh; background: #f8fafc; }
-.hud-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #6b7280; }
+.hud { display: flex; gap: 20px; min-height: calc(100vh - 80px); }
+.hud-loading { display: flex; align-items: center; justify-content: center; min-height: 400px; color: #6b7280; }
 
-/* ── Left Panel ── */
+/* ── Left Panel (inside content area, not full-screen) ── */
 .hud-panel {
-  width: 260px; min-width: 260px; background: #fff; border-right: 1px solid #e5e7eb;
-  display: flex; flex-direction: column; padding: 16px 12px;
-  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  width: 240px; min-width: 240px; background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; display: flex; flex-direction: column; padding: 16px 12px;
+  position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px);
+  overflow-y: auto;
 }
+
+/* Filing info header */
+.hud-filing-info {
+  padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb;
+}
+.hud-filing-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 2px; }
+.hud-filing-detail { font-size: 11px; color: #6b7280; line-height: 1.4; }
 
 .hud-itr-badge {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 12px; background: #eff6ff; border: 1px solid #bfdbfe;
-  border-radius: 8px; margin-bottom: 16px;
+  border-radius: 8px; margin-bottom: 12px;
 }
 .hud-itr-type { font-size: 13px; font-weight: 700; color: #1d4ed8; }
 .hud-itr-name { font-size: 12px; color: #3b82f6; }
@@ -87,7 +95,7 @@
 
 /* ── Center Editor ── */
 .hud-editor {
-  flex: 1; padding: 24px 32px; max-width: 720px;
+  flex: 1; max-width: 640px;
   animation: stepFadeIn 0.25s ease-out;
 }
 @keyframes stepFadeIn {
@@ -97,19 +105,20 @@
 
 /* ── Mobile: panel becomes top bar ── */
 @media (max-width: 768px) {
-  .hud { flex-direction: column; }
+  .hud { flex-direction: column; gap: 12px; }
   .hud-panel {
     width: 100%; min-width: 100%; height: auto;
     position: relative; flex-direction: row; flex-wrap: wrap;
-    padding: 12px; gap: 8px; border-right: none; border-bottom: 1px solid #e5e7eb;
-    overflow-x: auto;
+    padding: 12px; gap: 6px; border-radius: 10px;
+    overflow-x: auto; max-height: none;
   }
-  .hud-itr-badge { margin-bottom: 0; }
+  .hud-itr-badge { margin-bottom: 0; flex-shrink: 0; }
+  .hud-filing-info { display: none; }
   .hud-section-label { display: none; }
   .hud-source { padding: 6px 10px; white-space: nowrap; flex-shrink: 0; }
   .hud-source-total { display: none; }
   .hud-source-toggle { display: none; }
   .hud-tax-summary { display: none; }
   .hud-actions { flex-direction: row; margin-top: 0; padding-top: 0; }
-  .hud-editor { padding: 16px 12px; }
+  .hud-editor { padding: 0; }
 }

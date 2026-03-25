@@ -1,252 +1,136 @@
 /**
- * User Dashboard - MVP
- * Shows: profile status, existing filings, and a clear "File ITR" action.
- * No fake data, no empty cards.
+ * Dashboard — Compact, single-screen, no scroll
  */
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import { FileText, Plus, ArrowRight, User, Shield, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { itrService } from '../../services';
 import { getCurrentAY, ayToFY } from '../../utils/assessmentYear';
-import { tokens } from '../../styles/tokens';
 
-const STATE_LABELS = {
-  'draft': { label: 'Draft', color: tokens.colors.neutral[600], icon: Clock },
-  'ready_for_submission': { label: 'Ready', color: tokens.colors.accent[600], icon: CheckCircle },
-  'submitted_to_eri': { label: 'Submitted', color: tokens.colors.info[600], icon: ArrowRight },
-  'eri_in_progress': { label: 'Processing', color: tokens.colors.warning[600], icon: Clock },
-  'eri_success': { label: 'Accepted', color: tokens.colors.success[600], icon: CheckCircle },
-  'eri_failed': { label: 'Failed', color: tokens.colors.error[600], icon: AlertCircle },
+const STATE_MAP = {
+  'draft': { label: 'Draft', color: '#6b7280', Icon: Clock },
+  'ready_for_submission': { label: 'Ready', color: '#2563eb', Icon: CheckCircle },
+  'submitted_to_eri': { label: 'Submitted', color: '#2563eb', Icon: ArrowRight },
+  'eri_in_progress': { label: 'Processing', color: '#d97706', Icon: Clock },
+  'eri_success': { label: 'Accepted', color: '#16a34a', Icon: CheckCircle },
+  'eri_failed': { label: 'Failed', color: '#ef4444', Icon: AlertCircle },
 };
 
-const UserDashboard = () => {
+export default function UserDashboard() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  const userName = user?.fullName || user?.name || 'User';
-  const panVerified = user?.panVerified || profile?.panVerified || false;
-  const panNumber = user?.panNumber || user?.pan || profile?.pan || null;
+  const name = user?.fullName || 'User';
+  const pan = user?.panNumber || user?.pan || profile?.pan || null;
+  const panOk = !!(user?.panVerified || profile?.panVerified);
 
-  // Fetch filings from backend
-  const { data: filingsData, isLoading } = useQuery({
+  const { data: filings = [], isLoading } = useQuery({
     queryKey: ['filings'],
-    queryFn: async () => {
-      const res = await itrService.getUserITRs();
-      return res.filings || [];
-    },
-    staleTime: 30 * 1000,
+    queryFn: async () => (await itrService.getUserITRs()).filings || [],
+    staleTime: 30000,
   });
 
-  const filings = filingsData || [];
-
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: tokens.colors.neutral[50], padding: tokens.spacing.xl }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div style={S.page}>
+      {/* Top row: welcome + CTA */}
+      <div style={S.topRow}>
+        <div>
+          <h1 style={S.h1}>Welcome, {name.split(' ')[0]}</h1>
+          <p style={S.sub}>AY {getCurrentAY()} (FY {ayToFY(getCurrentAY())})</p>
+        </div>
+        <button style={S.cta} onClick={() => navigate('/filing/start')}>
+          <Plus size={18} /> File ITR
+        </button>
+      </div>
 
-        {/* Welcome */}
-        <div style={{ marginBottom: tokens.spacing.xl }}>
-          <h1 style={{ fontSize: tokens.typography.fontSize['2xl'], fontWeight: tokens.typography.fontWeight.bold, color: tokens.colors.neutral[900], marginBottom: tokens.spacing.xs }}>
-            Welcome, {userName}
-          </h1>
-          <p style={{ fontSize: tokens.typography.fontSize.base, color: tokens.colors.neutral[500] }}>
-            AY {getCurrentAY()} (FY {ayToFY(getCurrentAY())})
-          </p>
+      {/* Status chips */}
+      <div style={S.chips}>
+        <Chip icon={<Shield size={14} />} label="PAN" ok={panOk} detail={pan ? `${pan.substring(0, 5)}****${pan.substring(9)}` : 'Not set'} onClick={() => navigate('/itr/pan-verification')} />
+        <Chip icon={<CheckCircle size={14} />} label="Profile" ok={!!user?.fullName} detail={user?.email || ''} onClick={() => navigate('/profile')} />
+      </div>
+
+      {/* Filings */}
+      <div style={S.card}>
+        <div style={S.cardHeader}>
+          <span style={S.cardTitle}>Your Filings</span>
+          <span style={S.cardCount}>{filings.length}</span>
         </div>
 
-        {/* Profile Status */}
-        <div style={{
-          display: 'flex', gap: tokens.spacing.md, marginBottom: tokens.spacing.xl, flexWrap: 'wrap',
-        }}>
-          <StatusChip
-            icon={User} label="Profile"
-            status={user?.fullName ? 'done' : 'pending'}
-            detail={user?.email}
-            onClick={() => navigate('/profile')}
-          />
-          <StatusChip
-            icon={Shield} label="PAN"
-            status={panVerified ? 'done' : 'pending'}
-            detail={panNumber ? `${panNumber.substring(0, 5)}****${panNumber.substring(9)}` : 'Not verified'}
-            onClick={() => navigate('/itr/pan-verification')}
-          />
-        </div>
-
-        {/* Start Filing CTA */}
-        <div
-          onClick={() => navigate('/filing/start')}
-          style={{
-            padding: tokens.spacing.lg,
-            backgroundColor: tokens.colors.accent[600],
-            borderRadius: tokens.borderRadius.lg,
-            cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginBottom: tokens.spacing.xl,
-            transition: 'opacity 0.2s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
-            <div style={{
-              width: '48px', height: '48px', backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: tokens.borderRadius.md, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Plus size={24} color="#fff" />
-            </div>
-            <div>
-              <p style={{ fontSize: tokens.typography.fontSize.lg, fontWeight: tokens.typography.fontWeight.bold, color: '#fff', marginBottom: '2px' }}>
-                File Income Tax Return
-              </p>
-              <p style={{ fontSize: tokens.typography.fontSize.sm, color: 'rgba(255,255,255,0.8)' }}>
-                ITR-1 to ITR-4 · Guided step-by-step
-              </p>
-            </div>
+        {isLoading ? (
+          <p style={S.empty}>Loading...</p>
+        ) : filings.length === 0 ? (
+          <div style={S.emptyBox}>
+            <FileText size={32} color="#d1d5db" />
+            <p style={S.emptyText}>No filings yet. Click "File ITR" to start.</p>
           </div>
-          <ArrowRight size={24} color="#fff" />
-        </div>
-
-        {/* Filings List */}
-        <div style={{
-          backgroundColor: tokens.colors.neutral.white,
-          borderRadius: tokens.borderRadius.lg,
-          border: `1px solid ${tokens.colors.neutral[200]}`,
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            padding: tokens.spacing.lg,
-            borderBottom: `1px solid ${tokens.colors.neutral[200]}`,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          }}>
-            <h2 style={{ fontSize: tokens.typography.fontSize.lg, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>
-              Your Filings
-            </h2>
-            <span style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[500] }}>
-              {filings.length} filing{filings.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-
-          {isLoading ? (
-            <div style={{ padding: tokens.spacing.xl, textAlign: 'center', color: tokens.colors.neutral[500] }}>
-              Loading filings...
-            </div>
-          ) : filings.length === 0 ? (
-            <div style={{ padding: tokens.spacing.xl, textAlign: 'center' }}>
-              <FileText size={40} color={tokens.colors.neutral[300]} style={{ margin: '0 auto 12px' }} />
-              <p style={{ color: tokens.colors.neutral[500], marginBottom: tokens.spacing.sm }}>No filings yet</p>
-              <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[400] }}>
-                Click "File Income Tax Return" above to get started
-              </p>
-            </div>
-          ) : (
-            <div>
-              {filings.map((filing) => {
-                const state = STATE_LABELS[filing.lifecycleState] || STATE_LABELS.draft;
-                const StateIcon = state.icon;
-                return (
-                  <div
-                    key={filing.id}
-                    onClick={() => {
-                      // Route to the correct ITR flow based on filing's ITR type
-                      const itrType = filing.itrType || 'ITR-1';
-                      const routeMap = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
-                      navigate(`/filing/${filing.id}/${routeMap[itrType] || 'itr1'}`);
-                    }}
-                    style={{
-                      padding: tokens.spacing.lg,
-                      borderBottom: `1px solid ${tokens.colors.neutral[100]}`,
-                      cursor: 'pointer',
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      transition: 'background-color 0.15s',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = tokens.colors.neutral[50]}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
-                      <FileText size={20} color={tokens.colors.neutral[400]} />
-                      <div>
-                        <p style={{ fontWeight: tokens.typography.fontWeight.medium, color: tokens.colors.neutral[900] }}>
-                          AY {filing.assessmentYear}
-                        </p>
-                        <p style={{ fontSize: tokens.typography.fontSize.sm, color: tokens.colors.neutral[500] }}>
-                          PAN: {filing.taxpayerPan}
-                        </p>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '4px',
-                        padding: `2px ${tokens.spacing.sm}`,
-                        backgroundColor: `${state.color}15`,
-                        color: state.color,
-                        borderRadius: tokens.borderRadius.full,
-                        fontSize: tokens.typography.fontSize.xs,
-                        fontWeight: tokens.typography.fontWeight.medium,
-                      }}>
-                        <StateIcon size={12} />
-                        {state.label}
-                      </span>
-                      <ArrowRight size={16} color={tokens.colors.neutral[400]} />
+        ) : (
+          <div style={S.list}>
+            {filings.map(f => {
+              const st = STATE_MAP[f.lifecycleState] || STATE_MAP.draft;
+              return (
+                <div key={f.id} style={S.row} onClick={() => {
+                  const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
+                  navigate(`/filing/${f.id}/${route}`);
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <div style={S.rowLeft}>
+                    <FileText size={16} color="#9ca3af" />
+                    <div>
+                      <div style={S.rowTitle}>AY {f.assessmentYear}</div>
+                      <div style={S.rowSub}>{f.taxpayerPan}</div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Quick Links */}
-        <div style={{ display: 'flex', gap: tokens.spacing.md, marginTop: tokens.spacing.xl, flexWrap: 'wrap' }}>
-          <QuickLink label="Profile Settings" onClick={() => navigate('/profile')} />
-          <QuickLink label="Session Management" onClick={() => navigate('/sessions')} />
-        </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ ...S.badge, color: st.color, background: `${st.color}12` }}>
+                      <st.Icon size={11} /> {st.label}
+                    </span>
+                    <ArrowRight size={14} color="#d1d5db" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
-};
+}
 
-// ── Small Components ──
-
-const StatusChip = ({ icon: Icon, label, status, detail, onClick }) => (
-  <div
-    onClick={onClick}
-    style={{
-      display: 'flex', alignItems: 'center', gap: tokens.spacing.sm,
-      padding: `${tokens.spacing.sm} ${tokens.spacing.md}`,
-      backgroundColor: tokens.colors.neutral.white,
-      border: `1px solid ${status === 'done' ? tokens.colors.success[200] : tokens.colors.neutral[200]}`,
-      borderRadius: tokens.borderRadius.md,
-      cursor: 'pointer',
-      transition: 'border-color 0.15s',
-    }}
-  >
-    <Icon size={16} color={status === 'done' ? tokens.colors.success[600] : tokens.colors.neutral[400]} />
-    <div>
-      <p style={{ fontSize: tokens.typography.fontSize.sm, fontWeight: tokens.typography.fontWeight.medium, color: tokens.colors.neutral[900] }}>
-        {label}: {status === 'done' ? '✓' : 'Pending'}
-      </p>
-      <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[500] }}>{detail}</p>
+function Chip({ icon, label, ok, detail, onClick }) {
+  return (
+    <div onClick={onClick} style={{ ...S.chip, borderColor: ok ? '#bbf7d0' : '#e5e7eb' }}>
+      <span style={{ color: ok ? '#16a34a' : '#9ca3af' }}>{icon}</span>
+      <div>
+        <div style={S.chipLabel}>{label}: {ok ? 'Done' : 'Pending'}</div>
+        <div style={S.chipDetail}>{detail}</div>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-const QuickLink = ({ label, onClick }) => (
-  <button
-    onClick={onClick}
-    style={{
-      padding: `${tokens.spacing.sm} ${tokens.spacing.md}`,
-      backgroundColor: tokens.colors.neutral.white,
-      border: `1px solid ${tokens.colors.neutral[200]}`,
-      borderRadius: tokens.borderRadius.md,
-      fontSize: tokens.typography.fontSize.sm,
-      color: tokens.colors.neutral[700],
-      cursor: 'pointer',
-      transition: 'border-color 0.15s',
-    }}
-  >
-    {label}
-  </button>
-);
-
-export default UserDashboard;
+const S = {
+  page: { display: 'flex', flexDirection: 'column', gap: 16, height: 'calc(100vh - 100px)', overflow: 'hidden' },
+  topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  h1: { fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 },
+  sub: { fontSize: 13, color: '#6b7280', margin: 0 },
+  cta: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
+  chips: { display: 'flex', gap: 10, flexWrap: 'wrap' },
+  chip: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, cursor: 'pointer', transition: 'border-color 0.15s' },
+  chipLabel: { fontSize: 12, fontWeight: 600, color: '#111827' },
+  chipDetail: { fontSize: 11, color: '#9ca3af' },
+  card: { flex: 1, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
+  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e5e7eb' },
+  cardTitle: { fontSize: 14, fontWeight: 600, color: '#111827' },
+  cardCount: { fontSize: 12, color: '#9ca3af' },
+  list: { flex: 1, overflowY: 'auto' },
+  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', transition: 'background 0.1s' },
+  rowLeft: { display: 'flex', alignItems: 'center', gap: 10 },
+  rowTitle: { fontSize: 13, fontWeight: 600, color: '#111827' },
+  rowSub: { fontSize: 11, color: '#9ca3af' },
+  badge: { display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 },
+  empty: { padding: 20, textAlign: 'center', color: '#9ca3af', fontSize: 13 },
+  emptyBox: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  emptyText: { fontSize: 13, color: '#9ca3af' },
+};

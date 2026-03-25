@@ -12,6 +12,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteLoader from './components/UI/RouteLoader';
 
 // Styles
+import './styles/theme.css';
 import './styles/GlobalStyles.css';
 
 // =====================================================
@@ -38,9 +39,6 @@ const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
 const ITRDeterminationWizard = lazy(() => import('./pages/Filing/ITRDetermination/ITRDeterminationWizard'));
 const SubmissionStatus = lazy(() => import('./pages/Filing/SubmissionStatus'));
 const ITR1Flow = lazy(() => import('./pages/Filing/ITR1/ITR1Flow'));
-const ITR2Flow = lazy(() => import('./pages/Filing/ITR2/ITR2Flow'));
-const ITR3Flow = lazy(() => import('./pages/Filing/ITR3/ITR3Flow'));
-const ITR4Flow = lazy(() => import('./pages/Filing/ITR4/ITR4Flow'));
 
 // ITR
 const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
@@ -111,13 +109,13 @@ const AppContent = () => (
         <Route path="/itr/pan-verification" element={<Page><PANVerification /></Page>} />
 
         {/* Filing: start */}
-        <Route path="/filing/start" element={<Page message="Loading filing wizard..."><ITRDeterminationWizard /></Page>} />
+        <Route path="/filing/start" element={<Page message="Loading..."><ITRDeterminationWizard /></Page>} />
 
-        {/* ITR type-specific flows (canonical) */}
-        <Route path="/filing/:filingId/itr1" element={<Page message="Loading ITR-1..."><ITR1Flow /></Page>} />
-        <Route path="/filing/:filingId/itr2" element={<Page message="Loading ITR-2..."><ITR2Flow /></Page>} />
-        <Route path="/filing/:filingId/itr3" element={<Page message="Loading ITR-3..."><ITR3Flow /></Page>} />
-        <Route path="/filing/:filingId/itr4" element={<Page message="Loading ITR-4..."><ITR4Flow /></Page>} />
+        {/* ITR filing — unified HUD inside main layout */}
+        <Route path="/filing/:filingId/itr1" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        <Route path="/filing/:filingId/itr2" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        <Route path="/filing/:filingId/itr3" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        <Route path="/filing/:filingId/itr4" element={<Page message="Loading..."><ITR1Flow /></Page>} />
         <Route path="/filing/:filingId/submission-status" element={<Page><SubmissionStatus /></Page>} />
 
         {/* ITR utilities */}

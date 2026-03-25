@@ -6,10 +6,10 @@
 
 html { scroll-behavior: smooth; }
 
-.ff-page { min-height: 100vh; background: #fafafa; }
+.ff-page { min-height: auto; background: transparent; }
 
-/* Progress bar */
-.ff-progress { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 12px 24px; position: sticky; top: 0; z-index: 10; }
+/* Progress bar — used by wizard, not by HUD */
+.ff-progress { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 12px 24px; margin: -16px -16px 16px; border-radius: 8px 8px 0 0; }
 .ff-progress-inner { max-width: 720px; margin: 0 auto; }
 .ff-progress-bar { display: flex; gap: 3px; margin-bottom: 8px; }
 .ff-progress-seg { flex: 1; height: 5px; border-radius: 3px; background: #e5e7eb; transition: background 0.3s ease, transform 0.15s; cursor: default; }

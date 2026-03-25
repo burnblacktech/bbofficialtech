@@ -2,8 +2,9 @@
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
+const rs = (v) => `Rs.${n(v).toLocaleString('en-IN')}`;
 
-export default function DeductionsEditor({ payload, onSave, isSaving }) {
+export default function DeductionsEditor({ payload, onSave }) {
   const d = payload?.deductions || {};
   const [regime, setRegime] = useState(payload?.selectedRegime || 'old');
   const [form, setForm] = useState({
@@ -25,9 +26,9 @@ export default function DeductionsEditor({ payload, onSave, isSaving }) {
 
   const raw80C = n(form.ppf) + n(form.elss) + n(form.lic) + n(form.otherC);
   const cap80C = Math.min(raw80C, 150000);
-  const cap80CCD = Math.min(n(form.nps), 50000);
-  const cap80TTA = Math.min(n(form.savingsInt), 10000);
-  const total = cap80C + cap80CCD + n(form.healthSelf) + n(form.healthParents) + n(form.eduLoan) + cap80TTA + n(form.donations);
+  const capNps = Math.min(n(form.nps), 50000);
+  const capTta = Math.min(n(form.savingsInt), 10000);
+  const total = cap80C + capNps + n(form.healthSelf) + n(form.healthParents) + n(form.eduLoan) + capTta + n(form.donations);
 
   return (
     <div>
@@ -45,49 +46,67 @@ export default function DeductionsEditor({ payload, onSave, isSaving }) {
 
       {regime === 'new' ? (
         <div className="step-card info">
-          <p style={{ margin: 0, fontSize: 14, color: '#1e40af' }}>Under the new regime, only standard deduction of â‚¹75,000 is available. No Chapter VI-A deductions.</p>
+          <p style={{ margin: 0, fontSize: 14, color: '#1e40af' }}>
+            Under the new regime, only standard deduction of Rs.75,000 is available. No Chapter VI-A deductions.
+          </p>
         </div>
       ) : (
         <>
           <div className="step-card editing">
-            <div className="ff-section-title">80C â€” Investments <span className="ff-section-cap">(max â‚¹1,50,000)</span></div>
+            <div className="ff-section-title">
+              80C - Investments <span className="ff-section-cap">(max Rs.1,50,000)</span>
+            </div>
             <div className="ff-grid-2">
               <F l="PPF" v={form.ppf} c={v => update('ppf', v)} />
               <F l="ELSS" v={form.elss} c={v => update('elss', v)} />
               <F l="LIC Premium" v={form.lic} c={v => update('lic', v)} />
               <F l="Other 80C" v={form.otherC} c={v => update('otherC', v)} h="Tuition, NSC, SCSS, etc." />
             </div>
-            {raw80C > 150000 && <div className="ff-hint" style={{ color: '#d97706' }}>Total â‚¹{raw80C.toLocaleString('en-IN')} â€” capped at â‚¹1,50,000</div>}
+            {raw80C > 150000 && (
+              <div className="ff-hint" style={{ color: '#d97706' }}>
+                Total {rs(raw80C)} - capped at Rs.1,50,000
+              </div>
+            )}
           </div>
 
           <div className="step-card editing">
             <div className="ff-section-title">Other Deductions</div>
             <div className="ff-grid-2">
-              <F l="80CCD(1B) â€” NPS" v={form.nps} c={v => update('nps', v)} h="Max â‚¹50,000" />
-              <F l="80D â€” Health (Self)" v={form.healthSelf} c={v => update('healthSelf', v)} h="Max â‚¹25K / â‚¹50K senior" />
-              <F l="80D â€” Health (Parents)" v={form.healthParents} c={v => update('healthParents', v)} h="Max â‚¹25K / â‚¹50K senior" />
-              <F l="80E â€” Education Loan" v={form.eduLoan} c={v => update('eduLoan', v)} h="Interest only, no cap" />
-              <F l="80TTA â€” Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h="Max â‚¹10,000" />
-              <F l="80G â€” Donations" v={form.donations} c={v => update('donations', v)} />
+              <F l="80CCD(1B) - NPS" v={form.nps} c={v => update('nps', v)} h="Max Rs.50,000" />
+              <F l="80D - Health (Self)" v={form.healthSelf} c={v => update('healthSelf', v)} h="Max Rs.25K / Rs.50K senior" />
+              <F l="80D - Health (Parents)" v={form.healthParents} c={v => update('healthParents', v)} h="Max Rs.25K / Rs.50K senior" />
+              <F l="80E - Education Loan" v={form.eduLoan} c={v => update('eduLoan', v)} h="Interest only, no cap" />
+              <F l="80TTA - Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h="Max Rs.10,000" />
+              <F l="80G - Donations" v={form.donations} c={v => update('donations', v)} />
             </div>
           </div>
         </>
       )}
 
       <div className="step-card summary">
-        <div className="ff-row"><span className="ff-row-label">Regime</span><span className="ff-row-value bold">{regime === 'old' ? 'Old' : 'New'}</span></div>
-        {regime === 'old' && <>
-          <div className="ff-row"><span className="ff-row-label">80C</span><span className="ff-row-value">â‚¹{cap80C.toLocaleString('en-IN')}</span></div>
-          <div className="ff-row"><span className="ff-row-label">80CCD(1B)</span><span className="ff-row-value">â‚¹{cap80CCD.toLocaleString('en-IN')}</span></div>
-          <div className="ff-row"><span className="ff-row-label">80D</span><span className="ff-row-value">â‚¹{(n(form.healthSelf) + n(form.healthParents)).toLocaleString('en-IN')}</span></div>
-          <div className="ff-row"><span className="ff-row-label">80E + 80TTA + 80G</span><span className="ff-row-value">â‚¹{(n(form.eduLoan) + cap80TTA + n(form.donations)).toLocaleString('en-IN')}</span></div>
-          <div className="ff-divider" />
-          <div className="ff-row"><span className="ff-row-label">Total Deductions</span><span className="ff-row-value bold green">â‚¹{total.toLocaleString('en-IN')}</span></div>
-        </>}
+        <div className="ff-row">
+          <span className="ff-row-label">Regime</span>
+          <span className="ff-row-value bold">{regime === 'old' ? 'Old' : 'New'}</span>
+        </div>
+        {regime === 'old' && (
+          <>
+            <div className="ff-row"><span className="ff-row-label">80C</span><span className="ff-row-value">{rs(cap80C)}</span></div>
+            <div className="ff-row"><span className="ff-row-label">80CCD(1B)</span><span className="ff-row-value">{rs(capNps)}</span></div>
+            <div className="ff-row"><span className="ff-row-label">80D</span><span className="ff-row-value">{rs(n(form.healthSelf) + n(form.healthParents))}</span></div>
+            <div className="ff-row"><span className="ff-row-label">80E + 80TTA + 80G</span><span className="ff-row-value">{rs(n(form.eduLoan) + capTta + n(form.donations))}</span></div>
+            <div className="ff-divider" />
+            <div className="ff-row"><span className="ff-row-label">Total Deductions</span><span className="ff-row-value bold green">{rs(total)}</span></div>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-const F = ({ l, v, c, h, t = 'number' }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />{h && <div className="ff-hint">{h}</div>}</div>);
-
+const F = ({ l, v, c, h }) => (
+  <div className="ff-field">
+    <label className="ff-label">{l}</label>
+    <input className="ff-input" type="number" value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />
+    {h && <div className="ff-hint">{h}</div>}
+  </div>
+);
