@@ -44,10 +44,6 @@ const authenticateToken = (req, res, next) => {
       });
     }
 
-    console.log('[JWT VERIFY]', {
-      secretPreview: JWT_SECRET?.slice(0, 6),
-      secretLength: JWT_SECRET?.length,
-    });
     jwt.verify(token, JWT_SECRET, { clockTolerance: 60 }, (err, user) => {
       if (err) {
         enterpriseLogger.warn('Invalid token attempt', {

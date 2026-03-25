@@ -18,7 +18,7 @@ const ITRRecommendationStep = ({ data, onContinue, onBack }) => {
     // Determine ITR mutation
     const determineITRMutation = useMutation({
         mutationFn: async () => {
-            const response = await api.post('/api/itr/determine', {
+            const response = await api.post('/itr/determine', {
                 profile: data.profile,
                 incomeSources: data.incomeSources,
                 additionalInfo: data.additionalInfo,
@@ -31,25 +31,26 @@ const ITRRecommendationStep = ({ data, onContinue, onBack }) => {
     const createFilingMutation = useMutation({
         mutationFn: async (determinationResult) => {
             const response = await newFilingService.createFiling({
-                financialYear: '2024-25',
-                pan: data.pan,
+                assessmentYear: '2025-26',
+                taxpayerPan: data.pan,
+                selectedIncomeSources: data.incomeSources,
                 determinedITR: determinationResult.recommendedITR,
-                determinationData: {
-                    profile: data.profile,
-                    incomeSources: data.incomeSources,
-                    additionalInfo: data.additionalInfo,
-                    eligibility: determinationResult.eligibility,
-                    determinedAt: new Date().toISOString(),
-                },
             });
             return response.data;
         },
         onSuccess: (response) => {
             toast.success('Filing created successfully!');
-            onContinue(response.filingId);
+            const filingId = response.data?.id || response.id;
+            onContinue(filingId);
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create filing');
+            // If filing already exists, use the existing one
+            if (error.response?.data?.data?.id) {
+                toast.success('Resuming existing filing');
+                onContinue(error.response.data.data.id);
+                return;
+            }
+            toast.error(error.response?.data?.error || 'Failed to create filing');
         },
     });
 

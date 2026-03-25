@@ -15,10 +15,6 @@ const UserSession = sequelize.define('UserSession', {
   userId: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
     field: 'user_id',
   },
   refreshTokenHash: {

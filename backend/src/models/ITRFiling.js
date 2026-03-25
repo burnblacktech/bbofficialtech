@@ -26,19 +26,11 @@ const ITRFiling = sequelize.define('ITRFiling', {
   caFirmId: {
     type: DataTypes.UUID,
     allowNull: true,
-    references: {
-      model: 'ca_firms',
-      key: 'id',
-    },
     field: 'ca_firm_id',
   },
   createdBy: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
     field: 'created_by',
   },
   userId: {

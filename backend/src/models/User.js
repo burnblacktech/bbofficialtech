@@ -56,10 +56,6 @@ const User = sequelize.define('User', {
   caFirmId: {
     type: DataTypes.UUID,
     allowNull: true,
-    references: {
-      model: 'ca_firms',
-      key: 'id',
-    },
     field: 'ca_firm_id',
   },
 

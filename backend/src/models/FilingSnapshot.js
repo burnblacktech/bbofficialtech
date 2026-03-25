@@ -16,20 +16,12 @@ const FilingSnapshot = sequelize.define('FilingSnapshot', {
         type: DataTypes.UUID,
         allowNull: false,
         field: 'filing_id',
-        references: {
-            model: 'itr_filings',
-            key: 'id',
-        },
         onDelete: 'CASCADE',
     },
     createdBy: {
         type: DataTypes.UUID,
         allowNull: false,
         field: 'created_by',
-        references: {
-            model: 'users',
-            key: 'id',
-        },
     },
 
     // versioning

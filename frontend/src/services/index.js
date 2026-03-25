@@ -1,143 +1,91 @@
 // =====================================================
-// UNIFIED FRONTEND SERVICES EXPORTS
-// All frontend services organized by category
+// SERVICES INDEX - MVP exports
 // =====================================================
 
-// Core services
-import apiClient from './core/APIClient';
-import cacheService from './core/CacheService';
-import errorHandler from './core/ErrorHandler';
+import api from './api';
 
-// API services
-import authService from './api/authService';
-import itrService from './api/itrService';
-import documentService from './api/documentService';
-import paymentService from './api/paymentService';
+// ── Auth Service ──
+export const authService = {
+  async login(credentials) {
+    const res = await api.post('/auth/login', credentials);
+    if (res.data.accessToken) {
+      localStorage.setItem('accessToken', res.data.accessToken);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+    }
+    return { success: true, user: res.data.user, accessToken: res.data.accessToken };
+  },
 
-// Utility services
-import validationService from '../utils/validationService';
-import storageService from '../utils/storageService';
+  handleOAuthLogin(user, token, refreshToken) {
+    localStorage.setItem('accessToken', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    return { success: true, user };
+  },
 
-// Tax and financial services
-import { itrJsonExportService } from './itrJsonExportService';
-import { form16ExtractionService } from './form16ExtractionService';
-import { bankStatementService } from './bankStatementService';
-import { taxSavingsService } from './taxSavingsService';
+  async logout() {
+    try { await api.post('/auth/logout'); } catch { /* ignore */ }
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+  },
 
-// Data integration services
-import { dataIntegrationService } from './DataIntegrationService';
-import { financialProfileService } from './FinancialProfileService';
-import { aisForm26ASService } from './AISForm26ASService';
-import { documentProcessingService } from './DocumentProcessingService';
-import { autoPopulationITRService } from './AutoPopulationITRService';
+  async getProfile() {
+    const res = await api.get('/auth/profile');
+    return res.data.data || res.data;
+  },
 
-// Broker integration
-import BrokerAPIService, { createBrokerService } from './BrokerAPIService';
+  async updateProfile(data) {
+    const res = await api.put('/auth/profile', data);
+    return { success: true, profile: res.data.user || res.data };
+  },
 
-// Specialized services
-import BankAPIService from './BankAPIService';
-import DeductionOCRService from './DeductionOCRService';
-import CABotService from './CABotService';
-
-// =====================================================
-// EXPORTS
-// =====================================================
-
-// Core services
-export {
-  apiClient,
-  cacheService,
-  errorHandler,
+  getCurrentUser() {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  },
 };
 
-// API services
-export {
-  authService,
-  itrService,
-  documentService,
-  paymentService,
+// ── ITR / Filing Service ──
+export const itrService = {
+  async getUserITRs() {
+    const res = await api.get('/filings');
+    return { success: true, filings: res.data.data };
+  },
+
+  async createITR(data) {
+    const res = await api.post('/filings', data);
+    return { success: true, filing: res.data.data };
+  },
+
+  async getITR(filingId) {
+    const res = await api.get(`/filings/${filingId}`);
+    return { success: true, filing: res.data.data };
+  },
+
+  async updateITR(filingId, updates) {
+    const res = await api.put(`/filings/${filingId}`, updates);
+    return { success: true, filing: res.data.data };
+  },
+
+  async validateITR(filingId, section) {
+    const res = await api.get(`/filings/${filingId}/readiness`);
+    return { success: true, errors: res.data.data?.completionChecklist || {} };
+  },
+
+  async submitITR(filingId) {
+    const res = await api.post(`/filings/${filingId}/submit`);
+    return { success: true, data: res.data.data };
+  },
+
+  async computeTax(filingId, assessmentYear) {
+    const res = await api.get(`/filings/${filingId}/tax-breakdown`);
+    return { success: true, computation: res.data.data };
+  },
+
+  async deleteITR(filingId) {
+    await api.delete(`/filings/${filingId}`);
+    return { success: true };
+  },
 };
 
-// Utility services
-export {
-  validationService,
-  storageService,
-  itrJsonExportService,
-  form16ExtractionService,
-  bankStatementService,
-  taxSavingsService,
-};
-
-// Data integration services
-export {
-  dataIntegrationService,
-  financialProfileService,
-  aisForm26ASService,
-  documentProcessingService,
-  autoPopulationITRService,
-};
-
-// Broker integration
-export {
-  BrokerAPIService,
-  createBrokerService,
-};
-
-// Specialized services
-export {
-  BankAPIService,
-  DeductionOCRService,
-  CABotService,
-};
-
-// Service categories
-export const core = {
-  apiClient,
-  cacheService,
-  errorHandler,
-};
-
-export const api = {
-  authService,
-  itrService,
-  documentService,
-  paymentService,
-};
-
-export const utils = {
-  validationService,
-  storageService,
-  itrJsonExportService,
-  form16ExtractionService,
-  bankStatementService,
-  taxSavingsService,
-};
-
-export const dataIntegration = {
-  dataIntegrationService,
-  financialProfileService,
-  aisForm26ASService,
-  documentProcessingService,
-  autoPopulationITRService,
-};
-
-export const brokerIntegration = {
-  BrokerAPIService,
-  createBrokerService,
-};
-
-export const specialized = {
-  BankAPIService,
-  DeductionOCRService,
-  CABotService,
-};
-
-// Default export
-export default {
-  ...core,
-  ...api,
-  ...utils,
-  ...dataIntegration,
-  ...brokerIntegration,
-  ...specialized,
-};
+export default api;

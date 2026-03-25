@@ -158,9 +158,8 @@ const ITRDeterminationWizard = () => {
                     <ITRRecommendationStep
                         data={wizardData}
                         onContinue={(filingId) => {
-                            // Navigate to appropriate ITR flow
-                            const itr = wizardData.determinationResult?.recommendedITR;
-                            navigate(`/filing/${filingId}/itr-${itr?.toLowerCase()}`);
+                            // Navigate to filing overview after creation
+                            navigate(`/filing/${filingId}/overview`);
                         }}
                         onBack={goToPreviousStep}
                     />
