@@ -256,15 +256,6 @@ const ITRFiling = sequelize.define('ITRFiling', {
   // =====================================================
   // AUDIT
   // =====================================================
-  createdAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    field: 'created_at',
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
 }, {
   sequelize,
   modelName: 'ITRFiling',

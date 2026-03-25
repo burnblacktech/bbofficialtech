@@ -2,6 +2,7 @@
 import api from './api';
 const memberService = {
   getMembers: async () => ({ data: { members: [] } }),
+  getAllMembers: async () => ({ data: [] }),
   addMember: async () => ({}),
   deleteMember: async () => ({}),
 };

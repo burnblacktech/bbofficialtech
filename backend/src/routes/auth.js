@@ -85,6 +85,8 @@ const userResponse = (user) => ({
   status: user.status,
   authProvider: user.authProvider || user.auth_provider,
   hasPassword: !!user.passwordHash,
+  panNumber: user.panNumber || null,
+  panVerified: user.panVerified || false,
   profile_picture: user.metadata?.profile_picture,
 });
 

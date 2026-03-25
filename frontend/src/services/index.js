@@ -43,6 +43,17 @@ export const authService = {
       return stored ? JSON.parse(stored) : null;
     } catch { return null; }
   },
+
+  googleLoginRedirect() {
+    const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+    const redirectBase = window.location.origin;
+    window.location.href = `${backendUrl}/auth/google?redirectBase=${encodeURIComponent(redirectBase)}`;
+  },
+
+  async register(data) {
+    const res = await api.post('/auth/register', data);
+    return res.data;
+  },
 };
 
 // ── ITR / Filing Service ──

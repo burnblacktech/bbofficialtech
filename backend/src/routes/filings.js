@@ -580,4 +580,205 @@ router.get('/:filingId/submission-status', authenticateToken, async (req, res, n
     }
 });
 
+/**
+ * ITR-1 Computation
+ * POST /api/filings/:filingId/itr1/compute
+ * Returns full tax computation for both regimes
+ */
+router.post('/:filingId/itr1/compute', authenticateToken, async (req, res, next) => {
+    try {
+        const { filingId } = req.params;
+        const filing = await ITRFiling.findByPk(filingId);
+
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const ITR1ComputationService = require('../services/itr/ITR1ComputationService');
+        const computation = ITR1ComputationService.compute(filing.jsonPayload || {});
+
+        // Save computation result on filing
+        await filing.update({ taxComputation: computation });
+
+        res.status(200).json({ success: true, data: computation });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * ITR-1 Validation
+ * GET /api/filings/:filingId/itr1/validate
+ * Returns field-level validation errors
+ */
+router.get('/:filingId/itr1/validate', authenticateToken, async (req, res, next) => {
+    try {
+        const { filingId } = req.params;
+        const filing = await ITRFiling.findByPk(filingId);
+
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const ITR1ComputationService = require('../services/itr/ITR1ComputationService');
+        const validation = ITR1ComputationService.validate(filing.jsonPayload || {});
+
+        res.status(200).json({ success: true, data: validation });
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * ITR-1 JSON Export (ITD format)
+ * GET /api/filings/:filingId/itr1/json
+ * Downloads ITD-format JSON for manual upload
+ */
+router.get('/:filingId/itr1/json', authenticateToken, async (req, res, next) => {
+    try {
+        const { filingId } = req.params;
+        const filing = await ITRFiling.findByPk(filingId);
+
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const ITR1JsonBuilder = require('../services/itr/ITR1JsonBuilder');
+        const json = ITR1JsonBuilder.build(filing.jsonPayload || {}, filing.assessmentYear);
+
+        const filename = `ITR1_${filing.taxpayerPan}_AY${filing.assessmentYear}.json`;
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+        res.status(200).json(json);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// =====================================================
+// ITR-2 SPECIFIC ENDPOINTS
+// =====================================================
+
+/**
+ * ITR-2 Computation
+ * POST /api/filings/:filingId/itr2/compute
+ */
+router.post('/:filingId/itr2/compute', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const ITR2ComputationService = require('../services/itr/ITR2ComputationService');
+        const computation = ITR2ComputationService.compute(filing.jsonPayload || {});
+        await filing.update({ taxComputation: computation });
+        res.json({ success: true, data: computation });
+    } catch (error) { next(error); }
+});
+
+/**
+ * ITR-2 Validation
+ * GET /api/filings/:filingId/itr2/validate
+ */
+router.get('/:filingId/itr2/validate', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const ITR2ComputationService = require('../services/itr/ITR2ComputationService');
+        const validation = ITR2ComputationService.validate(filing.jsonPayload || {});
+        res.json({ success: true, data: validation });
+    } catch (error) { next(error); }
+});
+
+/**
+ * ITR-2 JSON Export
+ * GET /api/filings/:filingId/itr2/json
+ */
+router.get('/:filingId/itr2/json', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const ITR2JsonBuilder = require('../services/itr/ITR2JsonBuilder');
+        const json = ITR2JsonBuilder.build(filing.jsonPayload || {}, filing.assessmentYear);
+        res.setHeader('Content-Disposition', `attachment; filename="ITR2_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
+        res.json(json);
+    } catch (error) { next(error); }
+});
+
+// =====================================================
+// ITR-3 SPECIFIC ENDPOINTS
+// =====================================================
+
+router.post('/:filingId/itr3/compute', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const ITR3 = require('../services/itr/ITR3ComputationService');
+        const computation = ITR3.compute(filing.jsonPayload || {});
+        await filing.update({ taxComputation: computation });
+        res.json({ success: true, data: computation });
+    } catch (error) { next(error); }
+});
+
+router.get('/:filingId/itr3/validate', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const ITR3 = require('../services/itr/ITR3ComputationService');
+        res.json({ success: true, data: ITR3.validate(filing.jsonPayload || {}) });
+    } catch (error) { next(error); }
+});
+
+router.get('/:filingId/itr3/json', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const ITR3Json = require('../services/itr/ITR3JsonBuilder');
+        res.setHeader('Content-Disposition', `attachment; filename="ITR3_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
+        res.json(ITR3Json.build(filing.jsonPayload || {}, filing.assessmentYear));
+    } catch (error) { next(error); }
+});
+
+// =====================================================
+// ITR-4 SPECIFIC ENDPOINTS
+// =====================================================
+
+router.post('/:filingId/itr4/compute', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const ITR4 = require('../services/itr/ITR4ComputationService');
+        const computation = ITR4.compute(filing.jsonPayload || {});
+        await filing.update({ taxComputation: computation });
+        res.json({ success: true, data: computation });
+    } catch (error) { next(error); }
+});
+
+router.get('/:filingId/itr4/validate', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const ITR4 = require('../services/itr/ITR4ComputationService');
+        res.json({ success: true, data: ITR4.validate(filing.jsonPayload || {}) });
+    } catch (error) { next(error); }
+});
+
+router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const ITR4Json = require('../services/itr/ITR4JsonBuilder');
+        res.setHeader('Content-Disposition', `attachment; filename="ITR4_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
+        res.json(ITR4Json.build(filing.jsonPayload || {}, filing.assessmentYear));
+    } catch (error) { next(error); }
+});
+
 module.exports = router;

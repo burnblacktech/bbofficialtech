@@ -180,8 +180,8 @@ class FilingService {
         try {
             const filings = await ITRFiling.findAll({
                 where: { createdBy: userId },
-                order: [['createdAt', 'DESC']],
-                attributes: ['id', 'assessmentYear', 'taxpayerPan', 'lifecycleState', 'createdAt', 'updatedAt'],
+                order: [['created_at', 'DESC']],
+                attributes: ['id', 'assessmentYear', 'taxpayerPan', 'lifecycleState', 'created_at', 'updated_at'],
             });
 
             return filings.map(f => ({

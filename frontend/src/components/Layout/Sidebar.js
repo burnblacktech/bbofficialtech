@@ -23,49 +23,22 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose, isOpenMobile }) => 
   const location = useLocation();
   const { user } = useAuth();
 
-  // Optimized 7-item navigation (PRD v3.0)
+  // MVP navigation — only working routes
   const navigationItems = [
     {
-      name: 'Home',
+      name: 'Dashboard',
       path: '/dashboard',
       icon: Home,
-      description: 'Financial Story Dashboard',
-    },
-    {
-      name: 'Income',
-      path: '/income',
-      icon: DollarSign,
-      description: 'Track all income sources',
-    },
-    {
-      name: 'Tax Planner',
-      path: '/tax-planner',
-      icon: Target,
-      description: 'Year-round optimization',
-    },
-    {
-      name: 'Documents',
-      path: '/documents',
-      icon: FolderOpen,
-      description: 'Upload & manage',
     },
     {
       name: 'File ITR',
-      path: '/filing/streamlined',
+      path: '/filing/start',
       icon: CheckCircle,
-      description: 'Streamlined 3-step filing',
     },
     {
-      name: 'Insights',
-      path: '/insights',
-      icon: Lightbulb,
-      description: 'Reports & recommendations',
-    },
-    {
-      name: 'Settings',
-      path: '/settings',
+      name: 'Profile',
+      path: '/profile',
       icon: Settings,
-      description: 'Profile & preferences',
     },
   ];
 

@@ -3,15 +3,13 @@
 // =====================================================
 
 import { Suspense, lazy, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Core components (synchronous - needed immediately)
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteLoader from './components/UI/RouteLoader';
-import { ITRProvider } from './contexts/ITRContext';
-import { getAllFilingRoutes } from './routes/filingRoutes';
 
 // Styles
 import './styles/GlobalStyles.css';
@@ -37,20 +35,17 @@ const GoogleOAuthError = lazy(() => import('./pages/Auth/GoogleOAuthError'));
 const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
 
 // Filing flow
-const StartFilingPage = lazy(() => import('./pages/Filing/StartFilingPage'));
 const ITRDeterminationWizard = lazy(() => import('./pages/Filing/ITRDetermination/ITRDeterminationWizard'));
-const DeductionsPage = lazy(() => import('./pages/Filing/DeductionsPage'));
-const TaxCalculationPage = lazy(() => import('./pages/Filing/TaxCalculationPage'));
-const ReviewSubmitPage = lazy(() => import('./pages/Filing/ReviewSubmitPage'));
 const SubmissionStatus = lazy(() => import('./pages/Filing/SubmissionStatus'));
+const ITR1Flow = lazy(() => import('./pages/Filing/ITR1/ITR1Flow'));
+const ITR2Flow = lazy(() => import('./pages/Filing/ITR2/ITR2Flow'));
+const ITR3Flow = lazy(() => import('./pages/Filing/ITR3/ITR3Flow'));
+const ITR4Flow = lazy(() => import('./pages/Filing/ITR4/ITR4Flow'));
 
 // ITR
 const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
 const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
 const EVerification = lazy(() => import('./pages/ITR/EVerification'));
-
-// Income
-const UnifiedIncomePage = lazy(() => import('./pages/Income/UnifiedIncomePage'));
 
 // User
 const ProfileSettings = lazy(() => import('./pages/User/ProfileSettings'));
@@ -115,40 +110,21 @@ const AppContent = () => (
         {/* PAN Verification */}
         <Route path="/itr/pan-verification" element={<Page><PANVerification /></Page>} />
 
-        {/* Filing: start + determination */}
+        {/* Filing: start */}
         <Route path="/filing/start" element={<Page message="Loading filing wizard..."><ITRDeterminationWizard /></Page>} />
-        <Route path="/filing/new" element={<Page><StartFilingPage /></Page>} />
 
-        {/* Filing: per-filing flow */}
-        <Route path="/filing/:filingId/income" element={<Page><UnifiedIncomePage /></Page>} />
-        <Route path="/filing/:filingId/deductions" element={<Page><DeductionsPage /></Page>} />
-        <Route path="/filing/:filingId/tax-calculation" element={<Page><TaxCalculationPage /></Page>} />
-        <Route path="/filing/:filingId/review" element={<Page><ReviewSubmitPage /></Page>} />
+        {/* ITR type-specific flows (canonical) */}
+        <Route path="/filing/:filingId/itr1" element={<Page message="Loading ITR-1..."><ITR1Flow /></Page>} />
+        <Route path="/filing/:filingId/itr2" element={<Page message="Loading ITR-2..."><ITR2Flow /></Page>} />
+        <Route path="/filing/:filingId/itr3" element={<Page message="Loading ITR-3..."><ITR3Flow /></Page>} />
+        <Route path="/filing/:filingId/itr4" element={<Page message="Loading ITR-4..."><ITR4Flow /></Page>} />
         <Route path="/filing/:filingId/submission-status" element={<Page><SubmissionStatus /></Page>} />
-
-        {/* Centralized filing sub-routes (from filingRoutes.js) */}
-        <Route element={<ITRProvider><Outlet /></ITRProvider>}>
-          {getAllFilingRoutes().map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={
-                <Page message={`Loading ${route.title || 'filing'}...`}>
-                  <route.component />
-                </Page>
-              }
-            />
-          ))}
-        </Route>
 
         {/* ITR utilities */}
         <Route path="/itr/history" element={<Page><FilingHistory /></Page>} />
         <Route path="/itr/e-verify" element={<Page><EVerification /></Page>} />
         <Route path="/itr/acknowledgment" element={<Page><AcknowledgmentRedirect /></Page>} />
         <Route path="/acknowledgment/:filingId" element={<Page><Acknowledgment /></Page>} />
-
-        {/* Income (standalone) */}
-        <Route path="/income" element={<Page><UnifiedIncomePage /></Page>} />
       </Route>
 
       {/* Catch-all */}

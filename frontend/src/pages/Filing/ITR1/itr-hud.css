@@ -1,0 +1,115 @@
+/* ITR Filing HUD — Game-style layout */
+
+.hud { display: flex; min-height: 100vh; background: #f8fafc; }
+.hud-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #6b7280; }
+
+/* ── Left Panel ── */
+.hud-panel {
+  width: 260px; min-width: 260px; background: #fff; border-right: 1px solid #e5e7eb;
+  display: flex; flex-direction: column; padding: 16px 12px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+
+.hud-itr-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 8px; margin-bottom: 16px;
+}
+.hud-itr-type { font-size: 13px; font-weight: 700; color: #1d4ed8; }
+.hud-itr-name { font-size: 12px; color: #3b82f6; }
+
+.hud-section-label {
+  font-size: 10px; font-weight: 700; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 0 8px; margin-bottom: 6px;
+}
+
+/* Source items */
+.hud-source {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  margin-bottom: 2px; transition: all 0.15s;
+}
+.hud-source.active { color: #111827; }
+.hud-source.inactive { color: #d1d5db; }
+.hud-source.active:hover { background: #f1f5f9; }
+.hud-source.inactive:hover { background: #fafafa; color: #9ca3af; }
+.hud-source.selected { background: #eff6ff; }
+.hud-source-left { display: flex; align-items: center; gap: 8px; }
+.hud-source-label { font-size: 13px; font-weight: 500; }
+.hud-source-right { display: flex; align-items: center; gap: 6px; }
+.hud-source-total { font-size: 12px; font-weight: 600; color: #374151; }
+.hud-source-total.negative { color: #16a34a; }
+.hud-source-toggle {
+  width: 18px; height: 18px; border-radius: 50%; border: none;
+  background: #fee2e2; color: #ef4444; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.15s;
+}
+.hud-source:hover .hud-source-toggle { opacity: 1; }
+
+/* Tax summary */
+.hud-tax-summary {
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: 10px; margin-bottom: 12px;
+}
+.hud-tax-row {
+  display: flex; justify-content: space-between; padding: 2px 0;
+  font-size: 12px; color: #6b7280;
+}
+.hud-tax-val { font-weight: 600; color: #111827; }
+.hud-tax-val.green { color: #16a34a; }
+.hud-tax-result {
+  display: flex; justify-content: space-between;
+  margin-top: 6px; padding-top: 6px; border-top: 1px solid #e5e7eb;
+  font-size: 13px; font-weight: 700;
+}
+.hud-tax-result.refund { color: #16a34a; }
+.hud-tax-result.payable { color: #dc2626; }
+.hud-tax-hint { font-size: 11px; color: #16a34a; margin-top: 4px; }
+
+/* Actions */
+.hud-actions { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 12px; }
+.hud-btn-primary {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; background: #2563eb; color: #fff; border: none;
+  border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s;
+}
+.hud-btn-primary:hover { background: #1d4ed8; }
+.hud-btn-outline {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px; background: transparent; color: #374151;
+  border: 1px solid #d1d5db; border-radius: 8px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.hud-btn-outline:hover { background: #f9fafb; }
+
+/* ── Center Editor ── */
+.hud-editor {
+  flex: 1; padding: 24px 32px; max-width: 720px;
+  animation: stepFadeIn 0.25s ease-out;
+}
+@keyframes stepFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Mobile: panel becomes top bar ── */
+@media (max-width: 768px) {
+  .hud { flex-direction: column; }
+  .hud-panel {
+    width: 100%; min-width: 100%; height: auto;
+    position: relative; flex-direction: row; flex-wrap: wrap;
+    padding: 12px; gap: 8px; border-right: none; border-bottom: 1px solid #e5e7eb;
+    overflow-x: auto;
+  }
+  .hud-itr-badge { margin-bottom: 0; }
+  .hud-section-label { display: none; }
+  .hud-source { padding: 6px 10px; white-space: nowrap; flex-shrink: 0; }
+  .hud-source-total { display: none; }
+  .hud-source-toggle { display: none; }
+  .hud-tax-summary { display: none; }
+  .hud-actions { flex-direction: row; margin-top: 0; padding-top: 0; }
+  .hud-editor { padding: 16px 12px; }
+}
