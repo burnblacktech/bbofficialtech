@@ -1,8 +1,10 @@
 /**
  * Unified ITR Filing — Game HUD Layout
- * Left panel: collapsible income sources + tax summary + actions
- * Center: active section editor OR default summary view
- * ITR type auto-adapts based on selected sources
+ * - Active sources: colored, prominent, with totals
+ * - Inactive sources: greyed out, dimmed
+ * - ITR type toggle in panel
+ * - Delete filing option
+ * - Proper ITR routing based on selected sources
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -11,12 +13,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
   Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
-  ChevronDown, ArrowLeft, CreditCard,
+  ChevronDown, ArrowLeft, CreditCard, Trash2,
 } from 'lucide-react';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { validateBankAccount } from '../../../utils/itrValidation';
 import toast from 'react-hot-toast';
+import P from '../../../styles/palette';
 import './itr-hud.css';
 
 import SalaryEditor from './editors/SalaryEditor';
@@ -32,16 +35,16 @@ const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
 
 const SOURCES = [
-  { id: 'salary', icon: Briefcase, label: 'Salary', color: '#059669', editor: SalaryEditor },
-  { id: 'house_property', icon: Home, label: 'House Property', color: '#7c3aed', editor: HousePropertyEditor },
-  { id: 'other', icon: DollarSign, label: 'Other Income', color: '#6b7280', editor: OtherIncomeEditor },
-  { id: 'capital_gains', icon: TrendingUp, label: 'Capital Gains', color: '#2563eb', editor: CapitalGainsEditor },
-  { id: 'business', icon: Building2, label: 'Business', color: '#d97706', editor: BusinessEditor },
-  { id: 'foreign', icon: Globe, label: 'Foreign Income', color: '#0891b2', editor: ForeignIncomeEditor },
+  { id: 'salary', icon: Briefcase, label: 'Salary', color: '#059669', bg: '#f0fdf4', editor: SalaryEditor },
+  { id: 'house_property', icon: Home, label: 'House Property', color: '#7c3aed', bg: '#f5f3ff', editor: HousePropertyEditor },
+  { id: 'other', icon: DollarSign, label: 'Other Income', color: '#6b7280', bg: '#f9fafb', editor: OtherIncomeEditor },
+  { id: 'capital_gains', icon: TrendingUp, label: 'Capital Gains', color: '#2563eb', bg: '#eff6ff', editor: CapitalGainsEditor },
+  { id: 'business', icon: Building2, label: 'Business', color: '#d97706', bg: '#fffbeb', editor: BusinessEditor },
+  { id: 'foreign', icon: Globe, label: 'Foreign Income', color: '#0891b2', bg: '#f0f9ff', editor: ForeignIncomeEditor },
 ];
 
+// ITR type based on active sources
 function getITRType(active, urlPath) {
-  // If URL explicitly says itr4, use it (set by wizard for presumptive)
   if (urlPath?.includes('/itr4')) return 'ITR-4';
   if (active.includes('business')) return 'ITR-3';
   if (active.includes('capital_gains') || active.includes('foreign')) return 'ITR-2';
@@ -49,6 +52,7 @@ function getITRType(active, urlPath) {
 }
 
 const ITR_NAMES = { 'ITR-1': 'Sahaj', 'ITR-2': 'Capital Gains', 'ITR-3': 'Business', 'ITR-4': 'Sugam' };
+const ITR_COLORS = { 'ITR-1': '#059669', 'ITR-2': '#2563eb', 'ITR-3': '#d97706', 'ITR-4': '#7c3aed' };
 const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
 
 export default function ITR1Flow() {
@@ -64,48 +68,37 @@ export default function ITR1Flow() {
   });
 
   const [active, setActive] = useState(['salary']);
-  const [selected, setSelected] = useState(null); // null = show summary
+  const [selected, setSelected] = useState(null);
   const [comp, setComp] = useState(null);
   const [bankData, setBankData] = useState({ bankName: '', accountNumber: '', ifsc: '', accountType: 'SAVINGS' });
   const [bankErrors, setBankErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [collapsed, setCollapsed] = useState({ income: false, savings: false, summary: false });
   const [selectedRegime, setSelectedRegime] = useState('new');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Init from filing — restore active sources, bank data, regime
+  // Init from filing
   useEffect(() => {
     if (!filing) return;
     const p = filing.jsonPayload || {};
-
-    // Restore active income sources
     const s = new Set();
     if (p.income?.salary?.employers?.length) s.add('salary');
-    if (p.income?.houseProperty?.type && p.income.houseProperty.type !== 'NONE' && p.income.houseProperty.type !== 'none') s.add('house_property');
+    if (p.income?.houseProperty?.type && !['NONE', 'none'].includes(p.income.houseProperty.type)) s.add('house_property');
     if (p.income?.capitalGains?.transactions?.length) s.add('capital_gains');
     if (p.income?.business?.businesses?.length || p.income?.presumptive?.entries?.length) s.add('business');
     if (n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) > 0) s.add('other');
     if (p.income?.foreignIncome?.incomes?.length) s.add('foreign');
     if (s.size === 0) s.add('salary');
     setActive([...s]);
-
-    // Restore bank data from filing
     const bd = p.bankDetails || {};
-    if (bd.bankName || bd.accountNumber) {
-      setBankData({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
-    }
-
-    // Restore regime from filing
+    if (bd.bankName || bd.accountNumber) setBankData({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
     setSelectedRegime(filing.selectedRegime || p.selectedRegime || 'new');
   }, [filing]);
 
   const saveMut = useMutation({
     mutationFn: async (updates) => {
       const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, updates) };
-      // If regime changed, save it as top-level field too
-      if (updates.selectedRegime) {
-        body.selectedRegime = updates.selectedRegime;
-        setSelectedRegime(updates.selectedRegime);
-      }
+      if (updates.selectedRegime) { body.selectedRegime = updates.selectedRegime; setSelectedRegime(updates.selectedRegime); }
       await api.put(`/filings/${filingId}`, body);
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['filing', filingId] }); recompute(); },
@@ -115,35 +108,46 @@ export default function ITR1Flow() {
   const recompute = useCallback(async () => {
     try {
       const itr = getITRType(active, location.pathname);
-      const ep = EP_MAP[itr] || 'itr1';
-      const r = await api.post(`/filings/${filingId}/${ep}/compute`);
+      const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
       setComp(r.data.data);
-    } catch { /* compute silently fails on empty data */ }
-  }, [filingId, active]);
+    } catch { /* silent */ }
+  }, [filingId, active]); // eslint-disable-line
 
   useEffect(() => { if (filing) recompute(); }, [filing]); // eslint-disable-line
 
+  // When active sources change, navigate to the correct ITR route
+  useEffect(() => {
+    if (!filing) return;
+    const itr = getITRType(active, location.pathname);
+    const ep = EP_MAP[itr] || 'itr1';
+    const currentEp = location.pathname.split('/').pop();
+    if (currentEp !== ep) {
+      navigate(`/filing/${filingId}/${ep}`, { replace: true });
+    }
+  }, [active]); // eslint-disable-line
+
   const toggleSource = (id) => {
     setActive(prev => {
-      if (prev.includes(id)) return prev.length > 1 ? prev.filter(s => s !== id) : prev;
-      return [...prev, id];
+      const next = prev.includes(id) ? (prev.length > 1 ? prev.filter(s => s !== id) : prev) : [...prev, id];
+      return next;
     });
-    setSelected(id);
+    if (!active.includes(id)) setSelected(id);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/filings/${filingId}`);
+      toast.success('Filing deleted');
+      navigate('/dashboard');
+    } catch (e) { toast.error(e.response?.data?.error || 'Cannot delete'); }
+    setShowDeleteConfirm(false);
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // Validate bank from filing payload (where BankEditor saves it)
-    const p = filing?.jsonPayload || {};
-    const bd = p.bankDetails || {};
+    const bd = filing?.jsonPayload?.bankDetails || {};
     const bv = validateBankAccount(bd);
-    if (!bv.valid) {
-      setBankErrors(bv.errors);
-      setSelected('bank');
-      toast.error('Complete bank details before submitting');
-      setIsSubmitting(false);
-      return;
-    }
+    if (!bv.valid) { setBankErrors(bv.errors); setSelected('bank'); toast.error('Complete bank details'); setIsSubmitting(false); return; }
     setBankErrors({});
     try {
       await api.post(`/filings/${filingId}/submit`);
@@ -156,8 +160,7 @@ export default function ITR1Flow() {
   const downloadJSON = async () => {
     try {
       const itr = getITRType(active, location.pathname);
-      const ep = EP_MAP[itr] || 'itr1';
-      const r = await api.get(`/filings/${filingId}/${ep}/json`);
+      const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/json`);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(r.data, null, 2)]));
       a.download = `${itr.replace('-', '')}_AY${filing?.assessmentYear}.json`; a.click();
@@ -176,63 +179,54 @@ export default function ITR1Flow() {
 
   const getTotalForSource = (id) => {
     if (!income) return null;
-    switch (id) {
-      case 'salary': return income.salary?.netTaxable;
-      case 'house_property': return income.houseProperty?.netIncome;
-      case 'other': return income.otherSources?.total;
-      case 'capital_gains': return income.capitalGains?.totalTaxable;
-      case 'business': return income.business?.netProfit || income.presumptive?.totalIncome;
-      case 'foreign': return income.foreignIncome?.totalIncome;
-      default: return null;
-    }
+    /* eslint-disable camelcase */
+    const map = { salary: income.salary?.netTaxable, house_property: income.houseProperty?.netIncome, other: income.otherSources?.total, capital_gains: income.capitalGains?.totalTaxable, business: income.business?.netProfit || income.presumptive?.totalIncome, foreign: income.foreignIncome?.totalIncome };
+    /* eslint-enable camelcase */
+    return map[id] ?? null;
   };
 
   const getEditor = () => {
     if (selected === 'deductions') return DeductionsEditor;
     if (selected === 'bank') return BankEditor;
-    if (!selected) return null; // show summary
-    const src = SOURCES.find(s => s.id === selected);
-    return src?.editor || null;
+    if (!selected) return null;
+    return SOURCES.find(s => s.id === selected)?.editor || null;
   };
 
   const Editor = getEditor();
   const toggle = (key) => setCollapsed(prev => ({ ...prev, [key]: !prev[key] }));
+  const itrColor = ITR_COLORS[itrType] || P.brand;
 
   return (
     <div className="hud">
       {/* ── Left Panel ── */}
       <aside className="hud-panel">
-        {/* Back nav */}
-        <button className="hud-back" onClick={() => navigate('/dashboard')}>
-          <ArrowLeft size={14} /> Dashboard
-        </button>
+        <button className="hud-back" onClick={() => navigate('/dashboard')}><ArrowLeft size={14} /> Dashboard</button>
 
         {/* Filing Info */}
         <div className="hud-filing-info">
           <div className="hud-filing-name">{user?.fullName || 'Taxpayer'}</div>
-          <div className="hud-filing-detail">PAN: {filing?.taxpayerPan || '---'}</div>
-          <div className="hud-filing-detail">AY {filing?.assessmentYear || '---'}</div>
+          <div className="hud-filing-detail">PAN: {filing?.taxpayerPan || '---'} · AY {filing?.assessmentYear || '---'}</div>
         </div>
 
-        {/* ITR Badge */}
-        <div className="hud-itr-badge">
-          <span className="hud-itr-type">{itrType}</span>
-          <span className="hud-itr-name">{ITR_NAMES[itrType]}</span>
+        {/* ITR Badge — colored by type */}
+        <div className="hud-itr-badge" style={{ background: `${itrColor}12`, borderColor: `${itrColor}30` }}>
+          <span className="hud-itr-type" style={{ color: itrColor }}>{itrType}</span>
+          <span className="hud-itr-name" style={{ color: itrColor }}>{ITR_NAMES[itrType]}</span>
         </div>
 
-        {/* Regime Toggle — always visible */}
+        {/* Regime Toggle */}
         <div className="hud-regime-toggle">
           {['old', 'new'].map(r => (
             <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
               onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
-              {r === 'old' ? 'Old' : 'New'}
+              {r === 'old' ? 'Old Regime' : 'New Regime'}
             </button>
           ))}
         </div>
 
-        {/* Income Sources — collapsible */}
+        {/* Income Sources */}
         <div className="hud-section-header" onClick={() => toggle('income')}>
-          <span className="hud-section-label">Income</span>
+          <span className="hud-section-label">Income Sources</span>
           {collapsed.income ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
         </div>
         {!collapsed.income && SOURCES.map(src => {
@@ -243,24 +237,27 @@ export default function ITR1Flow() {
           return (
             <div key={src.id}
               className={`hud-source ${isActive ? 'active' : 'inactive'} ${isSel ? 'selected' : ''}`}
+              style={isActive ? { background: isSel ? src.bg : undefined } : {}}
               onClick={() => isActive ? setSelected(src.id) : toggleSource(src.id)}>
               <div className="hud-source-left">
-                <Icon size={16} style={{ color: isActive ? src.color : '#d1d5db' }} />
-                <span className="hud-source-label">{src.label}</span>
+                <div className="hud-source-icon" style={{ background: isActive ? src.bg : P.bgMuted }}>
+                  <Icon size={14} style={{ color: isActive ? src.color : P.textLight }} />
+                </div>
+                <span className="hud-source-label" style={{ color: isActive ? P.textPrimary : P.textLight, fontWeight: isActive ? 600 : 400 }}>{src.label}</span>
               </div>
               <div className="hud-source-right">
                 {isActive && total != null && <span className={`hud-source-total ${n(total) < 0 ? 'negative' : ''}`}>{fmt(total)}</span>}
                 {isActive ? (
-                  <button className="hud-source-toggle" onClick={e => { e.stopPropagation(); toggleSource(src.id); }} title="Remove"><X size={12} /></button>
+                  <button className="hud-source-toggle" onClick={e => { e.stopPropagation(); toggleSource(src.id); }} title="Remove"><X size={11} /></button>
                 ) : (
-                  <Plus size={14} style={{ color: '#9ca3af' }} />
+                  <Plus size={13} style={{ color: P.textLight }} />
                 )}
               </div>
             </div>
           );
         })}
 
-        {/* Tax Savings — collapsible */}
+        {/* Tax Savings */}
         <div className="hud-section-header" onClick={() => toggle('savings')} style={{ marginTop: 8 }}>
           <span className="hud-section-label">Tax Savings</span>
           {collapsed.savings ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
@@ -268,17 +265,23 @@ export default function ITR1Flow() {
         {!collapsed.savings && (
           <>
             <div className={`hud-source active ${selected === 'deductions' ? 'selected' : ''}`} onClick={() => setSelected('deductions')}>
-              <div className="hud-source-left"><CheckCircle size={16} style={{ color: '#16a34a' }} /><span className="hud-source-label">Deductions</span></div>
-              <ChevronRight size={14} style={{ color: '#9ca3af' }} />
+              <div className="hud-source-left">
+                <div className="hud-source-icon" style={{ background: '#f0fdf4' }}><CheckCircle size={14} style={{ color: P.success }} /></div>
+                <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Deductions</span>
+              </div>
+              <ChevronRight size={13} style={{ color: P.textLight }} />
             </div>
             <div className={`hud-source active ${selected === 'bank' ? 'selected' : ''}`} onClick={() => setSelected('bank')}>
-              <div className="hud-source-left"><CreditCard size={16} style={{ color: '#6b7280' }} /><span className="hud-source-label">Bank & Submit</span></div>
-              <ChevronRight size={14} style={{ color: '#9ca3af' }} />
+              <div className="hud-source-left">
+                <div className="hud-source-icon" style={{ background: P.bgMuted }}><CreditCard size={14} style={{ color: P.textMuted }} /></div>
+                <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Bank & Submit</span>
+              </div>
+              <ChevronRight size={13} style={{ color: P.textLight }} />
             </div>
           </>
         )}
 
-        {/* Tax Summary — collapsible */}
+        {/* Tax Summary */}
         <div className="hud-section-header" onClick={() => toggle('summary')} style={{ marginTop: 8 }}>
           <span className="hud-section-label">Tax Summary</span>
           {collapsed.summary ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
@@ -297,11 +300,8 @@ export default function ITR1Flow() {
                 <span>{fmt(Math.abs(bestRegime.netPayable))}</span>
               </div>
             )}
-            {comp?.savings > 0 && <div className="hud-tax-hint">{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
-            {comp?.recommended && comp.recommended !== selectedRegime && (
-              <div className="hud-tax-hint" style={{ color: '#d97706' }}>
-                Tip: {comp.recommended === 'old' ? 'Old' : 'New'} regime would save {fmt(comp.savings)}
-              </div>
+            {comp?.savings > 0 && comp.recommended !== selectedRegime && (
+              <div className="hud-tax-hint" style={{ color: P.warning }}>Tip: {comp.recommended === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>
             )}
             <div className="hud-tax-expand">Click for full breakdown</div>
           </div>
@@ -310,28 +310,33 @@ export default function ITR1Flow() {
         {/* Actions */}
         <div className="hud-actions">
           <button className="hud-btn-outline" onClick={downloadJSON}><Download size={14} /> JSON</button>
-          <button className="hud-btn-primary" onClick={() => setSelected('bank')}><Send size={14} /> Review & Submit</button>
+          <button className="hud-btn-primary" onClick={() => setSelected('bank')}><Send size={14} /> Submit</button>
         </div>
+
+        {/* Delete */}
+        {!showDeleteConfirm ? (
+          <button onClick={() => setShowDeleteConfirm(true)} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: P.textLight, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: 4 }}>
+            <Trash2 size={12} /> Delete filing
+          </button>
+        ) : (
+          <div style={{ marginTop: 6, padding: 10, background: P.errorBg, borderRadius: 8, border: '1px solid #fecaca' }}>
+            <div style={{ fontSize: 12, color: P.errorDark, marginBottom: 6 }}>Delete this filing?</div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button onClick={handleDelete} style={{ flex: 1, padding: '5px 0', background: P.error, color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => setShowDeleteConfirm(false)} style={{ flex: 1, padding: '5px 0', background: P.bgMuted, color: P.textSecondary, border: 'none', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
+            </div>
+          </div>
+        )}
       </aside>
 
-      {/* ── Center: Editor or Summary ── */}
+      {/* ── Center ── */}
       <main className="hud-editor">
         {Editor ? (
-          <Editor
-            payload={payload}
-            filing={filing}
-            selectedRegime={selectedRegime}
-            onSave={(updates) => saveMut.mutateAsync(updates)}
-            isSaving={saveMut.isPending}
-            activeSources={active}
-            computation={comp}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            bankData={bankData}
-            setBankData={setBankData}
-            bankErrors={bankErrors}
-            onDownloadJSON={downloadJSON}
-          />
+          <Editor payload={payload} filing={filing} selectedRegime={selectedRegime}
+            onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
+            activeSources={active} computation={comp} onSubmit={handleSubmit}
+            isSubmitting={isSubmitting} bankData={bankData} setBankData={setBankData}
+            bankErrors={bankErrors} onDownloadJSON={downloadJSON} />
         ) : (
           <SummaryView comp={comp} itrType={itrType} filing={filing} rec={rec} bestRegime={bestRegime} altRegime={altRegime} tds={tds} onEdit={setSelected} />
         )}
@@ -340,32 +345,29 @@ export default function ITR1Flow() {
   );
 }
 
-/* ── Default Summary View (center area when nothing selected) ── */
+/* ── Summary View ── */
 function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, onEdit }) {
   const income = comp?.income;
-  if (!comp) {
-    return (
-      <div>
-        <h2 className="step-title">Filing Summary</h2>
-        <p className="step-desc">Add income sources from the left panel to see your tax computation here.</p>
-        <div className="step-card info" style={{ textAlign: 'center', padding: 32 }}>
-          <Briefcase size={32} color="#2563eb" style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: 14, color: '#6b7280' }}>Start by clicking a source on the left</div>
-        </div>
+  if (!comp) return (
+    <div>
+      <h2 className="step-title">Filing Summary</h2>
+      <p className="step-desc">Add income sources from the left panel to see your tax computation.</p>
+      <div className="step-card info" style={{ textAlign: 'center', padding: 32 }}>
+        <Briefcase size={32} color={P.brand} style={{ margin: '0 auto 8px' }} />
+        <div style={{ fontSize: 14, color: P.textMuted }}>Click an income source on the left to start</div>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <div>
       <h2 className="step-title">Tax Computation — {itrType}</h2>
       <p className="step-desc">AY {filing?.assessmentYear} · PAN {filing?.taxpayerPan}</p>
 
-      {/* Income Breakdown */}
       <div className="step-card">
-        <div className="ff-section-title" style={{ cursor: 'pointer' }} onClick={() => onEdit('salary')}>Income Breakdown</div>
+        <div className="ff-section-title">Income Breakdown</div>
         {income?.salary?.netTaxable > 0 && <SRow label="Salary (net)" value={income.salary.netTaxable} onClick={() => onEdit('salary')} />}
-        {income?.houseProperty?.netIncome !== 0 && income?.houseProperty?.netIncome != null && <SRow label="House Property" value={income.houseProperty.netIncome} onClick={() => onEdit('house_property')} />}
+        {income?.houseProperty?.netIncome != null && income.houseProperty.netIncome !== 0 && <SRow label="House Property" value={income.houseProperty.netIncome} onClick={() => onEdit('house_property')} />}
         {income?.otherSources?.total > 0 && <SRow label="Other Sources" value={income.otherSources.total} onClick={() => onEdit('other')} />}
         {income?.capitalGains?.totalTaxable > 0 && <SRow label="Capital Gains" value={income.capitalGains.totalTaxable} onClick={() => onEdit('capital_gains')} />}
         {(income?.business?.netProfit > 0 || income?.presumptive?.totalIncome > 0) && <SRow label="Business" value={income.business?.netProfit || income.presumptive?.totalIncome} onClick={() => onEdit('business')} />}
@@ -373,23 +375,17 @@ function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, o
         <SRow label="Gross Total Income" value={income?.grossTotal} bold />
       </div>
 
-      {/* Regime Comparison */}
       {bestRegime && altRegime && (
         <div className="step-card">
-          <div className="ff-section-title" onClick={() => onEdit('deductions')} style={{ cursor: 'pointer' }}>Regime Comparison</div>
+          <div className="ff-section-title" style={{ cursor: 'pointer' }} onClick={() => onEdit('deductions')}>Regime Comparison</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <RegimeCard regime={bestRegime} label={rec === 'old' ? 'Old Regime' : 'New Regime'} recommended tds={tds} />
             <RegimeCard regime={altRegime} label={rec === 'old' ? 'New Regime' : 'Old Regime'} tds={tds} />
           </div>
-          {comp?.savings > 0 && (
-            <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
-              {rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}
-            </div>
-          )}
+          {comp?.savings > 0 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, color: P.success, fontWeight: 600 }}>{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
         </div>
       )}
 
-      {/* Slab Breakdown */}
       {bestRegime?.slabBreakdown?.length > 0 && (
         <div className="step-card">
           <div className="ff-section-title">Slab Breakdown ({rec} regime)</div>
@@ -403,16 +399,15 @@ function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, o
           <SRow label="Tax on Income" value={bestRegime.taxOnIncome} />
           {bestRegime.rebate > 0 && <SRow label="Less: Rebate 87A" value={-bestRegime.rebate} green />}
           {bestRegime.surcharge > 0 && <SRow label="Surcharge" value={bestRegime.surcharge} />}
-          <SRow label="Health & Edu Cess (4%)" value={bestRegime.cess} />
+          <SRow label="Cess (4%)" value={bestRegime.cess} />
           <div className="ff-divider" />
           <SRow label="Total Tax" value={bestRegime.totalTax} bold />
-          {tds && n(tds.total) > 0 && <SRow label="Less: TDS / Advance Tax" value={-tds.total} green />}
+          {tds && n(tds.total) > 0 && <SRow label="Less: TDS" value={-tds.total} green />}
           <div className="ff-divider" />
-          <SRow label={bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'} value={Math.abs(bestRegime.netPayable)} bold color={bestRegime.netPayable <= 0 ? '#16a34a' : '#dc2626'} />
+          <SRow label={bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'} value={Math.abs(bestRegime.netPayable)} bold color={bestRegime.netPayable <= 0 ? P.success : P.error} />
         </div>
       )}
 
-      {/* Quick actions */}
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
         <button className="ff-btn ff-btn-outline" onClick={() => onEdit('deductions')}>Edit Deductions</button>
         <button className="ff-btn ff-btn-primary" onClick={() => onEdit('bank')}>Review & Submit</button>
@@ -424,9 +419,9 @@ function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, o
 function RegimeCard({ regime, label, recommended, tds }) {
   const net = regime.totalTax - n(tds?.total);
   return (
-    <div style={{ padding: 12, borderRadius: 8, border: recommended ? '2px solid #2563eb' : '1px solid #e5e7eb', background: recommended ? '#eff6ff' : '#fff', position: 'relative' }}>
-      {recommended && <span style={{ position: 'absolute', top: -8, right: 8, fontSize: 10, fontWeight: 700, color: '#fff', background: '#2563eb', padding: '1px 8px', borderRadius: 10 }}>BEST</span>}
-      <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 6 }}>{label}</div>
+    <div style={{ padding: 12, borderRadius: 8, border: recommended ? `2px solid ${P.brand}` : `1px solid ${P.borderLight}`, background: recommended ? P.brandLight : P.bgCard, position: 'relative' }}>
+      {recommended && <span style={{ position: 'absolute', top: -8, right: 8, fontSize: 10, fontWeight: 700, color: '#fff', background: P.brand, padding: '1px 8px', borderRadius: 10 }}>BEST</span>}
+      <div style={{ fontSize: 13, fontWeight: 700, color: P.textPrimary, marginBottom: 6 }}>{label}</div>
       <div className="ff-row"><span className="ff-row-label">Taxable</span><span className="ff-row-value">{fmt(regime.taxableIncome)}</span></div>
       <div className="ff-row"><span className="ff-row-label">Deductions</span><span className="ff-row-value green">{fmt(regime.deductions)}</span></div>
       <div className="ff-row"><span className="ff-row-label">Tax</span><span className="ff-row-value bold">{fmt(regime.totalTax)}</span></div>
@@ -436,10 +431,9 @@ function RegimeCard({ regime, label, recommended, tds }) {
 }
 
 function SRow({ label, value, bold, green, color, onClick }) {
-  const style = { cursor: onClick ? 'pointer' : 'default' };
   const valCls = `ff-row-value${bold ? ' bold' : ''}${green ? ' green' : ''}${n(value) < 0 ? ' green' : ''}`;
   return (
-    <div className="ff-row" style={style} onClick={onClick}>
+    <div className="ff-row" style={onClick ? { cursor: 'pointer' } : {}} onClick={onClick}>
       <span className="ff-row-label">{label}</span>
       <span className={valCls} style={color ? { color } : {}}>{n(value) < 0 ? '- ' : ''}{fmt(value)}</span>
     </div>

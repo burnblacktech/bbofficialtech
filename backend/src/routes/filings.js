@@ -30,7 +30,7 @@ const { AppError } = require('../middleware/errorHandler');
  */
 router.post('/', authenticateToken, async (req, res, next) => {
     try {
-        const { assessmentYear, taxpayerPan } = req.body;
+        const { assessmentYear, taxpayerPan, itrType } = req.body;
 
         if (!assessmentYear || !taxpayerPan) {
             return res.status(400).json({
@@ -48,8 +48,12 @@ router.post('/', authenticateToken, async (req, res, next) => {
             },
         });
 
-        // If filing exists, return it instead of creating a new one
+        // If filing exists, update its ITR type if changed and return it
         if (existingFiling) {
+            if (itrType && existingFiling.itrType !== itrType) {
+                existingFiling.itrType = itrType;
+                await existingFiling.save();
+            }
             return res.status(200).json({
                 success: true,
                 data: existingFiling,
@@ -64,7 +68,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
         };
 
         const result = await FilingService.createFiling(
-            { assessmentYear, taxpayerPan },
+            { assessmentYear, taxpayerPan, itrType },
             user
         );
 
@@ -213,6 +217,23 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+});
+
+/**
+ * Delete a draft filing
+ * DELETE /api/filings/:id
+ */
+router.delete('/:id', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.id);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        if (filing.lifecycleState !== STATES.DRAFT) {
+            throw new AppError('Only draft filings can be deleted', 400, 'CANNOT_DELETE_NON_DRAFT');
+        }
+        await filing.destroy();
+        res.json({ success: true, message: 'Filing deleted' });
+    } catch (error) { next(error); }
 });
 
 /**

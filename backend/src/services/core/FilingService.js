@@ -21,7 +21,7 @@ class FilingService {
      * @param {Object} user - { userId, caFirmId, role }
      * @returns {Object} { filingId, lifecycleState, assessmentYear }
      */
-    async createFiling({ assessmentYear, taxpayerPan }, user) {
+    async createFiling({ assessmentYear, taxpayerPan, itrType }, user) {
         const transaction = await sequelize.transaction();
 
         try {
@@ -55,6 +55,7 @@ class FilingService {
                 caFirmId: user.caFirmId || null,
                 assessmentYear,
                 taxpayerPan,
+                itrType: itrType || null,
                 lifecycleState: 'draft',
                 intelligenceFlags: [],
                 intelligenceOverrides: [],

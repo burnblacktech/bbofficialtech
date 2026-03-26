@@ -73,7 +73,7 @@ const ITRDeterminationWizard = () => {
         } catch { /* non-blocking — filing creation is more important */ }
       }
 
-      const res = await newFilingService.createFiling({ assessmentYear, taxpayerPan: panUpper });
+      const res = await newFilingService.createFiling({ assessmentYear, taxpayerPan: panUpper, itrType: recommendedITR });
       return res.data;
     },
     onSuccess: (response) => {
@@ -84,15 +84,18 @@ const ITRDeterminationWizard = () => {
       }
     },
     onError: (error) => {
-      // Filing already exists — resume
+      // Filing already exists — resume with correct ITR type
       const existing = error.response?.data?.data;
       const id = existing?.id || existing?.filingId;
       if (id) {
+        const existingType = existing?.itrType || recommendedITR;
+        const route = routeMap[existingType] || routeMap[recommendedITR];
         toast.success('Resuming existing filing');
-        navigate(`/filing/${id}/${routeMap[recommendedITR]}`);
+        navigate(`/filing/${id}/${route}`);
         return;
       }
-      toast.error(error.response?.data?.error || 'Failed to create filing');
+      const msg = error.response?.data?.error;
+      toast.error(typeof msg === 'string' ? msg : msg?.message || 'Failed to create filing');
     },
   });
 
