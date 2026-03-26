@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { validateForeignIncomeStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -10,11 +11,14 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
   const [incomes, setIncomes] = useState(existing.length ? existing : []);
   const [editing, setEditing] = useState(existing.length === 0 ? 0 : null);
   const [form, setForm] = useState(existing.length === 0 ? { ...EMPTY } : null);
+  const [errors, setErrors] = useState({});
 
   const save = () => {
-    if (!form?.country || !form?.amountINR) return;
+    if (!form?.country || !form?.amountINR) { setErrors({ _form: 'Country and amount are required' }); return; }
     const updated = [...incomes];
     updated[editing] = { ...form, amountINR: n(form.amountINR), taxPaidAbroad: n(form.taxPaidAbroad) };
+    const v = validateForeignIncomeStep(updated);
+    setErrors(v.valid ? {} : v.errors);
     setIncomes(updated); setForm(null); setEditing(null);
     onSave({ income: { foreignIncome: { incomes: updated } } });
   };
@@ -71,7 +75,14 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
         </div>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(incomes.length); }}><Plus size={15} /> Add Foreign Income</button>}
+      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(incomes.length); setErrors({}); }}><Plus size={15} /> Add Foreign Income</button>}
+
+      {Object.keys(errors).length > 0 && (
+        <div className="ff-errors">
+          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
+          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
+        </div>
+      )}
 
       {incomes.length > 0 && (
         <div className="step-card summary">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { validateCapitalGainsStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -10,11 +11,14 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
   const [txns, setTxns] = useState(existing.length ? existing : []);
   const [editing, setEditing] = useState(existing.length === 0 ? 0 : null);
   const [form, setForm] = useState(existing.length === 0 ? { ...EMPTY } : null);
+  const [errors, setErrors] = useState({});
 
   const save = () => {
-    if (!form?.saleValue) return;
+    if (!form?.saleValue) { setErrors({ _form: 'Sale value is required' }); return; }
     const updated = [...txns];
     updated[editing] = { ...form, saleValue: n(form.saleValue), purchaseValue: n(form.purchaseValue), indexedCost: n(form.indexedCost), expenses: n(form.expenses), exemption: n(form.exemption) };
+    const v = validateCapitalGainsStep(updated);
+    setErrors(v.valid ? {} : v.errors);
     setTxns(updated); setForm(null); setEditing(null);
     onSave({ income: { capitalGains: { transactions: updated } } });
   };
@@ -82,7 +86,14 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
         </div>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(txns.length); }}><Plus size={15} /> Add Transaction</button>}
+      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(txns.length); setErrors({}); }}><Plus size={15} /> Add Transaction</button>}
+
+      {Object.keys(errors).length > 0 && (
+        <div className="ff-errors">
+          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
+          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
+        </div>
+      )}
 
       {txns.length > 0 && (
         <div className="step-card summary">

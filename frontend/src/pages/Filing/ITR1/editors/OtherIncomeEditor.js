@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateOtherIncomeStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -12,10 +13,13 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
     familyPension: os.familyPension || '',
     otherIncome: os.otherIncome || '',
   });
+  const [errors, setErrors] = useState({});
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
+    const v = validateOtherIncomeStep(next);
+    setErrors(v.valid ? {} : v.errors);
     onSave({ income: { otherSources: next } });
   };
 

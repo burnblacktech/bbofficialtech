@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateHousePropertyStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -11,10 +12,13 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
     municipalTaxesPaid: hp.municipalTaxesPaid || '',
     interestOnHomeLoan: hp.interestOnHomeLoan || '',
   });
+  const [errors, setErrors] = useState({});
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
+    const v = validateHousePropertyStep(type.toUpperCase().replace('LETOUT', 'LET_OUT').replace('SELFOCCUPIED', 'SELF_OCCUPIED'), next);
+    setErrors(v.valid ? {} : v.errors);
     onSave({ income: { houseProperty: { type, ...next } } });
   };
 

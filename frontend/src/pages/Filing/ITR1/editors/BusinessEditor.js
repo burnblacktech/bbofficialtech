@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -14,16 +14,24 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
   const [rList, setRList] = useState(rEntries);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  const minRate = (f) => f?.section === '44ADA' ? 50 : f?.isDigital ? 6 : 8;
 
   const saveP = () => {
-    if (!form?.grossReceipts) return;
-    const updated = [...pList]; updated[editing] = { ...form, grossReceipts: n(form.grossReceipts), declaredIncome: n(form.declaredIncome) };
+    if (!form?.grossReceipts) { setErrors({ _form: 'Gross receipts required' }); return; }
+    const minIncome = Math.round(n(form.grossReceipts) * minRate(form) / 100);
+    if (n(form.declaredIncome) < minIncome) {
+      setErrors({ income: `Declared income must be at least ${minRate(form)}% of receipts (₹${minIncome.toLocaleString('en-IN')})` });
+    } else { setErrors({}); }
+    const updated = [...pList]; updated[editing] = { ...form, grossReceipts: n(form.grossReceipts), declaredIncome: Math.max(n(form.declaredIncome), minIncome) };
     setPList(updated); setForm(null); setEditing(null);
     onSave({ income: { presumptive: { entries: updated } } });
   };
 
   const saveR = () => {
-    if (!form?.name) return;
+    if (!form?.name) { setErrors({ _form: 'Business name required' }); return; }
+    setErrors({});
     const updated = [...rList]; updated[editing] = { ...form, turnover: n(form.turnover), grossProfit: n(form.grossProfit), depreciation: n(form.depreciation), expenses: { rent: n(form.expenses?.rent), salary: n(form.expenses?.salary), interest: n(form.expenses?.interest), other: n(form.expenses?.other) } };
     setRList(updated); setForm(null); setEditing(null);
     onSave({ income: { business: { businesses: updated } } });
@@ -35,7 +43,6 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
     onSave({ income: { [key]: key === 'presumptive' ? { entries: updated } : { businesses: updated } } });
   };
 
-  const minRate = (f) => f?.section === '44ADA' ? 50 : f?.isDigital ? 6 : 8;
   const items = mode === 'presumptive' ? pList : rList;
   const netExp = (b) => n(b.expenses?.rent) + n(b.expenses?.salary) + n(b.expenses?.interest) + n(b.expenses?.other);
 
@@ -107,7 +114,14 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
         </div>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm(mode === 'presumptive' ? { ...P_EMPTY } : { ...R_EMPTY }); setEditing(items.length); }}><Plus size={15} /> Add {mode === 'presumptive' ? 'Entry' : 'Business'}</button>}
+      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm(mode === 'presumptive' ? { ...P_EMPTY } : { ...R_EMPTY }); setEditing(items.length); setErrors({}); }}><Plus size={15} /> Add {mode === 'presumptive' ? 'Entry' : 'Business'}</button>}
+
+      {Object.keys(errors).length > 0 && (
+        <div className="ff-errors">
+          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
+          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
+        </div>
+      )}
 
       {items.length > 0 && (
         <div className="step-card summary">
