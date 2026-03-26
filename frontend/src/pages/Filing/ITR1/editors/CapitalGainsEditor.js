@@ -59,7 +59,10 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
             <div className="ff-field">
               <label className="ff-label">Asset Type</label>
               <select className="ff-select" value={form.assetType} onChange={e => setForm({ ...form, assetType: e.target.value })}>
-                {['equity', 'mutualFund', 'property', 'other'].map(o => <option key={o} value={o}>{o}</option>)}
+                <option value="equity">Listed Equity / Shares</option>
+                <option value="mutualFund">Equity Mutual Funds</option>
+                <option value="property">Property / Real Estate</option>
+                <option value="other">Other (Debt MF, Gold, etc.)</option>
               </select>
             </div>
             <div className="ff-field">
@@ -97,10 +100,13 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
 
       {txns.length > 0 && (
         <div className="step-card summary">
-          <div className="ff-row"><span className="ff-row-label">STCG Total</span><span className={`ff-row-value bold ${stcg < 0 ? 'red' : ''}`}>₹{stcg.toLocaleString('en-IN')}</span></div>
-          <div className="ff-row"><span className="ff-row-label">LTCG Total</span><span className={`ff-row-value bold ${ltcg < 0 ? 'red' : ''}`}>₹{ltcg.toLocaleString('en-IN')}</span></div>
+          <div className="ff-row"><span className="ff-row-label">STCG Total</span><span className={`ff-row-value bold ${stcg < 0 ? 'red' : ''}`}>{'\u20B9'}{stcg.toLocaleString('en-IN')}</span></div>
+          <div className="ff-row"><span className="ff-row-label">LTCG Total</span><span className={`ff-row-value bold ${ltcg < 0 ? 'red' : ''}`}>{'\u20B9'}{ltcg.toLocaleString('en-IN')}</span></div>
           <div className="ff-divider" />
-          <div className="ff-row"><span className="ff-row-label">Net Capital Gains</span><span className="ff-row-value bold">₹{(stcg + ltcg).toLocaleString('en-IN')}</span></div>
+          <div className="ff-row"><span className="ff-row-label">Net Capital Gains</span><span className="ff-row-value bold">{'\u20B9'}{(stcg + ltcg).toLocaleString('en-IN')}</span></div>
+          <div className="ff-hint" style={{ marginTop: 6 }}>
+            STCG on equity: 20% · LTCG on equity: 12.5% (first {'\u20B9'}1.25L exempt) · LTCG on property/other: 20%
+          </div>
         </div>
       )}
     </div>
