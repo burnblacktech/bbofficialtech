@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
@@ -40,17 +40,21 @@ const SOURCES = [
   { id: 'foreign', icon: Globe, label: 'Foreign Income', color: '#0891b2', editor: ForeignIncomeEditor },
 ];
 
-function getITRType(active) {
+function getITRType(active, urlPath) {
+  // If URL explicitly says itr4, use it (set by wizard for presumptive)
+  if (urlPath?.includes('/itr4')) return 'ITR-4';
   if (active.includes('business')) return 'ITR-3';
   if (active.includes('capital_gains') || active.includes('foreign')) return 'ITR-2';
   return 'ITR-1';
 }
 
 const ITR_NAMES = { 'ITR-1': 'Sahaj', 'ITR-2': 'Capital Gains', 'ITR-3': 'Business', 'ITR-4': 'Sugam' };
+const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
 
 export default function ITR1Flow() {
   const { filingId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const qc = useQueryClient();
   const { user } = useAuth();
 
@@ -110,8 +114,8 @@ export default function ITR1Flow() {
 
   const recompute = useCallback(async () => {
     try {
-      const itr = getITRType(active);
-      const ep = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3' }[itr] || 'itr1';
+      const itr = getITRType(active, location.pathname);
+      const ep = EP_MAP[itr] || 'itr1';
       const r = await api.post(`/filings/${filingId}/${ep}/compute`);
       setComp(r.data.data);
     } catch { /* compute silently fails on empty data */ }
@@ -151,8 +155,8 @@ export default function ITR1Flow() {
 
   const downloadJSON = async () => {
     try {
-      const itr = getITRType(active);
-      const ep = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3' }[itr] || 'itr1';
+      const itr = getITRType(active, location.pathname);
+      const ep = EP_MAP[itr] || 'itr1';
       const r = await api.get(`/filings/${filingId}/${ep}/json`);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(r.data, null, 2)]));
@@ -163,7 +167,7 @@ export default function ITR1Flow() {
   if (isLoading) return <div className="hud-loading"><Loader2 size={28} className="animate-spin" /></div>;
 
   const payload = filing?.jsonPayload || {};
-  const itrType = getITRType(active);
+  const itrType = getITRType(active, location.pathname);
   const income = comp?.income;
   const rec = selectedRegime;
   const bestRegime = comp?.[rec === 'old' ? 'oldRegime' : 'newRegime'];
