@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Briefcase, Home, TrendingUp, DollarSign, Globe, ArrowRight, CheckCircle, Loader2, Shield } from 'lucide-react';
+import { Briefcase, Home, TrendingUp, DollarSign, Globe, ArrowRight, ArrowLeft, CheckCircle, Loader2, Shield } from 'lucide-react';
 import api from '../../../services/api';
 import newFilingService from '../../../services/newFilingService';
 import { getFileableAYs } from '../../../utils/assessmentYear';
@@ -121,6 +121,9 @@ const ITRDeterminationWizard = () => {
       <div className="ff-content" style={{ maxWidth: 640 }}>
         <h1 className="step-title" style={{ fontSize: 26, marginBottom: 8 }}>File Your ITR</h1>
         <p className="step-desc">Tell us about your income and we'll pick the right form</p>
+        <button className="ff-btn ff-btn-ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
+          <ArrowLeft size={14} /> Back to Dashboard
+        </button>
 
         {/* Section 1: PAN + AY */}
         <div className="step-card">
