@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+/**
+ * Google OAuth Success — Processes OAuth callback and redirects
+ */
+
+import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { OrientationPage } from '../../components/templates';
-import { Card } from '../../components/UI/Card';
-import { Button } from '../../components/UI/Button';
-import { typography, spacing, components, layout } from '../../styles/designTokens';
 
-const GoogleOAuthSuccess = () => {
+export default function GoogleOAuthSuccess() {
   const { loginWithOAuth } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -24,18 +24,9 @@ const GoogleOAuthSuccess = () => {
             window.location.href = `/login?error=oauth_failed&message=${encodeURIComponent(result.message || 'Authentication failed')}`;
             return;
           }
-
-          // Ensure we land on the protected smart redirect route.
-          // Using a hard navigation here avoids edge cases where state timing briefly fails ProtectedRoute and bounces elsewhere.
-          try {
-            window.location.replace('/home');
-          } catch {
-            navigate('/home', { replace: true });
-          }
-        }).catch(() => {
-          window.location.href = '/login?error=oauth_failed';
-        });
-      } catch (error) {
+          try { window.location.replace('/home'); } catch { navigate('/home', { replace: true }); }
+        }).catch(() => { window.location.href = '/login?error=oauth_failed'; });
+      } catch {
         window.location.href = `/login?error=oauth_failed&message=${encodeURIComponent('Failed to process authentication data')}`;
       }
     } else {
@@ -44,14 +35,12 @@ const GoogleOAuthSuccess = () => {
   }, [loginWithOAuth, searchParams, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <h2 className="text-heading-3 font-semibold text-slate-900">Finalizing your login...</h2>
-        <p className="text-slate-600 mt-2">Please wait while we complete your authentication.</p>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f8fafc' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div className="animate-spin" style={{ width: 40, height: 40, border: '3px solid #e5e7eb', borderTopColor: '#2563eb', borderRadius: '50%', margin: '0 auto 16px' }}></div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: '#111827' }}>Finalizing your login...</div>
+        <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>Please wait while we complete authentication.</div>
       </div>
     </div>
   );
-};
-
-export default GoogleOAuthSuccess;
+}

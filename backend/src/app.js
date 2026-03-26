@@ -1,6 +1,5 @@
 // =====================================================
-// MAIN APPLICATION FILE - EXPRESS APP CONFIGURATION;
-// Enterprise-grade Express.js application setup;
+// EXPRESS APP CONFIGURATION
 // =====================================================
 
 const express = require('express');
@@ -10,28 +9,16 @@ const morgan = require('morgan');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-console.log('TRACE: session loaded');
-// RedisStore is loaded lazily when Redis is available (see server.js)
 const passport = require('./config/passport');
-console.log('TRACE: passport loaded');
 const enterpriseLogger = require('./utils/logger');
-console.log('TRACE: logger loaded');
-const redisService = require('./services/core/RedisService');
-console.log('TRACE: redis service loaded');
 const { globalErrorHandler } = require('./middleware/errorHandler');
-console.log('TRACE: error handler loaded');
-
-// =====================================================
-// EXPRESS APP INITIALIZATION;
-// =====================================================
 
 const app = express();
 
 // =====================================================
-// SECURITY MIDDLEWARE;
+// SECURITY
 // =====================================================
 
-// Helmet for security headers;
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -51,58 +38,43 @@ app.use(
   }),
 );
 
-// Cookie parser
 app.use(cookieParser());
 
-// Session configuration for OAuth state parameter
-// Use Redis store if available, fallback to memory store
-// Note: Store initialization is deferred until Redis is ready (handled in server.js)
-const sessionConfig = {
-  secret: process.env.SESSION_SECRET,
+// Session (for OAuth state)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'dev-session-secret',
   resave: false,
   saveUninitialized: false,
-  name: 'burnblack.sid', // Custom session name
+  name: 'burnblack.sid',
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 15 * 60 * 1000, // 15 minutes for OAuth state
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' required for cross-site cookie if API/Frontend are different domains
+    maxAge: 15 * 60 * 1000,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   },
-};
+}));
 
-// Initialize session store lazily (will be set up in server.js after Redis is initialized)
-// For now, use memory store as default
-enterpriseLogger.info('Using in-memory session store (will upgrade to Redis if available)');
-
-app.use(session(sessionConfig));
-
-// Initialize Passport
 app.use(passport.initialize());
 
-// CORS configuration;
+// =====================================================
+// CORS
+// =====================================================
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, etc.)
-      if (!origin) {
-        return callback(null, true);
-      }
+      if (!origin) { return callback(null, true); }
 
       const allowedOrigins = [
         'http://localhost:3000',
         'http://localhost:3001',
         'http://127.0.0.1:3000',
         'http://127.0.0.1:3001',
-        'https://burnblack.com',
-        'https://www.burnblack.com',
-        'https://app.burnblack.com',
-        // Allow Vercel preview and production deployments
-        process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
         process.env.FRONTEND_URL || null,
       ].filter(Boolean);
 
-      // In development, allow any localhost origin
-      if (process.env.NODE_ENV !== 'production' && origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      if (process.env.NODE_ENV !== 'production' &&
+          (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
         return callback(null, true);
       }
 
@@ -117,199 +89,69 @@ app.use(
     allowedHeaders: [
       'Content-Type',
       'Authorization',
-      'API-Version',
       'X-Requested-With',
       'x-correlation-id',
       'X-Correlation-ID',
-      'x-idempotency-key',
-      'X-Idempotency-Key',
-      'x-client-request-id',
-      'X-Client-Request-Id',
     ],
-    exposedHeaders: ['API-Version', 'X-Total-Count', 'X-Page-Count'],
+    exposedHeaders: ['X-Total-Count'],
   }),
 );
 
 // =====================================================
-// PARSING MIDDLEWARE;
+// PARSING & COMPRESSION
 // =====================================================
 
-// Body parsing middleware;
-app.use(
-  express.json({
-    limit: '10mb',
-    verify: (req, res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
-
-app.use(
-  express.urlencoded({
-    extended: true,
-    limit: '10mb',
-  }),
-);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(compression({ level: 6, threshold: 1024 }));
 
 // =====================================================
-// COMPRESSION MIDDLEWARE;
+// LOGGING
 // =====================================================
 
-// Compression middleware;
-app.use(
-  compression({
-    level: 6,
-    threshold: 1024,
-    filter: (req, res) => {
-      if (req.headers['x-no-compression']) {
-        return false;
-      }
-      return compression.filter(req, res);
-    },
-  }),
-);
-
-// =====================================================
-// LOGGING MIDDLEWARE;
-// =====================================================
-
-// Morgan HTTP request logger;
 app.use(
   morgan('combined', {
-    stream: {
-      write: message => {
-        enterpriseLogger.info(message.trim());
-      },
-    },
-    skip: (req, res) => {
-      // Skip logging for health checks;
-      return req.url === '/api/health' || req.url === '/api/health/';
-    },
+    stream: { write: message => enterpriseLogger.info(message.trim()) },
+    skip: (req) => req.url === '/api/health',
   }),
 );
 
 // =====================================================
-// REQUEST PROCESSING MIDDLEWARE;
+// REQUEST MIDDLEWARE
 // =====================================================
 
-// Trust proxy (for rate limiting and IP detection)
 app.set('trust proxy', 1);
 
-// Request ID middleware;
 app.use((req, res, next) => {
   req.id = require('crypto').randomUUID();
   res.setHeader('X-Request-ID', req.id);
   next();
 });
 
-// Request timing middleware;
 app.use((req, res, next) => {
   req.startTime = Date.now();
   next();
 });
 
 // =====================================================
-// ROUTE REGISTRATION;
+// ROUTES
 // =====================================================
 
-// Register all routes;
-// Use api.js for explicit route mounting (more reliable than automatic discovery)
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
 // =====================================================
-// HEALTH CHECK ENDPOINT
-// =====================================================
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    pid: process.pid,
-  });
-});
-
-// Also support /api/health for consistency
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    pid: process.pid,
-  });
-});
-
-// =====================================================
-// ERROR HANDLING MIDDLEWARE;
+// ERROR HANDLING
 // =====================================================
 
-// 404 handler;
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     error: 'Endpoint not found',
     path: req.originalUrl,
-    method: req.method,
-    timestamp: new Date().toISOString(),
   });
 });
 
-// Global error handler;
 app.use(globalErrorHandler);
-
-// =====================================================
-// GRACEFUL SHUTDOWN HANDLING;
-// =====================================================
-
-// Graceful shutdown handling;
-process.on('SIGTERM', () => {
-  enterpriseLogger.info('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  enterpriseLogger.info('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
-
-
-// Uncaught exception handler;
-process.on('uncaughtException', error => {
-  enterpriseLogger.error('Uncaught Exception', {
-    error: error.message,
-    stack: error.stack,
-  });
-  process.exit(1);
-});
-
-// Unhandled promise rejection handler;
-process.on('unhandledRejection', (reason, promise) => {
-  enterpriseLogger.error('Unhandled Promise Rejection', {
-    reason: reason instanceof Error ? reason.message : String(reason),
-    stack: reason instanceof Error ? reason.stack : undefined,
-  });
-  // In production, you might want to exit here, but for development, log and continue
-  if (process.env.NODE_ENV === 'production') {
-    process.exit(1);
-  }
-});
-
-// =====================================================
-// APPLICATION STARTUP;
-// =====================================================
-
-// Application startup logging;
-app.on('ready', () => {
-  enterpriseLogger.info('Application started successfully', {
-    port: process.env.PORT || 3000,
-    environment: process.env.NODE_ENV || 'development',
-    nodeVersion: process.version,
-    platform: process.platform,
-  });
-});
-
-// =====================================================
-// EXPORT APPLICATION;
-// =====================================================
 
 module.exports = app;

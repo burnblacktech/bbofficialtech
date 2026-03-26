@@ -1,272 +1,150 @@
 // =====================================================
 // ITR-1 JSON BUILDER
-// Builds complete ITR-1 JSON using common builders + ITR-1 specific logic
+// Generates ITD-format JSON for upload/submission
 // =====================================================
 
-const ITRJsonBuilders = require('./ITRJsonBuilders');
-const enterpriseLogger = require('../../utils/logger');
+const ITR1ComputationService = require('./ITR1ComputationService');
 
 class ITR1JsonBuilder {
+
   /**
-   * Build complete ITR-1 JSON
-   * @param {object} sectionSnapshot - Section-based snapshot from draft/filing
-   * @param {object} computationResult - Final computation result from TaxComputationEngine
-   * @param {string} assessmentYear - Assessment year (e.g., '2024-25')
-   * @param {object} user - User model instance
-   * @param {object} aggregatedSalary - Optional aggregated salary from Form16AggregationService
-   * @returns {object} Complete ITR-1 JSON in ITD format
+   * Build ITD-format ITR-1 JSON from filing payload
+   * @param {object} payload - The filing's jsonPayload
+   * @param {string} assessmentYear - e.g. "2025-26"
+   * @returns {object} ITD-format JSON
    */
-  buildITR1(sectionSnapshot, computationResult, assessmentYear, user, aggregatedSalary = null) {
-    try {
-      enterpriseLogger.info('Building ITR-1 JSON', {
-        assessmentYear,
-        hasComputationResult: !!computationResult,
-        hasAggregatedSalary: !!aggregatedSalary,
-      });
+  static build(payload, assessmentYear) {
+    const computation = ITR1ComputationService.compute(payload);
+    const regime = payload.selectedRegime || computation.recommended;
+    const result = regime === 'old' ? computation.oldRegime : computation.newRegime;
+    const pi = payload.personalInfo || {};
+    const salary = computation.income.salary;
+    const hp = computation.income.houseProperty;
+    const other = computation.income.otherSources;
+    const bank = payload.bankAccount || {};
 
-      // Use common builders for shared sections
-      const personalInfo = ITRJsonBuilders.buildPersonalInfo(sectionSnapshot, user);
-      const filingStatus = ITRJsonBuilders.buildFilingMeta(sectionSnapshot, assessmentYear);
-      const addressDetails = ITRJsonBuilders.buildAddressDetails(sectionSnapshot, user);
-      const taxSummary = ITRJsonBuilders.buildTaxSummary(computationResult, sectionSnapshot);
-      const verification = ITRJsonBuilders.buildVerification(sectionSnapshot, user);
+    return {
+      Form_ITR1: {
+        FormName: 'ITR-1',
+        Description: 'For Individuals having Income from Salaries, one house property, other sources (Interest etc.)',
+        AssessmentYear: assessmentYear,
+        SchemaVer: 'Ver1.0',
+        FormVer: 'Ver1.0',
+      },
 
-      // Build ITR-1 specific sections
-      const salaries = this.buildSalariesSection(sectionSnapshot, aggregatedSalary);
-      const incomeFromHP = this.buildHousePropertySection(sectionSnapshot);
-      const incFromOthSources = this.buildOtherIncomeSection(sectionSnapshot);
-      const partC = this.buildPartC(sectionSnapshot, aggregatedSalary);
-      const partD = this.buildPartD(computationResult);
-
-      // Assemble complete ITR-1 JSON
-      const itr1Json = {
-        Form_ITR1: {
-          PartA_GEN1: {
-            PersonalInfo: personalInfo,
-            FilingStatus: filingStatus,
-            AddressDetails: addressDetails,
-          },
-          PartB_TI: {
-            Salaries: salaries,
-            IncomeFromHP: incomeFromHP,
-            IncFromOthSources: incFromOthSources,
-          },
-          PartB_TTI: taxSummary,
-          PartC: partC,
-          PartD: partD,
-          Verification: verification,
+      PersonalInfo: {
+        AssesseeName: {
+          FirstName: pi.firstName || '',
+          MiddleName: pi.middleName || '',
+          SurNameOrOrgName: pi.lastName || '',
         },
-      };
-
-      enterpriseLogger.info('ITR-1 JSON built successfully', { assessmentYear });
-      return itr1Json;
-    } catch (error) {
-      enterpriseLogger.error('Error building ITR-1 JSON', {
-        error: error.message,
-        stack: error.stack,
-        assessmentYear,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Build Salaries section (PartB_TI.Salaries)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @param {object} aggregatedSalary - Optional aggregated salary from Form-16s
-   * @returns {object} Salaries section
-   */
-  buildSalariesSection(sectionSnapshot, aggregatedSalary = null) {
-    let grossSalary = 0;
-    let standardDeduction = 0;
-    let professionalTax = 0;
-
-    if (aggregatedSalary) {
-      // Use aggregated salary from Form-16s
-      grossSalary = parseFloat(aggregatedSalary.totalGrossSalary || 0);
-      standardDeduction = parseFloat(aggregatedSalary.totalStandardDeduction || 0);
-      professionalTax = parseFloat(aggregatedSalary.totalProfessionalTax || 0);
-    } else {
-      // Use manual entry from section snapshot
-      const income = sectionSnapshot.income || {};
-      const salary = income.salary || {};
-
-      grossSalary = parseFloat(salary.grossSalary || salary.totalSalary || income.salary || 0);
-      standardDeduction = parseFloat(salary.standardDeduction || 0);
-      professionalTax = parseFloat(salary.professionalTax || 0);
-    }
-
-    // Ensure standard deduction doesn't exceed 50000
-    standardDeduction = Math.min(standardDeduction, 50000);
-
-    // Calculate net salary
-    const netSalary = Math.max(0, grossSalary - standardDeduction - professionalTax);
-
-    return {
-      GrossSalary: this.formatAmount(grossSalary),
-      Salary16ia: this.formatAmount(standardDeduction),
-      ProfessionalTaxUs16iii: this.formatAmount(professionalTax),
-      NetSalary: this.formatAmount(netSalary),
-    };
-  }
-
-  /**
-   * Build House Property section (PartB_TI.IncomeFromHP)
-   * ITR-1 allows only one house property
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} IncomeFromHP section
-   */
-  buildHousePropertySection(sectionSnapshot) {
-    const income = sectionSnapshot.income || {};
-    const houseProperty = income.houseProperty || {};
-
-    let annualValue = 0;
-    let municipalTaxes = 0;
-    let interestOnLoan = 0;
-
-    // ITR-1 allows only one house property
-    if (Array.isArray(houseProperty.properties) && houseProperty.properties.length > 0) {
-      // Use first property
-      const property = houseProperty.properties[0];
-      annualValue = parseFloat(property.annualRentalIncome || property.annualValue || 0);
-      municipalTaxes = parseFloat(property.municipalTaxes || 0);
-      interestOnLoan = parseFloat(property.interestOnLoan || 0);
-    } else if (houseProperty.annualRentalIncome || houseProperty.annualValue) {
-      // Single property format
-      annualValue = parseFloat(houseProperty.annualRentalIncome || houseProperty.annualValue || 0);
-      municipalTaxes = parseFloat(houseProperty.municipalTaxes || 0);
-      interestOnLoan = parseFloat(houseProperty.interestOnLoan || 0);
-    } else if (typeof houseProperty === 'number') {
-      // Simple number format
-      annualValue = parseFloat(houseProperty);
-    }
-
-    // Calculate net annual value
-    const netAnnualValue = Math.max(0, annualValue - municipalTaxes);
-
-    // Deduction u/s 24: Interest on loan (capped at 200000) + 30% of Net Annual Value
-    const interestDeduction = Math.min(200000, interestOnLoan);
-    const standardDeduction = netAnnualValue * 0.3;
-    const deductionUs24 = interestDeduction + standardDeduction;
-
-    // Calculate income from house property (can be negative, but ITR-1 shows as 0 if negative)
-    const incomeFromHP = Math.max(0, netAnnualValue - deductionUs24);
-
-    return {
-      AnnualValue: this.formatAmount(annualValue),
-      NetAnnualValue: this.formatAmount(netAnnualValue),
-      DeductionUs24: this.formatAmount(deductionUs24),
-      IncomeFromHP: this.formatAmount(incomeFromHP),
-    };
-  }
-
-  /**
-   * Build Other Income section (PartB_TI.IncFromOthSources)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} IncFromOthSources section
-   */
-  buildOtherIncomeSection(sectionSnapshot) {
-    const income = sectionSnapshot.income || {};
-    const otherSources = income.otherSources || {};
-
-    // S22: Derive from nested otherSources if available, else flat fallback
-    const interestIncome = parseFloat(otherSources.interestIncome || otherSources.totalInterestIncome || income.interestIncome || 0);
-    const otherIncome = parseFloat(otherSources.otherIncome || otherSources.totalOtherIncome || income.otherIncome || 0);
-    const totalOthSrcInc = interestIncome + otherIncome;
-
-    return {
-      InterestIncome: this.formatAmount(interestIncome),
-      OtherIncome: this.formatAmount(otherIncome),
-      TotalOthSrcInc: this.formatAmount(totalOthSrcInc),
-    };
-  }
-
-  /**
-   * Build PartC (Taxes Paid, TDS, Bank Details)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @param {object} aggregatedSalary - Optional aggregated salary
-   * @returns {object} PartC section
-   */
-  buildPartC(sectionSnapshot, aggregatedSalary = null) {
-    const taxesPaid = sectionSnapshot.taxesPaid || sectionSnapshot.taxes_paid || {};
-
-    // Taxes paid
-    const advanceTax = parseFloat(taxesPaid.advanceTax || taxesPaid.advance_tax || 0);
-    const selfAssessmentTax = parseFloat(taxesPaid.selfAssessmentTax || taxesPaid.self_assessment_tax || 0);
-    const totalTaxesPaid = advanceTax + selfAssessmentTax;
-
-    // TDS - from aggregated salary or section snapshot
-    let totalTDS = 0;
-    if (aggregatedSalary) {
-      totalTDS = parseFloat(aggregatedSalary.totalTDS || 0);
-    } else {
-      totalTDS = parseFloat(taxesPaid.tds || taxesPaid.totalTDS || 0);
-    }
-
-    // Bank details
-    const bankDetails = sectionSnapshot.bankDetails || sectionSnapshot.bank_details || {};
-    const accountNumber = bankDetails.accountNumber || bankDetails.account_number || '';
-    const ifscCode = bankDetails.ifsc || bankDetails.ifscCode || bankDetails.ifsc_code || '';
-    const bankName = bankDetails.bankName || bankDetails.bank_name || '';
-
-    return {
-      TaxesPaid: {
-        AdvanceTax: this.formatAmount(advanceTax),
-        SelfAssessmentTax: this.formatAmount(selfAssessmentTax),
-        TotalTaxesPaid: this.formatAmount(totalTaxesPaid),
-      },
-      TDS: {
-        TotalTDS: this.formatAmount(totalTDS),
-      },
-      BankDetails: {
-        AccountNumber: accountNumber,
-        IFSCCode: ifscCode,
-        BankName: bankName,
-      },
-    };
-  }
-
-  /**
-   * Build PartD (Refund or Tax Payable)
-   * @param {object} computationResult - Computation result
-   * @returns {object} PartD section
-   */
-  buildPartD(computationResult) {
-    if (!computationResult) {
-      return {
-        RefundOrTaxPayable: {
-          RefundDue: '0.00',
-          BalTaxPayable: '0.00',
+        PAN: pi.pan || '',
+        DOB: pi.dob || '',
+        Gender: pi.gender || '',
+        AadhaarCardNo: pi.aadhaar || '',
+        Address: {
+          ResidenceNo: pi.address?.line1 || '',
+          ResidenceName: pi.address?.line2 || '',
+          CityOrTownOrDistrict: pi.address?.city || '',
+          StateCode: pi.address?.state || '',
+          PinCode: pi.address?.pincode || '',
+          CountryCode: '91',
         },
-      };
-    }
+        MobileNo: pi.phone || '',
+        EmailAddress: pi.email || '',
+        EmployerCategory: pi.employerCategory || 'OTH',
+        FilingStatus: pi.filingType || 'O', // O = Original, R = Revised
+      },
 
-    const refundAmount = parseFloat(computationResult.refundAmount || 0);
-    const finalTax = parseFloat(computationResult.finalTax || computationResult.totalTax || 0);
-    const taxPaid = parseFloat(computationResult.taxPaid || 0);
-    const balancePayable = Math.max(0, finalTax - taxPaid);
+      FilingStatus: {
+        ReturnFileSec: regime === 'new' ? 115 : 11, // 115 = new regime, 11 = old regime
+        OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
+      },
 
-    return {
-      RefundOrTaxPayable: {
-        RefundDue: this.formatAmount(refundAmount > 0 ? refundAmount : 0),
-        BalTaxPayable: this.formatAmount(refundAmount <= 0 ? balancePayable : 0),
+      IncomeDeductions: {
+        GrossSalary: salary.grossSalary,
+        Salary: salary.grossSalary - salary.exemptAllowances,
+        IncomeFromSal: salary.netTaxable,
+        AllwncExemptUs10: {
+          TotalAllwncExemptUs10: salary.exemptAllowances,
+        },
+        DeductionUs16: {
+          StandardDeduction: salary.standardDeduction,
+          EntertainmentAlwnc: 0,
+          ProfessionalTaxUs16iii: salary.professionalTax,
+        },
+        IncomeFromHP: hp.netIncome,
+        ...(hp.type === 'LET_OUT' || hp.type === 'DEEMED_LET_OUT' ? {
+          GrossRentReceived: hp.annualRent || 0,
+          TaxPaidlocalAuth: hp.municipalTaxes || 0,
+          AnnualValue: hp.netAnnualValue || 0,
+          StandardDeduction: hp.standardDeduction30 || 0,
+          InterestPayable: hp.interestOnHomeLoan || 0,
+        } : {
+          InterestPayable: hp.interestAllowed || 0,
+        }),
+        IncomeOthSrc: other.total,
+        GrossTotIncome: computation.grossTotalIncome,
+        TotalIncome: result.taxableIncome,
+      },
+
+      DeductionUnderChapterVIA: regime === 'old' ? {
+        Section80C: result.deductionBreakdown.section80C || 0,
+        Section80CCD1B: result.deductionBreakdown.section80CCD1B || 0,
+        Section80D: result.deductionBreakdown.section80D || 0,
+        Section80E: result.deductionBreakdown.section80E || 0,
+        Section80G: result.deductionBreakdown.section80G || 0,
+        Section80TTA: result.deductionBreakdown.section80TTA || 0,
+        TotalChapVIADeductions: result.deductions,
+      } : {
+        TotalChapVIADeductions: 0,
+      },
+
+      TaxComputation: {
+        TotalTaxPayable: result.taxOnIncome,
+        Rebate87A: result.rebate,
+        TaxPayableOnRebate: result.taxOnIncome - result.rebate,
+        Surcharge: result.surcharge,
+        EducationCess: result.cess,
+        GrossTaxLiability: result.totalTax,
+        TaxPaid: {
+          TDS: computation.tds.fromSalary + computation.tds.fromFD + computation.tds.fromOther,
+          AdvanceTax: computation.tds.advanceTax,
+          SelfAssessmentTax: computation.tds.selfAssessment,
+          TotalTaxesPaid: computation.tds.total,
+        },
+        BalTaxPayable: Math.max(0, result.totalTax - computation.tds.total),
+        RefundDue: Math.max(0, computation.tds.total - result.totalTax),
+      },
+
+      Refund: {
+        BankAccountDtls: {
+          BankName: bank.bankName || '',
+          IFSCCode: bank.ifsc || '',
+          BankAccountNo: bank.accountNumber || '',
+        },
+      },
+
+      Verification: {
+        Place: payload.verification?.place || '',
+        Date: payload.verification?.date || new Date().toISOString().split('T')[0],
+        Capacity: 'S', // S = Self
+      },
+
+      _meta: {
+        generatedAt: new Date().toISOString(),
+        regime,
+        computation: {
+          grossTotalIncome: computation.grossTotalIncome,
+          totalDeductions: result.deductions,
+          taxableIncome: result.taxableIncome,
+          totalTax: result.totalTax,
+          tdsCredit: computation.tds.total,
+          netPayable: result.netPayable,
+        },
       },
     };
-  }
-
-  /**
-   * Format amount as string with 2 decimal places
-   * @param {number|string} amount - Amount to format
-   * @returns {string} Formatted amount string
-   */
-  formatAmount(amount) {
-    const numAmount = parseFloat(amount || 0);
-    if (isNaN(numAmount)) {
-      return '0.00';
-    }
-    return numAmount.toFixed(2);
   }
 }
 
-module.exports = new ITR1JsonBuilder();
-
+module.exports = ITR1JsonBuilder;

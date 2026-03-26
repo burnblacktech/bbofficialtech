@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
-const User = require('./User');
 const enterpriseLogger = require('../utils/logger');
 
 const UserProfile = sequelize.define('UserProfile', {
@@ -13,10 +12,6 @@ const UserProfile = sequelize.define('UserProfile', {
     type: DataTypes.UUID,
     allowNull: false,
     unique: true,
-    references: {
-      model: User,
-      key: 'id',
-    },
     field: 'user_id',
   },
   panNumber: {

@@ -4,7 +4,8 @@
 // =====================================================
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import sseClient from '../services/SSENotificationClient';
+// SSE client removed for MVP — notifications are non-critical
+const sseClient = { connect: () => {}, disconnect: () => {}, on: () => {} };
 import { enterpriseLogger } from '../utils/logger';
 
 const NotificationContext = createContext();

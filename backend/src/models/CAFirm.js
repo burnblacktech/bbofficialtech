@@ -30,19 +30,11 @@ const CAFirm = sequelize.define('CAFirm', {
   ownerId: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
     field: 'owner_id',
   },
   createdBy: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
     field: 'created_by',
   },
 

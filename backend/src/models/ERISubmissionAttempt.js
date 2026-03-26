@@ -17,10 +17,6 @@ const ERISubmissionAttempt = sequelize.define('ERISubmissionAttempt', {
         type: DataTypes.UUID,
         allowNull: false,
         field: 'filing_id',
-        references: {
-            model: 'itr_filings',
-            key: 'id'
-        }
     },
     attemptNumber: {
         type: DataTypes.INTEGER,

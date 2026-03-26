@@ -280,7 +280,7 @@ const LoginPage = () => {
                 to="/forgot-password"
                 style={{
                   fontSize: tokens.typography.fontSize.xs,
-                  color: tokens.colors.accent[600],
+                  color: '#2563eb',
                   textDecoration: 'none',
                   fontWeight: tokens.typography.fontWeight.medium,
                 }}

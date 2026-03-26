@@ -316,7 +316,7 @@ const runPendingMigrations = async (options = {}) => {
     }
     console.log('\n   Troubleshooting:');
     console.log('   1. Verify database connection in .env file');
-    console.log('   2. Check Supabase project is active');
+    console.log('   2. Check database server is running');
     console.log('   3. Verify database credentials');
     console.log('   4. Run individual migrations manually if needed\n');
 

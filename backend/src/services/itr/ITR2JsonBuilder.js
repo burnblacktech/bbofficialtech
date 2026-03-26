@@ -1,282 +1,178 @@
 // =====================================================
 // ITR-2 JSON BUILDER
-// Builds complete ITR-2 JSON using common builders + ITR-2 specific schedules
+// Generates ITD-format JSON for ITR-2
 // =====================================================
 
-const ITRJsonBuilders = require('./ITRJsonBuilders');
-const ITR2ScheduleBuilders = require('./ITR2ScheduleBuilders');
-const enterpriseLogger = require('../../utils/logger');
+const ITR2ComputationService = require('./ITR2ComputationService');
 
 class ITR2JsonBuilder {
-  /**
-   * Build complete ITR-2 JSON
-   * @param {object} sectionSnapshot - Section-based snapshot from draft/filing
-   * @param {object} computationResult - Final computation result from TaxComputationEngine
-   * @param {string} assessmentYear - Assessment year (e.g., '2024-25')
-   * @param {object} user - User model instance
-   * @param {object} aggregatedSalary - Optional aggregated salary from Form16AggregationService
-   * @param {string} filingId - Optional filing ID for Schedule FA
-   * @returns {Promise<object>} Complete ITR-2 JSON in ITD format
-   */
-  async buildITR2(sectionSnapshot, computationResult, assessmentYear, user, aggregatedSalary = null, filingId = null) {
-    try {
-      enterpriseLogger.info('Building ITR-2 JSON', {
-        assessmentYear,
-        hasComputationResult: !!computationResult,
-        hasAggregatedSalary: !!aggregatedSalary,
-        filingId,
-      });
 
-      // Use common builders for shared sections
-      const personalInfo = ITRJsonBuilders.buildPersonalInfo(sectionSnapshot, user);
-      const filingStatus = ITRJsonBuilders.buildFilingMeta(sectionSnapshot, assessmentYear);
-      const addressDetails = ITRJsonBuilders.buildAddressDetails(sectionSnapshot, user);
-      const taxSummary = ITRJsonBuilders.buildTaxSummary(computationResult, sectionSnapshot);
-      const verification = ITRJsonBuilders.buildVerification(sectionSnapshot, user);
+  static build(payload, assessmentYear) {
+    const computation = ITR2ComputationService.compute(payload);
+    const regime = payload.selectedRegime || computation.recommended;
+    const result = regime === 'old' ? computation.oldRegime : computation.newRegime;
+    const pi = payload.personalInfo || {};
+    const income = computation.income;
+    const bank = payload.bankAccount || {};
 
-      // Build ITR-2 specific sections
-      const scheduleS = this.buildScheduleS(sectionSnapshot, aggregatedSalary);
-      const scheduleHP = ITR2ScheduleBuilders.buildScheduleHP(sectionSnapshot, computationResult);
-      const scheduleCG = ITR2ScheduleBuilders.buildScheduleCG(sectionSnapshot, computationResult);
-      const scheduleOS = this.buildScheduleOS(sectionSnapshot);
-      const scheduleVIA = this.buildScheduleVIA(sectionSnapshot);
-      const schedule80G = this.buildSchedule80G(sectionSnapshot);
-      const scheduleTDS1 = this.buildScheduleTDS1(sectionSnapshot, aggregatedSalary);
-      const scheduleTDS2 = this.buildScheduleTDS2(sectionSnapshot);
-      const scheduleIT = this.buildScheduleIT(sectionSnapshot);
-      const scheduleEI = ITR2ScheduleBuilders.buildScheduleEI(sectionSnapshot);
+    return {
+      Form_ITR2: {
+        FormName: 'ITR-2',
+        Description: 'For Individuals and HUFs not having income from profits and gains of business or profession',
+        AssessmentYear: assessmentYear,
+        SchemaVer: 'Ver1.0',
+        FormVer: 'Ver1.0',
+      },
 
-      // Conditional schedules
-      const scheduleFA = await ITR2ScheduleBuilders.buildScheduleFA(sectionSnapshot, filingId);
-      const scheduleAL = ITR2ScheduleBuilders.buildScheduleAL(sectionSnapshot, computationResult);
-
-      // Build PartB_TI (Total Income)
-      const partBTI = this.buildPartBTI(computationResult, scheduleHP, scheduleCG, scheduleOS);
-
-      // Assemble complete ITR-2 JSON
-      const itr2Json = {
-        Form_ITR2: {
-          PartA_GEN: {
-            PersonalInfo: personalInfo,
-            FilingStatus: filingStatus,
-            AddressDetails: addressDetails,
-          },
-          ScheduleS: scheduleS,
-          ScheduleHP: scheduleHP,
-          ScheduleCG: scheduleCG,
-          ScheduleOS: scheduleOS,
-          ScheduleVIA: scheduleVIA,
-          PartB_TI: partBTI,
-          PartB_TTI: taxSummary,
-          Schedule80G: schedule80G,
-          ScheduleTDS1: scheduleTDS1,
-          ScheduleTDS2: scheduleTDS2,
-          ScheduleIT: scheduleIT,
-          ScheduleEI: scheduleEI,
-          Verification: verification,
+      PersonalInfo: {
+        AssesseeName: { FirstName: pi.firstName || '', MiddleName: pi.middleName || '', SurNameOrOrgName: pi.lastName || '' },
+        PAN: pi.pan || '',
+        DOB: pi.dob || '',
+        Gender: pi.gender || '',
+        AadhaarCardNo: pi.aadhaar || '',
+        Address: {
+          ResidenceNo: pi.address?.line1 || '', ResidenceName: pi.address?.line2 || '',
+          CityOrTownOrDistrict: pi.address?.city || '', StateCode: pi.address?.state || '',
+          PinCode: pi.address?.pincode || '', CountryCode: '91',
         },
-      };
+        MobileNo: pi.phone || '',
+        EmailAddress: pi.email || '',
+      },
 
-      // Schedule AL is required per schema - always include (even if empty)
-      itr2Json.Form_ITR2.ScheduleAL = scheduleAL || {
-        Assets: { Total: '0.00' },
-        Liabilities: { Total: '0.00' },
-      };
+      FilingStatus: {
+        ReturnFileSec: regime === 'new' ? 115 : 11,
+        OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
+      },
 
-      // Conditionally add Schedule FA
-      if (scheduleFA) {
-        itr2Json.Form_ITR2.ScheduleFA = scheduleFA;
-      }
+      // Schedule S — Salary
+      ScheduleS: {
+        GrossSalary: income.salary.grossSalary,
+        ExemptAllowances: income.salary.exemptAllowances,
+        StandardDeduction: income.salary.standardDeduction,
+        ProfessionalTax: income.salary.professionalTax,
+        IncomeFromSalary: income.salary.netTaxable,
+      },
 
-      enterpriseLogger.info('ITR-2 JSON built successfully', { assessmentYear });
-      return itr2Json;
-    } catch (error) {
-      enterpriseLogger.error('Error building ITR-2 JSON', {
-        error: error.message,
-        stack: error.stack,
-        assessmentYear,
-      });
-      throw error;
-    }
-  }
+      // Schedule HP — House Property (multiple)
+      ScheduleHP: {
+        Properties: (income.houseProperty.properties || []).map(p => ({
+          PropertyType: p.type,
+          AnnualRent: p.annualRent || 0,
+          MunicipalTaxes: p.municipalTaxes || 0,
+          NetAnnualValue: p.nav || 0,
+          StandardDeduction30: p.standardDeduction30 || 0,
+          InterestOnLoan: p.interestOnHomeLoan || 0,
+          NetIncome: p.netIncome || 0,
+        })),
+        TotalHPIncome: income.houseProperty.netIncome,
+        CarryForwardLoss: income.houseProperty.carryForwardLoss || 0,
+      },
 
-  /**
-   * Build Schedule S (Salaries)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @param {object} aggregatedSalary - Optional aggregated salary
-   * @returns {object} Schedule S
-   */
-  buildScheduleS(sectionSnapshot, aggregatedSalary = null) {
-    let grossSalary = 0;
-    let standardDeduction = 0;
-    let professionalTax = 0;
+      // Schedule CG — Capital Gains
+      ScheduleCG: {
+        ShortTermCapitalGains: {
+          STCGEquity: income.capitalGains.stcg.equity,
+          STCGOther: income.capitalGains.stcg.other,
+          TotalSTCG: income.capitalGains.stcg.total,
+        },
+        LongTermCapitalGains: {
+          LTCGEquity: income.capitalGains.ltcg.equity,
+          LTCGProperty: income.capitalGains.ltcg.property,
+          LTCGOther: income.capitalGains.ltcg.other,
+          TotalLTCG: income.capitalGains.ltcg.total,
+          ExemptionUnder54: income.capitalGains.exemptions,
+        },
+        TotalCapitalGains: income.capitalGains.totalTaxable,
+        Transactions: income.capitalGains.transactions.map(t => ({
+          AssetType: t.assetType, GainType: t.gainType,
+          SaleDate: t.saleDate, PurchaseDate: t.purchaseDate,
+          SaleValue: t.saleValue, PurchaseValue: t.purchaseValue,
+          IndexedCost: t.indexedCost || 0, Expenses: t.expenses || 0,
+          Gain: t.gain, Exemption: t.exemption || 0, TaxableGain: t.taxableGain,
+        })),
+      },
 
-    if (aggregatedSalary) {
-      grossSalary = parseFloat(aggregatedSalary.totalGrossSalary || 0);
-      standardDeduction = parseFloat(aggregatedSalary.totalStandardDeduction || 0);
-      professionalTax = parseFloat(aggregatedSalary.totalProfessionalTax || 0);
-    } else {
-      const income = sectionSnapshot.income || {};
-      const salary = income.salary || {};
-      
-      grossSalary = parseFloat(salary.grossSalary || salary.totalSalary || income.salary || 0);
-      standardDeduction = parseFloat(salary.standardDeduction || 0);
-      professionalTax = parseFloat(salary.professionalTax || 0);
-    }
+      // Schedule OS — Other Sources
+      ScheduleOS: {
+        SavingsInterest: income.otherSources.savingsInterest,
+        FDInterest: income.otherSources.fdInterest,
+        Dividends: income.otherSources.dividends,
+        FamilyPension: income.otherSources.familyPension,
+        FamilyPensionExempt: income.otherSources.familyPensionExempt,
+        OtherIncome: income.otherSources.other,
+        TotalOtherIncome: income.otherSources.total,
+      },
 
-    standardDeduction = Math.min(standardDeduction, 50000);
-    const netSalary = Math.max(0, grossSalary - standardDeduction - professionalTax);
+      // Schedule FSI — Foreign Source Income
+      ScheduleFSI: income.foreignIncome.incomes.length > 0 ? {
+        Incomes: income.foreignIncome.incomes.map(i => ({
+          Country: i.country, IncomeType: i.type,
+          AmountINR: i.amountINR, TaxPaidAbroad: i.taxPaidAbroad,
+          DTAAApplicable: i.dtaaApplicable,
+        })),
+        TotalForeignIncome: income.foreignIncome.totalIncome,
+        TotalTaxPaidAbroad: income.foreignIncome.totalTaxPaidAbroad,
+      } : undefined,
 
-    return {
-      GrossSalary: this.formatAmount(grossSalary),
-      StandardDeduction: this.formatAmount(standardDeduction),
-      ProfessionalTax: this.formatAmount(professionalTax),
-      NetSalary: this.formatAmount(netSalary),
+      // Schedule TR — Tax Relief (DTAA)
+      ScheduleTR: computation.foreignTaxCredit.credit > 0 ? {
+        TotalForeignTaxCredit: computation.foreignTaxCredit.credit,
+        Details: computation.foreignTaxCredit.breakdown,
+      } : undefined,
+
+      // Deductions
+      DeductionUnderChapterVIA: regime === 'old' ? {
+        Section80C: result.deductionBreakdown.section80C || 0,
+        Section80CCD1B: result.deductionBreakdown.section80CCD1B || 0,
+        Section80D: result.deductionBreakdown.section80D || 0,
+        Section80E: result.deductionBreakdown.section80E || 0,
+        Section80G: result.deductionBreakdown.section80G || 0,
+        Section80TTA: result.deductionBreakdown.section80TTA || 0,
+        TotalChapVIADeductions: result.deductions,
+      } : { TotalChapVIADeductions: 0 },
+
+      // Tax Computation
+      TaxComputation: {
+        GrossTotalIncome: computation.grossTotalIncome,
+        TotalDeductions: result.deductions,
+        TotalTaxableIncome: result.taxableIncome,
+        NormalIncomeTax: result.normalTax,
+        STCGEquityTax: result.stcgEquityTax,
+        LTCGEquityTax: result.ltcgEquityTax,
+        LTCGOtherTax: result.ltcgOtherTax,
+        TotalTaxOnIncome: result.taxOnIncome,
+        Rebate87A: result.rebate,
+        Surcharge: result.surcharge,
+        HealthEducationCess: result.cess,
+        GrossTaxLiability: result.totalTax,
+        ForeignTaxCredit: computation.foreignTaxCredit.credit,
+        TaxPaid: {
+          TDSSalary: computation.tds.fromSalary,
+          TDSFD: computation.tds.fromFD,
+          TDSCapitalGains: computation.tds.fromCapitalGains || 0,
+          TDSOther: computation.tds.fromOther,
+          AdvanceTax: computation.tds.advanceTax,
+          SelfAssessmentTax: computation.tds.selfAssessment,
+          TotalTaxesPaid: computation.tds.total,
+        },
+        NetTaxPayable: Math.max(0, result.totalTax - computation.tds.total - computation.foreignTaxCredit.credit),
+        RefundDue: Math.max(0, computation.tds.total + computation.foreignTaxCredit.credit - result.totalTax),
+      },
+
+      Refund: {
+        BankAccountDtls: { BankName: bank.bankName || '', IFSCCode: bank.ifsc || '', BankAccountNo: bank.accountNumber || '' },
+      },
+
+      Verification: {
+        Place: payload.verification?.place || '', Date: payload.verification?.date || new Date().toISOString().split('T')[0], Capacity: 'S',
+      },
+
+      _meta: {
+        generatedAt: new Date().toISOString(), regime,
+        computation: { grossTotalIncome: computation.grossTotalIncome, totalDeductions: result.deductions, taxableIncome: result.taxableIncome, totalTax: result.totalTax, tdsCredit: computation.tds.total, foreignTaxCredit: computation.foreignTaxCredit.credit, netPayable: result.netPayable },
+      },
     };
-  }
-
-  /**
-   * Build Schedule OS (Other Sources)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} Schedule OS
-   */
-  buildScheduleOS(sectionSnapshot) {
-    const income = sectionSnapshot.income || {};
-    const otherSources = income.otherSources || {};
-    
-    const interestIncome = parseFloat(otherSources.totalInterestIncome || income.interestIncome || income.otherIncome || 0);
-    const otherIncome = parseFloat(otherSources.totalOtherIncome || 0);
-    const totalOS = interestIncome + otherIncome;
-
-    return {
-      InterestIncome: this.formatAmount(interestIncome),
-      OtherIncome: this.formatAmount(otherIncome),
-      TotalOS: this.formatAmount(totalOS),
-    };
-  }
-
-  /**
-   * Build Schedule VIA (Deductions)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} Schedule VIA
-   */
-  buildScheduleVIA(sectionSnapshot) {
-    const deductions = sectionSnapshot.deductions || {};
-
-    const section80C = parseFloat(deductions.section80C || deductions.section_80C || 0);
-    const section80D = parseFloat(deductions.section80D || deductions.section_80D || 0);
-    const section80E = parseFloat(deductions.section80E || deductions.section_80E || 0);
-    const section80G = parseFloat(deductions.section80G || deductions.section_80G || 0);
-    const section80TTA = parseFloat(deductions.section80TTA || deductions.section_80TTA || 0);
-    const section80TTB = parseFloat(deductions.section80TTB || deductions.section_80TTB || 0);
-
-    const totalDeductions = section80C + section80D + section80E + section80G + section80TTA + section80TTB;
-
-    return {
-      Section80C: this.formatAmount(section80C),
-      Section80D: this.formatAmount(section80D),
-      Section80E: this.formatAmount(section80E),
-      Section80G: this.formatAmount(section80G),
-      Section80TTA: this.formatAmount(section80TTA),
-      Section80TTB: this.formatAmount(section80TTB),
-      TotalDeductions: this.formatAmount(totalDeductions),
-    };
-  }
-
-  /**
-   * Build Schedule 80G (Donations)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} Schedule 80G
-   */
-  buildSchedule80G(sectionSnapshot) {
-    const deductions = sectionSnapshot.deductions || {};
-    const section80G = parseFloat(deductions.section80G || deductions.section_80G || 0);
-
-    return {
-      Total80G: this.formatAmount(section80G),
-    };
-  }
-
-  /**
-   * Build Schedule TDS1 (TDS Summary)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @param {object} aggregatedSalary - Optional aggregated salary
-   * @returns {object} Schedule TDS1
-   */
-  buildScheduleTDS1(sectionSnapshot, aggregatedSalary = null) {
-    let totalTDS = 0;
-
-    if (aggregatedSalary) {
-      totalTDS = parseFloat(aggregatedSalary.totalTDS || 0);
-    } else {
-      const taxesPaid = sectionSnapshot.taxesPaid || sectionSnapshot.taxes_paid || {};
-      totalTDS = parseFloat(taxesPaid.tds || taxesPaid.totalTDS || 0);
-    }
-
-    return {
-      TotalTDS: this.formatAmount(totalTDS),
-    };
-  }
-
-  /**
-   * Build Schedule TDS2 (TDS Details) - Empty for now
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} Schedule TDS2
-   */
-  buildScheduleTDS2(sectionSnapshot) {
-    // Schedule TDS2 contains detailed TDS entries per employer/deductor
-    // For now, return empty structure (can be enhanced later)
-    return {};
-  }
-
-  /**
-   * Build Schedule IT (Advance Tax and Self-Assessment Tax)
-   * @param {object} sectionSnapshot - Section snapshot
-   * @returns {object} Schedule IT
-   */
-  buildScheduleIT(sectionSnapshot) {
-    const taxesPaid = sectionSnapshot.taxesPaid || sectionSnapshot.taxes_paid || {};
-    
-    const advanceTax = parseFloat(taxesPaid.advanceTax || taxesPaid.advance_tax || 0);
-    const selfAssessmentTax = parseFloat(taxesPaid.selfAssessmentTax || taxesPaid.self_assessment_tax || 0);
-
-    return {
-      AdvanceTax: this.formatAmount(advanceTax),
-      SelfAssessmentTax: this.formatAmount(selfAssessmentTax),
-      TotalTaxPaid: this.formatAmount(advanceTax + selfAssessmentTax),
-    };
-  }
-
-  /**
-   * Build PartB_TI (Total Income)
-   * @param {object} computationResult - Computation result
-   * @param {Array} scheduleHP - Schedule HP entries
-   * @param {object} scheduleCG - Schedule CG
-   * @param {object} scheduleOS - Schedule OS
-   * @returns {object} PartB_TI
-   */
-  buildPartBTI(computationResult, scheduleHP, scheduleCG, scheduleOS) {
-    // Use computation result for gross total income
-    const grossTotIncome = parseFloat(computationResult.grossTotalIncome || 0);
-
-    return {
-      GrossTotIncome: this.formatAmount(grossTotIncome),
-    };
-  }
-
-  /**
-   * Format amount as string with 2 decimal places
-   * @param {number|string} amount - Amount to format
-   * @returns {string} Formatted amount string
-   */
-  formatAmount(amount) {
-    const numAmount = parseFloat(amount || 0);
-    if (isNaN(numAmount)) {
-      return '0.00';
-    }
-    return numAmount.toFixed(2);
   }
 }
 
-module.exports = new ITR2JsonBuilder();
-
+module.exports = ITR2JsonBuilder;

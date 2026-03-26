@@ -20,43 +20,43 @@ const Button = ({
     // Variant styles
     const variants = {
         primary: {
-            backgroundColor: tokens.colors.accent[600],
-            color: tokens.colors.primary[900],
+            backgroundColor: '#2563eb',
+            color: '#ffffff',
             border: 'none',
             hover: {
-                backgroundColor: tokens.colors.accent[500],
+                backgroundColor: '#1d4ed8',
             },
         },
         secondary: {
-            backgroundColor: tokens.colors.neutral[100],
-            color: tokens.colors.neutral[900],
-            border: `1px solid ${tokens.colors.neutral[300]}`,
+            backgroundColor: '#f3f4f6',
+            color: '#111827',
+            border: '1px solid #d1d5db',
             hover: {
-                backgroundColor: tokens.colors.neutral[200],
+                backgroundColor: '#e5e7eb',
             },
         },
         outline: {
             backgroundColor: 'transparent',
-            color: tokens.colors.accent[600],
-            border: `2px solid ${tokens.colors.accent[600]}`,
+            color: '#2563eb',
+            border: '2px solid #2563eb',
             hover: {
-                backgroundColor: tokens.colors.accent[50],
+                backgroundColor: '#eff6ff',
             },
         },
         ghost: {
             backgroundColor: 'transparent',
-            color: tokens.colors.neutral[700],
-            border: 'none',
+            color: '#374151',
+            border: '1px solid transparent',
             hover: {
-                backgroundColor: tokens.colors.neutral[100],
+                backgroundColor: '#f3f4f6',
             },
         },
         danger: {
-            backgroundColor: tokens.colors.error[600],
-            color: tokens.colors.neutral.white,
+            backgroundColor: '#ef4444',
+            color: '#ffffff',
             border: 'none',
             hover: {
-                backgroundColor: tokens.colors.error[700],
+                backgroundColor: '#dc2626',
             },
         },
     };

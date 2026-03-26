@@ -3,7 +3,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 
 /**
- * AppShell - The structural wrapper that provides global navigation
+ * AppShell — Header (h-14) + Sidebar + Content area.
  */
 export const AppShell = ({ children }) => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -16,37 +16,23 @@ export const AppShell = ({ children }) => {
             setIsMobile(mobile);
             if (!mobile) setIsMobileMenuOpen(false);
         };
-
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
-    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-    const closeMobileMenu = () => setIsMobileMenuOpen(false);
-
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
-            {/* Top Navigation */}
-            <Header
-                onMenuClick={toggleMobileMenu}
-                sidebarOpen={!sidebarCollapsed}
-            />
-
+            <Header onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
             <div className="flex flex-1 relative">
-                {/* Vertical Navigation */}
                 <Sidebar
                     isCollapsed={sidebarCollapsed}
-                    onToggle={toggleSidebar}
+                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                     isMobile={isMobile}
-                    onClose={closeMobileMenu}
+                    onClose={() => setIsMobileMenuOpen(false)}
                     isOpenMobile={isMobileMenuOpen}
                 />
-
-                {/* Main Content Area */}
-                <main className={`flex-1 transition-all duration-300 ease-in-out ${isMobile ? 'w-full' : sidebarCollapsed ? 'pl-16' : 'pl-64'
-                    }`}>
-                    <div className="p-4 sm:p-6 lg:p-8">
+                <main className={`flex-1 transition-all duration-300 ${isMobile ? 'w-full' : sidebarCollapsed ? 'pl-14' : 'pl-56'}`}>
+                    <div className="p-4 sm:p-6">
                         {children}
                     </div>
                 </main>

@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import documentService from '../services/api/documentService';
 import { enterpriseLogger } from '../utils/logger';
 import toast from 'react-hot-toast';
+
+// Document service removed for MVP — stub for context compatibility
+const documentService = { getDocuments: async () => ({ data: [] }), uploadDocument: async () => ({}), deleteDocument: async () => ({}) };
 
 const DocumentContext = createContext();
 
