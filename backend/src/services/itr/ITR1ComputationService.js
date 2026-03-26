@@ -13,8 +13,9 @@ class ITR1ComputationService {
    */
   static compute(payload) {
     const income = this.computeIncome(payload);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old');
-    const newRegime = this.computeRegime(income, payload.deductions, 'new');
+    const agriIncome = n(payload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
 
     const tds = this.computeTDS(payload);
     oldRegime.tdsCredit = tds.total;
@@ -27,6 +28,7 @@ class ITR1ComputationService {
 
     return {
       income,
+      agriculturalIncome: agriIncome,
       oldRegime,
       newRegime,
       tds,
@@ -186,12 +188,40 @@ class ITR1ComputationService {
 
   // ── Tax Computation ──
 
-  static computeRegime(income, deductionData, regime) {
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
     const deductions = regime === 'old' ? this.computeDeductions(deductionData) : { total: 0, breakdown: {} };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
-    const { tax, slabBreakdown } = this.applySlabs(taxableIncome, slabs);
+    const basicExemption = regime === 'old' ? 250000 : 300000;
+
+    // Agricultural income partial integration method (Section 2(1A) + Rule 8)
+    // Applies when: agri income > ₹5,000 AND non-agri income > basic exemption
+    let tax = 0;
+    let slabBreakdown = [];
+    let agriIntegrationApplied = false;
+
+    if (agriculturalIncome > 5000 && taxableIncome > basicExemption) {
+      // Step 1: Tax on (agricultural + non-agricultural) combined
+      const combined = taxableIncome + agriculturalIncome;
+      const { tax: taxOnCombined } = this.applySlabs(combined, slabs);
+
+      // Step 2: Tax on (agricultural + basic exemption)
+      const agriPlusExemption = agriculturalIncome + basicExemption;
+      const { tax: taxOnAgriExemption } = this.applySlabs(agriPlusExemption, slabs);
+
+      // Step 3: Difference is the actual tax
+      tax = Math.max(0, taxOnCombined - taxOnAgriExemption);
+      agriIntegrationApplied = true;
+
+      // Generate slab breakdown for display (on the combined amount, for transparency)
+      const result = this.applySlabs(taxableIncome, slabs);
+      slabBreakdown = result.slabBreakdown;
+    } else {
+      const result = this.applySlabs(taxableIncome, slabs);
+      tax = result.tax;
+      slabBreakdown = result.slabBreakdown;
+    }
 
     const rebateLimit = regime === 'old' ? 500000 : 700000;
     const rebateMax = regime === 'old' ? 12500 : 25000;
@@ -216,6 +246,8 @@ class ITR1ComputationService {
       deductions: deductions.total,
       deductionBreakdown: deductions.breakdown,
       taxableIncome,
+      agriculturalIncome: agriculturalIncome || 0,
+      agriIntegrationApplied,
       slabBreakdown,
       taxOnIncome: tax,
       rebate,

@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Download, Send, AlertCircle } from 'lucide-react';
+import { Download, Send, AlertCircle, Save } from 'lucide-react';
 import { validateBankAccount } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 export default function BankEditor({ payload, onSave, isSaving, computation, filing, onSubmit, isSubmitting, bankData, setBankData, bankErrors, onDownloadJSON }) {
-  // Init from filing payload (persisted data) or from parent state
   const saved = payload?.bankDetails || {};
   const [form, setForm] = useState({
     bankName: saved.bankName || bankData?.bankName || '',
@@ -13,28 +12,34 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
     accountType: saved.accountType || bankData?.accountType || 'SAVINGS',
   });
   const [errors, setErrors] = useState(bankErrors || {});
+  const [dirty, setDirty] = useState(false);
 
-  // Sync if filing data changes
+  // Only sync from payload on first load, not on every refetch
+  const [initialized, setInitialized] = useState(false);
   useEffect(() => {
+    if (initialized) return;
     const bd = payload?.bankDetails || {};
     if (bd.bankName || bd.accountNumber) {
-      setForm(prev => ({
-        bankName: bd.bankName || prev.bankName,
-        accountNumber: bd.accountNumber || prev.accountNumber,
-        ifsc: bd.ifsc || prev.ifsc,
-        accountType: bd.accountType || prev.accountType,
-      }));
+      setForm({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
     }
-  }, [payload?.bankDetails]);
+    setInitialized(true);
+  }, [payload?.bankDetails]); // eslint-disable-line
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
     setBankData?.(next);
-    // Validate on change
+    setDirty(true);
     const v = validateBankAccount(next);
     setErrors(v.valid ? {} : v.errors);
-    onSave({ bankDetails: next });
+    // Don't call onSave here — wait for explicit save
+  };
+
+  const handleSave = () => {
+    const v = validateBankAccount(form);
+    setErrors(v.valid ? {} : v.errors);
+    onSave({ bankDetails: form });
+    setDirty(false);
   };
 
   const hasErrors = errors && Object.keys(errors).length > 0;
@@ -71,6 +76,11 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
             </select>
           </div>
         </div>
+        {dirty && (
+          <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 8 }}>
+            {isSaving ? 'Saving...' : <><Save size={14} /> Save Bank Details</>}
+          </button>
+        )}
       </div>
 
       {hasErrors && (
@@ -105,16 +115,8 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
       )}
 
       <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-        {onDownloadJSON && (
-          <button className="ff-btn ff-btn-outline" onClick={onDownloadJSON}>
-            <Download size={15} /> Download JSON
-          </button>
-        )}
-        {onSubmit && (
-          <button className="ff-btn ff-btn-primary" onClick={onSubmit} disabled={isSubmitting || hasErrors}>
-            {isSubmitting ? <><span className="ff-spinner" /> Submitting...</> : <><Send size={15} /> Submit Filing</>}
-          </button>
-        )}
+        {onDownloadJSON && <button className="ff-btn ff-btn-outline" onClick={onDownloadJSON}><Download size={15} /> Download JSON</button>}
+        {onSubmit && <button className="ff-btn ff-btn-primary" onClick={onSubmit} disabled={isSubmitting || hasErrors}>{isSubmitting ? <><span className="ff-spinner" /> Submitting...</> : <><Send size={15} /> Submit Filing</>}</button>}
       </div>
     </div>
   );

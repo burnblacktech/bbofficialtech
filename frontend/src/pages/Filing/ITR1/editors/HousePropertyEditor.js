@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Save } from 'lucide-react';
 import { validateHousePropertyStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
@@ -13,20 +14,26 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
     interestOnHomeLoan: hp.interestOnHomeLoan || '',
   });
   const [errors, setErrors] = useState({});
+  const [dirty, setDirty] = useState(false);
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
+    setDirty(true);
     const v = validateHousePropertyStep(type.toUpperCase().replace('LETOUT', 'LET_OUT').replace('SELFOCCUPIED', 'SELF_OCCUPIED'), next);
     setErrors(v.valid ? {} : v.errors);
-    onSave({ income: { houseProperty: { type, ...next } } });
   };
 
   const changeType = (t) => {
     setType(t);
-    const reset = t === 'none' ? { annualRentReceived: '', municipalTaxesPaid: '', interestOnHomeLoan: '' } : form;
-    onSave({ income: { houseProperty: { type: t, ...reset } } });
-    if (t === 'none') setForm(reset);
+    setDirty(true);
+    if (t === 'none') setForm({ annualRentReceived: '', municipalTaxesPaid: '', interestOnHomeLoan: '' });
+  };
+
+  const handleSave = () => {
+    const reset = type === 'none' ? { annualRentReceived: '', municipalTaxesPaid: '', interestOnHomeLoan: '' } : form;
+    onSave({ income: { houseProperty: { type, ...reset } } });
+    setDirty(false);
   };
 
   const rent = n(form.annualRentReceived);
@@ -67,7 +74,13 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
       )}
 
       {type !== 'none' && (
-        <div className="step-card summary">
+        <>
+          {dirty && (
+            <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
+              {isSaving ? 'Saving...' : <><Save size={14} /> Save House Property</>}
+            </button>
+          )}
+          <div className="step-card summary">
           {type === 'letOut' && <>
             <div className="ff-row"><span className="ff-row-label">Net Annual Value</span><span className="ff-row-value">₹{netAV.toLocaleString('en-IN')}</span></div>
             <div className="ff-row"><span className="ff-row-label">Std Deduction (30%)</span><span className="ff-row-value">- ₹{stdDed.toLocaleString('en-IN')}</span></div>
@@ -76,6 +89,7 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
           <div className="ff-divider" />
           <div className="ff-row"><span className="ff-row-label">Net Income</span><span className={`ff-row-value bold ${netIncome < 0 ? 'red' : ''}`}>₹{netIncome.toLocaleString('en-IN')}</span></div>
         </div>
+        </>
       )}
     </div>
   );

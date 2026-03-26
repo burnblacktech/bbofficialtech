@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react';
+import { Save } from 'lucide-react';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -26,12 +27,17 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
-    onSave({ deductions: next, selectedRegime: regime });
+    // Don't save on keystroke — wait for explicit save
   };
 
   const changeRegime = (r) => {
     setRegime(r);
+    // Regime change saves immediately (it's a toggle, not text input)
     onSave({ deductions: form, selectedRegime: r });
+  };
+
+  const handleSave = () => {
+    onSave({ deductions: form, selectedRegime: regime });
   };
 
   // 80C total
@@ -109,6 +115,12 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
             </div>
           </div>
         </>
+      )}
+
+      {regime === 'old' && (
+        <button className="ff-btn ff-btn-primary" onClick={handleSave} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
+          <Save size={14} /> Save Deductions
+        </button>
       )}
 
       {/* Summary */}

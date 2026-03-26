@@ -13,8 +13,9 @@ class ITR2ComputationService {
    */
   static compute(payload) {
     const income = this.computeIncome(payload);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old');
-    const newRegime = this.computeRegime(income, payload.deductions, 'new');
+    const agriIncome = n(payload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
 
     const tds = this.computeTDS(payload);
     const foreignTaxCredit = this.computeForeignTaxCredit(payload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
@@ -102,7 +103,8 @@ class ITR2ComputationService {
       const expenses = n(txn.expenses);
       const gain = sale - cost - expenses;
       const exemption = n(txn.exemption);
-      const taxableGain = Math.max(0, gain - exemption);
+      // Allow negative gains (losses) — they offset within the same category
+      const taxableGain = gain - exemption;
       totalExemptions += exemption;
 
       if (isShortTerm) {
@@ -127,11 +129,17 @@ class ITR2ComputationService {
     const stcgTotal = stcgEquity + stcgOther;
     const ltcgTotal = ltcgEquity + ltcgProperty + ltcgOther;
 
+    // STCG loss can offset LTCG, LTCG loss can offset STCG (inter-category set-off)
+    // But net CG loss carries forward (not set off against other income heads except house property)
+    const totalTaxable = Math.max(0, stcgTotal + ltcgTotal);
+    const carryForwardLoss = (stcgTotal + ltcgTotal) < 0 ? Math.abs(stcgTotal + ltcgTotal) : 0;
+
     return {
       stcg: { equity: stcgEquity, other: stcgOther, total: stcgTotal },
       ltcg: { equity: ltcgEquity, property: ltcgProperty, other: ltcgOther, total: ltcgTotal },
       exemptions: totalExemptions,
-      totalTaxable: stcgTotal + ltcgTotal,
+      totalTaxable,
+      carryForwardLoss,
       transactions,
     };
   }
@@ -157,7 +165,7 @@ class ITR2ComputationService {
 
   // ── Tax Computation ──
 
-  static computeRegime(income, deductionData, regime) {
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {} };
 
     // Normal income (taxed at slab rates)
@@ -172,9 +180,24 @@ class ITR2ComputationService {
     const grossTotal = income.grossTotal;
     const taxableIncome = taxableNormal + stcgEquity + ltcgEquity + ltcgOther;
 
-    // Tax on normal income (slab rates)
+    // Tax on normal income (slab rates) — with agricultural income partial integration
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
-    const { tax: normalTax, slabBreakdown } = ITR1ComputationService.applySlabs(taxableNormal, slabs);
+    const basicExemption = regime === 'old' ? 250000 : 300000;
+    let normalTax = 0;
+    let slabBreakdown = [];
+
+    if (agriculturalIncome > 5000 && taxableNormal > basicExemption) {
+      // Partial integration: tax on (agri + normal) minus tax on (agri + exemption)
+      const { tax: taxCombined } = ITR1ComputationService.applySlabs(taxableNormal + agriculturalIncome, slabs);
+      const { tax: taxAgriExempt } = ITR1ComputationService.applySlabs(agriculturalIncome + basicExemption, slabs);
+      normalTax = Math.max(0, taxCombined - taxAgriExempt);
+      const result = ITR1ComputationService.applySlabs(taxableNormal, slabs);
+      slabBreakdown = result.slabBreakdown;
+    } else {
+      const result = ITR1ComputationService.applySlabs(taxableNormal, slabs);
+      normalTax = result.tax;
+      slabBreakdown = result.slabBreakdown;
+    }
 
     // Tax on special rate incomes
     const stcgEquityTax = Math.round(stcgEquity * 20 / 100); // 20% for AY 2025-26

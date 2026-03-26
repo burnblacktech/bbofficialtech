@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { Save } from 'lucide-react';
 import { validateOtherIncomeStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
 
-export default function OtherIncomeEditor({ payload, onSave }) {
+export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
   const os = payload?.income?.otherSources || {};
+  const agri = n(payload?.income?.agriculturalIncome);
   const [form, setForm] = useState({
     savingsInterest: os.savingsInterest || '',
     fdInterest: os.fdInterest || '',
@@ -15,15 +17,23 @@ export default function OtherIncomeEditor({ payload, onSave }) {
     winnings: os.winnings || '',
     gifts: os.gifts || '',
     otherIncome: os.otherIncome || '',
+    agriculturalIncome: agri || '',
   });
   const [errors, setErrors] = useState({});
+  const [dirty, setDirty] = useState(false);
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
+    setDirty(true);
     const v = validateOtherIncomeStep(next);
     setErrors(v.valid ? {} : v.errors);
-    onSave({ income: { otherSources: next } });
+  };
+
+  const handleSave = () => {
+    const { agriculturalIncome: agriVal, ...otherFields } = form;
+    onSave({ income: { otherSources: otherFields, agriculturalIncome: n(agriVal) } });
+    setDirty(false);
   };
 
   const fp = n(form.familyPension);
@@ -57,6 +67,28 @@ export default function OtherIncomeEditor({ payload, onSave }) {
         </div>
         <F l="Any Other Income" v={form.otherIncome} c={v => update('otherIncome', v)} h="Commission, royalty, etc." />
       </div>
+
+      {/* Agricultural Income — exempt but affects tax calculation */}
+      <div className="step-card editing">
+        <div className="ff-section-title">Agricultural Income (Exempt)</div>
+        <F l="Agricultural Income" v={form.agriculturalIncome} c={v => update('agriculturalIncome', v)} h="Exempt from tax, but used for slab rate calculation if > \u20B95,000" />
+        {n(form.agriculturalIncome) > 5000 && (
+          <div className="ff-hint" style={{ color: '#d97706', marginTop: 4 }}>
+            Since agricultural income exceeds \u20B95,000, it will be partially integrated with your other income for tax slab calculation (higher slabs may apply to non-agricultural income).
+          </div>
+        )}
+        {n(form.agriculturalIncome) > 0 && n(form.agriculturalIncome) <= 5000 && (
+          <div className="ff-hint" style={{ color: '#16a34a', marginTop: 4 }}>
+            Agricultural income up to \u20B95,000 has no impact on tax calculation.
+          </div>
+        )}
+      </div>
+
+      {dirty && (
+        <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
+          {isSaving ? 'Saving...' : <><Save size={14} /> Save Other Income</>}
+        </button>
+      )}
 
       <div className="step-card summary">
         {n(form.savingsInterest) > 0 && <R l="Savings Interest" v={form.savingsInterest} />}

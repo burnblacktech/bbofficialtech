@@ -11,8 +11,9 @@ class ITR3ComputationService {
 
   static compute(payload) {
     const income = this.computeIncome(payload);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old');
-    const newRegime = this.computeRegime(income, payload.deductions, 'new');
+    const agriIncome = n(payload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
 
     const tds = this.computeTDS(payload);
     const ftc = ITR2ComputationService.computeForeignTaxCredit(payload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
@@ -95,7 +96,7 @@ class ITR3ComputationService {
     };
   }
 
-  static computeRegime(income, deductionData, regime) {
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {} };
 
     const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + income.otherSources.total +
@@ -109,7 +110,22 @@ class ITR3ComputationService {
     const taxableIncome = taxableNormal + stcgEquity + ltcgEquity + ltcgOther;
 
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
-    const { tax: normalTax, slabBreakdown } = ITR1ComputationService.applySlabs(taxableNormal, slabs);
+    const basicExemption = regime === 'old' ? 250000 : 300000;
+
+    // Agricultural income partial integration for normal income tax
+    let normalTax = 0;
+    let slabBreakdown = [];
+    if (agriculturalIncome > 5000 && taxableNormal > basicExemption) {
+      const { tax: taxCombined } = ITR1ComputationService.applySlabs(taxableNormal + agriculturalIncome, slabs);
+      const { tax: taxAgriExempt } = ITR1ComputationService.applySlabs(agriculturalIncome + basicExemption, slabs);
+      normalTax = Math.max(0, taxCombined - taxAgriExempt);
+      slabBreakdown = ITR1ComputationService.applySlabs(taxableNormal, slabs).slabBreakdown;
+    } else {
+      const result = ITR1ComputationService.applySlabs(taxableNormal, slabs);
+      normalTax = result.tax;
+      slabBreakdown = result.slabBreakdown;
+    }
+
     const stcgEquityTax = Math.round(stcgEquity * 20 / 100);
     const ltcgEquityTax = Math.round(ltcgEquity * 12.5 / 100);
     const ltcgOtherTax = Math.round(ltcgOther * 20 / 100);

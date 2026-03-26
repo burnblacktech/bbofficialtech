@@ -81,7 +81,16 @@ export default function PANVerification() {
             <span style={{ fontSize: 15, fontWeight: 600, color: P.textPrimary }}>PAN Verified</span>
           </div>
           <div className="ff-row"><span className="ff-row-label">PAN</span><span className="ff-row-value bold">{result?.pan || existingPan}</span></div>
-          {result?.name && <div className="ff-row"><span className="ff-row-label">Name</span><span className="ff-row-value">{result.name}</span></div>}
+          {result?.name && (
+            <>
+              <div className="ff-row"><span className="ff-row-label">Name (as per PAN)</span><span className="ff-row-value">{result.name}</span></div>
+              {user?.fullName && user.fullName !== result.name && (
+                <div className="ff-hint" style={{ color: P.warning, marginTop: 4 }}>
+                  Your profile name was "{user.fullName}" — updated to match PAN records.
+                </div>
+              )}
+            </>
+          )}
           {result?.dateOfBirth && <div className="ff-row"><span className="ff-row-label">Date of Birth</span><span className="ff-row-value">{result.dateOfBirth}</span></div>}
           {result?.source && <div className="ff-row"><span className="ff-row-label">Source</span><span className="ff-row-value" style={{ fontSize: 11, color: P.textLight }}>{result.source}</span></div>}
         </div>

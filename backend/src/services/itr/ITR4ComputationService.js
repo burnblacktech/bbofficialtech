@@ -9,8 +9,9 @@ class ITR4ComputationService {
 
   static compute(payload) {
     const income = this.computeIncome(payload);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old');
-    const newRegime = this.computeRegime(income, payload.deductions, 'new');
+    const agriIncome = n(payload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
     const tds = ITR1ComputationService.computeTDS(payload);
 
     for (const r of [oldRegime, newRegime]) { r.tdsCredit = tds.total; r.netPayable = r.totalTax - tds.total; }
@@ -78,12 +79,26 @@ class ITR4ComputationService {
     return { entries, totalGrossReceipts: totalReceipts, totalIncome };
   }
 
-  static computeRegime(income, deductionData, regime) {
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {} };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
-    const { tax, slabBreakdown } = ITR1ComputationService.applySlabs(taxableIncome, slabs);
+    const basicExemption = regime === 'old' ? 250000 : 300000;
+
+    // Agricultural income partial integration
+    let tax = 0;
+    let slabBreakdown = [];
+    if (agriculturalIncome > 5000 && taxableIncome > basicExemption) {
+      const { tax: taxCombined } = ITR1ComputationService.applySlabs(taxableIncome + agriculturalIncome, slabs);
+      const { tax: taxAgriExempt } = ITR1ComputationService.applySlabs(agriculturalIncome + basicExemption, slabs);
+      tax = Math.max(0, taxCombined - taxAgriExempt);
+      slabBreakdown = ITR1ComputationService.applySlabs(taxableIncome, slabs).slabBreakdown;
+    } else {
+      const result = ITR1ComputationService.applySlabs(taxableIncome, slabs);
+      tax = result.tax;
+      slabBreakdown = result.slabBreakdown;
+    }
 
     const rebateLimit = regime === 'old' ? 500000 : 700000;
     const rebateMax = regime === 'old' ? 12500 : 25000;
@@ -92,13 +107,12 @@ class ITR4ComputationService {
 
     let surchargeRate = 0;
     if (income.grossTotal > 5000000) surchargeRate = 10;
-    // ITR-4 income limit is ₹50L, so max surcharge is 10%
     const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
     const cess = Math.round((taxAfterRebate + surcharge) * 4 / 100);
 
     return {
       regime, grossTotalIncome: income.grossTotal, deductions: deductions.total, deductionBreakdown: deductions.breakdown,
-      taxableIncome, slabBreakdown, taxOnIncome: tax, rebate, surcharge, surchargeRate, cess,
+      taxableIncome, agriculturalIncome: agriculturalIncome || 0, slabBreakdown, taxOnIncome: tax, rebate, surcharge, surchargeRate, cess,
       totalTax: taxAfterRebate + surcharge + cess,
     };
   }

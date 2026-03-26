@@ -456,7 +456,7 @@ router.patch('/pan', authenticateToken, async (req, res) => {
         user.panNumber = result.pan;
         user.panVerified = result.isValid;
         user.panVerifiedAt = new Date();
-        if (result.name && !user.fullName) user.fullName = result.name;
+        if (result.name) user.fullName = result.name; // PAN name is authoritative
         if (result.dateOfBirth && !user.dateOfBirth && !dateOfBirth) user.dateOfBirth = result.dateOfBirth;
       } catch {
         // SurePass unavailable — save PAN anyway, mark as unverified
@@ -506,12 +506,12 @@ router.post('/verify-pan', authenticateToken, async (req, res) => {
       return res.status(400).json({ success: false, message: 'PAN verification failed. Please check the PAN number.' });
     }
 
-    // Save verified PAN + name + DOB to user
+    // Save verified PAN + name + DOB to user (SurePass data is authoritative)
     user.panNumber = result.pan;
-    user.panVerified = true;
+    user.panVerified = result.isValid;
     user.panVerifiedAt = new Date();
-    if (result.name && !user.fullName) user.fullName = result.name;
-    if (result.dateOfBirth && !user.dateOfBirth) user.dateOfBirth = result.dateOfBirth;
+    if (result.name) user.fullName = result.name; // Always use PAN-verified name
+    if (result.dateOfBirth) user.dateOfBirth = result.dateOfBirth; // Always use PAN-verified DOB
     await user.save();
 
     enterpriseLogger.info('PAN verified via SurePass', { userId, pan: result.pan, source: result.source });
