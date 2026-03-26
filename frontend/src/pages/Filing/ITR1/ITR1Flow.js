@@ -165,7 +165,7 @@ export default function ITR1Flow() {
   const payload = filing?.jsonPayload || {};
   const itrType = getITRType(active);
   const income = comp?.income;
-  const rec = comp?.recommended || 'new';
+  const rec = selectedRegime;
   const bestRegime = comp?.[rec === 'old' ? 'oldRegime' : 'newRegime'];
   const altRegime = comp?.[rec === 'old' ? 'newRegime' : 'oldRegime'];
   const tds = comp?.tds;
@@ -214,6 +214,16 @@ export default function ITR1Flow() {
         <div className="hud-itr-badge">
           <span className="hud-itr-type">{itrType}</span>
           <span className="hud-itr-name">{ITR_NAMES[itrType]}</span>
+        </div>
+
+        {/* Regime Toggle — always visible */}
+        <div className="hud-regime-toggle">
+          {['old', 'new'].map(r => (
+            <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
+              onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
+              {r === 'old' ? 'Old' : 'New'}
+            </button>
+          ))}
         </div>
 
         {/* Income Sources — collapsible */}
@@ -284,6 +294,11 @@ export default function ITR1Flow() {
               </div>
             )}
             {comp?.savings > 0 && <div className="hud-tax-hint">{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
+            {comp?.recommended && comp.recommended !== selectedRegime && (
+              <div className="hud-tax-hint" style={{ color: '#d97706' }}>
+                Tip: {comp.recommended === 'old' ? 'Old' : 'New'} regime would save {fmt(comp.savings)}
+              </div>
+            )}
             <div className="hud-tax-expand">Click for full breakdown</div>
           </div>
         )}

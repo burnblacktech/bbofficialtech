@@ -137,14 +137,22 @@ class ITR1ComputationService {
   static computeDeductions(deductionData) {
     if (!deductionData) return { total: 0, breakdown: {} };
 
-    const s80c = Math.min(n(deductionData.section80C?.total || this.sum80C(deductionData.section80C)), 150000);
-    const s80ccd1b = Math.min(n(deductionData.section80CCD1B?.nps), 50000);
-    const s80d = this.compute80D(deductionData.section80D);
-    const s80e = n(deductionData.section80E?.educationLoanInterest);
-    const s80g = n(deductionData.section80G?.total);
-    const s80tta = Math.min(n(deductionData.section80TTA?.savingsInterest), 10000);
+    // Accept both nested (section80C.ppf) and flat (ppf) formats
+    const d = deductionData;
+    const c = d.section80C || d;
+    const raw80C = n(c.ppf) + n(c.elss) + n(c.lifeInsurance || c.lic) + n(c.nsc) +
+      n(c.tuitionFees) + n(c.homeLoanPrincipal) + n(c.sukanyaSamriddhi) + n(c.fiveYearFD) + n(c.otherC);
+    const s80c = Math.min(raw80C, 150000);
 
-    const total = s80c + s80ccd1b + s80d + s80e + s80g + s80tta;
+    const s80ccd1b = Math.min(n(d.section80CCD1B?.nps || d.nps), 50000);
+    const s80d = this.compute80D(d.section80D || { selfPremium: n(d.healthSelf), parentsPremium: n(d.healthParents) });
+    const s80e = n(d.section80E?.educationLoanInterest || d.eduLoan);
+    const s80g = n(d.section80G?.total || d.donations);
+    const s80tta = Math.min(n(d.section80TTA?.savingsInterest || d.savingsInt), 10000);
+    const s80gg = Math.min(n(d.rentPaid), 60000); // 80GG: max ₹5000/month
+    const s80u = n(d.disability);
+
+    const total = s80c + s80ccd1b + s80d + s80e + s80g + s80tta + s80gg + s80u;
 
     return {
       total,
@@ -155,14 +163,16 @@ class ITR1ComputationService {
         section80E: s80e,
         section80G: s80g,
         section80TTA: s80tta,
+        section80GG: s80gg,
+        section80U: s80u,
       },
     };
   }
 
   static sum80C(data) {
     if (!data) return 0;
-    return n(data.ppf) + n(data.elss) + n(data.lifeInsurance) + n(data.nsc) +
-      n(data.tuitionFees) + n(data.homeLoanPrincipal) + n(data.sukanyaSamriddhi) + n(data.fiveYearFD);
+    return n(data.ppf) + n(data.elss) + n(data.lifeInsurance || data.lic) + n(data.nsc) +
+      n(data.tuitionFees) + n(data.homeLoanPrincipal) + n(data.sukanyaSamriddhi) + n(data.fiveYearFD) + n(data.otherC);
   }
 
   static compute80D(data) {
