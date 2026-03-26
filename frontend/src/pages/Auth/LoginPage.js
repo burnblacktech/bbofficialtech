@@ -1,377 +1,129 @@
 /**
- * Login Page - Premium Compact Design
- * Tight spacing, professional appearance
+ * Login Page — Clean, single-frame, no scroll
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
 import { useSearchParams, Link } from 'react-router-dom';
-import { AlertCircle, Clock, Eye, EyeOff, Shield } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { sanitizeEmail, sanitizePassword } from '../../utils/sanitize';
-import Button from '../../components/atoms/Button';
-import Input from '../../components/atoms/Input';
-import FormField from '../../components/molecules/FormField';
-import Card from '../../components/atoms/Card';
-import { tokens } from '../../styles/tokens';
 import P from '../../styles/palette';
+import '../Filing/filing-flow.css';
 
-const LoginPage = () => {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [showPw, setShowPw] = useState(false);
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
 
   useEffect(() => {
-    const errorParam = searchParams.get('error');
-    const messageParam = searchParams.get('message');
-    if (errorParam === 'oauth_rate_limit' || messageParam?.includes('too many requests')) {
-      setError('Google OAuth rate limit exceeded. Please wait 15-30 minutes.');
-    } else if (errorParam === 'oauth_failed') {
-      setError(messageParam || 'Google OAuth failed. Please try again.');
-    } else if (messageParam) {
-      setError(decodeURIComponent(messageParam));
-    }
+    const err = searchParams.get('error');
+    const msg = searchParams.get('message');
+    if (err === 'oauth_rate_limit') setError('Too many requests. Please wait.');
+    else if (err === 'oauth_failed') setError(msg || 'Google login failed.');
+    else if (msg) setError(decodeURIComponent(msg));
   }, [searchParams]);
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem('rememberedEmail');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
+    const saved = localStorage.getItem('rememberedEmail');
+    if (saved) setEmail(saved);
   }, []);
 
-  const validateEmail = (emailValue) => {
-    if (!emailValue) {
-      setEmailError('Email is required');
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailValue)) {
-      setEmailError('Please enter a valid email');
-      return false;
-    }
-    setEmailError('');
-    return true;
-  };
-
-  const validatePassword = (passwordValue) => {
-    if (!passwordValue) {
-      setPasswordError('Password is required');
-      return false;
-    }
-    if (passwordValue.length < 8) {
-      setPasswordError('Password must be at least 8 characters');
-      return false;
-    }
-    setPasswordError('');
-    return true;
-  };
-
-  const handleEmailChange = (e) => {
-    const sanitized = sanitizeEmail(e.target.value);
-    setEmail(sanitized);
-    setError('');
-    if (sanitized) validateEmail(sanitized);
-    else setEmailError('');
-  };
-
-  const handlePasswordChange = (e) => {
-    const sanitized = sanitizePassword(e.target.value);
-    setPassword(sanitized);
-    setError('');
-    if (sanitized) validatePassword(sanitized);
-    else setPasswordError('');
-  };
-
-  const handleManualLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setEmailError('');
-    setPasswordError('');
-
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-
-    if (!isEmailValid || !isPasswordValid) return;
-
-    setIsLoading(true);
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email'); return; }
+    if (!password || password.length < 8) { setError('Password must be at least 8 characters'); return; }
+    setLoading(true);
     try {
-      if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email);
-      } else {
-        localStorage.removeItem('rememberedEmail');
-      }
-      const result = await login({ email, password });
-      if (!result.success) {
-        setError("Email or password doesn't match.");
-      }
-    } catch (error) {
-      setError(error.response?.data?.error || error.response?.data?.message || error.message || 'Login failed.');
-    } finally {
-      setIsLoading(false);
-    }
+      localStorage.setItem('rememberedEmail', email);
+      const result = await login({ email: sanitizeEmail(email), password: sanitizePassword(password) });
+      if (!result.success) setError("Email or password doesn't match.");
+    } catch (err) {
+      setError(err.response?.data?.error || 'Login failed.');
+    } finally { setLoading(false); }
   };
 
-  const handleGoogleLogin = () => {
-    authService.googleLoginRedirect();
-  };
+  const PwIcon = showPw ? EyeOff : Eye;
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: tokens.colors.neutral[50],
-      padding: tokens.spacing.md,
-    }}>
-      <div style={{ maxWidth: '400px', width: '100%' }}>
+    <div style={S.page}>
+      <div style={S.container}>
         {/* Logo */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: tokens.spacing.sm,
-          marginBottom: tokens.spacing.md,
-        }}>
-          <div style={{
-            width: '36px',
-            height: '36px',
-            background: P.logoBackground,
-            borderRadius: tokens.borderRadius.lg,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}>
-            <img src="/bb-logo.svg" alt="BB" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '5px' }} />
-          </div>
-          <h1 style={{
-            fontSize: tokens.typography.fontSize.lg,
-            fontWeight: tokens.typography.fontWeight.bold,
-            color: tokens.colors.neutral[900],
-            margin: 0,
-          }}>
-            BurnBlack
-          </h1>
+        <div style={S.logoRow}>
+          <div style={S.logoBox}><img src="/bb-logo.svg" alt="BB" style={S.logoImg} /></div>
+          <span style={S.logoText}>BurnBlack</span>
         </div>
 
-        {/* Card */}
-        <Card padding="lg" style={{ backgroundColor: tokens.colors.neutral.white }}>
-          {/* Title */}
-          <div style={{ marginBottom: tokens.spacing.md }}>
-            <h2 style={{
-              fontSize: tokens.typography.fontSize.lg,
-              fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.neutral[900],
-              marginBottom: tokens.spacing.xs,
-            }}>
-              Welcome back
-            </h2>
-            <p style={{
-              fontSize: tokens.typography.fontSize.sm,
-              color: tokens.colors.neutral[600],
-            }}>
-              Sign in to your account
-            </p>
-          </div>
+        <div className="step-card" style={{ padding: 28 }}>
+          <h2 style={S.title}>Welcome back</h2>
+          <p style={S.subtitle}>Sign in to your account</p>
 
-          {/* Error */}
           {error && (
-            <div style={{
-              padding: tokens.spacing.sm,
-              borderRadius: tokens.borderRadius.md,
-              backgroundColor: error.includes('rate limit') ? tokens.colors.warning[50] : tokens.colors.error[50],
-              border: `1px solid ${error.includes('rate limit') ? tokens.colors.warning[200] : tokens.colors.error[200]}`,
-              marginBottom: tokens.spacing.sm,
-              display: 'flex',
-              gap: tokens.spacing.xs,
-            }}>
-              {error.includes('rate limit') ? (
-                <Clock size={16} color={tokens.colors.warning[600]} style={{ flexShrink: 0 }} />
-              ) : (
-                <AlertCircle size={16} color={tokens.colors.error[600]} style={{ flexShrink: 0 }} />
-              )}
-              <p style={{
-                fontSize: tokens.typography.fontSize.xs,
-                color: error.includes('rate limit') ? tokens.colors.warning[700] : tokens.colors.error[700],
-                margin: 0,
-              }}>
-                {error}
-              </p>
+            <div className="ff-errors" style={{ marginBottom: 14 }}>
+              <div className="ff-errors-title"><AlertCircle size={14} /> {error}</div>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleManualLogin} style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.sm }}>
-            <FormField label="Email" required error={emailError}>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={handleEmailChange}
-                onBlur={() => validateEmail(email)}
-                error={!!emailError}
-                fullWidth
-              />
-            </FormField>
+          <form onSubmit={handleSubmit}>
+            <div className="ff-field">
+              <label className="ff-label">Email</label>
+              <input className="ff-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" />
+            </div>
+            <div className="ff-field" style={{ position: 'relative' }}>
+              <label className="ff-label">Password</label>
+              <input className="ff-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 8 characters" autoComplete="current-password" />
+              <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}><PwIcon size={16} /></button>
+            </div>
 
-            <FormField label="Password" required error={passwordError}>
-              <div style={{ position: 'relative' }}>
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  onBlur={() => validatePassword(password)}
-                  error={!!passwordError}
-                  fullWidth
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 0,
-                  }}
-                >
-                  {showPassword ? (
-                    <EyeOff size={16} color={tokens.colors.neutral[400]} />
-                  ) : (
-                    <Eye size={16} color={tokens.colors.neutral[400]} />
-                  )}
-                </button>
-              </div>
-            </FormField>
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: tokens.spacing.xs,
-            }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  style={{ width: '14px', height: '14px', cursor: 'pointer' }}
-                />
-                <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600] }}>
-                  Remember me
-                </span>
+            <div style={S.row}>
+              <label style={S.checkLabel}>
+                <input type="checkbox" defaultChecked style={S.check} /> Remember me
               </label>
-              <Link
-                to="/forgot-password"
-                style={{
-                  fontSize: tokens.typography.fontSize.xs,
-                  color: '#2563eb',
-                  textDecoration: 'none',
-                  fontWeight: tokens.typography.fontWeight.medium,
-                }}
-              >
-                Forgot password?
-              </Link>
+              <Link to="/forgot-password" style={S.link}>Forgot password?</Link>
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="md"
-              fullWidth
-              loading={isLoading}
-              style={{ marginTop: tokens.spacing.xs }}
-            >
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </Button>
+            <button className="ff-btn ff-btn-primary" type="submit" disabled={loading} style={S.submitBtn}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
 
-            <div style={{ position: 'relative', textAlign: 'center', margin: `${tokens.spacing.xs} 0` }}>
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                backgroundColor: tokens.colors.neutral[200],
-              }} />
-              <span style={{
-                position: 'relative',
-                backgroundColor: tokens.colors.neutral.white,
-                padding: `0 ${tokens.spacing.xs}`,
-                fontSize: tokens.typography.fontSize.xs,
-                color: tokens.colors.neutral[500],
-              }}>
-                Or
-              </span>
-            </div>
+            <div style={S.divider}><span style={S.dividerText}>Or</span></div>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="md"
-              fullWidth
-              onClick={handleGoogleLogin}
-            >
-              <svg style={{ width: '16px', height: '16px', marginRight: '6px' }} viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
+            <button type="button" className="ff-btn ff-btn-outline" onClick={() => authService.googleLoginRedirect()} style={S.submitBtn}>
+              <svg style={{ width: 16, height: 16 }} viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
               Google
-            </Button>
+            </button>
 
-            <div style={{ textAlign: 'center', marginTop: tokens.spacing.xs }}>
-              <p style={{
-                fontSize: tokens.typography.fontSize.xs,
-                color: tokens.colors.neutral[600],
-                margin: 0,
-              }}>
-                Don't have an account?{' '}
-                <Link
-                  to="/signup"
-                  style={{
-                    color: tokens.colors.accent[600],
-                    textDecoration: 'none',
-                    fontWeight: tokens.typography.fontWeight.semibold,
-                  }}
-                >
-                  Sign up
-                </Link>
-              </p>
-            </div>
+            <p style={S.footer}>Don't have an account? <Link to="/signup" style={S.link}>Sign up</Link></p>
           </form>
-        </Card>
-
-        <div style={{ marginTop: tokens.spacing.sm, textAlign: 'center' }}>
-          <p style={{
-            fontSize: tokens.typography.fontSize.xs,
-            color: tokens.colors.neutral[400],
-            margin: 0,
-          }}>
-            © 2025 BurnBlack
-          </p>
         </div>
+        <p style={S.copy}>&copy; 2025 BurnBlack</p>
       </div>
     </div>
   );
-};
+}
 
-export default LoginPage;
+const S = {
+  page: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: P.bgPage, padding: 16 },
+  container: { maxWidth: 400, width: '100%' },
+  logoRow: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 },
+  logoBox: { width: 36, height: 36, background: P.logoBackground, borderRadius: 10, overflow: 'hidden' },
+  logoImg: { width: '100%', height: '100%', objectFit: 'contain', padding: 5 },
+  logoText: { fontSize: 18, fontWeight: 700, color: P.textPrimary },
+  title: { fontSize: 20, fontWeight: 700, color: P.textPrimary, margin: '0 0 4px' },
+  subtitle: { fontSize: 14, color: P.textMuted, margin: '0 0 20px' },
+  eyeBtn: { position: 'absolute', right: 12, top: 30, background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 0 },
+  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  checkLabel: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: P.textMuted, cursor: 'pointer' },
+  check: { width: 14, height: 14, accentColor: P.brand, cursor: 'pointer' },
+  link: { fontSize: 13, color: P.brand, fontWeight: 500 },
+  submitBtn: { width: '100%', justifyContent: 'center' },
+  divider: { position: 'relative', textAlign: 'center', margin: '16px 0' },
+  dividerText: { position: 'relative', background: P.bgCard, padding: '0 12px', fontSize: 12, color: P.textLight, zIndex: 1 },
+  footer: { textAlign: 'center', fontSize: 13, color: P.textMuted, marginTop: 16 },
+  copy: { textAlign: 'center', fontSize: 12, color: P.textLight, marginTop: 16 },
+};

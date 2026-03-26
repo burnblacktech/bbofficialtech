@@ -1,421 +1,130 @@
 /**
- * Signup Page - Premium Compact Design
- * Tight spacing matching login page
+ * Signup Page — Clean, single-frame, matches Login
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
-import { AlertCircle, Shield, User, Mail, Phone, Lock } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Button from '../../components/atoms/Button';
-import Input from '../../components/atoms/Input';
-import FormField from '../../components/molecules/FormField';
-import Card from '../../components/atoms/Card';
-import { tokens } from '../../styles/tokens';
 import P from '../../styles/palette';
+import '../Filing/filing-flow.css';
 
-const SignupPage = () => {
+export default function SignupPage() {
   const navigate = useNavigate();
   const { loginWithOAuth } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    acceptTerms: false,
-  });
+  const [showPw, setShowPw] = useState(false);
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirmPassword: '' });
 
-  const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: [] });
+  const set = (k, v) => { setForm(prev => ({ ...prev, [k]: v })); setError(''); };
 
-  const calculatePasswordStrength = (password) => {
-    let score = 0;
-    const feedback = [];
-    if (password.length >= 8) score += 1;
-    else feedback.push('8+ chars');
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
-    else feedback.push('Upper+lower');
-    if (/\d/.test(password)) score += 1;
-    else feedback.push('Number');
-    if (/[^a-zA-Z0-9]/.test(password)) score += 1;
-    else feedback.push('Special char');
-    return { score, feedback };
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setError('');
-    if (field === 'password') {
-      setPasswordStrength(calculatePasswordStrength(value));
-    }
-  };
-
-  const validateForm = () => {
-    if (!formData.fullName.trim()) {
-      setError('Full name is required');
-      return false;
-    }
-    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setError('Valid email is required');
-      return false;
-    }
-    if (!/^[6-9]\d{9}$/.test(formData.phone.replace(/\D/g, ''))) {
-      setError('Valid 10-digit phone number required');
-      return false;
-    }
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return false;
-    }
-    if (passwordStrength.score < 2) {
-      setError('Password is too weak');
-      return false;
-    }
-    if (!formData.acceptTerms) {
-      setError('Please accept terms and conditions');
-      return false;
-    }
-    return true;
-  };
-
-  const handleSignup = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
     setError('');
-    setIsLoading(true);
+    if (!form.fullName.trim()) { setError('Full name is required'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setError('Valid email required'); return; }
+    if (form.phone && !/^[6-9]\d{9}$/.test(form.phone.replace(/\D/g, ''))) { setError('Valid 10-digit phone required'); return; }
+    if (form.password.length < 8) { setError('Password must be 8+ characters'); return; }
+    if (form.password !== form.confirmPassword) { setError('Passwords do not match'); return; }
 
+    setLoading(true);
     try {
-      const response = await authService.register({
-        fullName: formData.fullName,
-        email: formData.email.toLowerCase(),
-        phone: formData.phone.replace(/\D/g, ''),
-        password: formData.password,
+      const res = await authService.register({
+        fullName: form.fullName, email: form.email.toLowerCase(),
+        phone: form.phone.replace(/\D/g, ''), password: form.password,
       });
-
-      if (response.success) {
-        toast.success('Account created! Please verify your email.');
+      if (res.success) {
+        toast.success('Account created!');
         try {
-          const loginResponse = await authService.login({
-            email: formData.email.toLowerCase(),
-            password: formData.password,
-          });
-          if (loginResponse.success) {
-            await loginWithOAuth(loginResponse.user, loginResponse.accessToken, loginResponse.refreshToken);
-            navigate('/email-verification');
-          }
-        } catch (loginError) {
-          navigate('/login', { state: { message: 'Account created. Please login.' } });
-        }
+          const lr = await authService.login({ email: form.email.toLowerCase(), password: form.password });
+          if (lr.success) { await loginWithOAuth(lr.user, lr.accessToken, lr.refreshToken); navigate('/email-verification'); }
+        } catch { navigate('/login', { state: { message: 'Account created. Please login.' } }); }
       }
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Signup failed.';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Signup failed');
+    } finally { setLoading(false); }
   };
 
-  const handleGoogleSignup = () => {
-    authService.googleLoginRedirect();
-  };
-
-  const getPasswordStrengthColor = () => {
-    if (passwordStrength.score === 0) return tokens.colors.neutral[200];
-    if (passwordStrength.score === 1) return tokens.colors.error[500];
-    if (passwordStrength.score === 2) return tokens.colors.warning[500];
-    if (passwordStrength.score === 3) return tokens.colors.info[500];
-    return tokens.colors.success[500];
-  };
+  const PwIcon = showPw ? EyeOff : Eye;
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: tokens.colors.neutral[50],
-      padding: tokens.spacing.md,
-    }}>
-      <div style={{ maxWidth: '400px', width: '100%' }}>
-        {/* Logo */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: tokens.spacing.sm,
-          marginBottom: tokens.spacing.md,
-        }}>
-          <div style={{
-            width: '36px',
-            height: '36px',
-            background: P.logoBackground,
-            borderRadius: tokens.borderRadius.lg,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}>
-            <img src="/bb-logo.svg" alt="BB" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '5px' }} />
-          </div>
-          <h1 style={{
-            fontSize: tokens.typography.fontSize.lg,
-            fontWeight: tokens.typography.fontWeight.bold,
-            color: tokens.colors.neutral[900],
-            margin: 0,
-          }}>
-            BurnBlack
-          </h1>
+    <div style={S.page}>
+      <div style={S.container}>
+        <div style={S.logoRow}>
+          <div style={S.logoBox}><img src="/bb-logo.svg" alt="BB" style={S.logoImg} /></div>
+          <span style={S.logoText}>BurnBlack</span>
         </div>
 
-        {/* Card */}
-        <Card padding="lg" style={{ backgroundColor: tokens.colors.neutral.white }}>
-          {/* Title */}
-          <div style={{ marginBottom: tokens.spacing.md }}>
-            <h2 style={{
-              fontSize: tokens.typography.fontSize.lg,
-              fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.neutral[900],
-              marginBottom: tokens.spacing.xs,
-            }}>
-              Create your account
-            </h2>
-            <p style={{
-              fontSize: tokens.typography.fontSize.sm,
-              color: tokens.colors.neutral[600],
-            }}>
-              Start filing your taxes in minutes
-            </p>
-          </div>
+        <div className="step-card" style={{ padding: 28 }}>
+          <h2 style={S.title}>Create Account</h2>
+          <p style={S.subtitle}>Start filing your ITR in minutes</p>
 
-          {/* Error */}
-          {error && (
-            <div style={{
-              padding: tokens.spacing.sm,
-              borderRadius: tokens.borderRadius.md,
-              backgroundColor: tokens.colors.error[50],
-              border: `1px solid ${tokens.colors.error[200]}`,
-              marginBottom: tokens.spacing.sm,
-              display: 'flex',
-              gap: tokens.spacing.xs,
-            }}>
-              <AlertCircle size={16} color={tokens.colors.error[600]} style={{ flexShrink: 0 }} />
-              <p style={{
-                fontSize: tokens.typography.fontSize.xs,
-                color: tokens.colors.error[700],
-                margin: 0,
-              }}>
-                {error}
-              </p>
+          {error && <div className="ff-errors" style={{ marginBottom: 14 }}><div className="ff-errors-title"><AlertCircle size={14} /> {error}</div></div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="ff-field">
+              <label className="ff-label">Full Name *</label>
+              <input className="ff-input" type="text" value={form.fullName} onChange={e => set('fullName', e.target.value)} placeholder="As per PAN card" />
             </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.sm }}>
-            <FormField label="Full Name" required>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder="John Doe"
-                value={formData.fullName}
-                onChange={(e) => handleInputChange('fullName', e.target.value)}
-                fullWidth
-              />
-            </FormField>
-
-            <FormField label="Email" required>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                fullWidth
-              />
-            </FormField>
-
-            <FormField label="Mobile" required>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="10-digit number"
-                value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                fullWidth
-              />
-            </FormField>
-
-            <FormField label="Password" required>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Create password"
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                fullWidth
-              />
-              {formData.password && (
-                <div style={{ marginTop: tokens.spacing.xs }}>
-                  <div style={{ display: 'flex', gap: '2px', marginBottom: '2px' }}>
-                    {[0, 1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        style={{
-                          height: '3px',
-                          flex: 1,
-                          borderRadius: tokens.borderRadius.sm,
-                          backgroundColor: i < passwordStrength.score ? getPasswordStrengthColor() : tokens.colors.neutral[200],
-                        }}
-                      />
-                    ))}
-                  </div>
-                  {passwordStrength.feedback.length > 0 && (
-                    <p style={{
-                      fontSize: tokens.typography.fontSize.xs,
-                      color: tokens.colors.neutral[500],
-                      margin: 0,
-                    }}>
-                      {passwordStrength.feedback.join(', ')}
-                    </p>
-                  )}
-                </div>
-              )}
-            </FormField>
-
-            <FormField label="Confirm Password" required>
-              <Input
-                id="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Confirm password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                error={formData.confirmPassword && formData.password !== formData.confirmPassword}
-                fullWidth
-              />
-              {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <p style={{
-                  fontSize: tokens.typography.fontSize.xs,
-                  color: tokens.colors.error[600],
-                  marginTop: tokens.spacing.xs,
-                }}>
-                  Passwords don't match
-                </p>
-              )}
-            </FormField>
-
-            <div style={{ marginTop: tokens.spacing.xs }}>
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={formData.acceptTerms}
-                  onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
-                  style={{ width: '14px', height: '14px', cursor: 'pointer', marginTop: '2px', flexShrink: 0 }}
-                />
-                <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600] }}>
-                  I accept the{' '}
-                  <Link to="/terms" style={{ color: tokens.colors.accent[600], textDecoration: 'none' }}>
-                    Terms
-                  </Link>
-                  {' '}and{' '}
-                  <Link to="/privacy" style={{ color: tokens.colors.accent[600], textDecoration: 'none' }}>
-                    Privacy Policy
-                  </Link>
-                </span>
-              </label>
+            <div className="ff-grid-2">
+              <div className="ff-field">
+                <label className="ff-label">Email *</label>
+                <input className="ff-input" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="you@example.com" />
+              </div>
+              <div className="ff-field">
+                <label className="ff-label">Phone</label>
+                <input className="ff-input" type="tel" value={form.phone} onChange={e => set('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="10-digit mobile" />
+              </div>
+            </div>
+            <div className="ff-grid-2">
+              <div className="ff-field" style={{ position: 'relative' }}>
+                <label className="ff-label">Password *</label>
+                <input className="ff-input" type={showPw ? 'text' : 'password'} value={form.password} onChange={e => set('password', e.target.value)} placeholder="Min 8 characters" />
+                <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}><PwIcon size={16} /></button>
+              </div>
+              <div className="ff-field">
+                <label className="ff-label">Confirm *</label>
+                <input className="ff-input" type={showPw ? 'text' : 'password'} value={form.confirmPassword} onChange={e => set('confirmPassword', e.target.value)} placeholder="Repeat" />
+              </div>
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="md"
-              fullWidth
-              loading={isLoading}
-              style={{ marginTop: tokens.spacing.xs }}
-            >
-              {isLoading ? 'Creating account...' : 'Create account'}
-            </Button>
+            <button className="ff-btn ff-btn-primary" type="submit" disabled={loading} style={S.fullBtn}>
+              {loading ? 'Creating...' : 'Create Account'}
+            </button>
 
-            <div style={{ position: 'relative', textAlign: 'center', margin: `${tokens.spacing.xs} 0` }}>
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                backgroundColor: tokens.colors.neutral[200],
-              }} />
-              <span style={{
-                position: 'relative',
-                backgroundColor: tokens.colors.neutral.white,
-                padding: `0 ${tokens.spacing.xs}`,
-                fontSize: tokens.typography.fontSize.xs,
-                color: tokens.colors.neutral[500],
-              }}>
-                Or
-              </span>
-            </div>
+            <div style={S.divider}><span style={S.dividerText}>Or</span></div>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="md"
-              fullWidth
-              onClick={handleGoogleSignup}
-            >
-              <svg style={{ width: '16px', height: '16px', marginRight: '6px' }} viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
+            <button type="button" className="ff-btn ff-btn-outline" onClick={() => authService.googleLoginRedirect()} style={S.fullBtn}>
+              <svg style={{ width: 16, height: 16 }} viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
               Google
-            </Button>
+            </button>
 
-            <div style={{ textAlign: 'center', marginTop: tokens.spacing.xs }}>
-              <p style={{
-                fontSize: tokens.typography.fontSize.xs,
-                color: tokens.colors.neutral[600],
-                margin: 0,
-              }}>
-                Already have an account?{' '}
-                <Link
-                  to="/login"
-                  style={{
-                    color: tokens.colors.accent[600],
-                    textDecoration: 'none',
-                    fontWeight: tokens.typography.fontWeight.semibold,
-                  }}
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
+            <p style={S.footer}>Already have an account? <Link to="/login" style={S.link}>Sign in</Link></p>
           </form>
-        </Card>
-
-        <div style={{ marginTop: tokens.spacing.sm, textAlign: 'center' }}>
-          <p style={{
-            fontSize: tokens.typography.fontSize.xs,
-            color: tokens.colors.neutral[400],
-            margin: 0,
-          }}>
-            © 2025 BurnBlack
-          </p>
         </div>
+        <p style={S.copy}>&copy; 2025 BurnBlack</p>
       </div>
     </div>
   );
-};
+}
 
-export default SignupPage;
+const S = {
+  page: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: P.bgPage, padding: 16 },
+  container: { maxWidth: 440, width: '100%' },
+  logoRow: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 },
+  logoBox: { width: 36, height: 36, background: P.logoBackground, borderRadius: 10, overflow: 'hidden' },
+  logoImg: { width: '100%', height: '100%', objectFit: 'contain', padding: 5 },
+  logoText: { fontSize: 18, fontWeight: 700, color: P.textPrimary },
+  title: { fontSize: 20, fontWeight: 700, color: P.textPrimary, margin: '0 0 4px' },
+  subtitle: { fontSize: 14, color: P.textMuted, margin: '0 0 20px' },
+  eyeBtn: { position: 'absolute', right: 12, top: 30, background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 0 },
+  fullBtn: { width: '100%', justifyContent: 'center' },
+  link: { color: P.brand, fontWeight: 600 },
+  divider: { position: 'relative', textAlign: 'center', margin: '16px 0' },
+  dividerText: { position: 'relative', background: P.bgCard, padding: '0 12px', fontSize: 12, color: P.textLight, zIndex: 1 },
+  footer: { textAlign: 'center', fontSize: 13, color: P.textMuted, marginTop: 16 },
+  copy: { textAlign: 'center', fontSize: 12, color: P.textLight, marginTop: 16 },
+};
