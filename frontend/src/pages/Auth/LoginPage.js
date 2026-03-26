@@ -44,7 +44,8 @@ export default function LoginPage() {
       const result = await login({ email: sanitizeEmail(email), password: sanitizePassword(password) });
       if (!result.success) setError("Email or password doesn't match.");
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed.');
+      const msg = err.response?.data?.error;
+      setError(typeof msg === 'string' ? msg : msg?.message || 'Login failed.');
     } finally { setLoading(false); }
   };
 

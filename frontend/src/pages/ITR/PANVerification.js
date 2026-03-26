@@ -1,12 +1,13 @@
 /**
- * PAN Verification — Verify PAN and proceed to filing
+ * PAN Verification — Verifies via SurePass API, shows name + DOB
  */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
+import { Shield, CheckCircle, Loader2, ArrowRight, ArrowLeft, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import P from '../../styles/palette';
 import toast from 'react-hot-toast';
 import '../Filing/filing-flow.css';
 
@@ -18,6 +19,7 @@ export default function PANVerification() {
 
   const [pan, setPan] = useState(existingPan);
   const [verifying, setVerifying] = useState(false);
+  const [result, setResult] = useState(null);
 
   const handleVerify = async () => {
     const upper = pan.toUpperCase();
@@ -27,16 +29,20 @@ export default function PANVerification() {
     }
     setVerifying(true);
     try {
-      await api.patch('/auth/pan', { panNumber: upper });
+      const res = await api.post('/auth/verify-pan', { pan: upper });
+      setResult(res.data.data);
       refreshProfile?.();
-      toast.success('PAN verified');
+      toast.success(res.data.message || 'PAN verified');
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Verification failed');
+      toast.error(e.response?.data?.message || 'Verification failed');
     } finally { setVerifying(false); }
   };
 
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
+      <button className="ff-btn ff-btn-ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
+        <ArrowLeft size={14} /> Dashboard
+      </button>
       <h1 className="step-title">PAN Verification</h1>
       <p className="step-desc">Verify your PAN to start filing</p>
 
@@ -47,35 +53,39 @@ export default function PANVerification() {
             className="ff-input"
             type="text"
             value={pan}
-            onChange={e => setPan(e.target.value.toUpperCase())}
+            onChange={e => { setPan(e.target.value.toUpperCase()); setResult(null); }}
             placeholder="ABCDE1234F"
             maxLength={10}
             style={{ textTransform: 'uppercase' }}
-            disabled={isVerified}
+            disabled={isVerified && pan === existingPan}
           />
-          {isVerified && (
-            <span style={{ position: 'absolute', right: 12, top: 30, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#16a34a' }}>
+          {isVerified && pan === existingPan && (
+            <span style={{ position: 'absolute', right: 12, top: 30, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: P.success }}>
               <CheckCircle size={14} /> Verified
             </span>
           )}
         </div>
 
-        {isVerified ? (
-          <div className="step-card success" style={{ marginTop: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Shield size={18} color="#16a34a" />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>PAN Verified</div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>{existingPan}</div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <button className="ff-btn ff-btn-primary" onClick={handleVerify} disabled={verifying} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-            {verifying ? <><Loader2 size={16} className="animate-spin" /> Verifying...</> : <><Shield size={16} /> Verify PAN</>}
+        {!isVerified && (
+          <button className="ff-btn ff-btn-primary" onClick={handleVerify} disabled={verifying} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
+            {verifying ? <><Loader2 size={16} className="animate-spin" /> Verifying with SurePass...</> : <><Shield size={16} /> Verify PAN</>}
           </button>
         )}
       </div>
+
+      {/* Verification result */}
+      {(result || isVerified) && (
+        <div className="step-card success">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <CheckCircle size={20} color={P.success} />
+            <span style={{ fontSize: 15, fontWeight: 600, color: P.textPrimary }}>PAN Verified</span>
+          </div>
+          <div className="ff-row"><span className="ff-row-label">PAN</span><span className="ff-row-value bold">{result?.pan || existingPan}</span></div>
+          {result?.name && <div className="ff-row"><span className="ff-row-label">Name</span><span className="ff-row-value">{result.name}</span></div>}
+          {result?.dateOfBirth && <div className="ff-row"><span className="ff-row-label">Date of Birth</span><span className="ff-row-value">{result.dateOfBirth}</span></div>}
+          {result?.source && <div className="ff-row"><span className="ff-row-label">Source</span><span className="ff-row-value" style={{ fontSize: 11, color: P.textLight }}>{result.source}</span></div>}
+        </div>
+      )}
 
       <button className="ff-btn ff-btn-primary" onClick={() => navigate('/filing/start')} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }}>
         Proceed to Filing <ArrowRight size={16} />

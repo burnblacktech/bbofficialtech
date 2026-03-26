@@ -445,9 +445,23 @@ router.patch('/pan', authenticateToken, async (req, res) => {
     const user = await User.findByPk(userId);
     if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-    user.panNumber = panNumber.toUpperCase();
-    user.panVerified = true;
-    user.panVerifiedAt = new Date();
+    // Verify via SurePass if not already verified with this PAN
+    const panUpper = panNumber.toUpperCase();
+    if (user.panNumber !== panUpper || !user.panVerified) {
+      try {
+        const panService = require('../services/common/PANVerificationService');
+        const result = await panService.verifyPAN(panUpper, userId);
+        user.panNumber = result.pan;
+        user.panVerified = result.isValid;
+        user.panVerifiedAt = new Date();
+        if (result.name && !user.fullName) user.fullName = result.name;
+        if (result.dateOfBirth && !user.dateOfBirth && !dateOfBirth) user.dateOfBirth = result.dateOfBirth;
+      } catch {
+        // SurePass unavailable — save PAN anyway, mark as unverified
+        user.panNumber = panUpper;
+        user.panVerified = false;
+      }
+    }
 
     if (dateOfBirth) {
       user.dateOfBirth = dateOfBirth;
@@ -482,21 +496,45 @@ router.post('/verify-pan', authenticateToken, async (req, res) => {
     const user = await User.findByPk(userId);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-    // TODO: Integrate with SurePass API for real verification
-    const verifiedName = user.fullName || 'User Name';
+    // Call SurePass API (falls back to mock if FEATURE_PAN_VERIFICATION_LIVE !== 'true')
+    const panService = require('../services/common/PANVerificationService');
+    const result = await panService.verifyPAN(pan.toUpperCase(), userId);
 
-    if (!user.panNumber) {
-      user.panNumber = pan.toUpperCase();
-      user.panVerified = true;
-      user.panVerifiedAt = new Date();
-      await user.save();
+    if (!result.isValid) {
+      return res.status(400).json({ success: false, message: 'PAN verification failed. Please check the PAN number.' });
     }
 
-    enterpriseLogger.info('PAN verified', { userId, pan: pan.toUpperCase() });
-    res.json({ success: true, message: 'PAN verified successfully', data: { name: verifiedName, pan: pan.toUpperCase(), verified: true } });
+    // Save verified PAN + name + DOB to user
+    user.panNumber = result.pan;
+    user.panVerified = true;
+    user.panVerifiedAt = new Date();
+    if (result.name && !user.fullName) user.fullName = result.name;
+    if (result.dateOfBirth && !user.dateOfBirth) user.dateOfBirth = result.dateOfBirth;
+    await user.save();
+
+    enterpriseLogger.info('PAN verified via SurePass', { userId, pan: result.pan, source: result.source });
+    res.json({
+      success: true,
+      message: 'PAN verified successfully',
+      data: {
+        pan: result.pan,
+        name: result.name,
+        dateOfBirth: result.dateOfBirth,
+        verified: true,
+        source: result.source,
+      },
+    });
   } catch (error) {
     enterpriseLogger.error('PAN verification failed', { error: error.message, userId: req.user?.userId });
-    res.status(500).json({ success: false, message: 'PAN verification failed', error: error.message });
+    // If SurePass is down, allow manual save with a warning
+    if (error.statusCode === 503 || error.code === 'SERVICE_UNAVAILABLE') {
+      return res.status(200).json({
+        success: true,
+        message: 'PAN saved (verification service unavailable — will verify later)',
+        data: { pan: req.body.pan?.toUpperCase(), verified: false, source: 'MANUAL' },
+      });
+    }
+    res.status(error.statusCode || 500).json({ success: false, message: error.message || 'PAN verification failed' });
   }
 });
 

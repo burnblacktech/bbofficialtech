@@ -44,7 +44,8 @@ export default function SignupPage() {
         } catch { navigate('/login', { state: { message: 'Account created. Please login.' } }); }
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Signup failed');
+      const msg = err.response?.data?.error;
+      setError(typeof msg === 'string' ? msg : msg?.message || 'Signup failed');
     } finally { setLoading(false); }
   };
 

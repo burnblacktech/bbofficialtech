@@ -1,27 +1,34 @@
 /**
  * Vercel Serverless Entry Point
- * Wraps the Express app for Vercel's serverless functions
  */
 
-const app = require('../src/app');
-
-// Initialize database on cold start
-const { sequelize } = require('../src/config/database');
-const models = require('../src/models');
-
-let dbInitialized = false;
-
-const initDB = async () => {
-  if (dbInitialized) return;
-  try {
-    await sequelize.authenticate();
-    dbInitialized = true;
-  } catch (err) {
-    console.error('Database connection failed:', err.message);
-  }
-};
+let app;
+let dbReady = false;
 
 module.exports = async (req, res) => {
-  await initDB();
-  return app(req, res);
+  try {
+    // Lazy-load on first request (cold start)
+    if (!app) {
+      app = require('../src/app');
+    }
+
+    // Init DB once
+    if (!dbReady) {
+      try {
+        const { sequelize } = require('../src/config/database');
+        require('../src/models');
+        await sequelize.authenticate();
+        dbReady = true;
+        console.log('DB connected');
+      } catch (dbErr) {
+        console.error('DB connection failed:', dbErr.message);
+        // Continue anyway — some routes don't need DB
+      }
+    }
+
+    return app(req, res);
+  } catch (err) {
+    console.error('Serverless function error:', err.message, err.stack);
+    res.status(500).json({ success: false, error: 'Internal server error', detail: err.message });
+  }
 };
