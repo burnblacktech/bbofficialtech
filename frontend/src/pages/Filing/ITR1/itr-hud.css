@@ -1,13 +1,13 @@
 /* ITR Filing HUD — Works inside main Layout content area */
 
-.hud { display: flex; gap: 20px; min-height: calc(100vh - 80px); }
+.hud { display: flex; gap: 20px; min-height: calc(100vh - 56px - 48px); }
 .hud-loading { display: flex; align-items: center; justify-content: center; min-height: 400px; color: #6b7280; }
 
 /* ── Left Panel (inside content area, not full-screen) ── */
 .hud-panel {
   width: 240px; min-width: 240px; background: #fff; border: 1px solid #e5e7eb;
   border-radius: 12px; display: flex; flex-direction: column; padding: 16px 12px;
-  position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px);
+  position: sticky; top: 70px; height: fit-content; max-height: calc(100vh - 90px);
   overflow-y: auto;
 }
 

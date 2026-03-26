@@ -111,7 +111,7 @@ function Chip({ icon, label, ok, detail, onClick }) {
 }
 
 const S = {
-  page: { display: 'flex', flexDirection: 'column', gap: 16, height: 'calc(100vh - 100px)', overflow: 'hidden' },
+  page: { display: 'flex', flexDirection: 'column', gap: 16, height: 'calc(100vh - 56px - 48px)', overflow: 'hidden' },
   topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   h1: { fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 },
   sub: { fontSize: 13, color: '#6b7280', margin: 0 },

@@ -1,189 +1,77 @@
-// =====================================================
-// SIDEBAR COMPONENT - COLLAPSIBLE NAVIGATION MENU
-// Modern sidebar with smooth collapse/expand animation
-// =====================================================
+/**
+ * Sidebar — Minimal nav. Logo and user info live in Header.
+ */
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import {
-  Home,
-  DollarSign,
-  Target,
-  FolderOpen,
-  CheckCircle,
-  Lightbulb,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Home, CheckCircle, User, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const NAV = [
+  { name: 'Dashboard', path: '/dashboard', icon: Home },
+  { name: 'File ITR', path: '/filing/start', icon: CheckCircle },
+  { name: 'Profile', path: '/profile', icon: User },
+];
 
 const Sidebar = ({ isCollapsed, onToggle, isMobile, onClose, isOpenMobile }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
-
-  // MVP navigation — only working routes
-  const navigationItems = [
-    {
-      name: 'Dashboard',
-      path: '/dashboard',
-      icon: Home,
-    },
-    {
-      name: 'File ITR',
-      path: '/filing/start',
-      icon: CheckCircle,
-    },
-    {
-      name: 'Profile',
-      path: '/profile',
-      icon: Settings,
-    },
-  ];
 
   const isActive = (path) => {
-    if (path === '/dashboard') {
-      return location.pathname === '/dashboard' || location.pathname === '/home';
-    }
+    if (path === '/dashboard') return location.pathname === '/dashboard' || location.pathname === '/home';
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    if (isMobile && onClose) {
-      onClose();
-    }
-  };
+  const go = (path) => { navigate(path); if (isMobile && onClose) onClose(); };
 
-  const sidebarClasses = `
+  const cls = `
     fixed left-0 bottom-0 z-40 bg-white border-r border-slate-200
-    transition-all duration-300 ease-in-out flex flex-col
-    ${isMobile ? '' : 'top-14 sm:top-16 lg:top-20'}
-    ${isMobile ? (isOpenMobile ? 'w-64 translate-x-0 shadow-2xl' : 'w-64 -translate-x-full') : (isCollapsed ? 'w-16' : 'w-64')}
+    transition-all duration-300 ease-in-out flex flex-col top-14
+    ${isMobile ? (isOpenMobile ? 'w-56 translate-x-0 shadow-2xl' : 'w-56 -translate-x-full') : (isCollapsed ? 'w-14' : 'w-56')}
   `;
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isMobile && isOpenMobile && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={onClose} />
       )}
-
-      {/* Sidebar */}
-      <aside className={sidebarClasses}>
-        {/* Header */}
-        <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 border-b border-slate-200">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[var(--s29-primary)] rounded-xl flex items-center justify-center shadow-sm relative">
-                <img
-                  src="/bb-logo.svg"
-                  alt="BurnBlack Logo"
-                  className="w-full h-full object-contain p-1"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    const fallback = e.target.parentElement.querySelector('.logo-fallback');
-                    if (fallback) fallback.style.display = 'block';
-                  }}
-                />
-                <span className="text-white font-bold text-body-small sm:text-body-regular hidden logo-fallback absolute inset-0 flex items-center justify-center">BB</span>
-              </div>
-              <span className="text-body-large sm:text-body-large font-bold text-[var(--s29-text-main)]">BurnBlack</span>
-            </div>
-          )}
-          {isCollapsed && (
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-aurora-gradient rounded-xl flex items-center justify-center mx-auto shadow-card">
-              <img
-                src="/bb-logo.svg"
-                alt="BurnBlack Logo"
-                className="w-full h-full object-contain p-1"
-                onError={(e) => {
-                  // Fallback to text if logo fails to load
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'block';
-                }}
-              />
-              <span className="text-white font-bold text-body-small sm:text-body-regular hidden">BB</span>
-            </div>
-          )}
-          {!isMobile && (
-            <button
-              onClick={onToggle}
-              className="p-1 sm:p-1.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-              ) : (
-                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-              )}
+      <aside className={cls}>
+        {/* Toggle */}
+        {!isMobile && (
+          <div className="flex justify-end px-2 py-2">
+            <button onClick={onToggle} className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100" aria-label={isCollapsed ? 'Expand' : 'Collapse'}>
+              {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-3 sm:py-4 px-2">
-          <ul className="space-y-0.5 sm:space-y-1">
-            {navigationItems.map((item) => {
+        {/* Nav */}
+        <nav className="flex-1 px-2 py-1">
+          <ul className="space-y-0.5">
+            {NAV.map(item => {
               const Icon = item.icon;
               const active = isActive(item.path);
               return (
                 <li key={item.path}>
                   <button
-                    onClick={() => handleNavigation(item.path)}
-                    className={`
-                      w-full flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl
-                      transition-all duration-200 text-body-regular sm:text-body-large
-                      ${active
-                        ? 'bg-[var(--s29-primary-light)]/10 text-[var(--s29-primary)] font-semibold'
-                        : 'text-[var(--s29-text-muted)] hover:bg-[var(--s29-bg-alt)] hover:text-[var(--s29-text-main)]'
-                      }
+                    onClick={() => go(item.path)}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
+                      ${active ? 'bg-blue-50 text-[var(--brand-primary)] font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}
                       ${isCollapsed ? 'justify-center' : ''}
                     `}
                     title={isCollapsed ? item.name : ''}
-                    aria-label={isCollapsed ? item.name : undefined}
                     aria-current={active ? 'page' : undefined}
                   >
-                    <Icon className={`h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${active ? 'text-[var(--s29-primary)]' : ''}`} aria-hidden="true" />
-                    {!isCollapsed && <span className="text-body-regular sm:text-body-large">{item.name}</span>}
+                    <Icon className={`h-[18px] w-[18px] flex-shrink-0 ${active ? 'text-[var(--brand-primary)]' : ''}`} />
+                    {!isCollapsed && <span>{item.name}</span>}
                   </button>
                 </li>
               );
             })}
           </ul>
         </nav>
-
-        {/* User Info Footer */}
-        {!isCollapsed && (
-          <div className="p-4 border-t border-[var(--s29-border-light)]">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-[var(--s29-primary)] rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-white text-body-regular font-medium">
-                  {user?.fullName
-                    ?.split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2) || 'U'}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-body-regular font-bold text-[var(--s29-text-main)] truncate">
-                  {user?.fullName || 'User'}
-                </p>
-                <p className="text-body-small text-[var(--s29-text-muted)] truncate">{user?.email || ''}</p>
-              </div>
-            </div>
-          </div>
-        )}
       </aside>
     </>
   );
 };
 
 export default Sidebar;
-
