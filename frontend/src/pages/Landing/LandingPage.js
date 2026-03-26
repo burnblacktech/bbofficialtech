@@ -33,17 +33,17 @@ import { tokens } from '../../styles/tokens';
 // Trust Indicators Component
 const TrustIndicators = memo(({ stats, isLoading }) => {
   const statsData = stats?.data || {
-    totalUsersFormatted: '50K+',
-    totalRefundsFormatted: '₹120Cr+',
-    successRateFormatted: '99.9%',
-    supportAvailability: '24/7',
+    totalUsersFormatted: 'ITR-1 to 4',
+    totalRefundsFormatted: 'Old & New',
+    successRateFormatted: 'Real-time',
+    supportAvailability: 'Free',
   };
 
   const indicators = [
-    { icon: Users, value: statsData.totalUsersFormatted, label: 'Users', color: tokens.colors.accent[600] },
-    { icon: TrendingUp, value: statsData.totalRefundsFormatted, label: 'Refunds', color: tokens.colors.success[600] },
-    { icon: CheckCircle, value: statsData.successRateFormatted, label: 'Accuracy', color: tokens.colors.accent[600] },
-    { icon: Clock, value: statsData.supportAvailability, label: 'Support', color: tokens.colors.info[600] },
+    { icon: FileText, value: statsData.totalUsersFormatted, label: 'All Forms', color: tokens.colors.accent[600] },
+    { icon: TrendingUp, value: statsData.totalRefundsFormatted, label: 'Regime Compare', color: tokens.colors.success[600] },
+    { icon: CheckCircle, value: statsData.successRateFormatted, label: 'Computation', color: tokens.colors.accent[600] },
+    { icon: Zap, value: statsData.supportAvailability, label: 'To Start', color: tokens.colors.info[600] },
   ];
 
   return (
@@ -208,9 +208,9 @@ const LandingPage = () => {
 
   // SEO
   useEffect(() => {
-    document.title = 'BurnBlack - File Your ITR in 3 Minutes with AI | CA-Grade Accuracy';
+    document.title = 'BurnBlack — Smart ITR Filing for Individuals | ITR-1 to ITR-4';
     const metaDescription = document.querySelector('meta[name="description"]');
-    const description = 'Join 50,000+ Indians who saved ₹120Cr+ in taxes. File your ITR in 3 minutes with AI-powered automation and CA-grade accuracy. ICAI certified, 256-bit encryption, 99.9% accuracy guaranteed.';
+    const description = 'File your Income Tax Return online. Guided filing for ITR-1 to ITR-4 with real-time tax computation, old vs new regime comparison, and ITD-format JSON download. Built for Indian taxpayers.';
 
     if (metaDescription) {
       metaDescription.setAttribute('content', description);
@@ -228,21 +228,21 @@ const LandingPage = () => {
       return [
         {
           stars: 5,
-          text: 'BurnBlack made my tax filing so easy! The AI bot guided me through everything and I got a much higher refund than expected.',
-          name: 'Rajesh Kumar',
-          title: 'Software Engineer',
+          text: 'The guided flow made it easy to understand which ITR form I need. Regime comparison saved me from picking the wrong one.',
+          name: 'Early Access User',
+          title: 'Salaried Professional',
         },
         {
           stars: 5,
-          text: 'As a CA, BurnBlack has revolutionized how I handle client filings. The bulk processing feature saves me hours every day.',
-          name: 'Priya Sharma',
-          title: 'Chartered Accountant',
+          text: 'Finally a platform that explains tax computation step by step. I could see exactly how my tax was calculated.',
+          name: 'Beta Tester',
+          title: 'Freelancer',
         },
         {
           stars: 5,
-          text: 'The security and compliance features give me peace of mind. I can trust BurnBlack with all my sensitive financial data.',
-          name: 'Amit Patel',
-          title: 'Business Owner',
+          text: 'Clean interface, no clutter. I filed my ITR-1 without needing to call my CA for the first time.',
+          name: 'Early Access User',
+          title: 'IT Professional',
         },
       ];
     }
@@ -257,38 +257,38 @@ const LandingPage = () => {
   const features = [
     {
       icon: FileText,
-      title: 'Auto-Fill from Form 16',
-      description: 'Upload once. AI fills everything. Save 45 minutes.',
+      title: 'Guided Filing',
+      description: 'Plain-language questions that map to ITR fields. No jargon.',
       color: tokens.colors.accent[600],
     },
     {
       icon: TrendingUp,
-      title: 'Maximum Refunds',
-      description: 'AI finds hidden deductions. Users save ₹15K+ extra.',
+      title: 'Regime Comparison',
+      description: 'See old vs new regime side by side. Pick the one that saves more.',
       color: tokens.colors.success[600],
     },
     {
       icon: Shield,
-      title: 'CA-Verified Accuracy',
-      description: 'Every return checked by certified CAs. 99.9% accurate.',
+      title: 'Accurate Computation',
+      description: 'Slab-wise tax breakdown with rebate, surcharge, and cess.',
       color: tokens.colors.accent[600],
     },
     {
       icon: Zap,
-      title: '3-Minute Filing',
-      description: 'Fastest in India. Instant acknowledgment. Live tracking.',
+      title: 'ITD-Format JSON',
+      description: 'Download ITD-ready JSON for direct upload to the Income Tax portal.',
       color: tokens.colors.warning[600],
     },
     {
       icon: FileText,
-      title: 'All ITR Forms',
-      description: 'ITR-1 to ITR-4. Auto-selected based on your income.',
+      title: 'ITR-1 to ITR-4',
+      description: 'Salary, capital gains, business, presumptive — all covered.',
       color: tokens.colors.info[600],
     },
     {
-      icon: Users,
-      title: 'Family Filing',
-      description: 'One dashboard for everyone. Save 2+ hours per person.',
+      icon: Lock,
+      title: 'Secure & Private',
+      description: 'Your data stays encrypted. No sharing with third parties.',
       color: tokens.colors.accent[600],
     },
   ];
@@ -369,7 +369,7 @@ const LandingPage = () => {
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{ marginBottom: tokens.spacing.md }}>
-            <Badge variant="info">50K+ Indians Trust Us</Badge>
+            <Badge variant="info">Smart ITR Filing Platform</Badge>
           </div>
           <h1 style={{
             fontSize: tokens.typography.fontSize['4xl'],
@@ -378,7 +378,7 @@ const LandingPage = () => {
             marginBottom: tokens.spacing.md,
             lineHeight: tokens.typography.lineHeight.tight,
           }}>
-            File ITR in 3 Minutes
+            File Your ITR Online
           </h1>
           <p style={{
             fontSize: tokens.typography.fontSize.lg,
@@ -388,7 +388,7 @@ const LandingPage = () => {
             marginLeft: 'auto',
             marginRight: 'auto',
           }}>
-            AI-powered filing. CA-grade accuracy. ₹120Cr+ refunds generated.
+            Guided filing for individuals. ITR-1 to ITR-4 with real-time tax computation and regime comparison.
           </p>
 
           {/* Trust Badges */}
@@ -403,7 +403,7 @@ const LandingPage = () => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <CheckCircle size={14} color={tokens.colors.success[600]} />
-              <span>ICAI Certified</span>
+              <span>Secure & Encrypted</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Lock size={14} color={tokens.colors.success[600]} />
@@ -411,7 +411,7 @@ const LandingPage = () => {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <CheckCircle size={14} color={tokens.colors.success[600]} />
-              <span>99.9% Accurate</span>
+              <span>ITD-Format JSON</span>
             </div>
           </div>
 
@@ -646,14 +646,14 @@ const LandingPage = () => {
             color: tokens.colors.neutral.white,
             marginBottom: tokens.spacing.md,
           }}>
-            Join 50K+ Indians
+            Start Filing Today
           </h2>
           <p style={{
             fontSize: tokens.typography.fontSize.lg,
             color: tokens.colors.accent[50],
             marginBottom: tokens.spacing['2xl'],
           }}>
-            File in 3 minutes. Save more. No credit card required.
+            Free to start. No credit card required. File ITR-1 to ITR-4.
           </p>
           <div style={{
             display: 'flex',
@@ -829,7 +829,7 @@ const LandingPage = () => {
               color: tokens.colors.neutral[400],
               margin: 0,
             }}>
-              © 2024 BurnBlack. All rights reserved.
+              © 2025 BurnBlack. All rights reserved.
             </p>
           </div>
         </div>

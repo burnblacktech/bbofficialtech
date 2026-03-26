@@ -409,7 +409,7 @@ const SignupPage = () => {
             color: tokens.colors.neutral[400],
             margin: 0,
           }}>
-            © 2024 BurnBlack
+            © 2025 BurnBlack
           </p>
         </div>
       </div>
