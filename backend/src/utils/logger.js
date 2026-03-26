@@ -47,18 +47,12 @@ const enterpriseLogger = winston.createLogger({
   defaultMeta: { service: 'burnblack-itr' },
   transports,
 
-  // Handle uncaught exceptions
-  exceptionHandlers: [
-    new winston.transports.File({
-      filename: path.join(logsDir, 'exceptions.log'),
-    }),
+  // Handle uncaught exceptions and rejections — console only on serverless
+  exceptionHandlers: isServerless ? [new winston.transports.Console()] : [
+    new winston.transports.File({ filename: path.join(logsDir, 'exceptions.log') }),
   ],
-
-  // Handle unhandled rejections
-  rejectionHandlers: [
-    new winston.transports.File({
-      filename: path.join(logsDir, 'rejections.log'),
-    }),
+  rejectionHandlers: isServerless ? [new winston.transports.Console()] : [
+    new winston.transports.File({ filename: path.join(logsDir, 'rejections.log') }),
   ],
 });
 
