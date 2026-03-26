@@ -2,164 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* S29 — UI EXCELLENCE FOUNDATION */
-@import './styles/tokens.css';
-@import './styles/mobile-first.css';
-@import './styles/buttons.css';
-
 @layer base {
   :root {
-    /* Map S29 tokens to app-wide variables for instant consistency */
-    --bg-primary: var(--s29-bg-page);
-    --bg-secondary: var(--s29-bg-card);
-    --text-primary: var(--s29-text-main);
-    --text-secondary: var(--s29-text-muted);
-    --accent-color: var(--s29-primary);
-    --accent-color-dark: var(--s29-primary-dark);
-    --success-color: var(--s29-success);
-    --error-color: var(--s29-error);
-    --warning-color: var(--s29-warning);
-    --border-color: var(--s29-border-light);
+    --bg-primary: var(--bg-page, #f8fafc);
+    --text-primary: var(--text-primary, #111827);
+    --accent-color: var(--brand-primary, #2563eb);
   }
 
   html {
-    font-family: var(--s29-font-sans);
-    color: var(--s29-text-main);
-    background-color: var(--s29-bg-page);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-page);
     -webkit-font-smoothing: antialiased;
   }
 
-  body {
-    @apply antialiased;
-    background-color: var(--s29-bg-page);
-    line-height: var(--s29-line-height-body);
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: var(--s29-font-sans);
-    /* PM: Boring, readable, no noise */
-    color: var(--s29-text-heading);
-    line-height: var(--s29-line-height-heading);
+  h1, h2, h3, h4 {
+    color: var(--text-primary);
     letter-spacing: -0.01em;
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply text-white font-bold py-3 px-6 rounded-[var(--s29-radius-main)] transition-all duration-200 active:scale-[0.98] shadow-sm flex items-center justify-center gap-2;
-    background-color: var(--s29-primary);
-  }
-
-  .btn-primary:hover {
-    background-color: var(--s29-primary-dark);
-  }
-
-  .btn-secondary {
-    @apply text-[var(--s29-text-main)] font-bold py-3 px-6 rounded-[var(--s29-radius-main)] transition-all duration-200 border border-[var(--s29-border-light)] hover:bg-slate-50 flex items-center justify-center gap-2;
-    background-color: #FFFFFF;
-  }
-
-  .btn-danger {
-    @apply text-white font-bold py-3 px-6 rounded-[var(--s29-radius-main)] transition-all duration-200 hover:opacity-90 active:scale-[0.98] flex items-center justify-center gap-2;
-    background-color: var(--s29-error);
-  }
-
-  .input-field {
-    @apply w-full px-4 py-3 border border-[var(--s29-border-light)] rounded-[var(--s29-radius-main)] outline-none transition-all font-medium;
-    color: var(--s29-text-main);
-  }
-
-  .input-field:focus {
-    border-color: var(--s29-primary);
-    box-shadow: 0 0 0 3px var(--s29-primary-light);
-  }
-
-  .card {
-    background-color: var(--s29-bg-card);
-    border-radius: var(--s29-radius-large);
-    border: 1px solid var(--s29-border-light);
-    @apply p-8 shadow-sm;
-  }
-
-  .form-section {
-    @apply space-y-4;
-  }
-
-  .form-group {
-    @apply space-y-2;
-  }
-
-  .form-label {
-    @apply block text-sm font-medium text-gray-700;
-  }
-
-  .form-error {
-    @apply text-sm text-red-600;
-  }
-
-  .form-help {
-    @apply text-sm text-gray-500;
-  }
-
-  /* Breathing Grid Animations */
-  @keyframes contentFadeIn {
-    0% {
-      transform: translateY(8px);
-      opacity: 0;
-    }
-
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  .section-card-content {
-    animation: contentFadeIn 200ms cubic-bezier(0, 0, 0.2, 1) 100ms both;
-  }
-
-  /* Mobile/Tablet Glance Bar */
-  .glance-bar-container {
-    @apply sticky top-16 z-30 bg-white border-b border-gray-200;
-    height: 56px;
-  }
-
-  .glance-bar {
-    @apply flex items-center space-x-2 px-4 overflow-x-auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .glance-bar>* {
-    scroll-snap-align: start;
-    flex-shrink: 0;
-  }
-
-  .expanded-content-mobile {
-    @apply p-4;
-  }
-
-  /* Reduced Motion Support */
-  @media (prefers-reduced-motion: reduce) {
-
-    .section-card,
-    .breathing-grid,
-    .section-card-content {
-      transition: none !important;
-      animation: none !important;
-    }
-  }
-
-  /* Remove number input spinner arrows */
+  /* Remove number input spinners */
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-
   input[type='number'] {
     -moz-appearance: textfield;
     appearance: textfield;
