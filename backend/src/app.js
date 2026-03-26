@@ -71,10 +71,16 @@ app.use(
         'http://127.0.0.1:3000',
         'http://127.0.0.1:3001',
         process.env.FRONTEND_URL || null,
+        process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
       ].filter(Boolean);
 
       if (process.env.NODE_ENV !== 'production' &&
           (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+        return callback(null, true);
+      }
+
+      // Allow Vercel preview deployments
+      if (origin.endsWith('.vercel.app')) {
         return callback(null, true);
       }
 

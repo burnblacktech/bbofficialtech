@@ -45,7 +45,8 @@ export const authService = {
   },
 
   googleLoginRedirect() {
-    const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+    const backendUrl = process.env.REACT_APP_API_URL
+      || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api');
     const redirectBase = window.location.origin;
     window.location.href = `${backendUrl}/auth/google?redirectBase=${encodeURIComponent(redirectBase)}`;
   },
