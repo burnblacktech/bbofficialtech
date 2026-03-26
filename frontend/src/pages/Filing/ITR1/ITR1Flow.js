@@ -66,11 +66,14 @@ export default function ITR1Flow() {
   const [bankErrors, setBankErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [collapsed, setCollapsed] = useState({ income: false, savings: false, summary: false });
+  const [selectedRegime, setSelectedRegime] = useState('new');
 
-  // Init from filing
+  // Init from filing — restore active sources, bank data, regime
   useEffect(() => {
     if (!filing) return;
     const p = filing.jsonPayload || {};
+
+    // Restore active income sources
     const s = new Set();
     if (p.income?.salary?.employers?.length) s.add('salary');
     if (p.income?.houseProperty?.type && p.income.houseProperty.type !== 'NONE' && p.income.houseProperty.type !== 'none') s.add('house_property');
@@ -80,11 +83,26 @@ export default function ITR1Flow() {
     if (p.income?.foreignIncome?.incomes?.length) s.add('foreign');
     if (s.size === 0) s.add('salary');
     setActive([...s]);
+
+    // Restore bank data from filing
+    const bd = p.bankDetails || {};
+    if (bd.bankName || bd.accountNumber) {
+      setBankData({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
+    }
+
+    // Restore regime from filing
+    setSelectedRegime(filing.selectedRegime || p.selectedRegime || 'new');
   }, [filing]);
 
   const saveMut = useMutation({
     mutationFn: async (updates) => {
-      await api.put(`/filings/${filingId}`, { jsonPayload: deepMerge(filing?.jsonPayload || {}, updates) });
+      const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, updates) };
+      // If regime changed, save it as top-level field too
+      if (updates.selectedRegime) {
+        body.selectedRegime = updates.selectedRegime;
+        setSelectedRegime(updates.selectedRegime);
+      }
+      await api.put(`/filings/${filingId}`, body);
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['filing', filingId] }); recompute(); },
     onError: (e) => toast.error(e.response?.data?.error || 'Save failed'),
@@ -111,9 +129,18 @@ export default function ITR1Flow() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    // Validate bank from filing payload (where BankEditor saves it)
     const p = filing?.jsonPayload || {};
-    const bv = validateBankAccount(p.bankDetails || p.bankAccount || {});
-    if (!bv.valid) { setSelected('bank'); toast.error('Complete bank details'); setIsSubmitting(false); return; }
+    const bd = p.bankDetails || {};
+    const bv = validateBankAccount(bd);
+    if (!bv.valid) {
+      setBankErrors(bv.errors);
+      setSelected('bank');
+      toast.error('Complete bank details before submitting');
+      setIsSubmitting(false);
+      return;
+    }
+    setBankErrors({});
     try {
       await api.post(`/filings/${filingId}/submit`);
       toast.success('Filed successfully!');
@@ -274,6 +301,7 @@ export default function ITR1Flow() {
           <Editor
             payload={payload}
             filing={filing}
+            selectedRegime={selectedRegime}
             onSave={(updates) => saveMut.mutateAsync(updates)}
             isSaving={saveMut.isPending}
             activeSources={active}

@@ -4,9 +4,9 @@ import '../../filing-flow.css';
 const n = (v) => Number(v) || 0;
 const rs = (v) => `Rs.${n(v).toLocaleString('en-IN')}`;
 
-export default function DeductionsEditor({ payload, onSave }) {
+export default function DeductionsEditor({ payload, onSave, selectedRegime: regimeProp }) {
   const d = payload?.deductions || {};
-  const [regime, setRegime] = useState(payload?.selectedRegime || 'old');
+  const [regime, setRegime] = useState(regimeProp || payload?.selectedRegime || 'new');
   const [form, setForm] = useState({
     ppf: d.ppf || '', elss: d.elss || '', lic: d.lic || '', otherC: d.otherC || '',
     nps: d.nps || '', healthSelf: d.healthSelf || '', healthParents: d.healthParents || '',
