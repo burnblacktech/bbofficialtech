@@ -29,6 +29,7 @@ import Card from '../../components/atoms/Card';
 import Badge from '../../components/atoms/Badge';
 import FilingEntrySelector from '../../components/organisms/FilingEntrySelector';
 import { tokens } from '../../styles/tokens';
+import P from '../../styles/palette';
 
 // Trust Indicators Component
 const TrustIndicators = memo(({ stats, isLoading }) => {
@@ -315,7 +316,7 @@ const LandingPage = () => {
             <div style={{
               width: '40px',
               height: '40px',
-              background: '#0f172a',
+              background: P.logoBackground,
               borderRadius: tokens.borderRadius.xl,
               display: 'flex',
               alignItems: 'center',

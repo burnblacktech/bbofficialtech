@@ -14,6 +14,7 @@ import Input from '../../components/atoms/Input';
 import FormField from '../../components/molecules/FormField';
 import Card from '../../components/atoms/Card';
 import { tokens } from '../../styles/tokens';
+import P from '../../styles/palette';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -143,7 +144,7 @@ const LoginPage = () => {
           <div style={{
             width: '36px',
             height: '36px',
-            background: '#0f172a',
+            background: P.logoBackground,
             borderRadius: tokens.borderRadius.lg,
             display: 'flex',
             alignItems: 'center',

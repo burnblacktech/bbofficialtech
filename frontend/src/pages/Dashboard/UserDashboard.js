@@ -8,15 +8,18 @@ import { useAuth } from '../../contexts/AuthContext';
 import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { itrService } from '../../services';
 import { getCurrentAY, ayToFY } from '../../utils/assessmentYear';
+import P from '../../styles/palette';
 
+/* eslint-disable camelcase */
 const STATE_MAP = {
-  'draft': { label: 'Draft', color: '#6b7280', Icon: Clock },
-  'ready_for_submission': { label: 'Ready', color: '#2563eb', Icon: CheckCircle },
-  'submitted_to_eri': { label: 'Submitted', color: '#2563eb', Icon: ArrowRight },
-  'eri_in_progress': { label: 'Processing', color: '#d97706', Icon: Clock },
-  'eri_success': { label: 'Accepted', color: '#16a34a', Icon: CheckCircle },
-  'eri_failed': { label: 'Failed', color: '#ef4444', Icon: AlertCircle },
+  draft: { label: 'Draft', color: P.textMuted, Icon: Clock },
+  ready_for_submission: { label: 'Ready', color: P.brand, Icon: CheckCircle },
+  submitted_to_eri: { label: 'Submitted', color: P.brand, Icon: ArrowRight },
+  eri_in_progress: { label: 'Processing', color: P.warning, Icon: Clock },
+  eri_success: { label: 'Accepted', color: P.success, Icon: CheckCircle },
+  eri_failed: { label: 'Failed', color: P.error, Icon: AlertCircle },
 };
+/* eslint-enable camelcase */
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -33,7 +36,6 @@ export default function UserDashboard() {
 
   return (
     <div style={S.page}>
-      {/* Top row: welcome + CTA */}
       <div style={S.topRow}>
         <div>
           <h1 style={S.h1}>Welcome, {name.split(' ')[0]}</h1>
@@ -44,24 +46,21 @@ export default function UserDashboard() {
         </button>
       </div>
 
-      {/* Status chips */}
       <div style={S.chips}>
         <Chip icon={<Shield size={14} />} label="PAN" ok={panOk} detail={pan ? `${pan.substring(0, 5)}****${pan.substring(9)}` : 'Not set'} onClick={() => navigate('/itr/pan-verification')} />
         <Chip icon={<CheckCircle size={14} />} label="Profile" ok={!!user?.fullName} detail={user?.email || ''} onClick={() => navigate('/profile')} />
       </div>
 
-      {/* Filings */}
       <div style={S.card}>
         <div style={S.cardHeader}>
           <span style={S.cardTitle}>Your Filings</span>
           <span style={S.cardCount}>{filings.length}</span>
         </div>
-
         {isLoading ? (
           <p style={S.empty}>Loading...</p>
         ) : filings.length === 0 ? (
           <div style={S.emptyBox}>
-            <FileText size={32} color="#d1d5db" />
+            <FileText size={32} color={P.borderMedium} />
             <p style={S.emptyText}>No filings yet. Click "File ITR" to start.</p>
           </div>
         ) : (
@@ -73,10 +72,10 @@ export default function UserDashboard() {
                   const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
                   navigate(`/filing/${f.id}/${route}`);
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                onMouseEnter={e => { e.currentTarget.style.background = P.bgCardHover; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
                   <div style={S.rowLeft}>
-                    <FileText size={16} color="#9ca3af" />
+                    <FileText size={16} color={P.textLight} />
                     <div>
                       <div style={S.rowTitle}>AY {f.assessmentYear}</div>
                       <div style={S.rowSub}>{f.taxpayerPan}</div>
@@ -86,7 +85,7 @@ export default function UserDashboard() {
                     <span style={{ ...S.badge, color: st.color, background: `${st.color}12` }}>
                       <st.Icon size={11} /> {st.label}
                     </span>
-                    <ArrowRight size={14} color="#d1d5db" />
+                    <ArrowRight size={14} color={P.borderMedium} />
                   </div>
                 </div>
               );
@@ -100,8 +99,8 @@ export default function UserDashboard() {
 
 function Chip({ icon, label, ok, detail, onClick }) {
   return (
-    <div onClick={onClick} style={{ ...S.chip, borderColor: ok ? '#bbf7d0' : '#e5e7eb' }}>
-      <span style={{ color: ok ? '#16a34a' : '#9ca3af' }}>{icon}</span>
+    <div onClick={onClick} style={{ ...S.chip, borderColor: ok ? P.successBorder : P.borderLight }}>
+      <span style={{ color: ok ? P.success : P.textLight }}>{icon}</span>
       <div>
         <div style={S.chipLabel}>{label}: {ok ? 'Done' : 'Pending'}</div>
         <div style={S.chipDetail}>{detail}</div>
@@ -113,24 +112,24 @@ function Chip({ icon, label, ok, detail, onClick }) {
 const S = {
   page: { display: 'flex', flexDirection: 'column', gap: 16, height: 'calc(100vh - 56px - 48px)', overflow: 'hidden' },
   topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  h1: { fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 },
-  sub: { fontSize: 13, color: '#6b7280', margin: 0 },
-  cta: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
+  h1: { fontSize: 20, fontWeight: 700, color: P.textPrimary, margin: 0 },
+  sub: { fontSize: 13, color: P.textMuted, margin: 0 },
+  cta: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: P.brand, color: P.textWhite, border: `1px solid ${P.brandHover}`, borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 2px rgba(37,99,235,0.3)' },
   chips: { display: 'flex', gap: 10, flexWrap: 'wrap' },
-  chip: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, cursor: 'pointer', transition: 'border-color 0.15s' },
-  chipLabel: { fontSize: 12, fontWeight: 600, color: '#111827' },
-  chipDetail: { fontSize: 11, color: '#9ca3af' },
-  card: { flex: 1, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
-  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e5e7eb' },
-  cardTitle: { fontSize: 14, fontWeight: 600, color: '#111827' },
-  cardCount: { fontSize: 12, color: '#9ca3af' },
+  chip: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: P.bgCard, border: `1px solid ${P.borderLight}`, borderRadius: 8, cursor: 'pointer', transition: 'border-color 0.15s' },
+  chipLabel: { fontSize: 12, fontWeight: 600, color: P.textPrimary },
+  chipDetail: { fontSize: 11, color: P.textLight },
+  card: { flex: 1, background: P.bgCard, border: `1px solid ${P.borderLight}`, borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 },
+  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: `1px solid ${P.borderLight}` },
+  cardTitle: { fontSize: 14, fontWeight: 600, color: P.textPrimary },
+  cardCount: { fontSize: 12, color: P.textLight },
   list: { flex: 1, overflowY: 'auto' },
-  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', transition: 'background 0.1s' },
+  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: `1px solid ${P.bgMuted}`, cursor: 'pointer', transition: 'background 0.1s' },
   rowLeft: { display: 'flex', alignItems: 'center', gap: 10 },
-  rowTitle: { fontSize: 13, fontWeight: 600, color: '#111827' },
-  rowSub: { fontSize: 11, color: '#9ca3af' },
+  rowTitle: { fontSize: 13, fontWeight: 600, color: P.textPrimary },
+  rowSub: { fontSize: 11, color: P.textLight },
   badge: { display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 12, fontSize: 11, fontWeight: 600 },
-  empty: { padding: 20, textAlign: 'center', color: '#9ca3af', fontSize: 13 },
+  empty: { padding: 20, textAlign: 'center', color: P.textLight, fontSize: 13 },
   emptyBox: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  emptyText: { fontSize: 13, color: '#9ca3af' },
+  emptyText: { fontSize: 13, color: P.textLight },
 };

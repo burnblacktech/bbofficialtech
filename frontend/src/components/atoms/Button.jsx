@@ -3,42 +3,43 @@
  */
 
 import React from 'react';
+import P from '../../styles/palette';
 
 const VARIANTS = {
   primary: {
-    background: '#2563eb',
-    color: '#fff',
-    border: '1px solid #1d4ed8',
+    background: P.brand,
+    color: P.textWhite,
+    border: `1px solid ${P.brandHover}`,
     shadow: '0 1px 2px rgba(37,99,235,0.3)',
-    hover: { background: '#1d4ed8', border: '1px solid #1e40af', shadow: '0 2px 4px rgba(37,99,235,0.35)' },
+    hover: { background: P.brandHover, border: `1px solid ${P.brandDark}`, shadow: '0 2px 4px rgba(37,99,235,0.35)' },
   },
   secondary: {
-    background: '#fff',
-    color: '#374151',
-    border: '1px solid #d1d5db',
+    background: P.bgCard,
+    color: P.textSecondary,
+    border: `1px solid ${P.borderMedium}`,
     shadow: '0 1px 2px rgba(0,0,0,0.05)',
-    hover: { background: '#f9fafb', border: '1px solid #9ca3af' },
+    hover: { background: P.bgCardHover, border: `1px solid ${P.textLight}` },
   },
   outline: {
     background: 'transparent',
-    color: '#2563eb',
-    border: '2px solid #2563eb',
+    color: P.brand,
+    border: `2px solid ${P.brand}`,
     shadow: 'none',
-    hover: { background: '#eff6ff' },
+    hover: { background: P.brandLight },
   },
   ghost: {
     background: 'transparent',
-    color: '#374151',
+    color: P.textSecondary,
     border: '1px solid transparent',
     shadow: 'none',
-    hover: { background: '#f3f4f6', border: '1px solid #e5e7eb' },
+    hover: { background: P.bgMuted, border: `1px solid ${P.borderLight}` },
   },
   danger: {
-    background: '#ef4444',
-    color: '#fff',
-    border: '1px solid #dc2626',
+    background: P.error,
+    color: P.textWhite,
+    border: `1px solid ${P.dangerHover}`,
     shadow: '0 1px 2px rgba(239,68,68,0.3)',
-    hover: { background: '#dc2626', border: '1px solid #b91c1c' },
+    hover: { background: P.dangerHover, border: `1px solid ${P.dangerDark}` },
   },
 };
 

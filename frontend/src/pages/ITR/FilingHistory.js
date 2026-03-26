@@ -6,16 +6,17 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { FileText, ArrowLeft, Clock, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { itrService } from '../../services';
+import P from '../../styles/palette';
 import '../Filing/filing-flow.css';
 
 /* eslint-disable camelcase */
 const STATES = {
-  draft: { label: 'Draft', color: '#6b7280', Icon: Clock },
-  ready_for_submission: { label: 'Ready', color: '#2563eb', Icon: CheckCircle },
-  submitted_to_eri: { label: 'Submitted', color: '#2563eb', Icon: ArrowRight },
-  eri_in_progress: { label: 'Processing', color: '#d97706', Icon: Clock },
-  eri_success: { label: 'Accepted', color: '#16a34a', Icon: CheckCircle },
-  eri_failed: { label: 'Failed', color: '#ef4444', Icon: AlertCircle },
+  draft: { label: 'Draft', color: P.textMuted, Icon: Clock },
+  ready_for_submission: { label: 'Ready', color: P.brand, Icon: CheckCircle },
+  submitted_to_eri: { label: 'Submitted', color: P.brand, Icon: ArrowRight },
+  eri_in_progress: { label: 'Processing', color: P.warning, Icon: Clock },
+  eri_success: { label: 'Accepted', color: P.success, Icon: CheckCircle },
+  eri_failed: { label: 'Failed', color: P.error, Icon: AlertCircle },
 };
 /* eslint-enable camelcase */
 
@@ -35,11 +36,11 @@ export default function FilingHistory() {
       <p className="step-desc">All your ITR filings</p>
 
       {isLoading ? (
-        <div className="step-card" style={{ textAlign: 'center', padding: 32, color: '#6b7280' }}>Loading...</div>
+        <div className="step-card" style={{ textAlign: 'center', padding: 32, color: P.textMuted }}>Loading...</div>
       ) : filings.length === 0 ? (
         <div className="step-card" style={{ textAlign: 'center', padding: 32 }}>
-          <FileText size={32} color="#d1d5db" style={{ margin: '0 auto 8px' }} />
-          <p style={{ color: '#6b7280', fontSize: 14 }}>No filings yet</p>
+          <FileText size={32} color={P.borderMedium} style={{ margin: '0 auto 8px' }} />
+          <p style={{ color: P.textMuted, fontSize: 14 }}>No filings yet</p>
           <button className="ff-btn ff-btn-primary" onClick={() => navigate('/filing/start')} style={{ marginTop: 12 }}>File ITR</button>
         </div>
       ) : (
@@ -51,7 +52,7 @@ export default function FilingHistory() {
               onClick={() => navigate(`/filing/${f.id}/${route}`)}>
               <div className="ff-item">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <FileText size={18} color="#9ca3af" />
+                  <FileText size={18} color={P.textLight} />
                   <div>
                     <div className="ff-item-name">AY {f.assessmentYear} · {f.itrType || 'ITR-1'}</div>
                     <div className="ff-item-detail">PAN: {f.taxpayerPan}</div>
@@ -61,7 +62,7 @@ export default function FilingHistory() {
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 10px', borderRadius: 12, fontSize: 12, fontWeight: 600, color: st.color, background: `${st.color}12` }}>
                     <st.Icon size={12} /> {st.label}
                   </span>
-                  <ArrowRight size={14} color="#d1d5db" />
+                  <ArrowRight size={14} color={P.borderMedium} />
                 </div>
               </div>
             </div>

@@ -6,16 +6,17 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, Clock, Loader2, ArrowLeft, Download } from 'lucide-react';
 import api from '../../services/api';
+import P from '../../styles/palette';
 import toast from 'react-hot-toast';
 import './filing-flow.css';
 
 /* eslint-disable camelcase */
 const STATUS_MAP = {
-  draft: { icon: Clock, color: '#6b7280', label: 'Draft', desc: 'Filing has not been submitted yet.' },
-  submitted_to_eri: { icon: Clock, color: '#2563eb', label: 'Submitted', desc: 'Your return has been submitted to the ERI gateway.' },
-  eri_in_progress: { icon: Clock, color: '#d97706', label: 'Processing', desc: 'The Income Tax Department is processing your return.' },
-  eri_success: { icon: CheckCircle, color: '#16a34a', label: 'Accepted', desc: 'Your return has been accepted by the Income Tax Department.' },
-  eri_failed: { icon: XCircle, color: '#ef4444', label: 'Failed', desc: 'Submission was rejected. Please review and resubmit.' },
+  draft: { icon: Clock, color: P.textMuted, label: 'Draft', desc: 'Filing has not been submitted yet.' },
+  submitted_to_eri: { icon: Clock, color: P.brand, label: 'Submitted', desc: 'Your return has been submitted to the ERI gateway.' },
+  eri_in_progress: { icon: Clock, color: P.warning, label: 'Processing', desc: 'The Income Tax Department is processing your return.' },
+  eri_success: { icon: CheckCircle, color: P.success, label: 'Accepted', desc: 'Your return has been accepted by the Income Tax Department.' },
+  eri_failed: { icon: XCircle, color: P.error, label: 'Failed', desc: 'Submission was rejected. Please review and resubmit.' },
 };
 /* eslint-enable camelcase */
 
@@ -37,7 +38,7 @@ export default function SubmissionStatus() {
     fetch();
   }, [filingId]);
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Loader2 size={28} className="animate-spin" color="#6b7280" /></div>;
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Loader2 size={28} className="animate-spin" color={P.textMuted} /></div>;
 
   const state = data?.lifecycleState || 'draft';
   const st = STATUS_MAP[state] || STATUS_MAP.draft;
@@ -50,7 +51,7 @@ export default function SubmissionStatus() {
       <div className="step-card" style={{ textAlign: 'center', padding: 32 }}>
         <Icon size={48} color={st.color} style={{ margin: '0 auto 12px' }} />
         <div style={{ fontSize: 20, fontWeight: 700, color: st.color, marginBottom: 4 }}>{st.label}</div>
-        <div style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>{st.desc}</div>
+        <div style={{ fontSize: 14, color: P.textMuted, marginBottom: 16 }}>{st.desc}</div>
 
         {data?.acknowledgmentNumber && (
           <div className="step-card success" style={{ textAlign: 'left', marginTop: 12 }}>
@@ -61,7 +62,7 @@ export default function SubmissionStatus() {
 
         {data?.errorMessage && (
           <div className="step-card error" style={{ textAlign: 'left', marginTop: 12 }}>
-            <div style={{ fontSize: 13, color: '#991b1b' }}>{data.errorMessage}</div>
+            <div style={{ fontSize: 13, color: P.errorDark }}>{data.errorMessage}</div>
           </div>
         )}
       </div>

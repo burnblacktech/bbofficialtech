@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { authService } from '../../services';
 import { Eye, EyeOff, CheckCircle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import P from '../../styles/palette';
 import '../Filing/filing-flow.css';
 
 export default function ResetPassword() {
@@ -40,13 +41,13 @@ export default function ResetPassword() {
   const PwIcon = show ? EyeOff : Eye;
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: 16 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: P.bgPage, padding: 16 }}>
       <div style={{ maxWidth: 400, width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <div style={{ width: 36, height: 36, background: '#0f172a', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ width: 36, height: 36, background: P.logoBackground, borderRadius: 10, overflow: 'hidden' }}>
             <img src="/bb-logo.svg" alt="BB" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 5 }} />
           </div>
-          <span style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>BurnBlack</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: P.textPrimary }}>BurnBlack</span>
         </div>
 
         <div className="step-card" style={{ padding: 24 }}>
