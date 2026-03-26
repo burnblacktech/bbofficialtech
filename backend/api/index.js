@@ -2,6 +2,9 @@
  * Vercel Serverless Entry Point
  */
 
+// Explicit requires so Vercel's bundler includes these dynamic deps
+require('pg');
+
 let app;
 let dbReady = false;
 
