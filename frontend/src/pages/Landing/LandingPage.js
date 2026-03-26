@@ -315,14 +315,15 @@ const LandingPage = () => {
             <div style={{
               width: '40px',
               height: '40px',
-              background: `linear-gradient(135deg, ${tokens.colors.accent[600]}, ${tokens.colors.accent[700]})`,
+              background: '#0f172a',
               borderRadius: tokens.borderRadius.xl,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: tokens.shadows.md,
+              overflow: 'hidden',
             }}>
-              <Shield size={24} color={tokens.colors.neutral.white} />
+              <img src="/bb-logo.svg" alt="BurnBlack" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px' }} />
             </div>
             <div>
               <h1 style={{
