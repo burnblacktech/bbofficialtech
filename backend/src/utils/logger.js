@@ -7,6 +7,7 @@ const path = require('path');
 
 // Create logs directory if it doesn't exist
 const logsDir = path.join(__dirname, '../../logs');
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 
 // Define log format
 const logFormat = winston.format.combine(
@@ -18,34 +19,33 @@ const logFormat = winston.format.combine(
   }),
 );
 
+// Build transports — skip file transports on serverless (read-only filesystem)
+const transports = [
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple(),
+    ),
+  }),
+];
+
+if (!isServerless) {
+  try {
+    const fs = require('fs');
+    if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
+    transports.push(
+      new winston.transports.File({ filename: path.join(logsDir, 'error.log'), level: 'error', maxsize: 5242880, maxFiles: 5 }),
+      new winston.transports.File({ filename: path.join(logsDir, 'combined.log'), maxsize: 5242880, maxFiles: 5 }),
+    );
+  } catch { /* skip file logging if dir creation fails */ }
+}
+
 // Create logger instance
 const enterpriseLogger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: logFormat,
   defaultMeta: { service: 'burnblack-itr' },
-  transports: [
-    // Console transport
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple(),
-      ),
-    }),
-
-    // File transports
-    new winston.transports.File({
-      filename: path.join(logsDir, 'error.log'),
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-
-    new winston.transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-  ],
+  transports,
 
   // Handle uncaught exceptions
   exceptionHandlers: [
