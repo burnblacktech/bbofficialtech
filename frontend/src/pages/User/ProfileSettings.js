@@ -51,18 +51,22 @@ function ProfileTab({ user, refreshProfile }) {
   }, [user]);
 
   const panVerified = !!(user?.panVerified);
+  const nameLocked = panVerified; // Name locked after PAN verification (matches ITD records)
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.put('/auth/profile', {
-        fullName: form.fullName,
+      const updates = {
         phone: form.phone,
         dateOfBirth: form.dateOfBirth || null,
         gender: form.gender || null,
-      });
-      // Save PAN separately if changed
-      if (form.panNumber && form.panNumber !== (user?.panNumber || user?.pan || '')) {
+      };
+      // Only allow name change if PAN not verified
+      if (!nameLocked) updates.fullName = form.fullName;
+
+      await api.put('/auth/profile', updates);
+      // Save PAN separately if changed and not already verified
+      if (!panVerified && form.panNumber && form.panNumber !== (user?.panNumber || user?.pan || '')) {
         await api.patch('/auth/pan', { panNumber: form.panNumber.toUpperCase() });
       }
       refreshProfile?.();
@@ -77,7 +81,10 @@ function ProfileTab({ user, refreshProfile }) {
       <div className="step-card editing">
         <div className="ff-section-title">Personal Information</div>
         <div className="ff-grid-2">
-          <F l="Full Name" v={form.fullName} c={v => setForm({ ...form, fullName: v })} t="text" />
+          <div className="ff-field">
+            <label className="ff-label">Full Name {nameLocked && <span style={{ fontSize: 11, color: '#16a34a' }}>(verified via PAN)</span>}</label>
+            <input className="ff-input" type="text" value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })} disabled={nameLocked} style={nameLocked ? { background: '#f3f4f6', color: '#6b7280' } : {}} />
+          </div>
           <F l="Email" v={user?.email || ''} c={() => {}} t="email" disabled />
         </div>
         <div className="ff-grid-2">

@@ -81,13 +81,15 @@ const userResponse = (user) => ({
   id: user.id,
   email: user.email,
   fullName: user.fullName || user.full_name,
+  phone: user.phone || null,
+  dateOfBirth: user.dateOfBirth || null,
+  gender: user.gender || null,
   role: user.role,
   status: user.status,
   authProvider: user.authProvider || user.auth_provider,
   hasPassword: !!user.passwordHash,
   panNumber: user.panNumber || null,
   panVerified: user.panVerified || false,
-  profile_picture: user.metadata?.profile_picture,
 });
 
 // =====================================================

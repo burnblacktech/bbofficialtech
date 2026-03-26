@@ -42,8 +42,8 @@ export const AuthProvider = ({ children }) => {
       profileFetchInProgress.current = true;
       const profileData = await authService.getProfile();
       setProfile(profileData);
-      if (profileData?.user) {
-        setUser(prevUser => ({ ...prevUser, ...profileData.user }));
+      const userData = profileData?.user || profileData; if (userData?.id || userData?.email) {
+        setUser(prevUser => ({ ...prevUser, ...userData }));
       }
       return profileData;
     } catch (error) {
@@ -73,8 +73,8 @@ export const AuthProvider = ({ children }) => {
               const profileData = await authService.getProfile();
               setProfile(profileData);
               // Update user state with profile data including dateOfBirth, metadata, etc.
-              if (profileData?.user) {
-                setUser(prevUser => ({ ...prevUser, ...profileData.user }));
+              const userData = profileData?.user || profileData; if (userData?.id || userData?.email) {
+                setUser(prevUser => ({ ...prevUser, ...userData }));
               }
             } catch (error) {
               console.warn('Failed to load user profile:', error);
@@ -111,8 +111,8 @@ export const AuthProvider = ({ children }) => {
             const profileData = await authService.getProfile();
             setProfile(profileData);
             // Update user state with profile data including dateOfBirth, metadata, etc.
-            if (profileData?.user) {
-              setUser(prevUser => ({ ...prevUser, ...profileData.user }));
+            const userData = profileData?.user || profileData; if (userData?.id || userData?.email) {
+              setUser(prevUser => ({ ...prevUser, ...userData }));
             }
           } catch (error) {
             console.warn('Failed to load user profile after login:', error);
@@ -153,8 +153,8 @@ export const AuthProvider = ({ children }) => {
             const profileData = await authService.getProfile();
             setProfile(profileData);
             // Update user state with profile data including dateOfBirth, metadata, etc.
-            if (profileData?.user) {
-              setUser(prevUser => ({ ...prevUser, ...profileData.user }));
+            const userData = profileData?.user || profileData; if (userData?.id || userData?.email) {
+              setUser(prevUser => ({ ...prevUser, ...userData }));
             }
           } catch (error) {
             console.warn('Failed to load user profile after OAuth login:', error);
