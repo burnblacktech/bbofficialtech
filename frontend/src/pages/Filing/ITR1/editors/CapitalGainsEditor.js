@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { validateCapitalGainsStep } from '../../../../utils/itrValidation';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -10,11 +11,14 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
   const [txns, setTxns] = useState(existing.length ? existing : []);
   const [editing, setEditing] = useState(existing.length === 0 ? 0 : null);
   const [form, setForm] = useState(existing.length === 0 ? { ...EMPTY } : null);
+  const [errors, setErrors] = useState({});
 
   const save = () => {
-    if (!form?.saleValue) return;
+    if (!form?.saleValue) { setErrors({ _form: 'Sale value is required' }); return; }
     const updated = [...txns];
     updated[editing] = { ...form, saleValue: n(form.saleValue), purchaseValue: n(form.purchaseValue), indexedCost: n(form.indexedCost), expenses: n(form.expenses), exemption: n(form.exemption) };
+    const v = validateCapitalGainsStep(updated);
+    setErrors(v.valid ? {} : v.errors);
     setTxns(updated); setForm(null); setEditing(null);
     onSave({ income: { capitalGains: { transactions: updated } } });
   };
@@ -55,7 +59,10 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
             <div className="ff-field">
               <label className="ff-label">Asset Type</label>
               <select className="ff-select" value={form.assetType} onChange={e => setForm({ ...form, assetType: e.target.value })}>
-                {['equity', 'mutualFund', 'property', 'other'].map(o => <option key={o} value={o}>{o}</option>)}
+                <option value="equity">Listed Equity / Shares</option>
+                <option value="mutualFund">Equity Mutual Funds</option>
+                <option value="property">Property / Real Estate</option>
+                <option value="other">Other (Debt MF, Gold, etc.)</option>
               </select>
             </div>
             <div className="ff-field">
@@ -82,14 +89,24 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
         </div>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(txns.length); }}><Plus size={15} /> Add Transaction</button>}
+      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(txns.length); setErrors({}); }}><Plus size={15} /> Add Transaction</button>}
+
+      {Object.keys(errors).length > 0 && (
+        <div className="ff-errors">
+          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
+          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
+        </div>
+      )}
 
       {txns.length > 0 && (
         <div className="step-card summary">
-          <div className="ff-row"><span className="ff-row-label">STCG Total</span><span className={`ff-row-value bold ${stcg < 0 ? 'red' : ''}`}>₹{stcg.toLocaleString('en-IN')}</span></div>
-          <div className="ff-row"><span className="ff-row-label">LTCG Total</span><span className={`ff-row-value bold ${ltcg < 0 ? 'red' : ''}`}>₹{ltcg.toLocaleString('en-IN')}</span></div>
+          <div className="ff-row"><span className="ff-row-label">STCG Total</span><span className={`ff-row-value bold ${stcg < 0 ? 'red' : ''}`}>{'\u20B9'}{stcg.toLocaleString('en-IN')}</span></div>
+          <div className="ff-row"><span className="ff-row-label">LTCG Total</span><span className={`ff-row-value bold ${ltcg < 0 ? 'red' : ''}`}>{'\u20B9'}{ltcg.toLocaleString('en-IN')}</span></div>
           <div className="ff-divider" />
-          <div className="ff-row"><span className="ff-row-label">Net Capital Gains</span><span className="ff-row-value bold">₹{(stcg + ltcg).toLocaleString('en-IN')}</span></div>
+          <div className="ff-row"><span className="ff-row-label">Net Capital Gains</span><span className="ff-row-value bold">{'\u20B9'}{(stcg + ltcg).toLocaleString('en-IN')}</span></div>
+          <div className="ff-hint" style={{ marginTop: 6 }}>
+            STCG on equity: 20% · LTCG on equity: 12.5% (first {'\u20B9'}1.25L exempt) · LTCG on property/other: 20%
+          </div>
         </div>
       )}
     </div>

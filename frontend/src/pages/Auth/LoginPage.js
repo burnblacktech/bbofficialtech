@@ -141,15 +141,16 @@ const LoginPage = () => {
           marginBottom: tokens.spacing.md,
         }}>
           <div style={{
-            width: '32px',
-            height: '32px',
-            background: `linear-gradient(135deg, ${tokens.colors.accent[600]}, ${tokens.colors.accent[700]})`,
+            width: '36px',
+            height: '36px',
+            background: '#0f172a',
             borderRadius: tokens.borderRadius.lg,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            overflow: 'hidden',
           }}>
-            <Shield size={18} color={tokens.colors.neutral.white} />
+            <img src="/bb-logo.svg" alt="BB" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '5px' }} />
           </div>
           <h1 style={{
             fontSize: tokens.typography.fontSize.lg,

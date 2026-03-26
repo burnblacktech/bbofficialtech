@@ -1,124 +1,158 @@
-/* ITR Filing HUD — Works inside main Layout content area */
+/* =====================================================
+   ITR Filing HUD — Polished layout inside main content
+   Uses theme.css variables for all colors
+   ===================================================== */
 
-.hud { display: flex; gap: 20px; min-height: calc(100vh - 56px - 48px); }
-.hud-loading { display: flex; align-items: center; justify-content: center; min-height: 400px; color: #6b7280; }
+.hud { display: flex; gap: 24px; min-height: calc(100vh - 56px - 48px); }
+.hud-loading { display: flex; align-items: center; justify-content: center; min-height: 400px; color: var(--text-muted); }
 
-/* ── Left Panel (inside content area, not full-screen) ── */
+/* ── Left Panel ── */
 .hud-panel {
-  width: 240px; min-width: 240px; background: #fff; border: 1px solid #e5e7eb;
-  border-radius: 12px; display: flex; flex-direction: column; padding: 16px 12px;
-  position: sticky; top: 70px; height: fit-content; max-height: calc(100vh - 90px);
-  overflow-y: auto;
+  width: 260px; min-width: 260px;
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); display: flex; flex-direction: column;
+  padding: 16px 14px; position: sticky; top: 70px;
+  height: fit-content; max-height: calc(100vh - 90px);
+  overflow-y: auto; box-shadow: var(--shadow-sm);
 }
 
-/* Filing info header */
-.hud-filing-info {
-  padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb;
+/* Back nav */
+.hud-back {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--text-muted); background: none;
+  border: none; cursor: pointer; padding: 2px 0; margin-bottom: 10px;
+  transition: color 0.15s; min-height: auto;
 }
-.hud-filing-name { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 2px; }
-.hud-filing-detail { font-size: 11px; color: #6b7280; line-height: 1.4; }
+.hud-back:hover { color: var(--brand-primary); }
 
+/* Filing info */
+.hud-filing-info { padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border-light); }
+.hud-filing-name { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+.hud-filing-detail { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+/* ITR badge */
 .hud-itr-badge {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px; background: #eff6ff; border: 1px solid #bfdbfe;
-  border-radius: 8px; margin-bottom: 12px;
+  padding: 8px 12px; background: var(--brand-primary-light); border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md); margin-bottom: 8px;
 }
-.hud-itr-type { font-size: 13px; font-weight: 700; color: #1d4ed8; }
+.hud-itr-type { font-size: 14px; font-weight: 700; color: #1d4ed8; }
 .hud-itr-name { font-size: 12px; color: #3b82f6; }
 
+/* Regime toggle */
+.hud-regime-toggle {
+  display: flex; gap: 2px; background: var(--bg-muted); border-radius: var(--radius-md);
+  padding: 3px; margin-bottom: 12px;
+}
+.hud-regime-btn {
+  flex: 1; padding: 7px 0; border: none; border-radius: 6px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  background: transparent; color: var(--text-muted); transition: all 0.15s;
+  min-height: auto;
+}
+.hud-regime-btn.active {
+  background: var(--bg-card); color: var(--brand-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.hud-regime-btn:hover:not(.active) { color: var(--text-secondary); }
+
+/* Collapsible section headers */
+.hud-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 8px; cursor: pointer; user-select: none; margin-bottom: 4px;
+  border-radius: var(--radius-sm); color: var(--text-light);
+}
+.hud-section-header:hover { background: var(--bg-card-hover); }
+.hud-section-header .hud-section-label { margin-bottom: 0; }
+
 .hud-section-label {
-  font-size: 10px; font-weight: 700; color: #9ca3af;
-  text-transform: uppercase; letter-spacing: 0.5px;
-  padding: 0 8px; margin-bottom: 6px;
+  font-size: 10px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: 0.6px; padding: 0; margin-bottom: 4px;
 }
 
 /* Source items */
 .hud-source {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 10px; border-radius: 8px; cursor: pointer;
-  margin-bottom: 2px; transition: all 0.15s;
+  padding: 8px 10px; border-radius: var(--radius-md); cursor: pointer;
+  margin-bottom: 2px; transition: all 0.12s;
 }
-.hud-source.active { color: #111827; }
-.hud-source.inactive { color: #d1d5db; }
-.hud-source.active:hover { background: #f1f5f9; }
-.hud-source.inactive:hover { background: #fafafa; color: #9ca3af; }
-.hud-source.selected { background: #eff6ff; }
+.hud-source.active { color: var(--text-primary); }
+.hud-source.inactive { color: var(--border-medium); }
+.hud-source.active:hover { background: var(--bg-card-hover); }
+.hud-source.inactive:hover { background: var(--bg-card-hover); color: var(--text-light); }
+.hud-source.selected { background: var(--brand-primary-light); }
 .hud-source-left { display: flex; align-items: center; gap: 8px; }
 .hud-source-label { font-size: 13px; font-weight: 500; }
 .hud-source-right { display: flex; align-items: center; gap: 6px; }
-.hud-source-total { font-size: 12px; font-weight: 600; color: #374151; }
-.hud-source-total.negative { color: #16a34a; }
+.hud-source-total { font-size: 11px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.hud-source-total.negative { color: var(--color-success); }
 .hud-source-toggle {
   width: 18px; height: 18px; border-radius: 50%; border: none;
-  background: #fee2e2; color: #ef4444; cursor: pointer;
+  background: #fee2e2; color: var(--color-error); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.15s;
+  opacity: 0; transition: opacity 0.15s; min-height: auto; min-width: auto;
 }
 .hud-source:hover .hud-source-toggle { opacity: 1; }
 
 /* Tax summary */
 .hud-tax-summary {
-  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
-  padding: 10px; margin-bottom: 12px;
+  background: var(--bg-muted); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 12px; margin-bottom: 8px;
+  transition: border-color 0.15s;
 }
-.hud-tax-row {
-  display: flex; justify-content: space-between; padding: 2px 0;
-  font-size: 12px; color: #6b7280;
-}
-.hud-tax-val { font-weight: 600; color: #111827; }
-.hud-tax-val.green { color: #16a34a; }
+.hud-tax-summary:hover { border-color: #93c5fd; }
+.hud-tax-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: var(--text-muted); }
+.hud-tax-val { font-weight: 600; color: var(--text-primary); font-size: 11px; font-variant-numeric: tabular-nums; }
+.hud-tax-val.green { color: var(--color-success); }
+.hud-tax-divider { border-top: 1px solid var(--border-light); margin: 5px 0; }
 .hud-tax-result {
   display: flex; justify-content: space-between;
-  margin-top: 6px; padding-top: 6px; border-top: 1px solid #e5e7eb;
+  margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--border-light);
   font-size: 13px; font-weight: 700;
 }
-.hud-tax-result.refund { color: #16a34a; }
+.hud-tax-result.refund { color: var(--color-success); }
 .hud-tax-result.payable { color: #dc2626; }
-.hud-tax-hint { font-size: 11px; color: #16a34a; margin-top: 4px; }
+.hud-tax-hint { font-size: 10px; color: var(--color-success); margin-top: 4px; }
+.hud-tax-expand { font-size: 10px; color: var(--brand-primary); margin-top: 5px; text-align: center; opacity: 0.7; }
 
 /* Actions */
-.hud-actions { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 12px; }
+.hud-actions { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid var(--border-light); }
 .hud-btn-primary {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px; background: #2563eb; color: #fff; border: none;
-  border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: background 0.15s;
+  padding: 10px; background: var(--brand-primary); color: #fff; border: none;
+  border-radius: var(--radius-md); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; min-height: auto;
 }
-.hud-btn-primary:hover { background: #1d4ed8; }
+.hud-btn-primary:hover { background: var(--brand-primary-hover); }
 .hud-btn-outline {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 8px; background: transparent; color: #374151;
-  border: 1px solid #d1d5db; border-radius: 8px;
-  font-size: 12px; font-weight: 500; cursor: pointer;
+  padding: 8px; background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border-medium); border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 500; cursor: pointer; min-height: auto;
 }
-.hud-btn-outline:hover { background: #f9fafb; }
+.hud-btn-outline:hover { background: var(--bg-card-hover); }
 
 /* ── Center Editor ── */
 .hud-editor {
-  flex: 1; max-width: 640px;
+  flex: 1; max-width: 680px; min-width: 0;
   animation: stepFadeIn 0.25s ease-out;
 }
-@keyframes stepFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
-/* ── Mobile: panel becomes top bar ── */
+/* ── Mobile ── */
 @media (max-width: 768px) {
   .hud { flex-direction: column; gap: 12px; }
   .hud-panel {
     width: 100%; min-width: 100%; height: auto;
     position: relative; flex-direction: row; flex-wrap: wrap;
-    padding: 12px; gap: 6px; border-radius: 10px;
-    overflow-x: auto; max-height: none;
+    padding: 10px; gap: 6px; border-radius: var(--radius-lg);
+    overflow-x: auto; max-height: none; box-shadow: none;
   }
+  .hud-back, .hud-filing-info, .hud-section-header, .hud-section-label,
+  .hud-tax-summary, .hud-tax-expand { display: none; }
   .hud-itr-badge { margin-bottom: 0; flex-shrink: 0; }
-  .hud-filing-info { display: none; }
-  .hud-section-label { display: none; }
+  .hud-regime-toggle { margin-bottom: 0; flex-shrink: 0; min-width: 140px; }
   .hud-source { padding: 6px 10px; white-space: nowrap; flex-shrink: 0; }
-  .hud-source-total { display: none; }
-  .hud-source-toggle { display: none; }
-  .hud-tax-summary { display: none; }
-  .hud-actions { flex-direction: row; margin-top: 0; padding-top: 0; }
-  .hud-editor { padding: 0; }
+  .hud-source-total, .hud-source-toggle { display: none; }
+  .hud-actions { flex-direction: row; margin-top: 0; padding-top: 0; border-top: none; }
+  .hud-editor { padding: 0; max-width: 100%; }
 }

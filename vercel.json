@@ -30,43 +30,15 @@
       "destination": "/backend/api/index.js"
     },
     {
-      "source": "/static/:path*",
-      "destination": "/frontend/static/:path*"
-    },
-    {
-      "source": "/manifest.json",
-      "destination": "/frontend/manifest.json"
-    },
-    {
-      "source": "/asset-manifest.json",
-      "destination": "/frontend/asset-manifest.json"
-    },
-    {
-      "source": "/bb-logo.svg",
-      "destination": "/frontend/bb-logo.svg"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/frontend/index.html"
+      "destination": "/frontend/$1"
     }
   ],
   "headers": [
     {
-      "source": "/static/:path*",
+      "source": "/static/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/frontend/static/:path*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ],
@@ -75,6 +47,6 @@
     "NODE_ENV": "production",
     "CI": "false"
   },
-  "installCommand": "cd backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps"
+  "installCommand": "cd backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps",
+  "framework": null
 }
-

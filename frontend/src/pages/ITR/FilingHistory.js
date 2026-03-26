@@ -1,331 +1,73 @@
 /**
- * Filing History Page
- * View all past ITR filings with status and details
+ * Filing History — View all past filings
  */
 
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  FileText,
-  Download,
-  Eye,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  TrendingUp,
-  Calendar,
-  IndianRupee,
-  Filter,
-} from 'lucide-react';
-import Button from '../../components/atoms/Button';
-import Card from '../../components/atoms/Card';
-import Badge from '../../components/atoms/Badge';
-import { tokens } from '../../styles/tokens';
+import { useQuery } from '@tanstack/react-query';
+import { FileText, ArrowLeft, Clock, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { itrService } from '../../services';
+import '../Filing/filing-flow.css';
 
-const FilingHistory = () => {
+/* eslint-disable camelcase */
+const STATES = {
+  draft: { label: 'Draft', color: '#6b7280', Icon: Clock },
+  ready_for_submission: { label: 'Ready', color: '#2563eb', Icon: CheckCircle },
+  submitted_to_eri: { label: 'Submitted', color: '#2563eb', Icon: ArrowRight },
+  eri_in_progress: { label: 'Processing', color: '#d97706', Icon: Clock },
+  eri_success: { label: 'Accepted', color: '#16a34a', Icon: CheckCircle },
+  eri_failed: { label: 'Failed', color: '#ef4444', Icon: AlertCircle },
+};
+/* eslint-enable camelcase */
+
+export default function FilingHistory() {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState('all');
-
-  const filings = [
-    {
-      id: 1,
-      year: '2023-24',
-      filedDate: '2024-07-15',
-      status: 'verified',
-      itrForm: 'ITR-1',
-      income: 850000,
-      refund: 12450,
-      refundStatus: 'received',
-      acknowledgementNo: 'ITR1234567890',
-    },
-    {
-      id: 2,
-      year: '2022-23',
-      filedDate: '2023-07-20',
-      status: 'verified',
-      itrForm: 'ITR-1',
-      income: 780000,
-      refund: 8200,
-      refundStatus: 'received',
-      acknowledgementNo: 'ITR0987654321',
-    },
-    {
-      id: 3,
-      year: '2021-22',
-      filedDate: '2022-07-25',
-      status: 'verified',
-      itrForm: 'ITR-1',
-      income: 720000,
-      refund: 5600,
-      refundStatus: 'received',
-      acknowledgementNo: 'ITR1122334455',
-    },
-    {
-      id: 4,
-      year: '2020-21',
-      filedDate: '2021-07-30',
-      status: 'verified',
-      itrForm: 'ITR-1',
-      income: 650000,
-      taxPaid: 2500,
-      refundStatus: 'tax-paid',
-      acknowledgementNo: 'ITR5544332211',
-    },
-  ];
-
-  const getStatusIcon = (status) => {
-    if (status === 'verified') return <CheckCircle size={16} />;
-    if (status === 'pending') return <Clock size={16} />;
-    return <AlertCircle size={16} />;
-  };
-
-  const getStatusColor = (status) => {
-    if (status === 'verified') return 'success';
-    if (status === 'pending') return 'warning';
-    return 'error';
-  };
-
-  const formatCurrency = (amount) => `₹${amount.toLocaleString('en-IN')}`;
+  const { data: filings = [], isLoading } = useQuery({
+    queryKey: ['filings'],
+    queryFn: async () => (await itrService.getUserITRs()).filings || [],
+  });
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: tokens.colors.neutral[50],
-      padding: tokens.spacing.lg,
-    }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: tokens.spacing.lg,
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: tokens.typography.fontSize['2xl'],
-              fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.neutral[900],
-              marginBottom: tokens.spacing.xs,
-            }}>
-              Filing History
-            </h1>
-            <p style={{
-              fontSize: tokens.typography.fontSize.sm,
-              color: tokens.colors.neutral[600],
-            }}>
-              View and manage your past ITR filings
-            </p>
-          </div>
-          <Button variant="outline" size="sm">
-            <Filter size={16} style={{ marginRight: tokens.spacing.xs }} />
-            Filter
-          </Button>
+    <div style={{ maxWidth: 640, margin: '0 auto' }}>
+      <button className="ff-btn ff-btn-ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
+        <ArrowLeft size={14} /> Dashboard
+      </button>
+      <h1 className="step-title">Filing History</h1>
+      <p className="step-desc">All your ITR filings</p>
+
+      {isLoading ? (
+        <div className="step-card" style={{ textAlign: 'center', padding: 32, color: '#6b7280' }}>Loading...</div>
+      ) : filings.length === 0 ? (
+        <div className="step-card" style={{ textAlign: 'center', padding: 32 }}>
+          <FileText size={32} color="#d1d5db" style={{ margin: '0 auto 8px' }} />
+          <p style={{ color: '#6b7280', fontSize: 14 }}>No filings yet</p>
+          <button className="ff-btn ff-btn-primary" onClick={() => navigate('/filing/start')} style={{ marginTop: 12 }}>File ITR</button>
         </div>
-
-        {/* Stats Summary */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: tokens.spacing.md,
-          marginBottom: tokens.spacing.xl,
-        }}>
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.sm }}>
-              <FileText size={20} color={tokens.colors.accent[600]} />
-              <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600] }}>
-                Total Filings
-              </span>
-            </div>
-            <p style={{
-              fontSize: tokens.typography.fontSize.xl,
-              fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.neutral[900],
-            }}>
-              {filings.length}
-            </p>
-          </Card>
-
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.sm }}>
-              <IndianRupee size={20} color={tokens.colors.success[600]} />
-              <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600] }}>
-                Total Refunds
-              </span>
-            </div>
-            <p style={{
-              fontSize: tokens.typography.fontSize.xl,
-              fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.success[700],
-            }}>
-              {formatCurrency(filings.reduce((sum, f) => sum + (f.refund || 0), 0))}
-            </p>
-          </Card>
-
-          <Card padding="md">
-            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.sm }}>
-              <CheckCircle size={20} color={tokens.colors.info[600]} />
-              <span style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600] }}>
-                Verified
-              </span>
-            </div>
-            <p style={{
-              fontSize: tokens.typography.fontSize.xl,
-              fontWeight: tokens.typography.fontWeight.bold,
-              color: tokens.colors.neutral[900],
-            }}>
-              {filings.filter(f => f.status === 'verified').length}
-            </p>
-          </Card>
-        </div>
-
-        {/* Filing Timeline */}
-        <div>
-          <h2 style={{
-            fontSize: tokens.typography.fontSize.lg,
-            fontWeight: tokens.typography.fontWeight.semibold,
-            color: tokens.colors.neutral[900],
-            marginBottom: tokens.spacing.md,
-          }}>
-            Filing Timeline
-          </h2>
-
-          <div style={{ position: 'relative' }}>
-            {/* Timeline Line */}
-            <div style={{
-              position: 'absolute',
-              left: '24px',
-              top: '24px',
-              bottom: '24px',
-              width: '2px',
-              backgroundColor: tokens.colors.neutral[200],
-            }} />
-
-            {/* Filing Cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacing.md }}>
-              {filings.map((filing, index) => (
-                <div key={filing.id} style={{ position: 'relative', paddingLeft: '60px' }}>
-                  {/* Timeline Dot */}
-                  <div style={{
-                    position: 'absolute',
-                    left: '16px',
-                    top: '24px',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: tokens.borderRadius.full,
-                    backgroundColor: filing.status === 'verified' ? tokens.colors.success[600] : tokens.colors.warning[600],
-                    border: `3px solid ${tokens.colors.neutral.white}`,
-                    boxShadow: tokens.shadows.sm,
-                  }} />
-
-                  <Card padding="lg">
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      marginBottom: tokens.spacing.md,
-                    }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.xs }}>
-                          <h3 style={{
-                            fontSize: tokens.typography.fontSize.lg,
-                            fontWeight: tokens.typography.fontWeight.bold,
-                            color: tokens.colors.neutral[900],
-                            margin: 0,
-                          }}>
-                            AY {filing.year}
-                          </h3>
-                          <Badge variant={getStatusColor(filing.status)}>
-                            {getStatusIcon(filing.status)}
-                            <span style={{ marginLeft: tokens.spacing.xs }}>
-                              {filing.status}
-                            </span>
-                          </Badge>
-                        </div>
-                        <div style={{
-                          fontSize: tokens.typography.fontSize.sm,
-                          color: tokens.colors.neutral[600],
-                          display: 'flex',
-                          gap: tokens.spacing.md,
-                        }}>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.xs }}>
-                            <Calendar size={14} />
-                            Filed on {filing.filedDate}
-                          </span>
-                          <span>•</span>
-                          <span>{filing.itrForm}</span>
-                          <span>•</span>
-                          <span>ACK: {filing.acknowledgementNo}</span>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: tokens.spacing.xs }}>
-                        <Button variant="outline" size="sm">
-                          <Eye size={14} />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Download size={14} />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                      gap: tokens.spacing.md,
-                      padding: tokens.spacing.md,
-                      backgroundColor: tokens.colors.neutral[50],
-                      borderRadius: tokens.borderRadius.md,
-                    }}>
-                      <div>
-                        <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
-                          Total Income
-                        </p>
-                        <p style={{ fontSize: tokens.typography.fontSize.base, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.neutral[900] }}>
-                          {formatCurrency(filing.income)}
-                        </p>
-                      </div>
-
-                      {filing.refund && (
-                        <div>
-                          <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
-                            Refund
-                          </p>
-                          <p style={{ fontSize: tokens.typography.fontSize.base, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.success[600] }}>
-                            {formatCurrency(filing.refund)}
-                          </p>
-                        </div>
-                      )}
-
-                      {filing.taxPaid && (
-                        <div>
-                          <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
-                            Tax Paid
-                          </p>
-                          <p style={{ fontSize: tokens.typography.fontSize.base, fontWeight: tokens.typography.fontWeight.semibold, color: tokens.colors.error[600] }}>
-                            {formatCurrency(filing.taxPaid)}
-                          </p>
-                        </div>
-                      )}
-
-                      <div>
-                        <p style={{ fontSize: tokens.typography.fontSize.xs, color: tokens.colors.neutral[600], marginBottom: tokens.spacing.xs }}>
-                          Refund Status
-                        </p>
-                        <Badge variant={filing.refundStatus === 'received' ? 'success' : 'neutral'} size="sm">
-                          {filing.refundStatus === 'received' ? 'Received' : 'Tax Paid'}
-                        </Badge>
-                      </div>
-                    </div>
-                  </Card>
+      ) : (
+        filings.map(f => {
+          const st = STATES[f.lifecycleState] || STATES.draft;
+          const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
+          return (
+            <div key={f.id} className="step-card" style={{ cursor: 'pointer', marginBottom: 8 }}
+              onClick={() => navigate(`/filing/${f.id}/${route}`)}>
+              <div className="ff-item">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <FileText size={18} color="#9ca3af" />
+                  <div>
+                    <div className="ff-item-name">AY {f.assessmentYear} · {f.itrType || 'ITR-1'}</div>
+                    <div className="ff-item-detail">PAN: {f.taxpayerPan}</div>
+                  </div>
                 </div>
-              ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 10px', borderRadius: 12, fontSize: 12, fontWeight: 600, color: st.color, background: `${st.color}12` }}>
+                    <st.Icon size={12} /> {st.label}
+                  </span>
+                  <ArrowRight size={14} color="#d1d5db" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          );
+        })
+      )}
     </div>
   );
-};
-
-export default FilingHistory;
+}

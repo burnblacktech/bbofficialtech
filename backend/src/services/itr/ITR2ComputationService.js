@@ -88,27 +88,31 @@ class ITR2ComputationService {
     }
 
     let stcgEquity = 0, stcgOther = 0;
-    let ltcgEquity = 0, ltcgProperty = 0, ltcgOther = 0;
+    let ltcgProperty = 0, ltcgOther = 0;
+    let ltcgEquity = 0;
     let totalExemptions = 0;
     const transactions = [];
 
     for (const txn of cgData.transactions) {
+      // Normalize gainType: accept 'STCG'/'LTCG' or 'short-term'/'long-term'
+      const gt = (txn.gainType || '').toUpperCase();
+      const isShortTerm = gt === 'STCG' || gt === 'SHORT-TERM';
       const sale = n(txn.saleValue);
-      const cost = txn.gainType === 'long-term' ? n(txn.indexedCost || txn.purchaseValue) : n(txn.purchaseValue);
+      const cost = isShortTerm ? n(txn.purchaseValue) : n(txn.indexedCost || txn.purchaseValue);
       const expenses = n(txn.expenses);
       const gain = sale - cost - expenses;
       const exemption = n(txn.exemption);
       const taxableGain = Math.max(0, gain - exemption);
       totalExemptions += exemption;
 
-      if (txn.gainType === 'short-term') {
-        if (txn.assetType === 'equity' || txn.assetType === 'equity_mf') {
+      if (isShortTerm) {
+        if (txn.assetType === 'equity' || txn.assetType === 'equity_mf' || txn.assetType === 'mutualFund') {
           stcgEquity += taxableGain;
         } else {
           stcgOther += taxableGain;
         }
       } else {
-        if (txn.assetType === 'equity' || txn.assetType === 'equity_mf') {
+        if (txn.assetType === 'equity' || txn.assetType === 'equity_mf' || txn.assetType === 'mutualFund') {
           ltcgEquity += taxableGain;
         } else if (txn.assetType === 'property') {
           ltcgProperty += taxableGain;
@@ -143,8 +147,9 @@ class ITR2ComputationService {
     for (const inc of foreignData.incomes) {
       const amount = n(inc.amountINR);
       totalIncome += amount;
-      if (inc.dtaaApplicable) totalTaxPaid += n(inc.taxPaidAbroad);
-      incomes.push({ country: inc.country, type: inc.incomeType, amountINR: amount, taxPaidAbroad: n(inc.taxPaidAbroad), dtaaApplicable: !!inc.dtaaApplicable });
+      const hasDtaa = !!(inc.dtaaApplicable || inc.dtaa);
+      if (hasDtaa) totalTaxPaid += n(inc.taxPaidAbroad);
+      incomes.push({ country: inc.country, type: inc.incomeType, amountINR: amount, taxPaidAbroad: n(inc.taxPaidAbroad), dtaaApplicable: hasDtaa });
     }
 
     return { incomes, totalIncome, totalTaxPaidAbroad: totalTaxPaid };
@@ -227,7 +232,7 @@ class ITR2ComputationService {
     const breakdown = [];
 
     for (const inc of foreignData.incomes) {
-      if (!inc.dtaaApplicable || !inc.taxPaidAbroad) continue;
+      if (!(inc.dtaaApplicable || inc.dtaa) || !inc.taxPaidAbroad) continue;
       const foreignIncome = n(inc.amountINR);
       const foreignTax = n(inc.taxPaidAbroad);
       const proportionateTax = totalIncome > 0 ? Math.round((foreignIncome / totalIncome) * taxOnIncome) : 0;
