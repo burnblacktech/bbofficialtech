@@ -71,15 +71,15 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
       {/* Agricultural Income — exempt but affects tax calculation */}
       <div className="step-card editing">
         <div className="ff-section-title">Agricultural Income (Exempt)</div>
-        <F l="Agricultural Income" v={form.agriculturalIncome} c={v => update('agriculturalIncome', v)} h="Exempt from tax, but used for slab rate calculation if > \u20B95,000" />
+        <F l="Agricultural Income" v={form.agriculturalIncome} c={v => update('agriculturalIncome', v)} h="Exempt from tax, but used for slab rate calculation if > ₹5,000" />
         {n(form.agriculturalIncome) > 5000 && (
           <div className="ff-hint" style={{ color: '#d97706', marginTop: 4 }}>
-            Since agricultural income exceeds \u20B95,000, it will be partially integrated with your other income for tax slab calculation (higher slabs may apply to non-agricultural income).
+            Since agricultural income exceeds {'₹'}5,000, it will be partially integrated with your other income for tax slab calculation (higher slabs may apply to non-agricultural income).
           </div>
         )}
         {n(form.agriculturalIncome) > 0 && n(form.agriculturalIncome) <= 5000 && (
           <div className="ff-hint" style={{ color: '#16a34a', marginTop: 4 }}>
-            Agricultural income up to \u20B95,000 has no impact on tax calculation.
+            Agricultural income up to {'₹'}5,000 has no impact on tax calculation.
           </div>
         )}
       </div>
