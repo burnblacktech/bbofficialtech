@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 import { itrService } from '../../services';
 import { getCurrentAY, ayToFY } from '../../utils/assessmentYear';
 import P from '../../styles/palette';
@@ -67,6 +67,8 @@ export default function UserDashboard() {
           <div style={S.list}>
             {filings.map(f => {
               const st = STATE_MAP[f.lifecycleState] || STATE_MAP.draft;
+              const isSubmitted = f.lifecycleState === 'eri_success' || f.lifecycleState === 'submitted_to_eri';
+              const isRevised = f.filingType === 'revised';
               return (
                 <div key={f.id} style={S.row} onClick={() => {
                   const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
@@ -77,11 +79,20 @@ export default function UserDashboard() {
                   <div style={S.rowLeft}>
                     <FileText size={16} color={P.textLight} />
                     <div>
-                      <div style={S.rowTitle}>AY {f.assessmentYear}</div>
-                      <div style={S.rowSub}>{f.taxpayerPan}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={S.rowTitle}>AY {f.assessmentYear}</span>
+                        {isRevised && <span style={{ fontSize: 9, fontWeight: 700, color: '#7c3aed', background: '#f5f3ff', padding: '1px 6px', borderRadius: 8 }}>REVISED</span>}
+                      </div>
+                      <div style={S.rowSub}>{f.taxpayerPan} · {f.itrType || 'ITR-1'}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {isSubmitted && !isRevised && (
+                      <button style={{ fontSize: 11, fontWeight: 600, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #e9d5ff', borderRadius: 6, padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, minHeight: 'auto' }}
+                        onClick={(e) => { e.stopPropagation(); navigate('/filing/start', { state: { revised: true, assessmentYear: f.assessmentYear, taxpayerPan: f.taxpayerPan } }); }}>
+                        <RefreshCw size={10} /> Revise
+                      </button>
+                    )}
                     <span style={{ ...S.badge, color: st.color, background: `${st.color}12` }}>
                       <st.Icon size={11} /> {st.label}
                     </span>

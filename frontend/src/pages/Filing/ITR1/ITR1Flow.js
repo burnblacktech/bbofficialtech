@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
   Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
-  ChevronDown, ArrowLeft, CreditCard, Trash2,
+  ChevronDown, ArrowLeft, CreditCard, Trash2, Upload, AlertTriangle,
 } from 'lucide-react';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -30,6 +30,9 @@ import BusinessEditor from './editors/BusinessEditor';
 import ForeignIncomeEditor from './editors/ForeignIncomeEditor';
 import DeductionsEditor from './editors/DeductionsEditor';
 import BankEditor from './editors/BankEditor';
+import ImportDocumentModal from './import/ImportDocumentModal';
+import ImportReviewScreen from './import/ImportReviewScreen';
+import ImportHistoryPanel from './import/ImportHistoryPanel';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
@@ -76,6 +79,8 @@ export default function ITR1Flow() {
   const [collapsed, setCollapsed] = useState({ income: false, savings: false, summary: false });
   const [selectedRegime, setSelectedRegime] = useState('new');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importReviewData, setImportReviewData] = useState(null);
 
   // Init from filing
   useEffect(() => {
@@ -212,24 +217,83 @@ export default function ITR1Flow() {
         <div className="hud-itr-badge" style={{ background: `${itrColor}12`, borderColor: `${itrColor}30` }}>
           <span className="hud-itr-type" style={{ color: itrColor }}>{itrType}</span>
           <span className="hud-itr-name" style={{ color: itrColor }}>{ITR_NAMES[itrType]}</span>
+          {filing?.filingType === 'revised' && (
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#7c3aed', background: '#f5f3ff', padding: '1px 6px', borderRadius: 8, marginLeft: 4 }}>REVISED</span>
+          )}
         </div>
+        {filing?.filingType === 'revised' && filing?.originalAckNumber && (
+          <div style={{ fontSize: 11, color: P.textMuted, padding: '0 12px 4px', marginTop: -4 }}>
+            Original Ack: {filing.originalAckNumber}
+          </div>
+        )}
 
-        {/* Regime Toggle */}
-        <div className="hud-regime-toggle">
-          {['old', 'new'].map(r => (
-            <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-              onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
-              {r === 'old' ? 'Old Regime' : 'New Regime'}
-            </button>
-          ))}
-        </div>
+        {/* ── The Big Number — Refund/Payable Result ── */}
+        {bestRegime && tds ? (
+          <div style={{
+            background: bestRegime.netPayable <= 0 ? '#f0fdf4' : '#fef2f2',
+            border: `1px solid ${bestRegime.netPayable <= 0 ? '#bbf7d0' : '#fecaca'}`,
+            borderRadius: 10, padding: '12px 14px', marginBottom: 10,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: bestRegime.netPayable <= 0 ? P.success : P.error }}>
+                  {fmt(Math.abs(bestRegime.netPayable))}
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: bestRegime.netPayable <= 0 ? P.success : P.error, marginTop: 1 }}>
+                  {bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 10, color: P.textLight }}>Tax {fmt(bestRegime.totalTax)}</div>
+                {n(tds.total) > 0 && <div style={{ fontSize: 10, color: P.success }}>TDS -{fmt(tds.total)}</div>}
+              </div>
+            </div>
+            {/* Regime toggle inside the result card */}
+            <div className="hud-regime-toggle" style={{ marginTop: 10, marginBottom: 0 }}>
+              {['old', 'new'].map(r => (
+                <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
+                  onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
+                  {r === 'old' ? 'Old Regime' : 'New Regime'}
+                </button>
+              ))}
+            </div>
+            {comp?.savings > 0 && comp.recommended !== selectedRegime && (
+              <div style={{ fontSize: 10, color: P.warning, marginTop: 6, textAlign: 'center' }}>
+                Tip: {comp.recommended === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}
+              </div>
+            )}
+            {income && (itrType === 'ITR-1' || itrType === 'ITR-4') && income.grossTotal > 5000000 && (
+              <div style={{ marginTop: 8, padding: '5px 8px', background: '#fff', borderRadius: 6, border: '1px solid #fecaca', display: 'flex', alignItems: 'flex-start', gap: 5 }}>
+                <AlertTriangle size={12} style={{ color: P.error, flexShrink: 0, marginTop: 1 }} />
+                <div style={{ fontSize: 10, lineHeight: 1.3, color: P.errorDark }}>
+                  Income {fmt(income.grossTotal)} exceeds ₹50L limit for {itrType}
+                  {itrType === 'ITR-1' && (
+                    <button style={{ display: 'block', marginTop: 2, fontSize: 10, fontWeight: 600, color: P.brand, background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 'auto' }}
+                      onClick={(e) => { e.stopPropagation(); toggleSource('capital_gains'); }}>
+                      Switch to ITR-2 →
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* No computation yet — show placeholder */
+          <div style={{ background: P.bgMuted, borderRadius: 10, padding: '14px', marginBottom: 10, textAlign: 'center' }}>
+            <div style={{ fontSize: 13, color: P.textMuted }}>Add income to see your tax</div>
+            <div className="hud-regime-toggle" style={{ marginTop: 8, marginBottom: 0 }}>
+              {['old', 'new'].map(r => (
+                <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
+                  onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
+                  {r === 'old' ? 'Old Regime' : 'New Regime'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
-        {/* Income Sources */}
-        <div className="hud-section-header" onClick={() => toggle('income')}>
-          <span className="hud-section-label">Income Sources</span>
-          {collapsed.income ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
-        </div>
-        {!collapsed.income && SOURCES.map(src => {
+        {/* ── Income Sources (no section header — self-evident) ── */}
+        {SOURCES.map(src => {
           const isActive = active.includes(src.id);
           const isSel = selected === src.id;
           const Icon = src.icon;
@@ -257,61 +321,49 @@ export default function ITR1Flow() {
           );
         })}
 
-        {/* Tax Savings */}
-        <div className="hud-section-header" onClick={() => toggle('savings')} style={{ marginTop: 8 }}>
-          <span className="hud-section-label">Tax Savings</span>
-          {collapsed.savings ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+        {/* ── Tax Savings ── */}
+        <div style={{ borderTop: `1px solid ${P.borderLight}`, margin: '6px 0 4px', padding: 0 }} />
+        <div className={`hud-source active ${selected === 'deductions' ? 'selected' : ''}`} onClick={() => setSelected('deductions')}>
+          <div className="hud-source-left">
+            <div className="hud-source-icon" style={{ background: '#f0fdf4' }}><CheckCircle size={14} style={{ color: P.success }} /></div>
+            <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Deductions</span>
+          </div>
+          {bestRegime && n(bestRegime.deductions) > 0 && <span className="hud-source-total" style={{ color: P.success }}>{fmt(bestRegime.deductions)}</span>}
         </div>
-        {!collapsed.savings && (
-          <>
-            <div className={`hud-source active ${selected === 'deductions' ? 'selected' : ''}`} onClick={() => setSelected('deductions')}>
-              <div className="hud-source-left">
-                <div className="hud-source-icon" style={{ background: '#f0fdf4' }}><CheckCircle size={14} style={{ color: P.success }} /></div>
-                <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Deductions</span>
-              </div>
-              <ChevronRight size={13} style={{ color: P.textLight }} />
-            </div>
-            <div className={`hud-source active ${selected === 'bank' ? 'selected' : ''}`} onClick={() => setSelected('bank')}>
-              <div className="hud-source-left">
-                <div className="hud-source-icon" style={{ background: P.bgMuted }}><CreditCard size={14} style={{ color: P.textMuted }} /></div>
-                <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Bank & Submit</span>
-              </div>
-              <ChevronRight size={13} style={{ color: P.textLight }} />
-            </div>
-          </>
-        )}
+        <div className={`hud-source active ${selected === 'bank' ? 'selected' : ''}`} onClick={() => setSelected('bank')}>
+          <div className="hud-source-left">
+            <div className="hud-source-icon" style={{ background: P.bgMuted }}><CreditCard size={14} style={{ color: P.textMuted }} /></div>
+            <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Bank & Submit</span>
+          </div>
+          <ChevronRight size={13} style={{ color: P.textLight }} />
+        </div>
 
-        {/* Tax Summary */}
-        <div className="hud-section-header" onClick={() => toggle('summary')} style={{ marginTop: 8 }}>
-          <span className="hud-section-label">Tax Summary</span>
-          {collapsed.summary ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
-        </div>
-        {!collapsed.summary && (
-          <div className="hud-tax-summary" onClick={() => setSelected(null)} style={{ cursor: 'pointer' }}>
-            {income && <div className="hud-tax-row"><span>Gross Income</span><span className="hud-tax-val">{fmt(income.grossTotal)}</span></div>}
-            {bestRegime && <div className="hud-tax-row"><span>Deductions</span><span className="hud-tax-val green">- {fmt(bestRegime.deductions)}</span></div>}
-            {bestRegime && <div className="hud-tax-row"><span>Taxable</span><span className="hud-tax-val">{fmt(bestRegime.taxableIncome)}</span></div>}
-            <div className="hud-tax-divider" />
-            {bestRegime && <div className="hud-tax-row"><span>Tax ({rec})</span><span className="hud-tax-val">{fmt(bestRegime.totalTax)}</span></div>}
-            {tds && n(tds.total) > 0 && <div className="hud-tax-row"><span>TDS Credit</span><span className="hud-tax-val green">{fmt(tds.total)}</span></div>}
-            {bestRegime && tds && (
-              <div className={`hud-tax-result ${bestRegime.netPayable <= 0 ? 'refund' : 'payable'}`}>
-                <span>{bestRegime.netPayable <= 0 ? 'Refund' : 'Payable'}</span>
-                <span>{fmt(Math.abs(bestRegime.netPayable))}</span>
-              </div>
-            )}
-            {comp?.savings > 0 && comp.recommended !== selectedRegime && (
-              <div className="hud-tax-hint" style={{ color: P.warning }}>Tip: {comp.recommended === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>
-            )}
-            <div className="hud-tax-expand">Click for full breakdown</div>
+        {/* ── Compact Tax Computation (always visible, reference data) ── */}
+        {bestRegime && (
+          <div style={{ margin: '8px 0', padding: '10px 12px', background: P.bgMuted, borderRadius: 8, fontSize: 11, color: P.textMuted }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Gross Income</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(income?.grossTotal)}</span></div>
+            {n(bestRegime.deductions) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Deductions</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(bestRegime.deductions)}</span></div>}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Taxable</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.taxableIncome)}</span></div>
+            <div style={{ borderTop: `1px solid ${P.borderLight}`, margin: '4px 0' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Tax ({rec})</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.totalTax)}</span></div>
+            {tds && n(tds.total) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>TDS/Advance</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(tds.total)}</span></div>}
+            <div style={{ textAlign: 'center', marginTop: 4 }}>
+              <button style={{ fontSize: 10, color: P.brand, background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 'auto' }} onClick={() => setSelected(null)}>
+                View full breakdown →
+              </button>
+            </div>
           </div>
         )}
 
         {/* Actions */}
         <div className="hud-actions">
+          <button className="hud-btn-outline" onClick={() => setShowImportModal(true)}><Upload size={14} /> Import</button>
           <button className="hud-btn-outline" onClick={downloadJSON}><Download size={14} /> JSON</button>
           <button className="hud-btn-primary" onClick={() => setSelected('bank')}><Send size={14} /> Submit</button>
         </div>
+
+        {/* Import History */}
+        <ImportHistoryPanel filingId={filingId} />
 
         {/* Delete */}
         {!showDeleteConfirm ? (
@@ -336,11 +388,57 @@ export default function ITR1Flow() {
             onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
             activeSources={active} computation={comp} onSubmit={handleSubmit}
             isSubmitting={isSubmitting} bankData={bankData} setBankData={setBankData}
-            bankErrors={bankErrors} onDownloadJSON={downloadJSON} />
+            bankErrors={bankErrors} onDownloadJSON={downloadJSON} itrType={itrType} />
         ) : (
           <SummaryView comp={comp} itrType={itrType} filing={filing} rec={rec} bestRegime={bestRegime} altRegime={altRegime} tds={tds} onEdit={setSelected} />
         )}
       </main>
+
+      {/* ── Import Modal Overlay ── */}
+      {showImportModal && !importReviewData && (
+        <ImportDocumentModal
+          filingId={filingId}
+          onClose={() => { setShowImportModal(false); setImportReviewData(null); }}
+          onImportParsed={(data) => setImportReviewData(data)}
+        />
+      )}
+      {showImportModal && importReviewData && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ width: '100%', maxWidth: 720, maxHeight: '90vh' }}>
+            <ImportReviewScreen
+              extractedData={importReviewData.extractedData}
+              conflicts={importReviewData.conflicts}
+              fieldMapping={importReviewData.fieldMapping}
+              documentMeta={importReviewData.documentMeta}
+              documentType={importReviewData.documentType}
+              fileName={importReviewData.fileName}
+              fileContent={importReviewData.fileContent}
+              filingId={filingId}
+              onClose={() => { setShowImportModal(false); setImportReviewData(null); }}
+              onConfirmed={() => {
+                qc.invalidateQueries({ queryKey: ['filing', filingId] });
+                qc.invalidateQueries({ queryKey: ['importHistory', filingId] });
+                setShowImportModal(false);
+                setImportReviewData(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
+      {/* ── Mobile Sticky Tax Bar ── */}
+      {bestRegime && tds && (
+        <div className="hud-mobile-tax-bar">
+          <div>
+            <div className="tax-label">{bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'}</div>
+            <div className={`tax-amount ${bestRegime.netPayable <= 0 ? 'refund' : 'payable'}`}>
+              {fmt(Math.abs(bestRegime.netPayable))}
+            </div>
+          </div>
+          <button className="hud-btn-primary" style={{ padding: '8px 16px', fontSize: 12 }} onClick={() => setSelected('bank')}>
+            <Send size={13} /> Submit
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
   return (
     <div>
       <h2 className="step-title">Salary Income</h2>
-      <p className="step-desc">Add employer details from Form 16</p>
+      <p className="step-desc">Add employer details from your Form 16. If you have multiple employers, add each one separately.</p>
 
       {employers.map((emp, i) => editing === i ? null : (
         <div key={i} className="step-card">
@@ -59,17 +59,17 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
       {form && (
         <div className="step-card editing">
           <div className="ff-grid-2">
-            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" />
-            <F l="TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" />
+            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="As shown on your Form 16" />
+            <F l="TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="Employer's TAN from Form 16 header" />
           </div>
           <div className="ff-grid-2">
-            <F l="Gross Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} />
-            <F l="TDS Deducted (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} />
+            <F l="Gross Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Form 16 Part B → Sr. No. 1 (Gross Salary)" />
+            <F l="TDS Deducted (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="Form 16 Part A → Total Tax Deducted" />
           </div>
           <div className="ff-grid-3">
-            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} />
-            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} />
-            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} />
+            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} h="Form 16 → Allowances" />
+            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Calculated or from Form 16" />
+            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="Usually ₹2,400/year (₹200/month)" />
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button className="ff-btn ff-btn-primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
@@ -98,4 +98,4 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
   );
 }
 
-const F = ({ l, v, c, t = 'number' }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" /></div>);
+const F = ({ l, v, c, t = 'number', h }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />{h && <div className="ff-hint">{h}</div>}</div>);

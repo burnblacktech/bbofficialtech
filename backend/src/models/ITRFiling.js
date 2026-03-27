@@ -101,6 +101,25 @@ const ITRFiling = sequelize.define('ITRFiling', {
     allowNull: true,
     field: 'itr_type',
   },
+  filingType: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'original',
+    field: 'filing_type',
+    comment: 'original or revised',
+  },
+  originalAckNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'original_ack_number',
+    comment: 'Acknowledgment number of the original filing being revised',
+  },
+  originalFilingId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    field: 'original_filing_id',
+    comment: 'FK to the original filing being revised',
+  },
 
   // =====================================================
   // FILING DATA (Canonical Aggregate)

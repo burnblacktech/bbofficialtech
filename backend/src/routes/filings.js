@@ -20,6 +20,7 @@ const FilingSafetyService = require('../services/itr/FilingSafetyService');
 const TaxRegimeAssembly = require('../services/tax/TaxRegimeAssembly');
 const TaxRegimeCalculatorV2 = require('../services/itr/TaxRegimeCalculatorV2');
 const ERIOutcomeService = require('../services/ERIOutcomeService');
+const FilingCompletenessService = require('../services/itr/FilingCompletenessService');
 const { AppError } = require('../middleware/errorHandler');
 
 /**
@@ -30,7 +31,7 @@ const { AppError } = require('../middleware/errorHandler');
  */
 router.post('/', authenticateToken, async (req, res, next) => {
     try {
-        const { assessmentYear, taxpayerPan, itrType } = req.body;
+        const { assessmentYear, taxpayerPan, itrType, filingType, originalAckNumber } = req.body;
 
         if (!assessmentYear || !taxpayerPan) {
             return res.status(400).json({
@@ -39,12 +40,52 @@ router.post('/', authenticateToken, async (req, res, next) => {
             });
         }
 
-        // Check if filing already exists for this user, year, and PAN
+        // Revised return flow
+        if (filingType === 'revised') {
+            if (!originalAckNumber?.trim()) {
+                return res.status(400).json({ success: false, error: 'Original acknowledgment number is required for revised returns' });
+            }
+
+            // Find the original filing
+            const originalFiling = await ITRFiling.findOne({
+                where: {
+                    createdBy: req.user.userId,
+                    assessmentYear,
+                    taxpayerPan,
+                    filingType: 'original',
+                    lifecycleState: ['eri_success', 'submitted_to_eri'],
+                },
+            });
+
+            if (!originalFiling) {
+                return res.status(400).json({ success: false, error: 'No submitted original filing found for this AY. You must submit an original return first.' });
+            }
+
+            // Create revised filing with data copied from original
+            const user = { userId: req.user.userId, caFirmId: req.user.caFirmId, role: req.user.role };
+            const result = await FilingService.createFiling(
+                { assessmentYear, taxpayerPan, itrType: itrType || originalFiling.itrType },
+                user
+            );
+
+            // Set revised fields
+            result.filingType = 'revised';
+            result.originalAckNumber = originalAckNumber.trim();
+            result.originalFilingId = originalFiling.id;
+            result.jsonPayload = { ...originalFiling.jsonPayload };
+            result.selectedRegime = originalFiling.selectedRegime;
+            await result.save();
+
+            return res.status(201).json({ success: true, data: result });
+        }
+
+        // Original filing flow — check for existing draft
         const existingFiling = await ITRFiling.findOne({
             where: {
                 createdBy: req.user.userId,
                 assessmentYear,
                 taxpayerPan,
+                filingType: 'original',
             },
         });
 
@@ -237,6 +278,21 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
 });
 
 /**
+ * Validate filing completeness (pre-submission check)
+ * GET /api/filings/:filingId/validate
+ */
+router.get('/:filingId/validate', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const result = FilingCompletenessService.validate(filing);
+        res.json({ success: true, data: result });
+    } catch (error) { next(error); }
+});
+
+/**
  * Submit filing to ERI (S20.A: Direct submission)
  * POST /api/filings/:filingId/submit
  */
@@ -260,6 +316,26 @@ router.post('/:filingId/submit', authenticateToken, async (req, res, next) => {
                 `Cannot submit filing in ${filing.lifecycleState} state`,
                 400,
                 'INVALID_STATE'
+            );
+        }
+
+        // S22: Filing completeness gate
+        const completeness = FilingCompletenessService.validate(filing);
+        if (!completeness.complete) {
+            throw new AppError(
+                `Filing incomplete: ${completeness.errors.map(e => e.message).join('; ')}`,
+                400,
+                'FILING_INCOMPLETE',
+                { errors: completeness.errors, warnings: completeness.warnings }
+            );
+        }
+
+        // Revised return: must have original ack number
+        if (filing.filingType === 'revised' && !filing.originalAckNumber?.trim()) {
+            throw new AppError(
+                'Original acknowledgment number is required for revised returns',
+                400,
+                'REVISED_MISSING_ACK'
             );
         }
 
@@ -801,5 +877,8 @@ router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => 
         res.json(ITR4Json.build(filing.jsonPayload || {}, filing.assessmentYear));
     } catch (error) { next(error); }
 });
+
+// Mount document import sub-routes
+router.use('/', require('./import'));
 
 module.exports = router;

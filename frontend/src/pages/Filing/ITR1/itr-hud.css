@@ -99,13 +99,11 @@
 }
 .hud-source:hover .hud-source-toggle { opacity: 1; }
 
-/* Tax summary */
+/* Tax summary — kept for reference, main result now in Big Number card */
 .hud-tax-summary {
   background: var(--bg-muted); border: 1px solid var(--border-light);
   border-radius: var(--radius-md); padding: 12px; margin-bottom: 8px;
-  transition: border-color 0.15s;
 }
-.hud-tax-summary:hover { border-color: #93c5fd; }
 .hud-tax-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: var(--text-muted); }
 .hud-tax-val { font-weight: 600; color: var(--text-primary); font-size: 11px; font-variant-numeric: tabular-nums; }
 .hud-tax-val.green { color: var(--color-success); }
@@ -145,19 +143,74 @@
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  .hud { flex-direction: column; gap: 12px; }
+  .hud { flex-direction: column; gap: 0; }
   .hud-panel {
     width: 100%; min-width: 100%; height: auto;
-    position: relative; flex-direction: row; flex-wrap: wrap;
-    padding: 10px; gap: 6px; border-radius: var(--radius-lg);
-    overflow-x: auto; max-height: none; box-shadow: none;
+    position: relative; flex-direction: column;
+    padding: 12px; gap: 8px; border-radius: 0;
+    overflow: visible; max-height: none; box-shadow: none;
+    border-left: none; border-right: none; border-top: none;
   }
-  .hud-back, .hud-filing-info, .hud-section-header, .hud-section-label,
-  .hud-tax-summary, .hud-tax-expand { display: none; }
-  .hud-itr-badge { margin-bottom: 0; flex-shrink: 0; }
-  .hud-regime-toggle { margin-bottom: 0; flex-shrink: 0; min-width: 140px; }
-  .hud-source { padding: 6px 10px; white-space: nowrap; flex-shrink: 0; }
-  .hud-source-total, .hud-source-toggle { display: none; }
-  .hud-actions { flex-direction: row; margin-top: 0; padding-top: 0; border-top: none; }
-  .hud-editor { padding: 0; max-width: 100%; }
+  .hud-back { display: none; }
+  .hud-filing-info { display: none; }
+
+  /* Compact header row: badge + regime + actions */
+  .hud-itr-badge { margin-bottom: 0; }
+  .hud-regime-toggle { margin-bottom: 0; }
+
+  /* Income sources as horizontal scrollable chips */
+  .hud-section-header { display: none; }
+  .hud-section-label { display: none; }
+  .hud-source {
+    padding: 6px 12px; white-space: nowrap; flex-shrink: 0;
+    border: 1px solid var(--border-light); border-radius: 20px;
+    margin-bottom: 0;
+  }
+  .hud-source.active { border-color: var(--brand-primary); background: var(--brand-primary-light); }
+  .hud-source.inactive { border-color: var(--border-light); }
+  .hud-source-total { display: none; }
+  .hud-source-toggle { display: none; }
+  .hud-source-icon { width: 20px; height: 20px; border-radius: 5px; }
+  .hud-source-label { font-size: 12px; }
+
+  /* Horizontal scroll container for sources */
+  .hud-sources-scroll {
+    display: flex; gap: 6px; overflow-x: auto; padding: 4px 0;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .hud-sources-scroll::-webkit-scrollbar { display: none; }
+
+  /* Tax summary as compact bottom bar */
+  .hud-tax-summary { display: none; }
+  .hud-tax-expand { display: none; }
+
+  /* Actions row */
+  .hud-actions {
+    flex-direction: row; margin-top: 0; padding-top: 8px;
+    border-top: 1px solid var(--border-light); gap: 8px;
+  }
+  .hud-btn-primary, .hud-btn-outline { flex: 1; padding: 10px 8px; font-size: 12px; }
+
+  /* Editor full width */
+  .hud-editor { padding: 12px; max-width: 100%; }
+}
+
+/* ── Mobile sticky tax bar ── */
+.hud-mobile-tax-bar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .hud-mobile-tax-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: var(--bg-card); border-top: 1px solid var(--border-light);
+    padding: 10px 16px; box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  }
+  .hud-mobile-tax-bar .tax-label { font-size: 12px; color: var(--text-muted); }
+  .hud-mobile-tax-bar .tax-amount { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .hud-mobile-tax-bar .tax-amount.refund { color: var(--color-success); }
+  .hud-mobile-tax-bar .tax-amount.payable { color: var(--color-error); }
+
+  /* Add bottom padding to editor so content isn't hidden behind sticky bar */
+  .hud-editor { padding-bottom: 72px; }
 }

@@ -5,7 +5,7 @@
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { font-size: 16px; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { font-size: 16px; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -49,6 +49,18 @@ input:focus, select:focus, textarea:focus { outline: none; }
 
 /* Screen reader only */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+/* Safe area for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* Mobile touch targets */
+@media (max-width: 640px) {
+  button, [role="button"], a { min-height: 44px; min-width: 44px; }
+  button.compact, .compact { min-height: auto; min-width: auto; }
+  input, select, textarea { font-size: 16px; /* prevents iOS auto-zoom */ }
+}
 
 /* Animate spin utility (used by Loader2 icon) */
 .animate-spin { animation: _spin 1s linear infinite; }
