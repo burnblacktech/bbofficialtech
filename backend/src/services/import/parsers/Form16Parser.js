@@ -1,13 +1,27 @@
 /**
  * Form 16 PDF Parser
  * Extracts salary, TDS, employer, and deduction data from Form 16 PDFs.
- * Uses pdf-parse (v1.x) for text extraction + regex for field matching.
+ * Uses pdfjs-dist for text extraction + regex for field matching.
  * Only supports digitally-generated PDFs (not scanned images).
  */
 
-const pdfParse = require('pdf-parse');
 const { AppError } = require('../../../middleware/errorHandler');
 const ErrorCodes = require('../../../constants/ErrorCodes');
+
+/**
+ * Extract text from a PDF buffer using pdfjs-dist (legacy Node.js build)
+ */
+async function extractTextFromPDF(pdfBuffer) {
+  const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
+  const doc = await pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer) }).promise;
+  const pages = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    pages.push(content.items.map(item => item.str).join(' '));
+  }
+  return pages.join('\n');
+}
 
 const n = (v) => { const x = parseFloat(String(v).replace(/,/g, '').replace(/[^\d.-]/g, '')); return isNaN(x) ? 0 : Math.round(x); };
 
@@ -26,10 +40,10 @@ class Form16Parser {
     let text;
     try {
       const result = await Promise.race([
-        pdfParse(pdfBuffer),
+        extractTextFromPDF(pdfBuffer),
         new Promise((_, reject) => setTimeout(() => reject(new Error('PDF parsing timeout')), 30000)),
       ]);
-      text = result.text;
+      text = result;
     } catch (err) {
       if (err.message?.includes('password')) {
         throw new AppError('This PDF is password-protected. Please remove the password and try again.', 422, ErrorCodes.IMPORT_PARSE_FAILED);
