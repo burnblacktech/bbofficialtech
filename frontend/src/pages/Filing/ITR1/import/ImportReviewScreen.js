@@ -589,7 +589,7 @@ const styles = {
     marginBottom: 12,
   },
   conflictCard: {
-    border: `1px solid #fde68a`,
+    border: '1px solid #fde68a',
     borderRadius: 10,
     padding: 14,
     marginBottom: 10,
@@ -746,7 +746,7 @@ const styles = {
     cursor: 'pointer',
     padding: '2px 6px',
     borderRadius: 6,
-    border: `1px solid transparent`,
+    border: '1px solid transparent',
     transition: 'border-color 0.15s, background 0.15s',
     whiteSpace: 'nowrap',
   },
