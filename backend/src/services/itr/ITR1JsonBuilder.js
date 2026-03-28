@@ -33,33 +33,41 @@ class ITR1JsonBuilder {
       },
 
       PersonalInfo: {
-        AssesseeName: {
-          FirstName: pi.firstName || '',
-          MiddleName: pi.middleName || '',
-          SurNameOrOrgName: pi.lastName || '',
-        },
-        PAN: pi.pan || '',
-        DOB: pi.dob || '',
-        Gender: pi.gender || '',
-        AadhaarCardNo: pi.aadhaar || '',
+        AssesseeName: { FirstName: pi.firstName, MiddleName: pi.middleName, SurNameOrOrgName: pi.lastName },
+        PAN: pi.pan,
+        DOB: pi.dob,
+        Gender: pi.gender,
+        AadhaarCardNo: pi.aadhaar,
         Address: {
-          ResidenceNo: pi.address?.line1 || '',
-          ResidenceName: pi.address?.line2 || '',
-          CityOrTownOrDistrict: pi.address?.city || '',
-          StateCode: pi.address?.state || '',
-          PinCode: pi.address?.pincode || '',
-          CountryCode: '91',
+          ResidenceNo: pi.address?.flatDoorBuilding,
+          ResidenceName: pi.address?.premisesName,
+          RoadOrStreet: pi.address?.roadStreet,
+          AreaOrLocality: pi.address?.areaLocality,
+          CityOrTownOrDistrict: pi.address?.city,
+          StateCode: pi.address?.stateCode,
+          PinCode: pi.address?.pincode,
+          CountryCode: pi.residentialStatus === 'RES' ? '91' : '91',
         },
-        MobileNo: pi.phone || '',
-        EmailAddress: pi.email || '',
-        EmployerCategory: pi.employerCategory || 'OTH',
-        FilingStatus: pi.filingType || 'O', // O = Original, R = Revised
+        MobileNo: pi.phone,
+        EmailAddress: pi.email,
+        EmployerCategory: pi.employerCategory,
       },
 
       FilingStatus: {
-        ReturnFileSec: regime === 'new' ? 115 : 11, // 115 = new regime, 11 = old regime
+        FilingStatus: pi.filingStatus || 'O',
+        ReturnFileSec: regime === 'new' ? 115 : 11,
         OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
+        ...(pi.filingStatus === 'R' ? { OriginalAckNo: pi.originalAckNumber, OriginalFilingDate: pi.originalFilingDate } : {}),
+        ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason } : {}),
       },
+
+      // Schedule CG for Section 112A (LTCG ≤ ₹1.25L) — ITR-1 only
+      ScheduleCGFor112A: pi.ltcg112A?.amount ? {
+        LTCGAmount: Number(pi.ltcg112A.amount),
+        ExemptAmount: Math.min(Number(pi.ltcg112A.amount), 125000),
+        TaxableAmount: Math.max(0, Number(pi.ltcg112A.amount) - 125000),
+        TaxRate: 12.5,
+      } : undefined,
 
       IncomeDeductions: {
         GrossSalary: salary.grossSalary,

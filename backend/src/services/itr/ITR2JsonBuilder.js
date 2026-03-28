@@ -25,23 +25,32 @@ class ITR2JsonBuilder {
       },
 
       PersonalInfo: {
-        AssesseeName: { FirstName: pi.firstName || '', MiddleName: pi.middleName || '', SurNameOrOrgName: pi.lastName || '' },
-        PAN: pi.pan || '',
-        DOB: pi.dob || '',
-        Gender: pi.gender || '',
-        AadhaarCardNo: pi.aadhaar || '',
+        AssesseeName: { FirstName: pi.firstName, MiddleName: pi.middleName, SurNameOrOrgName: pi.lastName },
+        PAN: pi.pan,
+        DOB: pi.dob,
+        Gender: pi.gender,
+        AadhaarCardNo: pi.aadhaar,
         Address: {
-          ResidenceNo: pi.address?.line1 || '', ResidenceName: pi.address?.line2 || '',
-          CityOrTownOrDistrict: pi.address?.city || '', StateCode: pi.address?.state || '',
-          PinCode: pi.address?.pincode || '', CountryCode: '91',
+          ResidenceNo: pi.address?.flatDoorBuilding,
+          ResidenceName: pi.address?.premisesName,
+          RoadOrStreet: pi.address?.roadStreet,
+          AreaOrLocality: pi.address?.areaLocality,
+          CityOrTownOrDistrict: pi.address?.city,
+          StateCode: pi.address?.stateCode,
+          PinCode: pi.address?.pincode,
+          CountryCode: pi.residentialStatus === 'RES' ? '91' : '91',
         },
-        MobileNo: pi.phone || '',
-        EmailAddress: pi.email || '',
+        MobileNo: pi.phone,
+        EmailAddress: pi.email,
+        EmployerCategory: pi.employerCategory,
       },
 
       FilingStatus: {
+        FilingStatus: pi.filingStatus || 'O',
         ReturnFileSec: regime === 'new' ? 115 : 11,
         OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
+        ...(pi.filingStatus === 'R' ? { OriginalAckNo: pi.originalAckNumber, OriginalFilingDate: pi.originalFilingDate } : {}),
+        ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason } : {}),
       },
 
       // Schedule S — Salary

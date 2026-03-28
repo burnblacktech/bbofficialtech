@@ -165,3 +165,208 @@ export function validateITR1Limit(grossTotal) {
   }
   return { valid: true, errors: {} };
 }
+
+// ── Personal Info ──
+const NAME_REGEX = /^[A-Za-z\s.]+$/;
+const AADHAAR_REGEX = /^\d{12}$/;
+const PHONE_REGEX = /^[6-9]\d{9}$/;
+const PINCODE_REGEX = /^[1-9]\d{5}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const VALID_RESIDENTIAL_STATUSES = ['RES', 'NRI', 'RNOR'];
+const VALID_EMPLOYER_CATEGORIES = ['GOV', 'PSU', 'PE', 'OTH', 'NA'];
+const VALID_FILING_STATUSES = ['O', 'R', 'B', 'U'];
+
+export function validatePersonalInfo(data) {
+  const errors = {};
+  if (!data) {
+    errors._form = 'Personal info is required';
+    return { valid: false, errors };
+  }
+
+  // firstName
+  if (!data.firstName?.trim()) {
+    errors.firstName = 'First name is required';
+  } else if (!NAME_REGEX.test(data.firstName)) {
+    errors.firstName = 'First name must contain only letters, spaces, and dots';
+  } else if (data.firstName.length > 50) {
+    errors.firstName = 'First name must be 50 characters or less';
+  }
+
+  // lastName
+  if (!data.lastName?.trim()) {
+    errors.lastName = 'Last name is required';
+  } else if (!NAME_REGEX.test(data.lastName)) {
+    errors.lastName = 'Last name must contain only letters, spaces, and dots';
+  } else if (data.lastName.length > 50) {
+    errors.lastName = 'Last name must be 50 characters or less';
+  }
+
+  // PAN
+  if (!data.pan?.trim()) {
+    errors.pan = 'PAN is required';
+  } else if (!PAN_REGEX.test(data.pan)) {
+    errors.pan = 'Invalid PAN format (e.g., ABCDE1234F)';
+  }
+
+  // DOB
+  if (!data.dob?.trim()) {
+    errors.dob = 'Date of birth is required';
+  } else {
+    const dobDate = new Date(data.dob);
+    const now = new Date();
+    if (isNaN(dobDate.getTime())) {
+      errors.dob = 'Invalid date format';
+    } else if (dobDate >= now) {
+      errors.dob = 'Date of birth must be in the past';
+    } else {
+      const ageDiff = now.getFullYear() - dobDate.getFullYear();
+      const age = now < new Date(now.getFullYear(), dobDate.getMonth(), dobDate.getDate()) ? ageDiff - 1 : ageDiff;
+      if (age > 150) {
+        errors.dob = 'Age cannot exceed 150 years';
+      }
+    }
+  }
+
+  // Aadhaar
+  if (!data.aadhaar?.trim()) {
+    errors.aadhaar = 'Aadhaar number is required';
+  } else if (!AADHAAR_REGEX.test(data.aadhaar)) {
+    errors.aadhaar = 'Aadhaar must be exactly 12 digits';
+  }
+
+  // Email
+  if (!data.email?.trim()) {
+    errors.email = 'Email is required';
+  } else if (!EMAIL_REGEX.test(data.email)) {
+    errors.email = 'Invalid email format';
+  }
+
+  // Phone
+  if (!data.phone?.trim()) {
+    errors.phone = 'Phone number is required';
+  } else if (!PHONE_REGEX.test(data.phone)) {
+    errors.phone = 'Phone must be 10 digits starting with 6-9';
+  }
+
+  // Residential Status
+  if (!data.residentialStatus?.trim()) {
+    errors.residentialStatus = 'Residential status is required';
+  } else if (!VALID_RESIDENTIAL_STATUSES.includes(data.residentialStatus)) {
+    errors.residentialStatus = 'Invalid residential status';
+  }
+
+  // Employer Category
+  if (!data.employerCategory?.trim()) {
+    errors.employerCategory = 'Employer category is required';
+  } else if (!VALID_EMPLOYER_CATEGORIES.includes(data.employerCategory)) {
+    errors.employerCategory = 'Invalid employer category';
+  }
+
+  // Filing Status
+  if (!data.filingStatus?.trim()) {
+    errors.filingStatus = 'Filing status is required';
+  } else if (!VALID_FILING_STATUSES.includes(data.filingStatus)) {
+    errors.filingStatus = 'Invalid filing status';
+  }
+
+  // Conditional: revised return requires originalAckNumber
+  if (data.filingStatus === 'R' && !data.originalAckNumber?.trim()) {
+    errors.originalAckNumber = 'Original acknowledgment number is required for revised returns';
+  }
+
+  // Conditional: updated return requires updatedReturnReason
+  if (data.filingStatus === 'U' && !data.updatedReturnReason?.trim()) {
+    errors.updatedReturnReason = 'Reason is required for updated returns';
+  }
+
+  // Address
+  const addr = data.address || {};
+  if (!addr.flatDoorBuilding?.trim()) {
+    errors['address.flatDoorBuilding'] = 'Flat/Door/Building is required';
+  }
+  if (!addr.city?.trim()) {
+    errors['address.city'] = 'City is required';
+  }
+  if (!addr.stateCode?.trim()) {
+    errors['address.stateCode'] = 'State is required';
+  }
+  if (!addr.pincode?.trim()) {
+    errors['address.pincode'] = 'Pincode is required';
+  } else if (!PINCODE_REGEX.test(addr.pincode)) {
+    errors['address.pincode'] = 'Pincode must be 6 digits starting with 1-9';
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors };
+}
+
+// ── TDS2 Entry ──
+export function validateTDS2Entry(entry) {
+  const errors = {};
+  if (!entry) {
+    errors._form = 'TDS entry is required';
+    return { valid: false, errors };
+  }
+
+  if (!entry.deductorTan?.trim()) {
+    errors.deductorTan = 'Deductor TAN is required';
+  } else if (!TAN_REGEX.test(entry.deductorTan)) {
+    errors.deductorTan = 'Invalid TAN format (e.g., ABCD12345E)';
+  }
+
+  if (!entry.deductorName?.trim()) {
+    errors.deductorName = 'Deductor name is required';
+  }
+
+  if (!entry.sectionCode?.trim()) {
+    errors.sectionCode = 'Section code is required';
+  }
+
+  if (n(entry.amountPaid) < 0) {
+    errors.amountPaid = 'Amount paid cannot be negative';
+  }
+
+  if (n(entry.tdsDeducted) < 0) {
+    errors.tdsDeducted = 'TDS deducted cannot be negative';
+  }
+
+  if (n(entry.tdsClaimed) < 0) {
+    errors.tdsClaimed = 'TDS claimed cannot be negative';
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors };
+}
+
+// ── 80G Donation ──
+const VALID_80G_CATEGORIES = ['100_no_limit', '100_with_limit', '50_no_limit', '50_with_limit'];
+
+export function validateDonation80G(entry) {
+  const errors = {};
+  if (!entry) {
+    errors._form = 'Donation entry is required';
+    return { valid: false, errors };
+  }
+
+  if (!entry.doneeName?.trim()) {
+    errors.doneeName = 'Donee name is required';
+  }
+
+  if (n(entry.amount) <= 0) {
+    errors.amount = 'Donation amount must be greater than 0';
+  }
+
+  // Donee PAN required for donations > ₹2000
+  if (n(entry.amount) > 2000 && !entry.doneePan?.trim()) {
+    errors.doneePan = 'Donee PAN is required for donations exceeding ₹2,000';
+  } else if (entry.doneePan?.trim() && !PAN_REGEX.test(entry.doneePan)) {
+    errors.doneePan = 'Invalid PAN format (e.g., ABCDE1234F)';
+  }
+
+  if (!entry.category?.trim()) {
+    errors.category = 'Donation category is required';
+  } else if (!VALID_80G_CATEGORIES.includes(entry.category)) {
+    errors.category = 'Invalid donation category';
+  }
+
+  return { valid: Object.keys(errors).length === 0, errors };
+}

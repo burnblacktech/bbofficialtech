@@ -47,9 +47,91 @@ class FilingCompletenessService {
   }
 
   static _validatePersonalInfo(payload, filing, errors) {
-    const pan = filing.taxpayerPan || payload.personalInfo?.pan;
+    const pi = payload.personalInfo || {};
+    const pan = filing.taxpayerPan || pi.pan;
+
+    // PAN
     if (!pan || !PAN_REGEX.test(pan)) {
       errors.push({ section: 'Personal Info', field: 'pan', message: 'Valid PAN is required' });
+    }
+
+    // Name
+    if (!pi.firstName?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'firstName', message: 'First name is required' });
+    }
+    if (!pi.lastName?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'lastName', message: 'Last name is required' });
+    }
+
+    // DOB
+    if (!pi.dob?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'dob', message: 'Date of birth is required' });
+    }
+
+    // Gender
+    if (!pi.gender?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'gender', message: 'Gender is required' });
+    }
+
+    // Aadhaar
+    if (!pi.aadhaar?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'aadhaar', message: 'Aadhaar number is required' });
+    } else if (!/^\d{12}$/.test(pi.aadhaar)) {
+      errors.push({ section: 'Personal Info', field: 'aadhaar', message: 'Aadhaar must be exactly 12 digits' });
+    }
+
+    // Email
+    if (!pi.email?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'email', message: 'Email is required' });
+    }
+
+    // Phone
+    if (!pi.phone?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'phone', message: 'Phone number is required' });
+    } else if (!/^[6-9]\d{9}$/.test(pi.phone)) {
+      errors.push({ section: 'Personal Info', field: 'phone', message: 'Phone must be 10 digits starting with 6-9' });
+    }
+
+    // Residential status
+    if (!pi.residentialStatus?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'residentialStatus', message: 'Residential status is required' });
+    }
+
+    // Employer category
+    if (!pi.employerCategory?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'employerCategory', message: 'Employer category is required' });
+    }
+
+    // Filing status
+    if (!pi.filingStatus?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'filingStatus', message: 'Filing status is required' });
+    }
+
+    // Conditional: revised return
+    if (pi.filingStatus === 'R' && !pi.originalAckNumber?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'originalAckNumber', message: 'Original acknowledgment number is required for revised returns' });
+    }
+
+    // Conditional: updated return
+    if (pi.filingStatus === 'U' && !pi.updatedReturnReason?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'updatedReturnReason', message: 'Reason is required for updated returns' });
+    }
+
+    // Address
+    const addr = pi.address || {};
+    if (!addr.flatDoorBuilding?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'address.flatDoorBuilding', message: 'Flat/Door/Building is required' });
+    }
+    if (!addr.city?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'address.city', message: 'City is required' });
+    }
+    if (!addr.stateCode?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'address.stateCode', message: 'State is required' });
+    }
+    if (!addr.pincode?.trim()) {
+      errors.push({ section: 'Personal Info', field: 'address.pincode', message: 'Pincode is required' });
+    } else if (!/^[1-9]\d{5}$/.test(addr.pincode)) {
+      errors.push({ section: 'Personal Info', field: 'address.pincode', message: 'Pincode must be 6 digits starting with 1-9' });
     }
   }
 

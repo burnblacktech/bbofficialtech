@@ -14,6 +14,7 @@ import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
   Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
   ChevronDown, ArrowLeft, CreditCard, Trash2, Upload, AlertTriangle,
+  User,
 } from 'lucide-react';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -33,6 +34,7 @@ import BankEditor from './editors/BankEditor';
 import ImportDocumentModal from './import/ImportDocumentModal';
 import ImportReviewScreen from './import/ImportReviewScreen';
 import ImportHistoryPanel from './import/ImportHistoryPanel';
+import PersonalInfoEditor, { getCompletionInfo } from './editors/PersonalInfoEditor';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
@@ -73,7 +75,7 @@ export default function ITR1Flow() {
   const navigate = useNavigate();
   const location = useLocation();
   const qc = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const { data: filing, isLoading } = useQuery({
     queryKey: ['filing', filingId],
@@ -140,6 +142,20 @@ export default function ITR1Flow() {
       navigate(`/filing/${filingId}/${ep}`, { replace: true });
     }
   }, [active]); // eslint-disable-line
+
+  // Auto-expand PersonalInfo when empty or incomplete on first open
+  useEffect(() => {
+    if (!filing) return;
+    const pi = filing.jsonPayload?.personalInfo;
+    if (!pi || Object.keys(pi).length === 0) {
+      setSelected('personalInfo');
+    } else {
+      const info = getCompletionInfo(pi);
+      if (!info.complete && selected === null) {
+        setSelected('personalInfo');
+      }
+    }
+  }, [filing?.id]); // eslint-disable-line
 
   const toggleSource = (id) => {
     setActive(prev => {
@@ -389,6 +405,43 @@ export default function ITR1Flow() {
 
       {/* ── Center — Accordion of all active sections ── */}
       <main className="hud-editor">
+        {/* Personal Info accordion card — always first */}
+        {(() => {
+          const piOpen = selected === 'personalInfo';
+          const piData = payload?.personalInfo || {};
+          const piCompletion = getCompletionInfo(piData);
+          const piColor = '#6366f1';
+          const piBg = '#eef2ff';
+          return (
+            <div className={`hud-accordion-card ${piOpen ? 'open' : ''}`} style={piOpen ? { borderColor: piColor, boxShadow: `0 0 0 2px ${piColor}12` } : {}}>
+              <button className="hud-accordion-header" onClick={() => setSelected(piOpen ? null : 'personalInfo')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 6, background: piBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <User size={13} style={{ color: piColor }} />
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Personal Info</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: piCompletion.complete ? P.success : P.warning }}>
+                    {piCompletion.filled}/{piCompletion.total}
+                  </span>
+                  {piCompletion.complete
+                    ? <CheckCircle size={14} style={{ color: P.success }} />
+                    : <AlertTriangle size={14} style={{ color: P.warning }} />}
+                  {piOpen ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
+                </div>
+              </button>
+              {piOpen && (
+                <div className="hud-accordion-body">
+                  <PersonalInfoEditor payload={payload} filing={filing}
+                    onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
+                    computation={comp} itrType={itrType} user={user} userProfile={profile || null} />
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
         {/* All active income sources as collapsible cards */}
         {SOURCES.filter(src => active.includes(src.id)).map(src => {
           const isOpen = selected === src.id;
