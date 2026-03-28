@@ -94,19 +94,43 @@ class ITRApplicabilityService {
         const forbiddenPath = FactPresenceResolver.getFirstForbiddenPath(payload, forbiddenPaths);
 
         if (forbiddenPath) {
-            return {
-                eligible: false,
-                reason: `Contains forbidden fact: ${forbiddenPath}`,
-                missing: []
-            };
+            // AY 2025-26 special case: ITR-1 allows LTCG ≤ ₹1.25L under Section 112A
+            if (itrType === 'ITR1' && forbiddenPath === 'income.capitalGains') {
+                const ltcg = payload.personalInfo?.ltcg112A;
+                const ltcgAmount = Number(ltcg?.amount) || 0;
+                const noLoss = ltcg?.noLossToCarryForward === true;
+                // Allow if LTCG ≤ ₹1.25L and no losses, OR if no CG transactions exist (just the mini-section)
+                const hasCGTransactions = (payload.income?.capitalGains?.transactions || []).length > 0;
+                if (!hasCGTransactions && ltcgAmount <= 125000 && (ltcgAmount === 0 || noLoss)) {
+                    // Allow — don't disqualify ITR-1 for this
+                } else if (hasCGTransactions) {
+                    return {
+                        eligible: false,
+                        reason: 'Capital gains transactions require ITR-2. ITR-1 only allows LTCG ≤ ₹1.25L via the mini-section.',
+                        missing: []
+                    };
+                } else {
+                    return {
+                        eligible: false,
+                        reason: `LTCG ₹${ltcgAmount.toLocaleString('en-IN')} exceeds ₹1.25L limit for ITR-1`,
+                        missing: []
+                    };
+                }
+            } else {
+                return {
+                    eligible: false,
+                    reason: `Contains forbidden fact: ${forbiddenPath}`,
+                    missing: []
+                };
+            }
         }
 
         // Step 2: Check conditions
         if (contract.conditions) {
             // Resident condition
             if (contract.conditions.resident !== undefined) {
-                // S22: Derive residency from jsonPayload.personalInfo
-                const isResident = payload.personalInfo?.isResident !== false;
+                const resStatus = payload.personalInfo?.residentialStatus || 'RES';
+                const isResident = resStatus === 'RES';
                 if (contract.conditions.resident && !isResident) {
                     return {
                         eligible: false,

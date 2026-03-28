@@ -64,9 +64,9 @@ const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'it
 // eslint-disable-next-line camelcase
 const SOURCE_IMPORTS = {
   salary: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
-  other: [{ type: '26as', label: '26AS', color: '#2563eb' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
-  'capital_gains': [{ type: 'ais', label: 'AIS', color: '#7c3aed' }],
-  'house_property': [{ type: '26as', label: '26AS', color: '#2563eb' }],
+  other: [{ type: 'form16a', label: 'Form 16A', color: '#0891b2' }, { type: '26as', label: '26AS', color: '#2563eb' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  'capital_gains': [{ type: 'form16b', label: 'Form 16B', color: '#d97706' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  'house_property': [{ type: 'form16c', label: 'Form 16C', color: '#6b7280' }, { type: '26as', label: '26AS', color: '#2563eb' }],
   deductions: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
 };
 

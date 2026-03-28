@@ -21,7 +21,8 @@ class ITR4ComputationService {
   }
 
   static computeIncome(payload) {
-    const salary = ITR1ComputationService.computeSalary(payload.income?.salary);
+    const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
+    const salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory);
     const hp = ITR1ComputationService.computeHouseProperty(payload.income?.houseProperty);
     const other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources);
     const presumptive = this.computePresumptive(payload.income?.presumptive);
@@ -80,7 +81,7 @@ class ITR4ComputationService {
   }
 
   static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
-    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {} };
+    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {}, warnings: [] };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;

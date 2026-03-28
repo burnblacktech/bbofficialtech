@@ -57,6 +57,42 @@ const DOC_TYPES = [
     color: '#7c3aed',
     bg: '#f5f3ff',
   },
+  {
+    id: 'form16a',
+    label: 'Form 16A',
+    desc: 'Non-salary TDS certificate (PDF)',
+    format: 'PDF',
+    accept: '.pdf',
+    mimeTypes: ['application/pdf'],
+    maxSizeMB: 10,
+    icon: FileText,
+    color: '#0891b2',
+    bg: '#f0f9ff',
+  },
+  {
+    id: 'form16b',
+    label: 'Form 16B',
+    desc: 'TDS on property sale (PDF)',
+    format: 'PDF',
+    accept: '.pdf',
+    mimeTypes: ['application/pdf'],
+    maxSizeMB: 10,
+    icon: FileText,
+    color: '#d97706',
+    bg: '#fffbeb',
+  },
+  {
+    id: 'form16c',
+    label: 'Form 16C',
+    desc: 'TDS on rent (PDF)',
+    format: 'PDF',
+    accept: '.pdf',
+    mimeTypes: ['application/pdf'],
+    maxSizeMB: 10,
+    icon: FileText,
+    color: '#6b7280',
+    bg: '#f9fafb',
+  },
 ];
 
 // ── Animation variants ──
@@ -78,7 +114,8 @@ const modalVariants = {
  */
 function validateFileFormat(file, docType) {
   const ext = file.name.split('.').pop()?.toLowerCase();
-  const expectedExt = docType.id === 'form16' ? 'pdf' : 'json';
+  const pdfTypes = ['form16', 'form16a', 'form16b', 'form16c'];
+  const expectedExt = pdfTypes.includes(docType.id) ? 'pdf' : 'json';
 
   if (ext !== expectedExt) {
     return { valid: false, error: `Expected a .${expectedExt} file but got .${ext}` };

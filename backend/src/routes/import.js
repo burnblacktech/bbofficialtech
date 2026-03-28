@@ -31,8 +31,8 @@ router.post('/:filingId/import', authenticateToken, importRateLimit, async (req,
     if (!documentType || !fileContent) {
       return res.status(400).json({ success: false, error: 'documentType and fileContent (base64) are required' });
     }
-    if (!['form16', '26as', 'ais'].includes(documentType)) {
-      return res.status(400).json({ success: false, error: 'documentType must be form16, 26as, or ais' });
+    if (!['form16', 'form16a', 'form16b', 'form16c', '26as', 'ais'].includes(documentType)) {
+      return res.status(400).json({ success: false, error: 'documentType must be form16, form16a, form16b, form16c, 26as, or ais' });
     }
 
     const result = await ImportEngineService.parseDocument(req.params.filingId, req.user.userId, { documentType, fileContent, fileName });

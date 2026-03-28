@@ -123,6 +123,105 @@ class DataMapper {
   }
 
   /**
+   * Map Form 16A parsed data to jsonPayload paths
+   * Routes section codes to income sections and TDS to nonSalaryEntries
+   * @param {object} parsed - Output from Form16AParser.parse()
+   * @returns {object} { fieldPath: value } flat map
+   */
+  static mapForm16A(parsed) {
+    const map = {};
+    const { data } = parsed;
+    if (!data) return map;
+
+    // Map section code to income section
+    const section = (data.sectionCode || '').toUpperCase();
+    if (section === '194A' || section === '194A') {
+      // Interest income — FD/savings
+      if (data.amountPaid) map['income.otherSources.fdInterest'] = data.amountPaid;
+    } else if (section === '194I' || section === '194IA' || section === '194IB') {
+      // Rent income — could be house property or other sources
+      if (data.amountPaid) map['income.otherSources.otherIncome'] = data.amountPaid;
+    } else if (section === '194J') {
+      // Professional fees — other sources
+      if (data.amountPaid) map['income.otherSources.otherIncome'] = data.amountPaid;
+    } else if (data.amountPaid) {
+      // Other section codes → other sources
+      map['income.otherSources.otherIncome'] = data.amountPaid;
+    }
+
+    // TDS entry → nonSalaryEntries
+    if (data.tdsDeducted || data.deductorTan) {
+      map['taxes.tds.nonSalaryEntries[0].deductorTan'] = data.deductorTan || '';
+      map['taxes.tds.nonSalaryEntries[0].deductorName'] = data.deductorName || '';
+      map['taxes.tds.nonSalaryEntries[0].sectionCode'] = data.sectionCode || '';
+      map['taxes.tds.nonSalaryEntries[0].amountPaid'] = n(data.amountPaid);
+      map['taxes.tds.nonSalaryEntries[0].tdsDeducted'] = n(data.tdsDeducted);
+      map['taxes.tds.nonSalaryEntries[0].tdsClaimed'] = n(data.tdsDeducted);
+    }
+
+    return map;
+  }
+
+  /**
+   * Map Form 16B parsed data to jsonPayload paths
+   * Maps property sale to capital gains and TDS to fromCapitalGains
+   * @param {object} parsed - Output from Form16BParser.parse()
+   * @returns {object} { fieldPath: value } flat map
+   */
+  static mapForm16B(parsed) {
+    const map = {};
+    const { data } = parsed;
+    if (!data) return map;
+
+    // Property sale → capital gains transaction
+    if (data.propertySaleConsideration) {
+      map['income.capitalGains.transactions[0].assetType'] = 'property';
+      map['income.capitalGains.transactions[0].saleValue'] = n(data.propertySaleConsideration);
+      map['income.capitalGains.transactions[0].gainType'] = 'LTCG';
+      if (data.transactionDate) {
+        map['income.capitalGains.transactions[0].saleDate'] = data.transactionDate;
+      }
+    }
+
+    // TDS on property sale
+    if (data.tdsDeducted) {
+      map['taxes.tds.fromCapitalGains'] = n(data.tdsDeducted);
+    }
+
+    return map;
+  }
+
+  /**
+   * Map Form 16C parsed data to jsonPayload paths
+   * Maps rent to house property income and TDS to nonSalaryEntries
+   * @param {object} parsed - Output from Form16CParser.parse()
+   * @returns {object} { fieldPath: value } flat map
+   */
+  static mapForm16C(parsed) {
+    const map = {};
+    const { data } = parsed;
+    if (!data) return map;
+
+    // Rent income → house property (let-out rental income)
+    if (data.rentAmount) {
+      map['income.houseProperty.type'] = 'LET_OUT';
+      map['income.houseProperty.annualRent'] = n(data.rentAmount);
+    }
+
+    // TDS on rent → nonSalaryEntries
+    if (data.tdsDeducted || data.tenantTan) {
+      map['taxes.tds.nonSalaryEntries[0].deductorTan'] = data.tenantTan || '';
+      map['taxes.tds.nonSalaryEntries[0].deductorName'] = data.tenantName || '';
+      map['taxes.tds.nonSalaryEntries[0].sectionCode'] = '194IB';
+      map['taxes.tds.nonSalaryEntries[0].amountPaid'] = n(data.rentAmount);
+      map['taxes.tds.nonSalaryEntries[0].tdsDeducted'] = n(data.tdsDeducted);
+      map['taxes.tds.nonSalaryEntries[0].tdsClaimed'] = n(data.tdsDeducted);
+    }
+
+    return map;
+  }
+
+  /**
    * Merge mapped data into existing payload (non-destructive)
    * @param {object} existingPayload - Current jsonPayload
    * @param {object} mappedData - { fieldPath: value } from mapXxx()

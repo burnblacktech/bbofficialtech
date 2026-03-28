@@ -29,7 +29,8 @@ class ITR3ComputationService {
   }
 
   static computeIncome(payload) {
-    const salary = ITR1ComputationService.computeSalary(payload.income?.salary);
+    const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
+    const salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory);
     const hp = ITR2ComputationService.computeHouseProperties(payload.income?.houseProperty);
     const cg = ITR2ComputationService.computeCapitalGains(payload.income?.capitalGains);
     const other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources);
@@ -97,7 +98,7 @@ class ITR3ComputationService {
   }
 
   static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
-    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {} };
+    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {}, warnings: [] };
 
     const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + income.otherSources.total +
       income.capitalGains.stcg.other + income.foreignIncome.totalIncome + income.business.netProfit;

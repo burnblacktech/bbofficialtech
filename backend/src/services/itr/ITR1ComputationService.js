@@ -14,8 +14,8 @@ class ITR1ComputationService {
   static compute(payload) {
     const income = this.computeIncome(payload);
     const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
 
     const tds = this.computeTDS(payload);
     oldRegime.tdsCredit = tds.total;
@@ -186,66 +186,96 @@ class ITR1ComputationService {
 
   // ── Deductions ──
 
-  static computeDeductions(deductionData) {
-    if (!deductionData) return { total: 0, breakdown: {} };
+  static computeDeductions(deductionData, payload) {
+    if (!deductionData) return { total: 0, breakdown: {}, warnings: [] };
 
-    // Accept both nested (section80C.ppf) and flat (ppf) formats
     const d = deductionData;
     const c = d.section80C || d;
-    const raw80C = n(c.ppf) + n(c.elss) + n(c.lifeInsurance || c.lic) + n(c.nsc) +
-      n(c.tuitionFees) + n(c.homeLoanPrincipal) + n(c.sukanyaSamriddhi) + n(c.fiveYearFD) + n(c.otherC);
-    const s80c = Math.min(raw80C, 150000);
+    const deductionWarnings = [];
 
+    // ── 80CCE Aggregate: 80C + 80CCC + 80CCD(1) share ₹1.5L limit ──
+    // 80CCD(1) = employee NPS contribution (part of 80C limit)
+    // 80CCD(1B) = additional NPS (₹50K, OUTSIDE the 80C limit)
+    // 80CCD(2) = employer NPS (separate, no limit overlap)
+    const raw80CItems = n(c.ppf) + n(c.elss) + n(c.lifeInsurance || c.lic) + n(c.nsc) +
+      n(c.tuitionFees) + n(c.homeLoanPrincipal) + n(c.sukanyaSamriddhi) + n(c.fiveYearFD) + n(c.otherC);
+    const npsEmployee = n(d.npsEmployee || d.section80CCD1?.nps); // 80CCD(1) — part of 80C limit
+    const raw80CCE = raw80CItems + npsEmployee; // Combined 80C + 80CCC + 80CCD(1)
+    const s80c = Math.min(raw80CCE, 150000); // 80CCE cap: ₹1.5L
+
+    if (raw80CCE > 150000) {
+      deductionWarnings.push(`80C+80CCD(1) total ₹${raw80CCE.toLocaleString('en-IN')} exceeds ₹1.5L — capped at ₹1,50,000`);
+    }
+
+    // 80CCD(1B): additional NPS — OUTSIDE the 80CCE limit, separate ₹50K cap
     const s80ccd1b = Math.min(n(d.section80CCD1B?.nps || d.nps), 50000);
+
+    // 80CCD(2): employer NPS — separate, no overlap with 80C
+    const s80ccd2 = n(d.section80CCD2?.employerNps || d.employerNps);
+    // 80CCD(2) limit: 14% of salary for GOV, 10% for others
+    const employerCategory = payload?.personalInfo?.employerCategory || 'OTH';
+    const salaryForNPS = (payload?.income?.salary?.employers || []).reduce((s, e) => s + n(e.basicPlusDA || e.grossSalary), 0);
+    const ccd2Limit = employerCategory === 'GOV' ? Math.round(salaryForNPS * 0.14) : Math.round(salaryForNPS * 0.10);
+    const s80ccd2Capped = salaryForNPS > 0 ? Math.min(s80ccd2, ccd2Limit) : s80ccd2;
+
     const s80d = this.compute80D(d.section80D || { selfPremium: n(d.healthSelf), parentsPremium: n(d.healthParents) });
     const s80e = n(d.section80E?.educationLoanInterest || d.eduLoan);
 
-    // Categorized 80G: compute from itemized donations if present, else fall back to flat value
+    // ── 80G: Categorized donations ──
     let s80g = 0;
     const donations80G = d.donations80G;
     if (Array.isArray(donations80G) && donations80G.length > 0) {
-      // Use gross total income as adjusted total income for v1 (avoids chicken-and-egg with 80G)
       const grossTotal = this._lastGrossTotal || 0;
-      const sum100NoLimit = donations80G
-        .filter(e => e.category === '100_no_limit')
-        .reduce((s, e) => s + n(e.amount), 0);
-      const sum100WithLimit = donations80G
-        .filter(e => e.category === '100_with_limit')
-        .reduce((s, e) => s + n(e.amount), 0);
-      const sum50NoLimit = donations80G
-        .filter(e => e.category === '50_no_limit')
-        .reduce((s, e) => s + n(e.amount), 0);
-      const sum50WithLimit = donations80G
-        .filter(e => e.category === '50_with_limit')
-        .reduce((s, e) => s + n(e.amount), 0);
-
+      const sum100NoLimit = donations80G.filter(e => e.category === '100_no_limit').reduce((s, e) => s + n(e.amount), 0);
+      const sum100WithLimit = donations80G.filter(e => e.category === '100_with_limit').reduce((s, e) => s + n(e.amount), 0);
+      const sum50NoLimit = donations80G.filter(e => e.category === '50_no_limit').reduce((s, e) => s + n(e.amount), 0);
+      const sum50WithLimit = donations80G.filter(e => e.category === '50_with_limit').reduce((s, e) => s + n(e.amount), 0);
       const tenPercentATI = Math.round(grossTotal * 0.10);
-      s80g = sum100NoLimit
-        + Math.min(sum100WithLimit, tenPercentATI)
-        + Math.round(0.5 * sum50NoLimit)
-        + Math.round(0.5 * Math.min(sum50WithLimit, tenPercentATI));
+      s80g = sum100NoLimit + Math.min(sum100WithLimit, tenPercentATI) + Math.round(0.5 * sum50NoLimit) + Math.round(0.5 * Math.min(sum50WithLimit, tenPercentATI));
     } else {
       s80g = n(d.section80G?.total || d.donations);
     }
 
-    const s80tta = Math.min(n(d.section80TTA?.savingsInterest || d.savingsInt), 10000);
-    const s80gg = Math.min(n(d.rentPaid), 60000); // 80GG: max ₹5000/month
+    // ── 80TTA vs 80TTB: mutually exclusive ──
+    // Senior citizens (age ≥ 60) should use 80TTB (₹50K), others use 80TTA (₹10K)
+    const isSenior = d.isSeniorCitizen || false;
+    let s80tta = 0;
+    let s80ttb = 0;
+    if (isSenior) {
+      s80ttb = Math.min(n(d.section80TTB?.interest || d.savingsInt), 50000);
+    } else {
+      s80tta = Math.min(n(d.section80TTA?.savingsInterest || d.savingsInt), 10000);
+    }
+
+    // ── 80GG vs HRA: mutually exclusive ──
+    // If HRA is claimed by any employer, 80GG cannot be claimed
+    const hasHRA = (payload?.income?.salary?.employers || []).some(e => n(e.allowances?.hra?.exempt) > 0);
+    let s80gg = 0;
+    if (!hasHRA) {
+      s80gg = Math.min(n(d.rentPaid), 60000); // 80GG: max ₹5000/month
+    } else if (n(d.rentPaid) > 0) {
+      deductionWarnings.push('80GG rent deduction not available when HRA is claimed from employer');
+    }
+
     const s80u = n(d.disability);
 
-    const total = s80c + s80ccd1b + s80d + s80e + s80g + s80tta + s80gg + s80u;
+    const total = s80c + s80ccd1b + s80ccd2Capped + s80d + s80e + s80g + s80tta + s80ttb + s80gg + s80u;
 
     return {
       total,
       breakdown: {
         section80C: s80c,
         section80CCD1B: s80ccd1b,
+        section80CCD2: s80ccd2Capped,
         section80D: s80d,
         section80E: s80e,
         section80G: s80g,
         section80TTA: s80tta,
+        section80TTB: s80ttb,
         section80GG: s80gg,
         section80U: s80u,
       },
+      warnings: deductionWarnings,
     };
   }
 
@@ -266,10 +296,10 @@ class ITR1ComputationService {
 
   // ── Tax Computation ──
 
-  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0, payload = null) {
     // Store gross total for 80G adjusted total income computation (v1 simplification)
     this._lastGrossTotal = income.grossTotal;
-    const deductions = regime === 'old' ? this.computeDeductions(deductionData) : { total: 0, breakdown: {} };
+    const deductions = regime === 'old' ? this.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;

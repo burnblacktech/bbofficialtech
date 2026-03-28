@@ -10,6 +10,9 @@ const { sequelize } = require('../../config/database');
 const AuditService = require('../core/AuditService');
 const FilingSnapshotService = require('../itr/FilingSnapshotService');
 const Form16Parser = require('./parsers/Form16Parser');
+const Form16AParser = require('./parsers/Form16AParser');
+const Form16BParser = require('./parsers/Form16BParser');
+const Form16CParser = require('./parsers/Form16CParser');
 const TwentySixASParser = require('./parsers/TwentySixASParser');
 const AISParser = require('./parsers/AISParser');
 const DataMapper = require('./DataMapper');
@@ -18,8 +21,8 @@ const { AppError } = require('../../middleware/errorHandler');
 const ErrorCodes = require('../../constants/ErrorCodes');
 const enterpriseLogger = require('../../utils/logger');
 
-const SIZE_LIMITS = { form16: 10 * 1024 * 1024, '26as': 5 * 1024 * 1024, ais: 10 * 1024 * 1024 };
-const MIME_MAP = { form16: 'application/pdf', '26as': 'application/json', ais: 'application/json' };
+const SIZE_LIMITS = { form16: 10 * 1024 * 1024, form16a: 10 * 1024 * 1024, form16b: 10 * 1024 * 1024, form16c: 10 * 1024 * 1024, '26as': 5 * 1024 * 1024, ais: 10 * 1024 * 1024 };
+const MIME_MAP = { form16: 'application/pdf', form16a: 'application/pdf', form16b: 'application/pdf', form16c: 'application/pdf', '26as': 'application/json', ais: 'application/json' };
 
 class ImportEngineService {
 
@@ -63,6 +66,12 @@ class ImportEngineService {
       if (parsed.pan && parsed.pan !== filing.taxpayerPan) {
         throw new AppError(`PAN mismatch: document has ${parsed.pan}, filing has ${filing.taxpayerPan}`, 409, ErrorCodes.IMPORT_PAN_MISMATCH);
       }
+    } else if (documentType === 'form16a') {
+      parsed = await Form16AParser.parse(buffer);
+    } else if (documentType === 'form16b') {
+      parsed = await Form16BParser.parse(buffer);
+    } else if (documentType === 'form16c') {
+      parsed = await Form16CParser.parse(buffer);
     }
 
     // 5. Map to jsonPayload paths
@@ -70,6 +79,9 @@ class ImportEngineService {
     let mappedData;
     if (documentType === 'form16') mappedData = DataMapper.mapForm16(parsed);
     else if (documentType === '26as') mappedData = DataMapper.map26AS(parsed, existingPayload);
+    else if (documentType === 'form16a') mappedData = DataMapper.mapForm16A(parsed);
+    else if (documentType === 'form16b') mappedData = DataMapper.mapForm16B(parsed);
+    else if (documentType === 'form16c') mappedData = DataMapper.mapForm16C(parsed);
     else mappedData = DataMapper.mapAIS(parsed);
 
     // 6. Detect conflicts
@@ -219,6 +231,7 @@ class ImportEngineService {
 
   static getSectionForPath(path) {
     if (path.includes('salary')) return 'Salary';
+    if (path.includes('houseProperty')) return 'House Property';
     if (path.includes('otherSources')) return 'Other Income';
     if (path.includes('capitalGains')) return 'Capital Gains';
     if (path.startsWith('deductions')) return 'Deductions';
