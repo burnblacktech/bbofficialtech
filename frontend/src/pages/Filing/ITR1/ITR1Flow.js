@@ -374,6 +374,14 @@ export default function ITR1Flow() {
           );
         })}
 
+        {/* Agricultural income — shown as exempt sub-line when present */}
+        {n(comp?.agriculturalIncome) > 0 && active.includes('other') && (
+          <div style={{ padding: '2px 10px 4px 46px', fontSize: 11, color: P.success, display: 'flex', justifyContent: 'space-between' }}>
+            <span>Agri (exempt)</span>
+            <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(comp.agriculturalIncome)}</span>
+          </div>
+        )}
+
         {/* ── Tax Savings ── */}
         <div style={{ borderTop: `1px solid ${P.borderLight}`, margin: '6px 0 4px', padding: 0 }} />
         <div className={`hud-source active ${selected === 'deductions' ? 'selected' : ''}`} onClick={() => setSelected('deductions')}>
