@@ -247,7 +247,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             : <AlertTriangle size={16} color={P.warning} />}
         </div>
       </div>
-      <p className="step-desc">ITD-mandated taxpayer identity, address, and filing metadata. Fields marked * are required.</p>
+      <p className="step-desc">Your identity details as required by the Income Tax Department. Fields marked * are mandatory for filing.</p>
 
       {/* PAN Verified badge */}
       {panVerified && (

@@ -172,13 +172,13 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
 
   return (
     <div>
-      <h2 className="step-title">Review & Submit</h2>
-      <p className="step-desc">Verify your details, download JSON, and submit to the Income Tax Department</p>
+      <h2 className="step-title">Taxes Paid, Bank & Submit</h2>
+      <p className="step-desc">Enter taxes already paid, bank details for refund, and download your ITR JSON</p>
 
       {/* Bank Details */}
       <div className="step-card editing">
         <div className="ff-section-title">Bank Account for Refund</div>
-        <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>If you're due a refund, it will be credited to this account. Use the same account linked to your PAN.</div>
+        <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>If you're due a refund, ITD will credit it to this account. Use the same bank linked to your PAN.</div>
         <div className="ff-grid-2">
           <div className="ff-field">
             <label className="ff-label">Bank Name *</label>

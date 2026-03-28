@@ -72,7 +72,7 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
   return (
     <div>
       <h2 className="step-title">Salary Income</h2>
-      <p className="step-desc">Add employer details from your Form 16. If you have multiple employers, add each one separately.</p>
+      <p className="step-desc">Enter your employer details from Form 16. If you changed jobs this year, add each employer separately.</p>
 
       {employers.map((emp, i) => editing === i ? null : (
         <div key={i} className="step-card">
@@ -92,17 +92,17 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
       {form && (
         <div className="step-card editing">
           <div className="ff-grid-2">
-            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="As shown on your Form 16" />
-            <F l="TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="Employer's TAN from Form 16 header" />
+            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="The company that pays your salary — from Form 16 header" />
+            <F l="Employer TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="10-character Tax Deduction Number on Form 16 Part A" />
           </div>
           <div className="ff-grid-2">
-            <F l="Gross Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Form 16 Part B → Sr. No. 1 (Gross Salary)" />
-            <F l="TDS Deducted (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="Form 16 Part A → Total Tax Deducted" />
+            <F l="Total Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Your total CTC or gross salary for the year — Form 16 Part B, Sr. No. 1" />
+            <F l="Tax Deducted by Employer (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="TDS already deducted from your salary — Form 16 Part A, last row" />
           </div>
           <div className="ff-grid-3">
-            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} h="Form 16 → Allowances" />
-            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Calculated or from Form 16" />
-            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="Usually ₹2,400/year (₹200/month)" />
+            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} h="House Rent Allowance from your salary slip" />
+            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Tax-free portion of HRA — your employer calculates this in Form 16" />
+            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="State tax deducted from salary — usually ₹200/month (₹2,400/year)" />
           </div>
 
           {suggestedHRA && (

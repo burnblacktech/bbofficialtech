@@ -108,8 +108,8 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
 
   return (
     <div>
-      <h2 className="step-title">Deductions & Regime</h2>
-      <p className="step-desc">Choose your tax regime and claim deductions</p>
+      <h2 className="step-title">Tax Savings & Deductions</h2>
+      <p className="step-desc">Choose your tax regime and claim deductions to reduce your taxable income</p>
 
       {/* Regime Toggle — prominent */}
       <div className="step-card" style={{ marginBottom: 16 }}>
@@ -135,7 +135,7 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
         <>
           {/* 80C */}
           <div className="step-card editing">
-            <div className="ff-section-title">80C — Investments & Payments <span className="ff-section-cap">(max {rs(150000)})</span></div>
+            <div className="ff-section-title">80C — Tax Saving Investments <span className="ff-section-cap">(max {rs(150000)})</span></div>
             <div className="ff-grid-2">
               <F l="PPF" v={form.ppf} c={v => update('ppf', v)} />
               <F l="ELSS Mutual Funds" v={form.elss} c={v => update('elss', v)} />
