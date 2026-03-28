@@ -18,7 +18,7 @@
   "rewrites": [
     { "source": "/api/:path*", "destination": "/backend/api/index.js" },
     { "source": "/health", "destination": "/backend/api/index.js" },
-    { "source": "/(.*)", "destination": "/frontend/$1" }
+    { "source": "/((?!static|asset-manifest|favicon|manifest|robots|logo|bb-).*)", "destination": "/frontend/index.html" }
   ],
   "headers": [
     {

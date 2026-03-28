@@ -121,8 +121,8 @@ function readFileAsBase64(file) {
   });
 }
 
-export default function ImportDocumentModal({ filingId, onClose, onImportParsed }) {
-  const [selectedType, setSelectedType] = useState(null);
+export default function ImportDocumentModal({ filingId, onClose, onImportParsed, preselectedType }) {
+  const [selectedType, setSelectedType] = useState(preselectedType || null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);

@@ -58,6 +58,15 @@ const ITR_NAMES = { 'ITR-1': 'Sahaj', 'ITR-2': 'Capital Gains', 'ITR-3': 'Busine
 const ITR_COLORS = { 'ITR-1': '#059669', 'ITR-2': '#2563eb', 'ITR-3': '#d97706', 'ITR-4': '#7c3aed' };
 const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
 
+// Map source IDs to relevant import document types
+const SOURCE_IMPORTS = {
+  salary: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
+  other: [{ type: '26as', label: '26AS', color: '#2563eb' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  capital_gains: [{ type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  house_property: [{ type: '26as', label: '26AS', color: '#2563eb' }],
+  deductions: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
+};
+
 export default function ITR1Flow() {
   const { filingId } = useParams();
   const navigate = useNavigate();
@@ -80,6 +89,7 @@ export default function ITR1Flow() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importReviewData, setImportReviewData] = useState(null);
+  const [importPreselect, setImportPreselect] = useState(null); // pre-select doc type when opening from context
 
   // Init from filing
   useEffect(() => {
@@ -190,6 +200,11 @@ export default function ITR1Flow() {
   };
 
   const itrColor = ITR_COLORS[itrType] || P.brand;
+
+  const openImport = (docType) => {
+    setImportPreselect(docType || null);
+    setShowImportModal(true);
+  };
 
   return (
     <div className="hud">
@@ -347,7 +362,7 @@ export default function ITR1Flow() {
 
         {/* Actions */}
         <div className="hud-actions">
-          <button className="hud-btn-outline" onClick={() => setShowImportModal(true)}><Upload size={14} /> Import</button>
+          <button className="hud-btn-outline" onClick={() => openImport(null)}><Upload size={14} /> Import</button>
           <button className="hud-btn-outline" onClick={downloadJSON}><Download size={14} /> JSON</button>
           <button className="hud-btn-primary" onClick={() => setSelected('bank')}><Send size={14} /> Submit</button>
         </div>
@@ -379,6 +394,7 @@ export default function ITR1Flow() {
           const Icon = src.icon;
           const total = getTotalForSource(src.id);
           const EditorComp = src.editor;
+          const imports = SOURCE_IMPORTS[src.id] || [];
           return (
             <div key={src.id} className={`hud-accordion-card ${isOpen ? 'open' : ''}`} style={isOpen ? { borderColor: src.color, boxShadow: `0 0 0 2px ${src.color}12` } : {}}>
               <button className="hud-accordion-header" onClick={() => setSelected(isOpen ? null : src.id)}>
@@ -388,7 +404,17 @@ export default function ITR1Flow() {
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>{src.label}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {imports.length > 0 && (
+                    <span style={{ display: 'flex', gap: 4 }}>
+                      {imports.map(imp => (
+                        <span key={imp.type} onClick={(e) => { e.stopPropagation(); openImport(imp.type); }}
+                          style={{ fontSize: 10, fontWeight: 600, color: imp.color, background: `${imp.color}10`, border: `1px solid ${imp.color}30`, borderRadius: 10, padding: '2px 7px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                          <Upload size={9} /> {imp.label}
+                        </span>
+                      ))}
+                    </span>
+                  )}
                   {total != null && <span style={{ fontSize: 12, fontWeight: 600, color: n(total) < 0 ? P.success : P.textSecondary, fontVariantNumeric: 'tabular-nums' }}>{fmt(total)}</span>}
                   {isOpen ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
                 </div>
@@ -413,7 +439,11 @@ export default function ITR1Flow() {
               </div>
               <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Deductions</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span onClick={(e) => { e.stopPropagation(); openImport('form16'); }}
+                style={{ fontSize: 10, fontWeight: 600, color: '#059669', background: '#059669'+'10', border: '1px solid #059669'+'30', borderRadius: 10, padding: '2px 7px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                <Upload size={9} /> Form 16
+              </span>
               {bestRegime && n(bestRegime.deductions) > 0 && <span style={{ fontSize: 12, fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.deductions)}</span>}
               {selected === 'deductions' ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
             </div>
@@ -459,7 +489,8 @@ export default function ITR1Flow() {
       {showImportModal && !importReviewData && (
         <ImportDocumentModal
           filingId={filingId}
-          onClose={() => { setShowImportModal(false); setImportReviewData(null); }}
+          preselectedType={importPreselect}
+          onClose={() => { setShowImportModal(false); setImportReviewData(null); setImportPreselect(null); }}
           onImportParsed={(data) => setImportReviewData(data)}
         />
       )}
@@ -475,7 +506,7 @@ export default function ITR1Flow() {
               fileName={importReviewData.fileName}
               fileContent={importReviewData.fileContent}
               filingId={filingId}
-              onClose={() => { setShowImportModal(false); setImportReviewData(null); }}
+              onClose={() => { setShowImportModal(false); setImportReviewData(null); setImportPreselect(null); }}
               onConfirmed={() => {
                 qc.invalidateQueries({ queryKey: ['filing', filingId] });
                 qc.invalidateQueries({ queryKey: ['importHistory', filingId] });
