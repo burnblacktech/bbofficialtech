@@ -641,7 +641,7 @@ export default function ITR1Flow() {
   );
 }
 
-/* ── Summary View ── */
+/* ── Summary View — Computation Story ── */
 function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, onEdit }) {
   const income = comp?.income;
   if (!comp) return (
@@ -655,52 +655,122 @@ function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, o
     </div>
   );
 
+  const agri = n(comp?.agriculturalIncome);
+
   return (
     <div>
       <h2 className="step-title">Tax Computation — {itrType}</h2>
-      <p className="step-desc">AY {filing?.assessmentYear} · PAN {filing?.taxpayerPan}</p>
+      <p className="step-desc">AY {filing?.assessmentYear} · PAN {filing?.taxpayerPan} · {rec === 'old' ? 'Old' : 'New'} Regime</p>
 
+      {/* ── Step 1: Your Income ── */}
       <div className="step-card">
-        <div className="ff-section-title">Income Breakdown</div>
-        {income?.salary?.netTaxable > 0 && <SRow label="Salary (net)" value={income.salary.netTaxable} onClick={() => onEdit('salary')} />}
-        {income?.houseProperty?.netIncome != null && income.houseProperty.netIncome !== 0 && <SRow label="House Property" value={income.houseProperty.netIncome} onClick={() => onEdit('house_property')} />}
+        <div className="ff-section-title">1. Your Income</div>
+        {income?.salary?.netTaxable > 0 && (
+          <div className="ff-row" style={{ cursor: 'pointer' }} onClick={() => onEdit('salary')}>
+            <span className="ff-row-label">Salary (after std deduction ₹75,000)</span>
+            <span className="ff-row-value">{fmt(income.salary.netTaxable)}</span>
+          </div>
+        )}
+        {income?.salary?.netTaxable > 0 && income.salary.exemptAllowances > 0 && (
+          <div style={{ fontSize: 11, color: P.textLight, padding: '0 0 2px 12px' }}>
+            Gross {fmt(income.salary.grossSalary)} − Exempt {fmt(income.salary.exemptAllowances)} − Std ded ₹75,000 − PT {fmt(income.salary.professionalTax)}
+          </div>
+        )}
+        {income?.houseProperty?.netIncome != null && income.houseProperty.netIncome !== 0 && (
+          <SRow label={`House Property (${income.houseProperty.type === 'SELF_OCCUPIED' ? 'self-occupied' : 'let-out'})`} value={income.houseProperty.netIncome} onClick={() => onEdit('house_property')} />
+        )}
         {income?.otherSources?.total > 0 && <SRow label="Other Sources" value={income.otherSources.total} onClick={() => onEdit('other')} />}
         {income?.capitalGains?.totalTaxable > 0 && <SRow label="Capital Gains" value={income.capitalGains.totalTaxable} onClick={() => onEdit('capital_gains')} />}
-        {(income?.business?.netProfit > 0 || income?.presumptive?.totalIncome > 0) && <SRow label="Business" value={income.business?.netProfit || income.presumptive?.totalIncome} onClick={() => onEdit('business')} />}
+        {(income?.business?.netProfit > 0 || income?.presumptive?.totalIncome > 0) && <SRow label="Business / Profession" value={income.business?.netProfit || income.presumptive?.totalIncome} onClick={() => onEdit('business')} />}
         <div className="ff-divider" />
         <SRow label="Gross Total Income" value={income?.grossTotal} bold />
+        {agri > 0 && (
+          <div className="ff-row" style={{ marginTop: 2 }}>
+            <span className="ff-row-label" style={{ color: P.success }}>Agricultural Income (exempt)</span>
+            <span className="ff-row-value" style={{ color: P.success }}>{fmt(agri)}</span>
+          </div>
+        )}
       </div>
 
-      {bestRegime && altRegime && (
-        <div className="step-card">
-          <div className="ff-section-title" style={{ cursor: 'pointer' }} onClick={() => onEdit('deductions')}>Regime Comparison</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <RegimeCard regime={bestRegime} label={rec === 'old' ? 'Old Regime' : 'New Regime'} recommended tds={tds} />
-            <RegimeCard regime={altRegime} label={rec === 'old' ? 'New Regime' : 'Old Regime'} tds={tds} />
-          </div>
-          {comp?.savings > 0 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, color: P.success, fontWeight: 600 }}>{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
+      {/* ── Step 2: Deductions ── */}
+      {bestRegime && n(bestRegime.deductions) > 0 && (
+        <div className="step-card" style={{ cursor: 'pointer' }} onClick={() => onEdit('deductions')}>
+          <div className="ff-section-title">2. Deductions (Chapter VI-A)</div>
+          {bestRegime.deductionBreakdown && Object.entries(bestRegime.deductionBreakdown).filter(([, v]) => n(v) > 0).map(([k, v]) => {
+            const labels = { section80C: '80C (PPF, ELSS, LIC...)', section80CCD1B: '80CCD(1B) NPS', section80CCD2: '80CCD(2) Employer NPS', section80D: '80D Health Insurance', section80E: '80E Education Loan', section80G: '80G Donations', section80TTA: '80TTA Savings Interest', section80TTB: '80TTB Senior Savings', section80GG: '80GG Rent', section80U: '80U Disability' };
+            return <SRow key={k} label={labels[k] || k} value={v} green />;
+          })}
+          <div className="ff-divider" />
+          <SRow label="Total Deductions" value={bestRegime.deductions} bold green />
         </div>
       )}
 
+      {/* ── Step 3: Taxable Income ── */}
+      <div className="step-card">
+        <div className="ff-section-title">3. Taxable Income</div>
+        <SRow label="Gross Total Income" value={income?.grossTotal} />
+        {n(bestRegime?.deductions) > 0 && <SRow label="Less: Deductions" value={-bestRegime.deductions} green />}
+        <div className="ff-divider" />
+        <SRow label="Total Taxable Income" value={bestRegime?.taxableIncome} bold />
+      </div>
+
+      {/* ── Step 4: Tax Calculation ── */}
       {bestRegime?.slabBreakdown?.length > 0 && (
         <div className="step-card">
-          <div className="ff-section-title">Slab Breakdown ({rec} regime)</div>
+          <div className="ff-section-title">4. Tax Calculation ({rec === 'old' ? 'Old' : 'New'} Regime)</div>
           {bestRegime.slabBreakdown.filter(s => s.tax > 0).map((s, i) => (
             <div key={i} className="ff-row">
               <span className="ff-row-label">{fmt(s.min)} – {s.max === Infinity ? 'Above' : fmt(s.max)} @ {s.rate}%</span>
               <span className="ff-row-value">{fmt(s.tax)}</span>
             </div>
           ))}
+          {agri > 5000 && bestRegime.agriIntegrationApplied && (
+            <div style={{ fontSize: 11, color: P.warning, padding: '4px 0', lineHeight: 1.3 }}>
+              Tax computed using partial integration method — agri income ({fmt(agri)}) pushes other income into higher slabs
+            </div>
+          )}
           <div className="ff-divider" />
           <SRow label="Tax on Income" value={bestRegime.taxOnIncome} />
-          {bestRegime.rebate > 0 && <SRow label="Less: Rebate 87A" value={-bestRegime.rebate} green />}
-          {bestRegime.surcharge > 0 && <SRow label="Surcharge" value={bestRegime.surcharge} />}
-          <SRow label="Cess (4%)" value={bestRegime.cess} />
+          {n(bestRegime.rebate) > 0 && <SRow label="Less: Rebate u/s 87A" value={-bestRegime.rebate} green />}
+          {n(bestRegime.surcharge) > 0 && <SRow label="Surcharge" value={bestRegime.surcharge} />}
+          <SRow label="Health & Education Cess (4%)" value={bestRegime.cess} />
           <div className="ff-divider" />
-          <SRow label="Total Tax" value={bestRegime.totalTax} bold />
-          {tds && n(tds.total) > 0 && <SRow label="Less: TDS" value={-tds.total} green />}
+          <SRow label="Total Tax Liability" value={bestRegime.totalTax} bold />
+        </div>
+      )}
+
+      {/* ── Step 5: Tax Paid ── */}
+      {tds && n(tds.total) > 0 && (
+        <div className="step-card">
+          <div className="ff-section-title">5. Tax Already Paid</div>
+          {n(tds.fromSalary) > 0 && <SRow label="TDS on Salary" value={tds.fromSalary} green />}
+          {n(tds.fromNonSalary) > 0 && <SRow label="TDS on Other Income" value={tds.fromNonSalary} green />}
+          {n(tds.fromCapitalGains) > 0 && <SRow label="TDS on Capital Gains" value={tds.fromCapitalGains} green />}
+          {n(tds.advanceTax) > 0 && <SRow label="Advance Tax" value={tds.advanceTax} green />}
+          {n(tds.selfAssessment) > 0 && <SRow label="Self-Assessment Tax" value={tds.selfAssessment} green />}
           <div className="ff-divider" />
-          <SRow label={bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'} value={Math.abs(bestRegime.netPayable)} bold color={bestRegime.netPayable <= 0 ? P.success : P.error} />
+          <SRow label="Total Tax Paid" value={tds.total} bold green />
+        </div>
+      )}
+
+      {/* ── Step 6: Result ── */}
+      <div className="step-card" style={{ background: bestRegime?.netPayable <= 0 ? '#f0fdf4' : '#fef2f2', borderColor: bestRegime?.netPayable <= 0 ? '#bbf7d0' : '#fecaca' }}>
+        <div className="ff-section-title">6. {bestRegime?.netPayable <= 0 ? 'Refund Due' : 'Balance Tax Payable'}</div>
+        <SRow label="Total Tax Liability" value={bestRegime?.totalTax} />
+        {tds && n(tds.total) > 0 && <SRow label="Less: Tax Paid" value={-tds.total} green />}
+        <div className="ff-divider" />
+        <SRow label={bestRegime?.netPayable <= 0 ? 'Refund Due to You' : 'Tax You Need to Pay'} value={Math.abs(bestRegime?.netPayable || 0)} bold color={bestRegime?.netPayable <= 0 ? P.success : P.error} />
+      </div>
+
+      {/* ── Regime Comparison ── */}
+      {bestRegime && altRegime && (
+        <div className="step-card">
+          <div className="ff-section-title">Regime Comparison</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <RegimeCard regime={bestRegime} label={rec === 'old' ? 'Old Regime' : 'New Regime'} recommended tds={tds} />
+            <RegimeCard regime={altRegime} label={rec === 'old' ? 'New Regime' : 'Old Regime'} tds={tds} />
+          </div>
+          {comp?.savings > 0 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, color: P.success, fontWeight: 600 }}>{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
         </div>
       )}
 
