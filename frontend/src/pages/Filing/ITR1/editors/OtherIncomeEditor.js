@@ -105,6 +105,12 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
         {n(form.otherIncome) > 0 && <R l="Other" v={form.otherIncome} />}
         <div className="ff-divider" />
         <div className="ff-row"><span className="ff-row-label">Total Other Income</span><span className="ff-row-value bold">{'\u20B9'}{total.toLocaleString('en-IN')}</span></div>
+        {n(form.agriculturalIncome) > 0 && (
+          <div className="ff-row" style={{ marginTop: 4 }}>
+            <span className="ff-row-label" style={{ color: '#16a34a' }}>Agricultural Income (exempt)</span>
+            <span className="ff-row-value" style={{ color: '#16a34a' }}>{'\u20B9'}{n(form.agriculturalIncome).toLocaleString('en-IN')}</span>
+          </div>
+        )}
       </div>
     </div>
   );

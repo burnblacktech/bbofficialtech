@@ -109,7 +109,7 @@ export default function ITR1Flow() {
     if (p.income?.houseProperty?.type && !['NONE', 'none'].includes(p.income.houseProperty.type)) s.add('house_property');
     if (p.income?.capitalGains?.transactions?.length) s.add('capital_gains');
     if (p.income?.business?.businesses?.length || p.income?.presumptive?.entries?.length) s.add('business');
-    if (n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) > 0) s.add('other');
+    if (n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) + n(p.income?.otherSources?.dividendIncome) + n(p.income?.otherSources?.familyPension) + n(p.income?.otherSources?.otherIncome) + n(p.income?.agriculturalIncome) > 0) s.add('other');
     if (p.income?.foreignIncome?.incomes?.length) s.add('foreign');
     if (s.size === 0) s.add('salary');
     setActive([...s]);
