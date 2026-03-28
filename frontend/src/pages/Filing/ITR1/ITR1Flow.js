@@ -76,7 +76,6 @@ export default function ITR1Flow() {
   const [bankData, setBankData] = useState({ bankName: '', accountNumber: '', ifsc: '', accountType: 'SAVINGS' });
   const [bankErrors, setBankErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [collapsed, setCollapsed] = useState({ income: false, savings: false, summary: false });
   const [selectedRegime, setSelectedRegime] = useState('new');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -190,15 +189,6 @@ export default function ITR1Flow() {
     return map[id] ?? null;
   };
 
-  const getEditor = () => {
-    if (selected === 'deductions') return DeductionsEditor;
-    if (selected === 'bank') return BankEditor;
-    if (!selected) return null;
-    return SOURCES.find(s => s.id === selected)?.editor || null;
-  };
-
-  const Editor = getEditor();
-  const toggle = (key) => setCollapsed(prev => ({ ...prev, [key]: !prev[key] }));
   const itrColor = ITR_COLORS[itrType] || P.brand;
 
   return (
@@ -381,15 +371,86 @@ export default function ITR1Flow() {
         )}
       </aside>
 
-      {/* ── Center ── */}
+      {/* ── Center — Accordion of all active sections ── */}
       <main className="hud-editor">
-        {Editor ? (
-          <Editor payload={payload} filing={filing} selectedRegime={selectedRegime}
-            onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-            activeSources={active} computation={comp} onSubmit={handleSubmit}
-            isSubmitting={isSubmitting} bankData={bankData} setBankData={setBankData}
-            bankErrors={bankErrors} onDownloadJSON={downloadJSON} itrType={itrType} />
-        ) : (
+        {/* All active income sources as collapsible cards */}
+        {SOURCES.filter(src => active.includes(src.id)).map(src => {
+          const isOpen = selected === src.id;
+          const Icon = src.icon;
+          const total = getTotalForSource(src.id);
+          const EditorComp = src.editor;
+          return (
+            <div key={src.id} className={`hud-accordion-card ${isOpen ? 'open' : ''}`} style={isOpen ? { borderColor: src.color, boxShadow: `0 0 0 2px ${src.color}12` } : {}}>
+              <button className="hud-accordion-header" onClick={() => setSelected(isOpen ? null : src.id)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 6, background: src.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon size={13} style={{ color: src.color }} />
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>{src.label}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {total != null && <span style={{ fontSize: 12, fontWeight: 600, color: n(total) < 0 ? P.success : P.textSecondary, fontVariantNumeric: 'tabular-nums' }}>{fmt(total)}</span>}
+                  {isOpen ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
+                </div>
+              </button>
+              {isOpen && (
+                <div className="hud-accordion-body">
+                  <EditorComp payload={payload} filing={filing} selectedRegime={selectedRegime}
+                    onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
+                    activeSources={active} computation={comp} itrType={itrType} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Deductions card */}
+        <div className={`hud-accordion-card ${selected === 'deductions' ? 'open' : ''}`} style={selected === 'deductions' ? { borderColor: P.success, boxShadow: '0 0 0 2px rgba(22,163,74,0.08)' } : {}}>
+          <button className="hud-accordion-header" onClick={() => setSelected(selected === 'deductions' ? null : 'deductions')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: 6, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CheckCircle size={13} style={{ color: P.success }} />
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Deductions</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {bestRegime && n(bestRegime.deductions) > 0 && <span style={{ fontSize: 12, fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.deductions)}</span>}
+              {selected === 'deductions' ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
+            </div>
+          </button>
+          {selected === 'deductions' && (
+            <div className="hud-accordion-body">
+              <DeductionsEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
+                onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
+                activeSources={active} computation={comp} itrType={itrType} />
+            </div>
+          )}
+        </div>
+
+        {/* Bank & Submit card */}
+        <div className={`hud-accordion-card ${selected === 'bank' ? 'open' : ''}`} style={selected === 'bank' ? { borderColor: P.brand, boxShadow: '0 0 0 2px rgba(37,99,235,0.08)' } : {}}>
+          <button className="hud-accordion-header" onClick={() => setSelected(selected === 'bank' ? null : 'bank')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: 6, background: P.bgMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CreditCard size={13} style={{ color: P.textMuted }} />
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Bank & Submit</span>
+            </div>
+            {selected === 'bank' ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
+          </button>
+          {selected === 'bank' && (
+            <div className="hud-accordion-body">
+              <BankEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
+                onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
+                activeSources={active} computation={comp} onSubmit={handleSubmit}
+                isSubmitting={isSubmitting} bankData={bankData} setBankData={setBankData}
+                bankErrors={bankErrors} onDownloadJSON={downloadJSON} itrType={itrType} />
+            </div>
+          )}
+        </div>
+
+        {/* Summary view when nothing is selected */}
+        {!selected && (
           <SummaryView comp={comp} itrType={itrType} filing={filing} rec={rec} bestRegime={bestRegime} altRegime={altRegime} tds={tds} onEdit={setSelected} />
         )}
       </main>

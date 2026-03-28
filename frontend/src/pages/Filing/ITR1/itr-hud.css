@@ -137,8 +137,30 @@
 
 /* ── Center Editor ── */
 .hud-editor {
-  flex: 1; max-width: 680px; min-width: 0;
+  flex: 1; max-width: 720px; min-width: 0;
   animation: stepFadeIn 0.25s ease-out;
+}
+
+/* ── Accordion Cards ── */
+.hud-accordion-card {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg); margin-bottom: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+}
+.hud-accordion-card:hover { border-color: var(--border-medium); }
+.hud-accordion-card.open { border-color: var(--brand-primary); }
+
+.hud-accordion-header {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 12px 16px; background: none; border: none;
+  cursor: pointer; min-height: 48px; transition: background 0.1s;
+}
+.hud-accordion-header:hover { background: var(--bg-card-hover); }
+
+.hud-accordion-body {
+  padding: 0 16px 16px;
+  animation: stepFadeIn 0.2s ease-out;
 }
 
 /* ── Mobile ── */
@@ -193,6 +215,11 @@
 
   /* Editor full width */
   .hud-editor { padding: 12px; max-width: 100%; }
+
+  /* Accordion cards on mobile — tighter spacing */
+  .hud-accordion-card { border-radius: var(--radius-md); margin-bottom: 6px; }
+  .hud-accordion-header { padding: 10px 12px; min-height: 44px; }
+  .hud-accordion-body { padding: 0 12px 12px; }
 }
 
 /* ── Mobile sticky tax bar ── */
