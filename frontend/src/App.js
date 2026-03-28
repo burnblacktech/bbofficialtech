@@ -131,10 +131,19 @@ const AppContent = () => (
   </div>
 );
 
-const App = () => (
-  <ErrorBoundary>
-    <AppContent />
-  </ErrorBoundary>
-);
+const App = () => {
+  // Prevent scroll-wheel from changing number input values globally
+  useEffect(() => {
+    const handler = () => { if (document.activeElement?.type === 'number') document.activeElement.blur(); };
+    document.addEventListener('wheel', handler, { passive: true });
+    return () => document.removeEventListener('wheel', handler);
+  }, []);
+
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
+  );
+};
 
 export default App;

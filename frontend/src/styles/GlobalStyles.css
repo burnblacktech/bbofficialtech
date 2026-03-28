@@ -36,6 +36,11 @@ input:focus, select:focus, textarea:focus { outline: none; }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-medium); }
 
+/* Disable scroll-to-change on number inputs */
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
 /* Selection */
 ::selection { background: rgba(37, 99, 235, 0.15); }
 
