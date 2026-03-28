@@ -41,6 +41,28 @@ const ITRDeterminationWizard = () => {
   const [businessTurnover, setBusinessTurnover] = useState('');
   const [wantsPresumptive, setWantsPresumptive] = useState(false);
   const [panError, setPanError] = useState('');
+  const [checkingExisting, setCheckingExisting] = useState(true);
+
+  // Check if a filing already exists for this AY — if so, go straight to it
+  React.useEffect(() => {
+    if (!panFromProfile) { setCheckingExisting(false); return; }
+    const checkExisting = async () => {
+      try {
+        const res = await api.get('/filings');
+        const filings = res.data?.data || res.data?.filings || [];
+        const currentAY = fileableAYs[0].value;
+        const existing = filings.find(f => f.assessmentYear === currentAY && f.lifecycleState === 'draft');
+        if (existing) {
+          const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[existing.itrType] || 'itr1';
+          toast.success('Resuming your existing filing');
+          navigate(`/filing/${existing.id}/${route}`, { replace: true });
+          return;
+        }
+      } catch { /* ignore — show the wizard */ }
+      setCheckingExisting(false);
+    };
+    checkExisting();
+  }, []); // eslint-disable-line
 
   const toggleSource = (id) => {
     setSources(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
@@ -121,6 +143,11 @@ const ITRDeterminationWizard = () => {
 
   return (
     <div className="ff-page">
+      {checkingExisting ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+          <Loader2 size={28} className="animate-spin" style={{ color: '#6b7280' }} />
+        </div>
+      ) : (
       <div className="ff-content" style={{ maxWidth: 640 }}>
         <h1 className="step-title" style={{ fontSize: 26, marginBottom: 8 }}>File Your ITR</h1>
         <p className="step-desc">Tell us about your income and we'll pick the right form</p>
@@ -245,6 +272,7 @@ const ITRDeterminationWizard = () => {
           You can change income sources later. Data is saved as you go.
         </p>
       </div>
+      )}
     </div>
   );
 };
