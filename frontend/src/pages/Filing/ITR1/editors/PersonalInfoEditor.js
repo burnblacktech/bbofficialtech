@@ -128,7 +128,6 @@ const FILING_STATUS_OPTIONS = [
   { value: 'U', label: 'Updated (U)' },
 ];
 
-
 export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, computation, itrType, user, userProfile }) {
   const savedPI = payload?.personalInfo || {};
   const [form, setForm] = useState(() => buildInitialState(user, userProfile, savedPI, payload));
