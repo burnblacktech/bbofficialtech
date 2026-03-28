@@ -1,15 +1,20 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/build",
-  "installCommand": "cd backend && npm install --omit=dev && cd ../frontend && npm install",
-  "framework": null,
-  "functions": {
-    "backend/api/index.js": {
-      "maxDuration": 60,
-      "includeFiles": "backend/src/**"
+  "builds": [
+    {
+      "src": "backend/api/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "includeFiles": ["backend/src/**", "backend/package.json"]
+      }
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
     }
-  },
+  ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "/backend/api/index.js" },
     { "source": "/health", "destination": "/backend/api/index.js" },
@@ -23,9 +28,5 @@
       ]
     }
   ],
-  "regions": ["bom1"],
-  "env": {
-    "NODE_ENV": "production",
-    "CI": "false"
-  }
+  "regions": ["bom1"]
 }
