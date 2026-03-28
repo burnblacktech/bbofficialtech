@@ -59,11 +59,12 @@ const ITR_COLORS = { 'ITR-1': '#059669', 'ITR-2': '#2563eb', 'ITR-3': '#d97706',
 const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
 
 // Map source IDs to relevant import document types
+// eslint-disable-next-line camelcase
 const SOURCE_IMPORTS = {
   salary: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
   other: [{ type: '26as', label: '26AS', color: '#2563eb' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
-  capital_gains: [{ type: 'ais', label: 'AIS', color: '#7c3aed' }],
-  house_property: [{ type: '26as', label: '26AS', color: '#2563eb' }],
+  'capital_gains': [{ type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  'house_property': [{ type: '26as', label: '26AS', color: '#2563eb' }],
   deductions: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
 };
 
