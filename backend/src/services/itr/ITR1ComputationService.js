@@ -134,17 +134,20 @@ class ITR1ComputationService {
   }
 
   static computeOtherIncome(otherData) {
-    if (!otherData) return { savingsInterest: 0, fdInterest: 0, dividends: 0, familyPension: 0, familyPensionExempt: 0, other: 0, total: 0 };
+    if (!otherData) return { savingsInterest: 0, fdInterest: 0, dividends: 0, familyPension: 0, familyPensionExempt: 0, other: 0, interestOnITRefund: 0, winnings: 0, gifts: 0, total: 0 };
 
     const savings = n(otherData.savingsInterest);
     const fd = n(otherData.fdInterest);
     const div = n(otherData.dividendIncome);
     const fpGross = n(otherData.familyPension);
     const fpExempt = Math.min(Math.round(fpGross / 3), 15000);
+    const itRefund = n(otherData.interestOnITRefund);
+    const winnings = n(otherData.winnings);
+    const gifts = n(otherData.gifts);
     const other = n(otherData.otherIncome);
-    const total = savings + fd + div + (fpGross - fpExempt) + other;
+    const total = savings + fd + div + (fpGross - fpExempt) + itRefund + winnings + gifts + other;
 
-    return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, other, total };
+    return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, interestOnITRefund: itRefund, winnings, gifts, other, total };
   }
 
   // ── Salary Exemptions ──
