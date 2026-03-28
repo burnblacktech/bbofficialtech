@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 import { itrService } from '../../services';
-import { getCurrentAY, ayToFY } from '../../utils/assessmentYear';
+import { getCurrentAY, ayToFY, getDeadlineInfo } from '../../utils/assessmentYear';
 import P from '../../styles/palette';
 
 /* eslint-disable camelcase */
@@ -34,8 +34,24 @@ export default function UserDashboard() {
     staleTime: 30000,
   });
 
+  const dl = getDeadlineInfo();
+
   return (
     <div style={S.page}>
+      {/* Deadline banner */}
+      {!dl.isPastDue && dl.daysLeft <= 120 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: dl.daysLeft <= 30 ? '#fef2f2' : '#fffbeb', border: `1px solid ${dl.daysLeft <= 30 ? '#fecaca' : '#fde68a'}`, borderRadius: 8, fontSize: 13, color: dl.daysLeft <= 30 ? P.error : P.warning, marginBottom: 12 }}>
+          <Clock size={14} style={{ flexShrink: 0 }} />
+          <span>Filing deadline: {dl.label} · {dl.daysLeft} days left{dl.daysLeft <= 30 ? ' — file now to avoid late fees' : ''}</span>
+        </div>
+      )}
+      {dl.isPastDue && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, fontSize: 13, color: P.error, marginBottom: 12 }}>
+          <AlertCircle size={14} style={{ flexShrink: 0 }} />
+          <span>Deadline passed ({dl.label}). You can still file a belated return, but interest under Section 234A may apply.</span>
+        </div>
+      )}
+
       <div style={S.topRow}>
         <div>
           <h1 style={S.h1}>Welcome, {name.split(' ')[0]}</h1>
@@ -61,7 +77,10 @@ export default function UserDashboard() {
         ) : filings.length === 0 ? (
           <div style={S.emptyBox}>
             <FileText size={32} color={P.borderMedium} />
-            <p style={S.emptyText}>No filings yet. Click "File ITR" to start.</p>
+            <p style={S.emptyText}>Ready to file? It takes about 15 minutes for most salaried individuals.</p>
+            <button style={{ ...S.cta, marginTop: 8 }} onClick={() => navigate('/filing/start')}>
+              <Plus size={16} /> Start Filing
+            </button>
           </div>
         ) : (
           <div style={S.list}>

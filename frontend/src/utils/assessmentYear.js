@@ -53,3 +53,23 @@ export const getFileableAYs = () => {
     { value: prevAY, label: `AY ${prevAY} (FY ${ayToFY(prevAY)})`, primary: false },
   ];
 };
+
+/**
+ * Get filing deadline info for the current AY.
+ * Standard deadline: July 31 of the AY start year.
+ * Returns { deadline: Date, daysLeft: number, isPastDue: boolean, label: string }
+ */
+export const getDeadlineInfo = () => {
+  const ay = getCurrentAY();
+  const [startStr] = ay.split('-');
+  const startYear = parseInt(startStr, 10);
+  const deadline = new Date(startYear, 6, 31); // July 31 (month is 0-indexed)
+  const now = new Date();
+  const diffMs = deadline.getTime() - now.getTime();
+  const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  const isPastDue = daysLeft < 0;
+  const dd = String(deadline.getDate()).padStart(2, '0');
+  const mm = String(deadline.getMonth() + 1).padStart(2, '0');
+  const label = `${dd}/${mm}/${deadline.getFullYear()}`;
+  return { deadline, daysLeft, isPastDue, label, ay };
+};

@@ -30,7 +30,7 @@ export default function LandingPage() {
       <main style={S.hero}>
         <div style={S.heroInner}>
           <div style={S.heroLeft}>
-            <div style={S.badge}><Shield size={14} /> ICAI Certified Platform</div>
+            <div style={S.badge}><Shield size={14} /> Built by Tax Professionals</div>
             <h1 style={S.h1}>File Your ITR<br />Like a CA Would</h1>
             <p style={S.heroDesc}>
               Smart guidance, real-time computation, old vs new regime comparison.
@@ -58,7 +58,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer style={S.footer}>
-        <span>&copy; 2025 BurnBlack Technologies</span>
+        <span>&copy; 2026 BurnBlack Technologies</span>
         <span style={{ color: P.textLight }}>Built for Indian taxpayers</span>
       </footer>
     </div>

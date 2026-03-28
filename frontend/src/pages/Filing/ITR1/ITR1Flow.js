@@ -73,6 +73,37 @@ const SOURCE_IMPORTS = {
   deductions: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
 };
 
+// Section completion check — returns true if section has meaningful data
+/* eslint-disable camelcase */
+function isSectionComplete(id, payload, comp) {
+  const p = payload || {};
+  switch (id) {
+    case 'personalInfo': return getCompletionInfo(p.personalInfo || {}).complete;
+    case 'salary': return (p.income?.salary?.employers || []).length > 0;
+    case 'house_property': return p.income?.houseProperty?.type && !['none', 'NONE'].includes(p.income.houseProperty.type);
+    case 'other': return n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) + n(p.income?.otherSources?.dividendIncome) + n(p.income?.otherSources?.otherIncome) > 0;
+    case 'capital_gains': return (p.income?.capitalGains?.transactions || []).length > 0;
+    case 'business': return (p.income?.presumptive?.entries || []).length > 0 || (p.income?.business?.businesses || []).length > 0;
+    case 'foreign': return (p.income?.foreignIncome?.incomes || []).length > 0;
+    case 'deductions': return n(p.deductions?.ppf) + n(p.deductions?.elss) + n(p.deductions?.lic) + n(p.deductions?.nps) + n(p.deductions?.healthSelf) > 0;
+    case 'bank': return !!(p.bankDetails?.bankName && p.bankDetails?.accountNumber);
+    default: return false;
+  }
+}
+/* eslint-enable camelcase */
+
+// Get the next incomplete section in filing order
+/* eslint-disable camelcase */
+function getNextSection(currentId, activeSources, payload, comp) {
+  const order = ['personalInfo', ...activeSources, 'deductions', 'bank'];
+  const idx = order.indexOf(currentId);
+  if (idx === -1 || idx >= order.length - 1) return null;
+  const next = order[idx + 1];
+  const labels = { personalInfo: 'Personal Info', salary: 'Salary', house_property: 'House Property', other: 'Other Income', capital_gains: 'Capital Gains', business: 'Business', foreign: 'Foreign Income', deductions: 'Deductions', bank: 'Bank & Submit' };
+  return { id: next, label: labels[next] || next };
+}
+/* eslint-enable camelcase */
+
 export default function ITR1Flow() {
   const { filingId } = useParams();
   const navigate = useNavigate();
@@ -496,6 +527,11 @@ export default function ITR1Flow() {
                   <PersonalInfoEditor payload={payload} filing={filing}
                     onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
                     computation={comp} itrType={itrType} user={user} userProfile={profile || null} />
+                  {(() => { const nx = getNextSection('personalInfo', active, payload, comp); return nx ? (
+                    <button className="ff-btn ff-btn-outline" onClick={() => setSelected(nx.id)} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
+                      Continue to {nx.label} →
+                    </button>
+                  ) : null; })()}
                 </div>
               )}
             </div>
@@ -509,6 +545,7 @@ export default function ITR1Flow() {
           const total = getTotalForSource(src.id);
           const EditorComp = src.editor;
           const imports = SOURCE_IMPORTS[src.id] || [];
+          const srcComplete = isSectionComplete(src.id, payload, comp);
           return (
             <div key={src.id} className={`hud-accordion-card ${isOpen ? 'open' : ''}`} style={isOpen ? { borderColor: src.color, boxShadow: `0 0 0 2px ${src.color}12` } : {}}>
               <button className="hud-accordion-header" onClick={() => setSelected(isOpen ? null : src.id)}>
@@ -517,6 +554,7 @@ export default function ITR1Flow() {
                     <Icon size={13} style={{ color: src.color }} />
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>{src.label}</span>
+                  {srcComplete && <CheckCircle size={12} style={{ color: P.success }} />}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   {imports.length > 0 && (
@@ -538,6 +576,11 @@ export default function ITR1Flow() {
                   <EditorComp payload={payload} filing={filing} selectedRegime={selectedRegime}
                     onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
                     activeSources={active} computation={comp} itrType={itrType} />
+                  {(() => { const nx = getNextSection(src.id, active, payload, comp); return nx ? (
+                    <button className="ff-btn ff-btn-outline" onClick={() => setSelected(nx.id)} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
+                      Continue to {nx.label} →
+                    </button>
+                  ) : null; })()}
                 </div>
               )}
             </div>
@@ -552,6 +595,7 @@ export default function ITR1Flow() {
                 <CheckCircle size={13} style={{ color: P.success }} />
               </div>
               <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Deductions</span>
+              {isSectionComplete('deductions', payload, comp) && <CheckCircle size={12} style={{ color: P.success }} />}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span onClick={(e) => { e.stopPropagation(); openImport('form16'); }}
@@ -567,6 +611,9 @@ export default function ITR1Flow() {
               <DeductionsEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
                 onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
                 activeSources={active} computation={comp} itrType={itrType} />
+              <button className="ff-btn ff-btn-outline" onClick={() => setSelected('bank')} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
+                Continue to Bank & Submit →
+              </button>
             </div>
           )}
         </div>
@@ -579,6 +626,7 @@ export default function ITR1Flow() {
                 <CreditCard size={13} style={{ color: P.textMuted }} />
               </div>
               <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Bank & Submit</span>
+              {isSectionComplete('bank', payload, comp) && <CheckCircle size={12} style={{ color: P.success }} />}
             </div>
             {selected === 'bank' ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
           </button>
@@ -780,6 +828,36 @@ function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, o
             <RegimeCard regime={altRegime} label={rec === 'old' ? 'New Regime' : 'Old Regime'} tds={tds} />
           </div>
           {comp?.savings > 0 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, color: P.success, fontWeight: 600 }}>{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
+        </div>
+      )}
+
+      {/* ── CA Insights ── */}
+      {bestRegime && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+          {/* Refund explanation */}
+          {bestRegime.netPayable < 0 && n(tds?.fromSalary) > 0 && (
+            <div style={{ padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, fontSize: 12, color: '#166534', lineHeight: 1.5 }}>
+              💡 Your employer deducted {fmt(tds.fromSalary)} as TDS, which is more than your actual tax liability. The excess {fmt(Math.abs(bestRegime.netPayable))} will be refunded after filing.
+            </div>
+          )}
+          {/* Zero tax explanation */}
+          {bestRegime.totalTax === 0 && n(income?.grossTotal) > 0 && (
+            <div style={{ padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, fontSize: 12, color: '#166534', lineHeight: 1.5 }}>
+              💡 Your taxable income is within the rebate limit — no tax to pay. {n(bestRegime.rebate) > 0 ? `Rebate of ${fmt(bestRegime.rebate)} under Section 87A covers your entire tax.` : ''}
+            </div>
+          )}
+          {/* Regime suggestion */}
+          {comp?.savings > 0 && comp.recommended !== rec && (
+            <div style={{ padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, fontSize: 12, color: '#92400e', lineHeight: 1.5 }}>
+              💡 Switching to {comp.recommended === 'old' ? 'Old' : 'New'} Regime would save you {fmt(comp.savings)}. {comp.recommended === 'old' ? 'Your deductions make the old regime more beneficial.' : 'The lower slab rates outweigh your deductions.'}
+            </div>
+          )}
+          {/* New regime trade-off */}
+          {rec === 'new' && n(altRegime?.deductions) > 0 && (
+            <div style={{ padding: '10px 14px', background: P.infoBg, border: `1px solid ${P.infoBorder}`, borderRadius: 8, fontSize: 12, color: '#1e40af', lineHeight: 1.5 }}>
+              💡 Under New Regime, you are not claiming {fmt(altRegime.deductions)} in deductions (80C, 80D, etc.). The lower slab rates compensate{comp?.recommended === 'new' ? ' — and save you more.' : ', but Old Regime may save more.'}
+            </div>
+          )}
         </div>
       )}
 

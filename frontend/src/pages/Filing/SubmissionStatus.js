@@ -67,6 +67,19 @@ export default function SubmissionStatus() {
         )}
       </div>
 
+      {/* E-verification reminder */}
+      {(state === 'eri_success' || state === 'submitted_to_eri') && (
+        <div style={{ marginTop: 16, padding: '14px 16px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#92400e', marginBottom: 6 }}>E-Verify Your Return</div>
+          <div style={{ fontSize: 13, color: '#92400e', lineHeight: 1.5 }}>
+            You must e-verify within 30 days of filing, or your return is treated as not filed. Aadhaar OTP is the fastest method (2 minutes).
+          </div>
+          <a href="https://www.incometax.gov.in" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8, fontSize: 13, fontWeight: 600, color: P.brand }}>
+            Go to ITD Portal →
+          </a>
+        </div>
+      )}
+
       <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
         <button className="ff-btn ff-btn-outline" onClick={() => navigate('/dashboard')}>
           <ArrowLeft size={15} /> Dashboard

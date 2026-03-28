@@ -17,7 +17,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPw, setShowPw] = useState(false);
-  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirmPassword: '', agreeTerms: false });
 
   const set = (k, v) => { setForm(prev => ({ ...prev, [k]: v })); setError(''); };
 
@@ -29,6 +29,7 @@ export default function SignupPage() {
     if (form.phone && !/^[6-9]\d{9}$/.test(form.phone.replace(/\D/g, ''))) { setError('Valid 10-digit phone required'); return; }
     if (form.password.length < 8) { setError('Password must be 8+ characters'); return; }
     if (form.password !== form.confirmPassword) { setError('Passwords do not match'); return; }
+    if (!form.agreeTerms) { setError('Please agree to the Terms of Service and Privacy Policy'); return; }
 
     setLoading(true);
     try {
@@ -91,6 +92,11 @@ export default function SignupPage() {
                 <input className="ff-input" type={showPw ? 'text' : 'password'} value={form.confirmPassword} onChange={e => set('confirmPassword', e.target.value)} placeholder="Repeat" />
               </div>
             </div>
+
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, color: P.textMuted, marginBottom: 14, cursor: 'pointer', lineHeight: 1.4 }}>
+              <input type="checkbox" checked={form.agreeTerms} onChange={e => set('agreeTerms', e.target.checked)} style={{ marginTop: 2, accentColor: P.brand, minWidth: 16, minHeight: 16 }} />
+              <span>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: P.brand, fontWeight: 500 }}>Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: P.brand, fontWeight: 500 }}>Privacy Policy</a></span>
+            </label>
 
             <button className="ff-btn ff-btn-primary" type="submit" disabled={loading} style={S.fullBtn}>
               {loading ? 'Creating...' : 'Create Account'}
