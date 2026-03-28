@@ -403,11 +403,23 @@ export default function ITR1Flow() {
         {bestRegime && (
           <div style={{ margin: '8px 0', padding: '10px 12px', background: P.bgMuted, borderRadius: 8, fontSize: 11, color: P.textMuted }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Gross Income</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(income?.grossTotal)}</span></div>
+            {n(comp?.agriculturalIncome) > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Agri Income (exempt)</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>{fmt(comp.agriculturalIncome)}</span></div>
+            )}
             {n(bestRegime.deductions) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Deductions</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(bestRegime.deductions)}</span></div>}
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Taxable</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.taxableIncome)}</span></div>
             <div style={{ borderTop: `1px solid ${P.borderLight}`, margin: '4px 0' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Tax ({rec})</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.totalTax)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Tax on income</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.taxOnIncome)}</span></div>
+            {n(bestRegime.rebate) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Rebate 87A</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(bestRegime.rebate)}</span></div>}
+            {n(bestRegime.surcharge) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Surcharge</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.surcharge)}</span></div>}
+            {n(bestRegime.cess) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Cess (4%)</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.cess)}</span></div>}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Total tax ({rec})</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.totalTax)}</span></div>
             {tds && n(tds.total) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>TDS/Advance</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(tds.total)}</span></div>}
+            {n(comp?.agriculturalIncome) > 5000 && bestRegime.agriIntegrationApplied && (
+              <div style={{ fontSize: 10, color: P.warning, marginTop: 4, lineHeight: 1.3 }}>
+                Agri income ({fmt(comp.agriculturalIncome)}) pushes other income into higher slabs via partial integration
+              </div>
+            )}
             <div style={{ textAlign: 'center', marginTop: 4 }}>
               <button style={{ fontSize: 10, color: P.brand, background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 'auto' }} onClick={() => setSelected(null)}>
                 View full breakdown →
