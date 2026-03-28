@@ -226,7 +226,16 @@ export default function ITR1Flow() {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(r.data, null, 2)]));
       a.download = `${itr.replace('-', '')}_AY${filing?.assessmentYear}.json`; a.click();
-    } catch { toast.error('Download failed'); }
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.code === 'FILING_INCOMPLETE' && data?.issues?.length) {
+        const first3 = data.issues.slice(0, 3).map(i => i.message || i.field).join(', ');
+        toast.error(`Filing incomplete: ${first3}${data.issues.length > 3 ? ` (+${data.issues.length - 3} more)` : ''}`, { duration: 6000 });
+        setSelected('personalInfo');
+      } else {
+        toast.error(data?.error || 'Download failed');
+      }
+    }
   };
 
   if (isLoading) return <div className="hud-loading"><Loader2 size={28} className="animate-spin" /></div>;

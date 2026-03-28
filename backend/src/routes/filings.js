@@ -737,6 +737,18 @@ router.get('/:filingId/itr1/json', authenticateToken, async (req, res, next) => 
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
 
+        // Validate completeness before generating JSON
+        const validation = FilingCompletenessService.validate(filing);
+        const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
+        if (blockers.length > 0) {
+            return res.status(422).json({
+                success: false,
+                error: `Filing is incomplete. ${blockers.length} issue(s) must be fixed before downloading JSON.`,
+                code: 'FILING_INCOMPLETE',
+                issues: blockers.slice(0, 10),
+            });
+        }
+
         const ITR1JsonBuilder = require('../services/itr/ITR1JsonBuilder');
         const json = ITR1JsonBuilder.build(filing.jsonPayload || {}, filing.assessmentYear);
 
@@ -797,6 +809,12 @@ router.get('/:filingId/itr2/json', authenticateToken, async (req, res, next) => 
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
 
+        const validation = FilingCompletenessService.validate(filing);
+        const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
+        if (blockers.length > 0) {
+            return res.status(422).json({ success: false, error: `Filing incomplete. ${blockers.length} issue(s) to fix.`, code: 'FILING_INCOMPLETE', issues: blockers.slice(0, 10) });
+        }
+
         const ITR2JsonBuilder = require('../services/itr/ITR2JsonBuilder');
         const json = ITR2JsonBuilder.build(filing.jsonPayload || {}, filing.assessmentYear);
         res.setHeader('Content-Disposition', `attachment; filename="ITR2_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
@@ -835,6 +853,11 @@ router.get('/:filingId/itr3/json', authenticateToken, async (req, res, next) => 
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const validation = FilingCompletenessService.validate(filing);
+        const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
+        if (blockers.length > 0) {
+            return res.status(422).json({ success: false, error: `Filing incomplete. ${blockers.length} issue(s) to fix.`, code: 'FILING_INCOMPLETE', issues: blockers.slice(0, 10) });
+        }
         const ITR3Json = require('../services/itr/ITR3JsonBuilder');
         res.setHeader('Content-Disposition', `attachment; filename="ITR3_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
         res.json(ITR3Json.build(filing.jsonPayload || {}, filing.assessmentYear));
@@ -872,6 +895,11 @@ router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => 
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        const validation = FilingCompletenessService.validate(filing);
+        const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
+        if (blockers.length > 0) {
+            return res.status(422).json({ success: false, error: `Filing incomplete. ${blockers.length} issue(s) to fix.`, code: 'FILING_INCOMPLETE', issues: blockers.slice(0, 10) });
+        }
         const ITR4Json = require('../services/itr/ITR4JsonBuilder');
         res.setHeader('Content-Disposition', `attachment; filename="ITR4_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
         res.json(ITR4Json.build(filing.jsonPayload || {}, filing.assessmentYear));
