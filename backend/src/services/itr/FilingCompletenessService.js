@@ -39,6 +39,9 @@ class FilingCompletenessService {
     // ITR-specific limits
     this._validateITRLimits(payload, itrType, errors);
 
+    // Numeric bounds and cross-field sanity checks
+    this._validateNumericBounds(payload, errors, warnings);
+
     return {
       complete: errors.length === 0,
       errors,
@@ -244,6 +247,151 @@ class FilingCompletenessService {
         errors.push({ section: 'Presumptive', field: 'turnoverLimit', message: 'Total receipts exceed ₹2Cr — use ITR-3 instead' });
       }
     }
+  }
+  /**
+   * Validate numeric bounds, negative values, and cross-field sanity
+   * This is the backend enforcement layer — catches API bypass attempts
+   */
+  static _validateNumericBounds(payload, errors, warnings) {
+    const income = payload.income || {};
+    const MAX_AMOUNT = 9999999999; // ₹999.99 Cr — practical upper bound
+
+    // ── Salary bounds ──
+    (income.salary?.employers || []).forEach((emp, i) => {
+      const prefix = `Employer ${i + 1}`;
+      if (n(emp.grossSalary) < 0) {
+        errors.push({ section: 'Salary', field: `employer.${i}.grossSalary`, message: `${prefix}: Gross salary cannot be negative` });
+      }
+      if (n(emp.grossSalary) > MAX_AMOUNT) {
+        errors.push({ section: 'Salary', field: `employer.${i}.grossSalary`, message: `${prefix}: Gross salary exceeds maximum` });
+      }
+      if (n(emp.tdsDeducted) < 0) {
+        errors.push({ section: 'Salary', field: `employer.${i}.tds`, message: `${prefix}: TDS cannot be negative` });
+      }
+      if (n(emp.tdsDeducted) > n(emp.grossSalary) && n(emp.grossSalary) > 0) {
+        warnings.push({ section: 'Salary', field: `employer.${i}.tds`, message: `${prefix}: TDS exceeds gross salary — please verify` });
+      }
+      if (n(emp.allowances?.hra?.exempt) > n(emp.allowances?.hra?.received) && n(emp.allowances?.hra?.received) > 0) {
+        warnings.push({ section: 'Salary', field: `employer.${i}.hra`, message: `${prefix}: HRA exempt exceeds HRA received` });
+      }
+      if (n(emp.deductions?.professionalTax) < 0) {
+        errors.push({ section: 'Salary', field: `employer.${i}.pt`, message: `${prefix}: Professional tax cannot be negative` });
+      }
+    });
+
+    // ── House property bounds ──
+    const hp = income.houseProperty || {};
+    if (hp.type === 'SELF_OCCUPIED' && n(hp.interestOnHomeLoan) < 0) {
+      errors.push({ section: 'House Property', field: 'interestOnHomeLoan', message: 'Home loan interest cannot be negative' });
+    }
+    if (hp.type === 'LET_OUT') {
+      if (n(hp.annualRentReceived) < 0) {
+        errors.push({ section: 'House Property', field: 'annualRentReceived', message: 'Rent received cannot be negative' });
+      }
+      if (n(hp.municipalTaxesPaid) < 0) {
+        errors.push({ section: 'House Property', field: 'municipalTaxesPaid', message: 'Municipal taxes cannot be negative' });
+      }
+    }
+
+    // ── Other income bounds ──
+    const os = income.otherSources || {};
+    const otherFields = ['savingsInterest', 'fdInterest', 'dividendIncome', 'familyPension', 'otherIncome'];
+    otherFields.forEach(f => {
+      if (n(os[f]) < 0) {
+        errors.push({ section: 'Other Income', field: f, message: `${f} cannot be negative` });
+      }
+    });
+
+    // ── Capital gains bounds ──
+    (income.capitalGains?.transactions || []).forEach((t, i) => {
+      if (n(t.saleValue) < 0) {
+        errors.push({ section: 'Capital Gains', field: `cg.${i}.saleValue`, message: `Transaction ${i + 1}: Sale value cannot be negative` });
+      }
+      if (n(t.purchaseValue) < 0) {
+        errors.push({ section: 'Capital Gains', field: `cg.${i}.purchaseValue`, message: `Transaction ${i + 1}: Purchase value cannot be negative` });
+      }
+      if (n(t.expenses) < 0) {
+        errors.push({ section: 'Capital Gains', field: `cg.${i}.expenses`, message: `Transaction ${i + 1}: Expenses cannot be negative` });
+      }
+      if (n(t.exemption) < 0) {
+        errors.push({ section: 'Capital Gains', field: `cg.${i}.exemption`, message: `Transaction ${i + 1}: Exemption cannot be negative` });
+      }
+      // Exemption should not exceed gain
+      const gain = n(t.saleValue) - n(t.purchaseValue || t.indexedCost) - n(t.expenses);
+      if (gain > 0 && n(t.exemption) > gain) {
+        warnings.push({ section: 'Capital Gains', field: `cg.${i}.exemption`, message: `Transaction ${i + 1}: Exemption (₹${n(t.exemption).toLocaleString('en-IN')}) exceeds gain (₹${gain.toLocaleString('en-IN')})` });
+      }
+    });
+
+    // ── Business bounds ──
+    (income.business?.businesses || []).forEach((biz, i) => {
+      if (n(biz.turnover) < 0) {
+        errors.push({ section: 'Business', field: `business.${i}.turnover`, message: `Business ${i + 1}: Turnover cannot be negative` });
+      }
+    });
+
+    // ── Presumptive bounds ──
+    (income.presumptive?.entries || []).forEach((e, i) => {
+      if (n(e.grossReceipts) < 0) {
+        errors.push({ section: 'Presumptive', field: `pres.${i}.grossReceipts`, message: `Entry ${i + 1}: Gross receipts cannot be negative` });
+      }
+      // Minimum income rate enforcement (44AD: 6-8%, 44ADA: 50%)
+      const receipts = n(e.grossReceipts);
+      if (receipts > 0 && e.section === '44AD') {
+        const minRate = e.digitalReceipts ? 6 : 8;
+        const minIncome = Math.round(receipts * minRate / 100);
+        if (n(e.declaredIncome) < minIncome) {
+          errors.push({ section: 'Presumptive', field: `pres.${i}.declaredIncome`, message: `Entry ${i + 1}: Declared income must be at least ${minRate}% of receipts (₹${minIncome.toLocaleString('en-IN')})` });
+        }
+      }
+      if (receipts > 0 && e.section === '44ADA') {
+        const minIncome = Math.round(receipts * 50 / 100);
+        if (n(e.declaredIncome) < minIncome) {
+          errors.push({ section: 'Presumptive', field: `pres.${i}.declaredIncome`, message: `Entry ${i + 1}: Declared income must be at least 50% of receipts (₹${minIncome.toLocaleString('en-IN')})` });
+        }
+      }
+    });
+
+    // ── Foreign income bounds ──
+    (income.foreignIncome?.incomes || []).forEach((inc, i) => {
+      if (n(inc.amountINR) < 0) {
+        errors.push({ section: 'Foreign Income', field: `fi.${i}.amountINR`, message: `Entry ${i + 1}: Amount cannot be negative` });
+      }
+      if (n(inc.taxPaidAbroad) < 0) {
+        errors.push({ section: 'Foreign Income', field: `fi.${i}.taxPaidAbroad`, message: `Entry ${i + 1}: Tax paid abroad cannot be negative` });
+      }
+    });
+
+    // ── TDS bounds ──
+    const tds = payload.taxes?.tds || {};
+    (tds.nonSalaryEntries || []).forEach((e, i) => {
+      if (n(e.tdsDeducted) < 0) {
+        errors.push({ section: 'TDS', field: `tds.${i}.tdsDeducted`, message: `TDS entry ${i + 1}: TDS deducted cannot be negative` });
+      }
+      if (n(e.tdsClaimed) < 0) {
+        errors.push({ section: 'TDS', field: `tds.${i}.tdsClaimed`, message: `TDS entry ${i + 1}: TDS claimed cannot be negative` });
+      }
+      if (n(e.tdsClaimed) > n(e.tdsDeducted) && n(e.tdsDeducted) > 0) {
+        warnings.push({ section: 'TDS', field: `tds.${i}.tdsClaimed`, message: `TDS entry ${i + 1}: TDS claimed exceeds TDS deducted` });
+      }
+    });
+
+    // ── Advance tax / SAT bounds ──
+    if (n(payload.taxes?.advanceTax) < 0) {
+      errors.push({ section: 'Taxes Paid', field: 'advanceTax', message: 'Advance tax cannot be negative' });
+    }
+    if (n(payload.taxes?.selfAssessmentTax) < 0) {
+      errors.push({ section: 'Taxes Paid', field: 'selfAssessmentTax', message: 'Self-assessment tax cannot be negative' });
+    }
+
+    // ── Deduction bounds (enforce caps as errors, not just warnings) ──
+    const d = payload.deductions || {};
+    const deductionFields = ['ppf', 'elss', 'lic', 'nsc', 'tuitionFees', 'homeLoanPrincipal', 'sukanyaSamriddhi', 'fiveYearFD', 'nps', 'healthSelf', 'healthParents', 'eduLoan', 'savingsInt', 'rentPaid', 'disability'];
+    deductionFields.forEach(f => {
+      if (n(d[f]) < 0) {
+        errors.push({ section: 'Deductions', field: f, message: `${f}: Deduction amount cannot be negative` });
+      }
+    });
   }
 }
 
