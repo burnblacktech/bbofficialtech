@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import { validateHousePropertyStep } from '../../../../utils/itrValidation';
+import useAutoSave from '../../../../hooks/useAutoSave';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -14,26 +15,31 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
     interestOnHomeLoan: hp.interestOnHomeLoan || '',
   });
   const [errors, setErrors] = useState({});
-  const [dirty, setDirty] = useState(false);
+
+  const buildPayload = useCallback(() => {
+    const reset = type === 'none' ? { annualRentReceived: '', municipalTaxesPaid: '', interestOnHomeLoan: '' } : form;
+    return { income: { houseProperty: { type, ...reset } } };
+  }, [type, form]);
+
+  const { markDirty } = useAutoSave(onSave, buildPayload);
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
-    setDirty(true);
+    markDirty();
     const v = validateHousePropertyStep(type.toUpperCase().replace('LETOUT', 'LET_OUT').replace('SELFOCCUPIED', 'SELF_OCCUPIED'), next);
     setErrors(v.valid ? {} : v.errors);
   };
 
   const changeType = (t) => {
     setType(t);
-    setDirty(true);
+    markDirty();
     if (t === 'none') setForm({ annualRentReceived: '', municipalTaxesPaid: '', interestOnHomeLoan: '' });
   };
 
   const handleSave = () => {
     const reset = type === 'none' ? { annualRentReceived: '', municipalTaxesPaid: '', interestOnHomeLoan: '' } : form;
     onSave({ income: { houseProperty: { type, ...reset } } });
-    setDirty(false);
   };
 
   const rent = n(form.annualRentReceived);
@@ -59,27 +65,25 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
 
       {type === 'selfOccupied' && (
         <div className="step-card editing">
-          <F l="Home Loan Interest (₹)" v={form.interestOnHomeLoan} c={v => update('interestOnHomeLoan', v)} h="Max deduction ₹2,00,000 for self-occupied" />
+          <F l="Home Loan Interest (₹)" v={form.interestOnHomeLoan} c={v => update('interestOnHomeLoan', v)} h="Home loan interest paid · Max ₹2,00,000 for self-occupied" />
         </div>
       )}
 
       {type === 'letOut' && (
         <div className="step-card editing">
           <div className="ff-grid-2">
-            <F l="Annual Rent Received (₹)" v={form.annualRentReceived} c={v => update('annualRentReceived', v)} />
-            <F l="Municipal Taxes Paid (₹)" v={form.municipalTaxesPaid} c={v => update('municipalTaxesPaid', v)} />
+            <F l="Annual Rent Received (₹)" v={form.annualRentReceived} c={v => update('annualRentReceived', v)} h="Total rent collected this year · From rent agreement" />
+            <F l="Municipal Taxes Paid (₹)" v={form.municipalTaxesPaid} c={v => update('municipalTaxesPaid', v)} h="Property tax paid · From municipal corporation receipt" />
           </div>
-          <F l="Home Loan Interest (₹)" v={form.interestOnHomeLoan} c={v => update('interestOnHomeLoan', v)} />
+          <F l="Home Loan Interest (₹)" v={form.interestOnHomeLoan} c={v => update('interestOnHomeLoan', v)} h="Home loan interest paid · No cap for let-out property" />
         </div>
       )}
 
       {type !== 'none' && (
         <>
-          {dirty && (
-            <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
-              {isSaving ? 'Saving...' : <><Save size={14} /> Save House Property</>}
-            </button>
-          )}
+          <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
+            {isSaving ? 'Saving...' : <><Save size={14} /> Save House Property</>}
+          </button>
           <div className="step-card summary">
           {type === 'letOut' && <>
             <div className="ff-row"><span className="ff-row-label">Net Annual Value</span><span className="ff-row-value">₹{netAV.toLocaleString('en-IN')}</span></div>

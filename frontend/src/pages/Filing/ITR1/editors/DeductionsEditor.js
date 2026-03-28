@@ -1,6 +1,7 @@
-﻿import { useState } from 'react';
+﻿import { useState, useCallback } from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
 import { validateDonation80G } from '../../../../utils/itrValidation';
+import useAutoSave from '../../../../hooks/useAutoSave';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -52,15 +53,22 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
   const [donations80G, setDonations80G] = useState(initDonations80G);
   const [donationErrors, setDonationErrors] = useState({});
 
+  const buildPayload = useCallback(() => {
+    return { deductions: { ...form, donations80G: donations80G.filter(e => e.doneeName || n(e.amount) > 0) }, selectedRegime: regime };
+  }, [form, donations80G, regime]);
+
+  const { markDirty } = useAutoSave(onSave, buildPayload);
+
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
-    // Don't save on keystroke — wait for explicit save
+    markDirty();
   };
 
   // 80G donation helpers
   const updateDonation = (idx, field, val) => {
     setDonations80G(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
+    markDirty();
   };
 
   const validateDonationOnBlur = (idx) => {
@@ -140,13 +148,13 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
               <F l="PPF" v={form.ppf} c={v => update('ppf', v)} />
               <F l="ELSS Mutual Funds" v={form.elss} c={v => update('elss', v)} />
               <F l="LIC Premium" v={form.lic} c={v => update('lic', v)} />
-              <F l="Tuition Fees" v={form.tuitionFees} c={v => update('tuitionFees', v)} h="Max 2 children" />
+              <F l="Tuition Fees" v={form.tuitionFees} c={v => update('tuitionFees', v)} h="School/college fees · Max 2 children" />
               <F l="Home Loan Principal" v={form.homeLoanPrincipal} c={v => update('homeLoanPrincipal', v)} />
               <F l="Sukanya Samriddhi" v={form.sukanyaSamriddhi} c={v => update('sukanyaSamriddhi', v)} />
               <F l="5-Year Tax Saver FD" v={form.fiveYearFD} c={v => update('fiveYearFD', v)} />
               <F l="NSC" v={form.nsc} c={v => update('nsc', v)} />
             </div>
-            <F l="Other 80C" v={form.otherC} c={v => update('otherC', v)} h="SCSS, stamp duty, etc." />
+            <F l="Other 80C" v={form.otherC} c={v => update('otherC', v)} h="SCSS, stamp duty, post office deposits, etc." />
             {raw80C > 150000 && <div className="ff-hint" style={{ color: '#d97706', marginTop: 4 }}>Total {rs(raw80C)} — capped at {rs(150000)}</div>}
             {raw80C > 0 && raw80C <= 150000 && <div className="ff-hint" style={{ color: '#16a34a', marginTop: 4 }}>Used {rs(raw80C)} of {rs(150000)} limit</div>}
           </div>
@@ -155,10 +163,10 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
           <div className="step-card editing">
             <div className="ff-section-title">Health & Insurance</div>
             <div className="ff-grid-2">
-              <F l="80CCD(1B) — NPS" v={form.nps} c={v => update('nps', v)} h={`Max ${rs(50000)}`} />
-              <F l="80D — Health (Self/Family)" v={form.healthSelf} c={v => update('healthSelf', v)} h={`Max ${rs(25000)} / ${rs(50000)} senior`} />
-              <F l="80D — Health (Parents)" v={form.healthParents} c={v => update('healthParents', v)} h={`Max ${rs(25000)} / ${rs(50000)} senior`} />
-              <F l="80U — Disability" v={form.disability} c={v => update('disability', v)} h={`${rs(75000)} / ${rs(125000)} severe`} />
+              <F l="80CCD(1B) — NPS" v={form.nps} c={v => update('nps', v)} h={`Additional NPS investment · Max ${rs(50000)} beyond 80C`} />
+              <F l="80D — Health (Self/Family)" v={form.healthSelf} c={v => update('healthSelf', v)} h={`Health insurance premium · ${rs(25000)} (${rs(50000)} if senior)`} />
+              <F l="80D — Health (Parents)" v={form.healthParents} c={v => update('healthParents', v)} h={`Parents' health insurance · ${rs(25000)} (${rs(50000)} if senior)`} />
+              <F l="80U — Disability" v={form.disability} c={v => update('disability', v)} h={`Self disability deduction · ${rs(75000)} or ${rs(125000)} (severe)`} />
             </div>
           </div>
 
@@ -166,9 +174,9 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
           <div className="step-card editing">
             <div className="ff-section-title">Other Deductions</div>
             <div className="ff-grid-2">
-              <F l="80E — Education Loan Interest" v={form.eduLoan} c={v => update('eduLoan', v)} h="No cap, interest only" />
-              <F l="80TTA — Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h={`Max ${rs(10000)}`} />
-              <F l="80GG — Rent Paid" v={form.rentPaid} c={v => update('rentPaid', v)} h={`No HRA? Max ${rs(5000)}/month`} />
+              <F l="80E — Education Loan Interest" v={form.eduLoan} c={v => update('eduLoan', v)} h="Interest on education loan · No upper limit, 8 years" />
+              <F l="80TTA — Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h={`Savings interest deduction · Max ${rs(10000)}`} />
+              <F l="80GG — Rent Paid" v={form.rentPaid} c={v => update('rentPaid', v)} h={`Rent deduction (no HRA) · Max ${rs(5000)}/month`} />
             </div>
           </div>
 

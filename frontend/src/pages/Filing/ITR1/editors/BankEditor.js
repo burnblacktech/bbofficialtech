@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Download, Save, CheckCircle, ExternalLink, Shield, Info, Plus, Trash2 } from 'lucide-react';
 import { validateBankAccount, validateTDS2Entry } from '../../../../utils/itrValidation';
+import useAutoSave from '../../../../hooks/useAutoSave';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -90,7 +91,11 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
     setDirty(true);
     const next = { ...form, [key]: val };
     setErrors(validateBankAccount(next).valid ? {} : validateBankAccount(next).errors);
+    markBankDirty();
   };
+
+  const buildBankPayload = useCallback(() => ({ bankDetails: form }), [form]);
+  const { markDirty: markBankDirty } = useAutoSave(onSave, buildBankPayload);
 
   const handleSave = () => {
     const v = validateBankAccount(form);
@@ -118,9 +123,22 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
     setTaxDirty(false);
   }, [nonSalaryTDS, advanceEntries, satEntries, advanceTotal, satTotal, onSave, payload?.taxes?.tds]);
 
+  const buildTaxPayload = useCallback(() => ({
+    taxes: {
+      tds: { ...(payload?.taxes?.tds || {}), nonSalaryEntries: nonSalaryTDS.filter(e => e.deductorTan || e.deductorName || num(e.tdsDeducted) > 0) },
+      advanceTax: advanceTotal,
+      selfAssessmentTax: satTotal,
+      advanceTaxEntries: advanceEntries.filter(e => num(e.amount) > 0),
+      selfAssessmentTaxEntries: satEntries.filter(e => num(e.amount) > 0),
+    },
+  }), [nonSalaryTDS, advanceEntries, satEntries, advanceTotal, satTotal, payload?.taxes?.tds]);
+
+  const { markDirty: markTaxDirty } = useAutoSave(onSave, buildTaxPayload);
+
   const updateTDSEntry = (idx, field, val) => {
     setNonSalaryTDS(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
     setTaxDirty(true);
+    markTaxDirty();
   };
 
   const validateTDSEntryOnBlur = (idx) => {
@@ -137,17 +155,20 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
   const addTDSEntry = () => {
     setNonSalaryTDS(prev => [...prev, { ...EMPTY_TDS_ENTRY }]);
     setTaxDirty(true);
+    markTaxDirty();
   };
 
   const removeTDSEntry = (idx) => {
     setNonSalaryTDS(prev => prev.filter((_, i) => i !== idx));
     setTdsEntryErrors(prev => { const next = { ...prev }; delete next[idx]; return next; });
     setTaxDirty(true);
+    markTaxDirty();
   };
 
   const updateChallan = (list, setList, idx, field, val) => {
     setList(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
     setTaxDirty(true);
+    markTaxDirty();
   };
 
   const handleDownload = () => {
@@ -178,24 +199,24 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
       {/* Bank Details */}
       <div className="step-card editing">
         <div className="ff-section-title">Bank Account for Refund</div>
-        <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>If you're due a refund, ITD will credit it to this account. Use the same bank linked to your PAN.</div>
+        <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>If you are due a refund, ITD credits it to this account. Use the bank linked to your PAN.</div>
         <div className="ff-grid-2">
           <div className="ff-field">
             <label className="ff-label">Bank Name *</label>
             <input className={`ff-input ${errors.bankName ? 'error' : ''}`} type="text" value={form.bankName} onChange={e => update('bankName', e.target.value)} placeholder="e.g., State Bank of India" />
-            {errors.bankName ? <div className="ff-hint" style={{ color: P.error }}>{errors.bankName}</div> : <div className="ff-hint">As printed on your cheque book or passbook</div>}
+            {errors.bankName ? <div className="ff-hint" style={{ color: P.error }}>{errors.bankName}</div> : <div className="ff-hint">Bank for refund credit · As on cheque book or passbook</div>}
           </div>
           <div className="ff-field">
             <label className="ff-label">Account Number *</label>
             <input className={`ff-input ${errors.accountNumber ? 'error' : ''}`} type="text" value={form.accountNumber} onChange={e => update('accountNumber', e.target.value)} placeholder="e.g., 1234567890" />
-            {errors.accountNumber ? <div className="ff-hint" style={{ color: P.error }}>{errors.accountNumber}</div> : <div className="ff-hint">Your savings or current account number</div>}
+            {errors.accountNumber ? <div className="ff-hint" style={{ color: P.error }}>{errors.accountNumber}</div> : <div className="ff-hint">Savings or current account · For refund credit</div>}
           </div>
         </div>
         <div className="ff-grid-2">
           <div className="ff-field">
             <label className="ff-label">IFSC Code</label>
             <input className={`ff-input ${errors.ifsc ? 'error' : ''}`} type="text" value={form.ifsc} onChange={e => update('ifsc', e.target.value.toUpperCase())} placeholder="e.g., SBIN0001234" />
-            {errors.ifsc ? <div className="ff-hint" style={{ color: P.error }}>{errors.ifsc}</div> : <div className="ff-hint">11-character code on your cheque leaf or bank website</div>}
+            {errors.ifsc ? <div className="ff-hint" style={{ color: P.error }}>{errors.ifsc}</div> : <div className="ff-hint">11-character branch code · On cheque leaf or bank website</div>}
           </div>
           <div className="ff-field">
             <label className="ff-label">Account Type</label>
@@ -292,7 +313,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
         <div style={{ marginTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <label className="ff-label" style={{ margin: 0 }}>Advance Tax Paid</label>
-            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => { setAdvanceEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); }}>
+            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => { setAdvanceEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); markTaxDirty(); }}>
               <Plus size={12} /> Add Challan
             </button>
           </div>
@@ -315,7 +336,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
                 <label className="ff-label" style={{ fontSize: 11 }}>Amount (₹)</label>
                 <input className="ff-input" type="number" min="0" value={entry.amount || ''} onChange={e => updateChallan(advanceEntries, setAdvanceEntries, i, 'amount', e.target.value)} placeholder="0" />
               </div>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, marginBottom: 2, minHeight: 'auto', minWidth: 'auto' }} onClick={() => { setAdvanceEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); }} title="Remove">
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, marginBottom: 2, minHeight: 'auto', minWidth: 'auto' }} onClick={() => { setAdvanceEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); markTaxDirty(); }} title="Remove">
                 <Trash2 size={14} />
               </button>
             </div>
@@ -332,7 +353,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
         <div style={{ marginTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <label className="ff-label" style={{ margin: 0 }}>Self-Assessment Tax Paid</label>
-            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => { setSatEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); }}>
+            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => { setSatEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); markTaxDirty(); }}>
               <Plus size={12} /> Add Challan
             </button>
           </div>
@@ -355,7 +376,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
                 <label className="ff-label" style={{ fontSize: 11 }}>Amount (₹)</label>
                 <input className="ff-input" type="number" min="0" value={entry.amount || ''} onChange={e => updateChallan(satEntries, setSatEntries, i, 'amount', e.target.value)} placeholder="0" />
               </div>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, marginBottom: 2, minHeight: 'auto', minWidth: 'auto' }} onClick={() => { setSatEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); }} title="Remove">
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, marginBottom: 2, minHeight: 'auto', minWidth: 'auto' }} onClick={() => { setSatEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); markTaxDirty(); }} title="Remove">
                 <Trash2 size={14} />
               </button>
             </div>

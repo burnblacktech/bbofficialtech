@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import { validateOtherIncomeStep } from '../../../../utils/itrValidation';
+import useAutoSave from '../../../../hooks/useAutoSave';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -20,12 +21,18 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
     agriculturalIncome: agri || '',
   });
   const [errors, setErrors] = useState({});
-  const [dirty, setDirty] = useState(false);
+
+  const buildPayload = useCallback(() => {
+    const { agriculturalIncome: agriVal, ...otherFields } = form;
+    return { income: { otherSources: otherFields, agriculturalIncome: n(agriVal) } };
+  }, [form]);
+
+  const { markDirty } = useAutoSave(onSave, buildPayload);
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
     setForm(next);
-    setDirty(true);
+    markDirty();
     const v = validateOtherIncomeStep(next);
     setErrors(v.valid ? {} : v.errors);
   };
@@ -33,7 +40,6 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
   const handleSave = () => {
     const { agriculturalIncome: agriVal, ...otherFields } = form;
     onSave({ income: { otherSources: otherFields, agriculturalIncome: n(agriVal) } });
-    setDirty(false);
   };
 
   const fp = n(form.familyPension);
@@ -49,29 +55,29 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
       <div className="step-card editing">
         <div className="ff-section-title">Interest Income</div>
         <div className="ff-grid-2">
-          <F l="Savings Account Interest" v={form.savingsInterest} c={v => update('savingsInterest', v)} h="From bank savings accounts" />
-          <F l="FD / RD Interest" v={form.fdInterest} c={v => update('fdInterest', v)} h="Fixed / recurring deposits" />
+          <F l="Savings Account Interest" v={form.savingsInterest} c={v => update('savingsInterest', v)} h="Interest on savings accounts · From bank passbook" />
+          <F l="FD / RD Interest" v={form.fdInterest} c={v => update('fdInterest', v)} h="FD/RD interest earned · From bank TDS certificate" />
         </div>
-        <F l="Interest on IT Refund" v={form.interestOnITRefund} c={v => update('interestOnITRefund', v)} h="u/s 244A — shown in intimation" />
+        <F l="Interest on IT Refund" v={form.interestOnITRefund} c={v => update('interestOnITRefund', v)} h="Interest on your IT refund · From ITD intimation order" />
       </div>
 
       <div className="step-card editing">
         <div className="ff-section-title">Other Sources</div>
         <div className="ff-grid-2">
-          <F l="Dividend Income" v={form.dividendIncome} c={v => update('dividendIncome', v)} h="From shares, MF (taxable from AY 2021-22)" />
+          <F l="Dividend Income" v={form.dividendIncome} c={v => update('dividendIncome', v)} h="Dividends from shares or MF · Fully taxable" />
           <F l="Family Pension" v={form.familyPension} c={v => update('familyPension', v)} h={fp > 0 ? `1/3 exempt: \u20B9${fpExempt.toLocaleString('en-IN')} (max \u20B915,000)` : '1/3 or \u20B915,000 whichever is less'} />
         </div>
         <div className="ff-grid-2">
-          <F l="Lottery / Winnings" v={form.winnings} c={v => update('winnings', v)} h="Taxed at flat 30% (no deductions)" />
-          <F l="Gifts (taxable)" v={form.gifts} c={v => update('gifts', v)} h="Aggregate > \u20B950,000 in a year" />
+          <F l="Lottery / Winnings" v={form.winnings} c={v => update('winnings', v)} h="Lottery, games, betting · Flat 30% tax" />
+          <F l="Gifts (taxable)" v={form.gifts} c={v => update('gifts', v)} h="Gifts from non-relatives · Taxable if total > ₹50,000/year" />
         </div>
-        <F l="Any Other Income" v={form.otherIncome} c={v => update('otherIncome', v)} h="Commission, royalty, etc." />
+        <F l="Any Other Income" v={form.otherIncome} c={v => update('otherIncome', v)} h="Commission, royalty, interest on loans given, etc." />
       </div>
 
       {/* Agricultural Income — exempt but affects tax calculation */}
       <div className="step-card editing">
         <div className="ff-section-title">Agricultural Income (Exempt)</div>
-        <F l="Agricultural Income" v={form.agriculturalIncome} c={v => update('agriculturalIncome', v)} h="Exempt from tax, but used for slab rate calculation if > ₹5,000" />
+        <F l="Agricultural Income" v={form.agriculturalIncome} c={v => update('agriculturalIncome', v)} h="Exempt from tax · Affects slab rate if > ₹5,000" />
         {n(form.agriculturalIncome) > 5000 && (
           <div className="ff-hint" style={{ color: '#d97706', marginTop: 4 }}>
             Since agricultural income exceeds {'₹'}5,000, it will be partially integrated with your other income for tax slab calculation (higher slabs may apply to non-agricultural income).
@@ -84,11 +90,9 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
         )}
       </div>
 
-      {dirty && (
-        <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
-          {isSaving ? 'Saving...' : <><Save size={14} /> Save Other Income</>}
-        </button>
-      )}
+      <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
+        {isSaving ? 'Saving...' : <><Save size={14} /> Save Other Income</>}
+      </button>
 
       <div className="step-card summary">
         {n(form.savingsInterest) > 0 && <R l="Savings Interest" v={form.savingsInterest} />}

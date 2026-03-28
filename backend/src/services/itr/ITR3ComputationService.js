@@ -12,8 +12,8 @@ class ITR3ComputationService {
   static compute(payload) {
     const income = this.computeIncome(payload);
     const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
 
     const tds = this.computeTDS(payload);
     const ftc = ITR2ComputationService.computeForeignTaxCredit(payload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
@@ -97,8 +97,9 @@ class ITR3ComputationService {
     };
   }
 
-  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
-    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {}, warnings: [] };
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0, payload = null) {
+    ITR1ComputationService._lastGrossTotal = income.grossTotal;
+    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
 
     const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + income.otherSources.total +
       income.capitalGains.stcg.other + income.foreignIncome.totalIncome + income.business.netProfit;

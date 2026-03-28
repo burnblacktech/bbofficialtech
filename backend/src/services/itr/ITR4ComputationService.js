@@ -10,8 +10,8 @@ class ITR4ComputationService {
   static compute(payload) {
     const income = this.computeIncome(payload);
     const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome);
+    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
+    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
     const tds = ITR1ComputationService.computeTDS(payload);
 
     for (const r of [oldRegime, newRegime]) { r.tdsCredit = tds.total; r.netPayable = r.totalTax - tds.total; }
@@ -80,8 +80,9 @@ class ITR4ComputationService {
     return { entries, totalGrossReceipts: totalReceipts, totalIncome };
   }
 
-  static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
-    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData) : { total: 0, breakdown: {}, warnings: [] };
+  static computeRegime(income, deductionData, regime, agriculturalIncome = 0, payload = null) {
+    ITR1ComputationService._lastGrossTotal = income.grossTotal;
+    const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;

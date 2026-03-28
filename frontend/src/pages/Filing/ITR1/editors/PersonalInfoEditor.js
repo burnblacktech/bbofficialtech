@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Lock, Shield, AlertTriangle, Save, User, MapPin, FileText, Info, CheckCircle } from 'lucide-react';
 import { INDIAN_STATES, isMetroCity } from '../../../../constants/indianStates';
 import { validatePersonalInfo } from '../../../../utils/itrValidation';
+import { formatDateDDMMYYYY } from '../../../../utils/dateFormat';
+import useAutoSave from '../../../../hooks/useAutoSave';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -149,6 +151,17 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
   const isRevisedFiling = filing?.filingType === 'revised';
   const isITR1 = itrType === 'ITR-1';
 
+  const buildPayload = useCallback(() => {
+    const metro = isMetroCity(form.address.city);
+    const piData = { ...form, isMetroCity: metro, ltcg112A: isITR1 ? form.ltcg112A : undefined };
+    if (isITR1 && !piData.ltcg112A?.amount && !piData.ltcg112A?.noLossToCarryForward) {
+      delete piData.ltcg112A;
+    }
+    return { personalInfo: piData };
+  }, [form, isITR1]);
+
+  const { markDirty } = useAutoSave(onSave, buildPayload);
+
   // Re-init when payload changes externally (e.g. after save round-trip)
   useEffect(() => {
     if (!dirty) {
@@ -161,17 +174,20 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
   const updateField = useCallback((field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setDirty(true);
-  }, []);
+    markDirty();
+  }, [markDirty]);
 
   const updateAddress = useCallback((field, value) => {
     setForm(prev => ({ ...prev, address: { ...prev.address, [field]: value } }));
     setDirty(true);
-  }, []);
+    markDirty();
+  }, [markDirty]);
 
   const updateLtcg = useCallback((field, value) => {
     setForm(prev => ({ ...prev, ltcg112A: { ...prev.ltcg112A, [field]: value } }));
     setDirty(true);
-  }, []);
+    markDirty();
+  }, [markDirty]);
 
   // Validate single field on blur
   const handleBlur = useCallback((field) => {
@@ -249,46 +265,84 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       </div>
       <p className="step-desc">Your identity details as required by the Income Tax Department. Fields marked * are mandatory for filing.</p>
 
-      {/* PAN Verified badge */}
-      {panVerified && (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', background: P.successBg, border: `1px solid ${P.successBorder}`, borderRadius: 6, fontSize: 12, fontWeight: 600, color: P.success, marginBottom: 12 }}>
-          <Shield size={13} /> PAN Verified — Name, DOB, and PAN are locked
-        </div>
-      )}
-
       {/* ── Section 1: Identity ── */}
-      <div className="step-card editing">
-        <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <User size={14} /> Identity
-        </div>
-        <div className="ff-grid-2">
-          <Field label="First Name *" value={form.firstName} onChange={v => updateField('firstName', v)} onBlur={() => handleBlur('firstName')} error={errors.firstName} locked={isLocked('firstName')} hint="As per PAN card" />
-          <Field label="Middle Name" value={form.middleName} onChange={v => updateField('middleName', v)} locked={isLocked('middleName')} hint="Optional" />
-        </div>
-        <div className="ff-grid-2">
-          <Field label="Last Name *" value={form.lastName} onChange={v => updateField('lastName', v)} onBlur={() => handleBlur('lastName')} error={errors.lastName} locked={isLocked('lastName')} hint="Surname as per PAN card" />
-          <Field label="PAN *" value={form.pan} onChange={v => updateField('pan', v.toUpperCase())} onBlur={() => handleBlur('pan')} error={errors.pan} locked={isLocked('pan')} hint="e.g., ABCDE1234F" />
-        </div>
-        <div className="ff-grid-2">
-          <Field label="Date of Birth *" value={form.dob} onChange={v => updateField('dob', v)} onBlur={() => handleBlur('dob')} error={errors.dob} locked={isLocked('dob')} type="date" />
-          <div className="ff-field">
-            <label className="ff-label">Gender *</label>
-            <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
-              {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-            {errors.gender && <div className="ff-hint" style={{ color: P.error }}>{errors.gender}</div>}
+      {panVerified && isLocked('firstName') && isLocked('lastName') && isLocked('pan') && isLocked('dob') ? (
+        <>
+          {/* Locked Data Card — PAN-verified fields as compact read-only display */}
+          <div className="ff-locked-card">
+            <div className="ff-locked-card-header">
+              <Lock size={13} /> Identity
+              <span className="ff-verified-dot"><Shield size={11} /> PAN Verified</span>
+            </div>
+            <div className="ff-kv-grid">
+              <div className="ff-kv-row">
+                <span className="ff-kv-label">Name</span>
+                <span className="ff-kv-value">{[form.firstName, form.middleName, form.lastName].filter(Boolean).join(' ')}</span>
+              </div>
+              <div className="ff-kv-row">
+                <span className="ff-kv-label">PAN</span>
+                <span className="ff-kv-value mono">{form.pan}</span>
+              </div>
+              <div className="ff-kv-row">
+                <span className="ff-kv-label">Date of Birth</span>
+                <span className="ff-kv-value">{formatDateDDMMYYYY(form.dob)}</span>
+              </div>
+            </div>
+            <div className="ff-source-badge"><Shield size={11} /> From PAN verification</div>
           </div>
-        </div>
-      </div>
+          {/* Gender still editable — not from PAN */}
+          <div className="step-card editing">
+            <div className="ff-field">
+              <label className="ff-label">Gender *</label>
+              <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
+                {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              {errors.gender && <div className="ff-hint" style={{ color: P.error }}>{errors.gender}</div>}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Editable form — PAN not verified or fields incomplete */}
+          {panVerified && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', background: P.successBg, border: `1px solid ${P.successBorder}`, borderRadius: 6, fontSize: 12, fontWeight: 600, color: P.success, marginBottom: 12 }}>
+              <Shield size={13} /> PAN Verified — Name, DOB, and PAN are locked
+            </div>
+          )}
+          <div className="step-card editing">
+            <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <User size={14} /> Identity
+            </div>
+            <div className="ff-grid-2">
+              <Field label="First Name *" value={form.firstName} onChange={v => updateField('firstName', v)} onBlur={() => handleBlur('firstName')} error={errors.firstName} locked={isLocked('firstName')} hint="As per PAN card" />
+              <Field label="Middle Name" value={form.middleName} onChange={v => updateField('middleName', v)} locked={isLocked('middleName')} hint="Optional" />
+            </div>
+            <div className="ff-grid-2">
+              <Field label="Last Name *" value={form.lastName} onChange={v => updateField('lastName', v)} onBlur={() => handleBlur('lastName')} error={errors.lastName} locked={isLocked('lastName')} hint="Surname as per PAN card" />
+              <Field label="PAN *" value={form.pan} onChange={v => updateField('pan', v.toUpperCase())} onBlur={() => handleBlur('pan')} error={errors.pan} locked={isLocked('pan')} hint="5 letters, 4 digits, 1 letter · e.g., ABCDE1234F" />
+            </div>
+            <div className="ff-grid-2">
+              <Field label="Date of Birth *" value={form.dob} onChange={v => updateField('dob', v)} onBlur={() => handleBlur('dob')} error={errors.dob} locked={isLocked('dob')} type="date" />
+              <div className="ff-field">
+                <label className="ff-label">Gender *</label>
+                <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
+                  {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+                {errors.gender && <div className="ff-hint" style={{ color: P.error }}>{errors.gender}</div>}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Section 2: Contact ── */}
       <div className="step-card editing">
         <div className="ff-section-title">Contact</div>
         <div className="ff-grid-2">
-          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="For ITD communication" />
-          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit Indian mobile" />
+          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here · Use your primary email" />
+          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile · Starting with 6, 7, 8, or 9" />
         </div>
-        <Field label="Aadhaar Number *" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar number" />
+        <Field label="Aadhaar Number *" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar · Required for e-verification" />
       </div>
 
       {/* ── Section 3: Address ── */}
@@ -297,8 +351,8 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           <MapPin size={14} /> Address
         </div>
         <div className="ff-grid-2">
-          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} hint="ITD: Residence No" />
-          <Field label="Premises Name" value={form.address.premisesName} onChange={v => updateAddress('premisesName', v)} hint="ITD: Residence Name" />
+          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} hint="House/flat number · ITD: Residence No" />
+          <Field label="Premises Name" value={form.address.premisesName} onChange={v => updateAddress('premisesName', v)} hint="Building or apartment name · Optional" />
         </div>
         <div className="ff-grid-2">
           <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
@@ -316,7 +370,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           </div>
         </div>
         <div className="ff-grid-2">
-          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} hint="6-digit pincode" />
+          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} hint="6-digit postal code · Of your current residence" />
           <div />
         </div>
       </div>
@@ -415,11 +469,9 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       )}
 
       {/* ── Save Button ── */}
-      {dirty && (
-        <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 4 }}>
-          {isSaving ? <><span className="ff-spinner" /> Saving...</> : <><Save size={14} /> Save Personal Info</>}
-        </button>
-      )}
+      <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 4 }}>
+        {isSaving ? <><span className="ff-spinner" /> Saving...</> : <><Save size={14} /> Save Personal Info</>}
+      </button>
     </div>
   );
 }

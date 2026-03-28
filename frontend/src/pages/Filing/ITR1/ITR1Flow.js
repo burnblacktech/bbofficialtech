@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
+import useUnsavedWarning from '../../../hooks/useUnsavedWarning';
 import { validateBankAccount } from '../../../utils/itrValidation';
 import toast from 'react-hot-toast';
 import P from '../../../styles/palette';
@@ -94,6 +95,11 @@ export default function ITR1Flow() {
   const [importReviewData, setImportReviewData] = useState(null);
   const [importPreselect, setImportPreselect] = useState(null); // pre-select doc type when opening from context
 
+  // Global dirty tracking — editors auto-save on unmount, but we still need
+  // beforeunload for tab close and route blocker for in-app navigation
+  const [globalDirty, setGlobalDirty] = useState(false);
+  const blocker = useUnsavedWarning(globalDirty);
+
   // Init from filing
   useEffect(() => {
     if (!filing) return;
@@ -118,8 +124,9 @@ export default function ITR1Flow() {
       if (updates.selectedRegime) { body.selectedRegime = updates.selectedRegime; setSelectedRegime(updates.selectedRegime); }
       await api.put(`/filings/${filingId}`, body);
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['filing', filingId] }); recompute(); },
-    onError: (e) => toast.error(e.response?.data?.error || 'Save failed'),
+    onMutate: () => { setGlobalDirty(true); },
+    onSuccess: () => { setGlobalDirty(false); qc.invalidateQueries({ queryKey: ['filing', filingId] }); recompute(); },
+    onError: (e) => { setGlobalDirty(false); toast.error(e.response?.data?.error || 'Save failed'); },
   });
 
   const recompute = useCallback(async () => {
@@ -601,6 +608,21 @@ export default function ITR1Flow() {
           <button className="hud-btn-primary" style={{ padding: '8px 16px', fontSize: 12 }} onClick={() => setSelected('bank')}>
             <Send size={13} /> Submit
           </button>
+        </div>
+      )}
+      {/* ── Route Blocker Dialog ── */}
+      {blocker.state === 'blocked' && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: 24, maxWidth: 360, width: '100%', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: P.textPrimary, marginBottom: 8 }}>Unsaved changes</div>
+            <div style={{ fontSize: 13, color: P.textMuted, marginBottom: 16, lineHeight: 1.5 }}>
+              Your data is being auto-saved. Leave now?
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => blocker.reset()} style={{ flex: 1, padding: '8px 0', background: P.bgMuted, color: P.textSecondary, border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Stay</button>
+              <button onClick={() => blocker.proceed()} style={{ flex: 1, padding: '8px 0', background: P.brand, color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Leave</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

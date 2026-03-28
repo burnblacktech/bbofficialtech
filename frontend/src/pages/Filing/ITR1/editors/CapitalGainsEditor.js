@@ -125,11 +125,11 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
             <F l="Purchase Value *" v={form.purchaseValue} c={v => setForm({ ...form, purchaseValue: v })} />
           </div>
           <div className="ff-grid-3">
-            <F l="Indexed Cost" v={form.indexedCost} c={v => setForm({ ...form, indexedCost: v })} h="For LTCG on property/debt" />
-            <F l="Expenses" v={form.expenses} c={v => setForm({ ...form, expenses: v })} h="Brokerage, stamp duty" />
+            <F l="Indexed Cost" v={form.indexedCost} c={v => setForm({ ...form, indexedCost: v })} h="Inflation-adjusted cost · For LTCG on property/debt" />
+            <F l="Expenses" v={form.expenses} c={v => setForm({ ...form, expenses: v })} h="Brokerage, stamp duty, legal fees" />
             <F l="Exemption (54/54EC/54F)" v={form.exemption} c={v => setForm({ ...form, exemption: v })} />
           </div>
-          <F l="TDS Deducted on This Sale" v={form.tdsOnSale} c={v => setForm({ ...form, tdsOnSale: v })} h="10% TDS on LTCG > \u20B91L (from broker)" />
+          <F l="TDS Deducted on This Sale" v={form.tdsOnSale} c={v => setForm({ ...form, tdsOnSale: v })} h="10% TDS on LTCG > ₹1L · From broker statement" />
 
           {/* Live gain preview */}
           {n(form.saleValue) > 0 && (
@@ -159,7 +159,7 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
       {txns.length > 0 && (
         <div className="step-card editing" style={{ marginTop: 8 }}>
           <div className="ff-section-title">TDS on Capital Gains</div>
-          <F l="Total TDS Deducted by Broker" v={tdsCG} c={v => setTdsCG(v)} h="From broker tax certificate / 26AS" />
+          <F l="Total TDS Deducted by Broker" v={tdsCG} c={v => setTdsCG(v)} h="Total TDS on capital gains · From broker certificate or 26AS" />
           <button className="ff-btn ff-btn-outline" onClick={saveTds} style={{ marginTop: 8, fontSize: 12 }}>Save TDS</button>
         </div>
       )}
