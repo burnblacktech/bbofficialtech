@@ -160,6 +160,10 @@ export default function ITR1Flow() {
   const toggleSource = (id) => {
     setActive(prev => {
       const next = prev.includes(id) ? (prev.length > 1 ? prev.filter(s => s !== id) : prev) : [...prev, id];
+      // Clear selected if we just removed the currently selected source
+      if (prev.includes(id) && selected === id) {
+        setSelected(null);
+      }
       return next;
     });
     if (!active.includes(id)) setSelected(id);
@@ -222,6 +226,19 @@ export default function ITR1Flow() {
     setImportPreselect(docType || null);
     setShowImportModal(true);
   };
+
+  // Scroll to the selected accordion card when selection changes
+  useEffect(() => {
+    if (!selected) return;
+    // Small delay to let the accordion render
+    const timer = setTimeout(() => {
+      const el = document.querySelector('.hud-accordion-card.open');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [selected]);
 
   return (
     <div className="hud">
