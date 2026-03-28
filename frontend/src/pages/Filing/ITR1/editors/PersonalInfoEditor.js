@@ -29,13 +29,23 @@ export function buildInitialState(user, userProfile, savedPI, payload) {
   const hasSalary = (payload?.income?.salary?.employers || []).length > 0;
 
   // Defaults from User + UserProfile
+  // Normalize gender: backend stores MALE/FEMALE/OTHER, we use Male/Female/Other
+  const normalizeGender = (g) => {
+    if (!g) return '';
+    const upper = g.toUpperCase();
+    if (upper === 'MALE') return 'Male';
+    if (upper === 'FEMALE') return 'Female';
+    if (upper === 'OTHER') return 'Other';
+    return g; // already in correct format
+  };
+
   const defaults = {
     firstName: parsed.firstName || '',
     middleName: parsed.middleName || '',
     lastName: parsed.lastName || '',
-    pan: user?.panNumber || '',
-    dob: user?.dateOfBirth ? user.dateOfBirth.slice(0, 10) : '',
-    gender: user?.gender || '',
+    pan: user?.panNumber || user?.pan || '',
+    dob: user?.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : '',
+    gender: normalizeGender(user?.gender),
     aadhaar: userProfile?.aadhaarNumber || '',
     email: user?.email || '',
     phone: user?.phone || '',
@@ -213,8 +223,14 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
     }
   }, [form, isITR1, onSave, userProfile]);
 
-  // Locked field helper
-  const isLocked = (field) => panVerified && ['firstName', 'middleName', 'lastName', 'dob', 'pan'].includes(field);
+  // Locked field helper — only lock if PAN verified AND the field has a value
+  const isLocked = (field) => {
+    if (!panVerified) return false;
+    if (!['firstName', 'middleName', 'lastName', 'dob', 'pan'].includes(field)) return false;
+    // Don't lock empty fields — user needs to fill them even if PAN is verified
+    const val = form[field];
+    return val !== undefined && val !== null && val !== '';
+  };
   const noSalaryLock = !hasSalary;
 
   return (
