@@ -89,9 +89,25 @@ class AISParser {
   static validate(jsonData) {
     const errors = [];
     if (!jsonData || typeof jsonData !== 'object') errors.push('Not a valid JSON object');
-    if (!jsonData?.pan) errors.push('Missing PAN');
-    if (!jsonData?.assessmentYear) errors.push('Missing assessment year');
-    if (!jsonData?.categories || typeof jsonData.categories !== 'object') errors.push('Missing categories object');
+    if (!jsonData?.pan && !jsonData?.PAN) errors.push('Missing PAN field');
+    if (!jsonData?.assessmentYear && !jsonData?.assessment_year && !jsonData?.aisData) errors.push('Missing assessment year');
+    if (!jsonData?.categories && !jsonData?.aisData && typeof jsonData !== 'object') errors.push('Missing income categories');
+
+    // Check if this is the raw ITD AIS Utility format (encrypted/encoded)
+    if (jsonData?.aisData || jsonData?.encryptedData || jsonData?.data?.encryptedData) {
+      errors.push('This appears to be the encrypted AIS file from ITD. Please open it in the AIS Utility first, then export the data as plain JSON');
+    }
+
+    // If it has categories, it's our expected format
+    if (jsonData?.categories && typeof jsonData.categories === 'object') {
+      return { valid: errors.length === 0, errors };
+    }
+
+    // If none of the expected structures match
+    if (errors.length === 0) {
+      errors.push('Unrecognized AIS format. Expected fields: pan, assessmentYear, categories');
+    }
+
     return { valid: errors.length === 0, errors };
   }
 }

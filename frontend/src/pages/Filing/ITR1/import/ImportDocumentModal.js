@@ -36,11 +36,11 @@ const DOC_TYPES = [
   {
     id: '26as',
     label: 'Form 26AS',
-    desc: 'Tax credit statement from ITD (JSON)',
-    format: 'JSON',
-    accept: '.json',
-    mimeTypes: ['application/json'],
-    maxSizeMB: 5,
+    desc: 'Tax credit statement · JSON or PDF from ITD portal',
+    format: 'JSON/PDF',
+    accept: '.json,.pdf',
+    mimeTypes: ['application/json', 'application/pdf'],
+    maxSizeMB: 10,
     icon: FileJson,
     color: '#2563eb',
     bg: '#eff6ff',
@@ -48,10 +48,10 @@ const DOC_TYPES = [
   {
     id: 'ais',
     label: 'AIS',
-    desc: 'Annual Information Statement (JSON)',
-    format: 'JSON',
-    accept: '.json',
-    mimeTypes: ['application/json'],
+    desc: 'Annual Information Statement · JSON or PDF from ITD portal',
+    format: 'JSON/PDF',
+    accept: '.json,.pdf',
+    mimeTypes: ['application/json', 'application/pdf'],
     maxSizeMB: 10,
     icon: FileJson,
     color: '#7c3aed',
@@ -164,13 +164,16 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState(null);
+  const [password, setPassword] = useState('');
+  const [needsPassword, setNeedsPassword] = useState(false);
+  const [pendingFile, setPendingFile] = useState(null);
   const fileInputRef = useRef(null);
 
   const docType = DOC_TYPES.find((d) => d.id === selectedType);
 
   // ── File handling ──
   const handleFile = useCallback(
-    async (file) => {
+    async (file, pwd) => {
       if (!docType) return;
       setError(null);
       setFileName(file.name);
@@ -186,18 +189,26 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
       setUploading(true);
       try {
         const fileContent = await readFileAsBase64(file);
-        const res = await api.post(`/filings/${filingId}/import`, {
-          documentType: docType.id,
-          fileContent,
-          fileName: file.name,
-        });
+        const body = { documentType: docType.id, fileContent, fileName: file.name };
+        if (pwd) body.password = pwd;
+        const res = await api.post(`/filings/${filingId}/import`, body);
 
         const { extractedData, conflicts, fieldMapping, documentMeta, warnings } = res.data;
+        setNeedsPassword(false);
+        setPendingFile(null);
+        setPassword('');
         onImportParsed({ extractedData, conflicts, fieldMapping, documentMeta, documentType: docType.id, fileName: file.name, fileContent, warnings: warnings || [] });
       } catch (err) {
+        const code = err.response?.data?.code;
         const msg = err.response?.data?.error || err.response?.data?.message || 'Upload failed. Please try again.';
-        setError(msg);
-        setFileName(null);
+        if (code === 'IMPORT_PASSWORD_REQUIRED' || code === 'IMPORT_PASSWORD_INCORRECT') {
+          setNeedsPassword(true);
+          setPendingFile(file);
+          setError(msg);
+        } else {
+          setError(msg);
+          setFileName(null);
+        }
       } finally {
         setUploading(false);
       }
@@ -357,6 +368,35 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
                     <AlertCircle size={16} style={{ color: P.error, flexShrink: 0 }} />
                     <span>{error}</span>
                   </motion.div>
+                )}
+
+                {/* Password input for protected PDFs */}
+                {needsPassword && (
+                  <div style={{ marginTop: 12, padding: 14, background: P.bgMuted, borderRadius: 8, border: `1px solid ${P.borderLight}` }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: P.textSecondary, display: 'block', marginBottom: 6 }}>
+                      PDF Password
+                    </label>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input
+                        type="text"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="e.g., abcde1234f01011990"
+                        style={{ flex: 1, padding: '8px 12px', border: `1px solid ${P.borderMedium}`, borderRadius: 6, fontSize: 13, outline: 'none' }}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }}
+                        disabled={!password || uploading}
+                        style={{ padding: '8px 16px', background: P.brand, color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: !password ? 0.5 : 1 }}
+                      >
+                        {uploading ? 'Trying...' : 'Unlock'}
+                      </button>
+                    </div>
+                    <div style={{ fontSize: 11, color: P.textLight, marginTop: 6 }}>
+                      ITD password format: PAN (lowercase) + DOB (DDMMYYYY)
+                    </div>
+                  </div>
                 )}
 
                 {/* Success hint */}

@@ -29,7 +29,7 @@ class ImportEngineService {
   /**
    * Parse document — extract data + detect conflicts (NO save)
    */
-  static async parseDocument(filingId, userId, { documentType, fileContent, fileName }) {
+  static async parseDocument(filingId, userId, { documentType, fileContent, fileName, password }) {
     // 1. Load filing
     const filing = await ITRFiling.findByPk(filingId);
     if (!filing) throw new AppError('Filing not found', 404, ErrorCodes.RESOURCE_NOT_FOUND);
@@ -52,36 +52,77 @@ class ImportEngineService {
       throw new AppError('File rejected for security reasons. Please upload a clean document.', 400, ErrorCodes.IMPORT_MALICIOUS_CONTENT);
     }
 
-    // 4. Parse
+    // 4. Parse — detect PDF vs JSON by magic bytes
     let parsed;
+    const isPDF = buffer.length > 4 && buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46;
+
     if (documentType === 'form16') {
-      parsed = await Form16Parser.parse(buffer);
-      // Validate AY
+      try { parsed = await Form16Parser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16 parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
       if (parsed.partA.assessmentYear && parsed.partA.assessmentYear !== filing.assessmentYear) {
         throw new AppError(`Form 16 is for AY ${parsed.partA.assessmentYear} but filing is for AY ${filing.assessmentYear}`, 409, ErrorCodes.IMPORT_AY_MISMATCH);
       }
     } else if (documentType === '26as') {
-      let json;
-      try { json = JSON.parse(buffer.toString('utf8')); }
-      catch { throw new AppError('Invalid JSON file. Please download a fresh copy from the ITD portal.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
-      parsed = TwentySixASParser.parse(json);
+      if (isPDF) {
+        try { parsed = await this._parseTDSPDF(buffer, password, '26AS'); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`26AS PDF parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      } else {
+        let json;
+        try { json = JSON.parse(buffer.toString('utf8')); }
+        catch { throw new AppError('Invalid file. Upload a JSON or PDF version of 26AS.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
+        try { parsed = TwentySixASParser.parse(json); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`26AS parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      }
       if (parsed.pan && parsed.pan !== filing.taxpayerPan) {
         throw new AppError(`PAN mismatch: document has ${parsed.pan}, filing has ${filing.taxpayerPan}`, 409, ErrorCodes.IMPORT_PAN_MISMATCH);
       }
     } else if (documentType === 'ais') {
-      let json;
-      try { json = JSON.parse(buffer.toString('utf8')); }
-      catch { throw new AppError('Invalid JSON file. Please download a fresh copy from the ITD portal.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
-      parsed = AISParser.parse(json);
+      if (isPDF) {
+        try { parsed = await this._parseTDSPDF(buffer, password, 'AIS'); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`AIS PDF parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      } else {
+        let json;
+        try { json = JSON.parse(buffer.toString('utf8')); }
+        catch { throw new AppError('Invalid file. Upload a JSON or PDF version of AIS.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
+        try { parsed = AISParser.parse(json); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`AIS parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      }
       if (parsed.pan && parsed.pan !== filing.taxpayerPan) {
         throw new AppError(`PAN mismatch: document has ${parsed.pan}, filing has ${filing.taxpayerPan}`, 409, ErrorCodes.IMPORT_PAN_MISMATCH);
       }
     } else if (documentType === 'form16a') {
-      parsed = await Form16AParser.parse(buffer);
+      try { parsed = await Form16AParser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16A parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
     } else if (documentType === 'form16b') {
-      parsed = await Form16BParser.parse(buffer);
+      try { parsed = await Form16BParser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16B parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
     } else if (documentType === 'form16c') {
-      parsed = await Form16CParser.parse(buffer);
+      try { parsed = await Form16CParser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16C parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
     }
 
     // 5. Map to jsonPayload paths
@@ -247,6 +288,123 @@ class ImportEngineService {
     if (path.startsWith('deductions')) return 'Deductions';
     if (path.startsWith('taxes')) return 'Taxes Paid';
     return 'Other';
+  }
+
+  /**
+   * Parse 26AS or AIS from PDF — extract text, then parse as structured data.
+   * Supports password-protected PDFs (ITD uses PAN+DOB as password).
+   */
+  static async _parseTDSPDF(buffer, password, docLabel) {
+    const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
+    const opts = { data: new Uint8Array(buffer) };
+    if (password) opts.password = password;
+
+    let doc;
+    try {
+      doc = await pdfjsLib.getDocument(opts).promise;
+    } catch (err) {
+      if (err.message?.includes('password') && !password) {
+        throw new AppError(
+          `This ${docLabel} PDF is password-protected. Enter the password (usually PAN in lowercase + DOB as DDMMYYYY, e.g., abcde1234f01011990).`,
+          422, 'IMPORT_PASSWORD_REQUIRED',
+        );
+      }
+      if (err.message?.includes('password') && password) {
+        throw new AppError(
+          `Incorrect password for ${docLabel} PDF. Try: PAN (lowercase) + DOB (DDMMYYYY). Example: abcde1234f01011990`,
+          422, 'IMPORT_PASSWORD_INCORRECT',
+        );
+      }
+      throw err;
+    }
+
+    // Extract all text
+    const pages = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const content = await page.getTextContent();
+      pages.push(content.items.map(item => item.str).join(' '));
+    }
+    const text = pages.join('\n');
+
+    if (!text || text.trim().length < 50) {
+      throw new AppError(`This ${docLabel} PDF appears to be a scanned image. Only digitally-generated PDFs are supported.`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+    }
+
+    // Extract PAN from text
+    const panMatch = text.match(/[A-Z]{5}[0-9]{4}[A-Z]/);
+    const pan = panMatch ? panMatch[0] : '';
+
+    // Extract TDS entries from text using regex patterns
+    const n = (v) => { const x = parseFloat(String(v).replace(/,/g, '').replace(/[^\d.-]/g, '')); return isNaN(x) ? 0 : Math.round(x); };
+    const warnings = [];
+
+    if (docLabel === '26AS') {
+      // 26AS PDF: look for TDS entries (TAN, Name, Amount, TDS)
+      const tdsEntries = [];
+      const tanPattern = /([A-Z]{4}[0-9]{5}[A-Z])\s+(.+?)\s+([\d,]+\.?\d*)\s+([\d,]+\.?\d*)/g;
+      let match;
+      while ((match = tanPattern.exec(text)) !== null) {
+        tdsEntries.push({ deductorTan: match[1], deductorName: match[2].trim(), amountPaid: n(match[3]), tdsDeducted: n(match[4]) });
+      }
+      if (tdsEntries.length === 0) {
+        warnings.push('Could not extract TDS entries from PDF. The format may differ from expected. Please verify data manually.');
+      }
+      return {
+        pan,
+        assessmentYear: '',
+        tdsEntries,
+        advanceTaxEntries: [],
+        selfAssessmentEntries: [],
+        refunds: [],
+        warnings,
+      };
+    }
+
+    // AIS PDF: extract income categories from text
+    const salary = [];
+    const interest = [];
+    const dividends = [];
+    const capitalGains = [];
+    const otherIncome = [];
+
+    // Try to extract salary entries
+    const salaryPattern = /salary.*?(\d[\d,]*\.?\d*)/gi;
+    let salMatch;
+    while ((salMatch = salaryPattern.exec(text)) !== null) {
+      salary.push({ employerName: '', employerTAN: '', grossSalary: n(salMatch[1]), tdsDeducted: 0 });
+    }
+
+    // Try to extract interest entries
+    const intPattern = /interest.*?(\d[\d,]*\.?\d*)/gi;
+    let intMatch;
+    while ((intMatch = intPattern.exec(text)) !== null) {
+      interest.push({ payerName: '', payerTAN: '', amount: n(intMatch[1]), tdsDeducted: 0, type: 'other' });
+    }
+
+    if (salary.length === 0 && interest.length === 0) {
+      warnings.push('Could not extract structured data from AIS PDF. The format may differ from expected. Please verify data manually.');
+    }
+
+    return {
+      pan,
+      assessmentYear: '',
+      financialYear: '',
+      salary,
+      interest,
+      dividends,
+      capitalGains,
+      otherIncome,
+      summary: {
+        totalSalary: salary.reduce((s, e) => s + e.grossSalary, 0),
+        totalInterest: interest.reduce((s, e) => s + e.amount, 0),
+        totalDividends: 0,
+        totalCapitalGains: 0,
+        totalOther: 0,
+        totalTDS: 0,
+      },
+      warnings,
+    };
   }
 }
 

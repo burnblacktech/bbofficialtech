@@ -52,6 +52,8 @@ const SOURCES = [
 // ITR type based on active sources
 function getITRType(active, urlPath) {
   if (urlPath?.includes('/itr4')) return 'ITR-4';
+  if (urlPath?.includes('/itr3')) return 'ITR-3';
+  if (urlPath?.includes('/itr2')) return 'ITR-2';
   if (active.includes('business')) return 'ITR-3';
   if (active.includes('capital_gains') || active.includes('foreign')) return 'ITR-2';
   return 'ITR-1';
@@ -123,9 +125,15 @@ export default function ITR1Flow() {
       const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, updates) };
       if (updates.selectedRegime) { body.selectedRegime = updates.selectedRegime; setSelectedRegime(updates.selectedRegime); }
       await api.put(`/filings/${filingId}`, body);
+      // Recompute immediately after save (sequential, not parallel)
+      try {
+        const itr = getITRType(active, location.pathname);
+        const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
+        setComp(r.data.data);
+      } catch { /* computation failure is non-blocking */ }
     },
     onMutate: () => { setGlobalDirty(true); },
-    onSuccess: () => { setGlobalDirty(false); qc.invalidateQueries({ queryKey: ['filing', filingId] }); recompute(); },
+    onSuccess: () => { setGlobalDirty(false); qc.invalidateQueries({ queryKey: ['filing', filingId] }); },
     onError: (e) => { setGlobalDirty(false); toast.error(e.response?.data?.error || 'Save failed'); },
   });
 

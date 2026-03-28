@@ -11,9 +11,11 @@ const ErrorCodes = require('../../../constants/ErrorCodes');
 /**
  * Extract text from a PDF buffer using pdfjs-dist (legacy Node.js build)
  */
-async function extractTextFromPDF(pdfBuffer) {
+async function extractTextFromPDF(pdfBuffer, password) {
   const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
-  const doc = await pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer) }).promise;
+  const opts = { data: new Uint8Array(pdfBuffer) };
+  if (password) opts.password = password;
+  const doc = await pdfjsLib.getDocument(opts).promise;
   const pages = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
@@ -32,7 +34,7 @@ class Form16Parser {
    * @param {Buffer} pdfBuffer - Raw PDF file content
    * @returns {Promise<object>} Extracted Part A + Part B data
    */
-  static async parse(pdfBuffer) {
+  static async parse(pdfBuffer, password) {
     if (!pdfBuffer || pdfBuffer.length === 0) {
       throw new AppError('Empty file uploaded', 400, ErrorCodes.IMPORT_PARSE_FAILED);
     }
@@ -40,13 +42,16 @@ class Form16Parser {
     let text;
     try {
       const result = await Promise.race([
-        extractTextFromPDF(pdfBuffer),
+        extractTextFromPDF(pdfBuffer, password),
         new Promise((_, reject) => setTimeout(() => reject(new Error('PDF parsing timeout')), 30000)),
       ]);
       text = result;
     } catch (err) {
-      if (err.message?.includes('password')) {
-        throw new AppError('This PDF is password-protected. Please remove the password and try again.', 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      if (err.message?.includes('password') && !password) {
+        throw new AppError('This PDF is password-protected. Please enter the password (PAN + DOB in DDMMYYYY format).', 422, 'IMPORT_PASSWORD_REQUIRED');
+      }
+      if (err.message?.includes('password') && password) {
+        throw new AppError('Incorrect password. For ITD documents, the password is usually your PAN (lowercase) + DOB (DDMMYYYY). Example: abcde1234f01011990', 422, 'IMPORT_PASSWORD_INCORRECT');
       }
       throw new AppError(`Could not read this PDF: ${err.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
     }

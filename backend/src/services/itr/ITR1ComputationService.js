@@ -108,11 +108,19 @@ class ITR1ComputationService {
   }
 
   static computeHouseProperty(hpData) {
-    if (!hpData || hpData.type === 'NONE' || !hpData.type) {
+    if (!hpData || !hpData.type) {
       return { type: 'NONE', netIncome: 0 };
     }
 
-    if (hpData.type === 'SELF_OCCUPIED') {
+    // Normalize type: frontend sends camelCase, backend expects UPPER_SNAKE
+    const typeMap = { selfoccupied: 'SELF_OCCUPIED', selfOccupied: 'SELF_OCCUPIED', letout: 'LET_OUT', letOut: 'LET_OUT', none: 'NONE' };
+    const normalizedType = typeMap[hpData.type] || hpData.type.toUpperCase();
+
+    if (normalizedType === 'NONE') {
+      return { type: 'NONE', netIncome: 0 };
+    }
+
+    if (normalizedType === 'SELF_OCCUPIED') {
       const interest = Math.min(n(hpData.interestOnHomeLoan), 200000);
       return { type: 'SELF_OCCUPIED', interestOnHomeLoan: n(hpData.interestOnHomeLoan), interestAllowed: interest, netIncome: -interest };
     }
@@ -126,7 +134,7 @@ class ITR1ComputationService {
     const netIncome = nav - stdDed - interest;
 
     return {
-      type: hpData.type,
+      type: normalizedType,
       annualRent: rent, municipalTaxes: municipal,
       netAnnualValue: nav, standardDeduction30: stdDed,
       interestOnHomeLoan: interest, netIncome,

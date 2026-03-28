@@ -59,12 +59,16 @@ class ITR2ComputationService {
     const properties = [];
 
     for (const prop of hpData.properties) {
-      if (prop.type === 'SELF_OCCUPIED') {
+      // Normalize type
+      const typeMap = { selfoccupied: 'SELF_OCCUPIED', selfOccupied: 'SELF_OCCUPIED', letout: 'LET_OUT', letOut: 'LET_OUT', deemedletout: 'DEEMED_LET_OUT' };
+      const pType = typeMap[prop.type] || (prop.type ? prop.type.toUpperCase() : '');
+
+      if (pType === 'SELF_OCCUPIED') {
         const interest = Math.min(n(prop.interestOnHomeLoan), 200000);
         const net = -interest;
         properties.push({ type: 'SELF_OCCUPIED', interestOnHomeLoan: n(prop.interestOnHomeLoan), interestAllowed: interest, netIncome: net });
         totalIncome += net;
-      } else if (prop.type === 'LET_OUT' || prop.type === 'DEEMED_LET_OUT') {
+      } else if (pType === 'LET_OUT' || pType === 'DEEMED_LET_OUT') {
         const rent = n(prop.annualRentReceived);
         const municipal = n(prop.municipalTaxesPaid);
         const nav = Math.max(0, rent - municipal);

@@ -27,7 +27,7 @@ const importRateLimit = rateLimit({
 // Parse document — extract data + conflicts (no save)
 router.post('/:filingId/import', authenticateToken, importRateLimit, async (req, res, next) => {
   try {
-    const { documentType, fileContent, fileName } = req.body;
+    const { documentType, fileContent, fileName, password } = req.body;
     if (!documentType || !fileContent) {
       return res.status(400).json({ success: false, error: 'documentType and fileContent (base64) are required' });
     }
@@ -35,7 +35,7 @@ router.post('/:filingId/import', authenticateToken, importRateLimit, async (req,
       return res.status(400).json({ success: false, error: 'documentType must be form16, form16a, form16b, form16c, 26as, or ais' });
     }
 
-    const result = await ImportEngineService.parseDocument(req.params.filingId, req.user.userId, { documentType, fileContent, fileName });
+    const result = await ImportEngineService.parseDocument(req.params.filingId, req.user.userId, { documentType, fileContent, fileName, password });
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
 });
