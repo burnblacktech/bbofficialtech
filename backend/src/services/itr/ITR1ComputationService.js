@@ -41,7 +41,8 @@ class ITR1ComputationService {
   // ── Income Computation ──
 
   static computeIncome(payload) {
-    const salary = this.computeSalary(payload.income?.salary);
+    const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
+    const salary = this.computeSalary(payload.income?.salary, employerCategory);
     const hp = this.computeHouseProperty(payload.income?.houseProperty);
     const other = this.computeOtherIncome(payload.income?.otherSources);
 
@@ -53,9 +54,9 @@ class ITR1ComputationService {
     };
   }
 
-  static computeSalary(salaryData) {
+  static computeSalary(salaryData, employerCategory) {
     if (!salaryData?.employers?.length) {
-      return { grossSalary: 0, exemptAllowances: 0, standardDeduction: 0, professionalTax: 0, netTaxable: 0, employers: [], tds: 0 };
+      return { grossSalary: 0, exemptAllowances: 0, salaryExemptions: 0, standardDeduction: 0, professionalTax: 0, entertainmentAllowanceDeduction: 0, netTaxable: 0, employers: [], tds: 0 };
     }
 
     let grossSalary = 0;
@@ -88,10 +89,22 @@ class ITR1ComputationService {
       });
     }
 
-    const standardDeduction = 75000; // AY 2025-26
-    const netTaxable = Math.max(0, grossSalary - exemptAllowances - standardDeduction - professionalTax);
+    // Salary exemptions (gratuity, leave encashment, commuted pension)
+    const salaryExemptions = this.computeSalaryExemptions(salaryData, employerCategory);
 
-    return { grossSalary, exemptAllowances, standardDeduction, professionalTax, netTaxable, employers, tds };
+    // Entertainment allowance deduction (GOV only): min(actual, 5000, 20% of basicPlusDA)
+    let entertainmentAllowanceDeduction = 0;
+    if (employerCategory === 'GOV') {
+      const totalEntertainment = salaryData.employers.reduce((sum, emp) => sum + n(emp.entertainmentAllowance), 0);
+      const totalBasicPlusDA = salaryData.employers.reduce((sum, emp) => sum + n(emp.basicPlusDA), 0);
+      entertainmentAllowanceDeduction = Math.min(totalEntertainment, 5000, Math.round(0.20 * totalBasicPlusDA));
+      entertainmentAllowanceDeduction = Math.max(0, entertainmentAllowanceDeduction);
+    }
+
+    const standardDeduction = 75000; // AY 2025-26
+    const netTaxable = Math.max(0, grossSalary - exemptAllowances - salaryExemptions - standardDeduction - professionalTax - entertainmentAllowanceDeduction);
+
+    return { grossSalary, exemptAllowances, salaryExemptions, standardDeduction, professionalTax, entertainmentAllowanceDeduction, netTaxable, employers, tds };
   }
 
   static computeHouseProperty(hpData) {
@@ -134,6 +147,43 @@ class ITR1ComputationService {
     return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, other, total };
   }
 
+  // ── Salary Exemptions ──
+
+  /**
+   * Compute salary exemptions based on employer category
+   * @param {object} salaryData - salary data with employers array
+   * @param {string} employerCategory - GOV, PSU, OTH, PE, NA
+   * @returns {number} total exempt amount
+   */
+  static computeSalaryExemptions(salaryData, employerCategory) {
+    if (!salaryData?.employers?.length) return 0;
+
+    let totalExempt = 0;
+
+    for (const emp of salaryData.employers) {
+      const gratuity = n(emp.gratuityReceived);
+      const leaveEncashment = n(emp.leaveEncashmentReceived);
+      const commutedPension = n(emp.commutedPensionReceived);
+
+      if (employerCategory === 'GOV') {
+        // Government: full exemption
+        totalExempt += gratuity + leaveEncashment + commutedPension;
+      } else {
+        // OTH / PSU / PE: capped exemptions
+        totalExempt += Math.min(gratuity, 2000000);
+        totalExempt += Math.min(leaveEncashment, 2500000);
+        // Commuted pension: 1/3 exempt if gratuity received, 1/2 if no gratuity
+        if (gratuity > 0) {
+          totalExempt += Math.round(commutedPension * (1 / 3));
+        } else {
+          totalExempt += Math.round(commutedPension * (1 / 2));
+        }
+      }
+    }
+
+    return totalExempt;
+  }
+
   // ── Deductions ──
 
   static computeDeductions(deductionData) {
@@ -149,7 +199,35 @@ class ITR1ComputationService {
     const s80ccd1b = Math.min(n(d.section80CCD1B?.nps || d.nps), 50000);
     const s80d = this.compute80D(d.section80D || { selfPremium: n(d.healthSelf), parentsPremium: n(d.healthParents) });
     const s80e = n(d.section80E?.educationLoanInterest || d.eduLoan);
-    const s80g = n(d.section80G?.total || d.donations);
+
+    // Categorized 80G: compute from itemized donations if present, else fall back to flat value
+    let s80g = 0;
+    const donations80G = d.donations80G;
+    if (Array.isArray(donations80G) && donations80G.length > 0) {
+      // Use gross total income as adjusted total income for v1 (avoids chicken-and-egg with 80G)
+      const grossTotal = this._lastGrossTotal || 0;
+      const sum100NoLimit = donations80G
+        .filter(e => e.category === '100_no_limit')
+        .reduce((s, e) => s + n(e.amount), 0);
+      const sum100WithLimit = donations80G
+        .filter(e => e.category === '100_with_limit')
+        .reduce((s, e) => s + n(e.amount), 0);
+      const sum50NoLimit = donations80G
+        .filter(e => e.category === '50_no_limit')
+        .reduce((s, e) => s + n(e.amount), 0);
+      const sum50WithLimit = donations80G
+        .filter(e => e.category === '50_with_limit')
+        .reduce((s, e) => s + n(e.amount), 0);
+
+      const tenPercentATI = Math.round(grossTotal * 0.10);
+      s80g = sum100NoLimit
+        + Math.min(sum100WithLimit, tenPercentATI)
+        + Math.round(0.5 * sum50NoLimit)
+        + Math.round(0.5 * Math.min(sum50WithLimit, tenPercentATI));
+    } else {
+      s80g = n(d.section80G?.total || d.donations);
+    }
+
     const s80tta = Math.min(n(d.section80TTA?.savingsInterest || d.savingsInt), 10000);
     const s80gg = Math.min(n(d.rentPaid), 60000); // 80GG: max ₹5000/month
     const s80u = n(d.disability);
@@ -189,6 +267,8 @@ class ITR1ComputationService {
   // ── Tax Computation ──
 
   static computeRegime(income, deductionData, regime, agriculturalIncome = 0) {
+    // Store gross total for 80G adjusted total income computation (v1 simplification)
+    this._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? this.computeDeductions(deductionData) : { total: 0, breakdown: {} };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
@@ -279,13 +359,26 @@ class ITR1ComputationService {
 
   static computeTDS(payload) {
     const fromSalary = payload.income?.salary?.employers?.reduce((sum, e) => sum + n(e.tdsDeducted), 0) || 0;
-    const fromFD = n(payload.taxes?.tds?.fromFD);
-    const fromOther = n(payload.taxes?.tds?.fromOther);
+
+    // Itemized TDS2: sum nonSalaryEntries if present, else fall back to fromFD + fromOther
+    const nonSalaryEntries = payload.taxes?.tds?.nonSalaryEntries;
+    let fromNonSalary = 0;
+    let fromFD = 0;
+    let fromOther = 0;
+
+    if (Array.isArray(nonSalaryEntries) && nonSalaryEntries.length > 0) {
+      fromNonSalary = nonSalaryEntries.reduce((sum, e) => sum + n(e.tdsClaimed), 0);
+    } else {
+      fromFD = n(payload.taxes?.tds?.fromFD);
+      fromOther = n(payload.taxes?.tds?.fromOther);
+      fromNonSalary = fromFD + fromOther;
+    }
+
     const advanceTax = n(payload.taxes?.advanceTax);
     const selfAssessment = n(payload.taxes?.selfAssessmentTax);
-    const total = fromSalary + fromFD + fromOther + advanceTax + selfAssessment;
+    const total = fromSalary + fromNonSalary + advanceTax + selfAssessment;
 
-    return { fromSalary, fromFD, fromOther, advanceTax, selfAssessment, total };
+    return { fromSalary, fromFD, fromOther, fromNonSalary, advanceTax, selfAssessment, total };
   }
 
   // ── Validation ──

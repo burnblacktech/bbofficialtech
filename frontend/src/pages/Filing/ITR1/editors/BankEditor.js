@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Download, Save, CheckCircle, ExternalLink, Shield, Info, Plus, Trash2 } from 'lucide-react';
-import { validateBankAccount } from '../../../../utils/itrValidation';
+import { validateBankAccount, validateTDS2Entry } from '../../../../utils/itrValidation';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -8,6 +8,21 @@ const num = (v) => Number(v) || 0;
 const fmt = (v) => `₹${num(v).toLocaleString('en-IN')}`;
 
 const EMPTY_CHALLAN = { bsrCode: '', challanNo: '', dateOfDeposit: '', amount: '' };
+
+const SECTION_CODE_OPTIONS = [
+  { value: '194A', label: '194A — Interest' },
+  { value: '194B', label: '194B — Lottery' },
+  { value: '194C', label: '194C — Contractor' },
+  { value: '194D', label: '194D — Insurance' },
+  { value: '194H', label: '194H — Commission' },
+  { value: '194I', label: '194I — Rent' },
+  { value: '194J', label: '194J — Professional' },
+  { value: '194K', label: '194K — MF Income' },
+  { value: '194N', label: '194N — Cash Withdrawal' },
+  { value: 'OTH', label: 'Other' },
+];
+
+const EMPTY_TDS_ENTRY = { deductorTan: '', deductorName: '', sectionCode: '', amountPaid: '', tdsDeducted: '', tdsClaimed: '' };
 
 export default function BankEditor({ payload, onSave, isSaving, computation, filing, onSubmit, isSubmitting, bankData, setBankData, bankErrors, onDownloadJSON, itrType }) {
   const saved = payload?.bankDetails || {};
@@ -23,8 +38,24 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
 
   // Taxes paid state
   const savedTaxes = payload?.taxes || {};
-  const [tdsFromFD, setTdsFromFD] = useState(num(savedTaxes.tds?.fromFD));
-  const [tdsFromOther, setTdsFromOther] = useState(num(savedTaxes.tds?.fromOther));
+
+  // Initialize nonSalaryTDS: prefer nonSalaryEntries, fall back to old flat fields for backward compat
+  const initNonSalaryTDS = () => {
+    if (savedTaxes.tds?.nonSalaryEntries?.length) return savedTaxes.tds.nonSalaryEntries;
+    // Backward compat: migrate old flat fields into a single entry
+    const oldFD = num(savedTaxes.tds?.fromFD);
+    const oldOther = num(savedTaxes.tds?.fromOther);
+    if (oldFD > 0 || oldOther > 0) {
+      const entries = [];
+      if (oldFD > 0) entries.push({ deductorTan: '', deductorName: '', sectionCode: '194A', amountPaid: oldFD, tdsDeducted: oldFD, tdsClaimed: oldFD });
+      if (oldOther > 0) entries.push({ deductorTan: '', deductorName: '', sectionCode: 'OTH', amountPaid: oldOther, tdsDeducted: oldOther, tdsClaimed: oldOther });
+      return entries;
+    }
+    return [];
+  };
+
+  const [nonSalaryTDS, setNonSalaryTDS] = useState(initNonSalaryTDS);
+  const [tdsEntryErrors, setTdsEntryErrors] = useState({});
   const [advanceEntries, setAdvanceEntries] = useState(savedTaxes.advanceTaxEntries?.length ? savedTaxes.advanceTaxEntries : []);
   const [satEntries, setSatEntries] = useState(savedTaxes.selfAssessmentTaxEntries?.length ? savedTaxes.selfAssessmentTaxEntries : []);
   const [taxDirty, setTaxDirty] = useState(false);
@@ -35,8 +66,19 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
     const bd = payload?.bankDetails || {};
     if (bd.bankName || bd.accountNumber) setForm({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
     const tx = payload?.taxes || {};
-    setTdsFromFD(num(tx.tds?.fromFD));
-    setTdsFromOther(num(tx.tds?.fromOther));
+    // Re-initialize nonSalaryTDS from payload
+    if (tx.tds?.nonSalaryEntries?.length) {
+      setNonSalaryTDS(tx.tds.nonSalaryEntries);
+    } else {
+      const oldFD = num(tx.tds?.fromFD);
+      const oldOther = num(tx.tds?.fromOther);
+      if (oldFD > 0 || oldOther > 0) {
+        const entries = [];
+        if (oldFD > 0) entries.push({ deductorTan: '', deductorName: '', sectionCode: '194A', amountPaid: oldFD, tdsDeducted: oldFD, tdsClaimed: oldFD });
+        if (oldOther > 0) entries.push({ deductorTan: '', deductorName: '', sectionCode: 'OTH', amountPaid: oldOther, tdsDeducted: oldOther, tdsClaimed: oldOther });
+        setNonSalaryTDS(entries);
+      }
+    }
     if (tx.advanceTaxEntries?.length) setAdvanceEntries(tx.advanceTaxEntries);
     if (tx.selfAssessmentTaxEntries?.length) setSatEntries(tx.selfAssessmentTaxEntries);
     setInitialized(true);
@@ -61,10 +103,12 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
   const advanceTotal = advanceEntries.reduce((s, e) => s + num(e.amount), 0);
   const satTotal = satEntries.reduce((s, e) => s + num(e.amount), 0);
 
+  const nonSalaryTDSTotal = nonSalaryTDS.reduce((s, e) => s + num(e.tdsClaimed), 0);
+
   const handleSaveTaxes = useCallback(() => {
     onSave({
       taxes: {
-        tds: { ...(payload?.taxes?.tds || {}), fromFD: num(tdsFromFD), fromOther: num(tdsFromOther) },
+        tds: { ...(payload?.taxes?.tds || {}), nonSalaryEntries: nonSalaryTDS.filter(e => e.deductorTan || e.deductorName || num(e.tdsDeducted) > 0) },
         advanceTax: advanceTotal,
         selfAssessmentTax: satTotal,
         advanceTaxEntries: advanceEntries.filter(e => num(e.amount) > 0),
@@ -72,7 +116,34 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
       },
     });
     setTaxDirty(false);
-  }, [tdsFromFD, tdsFromOther, advanceEntries, satEntries, advanceTotal, satTotal, onSave, payload?.taxes?.tds]);
+  }, [nonSalaryTDS, advanceEntries, satEntries, advanceTotal, satTotal, onSave, payload?.taxes?.tds]);
+
+  const updateTDSEntry = (idx, field, val) => {
+    setNonSalaryTDS(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
+    setTaxDirty(true);
+  };
+
+  const validateTDSEntryOnBlur = (idx) => {
+    const entry = nonSalaryTDS[idx];
+    if (!entry) return;
+    const result = validateTDS2Entry(entry);
+    setTdsEntryErrors(prev => {
+      const next = { ...prev };
+      if (result.valid) { delete next[idx]; } else { next[idx] = result.errors; }
+      return next;
+    });
+  };
+
+  const addTDSEntry = () => {
+    setNonSalaryTDS(prev => [...prev, { ...EMPTY_TDS_ENTRY }]);
+    setTaxDirty(true);
+  };
+
+  const removeTDSEntry = (idx) => {
+    setNonSalaryTDS(prev => prev.filter((_, i) => i !== idx));
+    setTdsEntryErrors(prev => { const next = { ...prev }; delete next[idx]; return next; });
+    setTaxDirty(true);
+  };
 
   const updateChallan = (list, setList, idx, field, val) => {
     setList(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
@@ -148,18 +219,73 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
           Enter TDS from sources other than salary, advance tax, and self-assessment tax paid during the year. These reduce your final tax liability.
         </div>
 
-        {/* TDS from non-salary sources */}
-        <div className="ff-grid-2">
-          <div className="ff-field">
-            <label className="ff-label">TDS on Fixed Deposits</label>
-            <input className="ff-input" type="number" min="0" value={tdsFromFD || ''} onChange={e => { setTdsFromFD(num(e.target.value)); setTaxDirty(true); }} placeholder="0" />
-            <div className="ff-hint">TDS deducted by bank on FD interest (Section 194A)</div>
+        {/* TDS from non-salary sources — itemized */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <label className="ff-label" style={{ margin: 0 }}>TDS on Non-Salary Income (Schedule TDS2)</label>
+            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={addTDSEntry}>
+              <Plus size={12} /> Add TDS Entry
+            </button>
           </div>
-          <div className="ff-field">
-            <label className="ff-label">TDS from Other Sources</label>
-            <input className="ff-input" type="number" min="0" value={tdsFromOther || ''} onChange={e => { setTdsFromOther(num(e.target.value)); setTaxDirty(true); }} placeholder="0" />
-            <div className="ff-hint">TDS on rent, professional fees, commission, etc.</div>
-          </div>
+          <div className="ff-hint" style={{ marginBottom: 8 }}>TDS deducted on FD interest, rent, professional fees, etc. Enter each deductor separately with their TAN and section code.</div>
+          {nonSalaryTDS.map((entry, i) => {
+            const errs = tdsEntryErrors[i] || {};
+            return (
+              <div key={i} style={{ padding: 12, background: P.bgMuted, borderRadius: 8, marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: P.textSecondary }}>Entry {i + 1}</span>
+                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, minHeight: 'auto', minWidth: 'auto' }} onClick={() => removeTDSEntry(i)} title="Remove">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+                <div className="ff-grid-2">
+                  <div className="ff-field">
+                    <label className="ff-label" style={{ fontSize: 11 }}>Deductor TAN *</label>
+                    <input className={`ff-input ${errs.deductorTan ? 'error' : ''}`} type="text" value={entry.deductorTan} onChange={e => updateTDSEntry(i, 'deductorTan', e.target.value.toUpperCase())} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="e.g., ABCD12345E" maxLength={10} />
+                    {errs.deductorTan && <div className="ff-hint" style={{ color: P.error }}>{errs.deductorTan}</div>}
+                  </div>
+                  <div className="ff-field">
+                    <label className="ff-label" style={{ fontSize: 11 }}>Deductor Name *</label>
+                    <input className={`ff-input ${errs.deductorName ? 'error' : ''}`} type="text" value={entry.deductorName} onChange={e => updateTDSEntry(i, 'deductorName', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="e.g., State Bank of India" />
+                    {errs.deductorName && <div className="ff-hint" style={{ color: P.error }}>{errs.deductorName}</div>}
+                  </div>
+                </div>
+                <div className="ff-grid-2" style={{ marginTop: 6 }}>
+                  <div className="ff-field">
+                    <label className="ff-label" style={{ fontSize: 11 }}>Section Code *</label>
+                    <select className={`ff-select ${errs.sectionCode ? 'error' : ''}`} value={entry.sectionCode} onChange={e => { updateTDSEntry(i, 'sectionCode', e.target.value); }} onBlur={() => validateTDSEntryOnBlur(i)}>
+                      <option value="">Select section...</option>
+                      {SECTION_CODE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    </select>
+                    {errs.sectionCode && <div className="ff-hint" style={{ color: P.error }}>{errs.sectionCode}</div>}
+                  </div>
+                  <div className="ff-field">
+                    <label className="ff-label" style={{ fontSize: 11 }}>Amount Paid / Credited (₹)</label>
+                    <input className={`ff-input ${errs.amountPaid ? 'error' : ''}`} type="number" min="0" value={entry.amountPaid || ''} onChange={e => updateTDSEntry(i, 'amountPaid', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />
+                    {errs.amountPaid && <div className="ff-hint" style={{ color: P.error }}>{errs.amountPaid}</div>}
+                  </div>
+                </div>
+                <div className="ff-grid-2" style={{ marginTop: 6 }}>
+                  <div className="ff-field">
+                    <label className="ff-label" style={{ fontSize: 11 }}>TDS Deducted (₹)</label>
+                    <input className={`ff-input ${errs.tdsDeducted ? 'error' : ''}`} type="number" min="0" value={entry.tdsDeducted || ''} onChange={e => updateTDSEntry(i, 'tdsDeducted', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />
+                    {errs.tdsDeducted && <div className="ff-hint" style={{ color: P.error }}>{errs.tdsDeducted}</div>}
+                  </div>
+                  <div className="ff-field">
+                    <label className="ff-label" style={{ fontSize: 11 }}>TDS Claimed This Year (₹)</label>
+                    <input className={`ff-input ${errs.tdsClaimed ? 'error' : ''}`} type="number" min="0" value={entry.tdsClaimed || ''} onChange={e => updateTDSEntry(i, 'tdsClaimed', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />
+                    {errs.tdsClaimed && <div className="ff-hint" style={{ color: P.error }}>{errs.tdsClaimed}</div>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {nonSalaryTDS.length > 0 && (
+            <div className="ff-row" style={{ marginTop: 4 }}>
+              <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Non-Salary TDS</span>
+              <span className="ff-row-value bold">{fmt(nonSalaryTDSTotal)}</span>
+            </div>
+          )}
         </div>
 
         {/* Advance Tax */}
@@ -243,12 +369,12 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
         </div>
 
         {/* Total taxes paid summary */}
-        {(num(tdsFromFD) + num(tdsFromOther) + advanceTotal + satTotal > 0) && (
+        {(nonSalaryTDSTotal + advanceTotal + satTotal > 0) && (
           <>
             <div className="ff-divider" />
             <div className="ff-row">
               <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Additional Taxes Paid</span>
-              <span className="ff-row-value bold green">{fmt(num(tdsFromFD) + num(tdsFromOther) + advanceTotal + satTotal)}</span>
+              <span className="ff-row-value bold green">{fmt(nonSalaryTDSTotal + advanceTotal + satTotal)}</span>
             </div>
           </>
         )}

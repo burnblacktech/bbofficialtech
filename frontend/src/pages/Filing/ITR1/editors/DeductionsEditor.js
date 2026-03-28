@@ -1,6 +1,23 @@
 ﻿import { useState } from 'react';
-import { Save } from 'lucide-react';
+import { Save, Plus, Trash2 } from 'lucide-react';
+import { validateDonation80G } from '../../../../utils/itrValidation';
+import P from '../../../../styles/palette';
 import '../../filing-flow.css';
+
+const DONATION_CATEGORY_OPTIONS = [
+  { value: '100_no_limit', label: '100% without limit' },
+  { value: '100_with_limit', label: '100% with 10% limit' },
+  { value: '50_no_limit', label: '50% without limit' },
+  { value: '50_with_limit', label: '50% with 10% limit' },
+];
+
+const DONEE_PRESETS = [
+  { doneeName: 'PM National Relief Fund', category: '100_no_limit' },
+  { doneeName: 'PM CARES Fund', category: '100_no_limit' },
+  { doneeName: 'National Defence Fund', category: '100_no_limit' },
+];
+
+const EMPTY_DONATION = { doneeName: '', doneePan: '', amount: '', category: '' };
 
 const n = (v) => Number(v) || 0;
 const rs = (v) => `\u20B9${n(v).toLocaleString('en-IN')}`;
@@ -19,10 +36,21 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
     healthSelf: d.healthSelf || '', healthParents: d.healthParents || '',
     eduLoan: d.eduLoan || '',
     savingsInt: d.savingsInt || '',
-    donations: d.donations || '',
     rentPaid: d.rentPaid || '',       // 80GG
     disability: d.disability || '',   // 80U
   });
+
+  // 80G donations — categorized array
+  const initDonations80G = () => {
+    if (d.donations80G?.length) return d.donations80G;
+    // Backward compat: migrate old single donations value
+    if (n(d.donations) > 0) {
+      return [{ doneeName: '', doneePan: '', amount: d.donations, category: '50_with_limit' }];
+    }
+    return [];
+  };
+  const [donations80G, setDonations80G] = useState(initDonations80G);
+  const [donationErrors, setDonationErrors] = useState({});
 
   const update = (key, val) => {
     const next = { ...form, [key]: val };
@@ -30,14 +58,43 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
     // Don't save on keystroke — wait for explicit save
   };
 
+  // 80G donation helpers
+  const updateDonation = (idx, field, val) => {
+    setDonations80G(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
+  };
+
+  const validateDonationOnBlur = (idx) => {
+    const entry = donations80G[idx];
+    if (!entry) return;
+    const result = validateDonation80G(entry);
+    setDonationErrors(prev => {
+      const next = { ...prev };
+      if (result.valid) { delete next[idx]; } else { next[idx] = result.errors; }
+      return next;
+    });
+  };
+
+  const addDonation = () => {
+    setDonations80G(prev => [...prev, { ...EMPTY_DONATION }]);
+  };
+
+  const addPresetDonation = (preset) => {
+    setDonations80G(prev => [...prev, { ...EMPTY_DONATION, doneeName: preset.doneeName, category: preset.category }]);
+  };
+
+  const removeDonation = (idx) => {
+    setDonations80G(prev => prev.filter((_, i) => i !== idx));
+    setDonationErrors(prev => { const next = { ...prev }; delete next[idx]; return next; });
+  };
+
   const changeRegime = (r) => {
     setRegime(r);
     // Regime change saves immediately (it's a toggle, not text input)
-    onSave({ deductions: form, selectedRegime: r });
+    onSave({ deductions: { ...form, donations80G: donations80G.filter(e => e.doneeName || n(e.amount) > 0) }, selectedRegime: r });
   };
 
   const handleSave = () => {
-    onSave({ deductions: form, selectedRegime: regime });
+    onSave({ deductions: { ...form, donations80G: donations80G.filter(e => e.doneeName || n(e.amount) > 0) }, selectedRegime: regime });
   };
 
   // 80C total
@@ -46,7 +103,8 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
   const capNps = Math.min(n(form.nps), 50000);
   const capTta = Math.min(n(form.savingsInt), 10000);
   const capRent = Math.min(n(form.rentPaid), 60000); // 80GG max ₹5000/month
-  const total = cap80C + capNps + n(form.healthSelf) + n(form.healthParents) + n(form.eduLoan) + capTta + n(form.donations) + capRent + n(form.disability);
+  const total80G = donations80G.reduce((s, e) => s + n(e.amount), 0);
+  const total = cap80C + capNps + n(form.healthSelf) + n(form.healthParents) + n(form.eduLoan) + capTta + total80G + capRent + n(form.disability);
 
   return (
     <div>
@@ -110,9 +168,75 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
             <div className="ff-grid-2">
               <F l="80E — Education Loan Interest" v={form.eduLoan} c={v => update('eduLoan', v)} h="No cap, interest only" />
               <F l="80TTA — Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h={`Max ${rs(10000)}`} />
-              <F l="80G — Donations" v={form.donations} c={v => update('donations', v)} h="50% or 100% eligible" />
               <F l="80GG — Rent Paid" v={form.rentPaid} c={v => update('rentPaid', v)} h={`No HRA? Max ${rs(5000)}/month`} />
             </div>
+          </div>
+
+          {/* 80G — Categorized Donations */}
+          <div className="step-card editing">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+              <div className="ff-section-title" style={{ margin: 0 }}>80G — Charitable Donations</div>
+              <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={addDonation}>
+                <Plus size={12} /> Add Donation
+              </button>
+            </div>
+            <div className="ff-hint" style={{ marginBottom: 10 }}>Each donation must be categorized by its deduction type. PAN of donee is required for donations exceeding ₹2,000.</div>
+
+            {/* Preset quick-add buttons */}
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+              {DONEE_PRESETS.map((preset) => (
+                <button key={preset.doneeName} className="ff-btn ff-btn-outline" style={{ padding: '4px 10px', fontSize: 11 }} onClick={() => addPresetDonation(preset)}>
+                  + {preset.doneeName}
+                </button>
+              ))}
+            </div>
+
+            {donations80G.map((entry, i) => {
+              const errs = donationErrors[i] || {};
+              return (
+                <div key={i} style={{ padding: 12, background: P.bgMuted, borderRadius: 8, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: P.textSecondary }}>Donation {i + 1}</span>
+                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, minHeight: 'auto', minWidth: 'auto' }} onClick={() => removeDonation(i)} title="Remove">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <div className="ff-grid-2">
+                    <div className="ff-field">
+                      <label className="ff-label" style={{ fontSize: 11 }}>Donee Name *</label>
+                      <input className={`ff-input ${errs.doneeName ? 'error' : ''}`} type="text" value={entry.doneeName} onChange={e => updateDonation(i, 'doneeName', e.target.value)} onBlur={() => validateDonationOnBlur(i)} placeholder="e.g., PM National Relief Fund" />
+                      {errs.doneeName && <div className="ff-hint" style={{ color: P.error }}>{errs.doneeName}</div>}
+                    </div>
+                    <div className="ff-field">
+                      <label className="ff-label" style={{ fontSize: 11 }}>Donee PAN</label>
+                      <input className={`ff-input ${errs.doneePan ? 'error' : ''}`} type="text" value={entry.doneePan} onChange={e => updateDonation(i, 'doneePan', e.target.value.toUpperCase())} onBlur={() => validateDonationOnBlur(i)} placeholder="e.g., AAATC1234D" maxLength={10} />
+                      {errs.doneePan ? <div className="ff-hint" style={{ color: P.error }}>{errs.doneePan}</div> : <div className="ff-hint">Required for donations &gt; ₹2,000</div>}
+                    </div>
+                  </div>
+                  <div className="ff-grid-2" style={{ marginTop: 6 }}>
+                    <div className="ff-field">
+                      <label className="ff-label" style={{ fontSize: 11 }}>Amount (₹) *</label>
+                      <input className={`ff-input ${errs.amount ? 'error' : ''}`} type="number" min="0" value={entry.amount || ''} onChange={e => updateDonation(i, 'amount', e.target.value)} onBlur={() => validateDonationOnBlur(i)} placeholder="0" />
+                      {errs.amount && <div className="ff-hint" style={{ color: P.error }}>{errs.amount}</div>}
+                    </div>
+                    <div className="ff-field">
+                      <label className="ff-label" style={{ fontSize: 11 }}>Deduction Category *</label>
+                      <select className={`ff-select ${errs.category ? 'error' : ''}`} value={entry.category} onChange={e => updateDonation(i, 'category', e.target.value)} onBlur={() => validateDonationOnBlur(i)}>
+                        <option value="">Select category...</option>
+                        {DONATION_CATEGORY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                      </select>
+                      {errs.category && <div className="ff-hint" style={{ color: P.error }}>{errs.category}</div>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {total80G > 0 && (
+              <div className="ff-row" style={{ marginTop: 4 }}>
+                <span className="ff-row-label" style={{ fontWeight: 600 }}>Total 80G Donations</span>
+                <span className="ff-row-value bold">{rs(total80G)}</span>
+              </div>
+            )}
           </div>
         </>
       )}
@@ -134,7 +258,7 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
             {n(form.disability) > 0 && <div className="ff-row"><span className="ff-row-label">80U Disability</span><span className="ff-row-value">{rs(form.disability)}</span></div>}
             {n(form.eduLoan) > 0 && <div className="ff-row"><span className="ff-row-label">80E Edu Loan</span><span className="ff-row-value">{rs(form.eduLoan)}</span></div>}
             {capTta > 0 && <div className="ff-row"><span className="ff-row-label">80TTA</span><span className="ff-row-value">{rs(capTta)}</span></div>}
-            {n(form.donations) > 0 && <div className="ff-row"><span className="ff-row-label">80G Donations</span><span className="ff-row-value">{rs(form.donations)}</span></div>}
+            {total80G > 0 && <div className="ff-row"><span className="ff-row-label">80G Donations</span><span className="ff-row-value">{rs(total80G)}</span></div>}
             {capRent > 0 && <div className="ff-row"><span className="ff-row-label">80GG Rent</span><span className="ff-row-value">{rs(capRent)}</span></div>}
             <div className="ff-divider" />
             <div className="ff-row"><span className="ff-row-label">Total Deductions</span><span className="ff-row-value bold green">{rs(total)}</span></div>

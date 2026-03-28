@@ -1,17 +1,38 @@
-import { useState } from 'react';
-import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
 import { validateSalaryStep } from '../../../../utils/itrValidation';
+import { isMetroCity } from '../../../../constants/indianStates';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
-const EMPTY = { name: '', tan: '', grossSalary: '', tdsDeducted: '', allowances: { hra: { received: '', exempt: '' }, lta: { exempt: '' } }, deductions: { professionalTax: '' } };
+const EMPTY = {
+  name: '', tan: '', grossSalary: '', tdsDeducted: '',
+  allowances: { hra: { received: '', exempt: '' }, lta: { exempt: '' } },
+  deductions: { professionalTax: '' },
+  gratuityReceived: '', leaveEncashmentReceived: '', commutedPensionReceived: '',
+  entertainmentAllowance: '', basicPlusDA: '', cityOfEmployment: '', rentPaid: '',
+};
 
 export default function SalaryEditor({ payload, onSave, isSaving }) {
   const existing = payload?.income?.salary?.employers || [];
+  const employerCategory = payload?.personalInfo?.employerCategory || 'OTH';
   const [employers, setEmployers] = useState(existing.length ? existing : []);
   const [editing, setEditing] = useState(existing.length === 0 ? 0 : null);
   const [form, setForm] = useState(existing.length === 0 ? { ...EMPTY } : null);
   const [errors, setErrors] = useState({});
+
+  // HRA auto-calculation hint
+  const suggestedHRA = useMemo(() => {
+    if (!form) return null;
+    const hraReceived = n(form.allowances?.hra?.received);
+    const basicDA = n(form.basicPlusDA);
+    const rent = n(form.rentPaid);
+    if (!hraReceived || !basicDA || !rent) return null;
+    const metro = isMetroCity(form.cityOfEmployment);
+    const metroRate = metro ? 0.50 : 0.40;
+    const val = Math.max(0, Math.min(hraReceived, rent - 0.10 * basicDA, metroRate * basicDA));
+    return { amount: Math.round(val), isMetro: metro };
+  }, [form]);
 
   const save = () => {
     if (!form?.name || !form?.grossSalary) {
@@ -19,7 +40,19 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
       return;
     }
     const updated = [...employers];
-    updated[editing] = { ...form, grossSalary: n(form.grossSalary), tdsDeducted: n(form.tdsDeducted), deductions: { professionalTax: n(form.deductions?.professionalTax) } };
+    updated[editing] = {
+      ...form,
+      grossSalary: n(form.grossSalary),
+      tdsDeducted: n(form.tdsDeducted),
+      deductions: { professionalTax: n(form.deductions?.professionalTax) },
+      gratuityReceived: n(form.gratuityReceived),
+      leaveEncashmentReceived: n(form.leaveEncashmentReceived),
+      commutedPensionReceived: n(form.commutedPensionReceived),
+      entertainmentAllowance: n(form.entertainmentAllowance),
+      basicPlusDA: n(form.basicPlusDA),
+      cityOfEmployment: form.cityOfEmployment || '',
+      rentPaid: n(form.rentPaid),
+    };
     // Validate
     const v = validateSalaryStep(updated);
     if (!v.valid) { setErrors(v.errors); }
@@ -71,6 +104,60 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
             <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Calculated or from Form 16" />
             <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="Usually ₹2,400/year (₹200/month)" />
           </div>
+
+          {suggestedHRA && (
+            <div className="ff-hint" style={{ marginTop: 4, color: '#2563eb' }}>
+              <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+              Suggested HRA exemption: ₹{suggestedHRA.amount.toLocaleString('en-IN')} (based on {suggestedHRA.isMetro ? 'metro' : 'non-metro'} rate)
+            </div>
+          )}
+
+          {/* Retirement Benefits & Allowances */}
+          {employerCategory !== 'NA' && (
+            <div style={{ marginTop: 16 }}>
+              <h4 className="ff-label" style={{ fontWeight: 600, marginBottom: 8 }}>Retirement Benefits &amp; Allowances</h4>
+
+              {employerCategory === 'GOV' && (
+                <div className="ff-hint" style={{ marginBottom: 8, color: '#16a34a' }}>
+                  <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                  Government employees: gratuity and leave encashment are fully exempt
+                </div>
+              )}
+              {(employerCategory === 'OTH' || employerCategory === 'PSU') && (
+                <div className="ff-hint" style={{ marginBottom: 8, color: '#d97706' }}>
+                  <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                  Gratuity exempt up to ₹20L, leave encashment up to ₹25L
+                </div>
+              )}
+              {employerCategory === 'PE' && (
+                <div className="ff-hint" style={{ marginBottom: 8, color: '#d97706' }}>
+                  <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                  Pension income is fully taxable as salary
+                </div>
+              )}
+
+              <div className="ff-grid-2">
+                <F l="Gratuity Received (₹)" v={form.gratuityReceived} c={v => setForm({ ...form, gratuityReceived: v })} h="Amount received on retirement/resignation" />
+                <F l="Leave Encashment Received (₹)" v={form.leaveEncashmentReceived} c={v => setForm({ ...form, leaveEncashmentReceived: v })} h="Leave encashment on retirement" />
+              </div>
+
+              {(employerCategory === 'PE' || employerCategory === 'GOV' || employerCategory === 'OTH' || employerCategory === 'PSU') && (
+                <div className="ff-grid-2">
+                  <F l="Commuted Pension Received (₹)" v={form.commutedPensionReceived} c={v => setForm({ ...form, commutedPensionReceived: v })} h="Lump-sum pension received" />
+                  {employerCategory === 'GOV' && (
+                    <F l="Entertainment Allowance (₹)" v={form.entertainmentAllowance} c={v => setForm({ ...form, entertainmentAllowance: v })} h="Govt employees: deduction up to ₹5,000 u/s 16(ii)" />
+                  )}
+                </div>
+              )}
+
+              <div className="ff-grid-3">
+                <F l="Basic + DA (₹)" v={form.basicPlusDA} c={v => setForm({ ...form, basicPlusDA: v })} h="Needed for HRA auto-calculation" />
+                <F l="City of Employment" v={form.cityOfEmployment} c={v => setForm({ ...form, cityOfEmployment: v })} t="text" h="For metro/non-metro HRA rate" />
+                <F l="Rent Paid (₹)" v={form.rentPaid} c={v => setForm({ ...form, rentPaid: v })} h="Annual rent for HRA calculation" />
+              </div>
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button className="ff-btn ff-btn-primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
             <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); }}>Cancel</button>
