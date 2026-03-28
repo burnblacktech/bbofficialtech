@@ -1,15 +1,15 @@
-import { useEffect, useCallback } from 'react';
-import { useBlocker } from 'react-router-dom';
+import { useEffect } from 'react';
 
 /**
- * useUnsavedWarning — Warns user about unsaved changes on:
- *   1. Browser tab close / refresh (beforeunload)
- *   2. In-app navigation via react-router (useBlocker)
+ * useUnsavedWarning — Warns user about unsaved changes on browser tab close / refresh.
  *
- * Returns setDirty(bool) to control when warnings are active.
+ * Note: In-app navigation blocking (useBlocker) requires createBrowserRouter (data router).
+ * Since we use <BrowserRouter>, we only handle beforeunload for now.
+ * Auto-save on editor unmount handles the section-switching case.
+ *
+ * @param {boolean} shouldWarn - Whether there are unsaved changes
  */
 export default function useUnsavedWarning(shouldWarn = false) {
-  // Browser beforeunload — covers tab close, refresh, external navigation
   useEffect(() => {
     if (!shouldWarn) return;
     const handler = (e) => {
@@ -19,15 +19,4 @@ export default function useUnsavedWarning(shouldWarn = false) {
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, [shouldWarn]);
-
-  // React Router in-app navigation blocker
-  const blocker = useBlocker(
-    useCallback(
-      ({ currentLocation, nextLocation }) =>
-        shouldWarn && currentLocation.pathname !== nextLocation.pathname,
-      [shouldWarn],
-    ),
-  );
-
-  return blocker;
 }
