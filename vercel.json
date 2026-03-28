@@ -18,7 +18,13 @@
   "rewrites": [
     { "source": "/api/:path*", "destination": "/backend/api/index.js" },
     { "source": "/health", "destination": "/backend/api/index.js" },
-    { "source": "/((?!static|asset-manifest|favicon|manifest|robots|logo|bb-).*)", "destination": "/frontend/index.html" }
+    { "source": "/static/:path*", "destination": "/frontend/static/:path*" },
+    { "source": "/manifest.json", "destination": "/frontend/manifest.json" },
+    { "source": "/favicon.ico", "destination": "/frontend/favicon.ico" },
+    { "source": "/bb-logo.svg", "destination": "/frontend/bb-logo.svg" },
+    { "source": "/robots.txt", "destination": "/frontend/robots.txt" },
+    { "source": "/asset-manifest.json", "destination": "/frontend/asset-manifest.json" },
+    { "source": "/(.*)", "destination": "/frontend/index.html" }
   ],
   "headers": [
     {
