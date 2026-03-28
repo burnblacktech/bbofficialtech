@@ -272,6 +272,7 @@ export default function ImportReviewScreen({
   filingId,
   onClose,
   onConfirmed,
+  warnings,
 }) {
   const queryClient = useQueryClient();
   const [confirming, setConfirming] = useState(false);
@@ -434,6 +435,21 @@ export default function ImportReviewScreen({
 
       {/* Scrollable body */}
       <div style={styles.body}>
+        {/* Parse warnings */}
+        {warnings && warnings.length > 0 && (
+          <div style={{ marginBottom: 16, padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+              <AlertTriangle size={14} style={{ color: '#d97706' }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#92400e' }}>Parsing Warnings</span>
+            </div>
+            {warnings.map((w, i) => (
+              <div key={i} style={{ fontSize: 12, color: '#a16207', marginLeft: 20, lineHeight: 1.5 }}>• {w}</div>
+            ))}
+            <div style={{ fontSize: 11, color: '#a16207', marginTop: 6, marginLeft: 20 }}>
+              Some fields may not have been extracted. Please verify the data below before confirming.
+            </div>
+          </div>
+        )}
         {/* Conflicts section */}
         {hasConflicts && (
           <div style={styles.conflictsSection}>

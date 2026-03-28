@@ -192,8 +192,8 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
           fileName: file.name,
         });
 
-        const { extractedData, conflicts, fieldMapping, documentMeta } = res.data;
-        onImportParsed({ extractedData, conflicts, fieldMapping, documentMeta, documentType: docType.id, fileName: file.name, fileContent });
+        const { extractedData, conflicts, fieldMapping, documentMeta, warnings } = res.data;
+        onImportParsed({ extractedData, conflicts, fieldMapping, documentMeta, documentType: docType.id, fileName: file.name, fileContent, warnings: warnings || [] });
       } catch (err) {
         const msg = err.response?.data?.error || err.response?.data?.message || 'Upload failed. Please try again.';
         setError(msg);

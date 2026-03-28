@@ -46,6 +46,12 @@ class ImportEngineService {
     if (!limit) throw new AppError(`Unknown document type: ${documentType}`, 400, ErrorCodes.IMPORT_INVALID_FILE_TYPE);
     if (buffer.length > limit) throw new AppError(`File exceeds ${Math.round(limit / 1024 / 1024)}MB limit`, 413, ErrorCodes.IMPORT_FILE_TOO_LARGE);
 
+    // 3.5 Basic malicious content scan
+    const bufStr = buffer.toString('utf8', 0, Math.min(buffer.length, 4096));
+    if (bufStr.includes('<script') || bufStr.includes('javascript:') || bufStr.includes('eval(') || bufStr.includes('document.cookie')) {
+      throw new AppError('File rejected for security reasons. Please upload a clean document.', 400, ErrorCodes.IMPORT_MALICIOUS_CONTENT);
+    }
+
     // 4. Parse
     let parsed;
     if (documentType === 'form16') {
@@ -55,13 +61,17 @@ class ImportEngineService {
         throw new AppError(`Form 16 is for AY ${parsed.partA.assessmentYear} but filing is for AY ${filing.assessmentYear}`, 409, ErrorCodes.IMPORT_AY_MISMATCH);
       }
     } else if (documentType === '26as') {
-      const json = JSON.parse(buffer.toString('utf8'));
+      let json;
+      try { json = JSON.parse(buffer.toString('utf8')); }
+      catch { throw new AppError('Invalid JSON file. Please download a fresh copy from the ITD portal.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
       parsed = TwentySixASParser.parse(json);
       if (parsed.pan && parsed.pan !== filing.taxpayerPan) {
         throw new AppError(`PAN mismatch: document has ${parsed.pan}, filing has ${filing.taxpayerPan}`, 409, ErrorCodes.IMPORT_PAN_MISMATCH);
       }
     } else if (documentType === 'ais') {
-      const json = JSON.parse(buffer.toString('utf8'));
+      let json;
+      try { json = JSON.parse(buffer.toString('utf8')); }
+      catch { throw new AppError('Invalid JSON file. Please download a fresh copy from the ITD portal.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
       parsed = AISParser.parse(json);
       if (parsed.pan && parsed.pan !== filing.taxpayerPan) {
         throw new AppError(`PAN mismatch: document has ${parsed.pan}, filing has ${filing.taxpayerPan}`, 409, ErrorCodes.IMPORT_PAN_MISMATCH);

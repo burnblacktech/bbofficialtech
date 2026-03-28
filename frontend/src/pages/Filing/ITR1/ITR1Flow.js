@@ -559,6 +559,7 @@ export default function ITR1Flow() {
               documentType={importReviewData.documentType}
               fileName={importReviewData.fileName}
               fileContent={importReviewData.fileContent}
+              warnings={importReviewData.warnings}
               filingId={filingId}
               onClose={() => { setShowImportModal(false); setImportReviewData(null); setImportPreselect(null); }}
               onConfirmed={() => {
