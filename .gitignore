@@ -76,3 +76,7 @@ frontend/public/uploads/
 *.md
 !README.md
 BBDocs/
+
+# Personal/temp files
+*.pdf
+Computation*.pdf
