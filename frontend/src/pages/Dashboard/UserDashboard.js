@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
+import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock, RefreshCw, Upload } from 'lucide-react';
 import { itrService } from '../../services';
 import { getCurrentAY, ayToFY, getDeadlineInfo } from '../../utils/assessmentYear';
 import P from '../../styles/palette';
@@ -66,6 +66,30 @@ export default function UserDashboard() {
         <Chip icon={<Shield size={14} />} label="PAN" ok={panOk} detail={pan ? `${pan.substring(0, 5)}****${pan.substring(9)}` : 'Not set'} onClick={() => navigate('/itr/pan-verification')} />
         <Chip icon={<CheckCircle size={14} />} label="Profile" ok={!!user?.fullName} detail={user?.email || ''} onClick={() => navigate('/profile')} />
       </div>
+
+      {/* Quick-start: Upload Form 16 */}
+      {filings.length === 0 && (
+        <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+          <div style={{ flex: 1, padding: '16px 20px', background: P.brandLight, border: `1px solid ${P.brand}40`, borderRadius: 10, cursor: 'pointer' }} onClick={() => navigate('/filing/start')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <Upload size={16} style={{ color: P.brand }} />
+              <span style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary }}>Quick Start with Form 16</span>
+            </div>
+            <div style={{ fontSize: 12, color: P.textMuted, lineHeight: 1.4 }}>
+              Salaried? Upload your Form 16 and we auto-fill 80% of your filing. Takes under 5 minutes.
+            </div>
+          </div>
+          <div style={{ flex: 1, padding: '16px 20px', background: P.bgCard, border: `1px solid ${P.borderLight}`, borderRadius: 10, cursor: 'pointer' }} onClick={() => navigate('/tax-calculator')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <FileText size={16} style={{ color: P.secondary }} />
+              <span style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary }}>Tax Calculator</span>
+            </div>
+            <div style={{ fontSize: 12, color: P.textMuted, lineHeight: 1.4 }}>
+              Check your tax liability before filing. Compare old vs new regime instantly.
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={S.card}>
         <div style={S.cardHeader}>
