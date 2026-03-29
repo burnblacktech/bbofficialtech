@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import { validateOtherIncomeStep } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
+import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -79,7 +80,7 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
         <div className="ff-section-title">Agricultural Income (Exempt)</div>
         <F l="Agricultural Income" v={form.agriculturalIncome} c={v => update('agriculturalIncome', v)} h="Exempt from tax · Affects slab rate if > ₹5,000" />
         {n(form.agriculturalIncome) > 5000 && (
-          <div className="ff-hint" style={{ color: '#d97706', marginTop: 4 }}>
+          <div className="ff-hint" style={{ color: P.warning, marginTop: 4 }}>
             Since agricultural income exceeds {'₹'}5,000, it will be partially integrated with your other income for tax slab calculation (higher slabs may apply to non-agricultural income).
           </div>
         )}

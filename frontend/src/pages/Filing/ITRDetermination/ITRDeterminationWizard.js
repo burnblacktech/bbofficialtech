@@ -170,7 +170,7 @@ const ITRDeterminationWizard = () => {
                 )}
               </div>
               {panError && <div className="ff-hint" style={{ color: '#ef4444' }}>{panError}</div>}
-              {panIsVerified && pan === panFromProfile && <div className="ff-hint">PAN verified from your profile. <button onClick={() => setPan('')} style={{ color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Change</button></div>}
+              {panIsVerified && pan === panFromProfile && <div className="ff-hint">PAN verified from your profile. <button onClick={() => setPan('')} style={{ color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Change</button></div>}
             </div>
             <div className="ff-field">
               <label className="ff-label">Assessment Year</label>
@@ -192,15 +192,15 @@ const ITRDeterminationWizard = () => {
                 <div key={src.id} className={`ff-option ${selected ? 'selected' : ''}`}
                   onClick={() => toggleSource(src.id)}
                   style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', padding: '12px 16px' }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: selected ? '#2563eb' : '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={18} color={selected ? '#fff' : '#6b7280'} />
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: selected ? '#D4AF37' : '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Icon size={18} color={selected ? '#0F0F0F' : '#6b7280'} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>{src.label}</div>
                     <div style={{ fontSize: 12, color: '#6b7280' }}>{src.desc}</div>
                   </div>
-                  <div style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${selected ? '#2563eb' : '#d1d5db'}`, background: selected ? '#2563eb' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {selected && <CheckCircle size={14} color="#fff" />}
+                  <div style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${selected ? '#D4AF37' : '#d1d5db'}`, background: selected ? '#D4AF37' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {selected && <CheckCircle size={14} color="#0F0F0F" />}
                   </div>
                 </div>
               );

@@ -23,7 +23,7 @@ import P from '../../../../styles/palette';
 // ── Document type configs (matches ImportDocumentModal / ImportReviewScreen) ──
 const DOC_CONFIG = {
   form16: { label: 'Form 16', icon: FileText, color: '#059669', bg: '#f0fdf4' },
-  '26as': { label: '26AS', icon: FileJson, color: '#2563eb', bg: '#eff6ff' },
+  '26as': { label: '26AS', icon: FileJson, color: '#0D9488', bg: '#F0FDFA' },
   ais: { label: 'AIS', icon: FileJson, color: '#7c3aed', bg: '#f5f3ff' },
 };
 

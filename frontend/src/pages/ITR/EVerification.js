@@ -16,7 +16,7 @@ export default function EVerification() {
 
       <div className="step-card info">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Shield size={20} color="#2563eb" />
+          <Shield size={20} color="#D4AF37" />
           <div>
             <div style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>Coming Soon</div>
             <div style={{ fontSize: 13, color: '#6b7280' }}>

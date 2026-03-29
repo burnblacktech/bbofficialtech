@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
 import { validateSalaryStep } from '../../../../utils/itrValidation';
 import { isMetroCity } from '../../../../constants/indianStates';
+import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -106,7 +107,7 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
           </div>
 
           {suggestedHRA && (
-            <div className="ff-hint" style={{ marginTop: 4, color: '#2563eb' }}>
+            <div className="ff-hint" style={{ marginTop: 4, color: P.secondary || '#0D9488' }}>
               <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
               Suggested HRA exemption: ₹{suggestedHRA.amount.toLocaleString('en-IN')} (based on {suggestedHRA.isMetro ? 'metro' : 'non-metro'} rate)
             </div>
@@ -124,13 +125,13 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
                 </div>
               )}
               {(employerCategory === 'OTH' || employerCategory === 'PSU') && (
-                <div className="ff-hint" style={{ marginBottom: 8, color: '#d97706' }}>
+                <div className="ff-hint" style={{ marginBottom: 8, color: P.warning }}>
                   <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
                   Gratuity exempt up to ₹20L, leave encashment up to ₹25L
                 </div>
               )}
               {employerCategory === 'PE' && (
-                <div className="ff-hint" style={{ marginBottom: 8, color: '#d97706' }}>
+                <div className="ff-hint" style={{ marginBottom: 8, color: P.warning }}>
                   <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
                   Pension income is fully taxable as salary
                 </div>

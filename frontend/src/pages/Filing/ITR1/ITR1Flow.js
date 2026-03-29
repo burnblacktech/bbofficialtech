@@ -45,8 +45,8 @@ const SOURCES = [
   { id: 'salary', icon: Briefcase, label: 'Salary', color: '#059669', bg: '#f0fdf4', editor: SalaryEditor },
   { id: 'house_property', icon: Home, label: 'House Property', color: '#7c3aed', bg: '#f5f3ff', editor: HousePropertyEditor },
   { id: 'other', icon: DollarSign, label: 'Other Income', color: '#6b7280', bg: '#f9fafb', editor: OtherIncomeEditor },
-  { id: 'capital_gains', icon: TrendingUp, label: 'Capital Gains', color: '#2563eb', bg: '#eff6ff', editor: CapitalGainsEditor },
-  { id: 'business', icon: Building2, label: 'Business', color: '#d97706', bg: '#fffbeb', editor: BusinessEditor },
+  { id: 'capital_gains', icon: TrendingUp, label: 'Capital Gains', color: '#0D9488', bg: '#F0FDFA', editor: CapitalGainsEditor },
+  { id: 'business', icon: Building2, label: 'Business', color: '#CA8A04', bg: '#FEFCE8', editor: BusinessEditor },
   { id: 'foreign', icon: Globe, label: 'Foreign Income', color: '#0891b2', bg: '#f0f9ff', editor: ForeignIncomeEditor },
 ];
 
@@ -61,16 +61,16 @@ function getITRType(active, urlPath) {
 }
 
 const ITR_NAMES = { 'ITR-1': 'Sahaj', 'ITR-2': 'Capital Gains', 'ITR-3': 'Business', 'ITR-4': 'Sugam' };
-const ITR_COLORS = { 'ITR-1': '#059669', 'ITR-2': '#2563eb', 'ITR-3': '#d97706', 'ITR-4': '#7c3aed' };
+const ITR_COLORS = { 'ITR-1': '#059669', 'ITR-2': '#0D9488', 'ITR-3': '#CA8A04', 'ITR-4': '#7c3aed' };
 const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
 
 // Map source IDs to relevant import document types
 // eslint-disable-next-line camelcase
 const SOURCE_IMPORTS = {
   salary: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
-  other: [{ type: 'form16a', label: 'Form 16A', color: '#0891b2' }, { type: '26as', label: '26AS', color: '#2563eb' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
-  'capital_gains': [{ type: 'form16b', label: 'Form 16B', color: '#d97706' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
-  'house_property': [{ type: 'form16c', label: 'Form 16C', color: '#6b7280' }, { type: '26as', label: '26AS', color: '#2563eb' }],
+  other: [{ type: 'form16a', label: 'Form 16A', color: '#0891b2' }, { type: '26as', label: '26AS', color: '#0D9488' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  'capital_gains': [{ type: 'form16b', label: 'Form 16B', color: '#CA8A04' }, { type: 'ais', label: 'AIS', color: '#7c3aed' }],
+  'house_property': [{ type: 'form16c', label: 'Form 16C', color: '#6b7280' }, { type: '26as', label: '26AS', color: '#0D9488' }],
   deductions: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
 };
 
@@ -869,7 +869,7 @@ function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, o
           )}
           {/* New regime trade-off */}
           {rec === 'new' && n(altRegime?.deductions) > 0 && (
-            <div style={{ padding: '10px 14px', background: P.infoBg, border: `1px solid ${P.infoBorder}`, borderRadius: 8, fontSize: 12, color: '#1e40af', lineHeight: 1.5 }}>
+            <div style={{ padding: '10px 14px', background: P.infoBg, border: `1px solid ${P.infoBorder}`, borderRadius: 8, fontSize: 12, color: P.secondaryDark || '#115E59', lineHeight: 1.5 }}>
               💡 Under New Regime, you are not claiming {fmt(altRegime.deductions)} in deductions (80C, 80D, etc.). The lower slab rates compensate{comp?.recommended === 'new' ? ' — and save you more.' : ', but Old Regime may save more.'}
             </div>
           )}

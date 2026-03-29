@@ -42,8 +42,8 @@ const DOC_TYPES = [
     mimeTypes: ['application/json', 'application/pdf'],
     maxSizeMB: 10,
     icon: FileJson,
-    color: '#2563eb',
-    bg: '#eff6ff',
+    color: '#0D9488',
+    bg: '#F0FDFA',
   },
   {
     id: 'ais',
@@ -78,8 +78,8 @@ const DOC_TYPES = [
     mimeTypes: ['application/pdf'],
     maxSizeMB: 10,
     icon: FileText,
-    color: '#d97706',
-    bg: '#fffbeb',
+    color: '#CA8A04',
+    bg: '#FEFCE8',
   },
   {
     id: 'form16c',

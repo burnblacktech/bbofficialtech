@@ -134,7 +134,7 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
 
       {regime === 'new' ? (
         <div className="step-card info">
-          <p style={{ margin: 0, fontSize: 14, color: '#1e40af' }}>
+          <p style={{ margin: 0, fontSize: 14, color: P.secondary || '#0D9488' }}>
             Under the new regime, only standard deduction of {rs(75000)} is available. No Chapter VI-A deductions apply.
             The new regime has lower tax slabs which may benefit you if your deductions are less than ~{rs(375000)}.
           </p>
@@ -155,7 +155,7 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
               <F l="NSC" v={form.nsc} c={v => update('nsc', v)} />
             </div>
             <F l="Other 80C" v={form.otherC} c={v => update('otherC', v)} h="SCSS, stamp duty, post office deposits, etc." />
-            {raw80C > 150000 && <div className="ff-hint" style={{ color: '#d97706', marginTop: 4 }}>Total {rs(raw80C)} — capped at {rs(150000)}</div>}
+            {raw80C > 150000 && <div className="ff-hint" style={{ color: P.warning, marginTop: 4 }}>Total {rs(raw80C)} — capped at {rs(150000)}</div>}
             {raw80C > 0 && raw80C <= 150000 && <div className="ff-hint" style={{ color: '#16a34a', marginTop: 4 }}>Used {rs(raw80C)} of {rs(150000)} limit</div>}
           </div>
 

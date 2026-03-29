@@ -21,7 +21,7 @@ import P from '../../../../styles/palette';
 // ── Source badge config (matches ImportDocumentModal card colors) ──
 const SOURCE_CONFIG = {
   form16: { label: 'Form 16', color: '#059669', bg: '#f0fdf4' },
-  '26as': { label: '26AS', color: '#2563eb', bg: '#eff6ff' },
+  '26as': { label: '26AS', color: '#0D9488', bg: '#F0FDFA' },
   ais: { label: 'AIS', color: '#7c3aed', bg: '#f5f3ff' },
   manual: { label: 'Manual', color: '#6b7280', bg: '#f3f4f6' },
 };
@@ -439,7 +439,7 @@ export default function ImportReviewScreen({
         {warnings && warnings.length > 0 && (
           <div style={{ marginBottom: 16, padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-              <AlertTriangle size={14} style={{ color: '#d97706' }} />
+              <AlertTriangle size={14} style={{ color: '#CA8A04' }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: '#92400e' }}>Parsing Warnings</span>
             </div>
             {warnings.map((w, i) => (

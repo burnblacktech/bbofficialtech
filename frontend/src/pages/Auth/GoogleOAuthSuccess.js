@@ -37,7 +37,7 @@ export default function GoogleOAuthSuccess() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f8fafc' }}>
       <div style={{ textAlign: 'center' }}>
-        <div className="animate-spin" style={{ width: 40, height: 40, border: '3px solid #e5e7eb', borderTopColor: '#2563eb', borderRadius: '50%', margin: '0 auto 16px' }}></div>
+        <div className="animate-spin" style={{ width: 40, height: 40, border: '3px solid #E8E8E4', borderTopColor: '#D4AF37', borderRadius: '50%', margin: '0 auto 16px' }}></div>
         <div style={{ fontSize: 16, fontWeight: 600, color: '#111827' }}>Finalizing your login...</div>
         <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>Please wait while we complete authentication.</div>
       </div>

@@ -450,7 +450,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
       </div>
 
       {/* Download & Submit */}
-      <div className="step-card" style={{ background: P.brandLight, borderColor: '#bfdbfe' }}>
+      <div className="step-card" style={{ background: P.brandLight, borderColor: P.brand }}>
         <div className="ff-section-title">Download & Submit</div>
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>

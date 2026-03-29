@@ -42,7 +42,7 @@ export default function EmailVerification() {
   };
 
   const icons = { pending: Mail, verifying: RefreshCw, success: CheckCircle, error: AlertCircle, expired: AlertCircle };
-  const colors = { pending: '#2563eb', verifying: '#2563eb', success: '#16a34a', error: '#ef4444', expired: '#d97706' };
+  const colors = { pending: '#D4AF37', verifying: '#D4AF37', success: '#16a34a', error: '#DC2626', expired: '#CA8A04' };
   const titles = { pending: 'Check Your Email', verifying: 'Verifying...', success: 'Email Verified!', error: 'Verification Failed', expired: 'Link Expired' };
   const Icon = icons[status];
 
