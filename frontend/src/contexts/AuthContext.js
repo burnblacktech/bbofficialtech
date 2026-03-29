@@ -188,8 +188,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Ensure we always end up at login
-      navigate('/login');
+      // Ensure we always end up at landing page
+      navigate('/');
     }
   }, [navigate]);
 

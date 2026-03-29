@@ -23,7 +23,7 @@ const Header = ({ onMenuClick }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = async () => { await logout(); navigate('/login'); };
+  const handleLogout = async () => { await logout(); navigate('/'); };
 
   const initials = user?.fullName
     ? user.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)

@@ -94,7 +94,7 @@ export default function TaxCalculator() {
       </nav>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 24px 48px' }}>
-        <button className="ff-btn ff-btn-ghost" onClick={() => navigate('/')} style={{ marginBottom: 12, padding: '4px 0', color: P.textMuted }}>
+        <button className="ff-btn ff-btn-ghost" onClick={() => navigate(-1)} style={{ marginBottom: 12, padding: '4px 0', color: P.textMuted }}>
           <ArrowLeft size={14} /> Back
         </button>
 
