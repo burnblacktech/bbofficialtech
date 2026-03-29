@@ -36,6 +36,7 @@ import ImportDocumentModal from './import/ImportDocumentModal';
 import ImportReviewScreen from './import/ImportReviewScreen';
 import ImportHistoryPanel from './import/ImportHistoryPanel';
 import PersonalInfoEditor, { getCompletionInfo } from './editors/PersonalInfoEditor';
+import DocumentPanel, { DocumentFloatButton } from './DocumentPanel';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
@@ -646,6 +647,20 @@ export default function ITR1Flow() {
           <SummaryView comp={comp} itrType={itrType} filing={filing} rec={rec} bestRegime={bestRegime} altRegime={altRegime} tds={tds} onEdit={setSelected} />
         )}
       </main>
+
+      {/* ── Right Panel: Document Checklist ── */}
+      <DocumentPanel
+        activeSources={active}
+        payload={payload}
+        panVerified={!!user?.panVerified}
+        onImport={openImport}
+      />
+
+      {/* ── Mobile: Floating document button ── */}
+      {(() => {
+        const docs = payload?._importMeta?.imports?.filter(i => i.status === 'confirmed') || [];
+        return <DocumentFloatButton count={docs.length} total={active.length + 4} onClick={() => openImport(null)} />;
+      })()}
 
       {/* ── Import Modal Overlay ── */}
       {showImportModal && !importReviewData && (
