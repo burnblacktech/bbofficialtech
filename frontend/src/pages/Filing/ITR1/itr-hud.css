@@ -126,7 +126,7 @@
 .hud-actions { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 12px; border-top: 1px solid var(--border-light); }
 .hud-btn-primary {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px; background: var(--brand-primary); color: #fff; border: none;
+  padding: 10px; background: var(--brand-primary); color: var(--brand-black, #0F0F0F); border: none;
   border-radius: var(--radius-md); font-size: 13px; font-weight: 600;
   cursor: pointer; transition: background 0.15s; min-height: auto;
 }

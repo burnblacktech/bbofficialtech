@@ -1,58 +1,61 @@
 /**
  * PALETTE — Central color control for JS inline styles.
+ * Must stay in sync with theme.css variables.
  *
- * HOW TO SWITCH THEMES:
- * 1. Change values in theme.css (CSS variables)
- * 2. Update the matching values below
- * Both must stay in sync. CSS controls the CSS-styled components,
- * this file controls the JS inline-styled components.
- *
- * Future: could read from CSS vars at runtime via getComputedStyle,
- * but static values are faster and work in SSR/serverless.
+ * BurnBlack: Gold + Black primary. Teal secondary. Warm neutrals.
  */
 
 const palette = {
-  // ── Brand ──
-  brand: '#2563eb',
-  brandHover: '#1d4ed8',
-  brandLight: '#eff6ff',
-  brandDark: '#1e40af',
+  // ── Brand: Gold + Black ──
+  brand: '#D4AF37',
+  brandHover: '#C4A030',
+  brandLight: '#FBF5E4',
+  brandDark: '#A68B2A',
+  brandBlack: '#0F0F0F',
+  brandBlackSoft: '#1A1A1A',
 
-  // ── Text ──
-  textPrimary: '#111827',
-  textSecondary: '#374151',
-  textMuted: '#6b7280',
-  textLight: '#9ca3af',
+  // ── Secondary: Teal ──
+  secondary: '#0D9488',
+  secondaryHover: '#0F766E',
+  secondaryLight: '#F0FDFA',
+
+  // ── Text (warm neutrals) ──
+  textPrimary: '#111111',
+  textSecondary: '#333333',
+  textMuted: '#666666',
+  textLight: '#999999',
   textWhite: '#ffffff',
 
-  // ── Backgrounds ──
-  bgPage: '#f8fafc',
+  // ── Backgrounds (warm white) ──
+  bgPage: '#FAFAF8',
   bgCard: '#ffffff',
-  bgCardHover: '#f9fafb',
-  bgMuted: '#f3f4f6',
-  bgDark: '#0f172a',
+  bgCardHover: '#F9F9F7',
+  bgMuted: '#F3F3F0',
+  bgDark: '#0F0F0F',
 
-  // ── Borders ──
-  borderLight: '#e5e7eb',
-  borderMedium: '#d1d5db',
+  // ── Borders (warm) ──
+  borderLight: '#E8E8E4',
+  borderMedium: '#D4D4D0',
 
   // ── Semantic ──
-  success: '#16a34a',
-  successBg: '#f0fdf4',
-  successBorder: '#bbf7d0',
-  error: '#ef4444',
-  errorBg: '#fef2f2',
-  errorDark: '#991b1b',
-  warning: '#d97706',
-  warningBg: '#fffbeb',
-  info: '#2563eb',
-  infoBg: '#eff6ff',
-  infoBorder: '#bfdbfe',
+  success: '#16A34A',
+  successBg: '#F0FDF4',
+  successBorder: '#BBF7D0',
+  error: '#DC2626',
+  errorBg: '#FEF2F2',
+  errorBorder: '#FECACA',
+  errorDark: '#991B1B',
+  warning: '#CA8A04',
+  warningBg: '#FEFCE8',
+  warningBorder: '#FDE68A',
+  info: '#0D9488',
+  infoBg: '#F0FDFA',
+  infoBorder: '#99F6E4',
 
   // ── UI Specific ──
-  logoBackground: '#0f172a',
-  dangerHover: '#dc2626',
-  dangerDark: '#b91c1c',
+  logoBackground: '#0F0F0F',
+  dangerHover: '#B91C1C',
+  dangerDark: '#7F1D1D',
 };
 
 export default palette;

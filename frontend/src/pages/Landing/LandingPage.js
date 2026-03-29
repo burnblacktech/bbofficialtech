@@ -81,12 +81,12 @@ const S = {
   page: { minHeight: '100vh', display: 'flex', flexDirection: 'column', background: P.bgPage },
 
   // Nav
-  nav: { background: P.bgCard, borderBottom: `1px solid ${P.borderLight}`, position: 'sticky', top: 0, zIndex: 50 },
+  nav: { background: P.brandBlack, borderBottom: '1px solid #2A2A2A', position: 'sticky', top: 0, zIndex: 50 },
   navInner: { maxWidth: 1100, margin: '0 auto', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   logoRow: { display: 'flex', alignItems: 'center', gap: 10 },
-  logoBox: { width: 36, height: 36, background: P.logoBackground, borderRadius: 10, overflow: 'hidden' },
+  logoBox: { width: 36, height: 36, background: P.brandBlackSoft, borderRadius: 10, overflow: 'hidden', border: '1px solid #333' },
   logoImg: { width: '100%', height: '100%', objectFit: 'contain', padding: 5 },
-  logoText: { fontSize: 18, fontWeight: 700, color: P.textPrimary },
+  logoText: { fontSize: 18, fontWeight: 700, color: P.brand },
   navRight: { display: 'flex', alignItems: 'center', gap: 8 },
 
   // Hero

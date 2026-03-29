@@ -1,71 +1,86 @@
 /* =====================================================
-   CENTRAL THEME — Single source for all colors & tokens
-   Switch themes by changing these variables
+   CENTRAL THEME — BurnBlack Color & Font System
+   Gold + Black primary. Teal secondary. Satoshi font.
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Brand */
-  --brand-primary: #2563eb;
-  --brand-primary-hover: #1d4ed8;
-  --brand-primary-light: #eff6ff;
-  --brand-accent: #D4AF37;
-  --brand-accent-light: #F9F3DC;
+  /* ── Brand: Gold + Black ── */
+  --brand-primary: #D4AF37;
+  --brand-primary-hover: #C4A030;
+  --brand-primary-light: #FBF5E4;
+  --brand-primary-dark: #A68B2A;
+  --brand-black: #0F0F0F;
+  --brand-black-soft: #1A1A1A;
+  --brand-gradient: linear-gradient(135deg, #D4AF37 0%, #B8941F 50%, #D4AF37 100%);
 
-  /* Text */
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
-  --text-light: #9ca3af;
+  /* ── Secondary: Teal ── */
+  --secondary: #0D9488;
+  --secondary-hover: #0F766E;
+  --secondary-light: #F0FDFA;
+  --secondary-dark: #115E59;
+
+  /* ── Text (warm neutrals) ── */
+  --text-primary: #111111;
+  --text-secondary: #333333;
+  --text-muted: #666666;
+  --text-light: #999999;
   --text-white: #ffffff;
 
-  /* Backgrounds */
-  --bg-page: #f8fafc;
+  /* ── Backgrounds (warm white) ── */
+  --bg-page: #FAFAF8;
   --bg-card: #ffffff;
-  --bg-card-hover: #f9fafb;
-  --bg-muted: #f3f4f6;
+  --bg-card-hover: #F9F9F7;
+  --bg-muted: #F3F3F0;
 
-  /* Borders */
-  --border-light: #e5e7eb;
-  --border-medium: #d1d5db;
-  --border-focus: #2563eb;
+  /* ── Borders (warm) ── */
+  --border-light: #E8E8E4;
+  --border-medium: #D4D4D0;
+  --border-focus: #D4AF37;
 
-  /* Semantic */
-  --color-success: #16a34a;
-  --color-success-bg: #f0fdf4;
-  --color-error: #ef4444;
-  --color-error-bg: #fef2f2;
-  --color-warning: #d97706;
-  --color-warning-bg: #fffbeb;
-  --color-info: #2563eb;
-  --color-info-bg: #eff6ff;
+  /* ── Semantic ── */
+  --color-success: #16A34A;
+  --color-success-bg: #F0FDF4;
+  --color-success-border: #BBF7D0;
+  --color-error: #DC2626;
+  --color-error-bg: #FEF2F2;
+  --color-error-border: #FECACA;
+  --color-warning: #CA8A04;
+  --color-warning-bg: #FEFCE8;
+  --color-warning-border: #FDE68A;
+  --color-info: #0D9488;
+  --color-info-bg: #F0FDFA;
+  --color-info-border: #99F6E4;
 
-  /* Spacing */
+  /* ── Spacing ── */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-full: 9999px;
 
-  /* Shadows */
+  /* ── Shadows ── */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
 
-  /* Z-index */
+  /* ── Z-index ── */
   --z-dropdown: 50;
   --z-sticky: 40;
   --z-overlay: 30;
   --z-sidebar: 20;
 
-  /* Legacy aliases */
-  --s29-primary: #2563eb;
-  --s29-primary-light: #eff6ff;
-  --s29-primary-dark: #1d4ed8;
-  --s29-text-main: #111827;
-  --s29-text-muted: #6b7280;
-  --s29-bg-page: #f8fafc;
-  --s29-bg-alt: #f3f4f6;
-  --s29-border-light: #e5e7eb;
-  --s29-error: #ef4444;
-  --s29-radius-main: 8px;
+  /* ── Font ── */
+  --font-primary: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'DM Mono', 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ── Global font application ── */
+body, input, select, textarea, button {
+  font-family: var(--font-primary);
+}
+
+/* ── Mono for financial numbers ── */
+.font-mono, .ff-row-value, .hud-source-total, .hud-tax-val {
+  font-family: var(--font-mono);
 }
