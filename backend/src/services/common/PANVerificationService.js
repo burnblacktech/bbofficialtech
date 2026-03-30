@@ -107,13 +107,23 @@ class PANVerificationService {
       // Format DOB to YYYY-MM-DD if available
       if (rawDOB) {
         try {
-          const dobDate = new Date(rawDOB);
-          if (!isNaN(dobDate.getTime())) {
-            // Format as YYYY-MM-DD for date input
-            const year = dobDate.getFullYear();
-            const month = String(dobDate.getMonth() + 1).padStart(2, '0');
-            const day = String(dobDate.getDate()).padStart(2, '0');
-            dateOfBirth = `${year}-${month}-${day}`;
+          // SurePass returns DOB in DD/MM/YYYY or DD-MM-YYYY format
+          // Do NOT use new Date() — it interprets DD/MM as MM/DD
+          const parts = String(rawDOB).split(/[\/\-\.]/);
+          if (parts.length === 3) {
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            let year = parts[2];
+            // Handle 2-digit year
+            if (year.length === 2) year = (Number(year) > 50 ? '19' : '20') + year;
+            // Validate
+            if (Number(day) >= 1 && Number(day) <= 31 && Number(month) >= 1 && Number(month) <= 12 && year.length === 4) {
+              dateOfBirth = `${year}-${month}-${day}`;
+            }
+          }
+          // Fallback: if it's already YYYY-MM-DD
+          if (!dateOfBirth && /^\d{4}-\d{2}-\d{2}$/.test(rawDOB)) {
+            dateOfBirth = rawDOB;
           }
         } catch (error) {
           enterpriseLogger.warn('Failed to parse DOB from PAN verification', {
@@ -251,13 +261,18 @@ class PANVerificationService {
       // Format DOB to YYYY-MM-DD if available
       if (rawDOB) {
         try {
-          const dobDate = new Date(rawDOB);
-          if (!isNaN(dobDate.getTime())) {
-            // Format as YYYY-MM-DD for date input
-            const year = dobDate.getFullYear();
-            const month = String(dobDate.getMonth() + 1).padStart(2, '0');
-            const day = String(dobDate.getDate()).padStart(2, '0');
-            dateOfBirth = `${year}-${month}-${day}`;
+          const parts = String(rawDOB).split(/[\/\-\.]/);
+          if (parts.length === 3) {
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            let year = parts[2];
+            if (year.length === 2) year = (Number(year) > 50 ? '19' : '20') + year;
+            if (Number(day) >= 1 && Number(day) <= 31 && Number(month) >= 1 && Number(month) <= 12 && year.length === 4) {
+              dateOfBirth = `${year}-${month}-${day}`;
+            }
+          }
+          if (!dateOfBirth && /^\d{4}-\d{2}-\d{2}$/.test(rawDOB)) {
+            dateOfBirth = rawDOB;
           }
         } catch (error) {
           enterpriseLogger.warn('Failed to parse DOB from PAN comprehensive verification', {
