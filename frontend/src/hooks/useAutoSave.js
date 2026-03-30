@@ -3,40 +3,35 @@ import { useRef, useCallback, useEffect } from 'react';
 /**
  * useAutoSave — Debounced auto-save hook for filing editors.
  *
- * Usage in an editor:
- *   const { markDirty, flushNow } = useAutoSave(onSave, buildPayload, delay);
- *
- * - Call `markDirty()` on every field change
- * - `buildPayload` is a function that returns the current save payload (or null to skip)
+ * - Call `markDirty()` on every field change (user-initiated only)
  * - Auto-saves after `delay` ms of inactivity
- * - `flushNow()` saves immediately (call on unmount or explicit save)
- *
- * The hook also exposes `isDirty` for UI indicators.
+ * - Does NOT save on mount or component init — only after real user interaction
+ * - Flushes pending save on unmount (fire-and-forget)
  */
 export default function useAutoSave(onSave, buildPayload, delay = 1500) {
   const dirtyRef = useRef(false);
   const timerRef = useRef(null);
   const savingRef = useRef(false);
   const mountedRef = useRef(true);
+  const interactedRef = useRef(false);
   const buildPayloadRef = useRef(buildPayload);
   const onSaveRef = useRef(onSave);
 
-  // Keep refs current without re-creating callbacks
   useEffect(() => { buildPayloadRef.current = buildPayload; }, [buildPayload]);
   useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
   const doSave = useCallback(() => {
-    if (!dirtyRef.current || savingRef.current) return;
+    // Only save if user has actually interacted AND data is dirty
+    if (!dirtyRef.current || savingRef.current || !interactedRef.current) return;
     const payload = buildPayloadRef.current?.();
     if (!payload) return;
     savingRef.current = true;
     dirtyRef.current = false;
     try {
       const result = onSaveRef.current(payload);
-      // Handle both sync and async onSave
       if (result && typeof result.then === 'function') {
         result
-          .catch(() => { dirtyRef.current = true; }) // re-mark dirty on failure
+          .catch(() => { dirtyRef.current = true; })
           .finally(() => { savingRef.current = false; });
       } else {
         savingRef.current = false;
@@ -48,6 +43,7 @@ export default function useAutoSave(onSave, buildPayload, delay = 1500) {
   }, []);
 
   const markDirty = useCallback(() => {
+    interactedRef.current = true;
     dirtyRef.current = true;
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(doSave, delay);
@@ -58,14 +54,12 @@ export default function useAutoSave(onSave, buildPayload, delay = 1500) {
     doSave();
   }, [doSave]);
 
-  // Cleanup on unmount — flush pending save
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       if (timerRef.current) clearTimeout(timerRef.current);
-      // Fire-and-forget save on unmount
-      if (dirtyRef.current) {
+      if (dirtyRef.current && interactedRef.current) {
         doSave();
       }
     };
