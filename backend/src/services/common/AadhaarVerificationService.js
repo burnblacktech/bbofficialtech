@@ -28,13 +28,19 @@ class AadhaarVerificationService {
     try {
       const base64 = pdfBuffer.toString('base64');
 
+      // SurePass eAadhaar API accepts multipart/form-data OR base64 in form field
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', pdfBuffer, { filename: 'eaadhaar.pdf', contentType: 'application/pdf' });
+      if (password) formData.append('password', password);
+
       const response = await axios.post(
-        `${this.baseUrl}/aadhaar-v2/upload-eaadhaar`,
-        { file: base64, password: password || '' },
+        'https://kyc-api.surepass.app/api/v1/aadhaar/upload/eaadhaar',
+        formData,
         {
           headers: {
             'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
+            ...formData.getHeaders(),
           },
           timeout: 30000,
         },
@@ -86,14 +92,22 @@ class AadhaarVerificationService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      if (error.response?.data?.message?.includes('password')) {
+      if (error.response?.data?.message?.includes('password') || error.response?.data?.message_code === 'invalid_pdf') {
         throw new AppError(
-          'Incorrect eAadhaar password. The password is usually your Aadhaar number or the share code.',
-          422, 'AADHAAR_PASSWORD_INCORRECT',
+          'Could not read eAadhaar PDF. Make sure it is a valid eAadhaar downloaded from UIDAI or DigiLocker.',
+          422, 'AADHAAR_VERIFICATION_FAILED',
         );
       }
-      enterpriseLogger.error('Aadhaar verification failed', { error: error.message });
-      throw new AppError(`Aadhaar verification failed: ${error.message}`, 500, 'AADHAAR_VERIFICATION_ERROR');
+      enterpriseLogger.error('Aadhaar verification failed', {
+        error: error.message,
+        status: error.response?.status,
+        responseData: error.response?.data,
+      });
+      throw new AppError(
+        `Aadhaar verification failed: ${error.response?.data?.message || error.message}`,
+        error.response?.status || 500,
+        'AADHAAR_VERIFICATION_ERROR',
+      );
     }
   }
 
