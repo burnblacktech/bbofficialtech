@@ -29,7 +29,7 @@ const ProtectedRoute = () => {
 
   // Redirect admin routes to admin login, regular routes to regular login
   if (!user) {
-    return <Navigate to={isAdminRoute ? '/admin/login' : '/login'} replace />;
+    return <Navigate to={isAdminRoute ? '/admin/login' : '/'} replace />;
   }
 
   return <Outlet />;

@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { FileText, CheckCircle, Upload, Shield, Building2 } from 'lucide-react';
+import { FileText, CheckCircle } from 'lucide-react';
 import P from '../../../styles/palette';
 
 // Document definitions — what's needed for each income source
@@ -167,6 +167,9 @@ export default function DocumentPanel({ activeSources, payload, panVerified, onI
                 <button className="hud-doc-action" onClick={() => onImport(doc.importType)}>
                   Upload
                 </button>
+              )}
+              {doc.status === 'pending' && !doc.importType && (
+                <span style={{ fontSize: 10, color: P.textLight, whiteSpace: 'nowrap' }}>Manual</span>
               )}
               {doc.status === 'done' && (
                 <CheckCircle size={14} style={{ color: P.success, flexShrink: 0, marginTop: 4 }} />
