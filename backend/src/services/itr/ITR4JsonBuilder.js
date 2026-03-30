@@ -1,8 +1,9 @@
 // =====================================================
-// ITR-4 JSON BUILDER (Sugam)
+// ITR-4 JSON BUILDER (Sugam) — ITD Schema Compliant
 // =====================================================
 
 const ITR4ComputationService = require('./ITR4ComputationService');
+const { buildPersonalInfo, buildFilingStatus, buildTDSSchedules, buildBankDetails, buildVerification, buildDeductions } = require('./jsonHelpers');
 
 class ITR4JsonBuilder {
   static build(payload, assessmentYear) {
@@ -11,41 +12,17 @@ class ITR4JsonBuilder {
     const result = regime === 'old' ? computation.oldRegime : computation.newRegime;
     const pi = payload.personalInfo || {};
     const income = computation.income;
-    const bank = payload.bankAccount || {};
+    const agri = Number(payload.income?.agriculturalIncome) || 0;
+    const tdsSchedules = buildTDSSchedules(payload);
 
-    return {
-      Form_ITR4: { FormName: 'ITR-4', Description: 'Sugam — Presumptive Income', AssessmentYear: assessmentYear, SchemaVer: 'Ver1.0' },
-      PersonalInfo: {
-        AssesseeName: { FirstName: pi.firstName, MiddleName: pi.middleName, SurNameOrOrgName: pi.lastName },
-        PAN: pi.pan,
-        DOB: pi.dob,
-        Gender: pi.gender,
-        AadhaarCardNo: pi.aadhaar,
-        Address: {
-          ResidenceNo: pi.address?.flatDoorBuilding,
-          ResidenceName: pi.address?.premisesName,
-          RoadOrStreet: pi.address?.roadStreet,
-          AreaOrLocality: pi.address?.areaLocality,
-          CityOrTownOrDistrict: pi.address?.city,
-          StateCode: pi.address?.stateCode,
-          PinCode: pi.address?.pincode,
-          CountryCode: pi.residentialStatus === 'RES' ? '91' : '91',
-        },
-        MobileNo: pi.phone,
-        EmailAddress: pi.email,
-        EmployerCategory: pi.employerCategory,
-      },
-      FilingStatus: {
-        FilingStatus: pi.filingStatus || 'O',
-        ReturnFileSec: regime === 'new' ? 115 : 11,
-        OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
-        ...(pi.filingStatus === 'R' ? { OriginalAckNo: pi.originalAckNumber, OriginalFilingDate: pi.originalFilingDate } : {}),
-        ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason } : {}),
-      },
+    const json = {
+      Form_ITR4: { FormName: 'ITR-4', Description: 'Sugam — Presumptive Income', AssessmentYear: assessmentYear, SchemaVer: 'Ver1.0', FormVer: 'Ver1.0' },
+      PersonalInfo: buildPersonalInfo(pi),
+      FilingStatus: buildFilingStatus(pi, regime, assessmentYear),
 
-      ScheduleS: { IncomeFromSalary: income.salary.netTaxable },
+      ScheduleS: { Salaries: income.salary.grossSalary, IncomeFromSal: income.salary.netTaxable },
       ScheduleHP: { IncomeFromHP: income.houseProperty.netIncome },
-      ScheduleOS: { TotalOtherIncome: income.otherSources.total },
+      ScheduleOS: { IncomeFromOtherSources: income.otherSources.total },
 
       ScheduleBP44AD: income.presumptive.entries.filter(e => e.section === '44AD').map(e => ({
         BusinessName: e.businessName, GrossReceipts: e.grossReceipts,
@@ -60,18 +37,34 @@ class ITR4JsonBuilder {
       })),
 
       TotalPresumptiveIncome: income.presumptive.totalIncome,
-      GrossTotalIncome: computation.grossTotalIncome,
 
-      DeductionUnderChapterVIA: { TotalChapVIADeductions: result.deductions },
+      ...tdsSchedules,
+      DeductionUnderChapterVIA: buildDeductions(result, regime),
+
+      IncomeDeductions: {
+        GrossTotIncome: computation.grossTotalIncome,
+        DeductUndChapVIA: result.deductions,
+        TotalIncome: result.taxableIncome,
+        AgriculturalIncome: agri,
+      },
+
       TaxComputation: {
-        TaxableIncome: result.taxableIncome, TotalTax: result.totalTax,
+        TotalTaxPayable: result.taxOnIncome,
+        Rebate87A: result.rebate,
+        Surcharge25: result.surcharge,
+        EducationCess: result.cess,
+        GrossTaxLiability: result.totalTax,
         TaxPaid: { TotalTaxesPaid: computation.tds.total },
-        NetPayable: Math.max(0, result.totalTax - computation.tds.total),
+        BalTaxPayable: Math.max(0, result.totalTax - computation.tds.total),
         RefundDue: Math.max(0, computation.tds.total - result.totalTax),
       },
-      Refund: { BankAccountDtls: { BankName: bank.bankName || '', IFSCCode: bank.ifsc || '', BankAccountNo: bank.accountNumber || '' } },
-      _meta: { generatedAt: new Date().toISOString(), regime },
+
+      BankAccountDtls: buildBankDetails(payload),
+      Verification: buildVerification(pi),
     };
+
+    Object.keys(json).forEach(k => { if (json[k] === undefined || json[k] === null) delete json[k]; });
+    return json;
   }
 }
 

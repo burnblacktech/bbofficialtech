@@ -138,14 +138,29 @@ export default function ITR1Flow() {
   useEffect(() => {
     if (!filing) return;
     const p = filing.jsonPayload || {};
+
+    // Determine active sources: prefer saved selection, then infer from data, then from ITR type
     const s = new Set();
-    if (p.income?.salary?.employers?.length) s.add('salary');
-    if (p.income?.houseProperty?.type && !['NONE', 'none'].includes(p.income.houseProperty.type)) s.add('house_property');
-    if (p.income?.capitalGains?.transactions?.length) s.add('capital_gains');
-    if (p.income?.business?.businesses?.length || p.income?.presumptive?.entries?.length) s.add('business');
-    if (n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) + n(p.income?.otherSources?.dividendIncome) + n(p.income?.otherSources?.familyPension) + n(p.income?.otherSources?.otherIncome) + n(p.income?.agriculturalIncome) > 0) s.add('other');
-    if (p.income?.foreignIncome?.incomes?.length) s.add('foreign');
-    if (s.size === 0) s.add('salary');
+    const savedSources = p._selectedSources;
+    if (Array.isArray(savedSources) && savedSources.length > 0) {
+      // Use sources selected in the ITR Determination wizard
+      savedSources.forEach(src => s.add(src));
+    } else {
+      // Infer from existing data
+      if (p.income?.salary?.employers?.length) s.add('salary');
+      if (p.income?.houseProperty?.type && !['NONE', 'none'].includes(p.income.houseProperty.type)) s.add('house_property');
+      if (p.income?.capitalGains?.transactions?.length) s.add('capital_gains');
+      if (p.income?.business?.businesses?.length || p.income?.presumptive?.entries?.length) s.add('business');
+      if (n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) + n(p.income?.otherSources?.dividendIncome) + n(p.income?.otherSources?.familyPension) + n(p.income?.otherSources?.otherIncome) + n(p.income?.agriculturalIncome) > 0) s.add('other');
+      if (p.income?.foreignIncome?.incomes?.length) s.add('foreign');
+    }
+    // Fallback: at least salary for ITR-1/2, business for ITR-3/4
+    if (s.size === 0) {
+      const itr = filing.itrType || 'ITR-1';
+      if (itr === 'ITR-3') s.add('business');
+      else if (itr === 'ITR-4') s.add('business');
+      else s.add('salary');
+    }
     setActive([...s]);
     const bd = p.bankDetails || {};
     if (bd.bankName || bd.accountNumber) setBankData({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
@@ -654,6 +669,7 @@ export default function ITR1Flow() {
         payload={payload}
         panVerified={!!user?.panVerified}
         onImport={openImport}
+        onNavigate={setSelected}
       />
 
       {/* ── Mobile: Floating document button ── */}

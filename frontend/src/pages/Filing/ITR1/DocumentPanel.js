@@ -11,33 +11,38 @@ import P from '../../../styles/palette';
 // Document definitions — what's needed for each income source
 const DOC_DEFS = {
   identity: [
-    { id: 'pan', label: 'PAN Card', desc: 'Identity verification', group: 'Identity', importType: null },
-    { id: 'aadhaar', label: 'Aadhaar Card', desc: 'For e-verification after filing', group: 'Identity', importType: null },
+    { id: 'pan', label: 'PAN Card', desc: 'Identity verification', group: 'Identity', importType: null, section: 'personalInfo' },
+    { id: 'aadhaar', label: 'Aadhaar Card', desc: 'For e-verification after filing', group: 'Identity', importType: null, section: 'personalInfo' },
   ],
   salary: [
-    { id: 'form16', label: 'Form 16', desc: 'Salary, TDS, employer details', group: 'Salary & TDS', importType: 'form16' },
+    { id: 'form16', label: 'Form 16', desc: 'Salary, TDS, employer details', group: 'Salary & TDS', importType: 'form16', section: 'salary' },
   ],
   tds: [
-    { id: '26as', label: 'Form 26AS', desc: 'Verifies all TDS credits', group: 'Salary & TDS', importType: '26as' },
-    { id: 'ais', label: 'AIS', desc: 'Cross-checks all reported income', group: 'Salary & TDS', importType: 'ais' },
+    { id: '26as', label: 'Form 26AS', desc: 'Verifies all TDS credits', group: 'Salary & TDS', importType: '26as', section: 'bank' },
+    { id: 'ais', label: 'AIS', desc: 'Cross-checks all reported income', group: 'Salary & TDS', importType: 'ais', section: null },
   ],
   other: [
-    { id: 'bank_stmt', label: 'Bank Statement', desc: 'Interest income + account details', group: 'Other Income', importType: null },
-    { id: 'form16a', label: 'Form 16A', desc: 'TDS on non-salary income', group: 'Other Income', importType: 'form16a' },
+    { id: 'bank_stmt', label: 'Bank Statement', desc: 'Interest income + account details', group: 'Other Income', importType: null, section: 'other' },
+    { id: 'form16a', label: 'Form 16A', desc: 'TDS on non-salary income', group: 'Other Income', importType: 'form16a', section: 'bank' },
   ],
   // eslint-disable-next-line camelcase
   house_property: [
-    { id: 'loan_cert', label: 'Home Loan Certificate', desc: 'Interest paid on housing loan', group: 'House Property', importType: null },
-    { id: 'form16c', label: 'Form 16C', desc: 'TDS on rent (from tenant)', group: 'House Property', importType: 'form16c' },
+    { id: 'loan_cert', label: 'Home Loan Certificate', desc: 'Interest paid on housing loan', group: 'House Property', importType: null, section: 'house_property' },
+    { id: 'rent_receipts', label: 'Rent Receipts / Agreement', desc: 'Proof of rent received (let-out)', group: 'House Property', importType: null, section: 'house_property' },
+    { id: 'form16c', label: 'Form 16C', desc: 'TDS on rent (from tenant)', group: 'House Property', importType: 'form16c', section: 'bank' },
   ],
   // eslint-disable-next-line camelcase
   capital_gains: [
-    { id: 'broker_cg', label: 'Broker CG Statement', desc: 'Capital gains from shares/MF', group: 'Capital Gains', importType: null },
-    { id: 'form16b', label: 'Form 16B', desc: 'TDS on property sale', group: 'Capital Gains', importType: 'form16b' },
+    { id: 'broker_cg', label: 'Broker CG Statement', desc: 'Capital gains from shares/MF', group: 'Capital Gains', importType: null, section: 'capital_gains' },
+    { id: 'form16b', label: 'Form 16B', desc: 'TDS on property sale', group: 'Capital Gains', importType: 'form16b', section: 'bank' },
   ],
   deductions: [
-    { id: 'invest_proofs', label: 'Investment Proofs', desc: 'PPF, ELSS, LIC for 80C', group: 'Deductions', importType: null },
-    { id: 'health_receipt', label: 'Health Insurance Receipt', desc: '80D premium proof', group: 'Deductions', importType: null },
+    { id: 'invest_proofs', label: 'Investment Proofs', desc: 'PPF, ELSS, LIC for 80C', group: 'Deductions', importType: null, section: 'deductions' },
+    { id: 'health_receipt', label: 'Health Insurance Receipt', desc: '80D premium proof', group: 'Deductions', importType: null, section: 'deductions' },
+    { id: 'donation_receipt', label: 'Donation Receipts', desc: '80G donation proof with PAN', group: 'Deductions', importType: null, section: 'deductions' },
+  ],
+  bank: [
+    { id: 'bank_passbook', label: 'Bank Passbook / Cheque', desc: 'Account number, IFSC for refund', group: 'Bank', importType: null, section: 'bank' },
   ],
 };
 
@@ -99,10 +104,16 @@ function generateChecklist(activeSources, payload, panVerified) {
     });
   }
 
-  // Deduction docs (if old regime or any deductions entered)
+  // Deduction docs
   const hasDeductions = Number(payload?.deductions?.ppf || 0) + Number(payload?.deductions?.elss || 0) + Number(payload?.deductions?.healthSelf || 0) > 0;
   docs.push({ ...DOC_DEFS.deductions[0], status: hasDeductions ? 'done' : 'pending', summary: hasDeductions ? 'Added' : null });
   docs.push({ ...DOC_DEFS.deductions[1], status: Number(payload?.deductions?.healthSelf || 0) > 0 ? 'done' : 'pending', summary: null });
+  const hasDonations = (payload?.deductions?.donations80G || []).length > 0;
+  docs.push({ ...DOC_DEFS.deductions[2], status: hasDonations ? 'done' : 'pending', summary: hasDonations ? `${payload.deductions.donations80G.length} donation(s)` : null });
+
+  // Bank docs — always needed
+  const hasBank = !!(payload?.bankDetails?.bankName && payload?.bankDetails?.accountNumber);
+  docs.push({ ...DOC_DEFS.bank[0], status: hasBank ? 'done' : 'pending', summary: hasBank ? `${payload.bankDetails.bankName} ****${(payload.bankDetails.accountNumber || '').slice(-4)}` : null });
 
   return docs;
 }
@@ -115,7 +126,7 @@ function fmtShort(v) {
   return `₹${n.toLocaleString('en-IN')}`;
 }
 
-export default function DocumentPanel({ activeSources, payload, panVerified, onImport }) {
+export default function DocumentPanel({ activeSources, payload, panVerified, onImport, onNavigate }) {
   const docs = useMemo(
     () => generateChecklist(activeSources, payload, panVerified),
     [activeSources, payload, panVerified],
@@ -168,8 +179,10 @@ export default function DocumentPanel({ activeSources, payload, panVerified, onI
                   Upload
                 </button>
               )}
-              {doc.status === 'pending' && !doc.importType && (
-                <span style={{ fontSize: 10, color: P.textLight, whiteSpace: 'nowrap' }}>Manual</span>
+              {doc.status === 'pending' && !doc.importType && doc.section && (
+                <button className="hud-doc-action" onClick={() => onNavigate?.(doc.section)}>
+                  Add
+                </button>
               )}
               {doc.status === 'done' && (
                 <CheckCircle size={14} style={{ color: P.success, flexShrink: 0, marginTop: 4 }} />

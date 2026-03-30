@@ -1,186 +1,110 @@
 // =====================================================
-// ITR-2 JSON BUILDER
-// Generates ITD-format JSON for ITR-2
+// ITR-2 JSON BUILDER — ITD Schema Compliant
 // =====================================================
 
 const ITR2ComputationService = require('./ITR2ComputationService');
+const { buildPersonalInfo, buildFilingStatus, buildTDSSchedules, buildBankDetails, buildVerification, buildDeductions } = require('./jsonHelpers');
 
 class ITR2JsonBuilder {
-
   static build(payload, assessmentYear) {
     const computation = ITR2ComputationService.compute(payload);
     const regime = payload.selectedRegime || computation.recommended;
     const result = regime === 'old' ? computation.oldRegime : computation.newRegime;
     const pi = payload.personalInfo || {};
     const income = computation.income;
-    const bank = payload.bankAccount || {};
+    const agri = Number(payload.income?.agriculturalIncome) || 0;
+    const tdsSchedules = buildTDSSchedules(payload);
 
-    return {
-      Form_ITR2: {
-        FormName: 'ITR-2',
-        Description: 'For Individuals and HUFs not having income from profits and gains of business or profession',
-        AssessmentYear: assessmentYear,
-        SchemaVer: 'Ver1.0',
-        FormVer: 'Ver1.0',
-      },
+    const json = {
+      Form_ITR2: { FormName: 'ITR-2', AssessmentYear: assessmentYear, SchemaVer: 'Ver1.0', FormVer: 'Ver1.0' },
+      PersonalInfo: buildPersonalInfo(pi),
+      FilingStatus: buildFilingStatus(pi, regime, assessmentYear),
 
-      PersonalInfo: {
-        AssesseeName: { FirstName: pi.firstName, MiddleName: pi.middleName, SurNameOrOrgName: pi.lastName },
-        PAN: pi.pan,
-        DOB: pi.dob,
-        Gender: pi.gender,
-        AadhaarCardNo: pi.aadhaar,
-        Address: {
-          ResidenceNo: pi.address?.flatDoorBuilding,
-          ResidenceName: pi.address?.premisesName,
-          RoadOrStreet: pi.address?.roadStreet,
-          AreaOrLocality: pi.address?.areaLocality,
-          CityOrTownOrDistrict: pi.address?.city,
-          StateCode: pi.address?.stateCode,
-          PinCode: pi.address?.pincode,
-          CountryCode: pi.residentialStatus === 'RES' ? '91' : '91',
-        },
-        MobileNo: pi.phone,
-        EmailAddress: pi.email,
-        EmployerCategory: pi.employerCategory,
-      },
-
-      FilingStatus: {
-        FilingStatus: pi.filingStatus || 'O',
-        ReturnFileSec: regime === 'new' ? 115 : 11,
-        OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
-        ...(pi.filingStatus === 'R' ? { OriginalAckNo: pi.originalAckNumber, OriginalFilingDate: pi.originalFilingDate } : {}),
-        ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason } : {}),
-      },
-
-      // Schedule S — Salary
       ScheduleS: {
-        GrossSalary: income.salary.grossSalary,
-        ExemptAllowances: income.salary.exemptAllowances,
-        StandardDeduction: income.salary.standardDeduction,
-        ProfessionalTax: income.salary.professionalTax,
-        IncomeFromSalary: income.salary.netTaxable,
+        Salaries: income.salary.grossSalary,
+        AllwncExemptUs10: { TotalAllwncExemptUs10: income.salary.exemptAllowances },
+        DeductionUs16: income.salary.standardDeduction + income.salary.professionalTax + income.salary.entertainmentAllowanceDeduction,
+        IncomeFromSal: income.salary.netTaxable,
       },
 
-      // Schedule HP — House Property (multiple)
       ScheduleHP: {
-        Properties: (income.houseProperty.properties || []).map(p => ({
-          PropertyType: p.type,
-          AnnualRent: p.annualRent || 0,
-          MunicipalTaxes: p.municipalTaxes || 0,
-          NetAnnualValue: p.nav || 0,
-          StandardDeduction30: p.standardDeduction30 || 0,
-          InterestOnLoan: p.interestOnHomeLoan || 0,
-          NetIncome: p.netIncome || 0,
+        Properties: (income.houseProperty.properties || [{ type: income.houseProperty.type, netIncome: income.houseProperty.netIncome, interestOnHomeLoan: income.houseProperty.interestOnHomeLoan || income.houseProperty.interestAllowed || 0 }]).map(p => ({
+          TypeOfHP: p.type === 'SELF_OCCUPIED' ? 'S' : 'L',
+          GrossRentReceived: p.annualRent || 0,
+          TaxPaidlocalAuth: p.municipalTaxes || 0,
+          AnnualValue: p.nav || 0,
+          StandardDeduction: p.standardDeduction30 || 0,
+          InterestPayable: p.interestOnHomeLoan || 0,
+          IncomeFromHP: p.netIncome || 0,
         })),
         TotalHPIncome: income.houseProperty.netIncome,
-        CarryForwardLoss: income.houseProperty.carryForwardLoss || 0,
       },
 
-      // Schedule CG — Capital Gains
       ScheduleCG: {
-        ShortTermCapitalGains: {
-          STCGEquity: income.capitalGains.stcg.equity,
-          STCGOther: income.capitalGains.stcg.other,
+        ShortTermCapGain: {
+          STCGOnEquity111A: income.capitalGains.stcg.equity,
+          STCGOnOthAssets: income.capitalGains.stcg.other,
           TotalSTCG: income.capitalGains.stcg.total,
         },
-        LongTermCapitalGains: {
-          LTCGEquity: income.capitalGains.ltcg.equity,
-          LTCGProperty: income.capitalGains.ltcg.property,
-          LTCGOther: income.capitalGains.ltcg.other,
+        LongTermCapGain: {
+          LTCGOnEquity112A: income.capitalGains.ltcg.equity,
+          LTCGOnProperty112: income.capitalGains.ltcg.property,
+          LTCGOnOthAssets: income.capitalGains.ltcg.other,
           TotalLTCG: income.capitalGains.ltcg.total,
-          ExemptionUnder54: income.capitalGains.exemptions,
         },
-        TotalCapitalGains: income.capitalGains.totalTaxable,
-        Transactions: income.capitalGains.transactions.map(t => ({
-          AssetType: t.assetType, GainType: t.gainType,
-          SaleDate: t.saleDate, PurchaseDate: t.purchaseDate,
-          SaleValue: t.saleValue, PurchaseValue: t.purchaseValue,
-          IndexedCost: t.indexedCost || 0, Expenses: t.expenses || 0,
-          Gain: t.gain, Exemption: t.exemption || 0, TaxableGain: t.taxableGain,
-        })),
+        TotalCapGains: income.capitalGains.totalTaxable,
       },
 
-      // Schedule OS — Other Sources
       ScheduleOS: {
-        SavingsInterest: income.otherSources.savingsInterest,
-        FDInterest: income.otherSources.fdInterest,
-        Dividends: income.otherSources.dividends,
-        FamilyPension: income.otherSources.familyPension,
-        FamilyPensionExempt: income.otherSources.familyPensionExempt,
-        OtherIncome: income.otherSources.other,
-        TotalOtherIncome: income.otherSources.total,
+        IntrstFrmSavingBank: income.otherSources.savingsInterest || 0,
+        IntrstFrmTermDeposit: income.otherSources.fdInterest || 0,
+        DividendIncome: income.otherSources.dividends || 0,
+        FamilyPension: income.otherSources.familyPension || 0,
+        IncomeFromOtherSources: income.otherSources.total,
       },
 
-      // Schedule FSI — Foreign Source Income
-      ScheduleFSI: income.foreignIncome.incomes.length > 0 ? {
-        Incomes: income.foreignIncome.incomes.map(i => ({
-          Country: i.country, IncomeType: i.type,
-          AmountINR: i.amountINR, TaxPaidAbroad: i.taxPaidAbroad,
-          DTAAApplicable: i.dtaaApplicable,
-        })),
-        TotalForeignIncome: income.foreignIncome.totalIncome,
-        TotalTaxPaidAbroad: income.foreignIncome.totalTaxPaidAbroad,
-      } : undefined,
-
-      // Schedule TR — Tax Relief (DTAA)
-      ScheduleTR: computation.foreignTaxCredit.credit > 0 ? {
-        TotalForeignTaxCredit: computation.foreignTaxCredit.credit,
-        Details: computation.foreignTaxCredit.breakdown,
-      } : undefined,
-
-      // Deductions
-      DeductionUnderChapterVIA: regime === 'old' ? {
-        Section80C: result.deductionBreakdown.section80C || 0,
-        Section80CCD1B: result.deductionBreakdown.section80CCD1B || 0,
-        Section80D: result.deductionBreakdown.section80D || 0,
-        Section80E: result.deductionBreakdown.section80E || 0,
-        Section80G: result.deductionBreakdown.section80G || 0,
-        Section80TTA: result.deductionBreakdown.section80TTA || 0,
-        TotalChapVIADeductions: result.deductions,
-      } : { TotalChapVIADeductions: 0 },
-
-      // Tax Computation
-      TaxComputation: {
-        GrossTotalIncome: computation.grossTotalIncome,
-        TotalDeductions: result.deductions,
-        TotalTaxableIncome: result.taxableIncome,
-        NormalIncomeTax: result.normalTax,
-        STCGEquityTax: result.stcgEquityTax,
-        LTCGEquityTax: result.ltcgEquityTax,
-        LTCGOtherTax: result.ltcgOtherTax,
-        TotalTaxOnIncome: result.taxOnIncome,
-        Rebate87A: result.rebate,
-        Surcharge: result.surcharge,
-        HealthEducationCess: result.cess,
-        GrossTaxLiability: result.totalTax,
-        ForeignTaxCredit: computation.foreignTaxCredit.credit,
-        TaxPaid: {
-          TDSSalary: computation.tds.fromSalary,
-          TDSFD: computation.tds.fromFD,
-          TDSCapitalGains: computation.tds.fromCapitalGains || 0,
-          TDSOther: computation.tds.fromOther,
-          AdvanceTax: computation.tds.advanceTax,
-          SelfAssessmentTax: computation.tds.selfAssessment,
-          TotalTaxesPaid: computation.tds.total,
+      ...(income.foreignIncome.totalIncome > 0 ? {
+        ScheduleFSI: {
+          Incomes: income.foreignIncome.incomes.map(i => ({
+            Country: i.country, IncomeType: i.type, AmountINR: i.amountINR, TaxPaidAbroad: i.taxPaidAbroad,
+          })),
+          TotalForeignIncome: income.foreignIncome.totalIncome,
         },
-        NetTaxPayable: Math.max(0, result.totalTax - computation.tds.total - computation.foreignTaxCredit.credit),
-        RefundDue: Math.max(0, computation.tds.total + computation.foreignTaxCredit.credit - result.totalTax),
+      } : {}),
+
+      ...tdsSchedules,
+
+      DeductionUnderChapterVIA: buildDeductions(result, regime),
+
+      IncomeDeductions: {
+        GrossTotIncome: computation.grossTotalIncome,
+        DeductUndChapVIA: result.deductions,
+        TotalIncome: result.taxableIncome,
+        AgriculturalIncome: agri,
       },
 
-      Refund: {
-        BankAccountDtls: { BankName: bank.bankName || '', IFSCCode: bank.ifsc || '', BankAccountNo: bank.accountNumber || '' },
+      TaxComputation: {
+        NormalIncomeTax: result.normalTax,
+        TaxOnSTCGEquity: result.stcgEquityTax,
+        TaxOnLTCGEquity: result.ltcgEquityTax,
+        TaxOnLTCGOther: result.ltcgOtherTax || 0,
+        TotalTaxPayable: result.taxOnIncome,
+        Rebate87A: result.rebate,
+        TaxPayableOnRebate: Math.max(0, result.taxOnIncome - result.rebate),
+        Surcharge25: result.surcharge,
+        EducationCess: result.cess,
+        GrossTaxLiability: result.totalTax,
+        TaxPaid: { TotalTaxesPaid: computation.tds.total },
+        BalTaxPayable: Math.max(0, result.totalTax - computation.tds.total - (computation.foreignTaxCredit?.credit || 0)),
+        RefundDue: Math.max(0, computation.tds.total + (computation.foreignTaxCredit?.credit || 0) - result.totalTax),
       },
 
-      Verification: {
-        Place: payload.verification?.place || '', Date: payload.verification?.date || new Date().toISOString().split('T')[0], Capacity: 'S',
-      },
-
-      _meta: {
-        generatedAt: new Date().toISOString(), regime,
-        computation: { grossTotalIncome: computation.grossTotalIncome, totalDeductions: result.deductions, taxableIncome: result.taxableIncome, totalTax: result.totalTax, tdsCredit: computation.tds.total, foreignTaxCredit: computation.foreignTaxCredit.credit, netPayable: result.netPayable },
-      },
+      BankAccountDtls: buildBankDetails(payload),
+      Verification: buildVerification(pi),
     };
+
+    Object.keys(json).forEach(k => { if (json[k] === undefined || json[k] === null) delete json[k]; });
+    return json;
   }
 }
 

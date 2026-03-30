@@ -1,8 +1,11 @@
 // =====================================================
-// ITR-3 JSON BUILDER
+// ITR-3 JSON BUILDER — ITD Schema Compliant
 // =====================================================
 
 const ITR3ComputationService = require('./ITR3ComputationService');
+const { buildPersonalInfo, buildFilingStatus, buildTDSSchedules, buildBankDetails, buildVerification, buildDeductions } = require('./jsonHelpers');
+
+const n = (v) => Number(v) || 0;
 
 class ITR3JsonBuilder {
   static build(payload, assessmentYear) {
@@ -11,49 +14,28 @@ class ITR3JsonBuilder {
     const result = regime === 'old' ? computation.oldRegime : computation.newRegime;
     const pi = payload.personalInfo || {};
     const income = computation.income;
-    const bank = payload.bankAccount || {};
+    const agri = n(payload.income?.agriculturalIncome);
     const bs = payload.income?.business?.balanceSheet || {};
+    const tdsSchedules = buildTDSSchedules(payload);
 
-    return {
-      Form_ITR3: { FormName: 'ITR-3', AssessmentYear: assessmentYear, SchemaVer: 'Ver1.0' },
-      PersonalInfo: {
-        AssesseeName: { FirstName: pi.firstName, MiddleName: pi.middleName, SurNameOrOrgName: pi.lastName },
-        PAN: pi.pan,
-        DOB: pi.dob,
-        Gender: pi.gender,
-        AadhaarCardNo: pi.aadhaar,
-        Address: {
-          ResidenceNo: pi.address?.flatDoorBuilding,
-          ResidenceName: pi.address?.premisesName,
-          RoadOrStreet: pi.address?.roadStreet,
-          AreaOrLocality: pi.address?.areaLocality,
-          CityOrTownOrDistrict: pi.address?.city,
-          StateCode: pi.address?.stateCode,
-          PinCode: pi.address?.pincode,
-          CountryCode: pi.residentialStatus === 'RES' ? '91' : '91',
-        },
-        MobileNo: pi.phone,
-        EmailAddress: pi.email,
-        EmployerCategory: pi.employerCategory,
-      },
-      FilingStatus: {
-        FilingStatus: pi.filingStatus || 'O',
-        ReturnFileSec: regime === 'new' ? 115 : 11,
-        OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
-        ...(pi.filingStatus === 'R' ? { OriginalAckNo: pi.originalAckNumber, OriginalFilingDate: pi.originalFilingDate } : {}),
-        ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason } : {}),
-      },
+    const json = {
+      Form_ITR3: { FormName: 'ITR-3', AssessmentYear: assessmentYear, SchemaVer: 'Ver1.0', FormVer: 'Ver1.0' },
+      PersonalInfo: buildPersonalInfo(pi),
+      FilingStatus: buildFilingStatus(pi, regime, assessmentYear),
 
-      ScheduleS: { IncomeFromSalary: income.salary.netTaxable },
+      ScheduleS: { Salaries: income.salary.grossSalary, IncomeFromSal: income.salary.netTaxable },
       ScheduleHP: { TotalHPIncome: income.houseProperty.netIncome },
-      ScheduleCG: {
-        STCGEquity: income.capitalGains.stcg.equity, STCGOther: income.capitalGains.stcg.other,
-        LTCGEquity: income.capitalGains.ltcg.equity, LTCGOther: income.capitalGains.ltcg.property + income.capitalGains.ltcg.other,
-        TotalCapitalGains: income.capitalGains.totalTaxable,
-      },
-      ScheduleOS: { TotalOtherIncome: income.otherSources.total },
+      ScheduleOS: { IncomeFromOtherSources: income.otherSources.total },
 
-      // Business-specific schedules
+      ScheduleCG: {
+        STCGOnEquity111A: income.capitalGains.stcg.equity,
+        STCGOnOthAssets: income.capitalGains.stcg.other,
+        LTCGOnEquity112A: income.capitalGains.ltcg.equity,
+        LTCGOnProperty112: income.capitalGains.ltcg.property,
+        LTCGOnOthAssets: income.capitalGains.ltcg.other,
+        TotalCapGains: income.capitalGains.totalTaxable,
+      },
+
       ScheduleBP: {
         Businesses: income.business.businesses.map(b => ({
           Name: b.name, NatureOfBusiness: b.natureOfBusiness,
@@ -63,14 +45,6 @@ class ITR3JsonBuilder {
         TotalTurnover: income.business.totalTurnover,
         TotalNetProfit: income.business.netProfit,
         AuditRequired: income.business.auditRequired,
-      },
-
-      SchedulePL: {
-        GrossReceipts: income.business.totalTurnover,
-        GrossProfit: income.business.totalGrossProfit,
-        TotalExpenses: income.business.totalExpenses,
-        Depreciation: income.business.totalDepreciation,
-        NetProfit: income.business.netProfit,
       },
 
       ScheduleBS: {
@@ -83,19 +57,38 @@ class ITR3JsonBuilder {
         TotalLiabilities: n(bs.capital) + n(bs.reserves) + n(bs.securedLoans) + n(bs.unsecuredLoans) + n(bs.currentLiabilities),
       },
 
-      DeductionUnderChapterVIA: { TotalChapVIADeductions: result.deductions },
-      TaxComputation: {
-        GrossTotalIncome: computation.grossTotalIncome, TotalDeductions: result.deductions,
-        TaxableIncome: result.taxableIncome, TotalTax: result.totalTax,
-        TaxPaid: { TotalTaxesPaid: computation.tds.total },
-        NetPayable: Math.max(0, result.totalTax - computation.tds.total - computation.foreignTaxCredit.credit),
-        RefundDue: Math.max(0, computation.tds.total + computation.foreignTaxCredit.credit - result.totalTax),
+      ...tdsSchedules,
+      DeductionUnderChapterVIA: buildDeductions(result, regime),
+
+      IncomeDeductions: {
+        GrossTotIncome: computation.grossTotalIncome,
+        DeductUndChapVIA: result.deductions,
+        TotalIncome: result.taxableIncome,
+        AgriculturalIncome: agri,
       },
-      Refund: { BankAccountDtls: { BankName: bank.bankName || '', IFSCCode: bank.ifsc || '', BankAccountNo: bank.accountNumber || '' } },
-      _meta: { generatedAt: new Date().toISOString(), regime },
+
+      TaxComputation: {
+        NormalIncomeTax: result.normalTax,
+        TaxOnSTCGEquity: result.stcgEquityTax,
+        TaxOnLTCGEquity: result.ltcgEquityTax,
+        TaxOnLTCGOther: result.ltcgOtherTax || 0,
+        TotalTaxPayable: result.taxOnIncome,
+        Rebate87A: result.rebate,
+        Surcharge25: result.surcharge,
+        EducationCess: result.cess,
+        GrossTaxLiability: result.totalTax,
+        TaxPaid: { TotalTaxesPaid: computation.tds.total },
+        BalTaxPayable: Math.max(0, result.totalTax - computation.tds.total - (computation.foreignTaxCredit?.credit || 0)),
+        RefundDue: Math.max(0, computation.tds.total + (computation.foreignTaxCredit?.credit || 0) - result.totalTax),
+      },
+
+      BankAccountDtls: buildBankDetails(payload),
+      Verification: buildVerification(pi),
     };
+
+    Object.keys(json).forEach(k => { if (json[k] === undefined || json[k] === null) delete json[k]; });
+    return json;
   }
 }
 
-function n(val) { return Number(val) || 0; }
 module.exports = ITR3JsonBuilder;

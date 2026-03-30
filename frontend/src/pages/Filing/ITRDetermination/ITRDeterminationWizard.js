@@ -98,9 +98,15 @@ const ITRDeterminationWizard = () => {
       const res = await newFilingService.createFiling({ assessmentYear, taxpayerPan: panUpper, itrType: recommendedITR });
       return res.data;
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       const filingId = response?.data?.id || response?.data?.filingId || response?.id || response?.filingId;
       if (filingId) {
+        // Save selected sources to the filing so the HUD knows what to show
+        try {
+          await api.put(`/filings/${filingId}`, {
+            jsonPayload: { _selectedSources: sources },
+          });
+        } catch { /* non-blocking */ }
         toast.success(`${recommendedITR} filing created`);
         navigate(`/filing/${filingId}/${routeMap[recommendedITR]}`);
       }
