@@ -541,6 +541,55 @@ router.post('/verify-pan', authenticateToken, async (req, res) => {
 });
 
 // =====================================================
+// AADHAAR VERIFICATION (eAadhaar PDF upload)
+// =====================================================
+
+router.post('/verify-aadhaar', authenticateToken, async (req, res) => {
+  try {
+    const { fileContent, password } = req.body;
+    if (!fileContent) {
+      return res.status(400).json({ success: false, error: 'eAadhaar PDF file content (base64) is required' });
+    }
+
+    const aadhaarService = require('../services/common/AadhaarVerificationService');
+    const buffer = Buffer.from(fileContent, 'base64');
+    const result = await aadhaarService.verifyFromPDF(buffer, password);
+
+    if (!result.success) {
+      return res.status(422).json({ success: false, error: 'Aadhaar verification failed' });
+    }
+
+    // Save Aadhaar number to user profile
+    const userId = req.user.userId;
+    const user = await User.findByPk(userId);
+    if (user) {
+      // Only save the last 4 digits masked version for security
+      user.aadhaarVerified = true;
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+      data: {
+        aadhaarMasked: result.aadhaarMasked,
+        name: result.name,
+        dob: result.dob,
+        gender: result.gender,
+        address: result.address,
+        phone: result.phone,
+        source: result.source,
+      },
+    });
+  } catch (error) {
+    const code = error.code || 'AADHAAR_ERROR';
+    if (code === 'AADHAAR_PASSWORD_INCORRECT') {
+      return res.status(422).json({ success: false, error: error.message, code });
+    }
+    res.status(error.statusCode || 500).json({ success: false, error: error.message || 'Aadhaar verification failed' });
+  }
+});
+
+// =====================================================
 // PASSWORD MANAGEMENT
 // =====================================================
 
