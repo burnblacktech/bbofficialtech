@@ -401,6 +401,12 @@ export default function ITR1Flow() {
           </div>
         )}
 
+        {/* ── Auto-save status ── */}
+        <div className={`ff-save-status ${saveMut.isPending ? 'saving' : 'saved'}`} style={{ marginBottom: 8, justifyContent: 'center', width: '100%' }}>
+          <span className="ff-save-dot" />
+          {saveMut.isPending ? 'Saving...' : 'All changes saved'}
+        </div>
+
         {/* ── Income Sources (no section header — self-evident) ── */}
         {SOURCES.map(src => {
           const isActive = active.includes(src.id);

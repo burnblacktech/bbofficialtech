@@ -39,6 +39,11 @@ const mapERIError = (error) => {
         return new AppError(ErrorCodes.UPSTREAM_ERROR, 'Digital Signature Verification Failed.', 400, { upstream: rawMsg });
     }
 
+    // 3b. ERI Add Client Errors (EF-prefixed codes from ITD)
+    if (rawCode && rawCode.startsWith('EF')) {
+        return new AppError(ErrorCodes.ERI_CLIENT_ADD_FAILED, rawMsg, status || 400, { upstream: rawMsg, eriCode: rawCode });
+    }
+
     if (rawMsg.includes('Duplicate filing') || rawCode === 'DUPLICATE_FILING') {
         return new AppError(ErrorCodes.FILING_ALREADY_SUBMITTED, 'Filing already exists for this PAN and Year.', 409, { upstream: rawMsg });
     }

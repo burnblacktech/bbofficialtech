@@ -52,17 +52,19 @@ function ProfileTab({ user, refreshProfile }) {
 
   const panVerified = !!(user?.panVerified);
   const nameLocked = panVerified; // Name locked after PAN verification (matches ITD records)
+  const dobLocked = panVerified && !!form.dateOfBirth; // DOB locked if verified from PAN
 
   const handleSave = async () => {
     setSaving(true);
     try {
       const updates = {
         phone: form.phone,
-        dateOfBirth: form.dateOfBirth || null,
         gender: form.gender || null,
       };
       // Only allow name change if PAN not verified
       if (!nameLocked) updates.fullName = form.fullName;
+      // Only allow DOB change if not verified from PAN
+      if (!dobLocked) updates.dateOfBirth = form.dateOfBirth || null;
 
       await api.put('/auth/profile', updates);
       // Save PAN separately if changed and not already verified
@@ -89,7 +91,7 @@ function ProfileTab({ user, refreshProfile }) {
         </div>
         <div className="ff-grid-2">
           <F l="Phone" v={form.phone} c={v => setForm({ ...form, phone: v })} t="tel" />
-          <F l="Date of Birth" v={form.dateOfBirth} c={v => setForm({ ...form, dateOfBirth: v })} t="date" />
+          <F l="Date of Birth" v={form.dateOfBirth} c={v => setForm({ ...form, dateOfBirth: v })} t="date" disabled={dobLocked} />
         </div>
         <div className="ff-field">
           <label className="ff-label">Gender</label>
@@ -180,9 +182,42 @@ function SecurityTab() {
   );
 }
 
-const F = ({ l, v, c, t = 'text', disabled }) => (
-  <div className="ff-field">
-    <label className="ff-label">{l}</label>
-    <input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} disabled={disabled} style={disabled ? { background: '#f3f4f6', color: '#6b7280' } : {}} />
-  </div>
-);
+const F = ({ l, v, c, t = 'text', disabled }) => {
+  // Date fields use DD/MM/YYYY text input
+  if (t === 'date') {
+    const toDisplay = (iso) => {
+      if (!iso) return '';
+      const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return m ? `${m[3]}/${m[2]}/${m[1]}` : iso;
+    };
+    const toISO = (display) => {
+      const m = display.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+    };
+    const [text, setText] = useState(toDisplay(v));
+    useEffect(() => { const d = toDisplay(v); if (d && d !== text) setText(d); }, [v]); // eslint-disable-line
+    const handleChange = (e) => {
+      let raw = e.target.value.replace(/[^\d/]/g, '');
+      if (raw.length === 2 && !raw.includes('/')) raw += '/';
+      else if (raw.length === 5 && raw.charAt(2) === '/' && raw.split('/').length === 2) raw += '/';
+      if (raw.length > 10) raw = raw.slice(0, 10);
+      setText(raw);
+      if (raw.length === 10) { const iso = toISO(raw); if (iso) c(iso); }
+    };
+    return (
+      <div className="ff-field">
+        <label className="ff-label">{l}</label>
+        <input className="ff-input" type="text" inputMode="numeric" value={disabled ? toDisplay(v) : text}
+          onChange={disabled ? undefined : handleChange} readOnly={disabled} disabled={disabled}
+          placeholder="DD/MM/YYYY" maxLength={10}
+          style={{ ...(disabled ? { background: '#f3f4f6', color: '#6b7280' } : {}), fontFamily: 'var(--font-mono)', letterSpacing: '0.5px' }} />
+      </div>
+    );
+  }
+  return (
+    <div className="ff-field">
+      <label className="ff-label">{l}</label>
+      <input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} disabled={disabled} style={disabled ? { background: '#f3f4f6', color: '#6b7280' } : {}} />
+    </div>
+  );
+};

@@ -147,6 +147,8 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
   const [dirty, setDirty] = useState(false);
 
   const panVerified = !!user?.panVerified;
+  // DOB from PAN verification (authoritative source from ITD)
+  const panVerifiedDob = user?.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : '';
   const hasSalary = (payload?.income?.salary?.employers || []).length > 0;
   const isRevisedFiling = filing?.filingType === 'revised';
   const isITR1 = itrType === 'ITR-1';
@@ -240,12 +242,17 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
   }, [form, isITR1, onSave, userProfile]);
 
   // Locked field helper — only lock if PAN verified AND the field has a value
+  // DOB: only lock if it matches the PAN-verified DOB (prevents locking wrong user-entered DOB)
   const isLocked = (field) => {
     if (!panVerified) return false;
     if (!['firstName', 'middleName', 'lastName', 'dob', 'pan'].includes(field)) return false;
-    // Don't lock empty fields — user needs to fill them even if PAN is verified
     const val = form[field];
-    return val !== undefined && val !== null && val !== '';
+    if (val === undefined || val === null || val === '') return false;
+    // DOB special case: only lock if it matches the verified DOB from PAN
+    if (field === 'dob') {
+      return panVerifiedDob && val === panVerifiedDob;
+    }
+    return true;
   };
   const noSalaryLock = !hasSalary;
 
@@ -322,7 +329,12 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
               <Field label="PAN *" value={form.pan} onChange={v => updateField('pan', v.toUpperCase())} onBlur={() => handleBlur('pan')} error={errors.pan} locked={isLocked('pan')} hint="5 letters, 4 digits, 1 letter · e.g., ABCDE1234F" />
             </div>
             <div className="ff-grid-2">
-              <Field label="Date of Birth *" value={form.dob} onChange={v => updateField('dob', v)} onBlur={() => handleBlur('dob')} error={errors.dob} locked={isLocked('dob')} type="date" />
+              <Field label="Date of Birth *" value={form.dob} onChange={v => updateField('dob', v)} onBlur={() => handleBlur('dob')} error={errors.dob} locked={isLocked('dob')} type="date"
+                hint={panVerified && panVerifiedDob && form.dob && form.dob !== panVerifiedDob
+                  ? `⚠️ PAN records show ${formatDateDDMMYYYY(panVerifiedDob)}`
+                  : panVerified && panVerifiedDob && form.dob === panVerifiedDob
+                    ? '✓ Matches PAN records'
+                    : 'DD/MM/YYYY · As per PAN card'} />
               <div className="ff-field">
                 <label className="ff-label">Gender *</label>
                 <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
@@ -478,6 +490,16 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
 
 /* ── Reusable Field Component ── */
 function Field({ label, value, onChange, onBlur, error, locked, type = 'text', hint }) {
+  // Date fields use custom DD/MM/YYYY input instead of native date picker
+  if (type === 'date') {
+    return (
+      <div className="ff-field">
+        <label className="ff-label">{label} {locked && <Lock size={11} style={{ verticalAlign: -1, color: P.textLight }} />}</label>
+        <DateInput value={value} onChange={onChange} onBlur={onBlur} locked={locked} error={error} />
+        {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div> : hint ? <div className="ff-hint">{hint}</div> : null}
+      </div>
+    );
+  }
   return (
     <div className="ff-field">
       <label className="ff-label">{label} {locked && <Lock size={11} style={{ verticalAlign: -1, color: P.textLight }} />}</label>
@@ -493,6 +515,79 @@ function Field({ label, value, onChange, onBlur, error, locked, type = 'text', h
       />
       {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div> : hint ? <div className="ff-hint">{hint}</div> : null}
     </div>
+  );
+}
+
+/**
+ * DateInput — DD/MM/YYYY text input with auto-formatting.
+ * Stores value as YYYY-MM-DD internally but displays as DD/MM/YYYY.
+ * Auto-inserts slashes as user types. Validates on blur.
+ */
+function DateInput({ value, onChange, onBlur, locked, error }) {
+  // Convert YYYY-MM-DD → DD/MM/YYYY for display
+  const toDisplay = (iso) => {
+    if (!iso) return '';
+    const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : iso;
+  };
+  // Convert DD/MM/YYYY → YYYY-MM-DD for storage
+  const toISO = (display) => {
+    const m = display.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+  };
+
+  const [text, setText] = useState(toDisplay(value));
+
+  // Sync when external value changes (e.g., PAN verification populates DOB)
+  useEffect(() => {
+    const d = toDisplay(value);
+    if (d !== text && value) setText(d);
+  }, [value]); // eslint-disable-line
+
+  const handleChange = (e) => {
+    let raw = e.target.value.replace(/[^\d/]/g, '');
+    // Auto-insert slashes: after DD and MM
+    if (raw.length === 2 && !raw.includes('/')) raw += '/';
+    else if (raw.length === 5 && raw.charAt(2) === '/' && raw.split('/').length === 2) raw += '/';
+    // Cap at 10 chars (DD/MM/YYYY)
+    if (raw.length > 10) raw = raw.slice(0, 10);
+    setText(raw);
+    // If complete, convert and propagate
+    if (raw.length === 10) {
+      const iso = toISO(raw);
+      if (iso) onChange(iso);
+    }
+  };
+
+  const handleBlur = () => {
+    if (text.length === 10) {
+      const iso = toISO(text);
+      if (iso) {
+        // Validate the date is real
+        const [y, m, d] = iso.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        if (dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d) {
+          onChange(iso);
+        }
+      }
+    }
+    onBlur?.();
+  };
+
+  return (
+    <input
+      className={`ff-input ${error ? 'error' : ''}`}
+      type="text"
+      inputMode="numeric"
+      value={locked ? toDisplay(value) : text}
+      onChange={locked ? undefined : handleChange}
+      onBlur={locked ? undefined : handleBlur}
+      readOnly={locked}
+      disabled={locked}
+      placeholder="DD/MM/YYYY"
+      maxLength={10}
+      style={{ fontFamily: 'var(--font-mono)', letterSpacing: '0.5px' }}
+    />
   );
 }
 

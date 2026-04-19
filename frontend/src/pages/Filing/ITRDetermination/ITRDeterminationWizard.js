@@ -87,11 +87,11 @@ const ITRDeterminationWizard = () => {
     mutationFn: async () => {
       const panUpper = pan.toUpperCase();
 
-      // Save PAN to user profile if not already saved
-      if (!panFromProfile || panFromProfile !== panUpper) {
+      // Verify PAN + save to profile (triggers SurePass → auto-populates name + DOB)
+      if (!panIsVerified || panFromProfile !== panUpper) {
         try {
           await api.patch('/auth/pan', { panNumber: panUpper });
-          refreshProfile?.();
+          await refreshProfile?.();
         } catch { /* non-blocking — filing creation is more important */ }
       }
 

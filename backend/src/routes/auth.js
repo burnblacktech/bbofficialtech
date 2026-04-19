@@ -457,7 +457,12 @@ router.patch('/pan', authenticateToken, async (req, res) => {
         user.panVerified = result.isValid;
         user.panVerifiedAt = new Date();
         if (result.name) user.fullName = result.name; // PAN name is authoritative
-        if (result.dateOfBirth && !user.dateOfBirth && !dateOfBirth) user.dateOfBirth = result.dateOfBirth;
+        // PAN DOB is authoritative — always update (unless user explicitly provides a different DOB)
+        if (result.dateOfBirth && !dateOfBirth) {
+          user.dateOfBirth = result.dateOfBirth;
+          user.dobVerified = true;
+          user.dobVerifiedAt = new Date();
+        }
       } catch {
         // SurePass unavailable — save PAN anyway, mark as unverified
         user.panNumber = panUpper;

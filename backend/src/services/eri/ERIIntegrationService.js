@@ -91,6 +91,24 @@ class ERIIntegrationService {
     return this.gateway.getAIS(pan, ay);
   }
 
+  // ── Client Management ──
+
+  async addClient(pan, dob, otpSource) {
+    return this.gateway.addClient(pan, dob, otpSource);
+  }
+
+  async validateClientOtp(pan, transactionId, otpSource, otp, validUpto) {
+    return this.gateway.validateClientOtp(pan, transactionId, otpSource, otp, validUpto);
+  }
+
+  async registerClient(details) {
+    return this.gateway.registerClient(details);
+  }
+
+  async validateRegOtp(pan, smsTransactionId, emailTransactionId, mobileOtp, emailOtp, validUpto) {
+    return this.gateway.validateRegOtp(pan, smsTransactionId, emailTransactionId, mobileOtp, emailOtp, validUpto);
+  }
+
   /**
    * Fetch previous ITR data for prefill
    */

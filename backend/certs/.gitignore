@@ -6,7 +6,9 @@
 *.key
 *.jks
 *.keystore
+eri-signed-payload.json
 
 # Keep this directory but ignore sensitive files
 !.gitignore
 !README.md
+!*.cer

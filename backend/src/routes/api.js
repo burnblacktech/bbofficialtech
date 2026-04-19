@@ -82,6 +82,9 @@ router.use('/tax', generalLimiter, require('./tax'));
 // ITR determination + PAN verification
 router.use('/itr', generalLimiter, require('./itr'));
 
+// ERI client management + operations
+router.use('/eri', strictLimiter, require('./eri'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================

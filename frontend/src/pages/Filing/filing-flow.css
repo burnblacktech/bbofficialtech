@@ -199,3 +199,29 @@
   .ff-kv-grid { grid-template-columns: 1fr; gap: 4px; }
   .ff-locked-card, .ff-saved-card { padding: 12px; }
 }
+
+/* ── Auto-Save Status Indicator ── */
+.ff-save-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500; padding: 3px 8px;
+  border-radius: var(--radius-full); transition: all 0.3s ease;
+}
+.ff-save-status.saving { color: var(--text-light); }
+.ff-save-status.saved { color: var(--color-success); }
+@keyframes savePulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+.ff-save-status.saving .ff-save-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-light); animation: savePulse 1s ease infinite;
+}
+.ff-save-status.saved .ff-save-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);
+}
+
+/* ── Empty State Card ── */
+.ff-empty-state {
+  text-align: center; padding: 32px 20px;
+  color: var(--text-muted); font-size: 14px; line-height: 1.6;
+}
+.ff-empty-state-icon { margin-bottom: 8px; opacity: 0.4; }
+.ff-empty-state-title { font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+.ff-empty-state-desc { font-size: 13px; }
