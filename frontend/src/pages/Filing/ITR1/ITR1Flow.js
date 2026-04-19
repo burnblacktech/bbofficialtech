@@ -272,24 +272,7 @@ export default function ITR1Flow() {
   };
 
   const downloadJSON = async () => {
-    // Check payment status first
-    try {
-      const payRes = await api.get(`/payments/status/${filingId}`);
-      if (!payRes.data?.data?.paid) {
-        const grossIncome = comp?.income?.grossTotal || 0;
-        const itr = getITRType(active, location.pathname);
-        // Free tier check
-        if (grossIncome <= 500000 && ['ITR-1', 'ITR-4'].includes(itr)) {
-          // Auto-create free order
-          await api.post('/payments/create-order', { filingId, itrType: itr, grossIncome });
-        } else {
-          setPendingAction('download');
-          setShowPaymentGate(true);
-          return;
-        }
-      }
-    } catch { /* payment check failed — allow download anyway for now */ }
-
+    // Payment gate bypassed for now — will enable when Razorpay keys are set
     try {
       const itr = getITRType(active, location.pathname);
       const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/json`);
