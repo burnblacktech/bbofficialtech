@@ -7,7 +7,7 @@
  * - Proper ITR routing based on selected sources
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -20,6 +20,7 @@ import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import useUnsavedWarning from '../../../hooks/useUnsavedWarning';
 import { validateBankAccount } from '../../../utils/itrValidation';
+import { generateWhispers, getWhispersForSection } from '../../../utils/taxBrain';
 import toast from 'react-hot-toast';
 import P from '../../../styles/palette';
 import './itr-hud.css';
@@ -37,6 +38,8 @@ import ImportReviewScreen from './import/ImportReviewScreen';
 import ImportHistoryPanel from './import/ImportHistoryPanel';
 import PersonalInfoEditor, { getCompletionInfo } from './editors/PersonalInfoEditor';
 import DocumentPanel, { DocumentFloatButton } from './DocumentPanel';
+import TaxPaymentGuide from './TaxPaymentGuide';
+import PaymentGate from './PaymentGate';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
@@ -128,6 +131,8 @@ export default function ITR1Flow() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importReviewData, setImportReviewData] = useState(null);
   const [importPreselect, setImportPreselect] = useState(null); // pre-select doc type when opening from context
+  const [showPaymentGate, setShowPaymentGate] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null); // 'download' or 'submit'
 
   // Global dirty tracking — editors auto-save on unmount, but we still need
   // beforeunload for tab close and route blocker for in-app navigation
@@ -267,6 +272,24 @@ export default function ITR1Flow() {
   };
 
   const downloadJSON = async () => {
+    // Check payment status first
+    try {
+      const payRes = await api.get(`/payments/status/${filingId}`);
+      if (!payRes.data?.data?.paid) {
+        const grossIncome = comp?.income?.grossTotal || 0;
+        const itr = getITRType(active, location.pathname);
+        // Free tier check
+        if (grossIncome <= 500000 && ['ITR-1', 'ITR-4'].includes(itr)) {
+          // Auto-create free order
+          await api.post('/payments/create-order', { filingId, itrType: itr, grossIncome });
+        } else {
+          setPendingAction('download');
+          setShowPaymentGate(true);
+          return;
+        }
+      }
+    } catch { /* payment check failed — allow download anyway for now */ }
+
     try {
       const itr = getITRType(active, location.pathname);
       const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/json`);
@@ -290,6 +313,12 @@ export default function ITR1Flow() {
   const payload = filing?.jsonPayload || {};
   const itrType = getITRType(active, location.pathname);
   const income = comp?.income;
+
+  // Tax Brain — generate contextual whispers based on current data
+  const whispers = useMemo(
+    () => generateWhispers(payload, comp, selectedRegime),
+    [payload, comp, selectedRegime],
+  );
   const rec = selectedRegime;
   const bestRegime = comp?.[rec === 'old' ? 'oldRegime' : 'newRegime'];
   const altRegime = comp?.[rec === 'old' ? 'newRegime' : 'oldRegime'];
@@ -548,7 +577,8 @@ export default function ITR1Flow() {
                 <div className="hud-accordion-body">
                   <PersonalInfoEditor payload={payload} filing={filing}
                     onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                    computation={comp} itrType={itrType} user={user} userProfile={profile || null} />
+                    computation={comp} itrType={itrType} user={user} userProfile={profile || null}
+                    whispers={getWhispersForSection(whispers, 'personalInfo')} />
                   {(() => { const nx = getNextSection('personalInfo', active, payload, comp); return nx ? (
                     <button className="ff-btn ff-btn-outline" onClick={() => setSelected(nx.id)} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
                       Continue to {nx.label} →
@@ -597,7 +627,8 @@ export default function ITR1Flow() {
                 <div className="hud-accordion-body">
                   <EditorComp payload={payload} filing={filing} selectedRegime={selectedRegime}
                     onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                    activeSources={active} computation={comp} itrType={itrType} />
+                    activeSources={active} computation={comp} itrType={itrType}
+                    whispers={getWhispersForSection(whispers, src.id)} />
                   {(() => { const nx = getNextSection(src.id, active, payload, comp); return nx ? (
                     <button className="ff-btn ff-btn-outline" onClick={() => setSelected(nx.id)} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
                       Continue to {nx.label} →
@@ -632,7 +663,8 @@ export default function ITR1Flow() {
             <div className="hud-accordion-body">
               <DeductionsEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
                 onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                activeSources={active} computation={comp} itrType={itrType} />
+                activeSources={active} computation={comp} itrType={itrType}
+                whispers={getWhispersForSection(whispers, 'deductions')} />
               <button className="ff-btn ff-btn-outline" onClick={() => setSelected('bank')} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
                 Continue to Bank & Submit →
               </button>
@@ -654,10 +686,18 @@ export default function ITR1Flow() {
           </button>
           {selected === 'bank' && (
             <div className="hud-accordion-body">
+              {/* Tax Payment Guide — shows when tax is payable */}
+              <TaxPaymentGuide
+                computation={comp?.[selectedRegime] || comp?.new || comp}
+                pan={payload?.personalInfo?.pan}
+                assessmentYear={filing?.assessmentYear}
+                onChallanSaved={(taxData) => saveMut.mutateAsync({ taxes: taxData })}
+              />
               <BankEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
                 onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
                 activeSources={active} computation={comp} onSubmit={handleSubmit}
                 isSubmitting={isSubmitting} bankData={bankData} setBankData={setBankData}
+                whispers={getWhispersForSection(whispers, 'bank')}
                 bankErrors={bankErrors} onDownloadJSON={downloadJSON} itrType={itrType} />
             </div>
           )}
@@ -717,6 +757,24 @@ export default function ITR1Flow() {
           </div>
         </div>
       )}
+
+      {/* ── Payment Gate Modal ── */}
+      {showPaymentGate && (
+        <PaymentGate
+          filingId={filingId}
+          itrType={itrType}
+          grossIncome={comp?.income?.grossTotal || 0}
+          userName={user?.fullName}
+          userEmail={user?.email}
+          onSuccess={() => {
+            setShowPaymentGate(false);
+            if (pendingAction === 'download') downloadJSON();
+            setPendingAction(null);
+          }}
+          onClose={() => { setShowPaymentGate(false); setPendingAction(null); }}
+        />
+      )}
+
       {/* ── Mobile Sticky Tax Bar ── */}
       {bestRegime && tds && (
         <div className="hud-mobile-tax-bar">

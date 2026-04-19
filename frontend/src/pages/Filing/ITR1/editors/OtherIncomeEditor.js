@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Save } from 'lucide-react';
 import { validateOtherIncomeStep } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
+import TaxWhisper from '../../../../components/common/TaxWhisper';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 

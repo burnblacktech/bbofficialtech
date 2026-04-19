@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
 import { validateSalaryStep } from '../../../../utils/itrValidation';
 import { isMetroCity } from '../../../../constants/indianStates';
+import TaxWhisper from '../../../../components/common/TaxWhisper';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -14,7 +15,7 @@ const EMPTY = {
   entertainmentAllowance: '', basicPlusDA: '', cityOfEmployment: '', rentPaid: '',
 };
 
-export default function SalaryEditor({ payload, onSave, isSaving }) {
+export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
   const existing = payload?.income?.salary?.employers || [];
   const employerCategory = payload?.personalInfo?.employerCategory || 'OTH';
   const [employers, setEmployers] = useState(existing.length ? existing : []);
@@ -182,6 +183,8 @@ export default function SalaryEditor({ payload, onSave, isSaving }) {
           <div className="ff-row"><span className="ff-row-label">Total TDS</span><span className="ff-row-value green">₹{employers.reduce((s, e) => s + n(e.tdsDeducted), 0).toLocaleString('en-IN')}</span></div>
         </div>
       )}
+
+      <TaxWhisper whispers={whispers} />
     </div>
   );
 }

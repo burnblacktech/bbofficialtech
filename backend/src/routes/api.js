@@ -85,6 +85,9 @@ router.use('/itr', generalLimiter, require('./itr'));
 // ERI client management + operations
 router.use('/eri', strictLimiter, require('./eri'));
 
+// Payments + billing
+router.use('/payments', generalLimiter, require('./payments'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================
