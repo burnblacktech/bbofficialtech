@@ -53,6 +53,13 @@ const AuditTrailPage = lazy(() => import('./pages/User/AuditTrailPage'));
 const DataExportPage = lazy(() => import('./pages/User/DataExportPage'));
 const Acknowledgment = lazy(() => import('./pages/Acknowledgment'));
 
+// Family + Vault + Post-Filing
+const FamilyPage = lazy(() => import('./pages/Family/FamilyPage'));
+const VaultPage = lazy(() => import('./pages/Vault/VaultPage'));
+const RefundTracker = lazy(() => import('./pages/PostFiling/RefundTracker'));
+const CPCDecoder = lazy(() => import('./pages/PostFiling/CPCDecoder'));
+const RevisedReturnWizard = lazy(() => import('./pages/PostFiling/RevisedReturnWizard'));
+
 // =====================================================
 // HELPERS
 // =====================================================
@@ -110,6 +117,15 @@ const AppContent = () => (
         <Route path="/sessions" element={<Page><SessionManagement /></Page>} />
         <Route path="/activity" element={<Page><AuditTrailPage /></Page>} />
         <Route path="/data" element={<Page><DataExportPage /></Page>} />
+
+        {/* Family + Vault */}
+        <Route path="/family" element={<Page><FamilyPage /></Page>} />
+        <Route path="/vault" element={<Page><VaultPage /></Page>} />
+
+        {/* Post-Filing */}
+        <Route path="/post-filing/:filingId/refund" element={<Page><RefundTracker /></Page>} />
+        <Route path="/post-filing/:filingId/cpc" element={<Page><CPCDecoder /></Page>} />
+        <Route path="/post-filing/:filingId/revised" element={<Page><RevisedReturnWizard /></Page>} />
 
         {/* PAN Verification */}
         <Route path="/itr/pan-verification" element={<Page><PANVerification /></Page>} />
