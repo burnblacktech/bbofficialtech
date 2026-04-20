@@ -69,4 +69,6 @@ module.exports = {
   UserProfile,
   FilingSnapshot,
   ERISubmissionAttempt,
+  Notification: require('./Notification'),
+  Order: require('./Order'),
 };

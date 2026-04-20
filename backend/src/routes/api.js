@@ -91,6 +91,9 @@ router.use('/payments', generalLimiter, require('./payments'));
 // OTP verification
 router.use('/otp', strictLimiter, require('./otp'));
 
+// Account management (audit trail, export, deletion, notification prefs)
+router.use('/account', generalLimiter, require('./account'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================

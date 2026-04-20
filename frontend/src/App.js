@@ -49,6 +49,8 @@ const EVerification = lazy(() => import('./pages/ITR/EVerification'));
 // User
 const ProfileSettings = lazy(() => import('./pages/User/ProfileSettings'));
 const SessionManagement = lazy(() => import('./pages/User/SessionManagement'));
+const AuditTrailPage = lazy(() => import('./pages/User/AuditTrailPage'));
+const DataExportPage = lazy(() => import('./pages/User/DataExportPage'));
 const Acknowledgment = lazy(() => import('./pages/Acknowledgment'));
 
 // =====================================================
@@ -106,6 +108,8 @@ const AppContent = () => (
         {/* Profile & Settings */}
         <Route path="/profile" element={<Page><ProfileSettings /></Page>} />
         <Route path="/sessions" element={<Page><SessionManagement /></Page>} />
+        <Route path="/activity" element={<Page><AuditTrailPage /></Page>} />
+        <Route path="/data" element={<Page><DataExportPage /></Page>} />
 
         {/* PAN Verification */}
         <Route path="/itr/pan-verification" element={<Page><PANVerification /></Page>} />
