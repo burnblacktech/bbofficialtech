@@ -76,9 +76,9 @@ class FilingCompletenessService {
       errors.push({ section: 'Personal Info', field: 'gender', message: 'Gender is required' });
     }
 
-    // Aadhaar
+    // Aadhaar — warning, not blocker (needed for e-verification, not for JSON)
     if (!pi.aadhaar?.trim()) {
-      errors.push({ section: 'Personal Info', field: 'aadhaar', message: 'Aadhaar number is required' });
+      warnings.push({ section: 'Personal Info', field: 'aadhaar', message: 'Aadhaar number is recommended for e-verification after filing' });
     } else if (!/^\d{12}$/.test(pi.aadhaar)) {
       errors.push({ section: 'Personal Info', field: 'aadhaar', message: 'Aadhaar must be exactly 12 digits' });
     }

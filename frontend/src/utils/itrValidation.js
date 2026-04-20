@@ -228,10 +228,9 @@ export function validatePersonalInfo(data) {
     }
   }
 
-  // Aadhaar
-  if (!data.aadhaar?.trim()) {
-    errors.aadhaar = 'Aadhaar number is required';
-  } else if (!AADHAAR_REGEX.test(data.aadhaar)) {
+  // Aadhaar — optional for JSON download, needed for e-verification
+  // Only validate format if provided, don't block if empty
+  if (data.aadhaar?.trim() && !AADHAAR_REGEX.test(data.aadhaar)) {
     errors.aadhaar = 'Aadhaar must be exactly 12 digits';
   }
 

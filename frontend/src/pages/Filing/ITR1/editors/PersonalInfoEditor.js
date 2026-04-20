@@ -99,7 +99,7 @@ export function buildInitialState(user, userProfile, savedPI, payload) {
   return merged;
 }
 
-const REQUIRED_FIELDS = ['firstName', 'lastName', 'pan', 'dob', 'gender', 'aadhaar', 'email', 'phone', 'residentialStatus', 'employerCategory', 'filingStatus'];
+const REQUIRED_FIELDS = ['firstName', 'lastName', 'pan', 'dob', 'gender', 'email', 'phone', 'residentialStatus', 'employerCategory', 'filingStatus'];
 const REQUIRED_ADDR = ['flatDoorBuilding', 'city', 'stateCode', 'pincode'];
 
 export function getCompletionInfo(form) {
@@ -354,7 +354,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here · Use your primary email" />
           <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile · Starting with 6, 7, 8, or 9" />
         </div>
-        <Field label="Aadhaar Number *" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar · Required for e-verification" />
+        <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar · Recommended for e-verification (not required for JSON download)" />
       </div>
 
       {/* ── Section 3: Address ── */}
