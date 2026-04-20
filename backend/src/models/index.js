@@ -71,4 +71,6 @@ module.exports = {
   ERISubmissionAttempt,
   Notification: require('./Notification'),
   Order: require('./Order'),
+  FamilyMember: require('./FamilyMember'),
+  VaultDocument: require('./VaultDocument'),
 };

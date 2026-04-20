@@ -94,6 +94,12 @@ router.use('/otp', strictLimiter, require('./otp'));
 // Account management (audit trail, export, deletion, notification prefs)
 router.use('/account', generalLimiter, require('./account'));
 
+// Family member management
+router.use('/family', generalLimiter, require('./family'));
+
+// Document vault
+router.use('/vault', generalLimiter, require('./vault'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================
