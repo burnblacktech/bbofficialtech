@@ -161,7 +161,7 @@ export default function VaultPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Badge tone={cat?.value === 'salary' ? 'success' : 'default'}>{cat?.label || doc.category}</Badge>
                     {isUsed && <Badge tone="brand">Used</Badge>}
-                    <Button variant="ghost" size="sm" onClick={() => { if (window.confirm('Delete this document?')) deleteMut.mutate(doc.id); }}>
+                    <Button variant="ghost" size="sm" onClick={() => { if (window.confirm('Delete this document?')) deleteMut.mutate(doc.id); }}> {/* eslint-disable-line no-alert */}
                       <Trash2 size={13} />
                     </Button>
                   </div>

@@ -29,8 +29,8 @@ export default function DataExportPage() {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      const res = await api.post('/account/delete');
-      toast.success(`Account deletion scheduled. You have 24 hours to cancel.`);
+      await api.post('/account/delete');
+      toast.success('Account deletion scheduled. You have 24 hours to cancel.');
       setShowDeleteConfirm(false);
     } catch (e) { toast.error(e.response?.data?.error || 'Failed'); }
     finally { setDeleting(false); }

@@ -62,7 +62,7 @@ export default function PaymentGate({ filingId, itrType, grossIncome, userName, 
       currency: orderData.currency,
       name: 'BurnBlack',
       description: `${orderData.plan.name} — ${itrType} Filing`,
-      order_id: orderData.razorpayOrderId,
+      'order_id': orderData.razorpayOrderId, // eslint-disable-line camelcase
       prefill: { name: userName || '', email: userEmail || '' },
       theme: { color: '#D4AF37' },
       handler: async (response) => {

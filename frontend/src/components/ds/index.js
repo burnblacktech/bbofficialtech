@@ -48,7 +48,7 @@ export function Button({ variant = 'primary', size = 'md', children, disabled, l
 // ═══════════════════════════════════════════════════════
 
 export const Input = forwardRef(function Input(
-  { label, hint, error, type = 'text', locked, required, className = '', ...rest }, ref
+  { label, hint, error, type = 'text', locked, required, className = '', ...rest }, ref,
 ) {
   return (
     <div className={`ds-field ${className}`}>

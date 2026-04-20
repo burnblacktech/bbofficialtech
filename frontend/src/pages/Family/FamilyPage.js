@@ -90,7 +90,7 @@ export default function FamilyPage() {
                   {m.pan?.slice(0, 5)}****{m.pan?.slice(9)} · {m.relationship}
                 </div>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => { if (window.confirm(`Remove ${m.fullName}?`)) removeMut.mutate(m.id); }}>
+              <Button variant="ghost" size="sm" onClick={() => { if (window.confirm(`Remove ${m.fullName}?`)) removeMut.mutate(m.id); }}> {/* eslint-disable-line no-alert */}
                 <Trash2 size={13} />
               </Button>
             </div>
