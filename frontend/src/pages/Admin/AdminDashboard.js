@@ -20,11 +20,20 @@ export default function AdminDashboard() {
     <div>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: P.textPrimary, margin: '0 0 20px' }}>Admin Dashboard</h1>
 
+      {/* Key metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
         <MetricCard icon={<Users size={18} />} label="Active Users (24h)" value={health?.activeUsers?.last24h ?? '—'} color={P.brand} />
         <MetricCard icon={<FileText size={18} />} label="Total Filings" value={totalFilings} color="#059669" />
         <MetricCard icon={<DollarSign size={18} />} label="Revenue (Today)" value={revenue?.summary?.today ? `₹${revenue.summary.today.toLocaleString('en-IN')}` : '₹0'} color="#7c3aed" />
         <MetricCard icon={<Wifi size={18} />} label="ERI Success Rate" value={eri?.successRate != null ? `${eri.successRate}%` : '—'} color={eri?.successRate >= 90 ? P.success : P.error} />
+      </div>
+
+      {/* Secondary metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+        <MetricCard icon={<Users size={18} />} label="Users (7d)" value={health?.activeUsers?.last7d ?? '—'} color={P.textMuted} />
+        <MetricCard icon={<DollarSign size={18} />} label="Revenue (Month)" value={revenue?.summary?.thisMonth ? `₹${revenue.summary.thisMonth.toLocaleString('en-IN')}` : '₹0'} color={P.textMuted} />
+        <MetricCard icon={<Activity size={18} />} label="Payment Success" value={revenue?.paymentSuccessRate != null ? `${revenue.paymentSuccessRate}%` : '—'} color={P.textMuted} />
+        <MetricCard icon={<Wifi size={18} />} label="ERI Pending" value={eri?.pendingCount ?? 0} color={eri?.pendingCount > 0 ? P.warning : P.textMuted} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>

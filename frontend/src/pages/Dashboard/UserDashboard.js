@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock, RefreshCw, Upload } from 'lucide-react';
+import { FileText, Plus, ArrowRight, Shield, CheckCircle, AlertCircle, Clock, RefreshCw, Upload, Users, FolderOpen, Activity } from 'lucide-react';
 import { itrService } from '../../services';
 import { getCurrentAY, ayToFY, getDeadlineInfo } from '../../utils/assessmentYear';
 import P from '../../styles/palette';
@@ -89,6 +89,23 @@ export default function UserDashboard() {
         </div>
       </div>
 
+      {/* Quick links */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        {[
+          { icon: <Users size={13} />, label: 'Family', path: '/family', color: '#7c3aed' },
+          { icon: <FolderOpen size={13} />, label: 'Documents', path: '/vault', color: P.secondary },
+          { icon: <Activity size={13} />, label: 'Activity', path: '/activity', color: P.textMuted },
+          { icon: <Shield size={13} />, label: 'Settings', path: '/profile', color: P.brand },
+        ].map(l => (
+          <div key={l.path} onClick={() => navigate(l.path)} style={{ flex: 1, padding: '8px 12px', background: P.bgCard, border: `1px solid ${P.borderLight}`, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'border-color 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = l.color; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = P.borderLight; }}>
+            <span style={{ color: l.color }}>{l.icon}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: P.textSecondary }}>{l.label}</span>
+          </div>
+        ))}
+      </div>
+
       <div style={S.card}>
         <div style={S.cardHeader}>
           <span style={S.cardTitle}>Your Filings</span>
@@ -132,6 +149,12 @@ export default function UserDashboard() {
                       <button style={{ fontSize: 11, fontWeight: 600, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #e9d5ff', borderRadius: 6, padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, minHeight: 'auto' }}
                         onClick={(e) => { e.stopPropagation(); navigate('/filing/start', { state: { revised: true, assessmentYear: f.assessmentYear, taxpayerPan: f.taxpayerPan } }); }}>
                         <RefreshCw size={10} /> Revise
+                      </button>
+                    )}
+                    {f.lifecycleState === 'eri_success' && (
+                      <button style={{ fontSize: 11, fontWeight: 600, color: P.success, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, minHeight: 'auto' }}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/post-filing/${f.id}/refund`); }}>
+                        Track
                       </button>
                     )}
                     <span style={{ ...S.badge, color: st.color, background: `${st.color}12` }}>
