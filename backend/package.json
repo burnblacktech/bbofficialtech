@@ -14,6 +14,7 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write src/",
     "db:migrate": "node src/scripts/migrate.js migrate",
+    "db:migrate-new": "node src/scripts/migrate-new-models.js",
     "db:seed": "node src/scripts/seed.js",
     "db:reset": "node src/scripts/reset.js",
     "db:verify": "node src/scripts/verifyDatabase.js",
