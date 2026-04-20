@@ -269,10 +269,10 @@ class FilingCompletenessService {
         errors.push({ section: 'Salary', field: `employer.${i}.tds`, message: `${prefix}: TDS cannot be negative` });
       }
       if (n(emp.tdsDeducted) > n(emp.grossSalary) && n(emp.grossSalary) > 0) {
-        warnings.push({ section: 'Salary', field: `employer.${i}.tds`, message: `${prefix}: TDS exceeds gross salary — please verify` });
+        errors.push({ section: 'Salary', field: `employer.${i}.tds`, message: `${prefix}: TDS (₹${n(emp.tdsDeducted).toLocaleString('en-IN')}) cannot exceed gross salary (₹${n(emp.grossSalary).toLocaleString('en-IN')})` });
       }
       if (n(emp.allowances?.hra?.exempt) > n(emp.allowances?.hra?.received) && n(emp.allowances?.hra?.received) > 0) {
-        warnings.push({ section: 'Salary', field: `employer.${i}.hra`, message: `${prefix}: HRA exempt exceeds HRA received` });
+        errors.push({ section: 'Salary', field: `employer.${i}.hra`, message: `${prefix}: HRA exempt cannot exceed HRA received` });
       }
       if (n(emp.deductions?.professionalTax) < 0) {
         errors.push({ section: 'Salary', field: `employer.${i}.pt`, message: `${prefix}: Professional tax cannot be negative` });
@@ -290,6 +290,9 @@ class FilingCompletenessService {
       }
       if (n(hp.municipalTaxesPaid) < 0) {
         errors.push({ section: 'House Property', field: 'municipalTaxesPaid', message: 'Municipal taxes cannot be negative' });
+      }
+      if (n(hp.municipalTaxesPaid) > n(hp.annualRentReceived) && n(hp.annualRentReceived) > 0) {
+        errors.push({ section: 'House Property', field: 'municipalTaxesPaid', message: 'Municipal taxes cannot exceed rent received' });
       }
     }
 
@@ -316,10 +319,10 @@ class FilingCompletenessService {
       if (n(t.exemption) < 0) {
         errors.push({ section: 'Capital Gains', field: `cg.${i}.exemption`, message: `Transaction ${i + 1}: Exemption cannot be negative` });
       }
-      // Exemption should not exceed gain
+      // Exemption should not exceed gain — blocker
       const gain = n(t.saleValue) - n(t.purchaseValue || t.indexedCost) - n(t.expenses);
       if (gain > 0 && n(t.exemption) > gain) {
-        warnings.push({ section: 'Capital Gains', field: `cg.${i}.exemption`, message: `Transaction ${i + 1}: Exemption (₹${n(t.exemption).toLocaleString('en-IN')}) exceeds gain (₹${gain.toLocaleString('en-IN')})` });
+        errors.push({ section: 'Capital Gains', field: `cg.${i}.exemption`, message: `Transaction ${i + 1}: Exemption (₹${n(t.exemption).toLocaleString('en-IN')}) cannot exceed gain (₹${gain.toLocaleString('en-IN')})` });
       }
     });
 
@@ -372,7 +375,7 @@ class FilingCompletenessService {
         errors.push({ section: 'TDS', field: `tds.${i}.tdsClaimed`, message: `TDS entry ${i + 1}: TDS claimed cannot be negative` });
       }
       if (n(e.tdsClaimed) > n(e.tdsDeducted) && n(e.tdsDeducted) > 0) {
-        warnings.push({ section: 'TDS', field: `tds.${i}.tdsClaimed`, message: `TDS entry ${i + 1}: TDS claimed exceeds TDS deducted` });
+        errors.push({ section: 'TDS', field: `tds.${i}.tdsClaimed`, message: `TDS entry ${i + 1}: TDS claimed (₹${n(e.tdsClaimed).toLocaleString('en-IN')}) cannot exceed TDS deducted (₹${n(e.tdsDeducted).toLocaleString('en-IN')})` });
       }
     });
 

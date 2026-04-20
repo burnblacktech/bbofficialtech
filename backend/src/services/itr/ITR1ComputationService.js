@@ -113,8 +113,12 @@ class ITR1ComputationService {
     }
 
     // Normalize type: frontend sends camelCase, backend expects UPPER_SNAKE
-    const typeMap = { selfoccupied: 'SELF_OCCUPIED', selfOccupied: 'SELF_OCCUPIED', letout: 'LET_OUT', letOut: 'LET_OUT', none: 'NONE' };
-    const normalizedType = typeMap[hpData.type] || hpData.type.toUpperCase();
+    const typeMap = {
+      selfoccupied: 'SELF_OCCUPIED', selfOccupied: 'SELF_OCCUPIED', 'SELF_OCCUPIED': 'SELF_OCCUPIED', self_occupied: 'SELF_OCCUPIED',
+      letout: 'LET_OUT', letOut: 'LET_OUT', 'LET_OUT': 'LET_OUT', let_out: 'LET_OUT',
+      none: 'NONE', NONE: 'NONE',
+    };
+    const normalizedType = typeMap[hpData.type] || (hpData.type ? hpData.type.toUpperCase().replace(/([a-z])([A-Z])/g, '$1_$2') : 'NONE');
 
     if (normalizedType === 'NONE') {
       return { type: 'NONE', netIncome: 0 };
@@ -443,12 +447,13 @@ class ITR1ComputationService {
       errors.push({ field: 'income', message: 'Total income exceeds ₹50L — ITR-1 not applicable' });
     }
 
-    // Bank account
-    if (!payload.bankAccount?.accountNumber) {
-      errors.push({ field: 'bankAccount', message: 'Bank account is required for refund' });
+    // Bank details (frontend uses bankDetails, not bankAccount)
+    const bank = payload.bankDetails || payload.bankAccount || {};
+    if (!bank.accountNumber) {
+      errors.push({ field: 'bankDetails', message: 'Bank account is required for refund' });
     }
-    if (payload.bankAccount?.ifsc && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(payload.bankAccount.ifsc)) {
-      errors.push({ field: 'bankAccount.ifsc', message: 'Invalid IFSC code' });
+    if (bank.ifsc && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(bank.ifsc)) {
+      errors.push({ field: 'bankDetails.ifsc', message: 'Invalid IFSC code' });
     }
 
     return { valid: errors.length === 0, errors };
