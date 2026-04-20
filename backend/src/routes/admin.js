@@ -126,6 +126,57 @@ router.get('/users/:userId/audit', async (req, res, next) => {
 });
 
 // ══════════════════════════════════════════════════════
+// IMPERSONATION — View as any user
+// ══════════════════════════════════════════════════════
+
+router.post('/users/:userId/impersonate', async (req, res, next) => {
+  try {
+    const targetUser = await User.findByPk(req.params.userId);
+    if (!targetUser) return res.status(404).json({ success: false, error: 'User not found' });
+
+    // Generate a short-lived token for the target user (30 min)
+    const jwt = require('jsonwebtoken');
+    const impersonationToken = jwt.sign(
+      {
+        userId: targetUser.id,
+        email: targetUser.email,
+        role: targetUser.role,
+        caFirmId: targetUser.caFirmId || null,
+        impersonatedBy: req.user.userId,
+      },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '30m' },
+    );
+
+    enterpriseLogger.info('Admin impersonation', {
+      adminId: req.user.userId,
+      targetUserId: targetUser.id,
+      targetEmail: targetUser.email,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        accessToken: impersonationToken,
+        user: {
+          id: targetUser.id,
+          email: targetUser.email,
+          fullName: targetUser.fullName,
+          role: targetUser.role,
+          panNumber: targetUser.panNumber,
+          panVerified: targetUser.panVerified,
+          dateOfBirth: targetUser.dateOfBirth,
+          gender: targetUser.gender,
+          phone: targetUser.phone,
+        },
+        expiresIn: '30m',
+        isImpersonation: true,
+      },
+    });
+  } catch (err) { next(err); }
+});
+
+// ══════════════════════════════════════════════════════
 // FILING STATISTICS
 // ══════════════════════════════════════════════════════
 

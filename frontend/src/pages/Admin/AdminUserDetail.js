@@ -4,7 +4,7 @@
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Shield, FileText, DollarSign, Clock, UserX, UserCheck, Key, Loader2 } from 'lucide-react';
+import { ArrowLeft, Shield, FileText, DollarSign, Clock, UserX, UserCheck, Key, Loader2, Users } from 'lucide-react';
 import { Card, Button, Badge, Row, Divider, Section, Alert } from '../../components/ds';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -35,6 +35,17 @@ export default function AdminUserDetail() {
   const resetPwMut = useMutation({
     mutationFn: () => api.post(`/admin/users/${userId}/reset-password`),
     onSuccess: () => toast.success('Password reset link sent'),
+    onError: (e) => toast.error(e.response?.data?.error || 'Failed'),
+  });
+
+  const impersonateMut = useMutation({
+    mutationFn: async () => (await api.post(`/admin/users/${userId}/impersonate`)).data.data,
+    onSuccess: (data) => {
+      // Store impersonation token and open user's dashboard in new tab
+      const url = `${window.location.origin}/dashboard?impersonate=${encodeURIComponent(data.accessToken)}`;
+      window.open(url, '_blank');
+      toast.success(`Viewing as ${data.user.fullName || data.user.email} (30 min)`);
+    },
     onError: (e) => toast.error(e.response?.data?.error || 'Failed'),
   });
 
@@ -88,6 +99,9 @@ export default function AdminUserDetail() {
                   <Key size={13} /> Send Password Reset
                 </Button>
               )}
+              <Button variant="outline" size="sm" loading={impersonateMut.isPending} onClick={() => impersonateMut.mutate()}>
+                <Users size={13} /> View as User
+              </Button>
             </div>
             <div style={{ marginTop: 12 }}>
               <Row label="Active Sessions" value={si?.activeSessions || 0} bold />
