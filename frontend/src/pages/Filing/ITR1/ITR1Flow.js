@@ -14,7 +14,7 @@ import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
   Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
   ChevronDown, ArrowLeft, CreditCard, Trash2, Upload, AlertTriangle,
-  User,
+  User, FileText,
 } from 'lucide-react';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -506,6 +506,15 @@ export default function ITR1Flow() {
         <div className="hud-actions">
           <button className="hud-btn-outline" onClick={() => openImport(null)}><Upload size={14} /> Import</button>
           <button className="hud-btn-outline" onClick={downloadJSON}><Download size={14} /> JSON</button>
+          <button className="hud-btn-outline" onClick={async () => {
+            try {
+              const r = await api.get(`/filings/${filingId}/computation-pdf`, { responseType: 'blob' });
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(r.data);
+              a.download = `BurnBlack_Computation_${filing?.taxpayerPan}_AY${filing?.assessmentYear}.pdf`;
+              a.click();
+            } catch { toast.error('PDF generation failed'); }
+          }}><FileText size={14} /> PDF</button>
           <button className="hud-btn-primary" onClick={() => setSelected('bank')}><Send size={14} /> Submit</button>
         </div>
 

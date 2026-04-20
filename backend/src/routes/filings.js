@@ -678,6 +678,36 @@ router.get('/:filingId/submission-status', authenticateToken, async (req, res, n
 });
 
 /**
+ * Computation PDF Download
+ * GET /api/filings/:filingId/computation-pdf
+ * Generates and returns ITD-style tax computation sheet as PDF
+ */
+router.get('/:filingId/computation-pdf', authenticateToken, async (req, res, next) => {
+    try {
+        const filing = await ITRFiling.findByPk(req.params.filingId);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        // Compute tax for the filing
+        const itrType = filing.itrType || 'ITR-1';
+        const computeMap = { 'ITR-1': 'ITR1ComputationService', 'ITR-2': 'ITR2ComputationService', 'ITR-3': 'ITR3ComputationService', 'ITR-4': 'ITR4ComputationService' };
+        const ServiceName = computeMap[itrType] || 'ITR1ComputationService';
+        const ComputeService = require(`../services/itr/${ServiceName}`);
+        const computation = ComputeService.compute(filing.jsonPayload || {});
+
+        const ComputationPDFService = require('../services/itr/ComputationPDFService');
+        const pdfData = ComputationPDFService.assemblePDFData(filing, computation);
+        const pdfBuffer = await ComputationPDFService.generatePDF(pdfData);
+        const filename = ComputationPDFService.getFilename(filing.taxpayerPan, filing.assessmentYear);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Length', pdfBuffer.length);
+        res.send(pdfBuffer);
+    } catch (error) { next(error); }
+});
+
+/**
  * ITR-1 Computation
  * POST /api/filings/:filingId/itr1/compute
  * Returns full tax computation for both regimes
