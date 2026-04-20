@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { Save } from 'lucide-react';
 import { validateHousePropertyStep } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
+import { NumericField, SummaryRow, SaveButton, Divider, EditorHeader } from './EditorShared';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -52,8 +52,7 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">House Property</h2>
-      <p className="step-desc">Income or loss from house property</p>
+      <EditorHeader title="House Property" subtitle="Income or loss from house property" />
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {[['none', 'None'], ['selfOccupied', 'Self-Occupied'], ['letOut', 'Let-Out']].map(([k, label]) => (
@@ -65,38 +64,34 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
 
       {type === 'selfOccupied' && (
         <div className="step-card editing">
-          <F l="Home Loan Interest (₹)" v={form.interestOnHomeLoan} c={v => update('interestOnHomeLoan', v)} h="Home loan interest paid · Max ₹2,00,000 for self-occupied" />
+          <NumericField label="Home Loan Interest (₹)" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="Home loan interest paid · Max ₹2,00,000 for self-occupied" error={errors.interest} />
         </div>
       )}
 
       {type === 'letOut' && (
         <div className="step-card editing">
           <div className="ff-grid-2">
-            <F l="Annual Rent Received (₹)" v={form.annualRentReceived} c={v => update('annualRentReceived', v)} h="Total rent collected this year · From rent agreement" />
-            <F l="Municipal Taxes Paid (₹)" v={form.municipalTaxesPaid} c={v => update('municipalTaxesPaid', v)} h="Property tax paid · From municipal corporation receipt" />
+            <NumericField label="Annual Rent Received (₹)" value={form.annualRentReceived} onChange={v => update('annualRentReceived', v)} hint="Total rent collected this year · From rent agreement" error={errors.rent} />
+            <NumericField label="Municipal Taxes Paid (₹)" value={form.municipalTaxesPaid} onChange={v => update('municipalTaxesPaid', v)} hint="Property tax paid · From municipal corporation receipt" error={errors.municipal} />
           </div>
-          <F l="Home Loan Interest (₹)" v={form.interestOnHomeLoan} c={v => update('interestOnHomeLoan', v)} h="Home loan interest paid · No cap for let-out property" />
+          <NumericField label="Home Loan Interest (₹)" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="Home loan interest paid · No cap for let-out property" error={errors.interest} />
         </div>
       )}
 
       {type !== 'none' && (
         <>
-          <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
-            {isSaving ? 'Saving...' : <><Save size={14} /> Save House Property</>}
-          </button>
+          <SaveButton onClick={handleSave} isSaving={isSaving} label="Save House Property" />
           <div className="step-card summary">
-          {type === 'letOut' && <>
-            <div className="ff-row"><span className="ff-row-label">Net Annual Value</span><span className="ff-row-value">₹{netAV.toLocaleString('en-IN')}</span></div>
-            <div className="ff-row"><span className="ff-row-label">Std Deduction (30%)</span><span className="ff-row-value">- ₹{stdDed.toLocaleString('en-IN')}</span></div>
-          </>}
-          <div className="ff-row"><span className="ff-row-label">Loan Interest</span><span className="ff-row-value">- ₹{cap.toLocaleString('en-IN')}</span></div>
-          <div className="ff-divider" />
-          <div className="ff-row"><span className="ff-row-label">Net Income</span><span className={`ff-row-value bold ${netIncome < 0 ? 'red' : ''}`}>₹{netIncome.toLocaleString('en-IN')}</span></div>
-        </div>
+            {type === 'letOut' && <>
+              <SummaryRow label="Net Annual Value" value={netAV} />
+              <SummaryRow label="Std Deduction (30%)" value={-stdDed} />
+            </>}
+            <SummaryRow label="Loan Interest" value={-cap} />
+            <Divider />
+            <SummaryRow label="Net Income" value={netIncome} bold red={netIncome < 0} />
+          </div>
         </>
       )}
     </div>
   );
 }
-
-const F = ({ l, v, c, h, t = 'number' }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />{h && <div className="ff-hint">{h}</div>}</div>);
