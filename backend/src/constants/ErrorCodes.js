@@ -58,4 +58,37 @@ module.exports = {
     IMPORT_MALICIOUS_CONTENT: 'IMPORT_MALICIOUS_CONTENT',     // 400
     IMPORT_NOT_FOUND: 'IMPORT_NOT_FOUND',                     // 404
     IMPORT_FILING_NOT_DRAFT: 'IMPORT_FILING_NOT_DRAFT',       // 409
+
+    // Family Filing
+    FAMILY_MEMBER_LIMIT: 'FAMILY_MEMBER_LIMIT',               // 409 — max 4 members
+    FAMILY_PAN_INVALID: 'FAMILY_PAN_INVALID',                 // 422 — PAN verification failed
+    FAMILY_MEMBER_NOT_FOUND: 'FAMILY_MEMBER_NOT_FOUND',       // 404
+    FAMILY_DUPLICATE_PAN: 'FAMILY_DUPLICATE_PAN',             // 409 — PAN already added
+
+    // Document Vault
+    VAULT_FILE_TOO_LARGE: 'VAULT_FILE_TOO_LARGE',             // 413 — exceeds 10MB
+    VAULT_INVALID_FORMAT: 'VAULT_INVALID_FORMAT',             // 422 — unsupported mime type
+    VAULT_DUPLICATE_IMPORT: 'VAULT_DUPLICATE_IMPORT',         // 409 — already imported to this filing
+    VAULT_DOC_NOT_FOUND: 'VAULT_DOC_NOT_FOUND',               // 404
+    VAULT_OCR_FAILED: 'VAULT_OCR_FAILED',                     // 422 — OCR extraction failed
+
+    // OTP
+    OTP_EXPIRED: 'OTP_EXPIRED',                               // 410 — OTP has expired
+    OTP_INVALID: 'OTP_INVALID',                               // 401 — wrong code
+    OTP_LOCKED_OUT: 'OTP_LOCKED_OUT',                         // 429 — too many attempts
+    OTP_DELIVERY_FAILED: 'OTP_DELIVERY_FAILED',               // 502 — SMS/email send failed
+
+    // Post-Filing
+    PF_CPC_PARSE_FAILED: 'PF_CPC_PARSE_FAILED',               // 422 — can't parse CPC intimation
+    PF_REVISED_DEADLINE: 'PF_REVISED_DEADLINE',               // 409 — past revised return deadline
+    PF_REFUND_API_UNAVAIL: 'PF_REFUND_API_UNAVAIL',           // 503 — ITD API unavailable
+    PF_NOT_FILED: 'PF_NOT_FILED',                             // 409 — filing not in eri_success state
+
+    // PDF Generation
+    PDF_GENERATION_FAILED: 'PDF_GENERATION_FAILED',           // 500 — PDFKit error
+
+    // Data Export & Deletion
+    EXPORT_IN_PROGRESS: 'EXPORT_IN_PROGRESS',                 // 409 — export already running
+    DELETION_IN_PROGRESS: 'DELETION_IN_PROGRESS',             // 409 — deletion already scheduled
+    DELETION_EXPIRED: 'DELETION_EXPIRED',                     // 410 — cancellation window passed
 };

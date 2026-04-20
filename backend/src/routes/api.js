@@ -88,6 +88,9 @@ router.use('/eri', strictLimiter, require('./eri'));
 // Payments + billing
 router.use('/payments', generalLimiter, require('./payments'));
 
+// OTP verification
+router.use('/otp', strictLimiter, require('./otp'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================
