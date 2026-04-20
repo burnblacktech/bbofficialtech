@@ -100,6 +100,9 @@ router.use('/family', generalLimiter, require('./family'));
 // Document vault
 router.use('/vault', generalLimiter, require('./vault'));
 
+// Post-filing intelligence
+router.use('/post-filing', generalLimiter, require('./postfiling'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================
