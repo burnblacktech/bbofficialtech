@@ -9,9 +9,11 @@ import { Card, Badge } from '../../components/ds';
 import api from '../../services/api';
 import P from '../../styles/palette';
 
+/* eslint-disable camelcase */
 const STATE_COLORS = {
   draft: P.textMuted, submitted_to_eri: P.brand, eri_success: P.success, eri_failed: P.error,
 };
+/* eslint-enable camelcase */
 
 export default function AdminFilings() {
   const [period, setPeriod] = useState('daily');

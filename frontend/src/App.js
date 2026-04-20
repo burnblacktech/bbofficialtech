@@ -23,6 +23,8 @@ import './styles/GlobalStyles.css';
 const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
 const HomeRedirect = lazy(() => import('./pages/HomeRedirect'));
 const TaxCalculator = lazy(() => import('./pages/Tools/TaxCalculator'));
+const TermsPage = lazy(() => import('./pages/Legal/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/Legal/PrivacyPage'));
 
 // Auth
 const LoginPage = lazy(() => import('./pages/Auth/LoginPage'));
@@ -130,6 +132,8 @@ const AppContent = () => {
       <Route path="/login" element={<Bare message="Loading login..."><LoginPage /></Bare>} />
       <Route path="/signup" element={<Bare message="Loading signup..."><SignupPage /></Bare>} />
       <Route path="/tax-calculator" element={<Bare message="Loading..."><TaxCalculator /></Bare>} />
+      <Route path="/terms" element={<Bare><TermsPage /></Bare>} />
+      <Route path="/privacy" element={<Bare><PrivacyPage /></Bare>} />
       <Route path="/email-verification" element={<Bare><EmailVerification /></Bare>} />
       <Route path="/forgot-password" element={<Bare><ForgotPassword /></Bare>} />
       <Route path="/reset-password" element={<Bare><ResetPassword /></Bare>} />
