@@ -50,8 +50,9 @@ export default function LandingPage() {
             <div style={S.features}>
               <Feature text="ITR-1 through ITR-4 — auto-detected" />
               <Feature text="Import Form 16, 26AS, AIS — auto-fill" />
-              <Feature text="Smart validation catches errors before ITD" />
+              <Feature text="Smart Tax Brain catches errors before ITD" />
               <Feature text="256-bit encryption, data stays in India" />
+              <Feature text="Free for income up to ₹5 lakh" />
             </div>
           </div>
 
@@ -66,10 +67,82 @@ export default function LandingPage() {
         </div>
       </main>
 
+      {/* How it works */}
+      <section style={{ background: P.bgCard, borderTop: `1px solid ${P.borderLight}`, padding: '48px 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: P.textPrimary, margin: '0 0 8px' }}>How It Works</h2>
+          <p style={{ fontSize: 14, color: P.textMuted, margin: '0 0 32px' }}>Three steps. Five minutes. Done.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {[
+              { step: '1', title: 'Select Income Sources', desc: 'Tell us what income you have — salary, property, capital gains, business. We pick the right ITR form.' },
+              { step: '2', title: 'Upload Documents', desc: 'Import Form 16, 26AS, AIS. We auto-fill 80% of your filing. Just verify the numbers.' },
+              { step: '3', title: 'Download & File', desc: 'Download your ITR JSON, upload to the ITD portal, and e-verify. Or let us submit directly via ERI.' },
+            ].map(s => (
+              <div key={s.step} style={{ padding: 20 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: P.brand, color: P.brandBlack, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 16, margin: '0 auto 12px' }}>{s.step}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: P.textPrimary, marginBottom: 6 }}>{s.title}</div>
+                <div style={{ fontSize: 13, color: P.textMuted, lineHeight: 1.5 }}>{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section style={{ background: P.bgPage, padding: '48px 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: P.textPrimary, margin: '0 0 8px' }}>Simple Pricing</h2>
+          <p style={{ fontSize: 14, color: P.textMuted, margin: '0 0 32px' }}>No hidden fees. Pay only when you download.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+            {[
+              { name: 'Free', price: '₹0', desc: 'Income ≤ ₹5L', features: ['ITR-1 / ITR-4', 'Form 16 import', 'Regime comparison', 'JSON download'] },
+              { name: 'Starter', price: '₹149', desc: 'Salaried individuals', features: ['ITR-1 / ITR-4', 'All document imports', 'ERI submission', 'e-Verification'], popular: true },
+              { name: 'Plus', price: '₹249', desc: 'Capital gains, business', features: ['All ITR types', 'Capital gains computation', 'Tax Brain insights', 'Email support'] },
+              { name: 'Family', price: '₹449', desc: 'Up to 4 family members', features: ['All ITR types', 'Cross-member optimization', 'Family dashboard', 'Priority support'] },
+            ].map(p => (
+              <div key={p.name} style={{ background: P.bgCard, border: `1px solid ${p.popular ? P.brand : P.borderLight}`, borderRadius: 12, padding: 20, position: 'relative' }}>
+                {p.popular && <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: P.brand, color: P.brandBlack, fontSize: 10, fontWeight: 700, padding: '2px 10px', borderRadius: 10 }}>MOST POPULAR</div>}
+                <div style={{ fontSize: 13, fontWeight: 600, color: P.textMuted, marginBottom: 4 }}>{p.name}</div>
+                <div style={{ fontSize: 28, fontWeight: 800, color: P.textPrimary, fontFamily: 'var(--font-mono)', marginBottom: 2 }}>{p.price}</div>
+                <div style={{ fontSize: 11, color: P.textLight, marginBottom: 12 }}>{p.desc} · + GST</div>
+                {p.features.map(f => (
+                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: P.textSecondary, marginBottom: 4 }}>
+                    <CheckCircle size={12} style={{ color: P.success, flexShrink: 0 }} /> {f}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust signals */}
+      <section style={{ background: P.bgCard, borderTop: `1px solid ${P.borderLight}`, padding: '32px 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap' }}>
+          {[
+            { icon: '🔒', text: '256-bit encryption' },
+            { icon: '🇮🇳', text: 'Data stays in India' },
+            { icon: '✅', text: 'ITD-compliant JSON' },
+            { icon: '🏛️', text: 'Registered ERI (ERIP013662)' },
+            { icon: '⚡', text: '5-minute filing' },
+          ].map(t => (
+            <div key={t.text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: P.textSecondary }}>
+              <span style={{ fontSize: 18 }}>{t.icon}</span> {t.text}
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Footer */}
       <footer style={S.footer}>
-        <span>&copy; 2026 BurnBlack Technologies</span>
-        <span style={{ color: P.textLight }}>Built for Indian taxpayers</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+          <span>&copy; 2026 BurnBlack Technologies (HJR Consultancy India Pvt Ltd)</span>
+          <div style={{ display: 'flex', gap: 16 }}>
+            <Link to="/tax-calculator" style={{ color: P.textLight, fontSize: 12, textDecoration: 'none' }}>Tax Calculator</Link>
+            <a href="/terms" style={{ color: P.textLight, fontSize: 12, textDecoration: 'none' }}>Terms</a>
+            <a href="/privacy" style={{ color: P.textLight, fontSize: 12, textDecoration: 'none' }}>Privacy</a>
+          </div>
+        </div>
       </footer>
     </div>
   );

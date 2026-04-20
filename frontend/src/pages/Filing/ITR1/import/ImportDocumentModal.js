@@ -114,11 +114,19 @@ const modalVariants = {
  */
 function validateFileFormat(file, docType) {
   const ext = file.name.split('.').pop()?.toLowerCase();
-  const pdfTypes = ['form16', 'form16a', 'form16b', 'form16c'];
-  const expectedExt = pdfTypes.includes(docType.id) ? 'pdf' : 'json';
+  const pdfOnlyTypes = ['form16', 'form16a', 'form16b', 'form16c'];
+  const dualTypes = ['26as', 'ais']; // Accept both JSON and PDF
 
-  if (ext !== expectedExt) {
-    return { valid: false, error: `Expected a .${expectedExt} file but got .${ext}` };
+  if (pdfOnlyTypes.includes(docType.id)) {
+    if (ext !== 'pdf') {
+      return { valid: false, error: `Expected a .pdf file but got .${ext}` };
+    }
+  } else if (dualTypes.includes(docType.id)) {
+    if (ext !== 'json' && ext !== 'pdf') {
+      return { valid: false, error: `Expected a .json or .pdf file but got .${ext}` };
+    }
+  } else if (ext !== 'json') {
+    return { valid: false, error: `Expected a .json file but got .${ext}` };
   }
 
   // MIME check — browsers may report empty or generic types, so also accept empty
