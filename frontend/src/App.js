@@ -60,6 +60,11 @@ const RefundTracker = lazy(() => import('./pages/PostFiling/RefundTracker'));
 const CPCDecoder = lazy(() => import('./pages/PostFiling/CPCDecoder'));
 const RevisedReturnWizard = lazy(() => import('./pages/PostFiling/RevisedReturnWizard'));
 
+// Admin
+const AdminLayout = lazy(() => import('./pages/Admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
+const AdminProtectedRoute = lazy(() => import('./components/auth/AdminProtectedRoute'));
+
 // =====================================================
 // HELPERS
 // =====================================================
@@ -145,6 +150,19 @@ const AppContent = () => (
         <Route path="/itr/e-verify" element={<Page><EVerification /></Page>} />
         <Route path="/itr/acknowledgment" element={<Page><AcknowledgmentRedirect /></Page>} />
         <Route path="/acknowledgment/:filingId" element={<Page><Acknowledgment /></Page>} />
+      </Route>
+
+      {/* ── Admin ── */}
+      <Route element={<Suspense fallback={<RouteLoader message="Loading admin..." />}><AdminProtectedRoute /></Suspense>}>
+        <Route element={<Suspense fallback={<RouteLoader />}><AdminLayout /></Suspense>}>
+          <Route path="/admin" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/users" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/filings" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/revenue" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/eri" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/coupons" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/health" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+        </Route>
       </Route>
 
       {/* Catch-all */}
