@@ -73,4 +73,5 @@ module.exports = {
   Order: require('./Order'),
   FamilyMember: require('./FamilyMember'),
   VaultDocument: require('./VaultDocument'),
+  Coupon: require('./Coupon'),
 };

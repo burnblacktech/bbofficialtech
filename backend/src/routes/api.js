@@ -103,6 +103,9 @@ router.use('/vault', generalLimiter, require('./vault'));
 // Post-filing intelligence
 router.use('/post-filing', generalLimiter, require('./postfiling'));
 
+// Admin dashboard (SUPER_ADMIN only — auth checked inside)
+router.use('/admin', generalLimiter, require('./admin'));
+
 // =====================================================
 // ERROR HANDLING
 // =====================================================
