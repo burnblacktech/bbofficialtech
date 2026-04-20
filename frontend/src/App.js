@@ -63,6 +63,13 @@ const RevisedReturnWizard = lazy(() => import('./pages/PostFiling/RevisedReturnW
 // Admin
 const AdminLayout = lazy(() => import('./pages/Admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('./pages/Admin/AdminUsers'));
+const AdminUserDetail = lazy(() => import('./pages/Admin/AdminUserDetail'));
+const AdminFilings = lazy(() => import('./pages/Admin/AdminFilings'));
+const AdminRevenue = lazy(() => import('./pages/Admin/AdminRevenue'));
+const AdminERI = lazy(() => import('./pages/Admin/AdminERI'));
+const AdminCoupons = lazy(() => import('./pages/Admin/AdminCoupons'));
+const AdminHealth = lazy(() => import('./pages/Admin/AdminHealth'));
 const AdminProtectedRoute = lazy(() => import('./components/auth/AdminProtectedRoute'));
 
 // =====================================================
@@ -156,12 +163,13 @@ const AppContent = () => (
       <Route element={<Suspense fallback={<RouteLoader message="Loading admin..." />}><AdminProtectedRoute /></Suspense>}>
         <Route element={<Suspense fallback={<RouteLoader />}><AdminLayout /></Suspense>}>
           <Route path="/admin" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
-          <Route path="/admin/users" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
-          <Route path="/admin/filings" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
-          <Route path="/admin/revenue" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
-          <Route path="/admin/eri" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
-          <Route path="/admin/coupons" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
-          <Route path="/admin/health" element={<Suspense fallback={<RouteLoader />}><AdminDashboard /></Suspense>} />
+          <Route path="/admin/users" element={<Suspense fallback={<RouteLoader />}><AdminUsers /></Suspense>} />
+          <Route path="/admin/users/:userId" element={<Suspense fallback={<RouteLoader />}><AdminUserDetail /></Suspense>} />
+          <Route path="/admin/filings" element={<Suspense fallback={<RouteLoader />}><AdminFilings /></Suspense>} />
+          <Route path="/admin/revenue" element={<Suspense fallback={<RouteLoader />}><AdminRevenue /></Suspense>} />
+          <Route path="/admin/eri" element={<Suspense fallback={<RouteLoader />}><AdminERI /></Suspense>} />
+          <Route path="/admin/coupons" element={<Suspense fallback={<RouteLoader />}><AdminCoupons /></Suspense>} />
+          <Route path="/admin/health" element={<Suspense fallback={<RouteLoader />}><AdminHealth /></Suspense>} />
         </Route>
       </Route>
 
