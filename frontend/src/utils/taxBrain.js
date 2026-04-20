@@ -13,6 +13,19 @@
 const n = (v) => Number(v) || 0;
 const rs = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
 
+/** Calculate age from DOB string (YYYY-MM-DD) as of March 31 of current FY */
+function getAge(dob) {
+  if (!dob) return 0;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return 0;
+  const now = new Date();
+  // Age as of March 31 of the financial year
+  const fyEnd = new Date(now.getMonth() >= 3 ? now.getFullYear() + 1 : now.getFullYear(), 2, 31);
+  let age = fyEnd.getFullYear() - d.getFullYear();
+  if (fyEnd < new Date(fyEnd.getFullYear(), d.getMonth(), d.getDate())) age--;
+  return age;
+}
+
 export function generateWhispers(payload, computation, selectedRegime) {
   if (!payload) return [];
   const w = [];
@@ -143,36 +156,110 @@ export function generateWhispers(payload, computation, selectedRegime) {
 
   if (regime === 'old') {
     if (raw80C > 0 && raw80C < 150000) {
+      const remaining = 150000 - raw80C;
+      const suggestions = [];
+      if (n(ded.ppf) === 0) suggestions.push('PPF (7.1% guaranteed, 15yr lock-in)');
+      if (n(ded.elss) === 0) suggestions.push('ELSS mutual funds (3yr lock-in, market-linked)');
+      if (n(ded.fiveYearFD) === 0) suggestions.push('5-year tax saver FD');
       w.push({ id: 'ded-80c-room', type: 'saving', section: 'deductions', priority: 1,
-        message: `You've used ${rs(raw80C)} of the \u20B91,50,000 80C limit. ${rs(150000 - raw80C)} remaining — consider PPF, ELSS, or 5-year FD before March 31.` });
+        message: `You've used ${rs(raw80C)} of the \u20B91,50,000 80C limit. ${rs(remaining)} remaining.${suggestions.length > 0 ? ` Consider: ${suggestions.slice(0, 2).join(', ')}.` : ''}` });
+    }
+    if (raw80C > 150000) {
+      w.push({ id: 'ded-80c-over', type: 'warning', section: 'deductions', priority: 2,
+        message: `Your 80C investments total ${rs(raw80C)} but only \u20B91,50,000 is deductible. The excess ${rs(raw80C - 150000)} won't reduce your tax.` });
     }
     if (n(ded.nps) === 0) {
       w.push({ id: 'ded-nps-unused', type: 'saving', section: 'deductions', priority: 2,
-        message: 'You haven\'t claimed 80CCD(1B) NPS deduction. You can invest up to \u20B950,000 in NPS for an additional deduction beyond the \u20B91.5L 80C limit.' });
+        message: 'You haven\'t claimed 80CCD(1B) NPS deduction. Invest up to \u20B950,000 in NPS for an additional deduction beyond the \u20B91.5L 80C limit. This alone can save up to \u20B915,600 in tax (30% slab).' });
     }
     if (n(ded.healthSelf) === 0 && n(ded.healthParents) === 0) {
       w.push({ id: 'ded-80d-unused', type: 'saving', section: 'deductions', priority: 2,
-        message: 'No health insurance premium claimed under 80D. Self/family: up to \u20B925,000 (\u20B950,000 if senior). Parents: additional \u20B925,000 (\u20B950,000 if senior).' });
+        message: 'No health insurance premium claimed under 80D. Self/family: up to \u20B925,000 (\u20B950,000 if senior). Parents: additional \u20B925,000 (\u20B950,000 if senior). Max saving: \u20B931,200 (30% slab).' });
     }
-    // HRA vs 80GG conflict
+
+    // ── HRA vs 80GG comparison (Requirement 4.2) ──
     const hasHRA = employers.some(e => n(e.allowances?.hra?.received) > 0);
-    if (hasHRA && n(ded.rentPaid) > 0) {
+    const hraExemptTotal = employers.reduce((s, e) => s + n(e.allowances?.hra?.exempt), 0);
+    const rentPaid80GG = n(ded.rentPaid);
+
+    if (hasHRA && rentPaid80GG > 0) {
       w.push({ id: 'ded-hra-80gg', type: 'warning', section: 'deductions', priority: 1,
         message: 'You\'re claiming both HRA exemption and 80GG rent deduction. These are mutually exclusive — you can only claim one. HRA is usually more beneficial.' });
+    } else if (!hasHRA && rentPaid80GG === 0 && employers.length > 0) {
+      // Check if 80GG would be beneficial
+      const totalRent = employers.reduce((s, e) => s + n(e.rentPaid), 0);
+      if (totalRent > 0) {
+        const potential80GG = Math.min(totalRent, 60000);
+        if (potential80GG > 1000) {
+          w.push({ id: 'ded-80gg-suggest', type: 'saving', section: 'deductions', priority: 2,
+            message: `You pay rent of ${rs(totalRent)}/year but haven't claimed 80GG. You could deduct up to ${rs(potential80GG)} (max \u20B95,000/month). Add it in the Deductions section.` });
+        }
+      }
+    } else if (hasHRA && hraExemptTotal > 0 && !hasHRA) {
+      // Compare HRA vs 80GG benefit
+      const potential80GG = Math.min(n(ded.rentPaid), 60000);
+      if (potential80GG > hraExemptTotal + 1000) {
+        w.push({ id: 'ded-80gg-better', type: 'saving', section: 'deductions', priority: 1,
+          message: `80GG deduction (${rs(potential80GG)}) would save more than your current HRA exemption (${rs(hraExemptTotal)}). Consider restructuring with your employer.` });
+      }
+    }
+
+    // ── 80TTA vs 80TTB age-based (Requirement 4.4) ──
+    const dob = pi.dob;
+    if (dob && savInt > 0) {
+      const age = getAge(dob);
+      if (age >= 60) {
+        const ttbLimit = 50000;
+        const ttbBenefit = Math.min(savInt + fdInt, ttbLimit);
+        w.push({ id: 'ded-80ttb-senior', type: 'saving', section: 'deductions', priority: 1,
+          message: `As a senior citizen (age ${age}), you qualify for Section 80TTB with a \u20B950,000 limit (not 80TTA's \u20B910,000). You can deduct up to ${rs(ttbBenefit)} of your interest income.` });
+      } else if (savInt > 10000) {
+        w.push({ id: 'ded-80tta-cap', type: 'info', section: 'deductions', priority: 3,
+          message: `Your savings interest of ${rs(savInt)} exceeds the 80TTA limit of \u20B910,000. Only \u20B910,000 is deductible. (Senior citizens get 80TTB with \u20B950,000 limit.)` });
+      }
+    }
+
+    // ── Education loan interest (80E) — no upper limit ──
+    if (n(ded.eduLoan) > 0) {
+      w.push({ id: 'ded-80e-info', type: 'info', section: 'deductions', priority: 3,
+        message: `Education loan interest of ${rs(ded.eduLoan)} is fully deductible under 80E (no upper limit). This deduction is available for 8 years from the year you start repaying.` });
     }
   }
 
-  // Regime comparison whisper
+  // ── Regime comparison whisper (enhanced — Requirement 5) ──
   if (comp.savings > 0) {
     const better = comp.recommended;
     const worse = better === 'old' ? 'new' : 'old';
+    const bestR = comp[better + 'Regime'] || {};
+    const worseR = comp[worse + 'Regime'] || {};
+
     if (regime !== better) {
+      let explanation = '';
+      if (better === 'old') {
+        // Old regime is better — explain which deductions make it worthwhile
+        const totalDed = n(bestR.deductions);
+        explanation = `Your deductions of ${rs(totalDed)} (80C, 80D, NPS, etc.) reduce your taxable income enough to offset the higher old regime rates.`;
+      } else {
+        // New regime is better — explain rate advantage
+        const totalDed = n(worseR.deductions);
+        explanation = `Your deductions of ${rs(totalDed)} aren't enough to offset the new regime's lower tax rates. You'd need ~\u20B93,75,000+ in deductions for old regime to be better.`;
+      }
       w.push({ id: 'ded-regime-switch', type: 'saving', section: 'deductions', priority: 1,
-        message: `Switching to ${better} regime would save you ${rs(comp.savings)}. ${better === 'old' ? 'Your deductions are high enough to make old regime better.' : 'Your deductions are low — new regime\'s lower slabs save more.'}` });
+        message: `Switching to ${better} regime saves ${rs(comp.savings)}. ${explanation}` });
     } else {
       w.push({ id: 'ded-regime-optimal', type: 'info', section: 'deductions', priority: 3,
         message: `You're on the optimal regime. ${better === 'old' ? 'Old' : 'New'} regime saves ${rs(comp.savings)} compared to ${worse}.` });
     }
+  }
+
+  // ── Incomplete data prompts (Requirement 4.6) ──
+  if (employers.length === 0 && !hp.type && n(os.savingsInterest) + n(os.fdInterest) === 0) {
+    w.push({ id: 'global-no-income', type: 'info', section: 'summary', priority: 2,
+      message: 'Add your income sources to get personalized tax-saving suggestions. Start with salary (Form 16) or other income.' });
+  }
+  if (employers.length > 0 && raw80C === 0 && n(ded.nps) === 0 && n(ded.healthSelf) === 0 && regime === 'old') {
+    w.push({ id: 'global-no-deductions', type: 'tip', section: 'deductions', priority: 2,
+      message: 'You haven\'t entered any deductions yet. Add your investments (PPF, ELSS, NPS) and insurance premiums to see how much tax you can save.' });
   }
 
   // ── Bank & TDS whispers ──
