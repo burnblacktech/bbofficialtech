@@ -182,14 +182,17 @@ class FilingService {
             const filings = await ITRFiling.findAll({
                 where: { createdBy: userId },
                 order: [['created_at', 'DESC']],
-                attributes: ['id', 'assessmentYear', 'taxpayerPan', 'lifecycleState', 'created_at', 'updated_at'],
+                attributes: ['id', 'assessmentYear', 'taxpayerPan', 'itrType', 'filingType', 'lifecycleState', 'jsonPayload', 'created_at', 'updated_at'],
             });
 
             return filings.map(f => ({
                 id: f.id,
                 assessmentYear: f.assessmentYear,
                 taxpayerPan: f.taxpayerPan,
+                itrType: f.itrType,
+                filingType: f.filingType,
                 lifecycleState: f.lifecycleState,
+                jsonPayload: f.jsonPayload,
                 createdAt: f.createdAt,
                 updatedAt: f.updatedAt,
             }));
