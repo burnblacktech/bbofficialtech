@@ -149,7 +149,7 @@ class DataExportService {
     if (!user) return;
 
     const hash = crypto.createHash('sha256').update(user.email || '').digest('hex').slice(0, 12);
-    user.email = `deleted_${hash}@anonymized.burnblack.in`;
+    user.email = `deleted_${hash}@anonymized.burnblack.com`;
     user.fullName = 'Deleted User';
     user.phone = null;
     user.dateOfBirth = null;

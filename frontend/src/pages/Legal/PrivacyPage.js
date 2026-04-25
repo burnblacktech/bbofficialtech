@@ -76,7 +76,7 @@ export default function PrivacyPage() {
         </Section>
 
         <Section t="12. Contact Us">
-          For privacy-related questions or requests, contact our Data Protection Officer at privacy@burnblack.in or write to: HJR Consultancy India Private Limited, Bengaluru, Karnataka, India.
+          For privacy-related questions or requests, contact our Data Protection Officer at privacy@burnblack.com or write to: HJR Consultancy India Private Limited, Bengaluru, Karnataka, India.
         </Section>
       </Card>
     </Page>

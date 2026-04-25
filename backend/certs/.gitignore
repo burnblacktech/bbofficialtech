@@ -3,12 +3,12 @@
 *.pfx
 *.pem
 *.crt
+*.cer
 *.key
 *.jks
 *.keystore
 eri-signed-payload.json
 
-# Keep this directory but ignore sensitive files
+# Keep only docs
 !.gitignore
 !README.md
-!*.cer

@@ -62,7 +62,7 @@ export default function TermsPage() {
         </Section>
 
         <Section t="12. Contact">
-          For questions about these terms, contact us at support@burnblack.in or write to: HJR Consultancy India Private Limited, Bengaluru, Karnataka, India.
+          For questions about these terms, contact us at support@burnblack.com or write to: HJR Consultancy India Private Limited, Bengaluru, Karnataka, India.
         </Section>
       </Card>
     </Page>

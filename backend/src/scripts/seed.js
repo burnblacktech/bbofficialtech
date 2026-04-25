@@ -10,15 +10,20 @@ const enterpriseLogger = require('../utils/logger');
 // Load environment variables
 require('dotenv').config();
 
-// Database configuration
-const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'burnblack_itr',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '123456',
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-};
+// Database configuration — supports DATABASE_URL (Neon/cloud) or individual vars
+const dbConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL.replace(/^["']|["']$/g, ''),
+      ssl: { rejectUnauthorized: false },
+    }
+  : {
+      host: process.env.DB_HOST || 'localhost',
+      port: process.env.DB_PORT || 5432,
+      database: process.env.DB_NAME || 'burnblack_itr',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || '123456',
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+    };
 
 class DatabaseSeeder {
   constructor() {
@@ -80,8 +85,8 @@ class DatabaseSeeder {
     for (const user of users) {
       try {
         await client.query(`
-          INSERT INTO users (email, password_hash, role, full_name, phone, status, email_verified, phone_verified, created_at, updated_at, auth_provider, onboarding_completed, token_version, id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), 'LOCAL', true, 0, $9)
+          INSERT INTO users (email, password_hash, role, full_name, phone, status, email_verified, created_at, updated_at, auth_provider, onboarding_completed, id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), 'local', true, $8)
           ON CONFLICT (email) DO NOTHING
         `, [
           user.email,
@@ -91,7 +96,6 @@ class DatabaseSeeder {
           user.phone,
           user.status,
           user.email_verified,
-          user.phone_verified,
           uuidv4(),
         ]);
 
@@ -123,12 +127,16 @@ class DatabaseSeeder {
     await client.query(`
       CREATE TABLE IF NOT EXISTS tax_slabs (
         id SERIAL PRIMARY KEY,
-        assessment_year VARCHAR(7) NOT NULL,
+        assessment_year VARCHAR(7) NOT NULL UNIQUE,
         slabs JSONB NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    // Ensure unique constraint exists (table may have been created without it)
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS tax_slabs_assessment_year_key ON tax_slabs (assessment_year)
+    `).catch(() => {});
 
     for (const taxSlab of taxSlabs) {
       try {
@@ -179,12 +187,16 @@ class DatabaseSeeder {
     await client.query(`
       CREATE TABLE IF NOT EXISTS validation_rules (
         id SERIAL PRIMARY KEY,
-        itr_type VARCHAR(10) NOT NULL,
+        itr_type VARCHAR(10) NOT NULL UNIQUE,
         rules JSONB NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    // Ensure unique constraint exists
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS validation_rules_itr_type_key ON validation_rules (itr_type)
+    `).catch(() => {});
 
     for (const rule of validationRules) {
       try {
@@ -214,30 +226,17 @@ class DatabaseSeeder {
 
       // Create a sample ITR filing
       const filingResult = await client.query(`
-        INSERT INTO itr_filings (user_id, itr_type, assessment_year, status)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO itr_filings (id, created_by, taxpayer_pan, itr_type, assessment_year, status, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+        ON CONFLICT DO NOTHING
         RETURNING id
-      `, [userId, 'ITR-1', '2024-25', 'draft']);
+      `, [uuidv4(), userId, 'ABCDE1234F', 'ITR-1', '2024-25', 'draft']);
 
-      const filingId = filingResult.rows[0].id;
-
-      // Create sample draft
-      await client.query(`
-        INSERT INTO itr_drafts (filing_id, step, data, is_completed)
-        VALUES ($1, $2, $3, $4)
-      `, [
-        filingId,
-        'personal_info',
-        JSON.stringify({
-          pan: 'ABCDE1234F',
-          full_name: 'Test User',
-          email: 'user@burnblack.com',
-          phone: '8888888888',
-        }),
-        true,
-      ]);
-
-      enterpriseLogger.info('Sample ITR filing and draft created');
+      if (filingResult.rows.length > 0) {
+        enterpriseLogger.info('Sample ITR filing created');
+      } else {
+        enterpriseLogger.info('Sample ITR filing already exists, skipped');
+      }
     }
   }
 
