@@ -62,6 +62,15 @@ const RefundTracker = lazy(() => import('./pages/PostFiling/RefundTracker'));
 const CPCDecoder = lazy(() => import('./pages/PostFiling/CPCDecoder'));
 const RevisedReturnWizard = lazy(() => import('./pages/PostFiling/RevisedReturnWizard'));
 
+// Finance pages
+const FinanceOverview = lazy(() => import('./pages/Finance/FinanceOverview'));
+const IncomeTracker = lazy(() => import('./pages/Finance/IncomeTracker'));
+const ExpenseTracker = lazy(() => import('./pages/Finance/ExpenseTracker'));
+const InvestmentLogger = lazy(() => import('./pages/Finance/InvestmentLogger'));
+
+// Unified Settings Hub
+const SettingsHub = lazy(() => import('./pages/Settings/SettingsHub'));
+
 // Admin
 const AdminLayout = lazy(() => import('./pages/Admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
@@ -147,11 +156,22 @@ const AppContent = () => {
         {/* Dashboard */}
         <Route path="/dashboard" element={<Page message="Loading dashboard..."><UserDashboard /></Page>} />
 
-        {/* Profile & Settings */}
-        <Route path="/profile" element={<Page><ProfileSettings /></Page>} />
-        <Route path="/sessions" element={<Page><SessionManagement /></Page>} />
+        {/* Unified Settings Hub */}
+        <Route path="/settings" element={<Page><SettingsHub /></Page>} />
+
+        {/* Legacy redirects → Settings Hub */}
+        <Route path="/profile" element={<Navigate to="/settings#profile" replace />} />
+        <Route path="/sessions" element={<Navigate to="/settings#sessions" replace />} />
+        <Route path="/data" element={<Navigate to="/settings#data" replace />} />
+
+        {/* Activity Log */}
         <Route path="/activity" element={<Page><AuditTrailPage /></Page>} />
-        <Route path="/data" element={<Page><DataExportPage /></Page>} />
+
+        {/* Finance pages */}
+        <Route path="/finance" element={<Page><FinanceOverview /></Page>} />
+        <Route path="/finance/income" element={<Page><IncomeTracker /></Page>} />
+        <Route path="/finance/expenses" element={<Page><ExpenseTracker /></Page>} />
+        <Route path="/finance/investments" element={<Page><InvestmentLogger /></Page>} />
 
         {/* Family + Vault */}
         <Route path="/family" element={<Page><FamilyPage /></Page>} />

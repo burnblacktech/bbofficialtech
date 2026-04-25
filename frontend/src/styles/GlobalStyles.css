@@ -27,8 +27,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 button { cursor: pointer; border: none; background: none; }
 
 /* Focus */
-*:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
+*:focus-visible { outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, rgba(212, 175, 55, 0.4)); outline-offset: var(--focus-ring-offset, 2px); border-radius: 4px; }
 input:focus, select:focus, textarea:focus { outline: none; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: var(--focus-ring-width, 2px) solid var(--border-focus, #D4AF37); outline-offset: 0; border-radius: var(--radius-sm, 6px); }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

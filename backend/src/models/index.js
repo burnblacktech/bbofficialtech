@@ -1,7 +1,6 @@
 // =====================================================
-// MODELS INDEX - MVP MODEL EXPORTS
-// Only load models needed for the core filing flow.
-// Non-MVP models are preserved on disk but not loaded at boot.
+// MODELS INDEX - MODEL EXPORTS
+// Loads core filing models + finance tracker models.
 // =====================================================
 
 const User = require('./User');
@@ -13,6 +12,12 @@ const CAFirm = require('./CAFirm');
 const UserProfile = require('./UserProfile');
 const FilingSnapshot = require('./FilingSnapshot');
 const ERISubmissionAttempt = require('./ERISubmissionAttempt');
+
+// Finance tracker models
+const IncomeEntry = require('./IncomeEntry');
+const ExpenseEntry = require('./ExpenseEntry');
+const InvestmentEntry = require('./InvestmentEntry');
+const InAppNotification = require('./InAppNotification');
 
 // Define MVP associations inline (replaces associations.js)
 // ── User ↔ CAFirm ──
@@ -59,6 +64,27 @@ User.hasMany(AuditEvent, {
   onDelete: 'SET NULL',
 });
 
+// ── User ↔ IncomeEntry ──
+User.hasMany(IncomeEntry, { foreignKey: 'userId', as: 'incomeEntries' });
+IncomeEntry.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// ── User ↔ ExpenseEntry ──
+User.hasMany(ExpenseEntry, { foreignKey: 'userId', as: 'expenseEntries' });
+ExpenseEntry.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// ── User ↔ InvestmentEntry ──
+User.hasMany(InvestmentEntry, { foreignKey: 'userId', as: 'investmentEntries' });
+InvestmentEntry.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// ── User ↔ InAppNotification ──
+User.hasMany(InAppNotification, { foreignKey: 'userId', as: 'inAppNotifications' });
+InAppNotification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// ── ITRFiling ↔ Finance Entries (optional link when used in filing) ──
+ITRFiling.hasMany(IncomeEntry, { foreignKey: 'usedInFilingId', as: 'incomeEntries' });
+ITRFiling.hasMany(ExpenseEntry, { foreignKey: 'usedInFilingId', as: 'expenseEntries' });
+ITRFiling.hasMany(InvestmentEntry, { foreignKey: 'usedInFilingId', as: 'investmentEntries' });
+
 module.exports = {
   User,
   ITRFiling,
@@ -69,6 +95,10 @@ module.exports = {
   UserProfile,
   FilingSnapshot,
   ERISubmissionAttempt,
+  IncomeEntry,
+  ExpenseEntry,
+  InvestmentEntry,
+  InAppNotification,
   Notification: require('./Notification'),
   Order: require('./Order'),
   FamilyMember: require('./FamilyMember'),

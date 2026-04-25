@@ -73,6 +73,64 @@
   /* ── Font ── */
   --font-primary: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'DM Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* ── Sidebar ── */
+  --sidebar-width-expanded: 224px;
+  --sidebar-width-collapsed: 56px;
+  --sidebar-bg: #FAFAF8;
+  --sidebar-border: #E8E8E4;
+  --sidebar-group-label: #999999;
+  --sidebar-item-text: #333333;
+  --sidebar-item-active-bg: #FBF5E4;
+  --sidebar-item-active-text: #D4AF37;
+  --sidebar-item-hover-bg: #F3F3F0;
+
+  /* ── Bottom Nav ── */
+  --bottom-nav-height: 56px;
+  --bottom-nav-bg: #ffffff;
+  --bottom-nav-border: #E8E8E4;
+  --bottom-nav-active: #D4AF37;
+  --bottom-nav-inactive: #999999;
+
+  /* ── Finance Category Colors ── */
+  --color-salary: #D4AF37;
+  --color-freelance: #0D9488;
+  --color-rental: #7C3AED;
+  --color-interest: #3B82F6;
+  --color-dividend: #F59E0B;
+  --color-capital-gain: #EC4899;
+
+  /* ── Expense Category Colors ── */
+  --color-rent: #7C3AED;
+  --color-medical: #DC2626;
+  --color-donations: #16A34A;
+  --color-education: #3B82F6;
+  --color-insurance: #F59E0B;
+
+  /* ── Investment Section Colors ── */
+  --color-80c: #D4AF37;
+  --color-80ccd: #0D9488;
+
+  /* ── Chart Colors ── */
+  --chart-income: #D4AF37;
+  --chart-expense: #1A1A1A;
+  --chart-unfilled: #E8E8E4;
+  --chart-grid: #F3F3F0;
+
+  /* ── Notification ── */
+  --notification-badge-bg: #DC2626;
+  --notification-badge-text: #ffffff;
+  --notification-panel-width: 360px;
+
+  /* ── Readiness Score ── */
+  --readiness-track: #E8E8E4;
+  --readiness-fill-good: #D4AF37;
+  --readiness-fill-low: #DC2626;
+
+  /* ── Focus Ring ── */
+  --focus-ring-color: rgba(212, 175, 55, 0.4);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 }
 
 /* ── Global font application ── */
@@ -83,4 +141,98 @@ body, input, select, textarea, button {
 /* ── Mono for financial numbers ── */
 .font-mono, .ff-row-value, .hud-source-total, .hud-tax-val {
   font-family: var(--font-mono);
+}
+
+
+/* ── Theme transition (smooth color changes) ── */
+[data-theme] {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ── Disable transitions on initial load to prevent FOUC ── */
+[data-theme="preload"],
+[data-theme="preload"] * {
+  transition: none !important;
+}
+
+/* ── Dark Mode Overrides ── */
+[data-theme="dark"] {
+  /* ── Brand ── */
+  --brand-primary: #E0C04D;
+  --brand-primary-hover: #D4AF37;
+  --brand-primary-light: #2A2410;
+  --brand-primary-dark: #F0D860;
+  --brand-black: #F0F0EC;
+  --brand-black-soft: #E0E0DC;
+
+  /* ── Secondary ── */
+  --secondary: #2DD4BF;
+  --secondary-hover: #14B8A6;
+  --secondary-light: #0D2926;
+  --secondary-dark: #5EEAD4;
+
+  /* ── Text ── */
+  --text-primary: #F0F0EC;
+  --text-secondary: #D0D0CC;
+  --text-muted: #A0A0A0;
+  --text-light: #888888;
+  --text-white: #111111;
+
+  /* ── Backgrounds ── */
+  --bg-page: #111111;
+  --bg-card: #1A1A1A;
+  --bg-card-hover: #222222;
+  --bg-muted: #2A2A2A;
+
+  /* ── Borders ── */
+  --border-light: #333333;
+  --border-medium: #444444;
+  --border-focus: #E0C04D;
+
+  /* ── Semantic ── */
+  --color-success: #22C55E;
+  --color-success-bg: #0A1F0F;
+  --color-success-border: #166534;
+  --color-error: #EF4444;
+  --color-error-bg: #1F0A0A;
+  --color-error-border: #7F1D1D;
+  --color-warning: #EAB308;
+  --color-warning-bg: #1F1A05;
+  --color-warning-border: #854D0E;
+  --color-info: #2DD4BF;
+  --color-info-bg: #0D2926;
+  --color-info-border: #115E59;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+
+  /* ── Sidebar ── */
+  --sidebar-bg: #1A1A1A;
+  --sidebar-border: #333333;
+  --sidebar-group-label: #777777;
+  --sidebar-item-text: #D0D0CC;
+  --sidebar-item-active-bg: #2A2410;
+  --sidebar-item-active-text: #E0C04D;
+  --sidebar-item-hover-bg: #2A2A2A;
+
+  /* ── Bottom Nav ── */
+  --bottom-nav-bg: #1A1A1A;
+  --bottom-nav-border: #333333;
+  --bottom-nav-active: #E0C04D;
+  --bottom-nav-inactive: #777777;
+
+  /* ── Chart Colors ── */
+  --chart-income: #E0C04D;
+  --chart-expense: #D0D0CC;
+  --chart-unfilled: #333333;
+  --chart-grid: #2A2A2A;
+
+  /* ── Readiness Score ── */
+  --readiness-track: #333333;
+  --readiness-fill-good: #E0C04D;
+  --readiness-fill-low: #EF4444;
+
+  /* ── Focus Ring ── */
+  --focus-ring-color: rgba(224, 192, 77, 0.4);
 }

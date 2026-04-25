@@ -1,11 +1,13 @@
 /**
- * VaultPage — Year-round document storage
+ * VaultPage — Year-round document storage with card grid layout
+ * 2 columns desktop, 1 mobile. Category color-coded badges,
+ * expiry warnings, file size validation, filter by category/FY
  */
 
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FileText, Upload, Trash2, Calendar, Loader2, Filter, FolderOpen } from 'lucide-react';
-import { Page, Card, Button, Input, Grid, Section, Badge, Alert } from '../../components/ds';
+import { FileText, Upload, Trash2, Loader2, FolderOpen, AlertTriangle, Clock } from 'lucide-react';
+import { Page, Card, Button, Input, Grid, Section, Badge } from '../../components/ds';
 import api from '../../services/api';
 import { getFileableAYs } from '../../utils/assessmentYear';
 import toast from 'react-hot-toast';
@@ -28,12 +30,25 @@ const FY_OPTIONS = getFileableAYs().map(ay => {
   return { value: `${y - 1}-${String(y).slice(2)}`, label: `FY ${y - 1}-${String(y).slice(2)}` };
 });
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function fmtSize(bytes) {
+  if (!bytes) return '0 KB';
+  return bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
+}
+
+function isExpiringSoon(expiryDate) {
+  if (!expiryDate) return false;
+  const diff = new Date(expiryDate) - new Date();
+  return diff > 0 && diff <= 30 * 24 * 60 * 60 * 1000;
+}
+
 export default function VaultPage() {
   const qc = useQueryClient();
   const fileRef = useRef(null);
   const [filter, setFilter] = useState({ fy: '', category: '' });
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadForm, setUploadForm] = useState({ category: '', fy: FY_OPTIONS[0]?.value || '', expiryDate: '' });
+  const [uploadForm, setUploadForm] = useState({ category: '', fy: FY_OPTIONS[0]?.value || '', expiryDate: '', description: '' });
 
   const { data: docs = [], isLoading } = useQuery({
     queryKey: ['vault-docs', filter],
@@ -57,6 +72,7 @@ export default function VaultPage() {
       formData.append('category', uploadForm.category);
       formData.append('fy', uploadForm.fy);
       if (uploadForm.expiryDate) formData.append('expiryDate', uploadForm.expiryDate);
+      if (uploadForm.description) formData.append('description', uploadForm.description);
       return (await api.post('/vault/documents', formData, { headers: { 'Content-Type': 'multipart/form-data' } })).data.data;
     },
     onSuccess: () => {
@@ -64,27 +80,35 @@ export default function VaultPage() {
       qc.invalidateQueries({ queryKey: ['vault-summary'] });
       toast.success('Document uploaded');
       setShowUpload(false);
-      setUploadForm({ category: '', fy: FY_OPTIONS[0]?.value || '', expiryDate: '' });
+      setUploadForm({ category: '', fy: FY_OPTIONS[0]?.value || '', expiryDate: '', description: '' });
     },
     onError: (e) => toast.error(e.response?.data?.error || 'Upload failed'),
   });
 
   const deleteMut = useMutation({
     mutationFn: async (id) => api.delete(`/vault/documents/${id}`),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['vault-docs'] }); toast.success('Deleted'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vault-docs'] });
+      qc.invalidateQueries({ queryKey: ['vault-summary'] });
+      toast.success('Document deleted');
+    },
   });
 
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
-    if (file && uploadForm.category) uploadMut.mutate(file);
+    if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('File size must not exceed 10MB');
+      e.target.value = '';
+      return;
+    }
+    if (uploadForm.category) uploadMut.mutate(file);
     e.target.value = '';
   };
 
-  const fmtSize = (bytes) => bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
-
   return (
-    <Page title="Document Vault" subtitle="Upload and organize tax documents year-round" maxWidth={720}>
-      {/* Summary */}
+    <Page title="Document Vault" subtitle="Upload and organize tax documents year-round" maxWidth={800}>
+      {/* Summary strip */}
       {summary && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
           <Badge tone="brand">{summary.totalDocuments} documents</Badge>
@@ -92,9 +116,11 @@ export default function VaultPage() {
         </div>
       )}
 
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <Button variant="primary" onClick={() => setShowUpload(true)}><Upload size={14} /> Upload Document</Button>
+      {/* Actions row */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <Button variant="primary" onClick={() => setShowUpload(true)}>
+          <Upload size={14} /> Upload Document
+        </Button>
         <Input type="select" value={filter.category} onChange={e => setFilter({ ...filter, category: e.target.value })} style={{ width: 160 }}>
           <option value="">All Categories</option>
           {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
@@ -107,20 +133,30 @@ export default function VaultPage() {
 
       {/* Upload form */}
       {showUpload && (
-        <Card variant="active">
+        <Card variant="active" style={{ marginBottom: 16 }}>
           <Section title="Upload Document" icon={<Upload size={14} />}>
             <Grid cols={2}>
-              <Input label="Category" required type="select" value={uploadForm.category} onChange={e => setUploadForm({ ...uploadForm, category: e.target.value })}>
+              <Input label="Category" required type="select" value={uploadForm.category}
+                onChange={e => setUploadForm({ ...uploadForm, category: e.target.value })}>
                 <option value="">Select category...</option>
                 {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </Input>
-              <Input label="Financial Year" required type="select" value={uploadForm.fy} onChange={e => setUploadForm({ ...uploadForm, fy: e.target.value })}>
+              <Input label="Financial Year" required type="select" value={uploadForm.fy}
+                onChange={e => setUploadForm({ ...uploadForm, fy: e.target.value })}>
                 {FY_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
               </Input>
             </Grid>
-            <Input label="Expiry Date (optional)" type="date" value={uploadForm.expiryDate} onChange={v => setUploadForm({ ...uploadForm, expiryDate: v })} hint="For insurance renewals, investment maturity, etc. You'll get a reminder 30 days before." />
+            <Grid cols={2}>
+              <Input label="Expiry Date (optional)" type="date" value={uploadForm.expiryDate}
+                onChange={v => setUploadForm({ ...uploadForm, expiryDate: v })}
+                hint="For insurance renewals, investment maturity, etc." />
+              <Input label="Description (optional)" value={uploadForm.description}
+                onChange={e => setUploadForm({ ...uploadForm, description: e.target.value })}
+                placeholder="Brief description" />
+            </Grid>
             <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <Button variant="primary" disabled={!uploadForm.category} loading={uploadMut.isPending} onClick={() => fileRef.current?.click()}>
+              <Button variant="primary" disabled={!uploadForm.category} loading={uploadMut.isPending}
+                onClick={() => fileRef.current?.click()}>
                 <Upload size={14} /> Choose File
               </Button>
               <Button variant="outline" onClick={() => setShowUpload(false)}>Cancel</Button>
@@ -131,40 +167,54 @@ export default function VaultPage() {
         </Card>
       )}
 
-      {/* Document list */}
+      {/* Document grid */}
       {isLoading ? (
         <div style={{ padding: 40, textAlign: 'center' }}><Loader2 size={24} className="animate-spin" color={P.textMuted} /></div>
       ) : docs.length === 0 ? (
         <Card variant="muted" style={{ textAlign: 'center', padding: 40 }}>
           <FolderOpen size={36} color={P.borderMedium} style={{ margin: '0 auto 8px' }} />
           <div style={{ fontSize: 14, fontWeight: 600, color: P.textSecondary }}>No documents yet</div>
-          <div style={{ fontSize: 13, color: P.textMuted, marginTop: 4 }}>Upload your tax documents to keep them organized and ready for filing.</div>
+          <div style={{ fontSize: 13, color: P.textMuted, marginTop: 4 }}>
+            Upload your tax documents to keep them organized and ready for filing.
+          </div>
         </Card>
       ) : (
-        <div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340, 1fr))', gap: 12 }}
+          className="vault-grid">
+          <style>{`
+            .vault-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            @media (max-width: 767px) { .vault-grid { grid-template-columns: 1fr !important; } }
+          `}</style>
           {docs.map(doc => {
             const cat = CATEGORIES.find(c => c.value === doc.category);
             const isUsed = (doc.usedInFilings || []).length > 0;
+            const expiringSoon = isExpiringSoon(doc.expiryDate);
             return (
-              <Card key={doc.id} style={{ padding: '12px 16px', marginBottom: 6 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <FileText size={16} style={{ color: cat?.color || P.textMuted }} />
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: P.textPrimary }}>{doc.fileName}</div>
-                      <div style={{ fontSize: 11, color: P.textMuted }}>
-                        {fmtSize(doc.fileSize)} · {doc.financialYear}
-                        {doc.expiryDate && ` · Expires ${new Date(doc.expiryDate).toLocaleDateString('en-IN')}`}
-                      </div>
+              <Card key={doc.id} style={{ padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <FileText size={20} style={{ color: cat?.color || P.textMuted, flexShrink: 0, marginTop: 2 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: P.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {doc.fileName}
+                    </div>
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
+                      <Badge tone={cat?.value === 'salary' ? 'success' : 'default'}>
+                        <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: cat?.color || P.textMuted, marginRight: 4 }} />
+                        {cat?.label || doc.category}
+                      </Badge>
+                      {isUsed && <Badge tone="brand">Used in Filing</Badge>}
+                      {expiringSoon && <Badge tone="warning" icon={<AlertTriangle size={10} />}>Expiring Soon</Badge>}
+                    </div>
+                    <div style={{ fontSize: 11, color: P.textLight, marginTop: 4 }}>
+                      {fmtSize(doc.fileSize)} · {doc.financialYear} · {new Date(doc.createdAt || doc.uploadDate).toLocaleDateString('en-IN')}
+                      {doc.expiryDate && ` · Expires ${new Date(doc.expiryDate).toLocaleDateString('en-IN')}`}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Badge tone={cat?.value === 'salary' ? 'success' : 'default'}>{cat?.label || doc.category}</Badge>
-                    {isUsed && <Badge tone="brand">Used</Badge>}
-                    <Button variant="ghost" size="sm" onClick={() => { if (window.confirm('Delete this document?')) deleteMut.mutate(doc.id); }}> {/* eslint-disable-line no-alert */}
-                      <Trash2 size={13} />
-                    </Button>
-                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    if (window.confirm('Delete this document?')) deleteMut.mutate(doc.id); /* eslint-disable-line no-alert */
+                  }}>
+                    <Trash2 size={13} />
+                  </Button>
                 </div>
               </Card>
             );

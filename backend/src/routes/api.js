@@ -97,6 +97,12 @@ router.use('/account', generalLimiter, require('./account'));
 // Family member management
 router.use('/family', generalLimiter, require('./family'));
 
+// Finance (Income, Expense, Investment CRUD + summaries)
+router.use('/finance', generalLimiter, require('./finance'));
+
+// In-app notifications
+router.use('/notifications', generalLimiter, require('./notifications'));
+
 // Document vault
 router.use('/vault', generalLimiter, require('./vault'));
 

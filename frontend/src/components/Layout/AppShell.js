@@ -1,25 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+/**
+ * AppShell — Layout orchestrator.
+ * Manages sidebar state, mobile detection, filing flow detection,
+ * content padding, and page transitions via Framer Motion.
+ */
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import { Home, FileText, User } from 'lucide-react';
+import BottomNav from './BottomNav';
+import CommandPalette from '../Shared/CommandPalette';
+import KeyboardShortcutsHelp from '../Shared/KeyboardShortcutsHelp';
+import OfflineBanner from '../Shared/OfflineBanner';
+import useSidebarStore from '../../store/useSidebarStore';
+import useSystemTheme from '../../hooks/useSystemTheme';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
+import useSequentialShortcut from '../../hooks/useSequentialShortcut';
 
-const MOBILE_NAV = [
-  { name: 'Dashboard', path: '/dashboard', icon: Home },
-  { name: 'File ITR', path: '/filing/start', icon: FileText },
-  { name: 'Profile', path: '/profile', icon: User },
-];
+const pageVariants = {
+  initial: { opacity: 0, y: 6 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -6 },
+};
 
-/**
- * AppShell — Header (h-14) + Sidebar (desktop) + Bottom Nav (mobile) + Content area.
- */
+const pageTransition = {
+  duration: 0.2,
+  ease: [0, 0, 0.2, 1],
+};
+
 export const AppShell = ({ children }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useSystemTheme();
+  useSequentialShortcut();
+  const { isCollapsed, toggle, setCollapsed } = useSidebarStore();
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 1024 : false,
+  );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const navigate = useNavigate();
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [shortcutsHelpOpen, setShortcutsHelpOpen] = useState(false);
   const location = useLocation();
 
+  // Global keyboard shortcuts
+  const shortcuts = useMemo(
+    () => [
+      { key: 'k', meta: true, handler: () => setCommandPaletteOpen(true) },
+      { key: 'Escape', handler: () => { setCommandPaletteOpen(false); setShortcutsHelpOpen(false); } },
+      { key: '?', handler: () => setShortcutsHelpOpen((v) => !v) },
+    ],
+    [],
+  );
+  useKeyboardShortcuts(shortcuts);
+
+  // Mobile detection
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
@@ -30,72 +63,92 @@ export const AppShell = ({ children }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isFilingPage = location.pathname.startsWith('/filing/') && location.pathname !== '/filing/start';
+  // Filing flow detection: hide sidebar/bottom nav on /filing/:filingId/* (excluding /filing/start)
+  const isFilingFlow =
+    /^\/filing\/[^/]+/.test(location.pathname) &&
+    location.pathname !== '/filing/start';
+
+  const handleMenuClick = useCallback(() => {
+    setIsMobileMenuOpen((prev) => !prev);
+  }, []);
+
+  const handleMobileClose = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
+  // Sidebar width for content padding on desktop
+  const sidebarWidth = isCollapsed ? 56 : 224;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Header onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-page)' }}>
+      {/* Header: 56px sticky */}
+      <Header onMenuClick={handleMenuClick} />
+
       <div className="flex flex-1 relative">
-        {!isMobile && (
+        {/* Desktop Sidebar */}
+        {!isMobile && !isFilingFlow && (
           <Sidebar
-            isCollapsed={sidebarCollapsed}
-            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+            isCollapsed={isCollapsed}
+            onToggle={toggle}
             isMobile={false}
-            onClose={() => {}}
             isOpenMobile={false}
+            onClose={() => {}}
           />
         )}
-        {isMobile && isMobileMenuOpen && (
+
+        {/* Mobile Sidebar slide-over */}
+        {isMobile && !isFilingFlow && (
           <Sidebar
             isCollapsed={false}
             onToggle={() => {}}
             isMobile={true}
-            onClose={() => setIsMobileMenuOpen(false)}
-            isOpenMobile={true}
+            isOpenMobile={isMobileMenuOpen}
+            onClose={handleMobileClose}
           />
         )}
-        <main className={`flex-1 transition-all duration-300 ${isMobile ? 'w-full' : sidebarCollapsed ? 'pl-14' : 'pl-56'}`}>
-          <div className={`p-4 sm:p-6 ${isMobile && !isFilingPage ? 'pb-20' : ''}`}>
-            {children}
+
+        {/* Main content area */}
+        <main
+          className="flex-1 transition-all duration-300 ease-in-out"
+          style={{
+            paddingLeft:
+              !isMobile && !isFilingFlow ? `${sidebarWidth}px` : '0px',
+          }}
+        >
+          <div
+            className={`${isMobile ? 'p-4' : 'p-6'} ${
+              isMobile && !isFilingFlow ? 'pb-24' : ''
+            }`}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={pageTransition}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>
 
-      {/* Mobile bottom navigation — hidden on filing pages (HUD has its own nav) */}
-      {isMobile && !isFilingPage && (
-        <nav style={bottomNavStyles.nav}>
-          {MOBILE_NAV.map(item => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-            return (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                style={{ ...bottomNavStyles.tab, color: active ? 'var(--brand-primary)' : 'var(--text-muted)' }}
-              >
-                <Icon size={20} />
-                <span style={bottomNavStyles.label}>{item.name}</span>
-              </button>
-            );
-          })}
-        </nav>
-      )}
+      {/* Mobile BottomNav — hidden on filing flow and desktop */}
+      {isMobile && !isFilingFlow && <BottomNav />}
+
+      {/* Command Palette */}
+      <CommandPalette isOpen={commandPaletteOpen} onClose={() => setCommandPaletteOpen(false)} />
+
+      {/* Keyboard Shortcuts Help */}
+      <KeyboardShortcutsHelp isOpen={shortcutsHelpOpen} onClose={() => setShortcutsHelpOpen(false)} />
+
+      {/* Offline Banner */}
+      <OfflineBanner />
     </div>
   );
 };
 
-const bottomNavStyles = {
-  nav: {
-    position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
-    display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-    height: 56, background: '#ffffff', borderTop: '1px solid var(--border-light)',
-    boxShadow: '0 -1px 4px rgba(0,0,0,0.04)',
-    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-  },
-  tab: {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-    background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px',
-    minHeight: 44, minWidth: 44, transition: 'color 0.15s',
-  },
-  label: { fontSize: 10, fontWeight: 600 },
-};
+export default AppShell;
