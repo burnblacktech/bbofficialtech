@@ -55,6 +55,7 @@ import AchievementBadges from '../../components/Shared/AchievementBadges';
 import useReadinessMilestones from '../../hooks/useReadinessMilestones';
 import useStreakTracking from '../../hooks/useStreakTracking';
 import useChartColors from '../../hooks/useChartColors';
+import { computeFilingProgress } from '../../utils/filingProgress';
 
 /* ── Constants ── */
 const MONTH_LABELS = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
@@ -731,6 +732,7 @@ function FilingsSection({ filings, isLoading, navigate }) {
             const isSubmitted = f.lifecycleState === 'eri_success' || f.lifecycleState === 'submitted_to_eri';
             const isRevised = f.filingType === 'revised';
             const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
+            const progress = f.lifecycleState === 'draft' ? computeFilingProgress(f) : null;
 
             return (
               <div
@@ -750,6 +752,19 @@ function FilingsSection({ filings, isLoading, navigate }) {
                     <div className="text-xs text-[var(--text-light)]">
                       {f.taxpayerPan} · {f.itrType || 'ITR-1'}
                     </div>
+                    {progress && (
+                      <div className="mt-1">
+                        <span className="text-[10px] text-[var(--text-light)]">
+                          {progress.completed} of {progress.total} sections complete
+                        </span>
+                        <div className="h-1 w-full rounded-full mt-0.5" style={{ backgroundColor: 'var(--bg-muted)' }}>
+                          <div
+                            className="h-full rounded-full"
+                            style={{ width: `${progress.percent}%`, backgroundColor: 'var(--brand-primary)' }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

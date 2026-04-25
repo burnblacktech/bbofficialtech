@@ -1,8 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Plus, Edit2, Trash2, AlertCircle, Info, Database } from 'lucide-react';
 import { validateSalaryStep } from '../../../../utils/itrValidation';
 import { isMetroCity } from '../../../../constants/indianStates';
 import TaxWhisper from '../../../../components/common/TaxWhisper';
+import { getIncomeSummary } from '../../../../services/financeService';
+import { formatCurrency } from '../../../../utils/formatCurrency';
 import api from '../../../../services/api';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
@@ -22,7 +25,7 @@ const SOURCE_LABELS = {
   form16b: 'Form 16B', form16c: 'Form 16C', manual: 'Manual',
 };
 
-export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
+export default function SalaryEditor({ payload, onSave, isSaving, whispers, filing }) {
   const existing = payload?.income?.salary?.employers || [];
   const employerCategory = payload?.personalInfo?.employerCategory || 'OTH';
   const fieldSources = payload?._importMeta?.fieldSources || {};
@@ -30,6 +33,43 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
   const [editing, setEditing] = useState(existing.length === 0 ? 0 : null);
   const [form, setForm] = useState(existing.length === 0 ? { ...EMPTY } : null);
   const [errors, setErrors] = useState({});
+  const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
+
+  // Tracked salary data query
+  const filingFY = filing?.financialYear || filing?.assessmentYear;
+  const { data: trackedIncome } = useQuery({
+    queryKey: ['tracked-salary', filingFY],
+    queryFn: () => getIncomeSummary(filingFY),
+    staleTime: 60000,
+    enabled: !!filingFY,
+  });
+
+  const trackedSalaryTotal = trackedIncome?.entries
+    ?.filter(e => e.sourceType === 'salary')
+    ?.reduce((s, e) => s + parseFloat(e.amount || 0), 0) || 0;
+
+  const handleUseTrackedData = () => {
+    if (employers.length > 0 && employers.some(e => e.name || e.grossSalary)) {
+      setShowReplaceConfirm(true);
+      return;
+    }
+    applyTrackedData();
+  };
+
+  const applyTrackedData = () => {
+    const trackedEmployers = [{
+      ...EMPTY,
+      name: 'From Tracked Data',
+      grossSalary: trackedSalaryTotal,
+      tdsDeducted: 0,
+      _source: 'tracked',
+    }];
+    setEmployers(trackedEmployers);
+    setEditing(null);
+    setForm(null);
+    setShowReplaceConfirm(false);
+    onSave({ income: { salary: { employers: trackedEmployers } } });
+  };
 
   // Helper to get field source for a salary field path
   const getFieldSource = (fieldName, empIndex) => {
@@ -98,6 +138,36 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
     <div>
       <h2 className="step-title">Salary Income</h2>
       <p className="step-desc">Enter your employer details from Form 16. If you changed jobs this year, add each employer separately.</p>
+
+      {/* Tracked data banner */}
+      {trackedSalaryTotal > 0 && (
+        <div className="flex items-center justify-between rounded-lg border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Database size={14} className="text-[var(--text-muted)]" />
+            <span className="text-[var(--text-secondary)]">
+              Tracked salary: <strong>{formatCurrency(trackedSalaryTotal)}</strong>
+            </span>
+          </div>
+          <button
+            onClick={handleUseTrackedData}
+            className="text-xs font-semibold px-3 py-1.5 rounded-md"
+            style={{ backgroundColor: 'var(--brand-primary)', color: '#fff' }}
+          >
+            Use Tracked Data
+          </button>
+        </div>
+      )}
+
+      {/* Replace confirmation dialog */}
+      {showReplaceConfirm && (
+        <div className="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-4 mb-4 shadow-sm">
+          <p className="text-sm text-[var(--text-secondary)] mb-3">This will replace your current entries with tracked data. Continue?</p>
+          <div className="flex gap-2">
+            <button onClick={applyTrackedData} className="text-xs font-semibold px-3 py-1.5 rounded-md" style={{ backgroundColor: 'var(--brand-primary)', color: '#fff' }}>Replace</button>
+            <button onClick={() => setShowReplaceConfirm(false)} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-[var(--border-light)] text-[var(--text-secondary)]">Cancel</button>
+          </div>
+        </div>
+      )}
 
       {employers.map((emp, i) => editing === i ? null : (
         <div key={i} className="step-card">

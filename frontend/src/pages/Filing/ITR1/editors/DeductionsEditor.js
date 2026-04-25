@@ -1,7 +1,10 @@
 ﻿import { useState, useCallback } from 'react';
-import { Save, Plus, Trash2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Save, Plus, Trash2, Database } from 'lucide-react';
 import { validateDonation80G } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
+import { getExpensesSummary } from '../../../../services/financeService';
+import { formatCurrency } from '../../../../utils/formatCurrency';
 import api from '../../../../services/api';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
@@ -30,10 +33,24 @@ const SOURCE_LABELS = {
   form16b: 'Form 16B', form16c: 'Form 16C', manual: 'Manual',
 };
 
-export default function DeductionsEditor({ payload, onSave, selectedRegime: regimeProp }) {
+export default function DeductionsEditor({ payload, onSave, selectedRegime: regimeProp, filing }) {
   const d = payload?.deductions || {};
   const fieldSources = payload?._importMeta?.fieldSources || {};
   const [regime, setRegime] = useState(regimeProp || payload?.selectedRegime || 'new');
+  const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
+
+  // Tracked deductions data query
+  const filingFY = filing?.financialYear || filing?.assessmentYear;
+  const { data: trackedExpenses } = useQuery({
+    queryKey: ['tracked-deductions', filingFY],
+    queryFn: () => getExpensesSummary(filingFY),
+    staleTime: 60000,
+    enabled: !!filingFY,
+  });
+
+  const trackedDeductionTotal = trackedExpenses?.entries
+    ?.filter(e => e.deductionSection)
+    ?.reduce((s, e) => s + parseFloat(e.amount || 0), 0) || 0;
 
   // Helper to get field source for a deduction field path
   const getFieldSource = (fieldName) => {
@@ -136,10 +153,59 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
   const total80G = donations80G.reduce((s, e) => s + n(e.amount), 0);
   const total = cap80C + capNps + n(form.healthSelf) + n(form.healthParents) + n(form.eduLoan) + capTta + total80G + capRent + n(form.disability);
 
+  const handleUseTrackedDeductions = () => {
+    const hasExisting = n(form.ppf) + n(form.elss) + n(form.lic) + n(form.nps) + n(form.healthSelf) > 0;
+    if (hasExisting) { setShowReplaceConfirm(true); return; }
+    applyTrackedDeductions();
+  };
+
+  const applyTrackedDeductions = () => {
+    // Map tracked expenses into deduction fields by section
+    const entries = trackedExpenses?.entries?.filter(e => e.deductionSection) || [];
+    const updates = {};
+    for (const e of entries) {
+      if (e.deductionSection === '80D') updates.healthSelf = (updates.healthSelf || 0) + parseFloat(e.amount || 0);
+    }
+    const next = { ...form, ...updates };
+    setForm(next);
+    setShowReplaceConfirm(false);
+    markDirty();
+  };
+
   return (
     <div>
       <h2 className="step-title">Tax Savings & Deductions</h2>
       <p className="step-desc">Choose your tax regime and claim deductions to reduce your taxable income</p>
+
+      {/* Tracked deductions banner */}
+      {trackedDeductionTotal > 0 && (
+        <div className="flex items-center justify-between rounded-lg border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Database size={14} className="text-[var(--text-muted)]" />
+            <span className="text-[var(--text-secondary)]">
+              Tracked deductions: <strong>{formatCurrency(trackedDeductionTotal)}</strong>
+            </span>
+          </div>
+          <button
+            onClick={handleUseTrackedDeductions}
+            className="text-xs font-semibold px-3 py-1.5 rounded-md"
+            style={{ backgroundColor: 'var(--brand-primary)', color: '#fff' }}
+          >
+            Use Tracked Data
+          </button>
+        </div>
+      )}
+
+      {/* Replace confirmation dialog */}
+      {showReplaceConfirm && (
+        <div className="rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] p-4 mb-4 shadow-sm">
+          <p className="text-sm text-[var(--text-secondary)] mb-3">This will replace your current entries with tracked data. Continue?</p>
+          <div className="flex gap-2">
+            <button onClick={applyTrackedDeductions} className="text-xs font-semibold px-3 py-1.5 rounded-md" style={{ backgroundColor: 'var(--brand-primary)', color: '#fff' }}>Replace</button>
+            <button onClick={() => setShowReplaceConfirm(false)} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-[var(--border-light)] text-[var(--text-secondary)]">Cancel</button>
+          </div>
+        </div>
+      )}
 
       {/* Regime Toggle — prominent */}
       <div className="step-card" style={{ marginBottom: 16 }}>

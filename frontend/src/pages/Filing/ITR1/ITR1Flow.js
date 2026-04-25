@@ -14,7 +14,7 @@ import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
   Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
   ChevronDown, ArrowLeft, CreditCard, Trash2, Upload, AlertTriangle,
-  User, FileText,
+  User, FileText, Calendar,
 } from 'lucide-react';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -322,8 +322,30 @@ export default function ITR1Flow() {
 
   if (isLoading) return <div className="hud-loading"><Loader2 size={28} className="animate-spin" /></div>;
 
+  // Compute filing progress for the mode badge
+  const progressSections = ['personalInfo', ...active, 'deductions', 'bank'];
+  const progressCompleted = progressSections.filter(id => isSectionComplete(id, payload, comp)).length;
+  const progressPercent = Math.round((progressCompleted / progressSections.length) * 100);
+
   return (
-    <div className="hud">
+    <div className="hud" style={{ borderTop: '3px solid var(--brand-primary)' }}>
+      {/* ── Filing Mode Badge + Progress Bar ── */}
+      <div style={{ padding: '8px 12px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 self-start"
+          style={{ backgroundColor: 'var(--brand-primary)', color: '#fff', fontSize: 12 }}
+        >
+          <FileText size={14} />
+          Filing Mode — AY {filing?.assessmentYear || '---'}
+        </span>
+        <div className="h-1.5 w-full rounded-full" style={{ backgroundColor: 'var(--bg-muted)' }}>
+          <div
+            className="h-full rounded-full transition-all"
+            style={{ width: `${progressPercent}%`, backgroundColor: 'var(--brand-primary)' }}
+          />
+        </div>
+      </div>
+
       {/* ── Left Panel ── */}
       <aside className="hud-panel">
         <button className="hud-back" onClick={() => navigate('/dashboard')}><ArrowLeft size={14} /> Dashboard</button>

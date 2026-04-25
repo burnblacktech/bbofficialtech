@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { PiggyBank, Plus, Pencil, Trash2, ChevronDown, CheckCircle } from 'lucide-react';
+import { PiggyBank, Plus, Pencil, Trash2, ChevronDown, CheckCircle, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import useFinanceFilterStore from '../../store/useFinanceFilterStore';
@@ -235,6 +235,13 @@ export default function InvestmentLogger() {
           <div className="flex items-center gap-2">
             <PiggyBank size={22} className="text-[var(--brand-primary)]" />
             <h1 className="text-xl font-bold text-[var(--text-primary)]">Investments</h1>
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
+              style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-muted)', fontSize: 12 }}
+            >
+              <Calendar size={14} />
+              Year-Round Tracking
+            </span>
           </div>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">Log investments and track your deduction progress</p>
         </div>

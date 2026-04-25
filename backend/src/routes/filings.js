@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 const FilingService = require('../services/core/FilingService');
 const { authenticateToken } = require('../middleware/auth');
-const { ITRFiling } = require('../models');
+const { ITRFiling, IncomeEntry, ExpenseEntry, InvestmentEntry } = require('../models');
 const SubmissionStateMachine = require('../domain/SubmissionStateMachine');
 const STATES = require('../domain/SubmissionStates');
 const ReviewRequirementService = require('../services/itr/ReviewRequirementService');
@@ -22,6 +22,83 @@ const TaxRegimeCalculatorV2 = require('../services/itr/TaxRegimeCalculatorV2');
 const ERIOutcomeService = require('../services/ERIOutcomeService');
 const FilingCompletenessService = require('../services/itr/FilingCompletenessService');
 const { AppError } = require('../middleware/errorHandler');
+
+/**
+ * mapTrackedDataToPayload
+ * Pure function: maps tracked IncomeEntry, ExpenseEntry, InvestmentEntry records
+ * into a jsonPayload fragment suitable for merging into a filing.
+ * No side effects — testable in isolation.
+ */
+function mapTrackedDataToPayload(incomeEntries, expenseEntries, investmentEntries) {
+  const payload = {};
+
+  // Salary: aggregate salary-type income entries into employers array
+  const salaryEntries = incomeEntries.filter(e => e.sourceType === 'salary');
+  if (salaryEntries.length > 0) {
+    const totalSalary = salaryEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+    payload.income = payload.income || {};
+    payload.income.salary = {
+      employers: [{
+        name: 'From Tracked Data',
+        grossSalary: totalSalary,
+        tdsDeducted: 0,
+        _source: 'tracked',
+      }],
+    };
+  }
+
+  // Other income: map interest/dividend entries
+  const interestEntries = incomeEntries.filter(e => e.sourceType === 'interest');
+  const dividendEntries = incomeEntries.filter(e => e.sourceType === 'dividend');
+  if (interestEntries.length > 0 || dividendEntries.length > 0) {
+    payload.income = payload.income || {};
+    payload.income.otherSources = {
+      savingsInterest: interestEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0),
+      dividendIncome: dividendEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0),
+    };
+  }
+
+  // Deductions: map expenses with deductionSection + investments
+  const deductions = {};
+  for (const exp of expenseEntries) {
+    if (!exp.deductionSection) continue;
+    if (exp.deductionSection === '80D') {
+      deductions.healthSelf = (deductions.healthSelf || 0) + parseFloat(exp.amount || 0);
+    }
+    // Additional mappings for other deduction sections
+    if (exp.deductionSection === '80G') {
+      deductions.donations80G = (deductions.donations80G || 0) + parseFloat(exp.amount || 0);
+    }
+    if (exp.deductionSection === '80E') {
+      deductions.educationLoan80E = (deductions.educationLoan80E || 0) + parseFloat(exp.amount || 0);
+    }
+  }
+
+  const investmentFieldMap = {
+    ppf: 'ppf',
+    elss: 'elss',
+    lic: 'lic',
+    nps: 'nps',
+    sukanya: 'sukanya',
+    tax_fd: 'taxFd',
+    ulip: 'ulip',
+    other_80c: 'other80c',
+    '80ccd_1b_nps': 'nps',
+  };
+
+  for (const inv of investmentEntries) {
+    const field = investmentFieldMap[inv.investmentType];
+    if (field) {
+      deductions[field] = (deductions[field] || 0) + parseFloat(inv.amount || 0);
+    }
+  }
+
+  if (Object.keys(deductions).length > 0) {
+    payload.deductions = deductions;
+  }
+
+  return payload;
+}
 
 /**
  * Create a new ITR filing
@@ -936,7 +1013,91 @@ router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => 
     } catch (error) { next(error); }
 });
 
+/**
+ * Pre-fill filing from tracked finance data
+ * POST /api/filings/:filingId/prefill-from-tracked
+ * Maps IncomeEntry, ExpenseEntry, InvestmentEntry for the filing's FY
+ * into the filing's jsonPayload via mapTrackedDataToPayload.
+ */
+router.post('/:filingId/prefill-from-tracked', authenticateToken, async (req, res, next) => {
+    try {
+        const { filingId } = req.params;
+        const userId = req.user.userId;
+
+        // 1. Verify filing exists
+        const filing = await ITRFiling.findByPk(filingId);
+        if (!filing) {
+            throw new AppError('Filing not found', 404, 'FILING_NOT_FOUND');
+        }
+
+        // 2. Verify ownership
+        if (filing.createdBy !== userId) {
+            throw new AppError('Not authorized to update this filing', 403, 'NOT_AUTHORIZED');
+        }
+
+        // 3. Verify draft state
+        if (filing.lifecycleState !== 'draft') {
+            throw new AppError(
+                `Filing is frozen in state: ${filing.lifecycleState}. Pre-fill only works on draft filings.`,
+                403,
+                'FILING_FROZEN'
+            );
+        }
+
+        // 4. Read tracked entries for the filing's financialYear and userId
+        const fy = filing.financialYear;
+        const [incomeEntries, expenseEntries, investmentEntries] = await Promise.all([
+            IncomeEntry.findAll({ where: { userId, financialYear: fy } }),
+            ExpenseEntry.findAll({ where: { userId, financialYear: fy } }),
+            InvestmentEntry.findAll({ where: { userId, financialYear: fy } }),
+        ]);
+
+        // 5. Map tracked data to payload fragment
+        const prefillPayload = mapTrackedDataToPayload(incomeEntries, expenseEntries, investmentEntries);
+
+        // 6. Merge into existing jsonPayload (shallow merge)
+        const existingPayload = filing.jsonPayload || {};
+        const mergedPayload = { ...existingPayload, ...prefillPayload };
+
+        // Deep merge income if both exist
+        if (existingPayload.income && prefillPayload.income) {
+            mergedPayload.income = { ...existingPayload.income, ...prefillPayload.income };
+        }
+        // Deep merge deductions if both exist
+        if (existingPayload.deductions && prefillPayload.deductions) {
+            mergedPayload.deductions = { ...existingPayload.deductions, ...prefillPayload.deductions };
+        }
+
+        await filing.update({ jsonPayload: mergedPayload });
+
+        // 7. Compute prefill summary
+        const incomeTotal = incomeEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+        const deductionsTotal = expenseEntries
+            .filter(e => e.deductionSection)
+            .reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+        const investmentsTotal = investmentEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+        const entriesMapped = incomeEntries.length + expenseEntries.filter(e => e.deductionSection).length + investmentEntries.length;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                id: filing.id,
+                jsonPayload: mergedPayload,
+                prefillSummary: {
+                    incomeTotal,
+                    deductionsTotal,
+                    investmentsTotal,
+                    entriesMapped,
+                },
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Mount document import sub-routes
 router.use('/', require('./import'));
 
 module.exports = router;
+module.exports.mapTrackedDataToPayload = mapTrackedDataToPayload;

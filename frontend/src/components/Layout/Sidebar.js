@@ -1,10 +1,12 @@
 /**
- * Sidebar — Grouped navigation with 4 NavGroups.
+ * Sidebar — Grouped navigation with dynamic NavGroups.
  * Reads state from useSidebarStore. Uses NavLink for active detection.
+ * Fetches filings via React Query for Post-Filing section and progress badge.
  */
 
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   Home,
   FileText,
@@ -18,42 +20,65 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeft,
+  DollarSign,
+  FileSearch,
+  FilePenLine,
 } from 'lucide-react';
+import api from '../../services/api';
+import { computeFilingProgress } from '../../utils/filingProgress';
 
-// ── Navigation config ──
+// ── Dynamic navigation config ──
 
-const NAV_GROUPS = [
-  {
-    label: 'Main',
-    items: [
-      { to: '/dashboard', icon: Home, label: 'Dashboard' },
-      { to: '/filing/start', icon: FileText, label: 'File ITR' },
-      // { to: '/setup-guide', icon: Sparkles, label: 'Setup Guide', conditional: true },
-    ],
-  },
-  {
-    label: 'Finance',
-    items: [
-      { to: '/finance/income', icon: TrendingUp, label: 'Income' },
-      { to: '/finance/expenses', icon: Receipt, label: 'Expenses' },
-      { to: '/finance/investments', icon: PiggyBank, label: 'Investments' },
-    ],
-  },
-  {
-    label: 'Manage',
-    items: [
-      { to: '/family', icon: Users, label: 'Family' },
-      { to: '/vault', icon: FolderOpen, label: 'Vault' },
-      { to: '/activity', icon: Activity, label: 'Activity' },
-    ],
-  },
-  {
-    label: 'Account',
-    items: [
-      { to: '/settings', icon: Settings, label: 'Settings' },
-    ],
-  },
-];
+const buildNavGroups = (submittedFilings, progressBadge) => {
+  const groups = [
+    {
+      label: 'Main',
+      items: [
+        { to: '/dashboard', icon: Home, label: 'Dashboard' },
+        { to: '/filing/start', icon: FileText, label: 'File ITR', badge: progressBadge },
+      ],
+    },
+  ];
+
+  if (submittedFilings.length > 0) {
+    const mostRecentId = submittedFilings[0].id;
+    groups.push({
+      label: 'Post-Filing',
+      items: [
+        { to: `/post-filing/${mostRecentId}/refund`, icon: DollarSign, label: 'Refund Tracker' },
+        { to: `/post-filing/${mostRecentId}/cpc`, icon: FileSearch, label: 'CPC Notices' },
+        { to: `/post-filing/${mostRecentId}/revised`, icon: FilePenLine, label: 'Revised Return' },
+      ],
+    });
+  }
+
+  groups.push(
+    {
+      label: 'Finance',
+      items: [
+        { to: '/finance/income', icon: TrendingUp, label: 'Income' },
+        { to: '/finance/expenses', icon: Receipt, label: 'Expenses' },
+        { to: '/finance/investments', icon: PiggyBank, label: 'Investments' },
+      ],
+    },
+    {
+      label: 'Manage',
+      items: [
+        { to: '/family', icon: Users, label: 'Family' },
+        { to: '/vault', icon: FolderOpen, label: 'Vault' },
+        { to: '/activity', icon: Activity, label: 'Activity' },
+      ],
+    },
+    {
+      label: 'Account',
+      items: [
+        { to: '/settings', icon: Settings, label: 'Settings' },
+      ],
+    },
+  );
+
+  return groups;
+};
 
 // ── NavGroup ──
 
@@ -127,7 +152,7 @@ const NavItem = ({ to, icon: Icon, label, badge, isCollapsed, onClick }) => {
       >
         <Icon className="h-[18px] w-[18px] flex-shrink-0" />
         {!isCollapsed && <span className="truncate">{label}</span>}
-        {!isCollapsed && badge != null && badge > 0 && (
+        {!isCollapsed && badge != null && (
           <span
             className="ml-auto inline-flex items-center justify-center rounded-full text-[10px] font-bold leading-none"
             style={{
@@ -138,7 +163,7 @@ const NavItem = ({ to, icon: Icon, label, badge, isCollapsed, onClick }) => {
               color: 'var(--notification-badge-text)',
             }}
           >
-            {badge > 9 ? '9+' : badge}
+            {typeof badge === 'string' ? badge : badge > 9 ? '9+' : badge}
           </span>
         )}
       </NavLink>
@@ -166,6 +191,25 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, isOpenMobile, onClose }) => 
   const handleNavClick = () => {
     if (isMobile && onClose) onClose();
   };
+
+  // Fetch filings for Post-Filing section and progress badge
+  const { data: filings = [] } = useQuery({
+    queryKey: ['filings'],
+    queryFn: async () => {
+      const res = await api.get('/filings');
+      return res.data?.data || [];
+    },
+    staleTime: 30000,
+  });
+
+  const submittedFilings = filings
+    .filter(f => ['submitted_to_eri', 'eri_in_progress', 'eri_success'].includes(f.lifecycleState))
+    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+  const draftFiling = filings.find(f => f.lifecycleState === 'draft');
+  const progressBadge = draftFiling ? `${computeFilingProgress(draftFiling).percent}%` : null;
+
+  const navGroups = buildNavGroups(submittedFilings, progressBadge);
 
   const sidebarClasses = `
     fixed left-0 bottom-0 z-40 flex flex-col top-14
@@ -240,7 +284,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobile, isOpenMobile, onClose }) => 
             }
           }
         }}>
-          {NAV_GROUPS.map((group, groupIdx) => (
+          {navGroups.map((group, groupIdx) => (
             <React.Fragment key={group.label}>
               {groupIdx > 0 && (
                 <div

@@ -6,12 +6,14 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Briefcase, Home, TrendingUp, DollarSign, Globe, ArrowRight, ArrowLeft, CheckCircle, Loader2, Shield } from 'lucide-react';
+import { Briefcase, Home, TrendingUp, DollarSign, Globe, ArrowRight, ArrowLeft, CheckCircle, Loader2, Shield, Database } from 'lucide-react';
 import api from '../../../services/api';
 import newFilingService from '../../../services/newFilingService';
-import { getFileableAYs } from '../../../utils/assessmentYear';
+import { getIncomeSummary, getExpensesSummary, getInvestmentsSummary } from '../../../services/financeService';
+import { getFileableAYs, ayToFY } from '../../../utils/assessmentYear';
+import { formatCurrency } from '../../../utils/formatCurrency';
 import toast from 'react-hot-toast';
 import '../filing-flow.css';
 
@@ -138,6 +140,76 @@ const ITRDeterminationWizard = () => {
       return;
     }
     createMutation.mutate();
+  };
+
+  // ── Tracked data queries for pre-fill bridge ──
+  const selectedFY = ayToFY(assessmentYear);
+  const { data: trackedIncome } = useQuery({
+    queryKey: ['income-summary', selectedFY],
+    queryFn: () => getIncomeSummary(selectedFY),
+    staleTime: 60000,
+  });
+  const { data: trackedExpenses } = useQuery({
+    queryKey: ['expenses-summary', selectedFY],
+    queryFn: () => getExpensesSummary(selectedFY),
+    staleTime: 60000,
+  });
+  const { data: trackedInvestments } = useQuery({
+    queryKey: ['investments-summary', selectedFY],
+    queryFn: () => getInvestmentsSummary(selectedFY),
+    staleTime: 60000,
+  });
+
+  const trackedIncomeTotal = parseFloat(trackedIncome?.totalIncome || 0);
+  const trackedExpenseTotal = parseFloat(trackedExpenses?.totalExpenses || 0);
+  const trackedInvestmentTotal = (trackedInvestments?.sections || []).reduce(
+    (sum, s) => sum + parseFloat(s.totalInvested || 0), 0,
+  );
+  const hasTrackedData = trackedIncomeTotal > 0 || trackedExpenseTotal > 0 || trackedInvestmentTotal > 0;
+
+  // Pre-fill mutation: create filing then call prefill endpoint
+  const prefillMutation = useMutation({
+    mutationFn: async () => {
+      const panUpper = pan.toUpperCase();
+      if (!panIsVerified || panFromProfile !== panUpper) {
+        try { await api.patch('/auth/pan', { panNumber: panUpper }); await refreshProfile?.(); } catch { /* non-blocking */ }
+      }
+      const res = await newFilingService.createFiling({ assessmentYear, taxpayerPan: panUpper, itrType: recommendedITR });
+      const filingId = res?.data?.id || res?.data?.filingId || res?.id || res?.filingId;
+      // Save selected sources
+      try { await api.put(`/filings/${filingId}`, { jsonPayload: { _selectedSources: sources } }); } catch { /* non-blocking */ }
+      // Call pre-fill endpoint
+      try { await api.post(`/filings/${filingId}/prefill-from-tracked`); } catch { toast.error('Could not pre-fill from tracked data'); }
+      return filingId;
+    },
+    onSuccess: (filingId) => {
+      if (filingId) {
+        toast.success(`${recommendedITR} filing created with tracked data`);
+        navigate(`/filing/${filingId}/${routeMap[recommendedITR]}`);
+      }
+    },
+    onError: (error) => {
+      const existing = error.response?.data?.data;
+      const id = existing?.id || existing?.filingId;
+      if (id) {
+        const existingType = existing?.itrType || recommendedITR;
+        const route = routeMap[existingType] || routeMap[recommendedITR];
+        toast.success('Resuming existing filing');
+        navigate(`/filing/${id}/${route}`);
+        return;
+      }
+      toast.error(error.response?.data?.error?.message || 'Failed to create filing');
+    },
+  });
+
+  const handleUseTrackedData = () => {
+    setPanError('');
+    if (!pan || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.toUpperCase())) {
+      setPanError('Enter a valid PAN (e.g., ABCDE1234F)');
+      return;
+    }
+    if (sources.length === 0) { toast.error('Select at least one income source'); return; }
+    prefillMutation.mutate();
   };
 
   const ITR_INFO = {
@@ -267,6 +339,46 @@ const ITRDeterminationWizard = () => {
           </div>
           <CheckCircle size={24} color="#16a34a" />
         </div>
+
+        {/* Pre-Fill Bridge — Tracked Data Summary Card */}
+        {hasTrackedData && (
+          <div className="step-card" style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <Database size={18} style={{ color: '#059669' }} />
+              <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Tracked Data Available</div>
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+              {trackedIncomeTotal > 0 && (
+                <div style={{ flex: '1 1 120px', padding: '8px 12px', background: '#fff', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: 11, color: '#6b7280' }}>Income</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{formatCurrency(trackedIncomeTotal)}</div>
+                </div>
+              )}
+              {trackedExpenseTotal > 0 && (
+                <div style={{ flex: '1 1 120px', padding: '8px 12px', background: '#fff', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: 11, color: '#6b7280' }}>Deductions</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{formatCurrency(trackedExpenseTotal)}</div>
+                </div>
+              )}
+              {trackedInvestmentTotal > 0 && (
+                <div style={{ flex: '1 1 120px', padding: '8px 12px', background: '#fff', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: 11, color: '#6b7280' }}>Investments</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{formatCurrency(trackedInvestmentTotal)}</div>
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="ff-btn ff-btn-primary" onClick={handleUseTrackedData} disabled={prefillMutation.isPending}
+                style={{ flex: 1, justifyContent: 'center', padding: '10px 16px' }}>
+                {prefillMutation.isPending ? <><Loader2 size={16} className="animate-spin" /> Pre-filling...</> : <><Database size={14} /> Use My Tracked Data</>}
+              </button>
+              <button className="ff-btn ff-btn-outline" onClick={handleStart} disabled={createMutation.isPending}
+                style={{ flex: 1, justifyContent: 'center', padding: '10px 16px' }}>
+                Start Fresh
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Start Button */}
         <button className="ff-btn ff-btn-primary" onClick={handleStart} disabled={createMutation.isPending}
