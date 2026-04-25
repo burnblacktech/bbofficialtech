@@ -22,7 +22,7 @@ import {
   PanelLeft,
   DollarSign,
   FileSearch,
-  FilePenLine,
+  FileEdit,
 } from 'lucide-react';
 import api from '../../services/api';
 import { computeFilingProgress } from '../../utils/filingProgress';
@@ -47,7 +47,7 @@ const buildNavGroups = (submittedFilings, progressBadge) => {
       items: [
         { to: `/post-filing/${mostRecentId}/refund`, icon: DollarSign, label: 'Refund Tracker' },
         { to: `/post-filing/${mostRecentId}/cpc`, icon: FileSearch, label: 'CPC Notices' },
-        { to: `/post-filing/${mostRecentId}/revised`, icon: FilePenLine, label: 'Revised Return' },
+        { to: `/post-filing/${mostRecentId}/revised`, icon: FileEdit, label: 'Revised Return' },
       ],
     });
   }
