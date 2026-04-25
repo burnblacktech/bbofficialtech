@@ -172,6 +172,10 @@ class ImportEngineService {
         snapshotId = snapshot?.id || null;
       } catch { /* snapshot service may not be available */ }
 
+      // Capture previous state for per-field audit
+      const previousPayload = filing.jsonPayload || {};
+      const previousFieldSources = previousPayload._importMeta?.fieldSources || {};
+
       // Merge
       const importId = uuidv4();
       const importMeta = {
@@ -205,6 +209,21 @@ class ImportEngineService {
         }, transaction);
       } catch { /* audit is best-effort */ }
 
+      // Per-field audit: log FIELD_SOURCE_CHANGE for each updated field
+      for (const field of fieldsUpdated) {
+        try {
+          const prevSource = previousFieldSources[field]?.source || null;
+          const prevValue = ConflictResolver.getNestedValue(previousPayload, field);
+          const newValue = resolvedData[field];
+          await AuditService.logEvent({
+            entityType: 'ITRFiling', entityId: filingId,
+            action: 'FIELD_SOURCE_CHANGE',
+            actorId: userId,
+            metadata: { fieldPath: field, previousValue: prevValue, newValue, previousSource: prevSource, newSource: documentType, importId },
+          }, transaction);
+        } catch { /* per-field audit is best-effort */ }
+      }
+
       await transaction.commit();
       enterpriseLogger.info('Import confirmed', { filingId, importId, documentType, fieldsUpdated: fieldsUpdated.length });
 
@@ -213,6 +232,112 @@ class ImportEngineService {
       await transaction.rollback();
       throw err;
     }
+  }
+
+  /**
+   * Parse document without filing context — for Finance Tracker.
+   * Reuses validation + parser selection but skips filing lookup, conflict detection, and merge.
+   */
+  static async parseDocumentOnly(userId, { documentType, fileContent, fileName, password }) {
+    // 1. Decode base64
+    let buffer;
+    try { buffer = Buffer.from(fileContent, 'base64'); }
+    catch { throw new AppError('Invalid file content', 400, ErrorCodes.IMPORT_PARSE_FAILED); }
+
+    // 2. Validate size
+    const limit = SIZE_LIMITS[documentType];
+    if (!limit) throw new AppError(`Unknown document type: ${documentType}`, 400, ErrorCodes.IMPORT_INVALID_FILE_TYPE);
+    if (buffer.length > limit) throw new AppError(`File exceeds ${Math.round(limit / 1024 / 1024)}MB limit`, 413, ErrorCodes.IMPORT_FILE_TOO_LARGE);
+
+    // 3. Basic malicious content scan
+    const bufStr = buffer.toString('utf8', 0, Math.min(buffer.length, 4096));
+    if (bufStr.includes('<script') || bufStr.includes('javascript:') || bufStr.includes('eval(') || bufStr.includes('document.cookie')) {
+      throw new AppError('File rejected for security reasons. Please upload a clean document.', 400, ErrorCodes.IMPORT_MALICIOUS_CONTENT);
+    }
+
+    // 4. Parse with appropriate parser
+    let parsed;
+    const isPDF = buffer.length > 4 && buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46;
+
+    if (documentType === 'form16') {
+      try { parsed = await Form16Parser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16 parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
+    } else if (documentType === '26as') {
+      if (isPDF) {
+        try { parsed = await this._parseTDSPDF(buffer, password, '26AS'); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`26AS PDF parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      } else {
+        let json;
+        try { json = JSON.parse(buffer.toString('utf8')); }
+        catch { throw new AppError('Invalid file. Upload a JSON or PDF version of 26AS.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
+        try { parsed = TwentySixASParser.parse(json); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`26AS parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      }
+    } else if (documentType === 'ais') {
+      if (isPDF) {
+        try { parsed = await this._parseTDSPDF(buffer, password, 'AIS'); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`AIS PDF parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      } else {
+        let json;
+        try { json = JSON.parse(buffer.toString('utf8')); }
+        catch { throw new AppError('Invalid file. Upload a JSON or PDF version of AIS.', 422, ErrorCodes.IMPORT_INVALID_SCHEMA); }
+        try { parsed = AISParser.parse(json); }
+        catch (parseErr) {
+          if (parseErr instanceof AppError) throw parseErr;
+          throw new AppError(`AIS parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+        }
+      }
+    } else if (documentType === 'form16a') {
+      try { parsed = await Form16AParser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16A parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
+    } else if (documentType === 'form16b') {
+      try { parsed = await Form16BParser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16B parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
+    } else if (documentType === 'form16c') {
+      try { parsed = await Form16CParser.parse(buffer, password); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Form 16C parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
+    }
+
+    // 5. Map to flat fields
+    let mappedData;
+    if (documentType === 'form16') mappedData = DataMapper.mapForm16(parsed);
+    else if (documentType === '26as') mappedData = DataMapper.map26AS(parsed, {});
+    else if (documentType === 'form16a') mappedData = DataMapper.mapForm16A(parsed);
+    else if (documentType === 'form16b') mappedData = DataMapper.mapForm16B(parsed);
+    else if (documentType === 'form16c') mappedData = DataMapper.mapForm16C(parsed);
+    else mappedData = DataMapper.mapAIS(parsed);
+
+    const fieldMapping = this.buildFieldMapping(mappedData);
+
+    enterpriseLogger.info('Document parsed (no filing)', { documentType, fieldsExtracted: Object.keys(mappedData).length });
+
+    return {
+      extractedData: mappedData,
+      fieldMapping,
+      documentMeta: { documentType, extractedFieldCount: Object.keys(mappedData).length },
+      warnings: parsed.warnings || [],
+    };
   }
 
   /**

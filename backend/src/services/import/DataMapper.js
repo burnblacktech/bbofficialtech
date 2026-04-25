@@ -4,6 +4,7 @@
  */
 
 const n = (v) => Number(v) || 0;
+const { SOURCE_AUTHORITY } = require('./ConflictResolver');
 
 class DataMapper {
 
@@ -242,7 +243,14 @@ class DataMapper {
     if (importMeta) {
       merged._importMeta.imports.push(importMeta);
       for (const field of fieldsUpdated) {
-        merged._importMeta.fieldSources[field] = { source: importMeta.documentType, importId: importMeta.importId };
+        const auth = SOURCE_AUTHORITY[importMeta.documentType] || SOURCE_AUTHORITY.manual;
+        merged._importMeta.fieldSources[field] = {
+          source: importMeta.documentType,
+          importId: importMeta.importId,
+          importedAt: importMeta.importedAt,
+          authorityTier: auth.tier,
+          editLock: auth.tier === 'itd' ? 'locked' : auth.tier === 'employer' ? 'warn' : 'free',
+        };
       }
     }
 

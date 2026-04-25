@@ -21,6 +21,9 @@ import P from '../../../../styles/palette';
 // ── Source badge config (matches ImportDocumentModal card colors) ──
 const SOURCE_CONFIG = {
   form16: { label: 'Form 16', color: '#059669', bg: '#f0fdf4' },
+  form16a: { label: 'Form 16A', color: '#047857', bg: '#ecfdf5' },
+  form16b: { label: 'Form 16B', color: '#065f46', bg: '#d1fae5' },
+  form16c: { label: 'Form 16C', color: '#064e3b', bg: '#d1fae5' },
   '26as': { label: '26AS', color: '#0D9488', bg: '#F0FDFA' },
   ais: { label: 'AIS', color: '#7c3aed', bg: '#f5f3ff' },
   manual: { label: 'Manual', color: '#6b7280', bg: '#f3f4f6' },
@@ -344,6 +347,17 @@ export default function ImportReviewScreen({
     });
   }, [conflicts, conflictResolutions, hasConflicts]);
 
+  // Count unresolved conflicts
+  const unresolvedCount = useMemo(() => {
+    if (!hasConflicts) return 0;
+    return conflicts.filter((c) => {
+      const res = conflictResolutions[c.fieldPath];
+      if (!res) return true;
+      if (res.choice === 'custom' && (res.value === '' || res.value == null)) return true;
+      return false;
+    }).length;
+  }, [conflicts, conflictResolutions, hasConflicts]);
+
   // Build resolved data for confirm
   const buildResolvedData = useCallback(() => {
     const resolved = {};
@@ -525,6 +539,11 @@ export default function ImportReviewScreen({
             <>
               <Loader2 size={14} style={{ animation: 'spin 0.8s linear infinite' }} />
               Confirming...
+            </>
+          ) : !allConflictsResolved ? (
+            <>
+              <AlertTriangle size={14} />
+              {unresolvedCount} conflict{unresolvedCount !== 1 ? 's' : ''} unresolved
             </>
           ) : (
             <>

@@ -5,6 +5,17 @@
 
 const n = (v) => Number(v) || 0;
 
+// Source authority hierarchy — rank determines precedence (lower = higher authority)
+const SOURCE_AUTHORITY = {
+  '26as': { tier: 'itd', rank: 1 },
+  'ais':  { tier: 'itd', rank: 2 },
+  'form16':  { tier: 'employer', rank: 3 },
+  'form16a': { tier: 'employer', rank: 4 },
+  'form16b': { tier: 'employer', rank: 5 },
+  'form16c': { tier: 'employer', rank: 6 },
+  'manual':  { tier: 'manual', rank: 99 },
+};
+
 // Human-readable labels for jsonPayload field paths
 const FIELD_LABELS = {
   'income.salary.employers': { section: 'Salary', prefix: 'Employer' },
@@ -66,30 +77,50 @@ class ConflictResolver {
    */
   static applyRecommendation(conflict) {
     const { fieldPath, existingSource, newSource } = conflict;
+    const existingAuth = SOURCE_AUTHORITY[existingSource] || SOURCE_AUTHORITY.manual;
+    const newAuth = SOURCE_AUTHORITY[newSource] || SOURCE_AUTHORITY.manual;
 
-    // Salary TDS: 26AS is authoritative (reflects actual credits with ITD)
-    if (fieldPath.includes('tdsDeducted') && fieldPath.includes('salary')) {
-      if (existingSource === 'form16' && newSource === '26as') {
-        conflict.recommendation = '26as';
-        conflict.reason = '26AS reflects actual TDS credits registered with ITD';
-      } else if (existingSource === '26as' && newSource === 'form16') {
-        conflict.recommendation = '26as';
-        conflict.reason = '26AS reflects actual TDS credits registered with ITD';
+    // Field-specific overrides (preserve existing logic)
+    if (fieldPath.includes('tdsDeducted')) {
+      conflict.recommendation = existingAuth.tier === 'itd' ? existingSource : newSource;
+      conflict.reason = '26AS reflects actual TDS credits registered with ITD';
+      // If neither is ITD, fall through to general comparison below
+      if (existingAuth.tier === 'itd' || newAuth.tier === 'itd') {
+        // Manual entries: always flag, no auto-recommendation
+        if (existingSource === 'manual') {
+          conflict.recommendation = null;
+          conflict.reason = 'This value was manually entered. Please verify which is correct.';
+        }
+        return;
       }
     }
-
-    // Salary gross: Form 16 is authoritative (employer-issued)
     if (fieldPath.includes('grossSalary') && fieldPath.includes('salary')) {
-      if (existingSource === 'form16' && newSource === 'ais') {
+      const form16Source = [existingSource, newSource].find(s => s === 'form16');
+      if (form16Source) {
         conflict.recommendation = 'form16';
         conflict.reason = 'Form 16 is issued by your employer and is the primary salary document';
-      } else if (existingSource === 'ais' && newSource === 'form16') {
-        conflict.recommendation = 'form16';
-        conflict.reason = 'Form 16 is issued by your employer and is the primary salary document';
+        // Manual entries: always flag, no auto-recommendation
+        if (existingSource === 'manual') {
+          conflict.recommendation = null;
+          conflict.reason = 'This value was manually entered. Please verify which is correct.';
+        }
+        return;
       }
     }
 
-    // Manual entries: always flag, no auto-recommendation
+    // General tier comparison
+    if (existingAuth.rank < newAuth.rank) {
+      conflict.recommendation = existingSource;
+      conflict.reason = `${existingSource} has higher authority (${existingAuth.tier}) than ${newSource} (${newAuth.tier})`;
+    } else if (newAuth.rank < existingAuth.rank) {
+      conflict.recommendation = newSource;
+      conflict.reason = `${newSource} has higher authority (${newAuth.tier}) than ${existingSource} (${existingAuth.tier})`;
+    } else {
+      conflict.recommendation = null;
+      conflict.reason = 'Both sources have equal authority. Please verify which is correct.';
+    }
+
+    // Manual entries: always flag, no auto-recommendation (preserve existing behavior)
     if (existingSource === 'manual') {
       conflict.recommendation = null;
       conflict.reason = 'This value was manually entered. Please verify which is correct.';
@@ -135,3 +166,4 @@ class ConflictResolver {
 }
 
 module.exports = ConflictResolver;
+module.exports.SOURCE_AUTHORITY = SOURCE_AUTHORITY;

@@ -11,6 +11,9 @@ const rateLimit = require('express-rate-limit');
 
 const { authenticateToken } = require('../middleware/auth');
 const ImportEngineService = require('../services/import/ImportEngineService');
+const ReconciliationService = require('../services/import/ReconciliationService');
+const { ITRFiling } = require('../models');
+const { AppError } = require('../middleware/errorHandler');
 
 const router = express.Router();
 
@@ -66,6 +69,18 @@ router.get('/:filingId/import/history', authenticateToken, async (req, res, next
   try {
     const history = await ImportEngineService.getImportHistory(req.params.filingId, req.user.userId);
     res.json({ success: true, data: history });
+  } catch (error) { next(error); }
+});
+
+// TDS Reconciliation — compare 26AS TDS entries against filing income
+router.get('/:filingId/reconcile-tds', authenticateToken, async (req, res, next) => {
+  try {
+    const filing = await ITRFiling.findByPk(req.params.filingId);
+    if (!filing) throw new AppError('Filing not found', 404);
+    if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+    const result = ReconciliationService.reconcile(filing.jsonPayload || {});
+    res.json({ success: true, data: result });
   } catch (error) { next(error); }
 });
 

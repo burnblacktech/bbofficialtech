@@ -13,6 +13,12 @@ import { getFileableAYs } from '../../utils/assessmentYear';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 
+// Map vault categories to import document types
+const CATEGORY_TO_IMPORT_TYPE = {
+  salary: 'form16',
+  tax_document: '26as',
+};
+
 const CATEGORIES = [
   { value: 'salary', label: 'Salary', color: '#059669' },
   { value: 'investments', label: 'Investments', color: '#7c3aed' },
@@ -65,6 +71,19 @@ export default function VaultPage() {
     queryFn: async () => (await api.get('/vault/summary')).data.data,
   });
 
+  // Check for active draft filings (used for import suggestion)
+  const { data: filings = [] } = useQuery({
+    queryKey: ['filings'],
+    queryFn: async () => {
+      try {
+        return (await api.get('/filings')).data.data || [];
+      } catch { return []; }
+    },
+    staleTime: 60000,
+  });
+
+  const activeDraftFiling = filings.find(f => f.status === 'draft');
+
   const uploadMut = useMutation({
     mutationFn: async (file) => {
       const formData = new FormData();
@@ -75,11 +94,55 @@ export default function VaultPage() {
       if (uploadForm.description) formData.append('description', uploadForm.description);
       return (await api.post('/vault/documents', formData, { headers: { 'Content-Type': 'multipart/form-data' } })).data.data;
     },
-    onSuccess: () => {
+    onSuccess: (uploadedDoc) => {
       qc.invalidateQueries({ queryKey: ['vault-docs'] });
       qc.invalidateQueries({ queryKey: ['vault-summary'] });
       toast.success('Document uploaded');
       setShowUpload(false);
+
+      // Auto-suggest import if category maps to a known import type and draft filing exists
+      const importType = CATEGORY_TO_IMPORT_TYPE[uploadForm.category];
+      if (importType && activeDraftFiling) {
+        // Check if user previously dismissed suggestion for this document
+        const dismissed = uploadedDoc?.metadata?.dismissedImportSuggestions || [];
+        if (!dismissed.includes(activeDraftFiling.id)) {
+          toast(
+            (t) => (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>Import this document into your filing?</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button
+                    onClick={() => {
+                      toast.dismiss(t.id);
+                      // Navigate to import flow — use window.location for simplicity
+                      window.location.href = `/filing/${activeDraftFiling.id}/import?type=${importType}`;
+                    }}
+                    style={{ fontSize: 12, padding: '4px 12px', background: P.brand || '#4f46e5', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Import
+                  </button>
+                  <button
+                    onClick={() => {
+                      toast.dismiss(t.id);
+                      // Store dismissal in vault document metadata (best-effort)
+                      if (uploadedDoc?.id) {
+                        api.patch(`/vault/documents/${uploadedDoc.id}`, {
+                          metadata: { dismissedImportSuggestions: [...dismissed, activeDraftFiling.id] },
+                        }).catch(() => { /* best-effort */ });
+                      }
+                    }}
+                    style={{ fontSize: 12, padding: '4px 12px', background: P.bgMuted || '#f3f4f6', color: P.textSecondary || '#6b7280', border: `1px solid ${P.borderLight || '#e5e7eb'}`, borderRadius: 6, cursor: 'pointer' }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            ),
+            { duration: 10000, position: 'bottom-center' },
+          );
+        }
+      }
+
       setUploadForm({ category: '', fy: FY_OPTIONS[0]?.value || '', expiryDate: '', description: '' });
     },
     onError: (e) => toast.error(e.response?.data?.error || 'Upload failed'),

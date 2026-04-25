@@ -106,6 +106,9 @@ router.use('/notifications', generalLimiter, require('./notifications'));
 // Document vault
 router.use('/vault', generalLimiter, require('./vault'));
 
+// Document parsing (filing-free, for Finance Tracker)
+router.use('/documents', generalLimiter, require('./documents'));
+
 // Post-filing intelligence
 router.use('/post-filing', generalLimiter, require('./postfiling'));
 

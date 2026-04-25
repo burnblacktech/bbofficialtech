@@ -6,12 +6,28 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, AlertCircle, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '../../services/api';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_TYPES = {
   salary: '.pdf,.png,.jpeg,.jpg',
   investment: '.pdf',
 };
+
+// Map component type prop to backend document type
+const DOC_TYPE_MAP = {
+  salary: 'form16',
+  investment: 'form16a',
+};
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function DocumentImport({
   type = 'salary',
@@ -52,28 +68,17 @@ export default function DocumentImport({
     setIsProcessing(true);
     setError(null);
 
-    // Simulate extraction (in production, this would call an OCR/parsing API)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      if (type === 'salary') {
-        setReviewData({
-          sourceType: 'salary',
-          amount: '',
-          dateReceived: new Date().toISOString().split('T')[0],
-          description: `Imported from ${f.name}`,
-        });
-      } else {
-        setReviewData({
-          investmentType: 'elss',
-          amount: '',
-          dateOfInvestment: new Date().toISOString().split('T')[0],
-          referenceNumber: '',
-          description: `Imported from ${f.name}`,
-        });
-      }
-    } catch {
-      setError('Failed to extract data from file. Please enter details manually.');
+      const base64 = await fileToBase64(f);
+      const documentType = DOC_TYPE_MAP[type] || 'form16';
+      const { data } = await api.post('/documents/parse', {
+        documentType,
+        fileContent: base64,
+        fileName: f.name,
+      });
+      setReviewData(data.data?.extractedData || data.data || {});
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to extract data from file. Please enter details manually.');
     } finally {
       setIsProcessing(false);
     }

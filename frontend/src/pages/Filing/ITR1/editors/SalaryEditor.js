@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
 import { validateSalaryStep } from '../../../../utils/itrValidation';
 import { isMetroCity } from '../../../../constants/indianStates';
 import TaxWhisper from '../../../../components/common/TaxWhisper';
+import api from '../../../../services/api';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -15,13 +16,35 @@ const EMPTY = {
   entertainmentAllowance: '', basicPlusDA: '', cityOfEmployment: '', rentPaid: '',
 };
 
+// Source labels for warn dialog
+const SOURCE_LABELS = {
+  '26as': '26AS', ais: 'AIS', form16: 'Form 16', form16a: 'Form 16A',
+  form16b: 'Form 16B', form16c: 'Form 16C', manual: 'Manual',
+};
+
 export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
   const existing = payload?.income?.salary?.employers || [];
   const employerCategory = payload?.personalInfo?.employerCategory || 'OTH';
+  const fieldSources = payload?._importMeta?.fieldSources || {};
   const [employers, setEmployers] = useState(existing.length ? existing : []);
   const [editing, setEditing] = useState(existing.length === 0 ? 0 : null);
   const [form, setForm] = useState(existing.length === 0 ? { ...EMPTY } : null);
   const [errors, setErrors] = useState({});
+
+  // Helper to get field source for a salary field path
+  const getFieldSource = (fieldName, empIndex) => {
+    const path = `income.salary.employers[${empIndex}].${fieldName}`;
+    return fieldSources[path] || null;
+  };
+
+  // Handle manual override of a warn-locked field
+  const handleManualOverride = (fieldPath, previousValue, newValue, previousSource) => {
+    // Best-effort audit log
+    api.post('/audit/events', {
+      action: 'FIELD_MANUAL_OVERRIDE',
+      metadata: { fieldPath, previousValue, newValue, previousSource, newSource: 'manual' },
+    }).catch(() => { /* best-effort */ });
+  };
 
   // HRA auto-calculation hint
   const suggestedHRA = useMemo(() => {
@@ -94,17 +117,17 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
       {form && (
         <div className="step-card editing">
           <div className="ff-grid-2">
-            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="Company that pays your salary · Form 16 header" />
-            <F l="Employer TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="10-character Tax Deduction Number · Form 16 Part A" />
+            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="Company that pays your salary · Form 16 header" fieldSource={getFieldSource('name', editing)} />
+            <F l="Employer TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="10-character Tax Deduction Number · Form 16 Part A" fieldSource={getFieldSource('tan', editing)} />
           </div>
           <div className="ff-grid-2">
-            <F l="Total Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Total CTC for the year · Form 16 Part B, Sr. No. 1" />
-            <F l="Tax Deducted by Employer (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="Tax deducted by employer · Form 16 Part A, last row" />
+            <F l="Total Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Total CTC for the year · Form 16 Part B, Sr. No. 1" fieldSource={getFieldSource('grossSalary', editing)} />
+            <F l="Tax Deducted by Employer (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="Tax deducted by employer · Form 16 Part A, last row" fieldSource={getFieldSource('tdsDeducted', editing)} />
           </div>
           <div className="ff-grid-3">
-            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} h="House Rent Allowance · From salary slip" />
-            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Tax-free HRA portion · Form 16 Part B" />
-            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="State tax on salary · Usually ₹200/month" />
+            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} h="House Rent Allowance · From salary slip" fieldSource={getFieldSource('allowances.hra.received', editing)} />
+            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Tax-free HRA portion · Form 16 Part B" fieldSource={getFieldSource('allowances.hra.exempt', editing)} />
+            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="State tax on salary · Usually ₹200/month" fieldSource={getFieldSource('deductions.professionalTax', editing)} />
           </div>
 
           {suggestedHRA && (
@@ -139,23 +162,23 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
               )}
 
               <div className="ff-grid-2">
-                <F l="Gratuity Received (₹)" v={form.gratuityReceived} c={v => setForm({ ...form, gratuityReceived: v })} h="Lump sum on retirement · Exempt limits vary by employer type" />
-                <F l="Leave Encashment Received (₹)" v={form.leaveEncashmentReceived} c={v => setForm({ ...form, leaveEncashmentReceived: v })} h="Unused leave payout · Exempt limits vary by employer type" />
+                <F l="Gratuity Received (₹)" v={form.gratuityReceived} c={v => setForm({ ...form, gratuityReceived: v })} h="Lump sum on retirement · Exempt limits vary by employer type" fieldSource={getFieldSource('gratuityReceived', editing)} />
+                <F l="Leave Encashment Received (₹)" v={form.leaveEncashmentReceived} c={v => setForm({ ...form, leaveEncashmentReceived: v })} h="Unused leave payout · Exempt limits vary by employer type" fieldSource={getFieldSource('leaveEncashmentReceived', editing)} />
               </div>
 
               {(employerCategory === 'PE' || employerCategory === 'GOV' || employerCategory === 'OTH' || employerCategory === 'PSU') && (
                 <div className="ff-grid-2">
-                  <F l="Commuted Pension Received (₹)" v={form.commutedPensionReceived} c={v => setForm({ ...form, commutedPensionReceived: v })} h="One-time pension payout · Partial exemption applies" />
+                  <F l="Commuted Pension Received (₹)" v={form.commutedPensionReceived} c={v => setForm({ ...form, commutedPensionReceived: v })} h="One-time pension payout · Partial exemption applies" fieldSource={getFieldSource('commutedPensionReceived', editing)} />
                   {employerCategory === 'GOV' && (
-                    <F l="Entertainment Allowance (₹)" v={form.entertainmentAllowance} c={v => setForm({ ...form, entertainmentAllowance: v })} h="Govt employees only · Max ₹5,000 deduction" />
+                    <F l="Entertainment Allowance (₹)" v={form.entertainmentAllowance} c={v => setForm({ ...form, entertainmentAllowance: v })} h="Govt employees only · Max ₹5,000 deduction" fieldSource={getFieldSource('entertainmentAllowance', editing)} />
                   )}
                 </div>
               )}
 
               <div className="ff-grid-3">
-                <F l="Basic + DA (₹)" v={form.basicPlusDA} c={v => setForm({ ...form, basicPlusDA: v })} h="Basic salary + DA · For HRA calculation" />
-                <F l="City of Employment" v={form.cityOfEmployment} c={v => setForm({ ...form, cityOfEmployment: v })} t="text" h="Office location · Metro cities get 50% HRA rate" />
-                <F l="Rent Paid (₹)" v={form.rentPaid} c={v => setForm({ ...form, rentPaid: v })} h="Annual rent paid · For HRA exemption calculation" />
+                <F l="Basic + DA (₹)" v={form.basicPlusDA} c={v => setForm({ ...form, basicPlusDA: v })} h="Basic salary + DA · For HRA calculation" fieldSource={getFieldSource('basicPlusDA', editing)} />
+                <F l="City of Employment" v={form.cityOfEmployment} c={v => setForm({ ...form, cityOfEmployment: v })} t="text" h="Office location · Metro cities get 50% HRA rate" fieldSource={getFieldSource('cityOfEmployment', editing)} />
+                <F l="Rent Paid (₹)" v={form.rentPaid} c={v => setForm({ ...form, rentPaid: v })} h="Annual rent paid · For HRA exemption calculation" fieldSource={getFieldSource('rentPaid', editing)} />
               </div>
             </div>
           )}
@@ -189,4 +212,31 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers }) {
   );
 }
 
-const F = ({ l, v, c, t = 'number', h }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />{h && <div className="ff-hint">{h}</div>}</div>);
+const F = ({ l, v, c, t = 'number', h, fieldSource }) => {
+  const editLock = fieldSource?.editLock || 'free';
+  const isLocked = editLock === 'locked';
+  return (
+    <div className="ff-field">
+      <label className="ff-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {l}
+        {isLocked && <span title="Value from 26AS/AIS — edit by re-importing" style={{ color: P.textLight, fontSize: 11 }}>🔒</span>}
+      </label>
+      <input
+        className="ff-input"
+        type={t}
+        value={v || ''}
+        onChange={e => c(e.target.value)}
+        placeholder="0"
+        disabled={isLocked}
+        readOnly={isLocked}
+        style={isLocked ? { opacity: 0.7, cursor: 'not-allowed' } : undefined}
+      />
+      {h && <div className="ff-hint">{h}</div>}
+      {fieldSource?.source && fieldSource.source !== 'manual' && (
+        <div className="ff-hint" style={{ fontSize: 10, color: P.textLight }}>
+          From {SOURCE_LABELS[fieldSource.source] || fieldSource.source}
+        </div>
+      )}
+    </div>
+  );
+};

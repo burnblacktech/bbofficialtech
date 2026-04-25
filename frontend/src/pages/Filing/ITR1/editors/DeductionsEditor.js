@@ -2,6 +2,7 @@
 import { Save, Plus, Trash2 } from 'lucide-react';
 import { validateDonation80G } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
+import api from '../../../../services/api';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -23,9 +24,30 @@ const EMPTY_DONATION = { doneeName: '', doneePan: '', amount: '', category: '' }
 const n = (v) => Number(v) || 0;
 const rs = (v) => `\u20B9${n(v).toLocaleString('en-IN')}`;
 
+// Source labels for display
+const SOURCE_LABELS = {
+  '26as': '26AS', ais: 'AIS', form16: 'Form 16', form16a: 'Form 16A',
+  form16b: 'Form 16B', form16c: 'Form 16C', manual: 'Manual',
+};
+
 export default function DeductionsEditor({ payload, onSave, selectedRegime: regimeProp }) {
   const d = payload?.deductions || {};
+  const fieldSources = payload?._importMeta?.fieldSources || {};
   const [regime, setRegime] = useState(regimeProp || payload?.selectedRegime || 'new');
+
+  // Helper to get field source for a deduction field path
+  const getFieldSource = (fieldName) => {
+    const path = `deductions.${fieldName}`;
+    return fieldSources[path] || null;
+  };
+
+  // Handle manual override of a warn-locked field
+  const handleManualOverride = (fieldPath, previousValue, newValue, previousSource) => {
+    api.post('/audit/events', {
+      action: 'FIELD_MANUAL_OVERRIDE',
+      metadata: { fieldPath, previousValue, newValue, previousSource, newSource: 'manual' },
+    }).catch(() => { /* best-effort */ });
+  };
   const [form, setForm] = useState({
     // 80C components
     ppf: d.ppf || '', elss: d.elss || '', lic: d.lic || '',
@@ -145,16 +167,16 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
           <div className="step-card editing">
             <div className="ff-section-title">80C — Tax Saving Investments <span className="ff-section-cap">(max {rs(150000)})</span></div>
             <div className="ff-grid-2">
-              <F l="PPF" v={form.ppf} c={v => update('ppf', v)} />
-              <F l="ELSS Mutual Funds" v={form.elss} c={v => update('elss', v)} />
-              <F l="LIC Premium" v={form.lic} c={v => update('lic', v)} />
-              <F l="Tuition Fees" v={form.tuitionFees} c={v => update('tuitionFees', v)} h="School/college fees · Max 2 children" />
-              <F l="Home Loan Principal" v={form.homeLoanPrincipal} c={v => update('homeLoanPrincipal', v)} />
-              <F l="Sukanya Samriddhi" v={form.sukanyaSamriddhi} c={v => update('sukanyaSamriddhi', v)} />
-              <F l="5-Year Tax Saver FD" v={form.fiveYearFD} c={v => update('fiveYearFD', v)} />
-              <F l="NSC" v={form.nsc} c={v => update('nsc', v)} />
+              <F l="PPF" v={form.ppf} c={v => update('ppf', v)} fieldSource={getFieldSource('ppf')} />
+              <F l="ELSS Mutual Funds" v={form.elss} c={v => update('elss', v)} fieldSource={getFieldSource('elss')} />
+              <F l="LIC Premium" v={form.lic} c={v => update('lic', v)} fieldSource={getFieldSource('lic')} />
+              <F l="Tuition Fees" v={form.tuitionFees} c={v => update('tuitionFees', v)} h="School/college fees · Max 2 children" fieldSource={getFieldSource('tuitionFees')} />
+              <F l="Home Loan Principal" v={form.homeLoanPrincipal} c={v => update('homeLoanPrincipal', v)} fieldSource={getFieldSource('homeLoanPrincipal')} />
+              <F l="Sukanya Samriddhi" v={form.sukanyaSamriddhi} c={v => update('sukanyaSamriddhi', v)} fieldSource={getFieldSource('sukanyaSamriddhi')} />
+              <F l="5-Year Tax Saver FD" v={form.fiveYearFD} c={v => update('fiveYearFD', v)} fieldSource={getFieldSource('fiveYearFD')} />
+              <F l="NSC" v={form.nsc} c={v => update('nsc', v)} fieldSource={getFieldSource('nsc')} />
             </div>
-            <F l="Other 80C" v={form.otherC} c={v => update('otherC', v)} h="SCSS, stamp duty, post office deposits, etc." />
+            <F l="Other 80C" v={form.otherC} c={v => update('otherC', v)} h="SCSS, stamp duty, post office deposits, etc." fieldSource={getFieldSource('otherC')} />
             {raw80C > 150000 && <div className="ff-hint" style={{ color: P.warning, marginTop: 4 }}>Total {rs(raw80C)} — capped at {rs(150000)}</div>}
             {raw80C > 0 && raw80C <= 150000 && <div className="ff-hint" style={{ color: '#16a34a', marginTop: 4 }}>Used {rs(raw80C)} of {rs(150000)} limit</div>}
           </div>
@@ -163,10 +185,10 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
           <div className="step-card editing">
             <div className="ff-section-title">Health & Insurance</div>
             <div className="ff-grid-2">
-              <F l="80CCD(1B) — NPS" v={form.nps} c={v => update('nps', v)} h={`Additional NPS investment · Max ${rs(50000)} beyond 80C`} />
-              <F l="80D — Health (Self/Family)" v={form.healthSelf} c={v => update('healthSelf', v)} h={`Health insurance premium · ${rs(25000)} (${rs(50000)} if senior)`} />
-              <F l="80D — Health (Parents)" v={form.healthParents} c={v => update('healthParents', v)} h={`Parents' health insurance · ${rs(25000)} (${rs(50000)} if senior)`} />
-              <F l="80U — Disability" v={form.disability} c={v => update('disability', v)} h={`Self disability deduction · ${rs(75000)} or ${rs(125000)} (severe)`} />
+              <F l="80CCD(1B) — NPS" v={form.nps} c={v => update('nps', v)} h={`Additional NPS investment · Max ${rs(50000)} beyond 80C`} fieldSource={getFieldSource('nps')} />
+              <F l="80D — Health (Self/Family)" v={form.healthSelf} c={v => update('healthSelf', v)} h={`Health insurance premium · ${rs(25000)} (${rs(50000)} if senior)`} fieldSource={getFieldSource('healthSelf')} />
+              <F l="80D — Health (Parents)" v={form.healthParents} c={v => update('healthParents', v)} h={`Parents' health insurance · ${rs(25000)} (${rs(50000)} if senior)`} fieldSource={getFieldSource('healthParents')} />
+              <F l="80U — Disability" v={form.disability} c={v => update('disability', v)} h={`Self disability deduction · ${rs(75000)} or ${rs(125000)} (severe)`} fieldSource={getFieldSource('disability')} />
             </div>
           </div>
 
@@ -174,9 +196,9 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
           <div className="step-card editing">
             <div className="ff-section-title">Other Deductions</div>
             <div className="ff-grid-2">
-              <F l="80E — Education Loan Interest" v={form.eduLoan} c={v => update('eduLoan', v)} h="Interest on education loan · No upper limit, 8 years" />
-              <F l="80TTA — Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h={`Savings interest deduction · Max ${rs(10000)}`} />
-              <F l="80GG — Rent Paid" v={form.rentPaid} c={v => update('rentPaid', v)} h={`Rent deduction (no HRA) · Max ${rs(5000)}/month`} />
+              <F l="80E — Education Loan Interest" v={form.eduLoan} c={v => update('eduLoan', v)} h="Interest on education loan · No upper limit, 8 years" fieldSource={getFieldSource('eduLoan')} />
+              <F l="80TTA — Savings Interest" v={form.savingsInt} c={v => update('savingsInt', v)} h={`Savings interest deduction · Max ${rs(10000)}`} fieldSource={getFieldSource('savingsInt')} />
+              <F l="80GG — Rent Paid" v={form.rentPaid} c={v => update('rentPaid', v)} h={`Rent deduction (no HRA) · Max ${rs(5000)}/month`} fieldSource={getFieldSource('rentPaid')} />
             </div>
           </div>
 
@@ -280,10 +302,31 @@ export default function DeductionsEditor({ payload, onSave, selectedRegime: regi
   );
 }
 
-const F = ({ l, v, c, h }) => (
-  <div className="ff-field">
-    <label className="ff-label">{l}</label>
-    <input className="ff-input" type="number" value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />
-    {h && <div className="ff-hint">{h}</div>}
-  </div>
-);
+const F = ({ l, v, c, h, fieldSource }) => {
+  const editLock = fieldSource?.editLock || 'free';
+  const isLocked = editLock === 'locked';
+  return (
+    <div className="ff-field">
+      <label className="ff-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {l}
+        {isLocked && <span title="Value from 26AS/AIS — edit by re-importing" style={{ color: P.textLight, fontSize: 11 }}>🔒</span>}
+      </label>
+      <input
+        className="ff-input"
+        type="number"
+        value={v || ''}
+        onChange={e => c(e.target.value)}
+        placeholder="0"
+        disabled={isLocked}
+        readOnly={isLocked}
+        style={isLocked ? { opacity: 0.7, cursor: 'not-allowed' } : undefined}
+      />
+      {h && <div className="ff-hint">{h}</div>}
+      {fieldSource?.source && fieldSource.source !== 'manual' && (
+        <div className="ff-hint" style={{ fontSize: 10, color: P.textLight }}>
+          From {SOURCE_LABELS[fieldSource.source] || fieldSource.source}
+        </div>
+      )}
+    </div>
+  );
+};
