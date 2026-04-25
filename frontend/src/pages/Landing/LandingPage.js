@@ -168,7 +168,7 @@ function LoginForm({ login, navigate }) {
     e.preventDefault();
     setError('');
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email'); return; }
-    if (!password || password.length < 8) { setError('Password must be at least 8 characters'); return; }
+    if (!password) { setError('Password is required'); return; }
     setLoading(true);
     try {
       localStorage.setItem('rememberedEmail', email);
@@ -189,7 +189,7 @@ function LoginForm({ login, navigate }) {
       </div>
       <div className="ff-field" style={{ position: 'relative' }}>
         <label className="ff-label">Password</label>
-        <input className="ff-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 8 characters" autoComplete="current-password" />
+        <input className="ff-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" autoComplete="current-password" />
         <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}>{showPw ? <EyeOff size={16} /> : <Eye size={16} />}</button>
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>

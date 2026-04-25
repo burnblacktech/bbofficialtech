@@ -85,7 +85,7 @@ router.get('/income', authenticateToken, async (req, res, next) => {
     const { fy } = validate(fyQuerySchema, req.query);
     const entries = await IncomeEntry.findAll({
       where: { userId: req.user.userId, financialYear: fy },
-      order: [['dateReceived', 'DESC'], ['createdAt', 'DESC']],
+      order: [['date_received', 'DESC'], ['created_at', 'DESC']],
     });
     res.json({ success: true, data: entries });
   } catch (error) {
@@ -209,7 +209,7 @@ router.get('/expenses', authenticateToken, async (req, res, next) => {
     const { fy } = validate(fyQuerySchema, req.query);
     const entries = await ExpenseEntry.findAll({
       where: { userId: req.user.userId, financialYear: fy },
-      order: [['datePaid', 'DESC'], ['createdAt', 'DESC']],
+      order: [['date_paid', 'DESC'], ['created_at', 'DESC']],
     });
     res.json({ success: true, data: entries });
   } catch (error) {
@@ -344,7 +344,7 @@ router.get('/investments', authenticateToken, async (req, res, next) => {
     const { fy } = validate(fyQuerySchema, req.query);
     const entries = await InvestmentEntry.findAll({
       where: { userId: req.user.userId, financialYear: fy },
-      order: [['deductionSection', 'ASC'], ['dateOfInvestment', 'DESC'], ['createdAt', 'DESC']],
+      order: [['deduction_section', 'ASC'], ['date_of_investment', 'DESC'], ['created_at', 'DESC']],
     });
 
     // Group by deduction section
@@ -599,12 +599,12 @@ router.get('/dashboard-summary', authenticateToken, async (req, res, next) => {
       InvestmentEntry.findAll({ where: { userId, financialYear: fy }, raw: true }),
       ITRFiling.findAll({
         where: { createdBy: userId },
-        order: [['createdAt', 'DESC']],
+        order: [['created_at', 'DESC']],
         limit: 10,
       }),
       AuditEvent.findAll({
         where: { actorId: userId },
-        order: [['createdAt', 'DESC']],
+        order: [['created_at', 'DESC']],
         limit: 5,
       }),
       User.findByPk(userId),

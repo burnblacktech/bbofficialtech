@@ -138,8 +138,8 @@ const AppContent = () => {
     <Routes>
       {/* ── Public ── */}
       <Route path="/" element={<Bare><LandingPage /></Bare>} />
-      <Route path="/login" element={<Bare message="Loading login..."><LoginPage /></Bare>} />
-      <Route path="/signup" element={<Bare message="Loading signup..."><SignupPage /></Bare>} />
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/signup" element={<Navigate to="/" replace />} />
       <Route path="/tax-calculator" element={<Bare message="Loading..."><TaxCalculator /></Bare>} />
       <Route path="/terms" element={<Bare><TermsPage /></Bare>} />
       <Route path="/privacy" element={<Bare><PrivacyPage /></Bare>} />
