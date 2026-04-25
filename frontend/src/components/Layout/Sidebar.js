@@ -23,6 +23,8 @@ import {
   DollarSign,
   FileSearch,
   FileEdit,
+  History,
+  Shield,
 } from 'lucide-react';
 import api from '../../services/api';
 import { computeFilingProgress } from '../../utils/filingProgress';
@@ -36,6 +38,7 @@ const buildNavGroups = (submittedFilings, progressBadge) => {
       items: [
         { to: '/dashboard', icon: Home, label: 'Dashboard' },
         { to: '/filing/start', icon: FileText, label: 'File ITR', badge: progressBadge },
+        { to: '/itr/history', icon: History, label: 'Filing History' },
       ],
     },
   ];
@@ -48,6 +51,7 @@ const buildNavGroups = (submittedFilings, progressBadge) => {
         { to: `/post-filing/${mostRecentId}/refund`, icon: DollarSign, label: 'Refund Tracker' },
         { to: `/post-filing/${mostRecentId}/cpc`, icon: FileSearch, label: 'CPC Notices' },
         { to: `/post-filing/${mostRecentId}/revised`, icon: FileEdit, label: 'Revised Return' },
+        { to: '/itr/e-verify', icon: Shield, label: 'E-Verification' },
       ],
     });
   }
