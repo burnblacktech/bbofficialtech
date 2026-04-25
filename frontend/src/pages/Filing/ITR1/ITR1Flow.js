@@ -291,8 +291,6 @@ export default function ITR1Flow() {
     }
   };
 
-  if (isLoading) return <div className="hud-loading"><Loader2 size={28} className="animate-spin" /></div>;
-
   const payload = filing?.jsonPayload || {};
   const itrType = getITRType(active, location.pathname);
   const income = comp?.income;
@@ -321,6 +319,8 @@ export default function ITR1Flow() {
     setImportPreselect(docType || null);
     setShowImportModal(true);
   };
+
+  if (isLoading) return <div className="hud-loading"><Loader2 size={28} className="animate-spin" /></div>;
 
   return (
     <div className="hud">
