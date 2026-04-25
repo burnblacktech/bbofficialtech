@@ -14,10 +14,12 @@ import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 
 // Map vault categories to import document types
+/* eslint-disable camelcase */
 const CATEGORY_TO_IMPORT_TYPE = {
   salary: 'form16',
   tax_document: '26as',
 };
+/* eslint-enable camelcase */
 
 const CATEGORIES = [
   { value: 'salary', label: 'Salary', color: '#059669' },
