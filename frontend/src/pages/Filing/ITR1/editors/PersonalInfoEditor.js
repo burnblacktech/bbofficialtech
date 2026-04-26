@@ -1,9 +1,11 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Lock, Shield, AlertTriangle, Save, User, MapPin, FileText, Info, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Lock, Shield, AlertTriangle, Save, User, MapPin, FileText, Info, CheckCircle, Upload, Loader2 } from 'lucide-react';
 import { INDIAN_STATES, isMetroCity } from '../../../../constants/indianStates';
 import { validatePersonalInfo } from '../../../../utils/itrValidation';
 import { formatDateDDMMYYYY } from '../../../../utils/dateFormat';
 import useAutoSave from '../../../../hooks/useAutoSave';
+import api from '../../../../services/api';
+import toast from 'react-hot-toast';
 import P from '../../../../styles/palette';
 import '../../filing-flow.css';
 
@@ -354,7 +356,25 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here · Use your primary email" />
           <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile · Starting with 6, 7, 8, or 9" />
         </div>
-        <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar · Recommended for e-verification (not required for JSON download)" />
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
+            <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar · Recommended for e-verification" />
+          </div>
+          <AadhaarUploadButton onVerified={(data) => {
+            if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
+            if (data.name && !form.firstName) {
+              const parsed = parseFullName(data.name);
+              updateField('firstName', parsed.firstName);
+              updateField('middleName', parsed.middleName);
+              updateField('lastName', parsed.lastName);
+            }
+            if (data.dob && !form.dob) updateField('dob', data.dob);
+            if (data.gender && !form.gender) updateField('gender', data.gender === 'M' ? 'MALE' : data.gender === 'F' ? 'FEMALE' : 'OTHER');
+            if (data.address && !form.address?.flatDoorBuilding) {
+              updateField('address', { ...form.address, flatDoorBuilding: data.address });
+            }
+          }} />
+        </div>
       </div>
 
       {/* ── Section 3: Address ── */}
@@ -597,5 +617,103 @@ function TrendingUpIcon({ size, ...props }) {
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
       <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />
     </svg>
+  );
+}
+
+/**
+ * AadhaarUploadButton — Upload eAadhaar PDF to extract Aadhaar number + personal details.
+ * Calls POST /api/auth/verify-aadhaar with base64 file content.
+ * Handles password-protected PDFs (Aadhaar number or share code).
+ */
+function AadhaarUploadButton({ onVerified }) {
+  const fileRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [needsPassword, setNeedsPassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [pendingFile, setPendingFile] = useState(null);
+
+  const handleFile = async (file, pwd) => {
+    setUploading(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const body = { fileContent: base64 };
+      if (pwd) body.password = pwd;
+
+      const res = await api.post('/auth/verify-aadhaar', body);
+      const data = res.data?.data || {};
+
+      toast.success('Aadhaar verified — details auto-filled');
+      setNeedsPassword(false);
+      setPassword('');
+      setPendingFile(null);
+      onVerified(data);
+    } catch (err) {
+      const code = err.response?.data?.code;
+      const msg = err.response?.data?.error || 'Aadhaar verification failed';
+
+      if (code === 'AADHAAR_PASSWORD_INCORRECT' || msg.toLowerCase().includes('password')) {
+        setNeedsPassword(true);
+        setPendingFile(file);
+        toast.error('PDF is password-protected. Enter your Aadhaar number or share code.');
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  const handleSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { toast.error('File must be under 10MB'); return; }
+    handleFile(file);
+  };
+
+  return (
+    <div>
+      <input ref={fileRef} type="file" accept=".pdf" onChange={handleSelect} style={{ display: 'none' }} />
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        disabled={uploading}
+        className="ff-btn ff-btn-outline"
+        style={{ padding: '6px 12px', fontSize: 12, whiteSpace: 'nowrap', marginBottom: 4 }}
+      >
+        {uploading ? <><Loader2 size={12} className="animate-spin" /> Verifying...</> : <><Upload size={12} /> Upload eAadhaar</>}
+      </button>
+
+      {needsPassword && (
+        <div style={{ marginTop: 6, padding: 10, background: P.bgMuted, borderRadius: 6, border: `1px solid ${P.borderLight}` }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: P.textSecondary, display: 'block', marginBottom: 4 }}>
+            PDF Password
+          </label>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Aadhaar number or share code"
+              style={{ flex: 1, padding: '6px 10px', border: `1px solid ${P.borderMedium}`, borderRadius: 4, fontSize: 12, outline: 'none' }}
+            />
+            <button
+              onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }}
+              disabled={!password || uploading}
+              className="ff-btn ff-btn-primary"
+              style={{ padding: '6px 12px', fontSize: 11 }}
+            >
+              Unlock
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
