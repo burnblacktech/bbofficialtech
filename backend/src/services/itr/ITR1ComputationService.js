@@ -264,7 +264,8 @@ class ITR1ComputationService {
 
     // ── 80TTA vs 80TTB: mutually exclusive ──
     // Senior citizens (age ≥ 60) should use 80TTB (₹50K), others use 80TTA (₹10K)
-    const isSenior = d.isSeniorCitizen || false;
+    // Use selfSenior flag from 80D section (already persisted by DeductionsEditor)
+    const isSenior = d.isSeniorCitizen || d.selfSenior || false;
     let s80tta = 0;
     let s80ttb = 0;
     if (isSenior) {

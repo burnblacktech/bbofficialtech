@@ -60,6 +60,12 @@ router.put('/:filingId/import/confirm', authenticateToken, async (req, res, next
       return res.status(400).json({ success: false, error: 'resolvedData and documentType are required' });
     }
 
+    // Gap fix #1: Verify filing is in draft state before confirming import
+    const filing = await ITRFiling.findByPk(req.params.filingId);
+    if (!filing) throw new AppError('Filing not found', 404);
+    if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+    if (filing.lifecycleState !== 'draft') throw new AppError('Only draft filings accept imports', 409, 'IMPORT_FILING_NOT_DRAFT');
+
     const result = await ImportEngineService.confirmImport(req.params.filingId, req.user.userId, { resolvedData, documentType, fileName, fileContent });
     res.json({ success: true, data: result });
   } catch (error) { next(error); }

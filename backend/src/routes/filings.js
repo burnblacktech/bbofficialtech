@@ -800,8 +800,15 @@ router.post('/:filingId/itr1/compute', authenticateToken, async (req, res, next)
         const ITR1ComputationService = require('../services/itr/ITR1ComputationService');
         const computation = ITR1ComputationService.compute(filing.jsonPayload || {});
 
-        // Save computation result on filing
-        await filing.update({ taxComputation: computation });
+        // Save computation result on filing + update taxLiability/refundAmount
+        const recommended = computation.recommended || 'new';
+        const bestRegime = computation[recommended === 'old' ? 'oldRegime' : 'newRegime'];
+        const netPayable = bestRegime?.netPayable || 0;
+        await filing.update({
+          taxComputation: computation,
+          taxLiability: netPayable > 0 ? netPayable : 0,
+          refundAmount: netPayable < 0 ? Math.abs(netPayable) : 0,
+        });
 
         res.status(200).json({ success: true, data: computation });
     } catch (error) {
@@ -885,7 +892,10 @@ router.post('/:filingId/itr2/compute', authenticateToken, async (req, res, next)
 
         const ITR2ComputationService = require('../services/itr/ITR2ComputationService');
         const computation = ITR2ComputationService.compute(filing.jsonPayload || {});
-        await filing.update({ taxComputation: computation });
+        const rec2 = computation.recommended || 'new';
+        const best2 = computation[rec2 === 'old' ? 'oldRegime' : 'newRegime'];
+        const net2 = best2?.netPayable || 0;
+        await filing.update({ taxComputation: computation, taxLiability: net2 > 0 ? net2 : 0, refundAmount: net2 < 0 ? Math.abs(net2) : 0 });
         res.json({ success: true, data: computation });
     } catch (error) { next(error); }
 });
@@ -940,7 +950,10 @@ router.post('/:filingId/itr3/compute', authenticateToken, async (req, res, next)
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
         const ITR3 = require('../services/itr/ITR3ComputationService');
         const computation = ITR3.compute(filing.jsonPayload || {});
-        await filing.update({ taxComputation: computation });
+        const rec3 = computation.recommended || 'new';
+        const best3 = computation[rec3 === 'old' ? 'oldRegime' : 'newRegime'];
+        const net3 = best3?.netPayable || 0;
+        await filing.update({ taxComputation: computation, taxLiability: net3 > 0 ? net3 : 0, refundAmount: net3 < 0 ? Math.abs(net3) : 0 });
         res.json({ success: true, data: computation });
     } catch (error) { next(error); }
 });
@@ -982,7 +995,10 @@ router.post('/:filingId/itr4/compute', authenticateToken, async (req, res, next)
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
         const ITR4 = require('../services/itr/ITR4ComputationService');
         const computation = ITR4.compute(filing.jsonPayload || {});
-        await filing.update({ taxComputation: computation });
+        const rec4 = computation.recommended || 'new';
+        const best4 = computation[rec4 === 'old' ? 'oldRegime' : 'newRegime'];
+        const net4 = best4?.netPayable || 0;
+        await filing.update({ taxComputation: computation, taxLiability: net4 > 0 ? net4 : 0, refundAmount: net4 < 0 ? Math.abs(net4) : 0 });
         res.json({ success: true, data: computation });
     } catch (error) { next(error); }
 });
@@ -1070,7 +1086,23 @@ router.post('/:filingId/prefill-from-tracked', authenticateToken, async (req, re
 
         await filing.update({ jsonPayload: mergedPayload });
 
-        // 7. Compute prefill summary
+        // 7a. Mark tracked entries as used in this filing (Gap fix #4)
+        const entryIds = {
+          income: incomeEntries.map(e => e.id),
+          expense: expenseEntries.filter(e => e.deductionSection).map(e => e.id),
+          investment: investmentEntries.map(e => e.id),
+        };
+        if (entryIds.income.length > 0) {
+          await IncomeEntry.update({ usedInFilingId: filingId }, { where: { id: entryIds.income } });
+        }
+        if (entryIds.expense.length > 0) {
+          await ExpenseEntry.update({ usedInFilingId: filingId }, { where: { id: entryIds.expense } });
+        }
+        if (entryIds.investment.length > 0) {
+          await InvestmentEntry.update({ usedInFilingId: filingId }, { where: { id: entryIds.investment } });
+        }
+
+        // 7b. Compute prefill summary
         const incomeTotal = incomeEntries.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
         const deductionsTotal = expenseEntries
             .filter(e => e.deductionSection)

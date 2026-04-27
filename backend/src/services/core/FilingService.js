@@ -291,7 +291,14 @@ class FilingService {
                 createdBy: userId,
                 version: nextVersion,
                 snapshotType: type,
-                jsonPayload: filing.jsonPayload,
+                jsonPayload: {
+                    ...filing.jsonPayload,
+                    _snapshotMeta: {
+                        taxComputation: filing.taxComputation || null,
+                        selectedRegime: filing.selectedRegime || null,
+                        snapshotAt: new Date().toISOString(),
+                    },
+                },
                 comment: comment,
             }, { transaction: t });
 
