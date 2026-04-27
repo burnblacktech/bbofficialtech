@@ -174,13 +174,15 @@ export function getCardSummary(sectionId, payload, comp, income, selectedRegime)
     case 'other': {
       const os = payload?.income?.otherSources || {};
       const total = income?.otherSources?.total;
+      const agri = n(payload?.income?.agriculturalIncome);
       const parts = [];
       if (n(os.fdInterest)) parts.push(`FD ${fmtShort(os.fdInterest)}`);
       if (n(os.savingsInterest)) parts.push(`Savings ${fmtShort(os.savingsInterest)}`);
       if (n(os.dividendIncome)) parts.push(`Div ${fmtShort(os.dividendIncome)}`);
+      if (agri > 0) parts.push(`Agri ${fmtShort(agri)}`);
       return {
         number: total != null && total > 0 ? fmt(total) : null,
-        summary: parts.length > 0 ? parts.slice(0, 2).join(' + ') : null,
+        summary: parts.length > 0 ? parts.slice(0, 3).join(' + ') : null,
       };
     }
     case 'capital_gains': {
@@ -351,7 +353,7 @@ function hasSomeData(sectionId, payload) {
     case 'house_property': return !!(p.income?.houseProperty?.type && p.income.houseProperty.type !== 'none' && p.income.houseProperty.type !== 'NONE');
     case 'other': {
       const os = p.income?.otherSources || {};
-      return !!(n(os.savingsInterest) || n(os.fdInterest) || n(os.dividendIncome) || n(os.otherIncome) || n(os.familyPension));
+      return !!(n(os.savingsInterest) || n(os.fdInterest) || n(os.dividendIncome) || n(os.otherIncome) || n(os.familyPension) || n(p.income?.agriculturalIncome));
     }
     case 'capital_gains': return (p.income?.capitalGains?.transactions || []).length > 0;
     case 'business': return (p.income?.presumptive?.entries || []).length > 0 || (p.income?.business?.businesses || []).length > 0;
