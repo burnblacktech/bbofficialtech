@@ -48,11 +48,11 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Business Income</h2>
+      <h2 className="step-title">Business or Freelance Income</h2>
       <p className="step-desc">Presumptive or regular business income</p>
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[['presumptive', 'Presumptive (44AD/ADA/AE)'], ['regular', 'Regular Books']].map(([k, label]) => (
+        {[['presumptive', 'Simple Estimate (Presumptive)'], ['regular', 'Full Accounts (Regular Books)']].map(([k, label]) => (
           <div key={k} className={`ff-option${mode === k ? ' selected' : ''}`} onClick={() => setMode(k)}>
             <div className="ff-option-label">{label}</div>
           </div>
@@ -94,13 +94,13 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
 
       {form && mode === 'regular' && (
         <div className="step-card editing">
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <F l="Business Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" />
             <F l="Turnover (₹)" v={form.turnover} c={v => setForm({ ...form, turnover: v })} />
           </div>
           <F l="Gross Profit (₹)" v={form.grossProfit} c={v => setForm({ ...form, grossProfit: v })} />
           <div className="ff-section-title">Expenses</div>
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <F l="Rent" v={form.expenses?.rent} c={v => setForm({ ...form, expenses: { ...form.expenses, rent: v } })} />
             <F l="Salary" v={form.expenses?.salary} c={v => setForm({ ...form, expenses: { ...form.expenses, salary: v } })} />
             <F l="Interest" v={form.expenses?.interest} c={v => setForm({ ...form, expenses: { ...form.expenses, interest: v } })} />

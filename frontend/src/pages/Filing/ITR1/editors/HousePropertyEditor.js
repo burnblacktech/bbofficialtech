@@ -55,7 +55,7 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
       <EditorHeader title="House Property" subtitle="Income or loss from house property" />
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[['none', 'None'], ['selfOccupied', 'Self-Occupied'], ['letOut', 'Let-Out']].map(([k, label]) => (
+        {[['none', "I don't own property"], ['selfOccupied', 'I live in my own house'], ['letOut', 'I rent out my property']].map(([k, label]) => (
           <div key={k} className={`ff-option${type === k ? ' selected' : ''}`} onClick={() => changeType(k)}>
             <div className="ff-option-label">{label}</div>
           </div>
@@ -70,11 +70,11 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
 
       {type === 'letOut' && (
         <div className="step-card editing">
-          <div className="ff-grid-2">
-            <NumericField label="Annual Rent Received (₹)" value={form.annualRentReceived} onChange={v => update('annualRentReceived', v)} hint="Total rent collected this year · From rent agreement" error={errors.rent} />
-            <NumericField label="Municipal Taxes Paid (₹)" value={form.municipalTaxesPaid} onChange={v => update('municipalTaxesPaid', v)} hint="Property tax paid · From municipal corporation receipt" error={errors.municipal} />
+          <div className="ff-grid-3">
+            <NumericField label="Annual Rent Received (₹)" value={form.annualRentReceived} onChange={v => update('annualRentReceived', v)} hint="Total rent collected" error={errors.rent} />
+            <NumericField label="Municipal Taxes Paid (₹)" value={form.municipalTaxesPaid} onChange={v => update('municipalTaxesPaid', v)} hint="Property tax paid" error={errors.municipal} />
+            <NumericField label="Home Loan Interest (₹)" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="No cap for let-out" error={errors.interest} />
           </div>
-          <NumericField label="Home Loan Interest (₹)" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="Home loan interest paid · No cap for let-out property" error={errors.interest} />
         </div>
       )}
 

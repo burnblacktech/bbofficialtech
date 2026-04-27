@@ -116,7 +116,7 @@ export const AppShell = ({ children }) => {
           }}
         >
           <div
-            className={`${isMobile ? 'p-4' : 'p-6'} ${
+            className={`${isFilingFlow ? 'p-0' : isMobile ? 'p-4' : 'p-6'} ${
               isMobile && !isFilingFlow ? 'pb-24' : ''
             }`}
           >

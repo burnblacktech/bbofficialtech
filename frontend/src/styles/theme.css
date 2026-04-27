@@ -127,6 +127,9 @@
   --readiness-fill-good: #D4AF37;
   --readiness-fill-low: #DC2626;
 
+  /* ── Elevated Card ── */
+  --bg-card-elevated: var(--bg-card);
+
   /* ── Focus Ring ── */
   --focus-ring-color: rgba(212, 175, 55, 0.4);
   --focus-ring-width: 2px;
@@ -181,11 +184,12 @@ body, input, select, textarea, button {
   /* ── Backgrounds ── */
   --bg-page: #111111;
   --bg-card: #1A1A1A;
-  --bg-card-hover: #222222;
+  --bg-card-hover: rgba(255, 255, 255, 0.04);
   --bg-muted: #2A2A2A;
+  --bg-card-elevated: rgba(255, 255, 255, 0.03);
 
   /* ── Borders ── */
-  --border-light: #333333;
+  --border-light: rgba(255, 255, 255, 0.08);
   --border-medium: #444444;
   --border-focus: #E0C04D;
 

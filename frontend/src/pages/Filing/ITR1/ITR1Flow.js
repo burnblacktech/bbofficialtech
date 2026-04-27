@@ -1,21 +1,20 @@
 /**
- * Unified ITR Filing — Game HUD Layout
- * - Active sources: colored, prominent, with totals
- * - Inactive sources: greyed out, dimmed
- * - ITR type toggle in panel
- * - Delete filing option
- * - Proper ITR routing based on selected sources
+ * ITR Filing — Story Dashboard Layout
+ * Single-page financial story: responsive card grid + result section + zoom editing.
+ * All business logic (state, hooks, mutations, effects) unchanged.
+ * Render rewrite only — accordion/stepper → card grid + Framer Motion zoom.
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
-  Plus, X, Loader2, Download, Send, CheckCircle, ChevronRight,
-  ChevronDown, ArrowLeft, CreditCard, Trash2, Upload, AlertTriangle,
-  User, FileText, Calendar,
+  Loader2, Download, Send, CheckCircle,
+  ArrowLeft, Trash2, Upload, AlertTriangle,
+  User, FileText, Landmark, Check, MoreHorizontal, Clock, Plus, X,
 } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import useUnsavedWarning from '../../../hooks/useUnsavedWarning';
@@ -23,7 +22,7 @@ import { validateBankAccount } from '../../../utils/itrValidation';
 import { generateWhispers, getWhispersForSection } from '../../../utils/taxBrain';
 import toast from 'react-hot-toast';
 import P from '../../../styles/palette';
-import './itr-hud.css';
+import './itr-story.css';
 
 import SalaryEditor from './editors/SalaryEditor';
 import HousePropertyEditor from './editors/HousePropertyEditor';
@@ -37,9 +36,13 @@ import ImportDocumentModal from './import/ImportDocumentModal';
 import ImportReviewScreen from './import/ImportReviewScreen';
 import ImportHistoryPanel from './import/ImportHistoryPanel';
 import PersonalInfoEditor, { getCompletionInfo } from './editors/PersonalInfoEditor';
-import DocumentPanel, { DocumentFloatButton } from './DocumentPanel';
 import TaxPaymentGuide from './TaxPaymentGuide';
 import PaymentGate from './PaymentGate';
+import FilerInfoCard from './editors/FilerInfoCard';
+import TaxComputationCard from '../../../components/Filing/TaxComputationCard';
+import SmartButton from '../../../components/UI/SmartButton';
+import CountingNumber from '../../../components/UI/CountingNumber';
+import { validateFilingCompleteness } from '../../../utils/filingCompletenessValidator';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
@@ -64,7 +67,6 @@ function getITRType(active, urlPath) {
 }
 
 const ITR_NAMES = { 'ITR-1': 'Sahaj', 'ITR-2': 'Capital Gains', 'ITR-3': 'Business', 'ITR-4': 'Sugam' };
-const ITR_COLORS = { 'ITR-1': '#059669', 'ITR-2': '#0D9488', 'ITR-3': '#CA8A04', 'ITR-4': '#7c3aed' };
 const EP_MAP = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' };
 
 // Map source IDs to relevant import document types
@@ -76,6 +78,246 @@ const SOURCE_IMPORTS = {
   'house_property': [{ type: 'form16c', label: 'Form 16C', color: '#6b7280' }, { type: '26as', label: '26AS', color: '#0D9488' }],
   deductions: [{ type: 'form16', label: 'Form 16', color: '#059669' }],
 };
+
+// ── Document definitions (moved from DocumentPanel.js) ──
+// eslint-disable-next-line camelcase
+const DOC_DEFS = {
+  identity: [
+    { id: 'pan', label: 'PAN Card', desc: 'Identity verification', group: 'Identity', importType: null, section: 'personalInfo' },
+    { id: 'aadhaar', label: 'Aadhaar Card', desc: 'For e-verification after filing', group: 'Identity', importType: null, section: 'personalInfo' },
+  ],
+  salary: [
+    { id: 'form16', label: 'Form 16', desc: 'Salary, TDS, employer details', group: 'Salary & TDS', importType: 'form16', section: 'salary' },
+  ],
+  tds: [
+    { id: '26as', label: 'Form 26AS', desc: 'Verifies all TDS credits', group: 'Salary & TDS', importType: '26as', section: 'bank' },
+    { id: 'ais', label: 'AIS', desc: 'Cross-checks all reported income', group: 'Salary & TDS', importType: 'ais', section: null },
+  ],
+  other: [
+    { id: 'bank_stmt', label: 'Bank Statement', desc: 'Interest income + account details', group: 'Other Income', importType: null, section: 'other' },
+    { id: 'form16a', label: 'Form 16A', desc: 'TDS on non-salary income', group: 'Other Income', importType: 'form16a', section: 'bank' },
+  ],
+  // eslint-disable-next-line camelcase
+  house_property: [
+    { id: 'loan_cert', label: 'Home Loan Certificate', desc: 'Interest paid on housing loan', group: 'House Property', importType: null, section: 'house_property' },
+    { id: 'rent_receipts', label: 'Rent Receipts / Agreement', desc: 'Proof of rent received (let-out)', group: 'House Property', importType: null, section: 'house_property' },
+    { id: 'form16c', label: 'Form 16C', desc: 'TDS on rent (from tenant)', group: 'House Property', importType: 'form16c', section: 'bank' },
+  ],
+  // eslint-disable-next-line camelcase
+  capital_gains: [
+    { id: 'broker_cg', label: 'Broker CG Statement', desc: 'Capital gains from shares/MF', group: 'Capital Gains', importType: null, section: 'capital_gains' },
+    { id: 'form16b', label: 'Form 16B', desc: 'TDS on property sale', group: 'Capital Gains', importType: 'form16b', section: 'bank' },
+  ],
+  deductions: [
+    { id: 'invest_proofs', label: 'Investment Proofs', desc: 'PPF, ELSS, LIC for 80C', group: 'Deductions', importType: null, section: 'deductions' },
+    { id: 'health_receipt', label: 'Health Insurance Receipt', desc: '80D premium proof', group: 'Deductions', importType: null, section: 'deductions' },
+    { id: 'donation_receipt', label: 'Donation Receipts', desc: '80G donation proof with PAN', group: 'Deductions', importType: null, section: 'deductions' },
+  ],
+  bank: [
+    { id: 'bank_passbook', label: 'Bank Passbook / Cheque', desc: 'Account number, IFSC for refund', group: 'Bank', importType: null, section: 'bank' },
+  ],
+};
+
+function fmtShort(v) {
+  const num = Number(v) || 0;
+  if (num >= 10000000) return `₹${(num / 10000000).toFixed(1)}Cr`;
+  if (num >= 100000) return `₹${(num / 100000).toFixed(1)}L`;
+  if (num >= 1000) return `₹${(num / 1000).toFixed(0)}K`;
+  return `₹${num.toLocaleString('en-IN')}`;
+}
+
+// ── Pure utility functions for Story Dashboard ──
+
+/**
+ * Mask a PAN string: first 5 + '****' + last char.
+ * Returns '' for null/undefined/short strings.
+ */
+export function maskPan(pan) {
+  if (!pan || typeof pan !== 'string' || pan.length < 6) return '';
+  return pan.slice(0, 5) + '****' + pan.slice(-1);
+}
+
+/**
+ * Get summary data for a card section.
+ * Pure function: given (sectionId, payload, comp, income, selectedRegime) → { number, summary, completionText? }
+ */
+export function getCardSummary(sectionId, payload, comp, income, selectedRegime) {
+  const bestRegime = comp?.[selectedRegime === 'old' ? 'oldRegime' : 'newRegime'];
+  switch (sectionId) {
+    case 'personalInfo': {
+      const pi = payload?.personalInfo || {};
+      const info = getCompletionInfo(pi);
+      return {
+        number: pi.fullName || null,
+        summary: pi.pan ? `PAN: ${pi.pan}` : null,
+        completionText: `${info.filled}/${info.total} fields`,
+      };
+    }
+    case 'salary': {
+      const employers = payload?.income?.salary?.employers || [];
+      const total = income?.salary?.netTaxable;
+      const empName = employers[0]?.name;
+      return {
+        number: total != null ? fmt(total) : null,
+        summary: employers.length > 0
+          ? `${empName}${employers.length > 1 ? ` + ${employers.length - 1} more` : ''}`
+          : null,
+      };
+    }
+    case 'house_property': {
+      const hp = income?.houseProperty;
+      return {
+        number: hp?.netIncome != null ? fmt(hp.netIncome) : null,
+        summary: hp?.type === 'SELF_OCCUPIED' ? 'Self-occupied' : hp?.type === 'LET_OUT' ? 'Let-out' : null,
+      };
+    }
+    case 'other': {
+      const os = payload?.income?.otherSources || {};
+      const total = income?.otherSources?.total;
+      const parts = [];
+      if (n(os.fdInterest)) parts.push(`FD ${fmtShort(os.fdInterest)}`);
+      if (n(os.savingsInterest)) parts.push(`Savings ${fmtShort(os.savingsInterest)}`);
+      if (n(os.dividendIncome)) parts.push(`Div ${fmtShort(os.dividendIncome)}`);
+      return {
+        number: total != null && total > 0 ? fmt(total) : null,
+        summary: parts.length > 0 ? parts.slice(0, 2).join(' + ') : null,
+      };
+    }
+    case 'capital_gains': {
+      const txns = payload?.income?.capitalGains?.transactions || [];
+      const total = income?.capitalGains?.totalTaxable;
+      return {
+        number: total != null ? fmt(total) : null,
+        summary: txns.length > 0 ? `${txns.length} transaction${txns.length > 1 ? 's' : ''}` : null,
+      };
+    }
+    case 'business': {
+      const entries = payload?.income?.presumptive?.entries || [];
+      const businesses = payload?.income?.business?.businesses || [];
+      const total = income?.business?.netProfit || income?.presumptive?.totalIncome;
+      const count = entries.length + businesses.length;
+      return {
+        number: total != null ? fmt(total) : null,
+        summary: count > 0 ? `${count} entr${count > 1 ? 'ies' : 'y'}` : null,
+      };
+    }
+    case 'deductions': {
+      const totalDed = bestRegime?.deductions;
+      const breakdown = bestRegime?.deductionBreakdown || {};
+      const sections = Object.entries(breakdown)
+        .filter(([, v]) => n(v) > 0)
+        .map(([k]) => k.replace('section', ''));
+      return {
+        number: totalDed != null && totalDed > 0 ? fmt(totalDed) : null,
+        summary: sections.length > 0 ? sections.slice(0, 2).join(' + ') : null,
+      };
+    }
+    case 'bank': {
+      const bd = payload?.bankDetails || {};
+      return {
+        number: bd.bankName ? `${bd.bankName} ****${(bd.accountNumber || '').slice(-4)}` : null,
+        summary: bd.ifsc ? `IFSC: ${bd.ifsc}` : null,
+      };
+    }
+    default:
+      return { number: null, summary: null };
+  }
+}
+
+/**
+ * Build the card sections array in filing order:
+ * Personal Info → active sources (in SOURCES order) → Deductions → Bank & Submit
+ */
+export function buildCardSections(active) {
+  return [
+    { id: 'personalInfo', icon: User, label: 'Personal Info', color: '#6366f1', bg: '#eef2ff' },
+    ...SOURCES.filter(src => active.includes(src.id)).map(src => ({
+      id: src.id, icon: src.icon, label: src.label, color: src.color, bg: src.bg,
+    })),
+    { id: 'deductions', icon: CheckCircle, label: 'Deductions', color: '#059669', bg: '#f0fdf4' },
+    { id: 'bank', icon: Landmark, label: 'Bank & Submit', color: '#6b7280', bg: 'var(--bg-muted)' },
+  ];
+}
+
+/**
+ * Generate personalised document checklist based on active income sources.
+ */
+function generateChecklist(activeSources, payload, panVerified) {
+  const docs = [];
+
+  // Identity — always needed
+  docs.push({
+    ...DOC_DEFS.identity[0],
+    status: panVerified ? 'done' : 'pending',
+    summary: panVerified ? 'Verified' : null,
+  });
+  docs.push({
+    ...DOC_DEFS.identity[1],
+    status: payload?.personalInfo?.aadhaar ? 'done' : 'pending',
+    summary: payload?.personalInfo?.aadhaar ? 'Added' : null,
+  });
+
+  // Salary docs
+  if (activeSources.includes('salary')) {
+    const hasForm16 = (payload?._importMeta?.imports || []).some(i => i.documentType === 'form16' && i.status === 'confirmed');
+    const employers = payload?.income?.salary?.employers || [];
+    docs.push({
+      ...DOC_DEFS.salary[0],
+      status: hasForm16 || employers.length > 0 ? 'done' : 'pending',
+      summary: employers.length > 0 ? `${employers[0]?.name || 'Employer'} · ${fmtShort(employers.reduce((s, e) => s + (Number(e.grossSalary) || 0), 0))}` : null,
+    });
+  }
+
+  // 26AS + AIS — always useful
+  const has26AS = (payload?._importMeta?.imports || []).some(i => i.documentType === '26as' && i.status === 'confirmed');
+  const hasAIS = (payload?._importMeta?.imports || []).some(i => i.documentType === 'ais' && i.status === 'confirmed');
+  docs.push({ ...DOC_DEFS.tds[0], status: has26AS ? 'done' : 'pending', summary: has26AS ? 'Imported' : null });
+  docs.push({ ...DOC_DEFS.tds[1], status: hasAIS ? 'done' : 'pending', summary: hasAIS ? 'Imported' : null });
+
+  // Other income docs
+  if (activeSources.includes('other')) {
+    docs.push({ ...DOC_DEFS.other[0], status: 'pending', summary: null });
+    const has16A = (payload?._importMeta?.imports || []).some(i => i.documentType === 'form16a' && i.status === 'confirmed');
+    docs.push({ ...DOC_DEFS.other[1], status: has16A ? 'done' : 'pending', summary: has16A ? 'Imported' : null });
+  }
+
+  // House property docs
+  if (activeSources.includes('house_property')) {
+    DOC_DEFS.house_property.forEach(d => {
+      const hasImport = d.importType ? (payload?._importMeta?.imports || []).some(i => i.documentType === d.importType && i.status === 'confirmed') : false;
+      docs.push({ ...d, status: hasImport ? 'done' : 'pending', summary: hasImport ? 'Imported' : null });
+    });
+  }
+
+  // Capital gains docs
+  if (activeSources.includes('capital_gains')) {
+    DOC_DEFS.capital_gains.forEach(d => {
+      const hasImport = d.importType ? (payload?._importMeta?.imports || []).some(i => i.documentType === d.importType && i.status === 'confirmed') : false;
+      docs.push({ ...d, status: hasImport ? 'done' : 'pending', summary: hasImport ? 'Imported' : null });
+    });
+  }
+
+  // Deduction docs
+  const hasDeductions = Number(payload?.deductions?.ppf || 0) + Number(payload?.deductions?.elss || 0) + Number(payload?.deductions?.healthSelf || 0) > 0;
+  docs.push({ ...DOC_DEFS.deductions[0], status: hasDeductions ? 'done' : 'pending', summary: hasDeductions ? 'Added' : null });
+  docs.push({ ...DOC_DEFS.deductions[1], status: Number(payload?.deductions?.healthSelf || 0) > 0 ? 'done' : 'pending', summary: null });
+  const hasDonations = (payload?.deductions?.donations80G || []).length > 0;
+  docs.push({ ...DOC_DEFS.deductions[2], status: hasDonations ? 'done' : 'pending', summary: hasDonations ? `${payload.deductions.donations80G.length} donation(s)` : null });
+
+  // Bank docs — always needed
+  const hasBank = !!(payload?.bankDetails?.bankName && payload?.bankDetails?.accountNumber);
+  docs.push({ ...DOC_DEFS.bank[0], status: hasBank ? 'done' : 'pending', summary: hasBank ? `${payload.bankDetails.bankName} ****${(payload.bankDetails.accountNumber || '').slice(-4)}` : null });
+
+  return docs;
+}
+
+/**
+ * Get documents relevant to a specific section.
+ */
+function getDocsForSection(sectionId, activeSources, payload, panVerified) {
+  const all = generateChecklist(activeSources, payload, panVerified);
+  return all.filter(d => d.section === sectionId);
+}
 
 // Section completion check — returns true if section has meaningful data
 /* eslint-disable camelcase */
@@ -96,17 +338,40 @@ function isSectionComplete(id, payload, comp) {
 }
 /* eslint-enable camelcase */
 
-// Get the next incomplete section in filing order
+// Check if a section has *some* data (but may not be complete) — for partial indicator
 /* eslint-disable camelcase */
-function getNextSection(currentId, activeSources, payload, comp) {
-  const order = ['personalInfo', ...activeSources, 'deductions', 'bank'];
-  const idx = order.indexOf(currentId);
-  if (idx === -1 || idx >= order.length - 1) return null;
-  const next = order[idx + 1];
-  const labels = { personalInfo: 'Personal Info', salary: 'Salary', house_property: 'House Property', other: 'Other Income', capital_gains: 'Capital Gains', business: 'Business', foreign: 'Foreign Income', deductions: 'Deductions', bank: 'Bank & Submit' };
-  return { id: next, label: labels[next] || next };
+function hasSomeData(sectionId, payload) {
+  const p = payload || {};
+  switch (sectionId) {
+    case 'personalInfo': {
+      const info = getCompletionInfo(p.personalInfo || {});
+      return info.filled > 0;
+    }
+    case 'salary': return (p.income?.salary?.employers || []).length > 0;
+    case 'house_property': return !!(p.income?.houseProperty?.type && p.income.houseProperty.type !== 'none' && p.income.houseProperty.type !== 'NONE');
+    case 'other': {
+      const os = p.income?.otherSources || {};
+      return !!(n(os.savingsInterest) || n(os.fdInterest) || n(os.dividendIncome) || n(os.otherIncome) || n(os.familyPension));
+    }
+    case 'capital_gains': return (p.income?.capitalGains?.transactions || []).length > 0;
+    case 'business': return (p.income?.presumptive?.entries || []).length > 0 || (p.income?.business?.businesses || []).length > 0;
+    case 'foreign': return (p.income?.foreignIncome?.incomes || []).length > 0;
+    case 'deductions': {
+      const d = p.deductions || {};
+      return !!(n(d.ppf) || n(d.elss) || n(d.lic) || n(d.nps) || n(d.healthSelf) || n(d.healthParent) || n(d.nps80CCD1B) || n(d.educationLoan));
+    }
+    case 'bank': return !!(p.bankDetails?.bankName || p.bankDetails?.accountNumber);
+    default: return false;
+  }
 }
 /* eslint-enable camelcase */
+
+// Derive 3-state completion: 'none' | 'partial' | 'complete'
+function getCompletionStatus(sectionId, payload, comp) {
+  if (isSectionComplete(sectionId, payload, comp)) return 'complete';
+  if (hasSomeData(sectionId, payload)) return 'partial';
+  return 'none';
+}
 
 export default function ITR1Flow() {
   const { filingId } = useParams();
@@ -114,8 +379,9 @@ export default function ITR1Flow() {
   const location = useLocation();
   const qc = useQueryClient();
   const { user, profile } = useAuth();
+  const reducedMotion = useReducedMotion();
 
-  const { data: filing, isLoading } = useQuery({
+  const { data: filing, isLoading, isError } = useQuery({
     queryKey: ['filing', filingId],
     queryFn: async () => (await api.get(`/filings/${filingId}`)).data.data,
   });
@@ -130,12 +396,17 @@ export default function ITR1Flow() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importReviewData, setImportReviewData] = useState(null);
-  const [importPreselect, setImportPreselect] = useState(null); // pre-select doc type when opening from context
+  const [importPreselect, setImportPreselect] = useState(null);
   const [showPaymentGate, setShowPaymentGate] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null); // 'download' or 'submit'
+  const [pendingAction, setPendingAction] = useState(null);
+  const [showOverflowMenu, setShowOverflowMenu] = useState(false);
+  const [showImportHistory, setShowImportHistory] = useState(false);
 
-  // Global dirty tracking — editors auto-save on unmount, but we still need
-  // beforeunload for tab close and route blocker for in-app navigation
+  // Focus management refs
+  const cardRefs = useRef({});
+  const previousSelected = useRef(null);
+
+  // Global dirty tracking
   const [globalDirty, setGlobalDirty] = useState(false);
   useUnsavedWarning(globalDirty);
 
@@ -144,14 +415,11 @@ export default function ITR1Flow() {
     if (!filing) return;
     const p = filing.jsonPayload || {};
 
-    // Determine active sources: prefer saved selection, then infer from data, then from ITR type
     const s = new Set();
     const savedSources = p._selectedSources;
     if (Array.isArray(savedSources) && savedSources.length > 0) {
-      // Use sources selected in the ITR Determination wizard
       savedSources.forEach(src => s.add(src));
     } else {
-      // Infer from existing data
       if (p.income?.salary?.employers?.length) s.add('salary');
       if (p.income?.houseProperty?.type && !['NONE', 'none'].includes(p.income.houseProperty.type)) s.add('house_property');
       if (p.income?.capitalGains?.transactions?.length) s.add('capital_gains');
@@ -159,7 +427,6 @@ export default function ITR1Flow() {
       if (n(p.income?.otherSources?.savingsInterest) + n(p.income?.otherSources?.fdInterest) + n(p.income?.otherSources?.dividendIncome) + n(p.income?.otherSources?.familyPension) + n(p.income?.otherSources?.otherIncome) + n(p.income?.agriculturalIncome) > 0) s.add('other');
       if (p.income?.foreignIncome?.incomes?.length) s.add('foreign');
     }
-    // Fallback: at least salary for ITR-1/2, business for ITR-3/4
     if (s.size === 0) {
       const itr = filing.itrType || 'ITR-1';
       if (itr === 'ITR-3') s.add('business');
@@ -177,12 +444,14 @@ export default function ITR1Flow() {
       const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, updates) };
       if (updates.selectedRegime) { body.selectedRegime = updates.selectedRegime; setSelectedRegime(updates.selectedRegime); }
       await api.put(`/filings/${filingId}`, body);
-      // Recompute immediately after save (sequential, not parallel)
       try {
         const itr = getITRType(active, location.pathname);
         const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
         setComp(r.data.data);
-      } catch { /* computation failure is non-blocking */ }
+      } catch (compErr) {
+        // Computation failure is non-blocking but logged
+        console.warn('Tax computation failed:', compErr.response?.data?.error || compErr.message);
+      }
     },
     onMutate: () => { setGlobalDirty(true); },
     onSuccess: () => { setGlobalDirty(false); qc.invalidateQueries({ queryKey: ['filing', filingId] }); },
@@ -197,9 +466,17 @@ export default function ITR1Flow() {
     } catch { /* silent */ }
   }, [filingId, active]); // eslint-disable-line
 
-  useEffect(() => { if (filing) recompute(); }, [filing]); // eslint-disable-line
+  // Initial computation on first load only (not on every filing refetch)
+  const initialComputeRef = useRef(false);
+  useEffect(() => {
+    if (filing && !initialComputeRef.current) {
+      initialComputeRef.current = true;
+      recompute();
+    }
+  }, [filing]); // eslint-disable-line
 
-  // When active sources change, navigate to the correct ITR route
+  // When active sources change, navigate to the correct ITR route and persist
+  const activeInitializedRef = useRef(false);
   useEffect(() => {
     if (!filing) return;
     const itr = getITRType(active, location.pathname);
@@ -208,6 +485,12 @@ export default function ITR1Flow() {
     if (currentEp !== ep) {
       navigate(`/filing/${filingId}/${ep}`, { replace: true });
     }
+    // Skip save on initial mount — only persist when user actually changes sources
+    if (!activeInitializedRef.current) {
+      activeInitializedRef.current = true;
+      return;
+    }
+    saveMut.mutate({ _selectedSources: active });
   }, [active]); // eslint-disable-line
 
   // Auto-expand PersonalInfo when empty or incomplete on first open
@@ -224,22 +507,58 @@ export default function ITR1Flow() {
     }
   }, [filing?.id]); // eslint-disable-line
 
-  // Scroll to the selected accordion card when selection changes
+  // Escape key handler — close Zoom_View
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && selected !== null) {
+        setSelected(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selected]);
+
+  // Focus management: on collapse → focus previous card
+  useEffect(() => {
+    if (selected !== null) {
+      previousSelected.current = selected;
+    } else if (previousSelected.current) {
+      // Focus the card that was previously expanded
+      const timer = setTimeout(() => {
+        const cardEl = cardRefs.current[previousSelected.current];
+        if (cardEl) {
+          cardEl.focus();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [selected]);
+
+  // Scroll expanded card into view
   useEffect(() => {
     if (!selected) return;
     const timer = setTimeout(() => {
-      const el = document.querySelector('.hud-accordion-card.open');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+      const el = document.querySelector('.story-card--open');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
     return () => clearTimeout(timer);
   }, [selected]);
 
+  // Close overflow menu when clicking outside
+  useEffect(() => {
+    if (!showOverflowMenu) return;
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.story-overflow')) {
+        setShowOverflowMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showOverflowMenu]);
+
   const toggleSource = (id) => {
     setActive(prev => {
       const next = prev.includes(id) ? (prev.length > 1 ? prev.filter(s => s !== id) : prev) : [...prev, id];
-      // Clear selected if we just removed the currently selected source
       if (prev.includes(id) && selected === id) {
         setSelected(null);
       }
@@ -272,7 +591,6 @@ export default function ITR1Flow() {
   };
 
   const downloadJSON = async () => {
-    // Payment gate bypassed for now — will enable when Razorpay keys are set
     try {
       const itr = getITRType(active, location.pathname);
       const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/json`);
@@ -291,11 +609,22 @@ export default function ITR1Flow() {
     }
   };
 
+  const downloadPDF = async () => {
+    try {
+      const itr = getITRType(active, location.pathname);
+      const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/pdf`, { responseType: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([r.data], { type: 'application/pdf' }));
+      a.download = `${itr.replace('-', '')}_AY${filing?.assessmentYear}.pdf`; a.click();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'PDF download failed');
+    }
+  };
+
   const payload = filing?.jsonPayload || {};
   const itrType = getITRType(active, location.pathname);
   const income = comp?.income;
 
-  // Tax Brain — generate contextual whispers based on current data
   const whispers = useMemo(
     () => generateWhispers(payload, comp, selectedRegime),
     [payload, comp, selectedRegime],
@@ -304,439 +633,473 @@ export default function ITR1Flow() {
   const bestRegime = comp?.[rec === 'old' ? 'oldRegime' : 'newRegime'];
   const altRegime = comp?.[rec === 'old' ? 'newRegime' : 'oldRegime'];
   const tds = comp?.tds;
-
-  const getTotalForSource = (id) => {
-    if (!income) return null;
-    /* eslint-disable camelcase */
-    const map = { salary: income.salary?.netTaxable, house_property: income.houseProperty?.netIncome, other: income.otherSources?.total, capital_gains: income.capitalGains?.totalTaxable, business: income.business?.netProfit || income.presumptive?.totalIncome, foreign: income.foreignIncome?.totalIncome };
-    /* eslint-enable camelcase */
-    return map[id] ?? null;
-  };
-
-  const itrColor = ITR_COLORS[itrType] || P.brand;
+  const maskedPan = maskPan(payload?.personalInfo?.pan);
 
   const openImport = (docType) => {
     setImportPreselect(docType || null);
     setShowImportModal(true);
   };
 
-  if (isLoading) return <div className="hud-loading"><Loader2 size={28} className="animate-spin" /></div>;
+  const panVerified = !!(filing?.panVerified || payload?.personalInfo?.panVerified);
 
-  // Compute filing progress for the mode badge
-  const progressSections = ['personalInfo', ...active, 'deductions', 'bank'];
-  const progressCompleted = progressSections.filter(id => isSectionComplete(id, payload, comp)).length;
-  const progressPercent = Math.round((progressCompleted / progressSections.length) * 100);
+  // Reusable inline document block renderer for each section card
+  const renderDocInlineBlock = (sectionId) => {
+    const docs = getDocsForSection(sectionId, active, payload, panVerified);
+    if (docs.length === 0) return null;
+    return (
+      <div className="hud-doc-inline">
+        <div className="hud-doc-inline-title">
+          <FileText size={11} /> Documents
+        </div>
+        {docs.map(doc => (
+          <div key={doc.id} className="hud-doc-inline-item">
+            <div className={`hud-doc-inline-icon ${doc.status === 'done' ? 'done' : 'pending'}`}>
+              {doc.status === 'done' ? <CheckCircle size={12} /> : <FileText size={12} />}
+            </div>
+            <div className="hud-doc-inline-info">
+              <div className="hud-doc-inline-name">{doc.label}</div>
+              {doc.status === 'done' && doc.summary ? (
+                <div className="hud-doc-inline-summary">{doc.summary}</div>
+              ) : doc.status === 'pending' ? (
+                <div className="hud-doc-inline-desc">{doc.desc}</div>
+              ) : null}
+            </div>
+            {doc.status === 'pending' && doc.importType && (
+              <button className="hud-doc-inline-action" onClick={() => openImport(doc.importType)}>
+                <Upload size={10} /> Upload
+              </button>
+            )}
+            {doc.status === 'pending' && !doc.importType && doc.section && doc.section !== selected && (
+              <button className="hud-doc-inline-action" onClick={() => setSelected(doc.section)}>
+                Add
+              </button>
+            )}
+            {doc.status === 'done' && (
+              <span className="hud-doc-inline-check"><Check size={14} /></span>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Render the correct editor component for a given section ID
+  const renderEditor = (sectionId) => {
+    const commonProps = {
+      payload, filing, selectedRegime,
+      onSave: (updates) => saveMut.mutateAsync(updates),
+      isSaving: saveMut.isPending,
+      activeSources: active, computation: comp, itrType,
+      whispers: getWhispersForSection(whispers, sectionId),
+    };
+
+    switch (sectionId) {
+      case 'personalInfo':
+        return <PersonalInfoEditor {...commonProps} user={user} userProfile={profile || null} />;
+      case 'deductions':
+        return <DeductionsEditor {...commonProps} onUploadProof={openImport} />;
+      case 'bank':
+        return (
+          <>
+            <TaxPaymentGuide
+              computation={comp?.[selectedRegime] || comp?.new || comp}
+              pan={payload?.personalInfo?.pan}
+              assessmentYear={filing?.assessmentYear}
+              onChallanSaved={(taxData) => saveMut.mutateAsync({ taxes: taxData })}
+            />
+            <BankEditor {...commonProps}
+              onSubmit={handleSubmit} isSubmitting={isSubmitting}
+              bankData={bankData} setBankData={setBankData}
+              bankErrors={bankErrors} onDownloadJSON={downloadJSON}
+            />
+          </>
+        );
+      default: {
+        const src = SOURCES.find(s => s.id === sectionId);
+        if (!src) return null;
+        const EditorComp = src.editor;
+        return <EditorComp {...commonProps} />;
+      }
+    }
+  };
+
+  // Build card sections for the list
+  const cardSections = buildCardSections(active);
+
+  // Task 7.3: Filing completeness for SmartButton gating (must be before early returns)
+  const completeness = useMemo(() => validateFilingCompleteness(payload, itrType), [payload, itrType]);
+
+  if (isLoading) return <div className="story-loading"><Loader2 size={28} className="animate-spin" /></div>;
+
+  if (isError || !filing) return (
+    <div className="story-loading" style={{ flexDirection: 'column', gap: 12 }}>
+      <AlertTriangle size={32} style={{ color: 'var(--color-error)' }} />
+      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Filing not found</div>
+      <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>This filing may have been deleted or the link is invalid.</div>
+      <button
+        onClick={() => navigate('/dashboard')}
+        style={{ marginTop: 8, padding: '8px 16px', background: 'var(--brand-primary)', color: 'var(--brand-black)', border: 'none', borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+      >
+        Go to Dashboard
+      </button>
+    </div>
+  );
+
+  const completedCount = cardSections.filter(s => getCompletionStatus(s.id, payload, comp) === 'complete').length;
+  const isSubmitted = filing?.lifecycleState && filing.lifecycleState !== 'draft';
+
+  // Build the income sub-items for the INCOME story card
+  const incomeSubItems = [
+    { id: 'personalInfo', icon: User, label: 'Personal Info', color: '#6366f1', bg: '#eef2ff' },
+    ...SOURCES.filter(src => active.includes(src.id)).map(src => ({
+      id: src.id, icon: src.icon, label: src.label, color: src.color, bg: src.bg,
+    })),
+  ];
+
+  const isRefund = bestRegime && bestRegime.netPayable <= 0;
+
+  // Task 5.3: Framer Motion entrance animation variants
+  const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } };
+  const fadeInUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } } };
+  const MotionOrDiv = reducedMotion ? 'div' : motion.div;
 
   return (
-    <div className="hud" style={{ borderTop: '3px solid var(--brand-primary)' }}>
-      {/* ── Filing Mode Badge + Progress Bar ── */}
-      <div style={{ padding: '8px 12px 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <span
-          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 self-start"
-          style={{ backgroundColor: 'var(--brand-primary)', color: '#fff', fontSize: 12 }}
-        >
-          <FileText size={14} />
-          Filing Mode — AY {filing?.assessmentYear || '---'}
-        </span>
-        <div className="h-1.5 w-full rounded-full" style={{ backgroundColor: 'var(--bg-muted)' }}>
-          <div
-            className="h-full rounded-full transition-all"
-            style={{ width: `${progressPercent}%`, backgroundColor: 'var(--brand-primary)' }}
-          />
+    <div className="story-dashboard">
+      {/* ── Top Bar ── */}
+      <div className="story-top-bar">
+        <button onClick={() => navigate('/dashboard')} className="story-top-bar__back">
+          <ArrowLeft size={16} /> Back
+        </button>
+        <div className="story-top-bar__context">
+          <span className="story-top-bar__itr">{itrType} ({ITR_NAMES[itrType]})</span>
+          <span className="story-top-bar__separator">·</span>
+          <span className="story-top-bar__ay">AY {filing?.assessmentYear}</span>
+        </div>
+        <div className="story-top-bar__user">
+          <span className="story-top-bar__name">{payload?.personalInfo?.fullName}</span>
+          <span className="story-top-bar__pan">{maskedPan}</span>
+        </div>
+        <div className={`story-top-bar__save ${saveMut.isPending ? 'saving' : ''}`}>
+          <span className="story-top-bar__save-dot" />
+          {saveMut.isPending ? 'Saving...' : 'All changes saved'}
         </div>
       </div>
 
-      {/* ── Left Panel ── */}
-      <aside className="hud-panel">
-        <button className="hud-back" onClick={() => navigate('/dashboard')}><ArrowLeft size={14} /> Dashboard</button>
+      {/* ── Split-Screen: Story Flow + Editor ── */}
+      <div className="story-panels">
 
-        {/* Filing Info */}
-        <div className="hud-filing-info">
-          <div className="hud-filing-name">{user?.fullName || 'Taxpayer'}</div>
-          <div className="hud-filing-detail">PAN: {filing?.taxpayerPan || '---'} · AY {filing?.assessmentYear || '---'}</div>
-        </div>
+        {/* LEFT: The Financial Story Flow */}
+        <nav className="story-flow">
+          <MotionOrDiv
+            {...(!reducedMotion ? { variants: staggerContainer, initial: 'hidden', animate: 'visible' } : {})}
+          >
 
-        {/* ITR Badge — colored by type */}
-        <div className="hud-itr-badge" style={{ background: `${itrColor}12`, borderColor: `${itrColor}30` }}>
-          <span className="hud-itr-type" style={{ color: itrColor }}>{itrType}</span>
-          <span className="hud-itr-name" style={{ color: itrColor }}>{ITR_NAMES[itrType]}</span>
-          {filing?.filingType === 'revised' && (
-            <span style={{ fontSize: 9, fontWeight: 700, color: '#7c3aed', background: '#f5f3ff', padding: '1px 6px', borderRadius: 8, marginLeft: 4 }}>REVISED</span>
-          )}
-        </div>
-        {filing?.filingType === 'revised' && filing?.originalAckNumber && (
-          <div style={{ fontSize: 11, color: P.textMuted, padding: '0 12px 4px', marginTop: -4 }}>
-            Original Ack: {filing.originalAckNumber}
-          </div>
-        )}
-
-        {/* ── The Big Number — Refund/Payable Result ── */}
-        {bestRegime && tds ? (
-          <div style={{
-            background: bestRegime.netPayable <= 0 ? '#f0fdf4' : '#fef2f2',
-            border: `1px solid ${bestRegime.netPayable <= 0 ? '#bbf7d0' : '#fecaca'}`,
-            borderRadius: 10, padding: '12px 14px', marginBottom: 10,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontSize: 20, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: bestRegime.netPayable <= 0 ? P.success : P.error }}>
-                  {fmt(Math.abs(bestRegime.netPayable))}
-                </div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: bestRegime.netPayable <= 0 ? P.success : P.error, marginTop: 1 }}>
-                  {bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'}
-                </div>
+          {/* ── Card 1: INCOME ── */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div
+            className={`story-flow__card ${['personalInfo', ...active].includes(selected) ? 'active' : ''}`}
+            ref={(el) => { cardRefs.current.incomeCard = el; }}
+          >
+            <div className="story-flow__card-header">
+              <div className="story-flow__card-icon" style={{ background: '#f0fdf4' }}>
+                <DollarSign size={14} style={{ color: '#059669' }} />
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: 10, color: P.textLight }}>Tax {fmt(bestRegime.totalTax)}</div>
-                {n(tds.total) > 0 && <div style={{ fontSize: 10, color: P.success }}>TDS -{fmt(tds.total)}</div>}
-              </div>
+              <span className="story-flow__card-title">Income</span>
+              <span className="story-flow__card-amount">
+                {income?.grossTotal ? <CountingNumber value={income.grossTotal} /> : '—'}
+              </span>
             </div>
-            {/* Regime toggle inside the result card */}
-            <div className="hud-regime-toggle" style={{ marginTop: 10, marginBottom: 0 }}>
+            {!income?.grossTotal && (
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>Add income sources below</div>
+            )}
+            <div style={{ fontSize: 10, color: 'var(--text-light)', marginTop: 4 }}>
+              {itrType} ({ITR_NAMES[itrType]}) · auto-detected from sources
+            </div>
+            <div className="story-flow__card-items">
+              {incomeSubItems.map(item => {
+                const summary = getCardSummary(item.id, payload, comp, income, selectedRegime);
+                const status = getCompletionStatus(item.id, payload, comp);
+                const isSource = item.id !== 'personalInfo';
+                const canRemove = isSource && active.length > 1;
+                return (
+                  <div key={item.id} className={`story-flow__card-item ${selected === item.id ? 'active' : ''}`}>
+                    <button
+                      className="story-flow__card-item-btn"
+                      onClick={() => setSelected(item.id)}
+                      ref={(el) => { cardRefs.current[item.id] = el; }}
+                    >
+                      <div className="story-flow__card-item-icon" style={{ background: item.bg }}>
+                        <item.icon size={10} style={{ color: item.color }} />
+                      </div>
+                      <span className="story-flow__card-item-label">{item.label}</span>
+                      {summary.number && (
+                        <span className="story-flow__card-item-amount">{summary.number}</span>
+                      )}
+                      <span className={`story-flow__card-item-status story-flow__card-item-status--${status}`}>
+                        {status === 'complete' && <Check size={7} />}
+                      </span>
+                      {status !== 'complete' && (
+                        <span className="story-flow__card-item-status-text">
+                          {status === 'partial' ? 'In progress' : 'Not started'}
+                        </span>
+                      )}
+                    </button>
+                    {canRemove && (
+                      <button
+                        className="story-flow__card-item-remove"
+                        onClick={(e) => { e.stopPropagation(); toggleSource(item.id); }}
+                        title={`Remove ${item.label}`}
+                      >
+                        <X size={10} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+              {/* Inactive sources — toggle to add */}
+              {SOURCES.filter(src => !active.includes(src.id)).map(src => (
+                <button
+                  key={src.id}
+                  className="story-flow__card-item story-flow__card-item--add"
+                  onClick={() => toggleSource(src.id)}
+                >
+                  <div className="story-flow__card-item-icon" style={{ background: 'var(--bg-muted)' }}>
+                    <Plus size={10} style={{ color: 'var(--text-light)' }} />
+                  </div>
+                  <span className="story-flow__card-item-label" style={{ color: 'var(--text-light)' }}>{src.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          </MotionOrDiv>
+
+          {/* Connector */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div className="story-flow__connector">▼</div>
+          </MotionOrDiv>
+
+          {/* ── Card 2: DEDUCTIONS ── */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div
+            className={`story-flow__card ${selected === 'deductions' ? 'active' : ''}`}
+            onClick={() => setSelected('deductions')}
+            ref={(el) => { cardRefs.current.deductions = el; }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelected('deductions'); }}
+          >
+            <div className="story-flow__card-header">
+              <div className="story-flow__card-icon" style={{ background: '#f0fdf4' }}>
+                <CheckCircle size={14} style={{ color: '#059669' }} />
+              </div>
+              <span className="story-flow__card-title">Deductions</span>
+              <span className="story-flow__card-amount" style={{ color: 'var(--color-success)' }}>
+                {bestRegime?.deductions ? <CountingNumber value={bestRegime.deductions} prefix="-₹" /> : '—'}
+              </span>
+            </div>
+            {!bestRegime?.deductions && (
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>Click to claim deductions</div>
+            )}
+          </div>
+          </MotionOrDiv>
+
+          {/* Connector */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div className="story-flow__connector">▼</div>
+          </MotionOrDiv>
+
+          {/* ── Card 3: TAX COMPUTATION ── */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div
+            className="story-flow__card"
+            ref={(el) => { cardRefs.current.taxCard = el; }}
+          >
+            <div className="story-flow__card-header">
+              <div className="story-flow__card-icon" style={{ background: '#eef2ff' }}>
+                <TrendingUp size={14} style={{ color: '#6366f1' }} />
+              </div>
+              <span className="story-flow__card-title">Tax</span>
+              <span className="story-flow__card-amount">
+                {bestRegime?.totalTax ? <CountingNumber value={bestRegime.totalTax} /> : '—'}
+              </span>
+            </div>
+            <div className="story-flow__regime">
               {['old', 'new'].map(r => (
-                <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-                  onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
-                  {r === 'old' ? 'Old Regime' : 'New Regime'}
+                <button
+                  key={r}
+                  className={`story-regime-btn ${selectedRegime === r ? 'active' : ''}`}
+                  onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}
+                >
+                  {r === 'old' ? 'Old' : 'New'}
                 </button>
               ))}
             </div>
             {comp?.savings > 0 && comp.recommended !== selectedRegime && (
-              <div style={{ fontSize: 10, color: P.warning, marginTop: 6, textAlign: 'center' }}>
-                Tip: {comp.recommended === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}
-              </div>
-            )}
-            {income && (itrType === 'ITR-1' || itrType === 'ITR-4') && income.grossTotal > 5000000 && (
-              <div style={{ marginTop: 8, padding: '5px 8px', background: '#fff', borderRadius: 6, border: '1px solid #fecaca', display: 'flex', alignItems: 'flex-start', gap: 5 }}>
-                <AlertTriangle size={12} style={{ color: P.error, flexShrink: 0, marginTop: 1 }} />
-                <div style={{ fontSize: 10, lineHeight: 1.3, color: P.errorDark }}>
-                  Income {fmt(income.grossTotal)} exceeds ₹50L limit for {itrType}
-                  {itrType === 'ITR-1' && (
-                    <button style={{ display: 'block', marginTop: 2, fontSize: 10, fontWeight: 600, color: P.brand, background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 'auto' }}
-                      onClick={(e) => { e.stopPropagation(); toggleSource('capital_gains'); }}>
-                      Switch to ITR-2 →
-                    </button>
-                  )}
-                </div>
+              <div className="story-flow__savings">
+                Switch to {comp.recommended === 'old' ? 'Old' : 'New'} to save {fmtShort(comp.savings)}
               </div>
             )}
           </div>
-        ) : (
-          /* No computation yet — show placeholder */
-          <div style={{ background: P.bgMuted, borderRadius: 10, padding: '14px', marginBottom: 10, textAlign: 'center' }}>
-            <div style={{ fontSize: 13, color: P.textMuted }}>Add income to see your tax</div>
-            <div className="hud-regime-toggle" style={{ marginTop: 8, marginBottom: 0 }}>
-              {['old', 'new'].map(r => (
-                <button key={r} className={`hud-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-                  onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
-                  {r === 'old' ? 'Old Regime' : 'New Regime'}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+          </MotionOrDiv>
 
-        {/* ── Auto-save status ── */}
-        <div className={`ff-save-status ${saveMut.isPending ? 'saving' : 'saved'}`} style={{ marginBottom: 8, justifyContent: 'center', width: '100%' }}>
-          <span className="ff-save-dot" />
-          {saveMut.isPending ? 'Saving...' : 'All changes saved'}
-        </div>
+          {/* Connector */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div className="story-flow__connector">▼</div>
+          </MotionOrDiv>
 
-        {/* ── Income Sources (no section header — self-evident) ── */}
-        {SOURCES.map(src => {
-          const isActive = active.includes(src.id);
-          const isSel = selected === src.id;
-          const Icon = src.icon;
-          const total = getTotalForSource(src.id);
-          return (
-            <div key={src.id}
-              className={`hud-source ${isActive ? 'active' : 'inactive'} ${isSel ? 'selected' : ''}`}
-              style={isActive ? { background: isSel ? src.bg : undefined } : {}}
-              onClick={() => isActive ? setSelected(src.id) : toggleSource(src.id)}>
-              <div className="hud-source-left">
-                <div className="hud-source-icon" style={{ background: isActive ? src.bg : P.bgMuted }}>
-                  <Icon size={14} style={{ color: isActive ? src.color : P.textLight }} />
-                </div>
-                <span className="hud-source-label" style={{ color: isActive ? P.textPrimary : P.textLight, fontWeight: isActive ? 600 : 400 }}>{src.label}</span>
-              </div>
-              <div className="hud-source-right">
-                {isActive && total != null && <span className={`hud-source-total ${n(total) < 0 ? 'negative' : ''}`}>{fmt(total)}</span>}
-                {isActive ? (
-                  <button className="hud-source-toggle" onClick={e => { e.stopPropagation(); toggleSource(src.id); }} title="Remove"><X size={11} /></button>
-                ) : (
-                  <Plus size={13} style={{ color: P.textLight }} />
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Agricultural income — shown as exempt sub-line when present */}
-        {n(comp?.agriculturalIncome) > 0 && active.includes('other') && (
-          <div style={{ padding: '2px 10px 4px 46px', fontSize: 11, color: P.success, display: 'flex', justifyContent: 'space-between' }}>
-            <span>Agri (exempt)</span>
-            <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(comp.agriculturalIncome)}</span>
-          </div>
-        )}
-
-        {/* ── Tax Savings ── */}
-        <div style={{ borderTop: `1px solid ${P.borderLight}`, margin: '6px 0 4px', padding: 0 }} />
-        <div className={`hud-source active ${selected === 'deductions' ? 'selected' : ''}`} onClick={() => setSelected('deductions')}>
-          <div className="hud-source-left">
-            <div className="hud-source-icon" style={{ background: '#f0fdf4' }}><CheckCircle size={14} style={{ color: P.success }} /></div>
-            <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Deductions</span>
-          </div>
-          {bestRegime && n(bestRegime.deductions) > 0 && <span className="hud-source-total" style={{ color: P.success }}>{fmt(bestRegime.deductions)}</span>}
-        </div>
-        <div className={`hud-source active ${selected === 'bank' ? 'selected' : ''}`} onClick={() => setSelected('bank')}>
-          <div className="hud-source-left">
-            <div className="hud-source-icon" style={{ background: P.bgMuted }}><CreditCard size={14} style={{ color: P.textMuted }} /></div>
-            <span className="hud-source-label" style={{ color: P.textPrimary, fontWeight: 600 }}>Bank & Submit</span>
-          </div>
-          <ChevronRight size={13} style={{ color: P.textLight }} />
-        </div>
-
-        {/* ── Compact Tax Computation (always visible, reference data) ── */}
-        {bestRegime && (
-          <div style={{ margin: '8px 0', padding: '10px 12px', background: P.bgMuted, borderRadius: 8, fontSize: 11, color: P.textMuted }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Gross Income</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(income?.grossTotal)}</span></div>
-            {n(comp?.agriculturalIncome) > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Agri Income (exempt)</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>{fmt(comp.agriculturalIncome)}</span></div>
-            )}
-            {n(bestRegime.deductions) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Deductions</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(bestRegime.deductions)}</span></div>}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Taxable</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.taxableIncome)}</span></div>
-            <div style={{ borderTop: `1px solid ${P.borderLight}`, margin: '4px 0' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Tax on income</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.taxOnIncome)}</span></div>
-            {n(bestRegime.rebate) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Rebate 87A</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(bestRegime.rebate)}</span></div>}
-            {n(bestRegime.surcharge) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Surcharge</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.surcharge)}</span></div>}
-            {n(bestRegime.cess) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Cess (4%)</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.cess)}</span></div>}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>Total tax ({rec})</span><span style={{ fontWeight: 600, color: P.textPrimary, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.totalTax)}</span></div>
-            {tds && n(tds.total) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}><span>TDS/Advance</span><span style={{ fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>-{fmt(tds.total)}</span></div>}
-            {n(comp?.agriculturalIncome) > 5000 && bestRegime.agriIntegrationApplied && (
-              <div style={{ fontSize: 10, color: P.warning, marginTop: 4, lineHeight: 1.3 }}>
-                Agri income ({fmt(comp.agriculturalIncome)}) pushes other income into higher slabs via partial integration
-              </div>
-            )}
-            <div style={{ textAlign: 'center', marginTop: 4 }}>
-              <button style={{ fontSize: 10, color: P.brand, background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 'auto' }} onClick={() => setSelected(null)}>
-                View full breakdown →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="hud-actions">
-          <button className="hud-btn-outline" onClick={() => openImport(null)}><Upload size={14} /> Import</button>
-          <button className="hud-btn-outline" onClick={downloadJSON}><Download size={14} /> JSON</button>
-          <button className="hud-btn-outline" onClick={async () => {
-            try {
-              const r = await api.get(`/filings/${filingId}/computation-pdf`, { responseType: 'blob' });
-              const a = document.createElement('a');
-              a.href = URL.createObjectURL(r.data);
-              a.download = `BurnBlack_Computation_${filing?.taxpayerPan}_AY${filing?.assessmentYear}.pdf`;
-              a.click();
-            } catch { toast.error('PDF generation failed'); }
-          }}><FileText size={14} /> PDF</button>
-          <button className="hud-btn-primary" onClick={() => setSelected('bank')}><Send size={14} /> Submit</button>
-        </div>
-
-        {/* Import History */}
-        <ImportHistoryPanel filingId={filingId} />
-
-        {/* Delete */}
-        {!showDeleteConfirm ? (
-          <button onClick={() => setShowDeleteConfirm(true)} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: P.textLight, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: 4 }}>
-            <Trash2 size={12} /> Delete filing
-          </button>
-        ) : (
-          <div style={{ marginTop: 6, padding: 10, background: P.errorBg, borderRadius: 8, border: '1px solid #fecaca' }}>
-            <div style={{ fontSize: 12, color: P.errorDark, marginBottom: 6 }}>Delete this filing?</div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={handleDelete} style={{ flex: 1, padding: '5px 0', background: P.error, color: '#fff', border: 'none', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>Delete</button>
-              <button onClick={() => setShowDeleteConfirm(false)} style={{ flex: 1, padding: '5px 0', background: P.bgMuted, color: P.textSecondary, border: 'none', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>Cancel</button>
-            </div>
-          </div>
-        )}
-      </aside>
-
-      {/* ── Center — Accordion of all active sections ── */}
-      <main className="hud-editor">
-        {/* Personal Info accordion card — always first */}
-        {(() => {
-          const piOpen = selected === 'personalInfo';
-          const piData = payload?.personalInfo || {};
-          const piCompletion = getCompletionInfo(piData);
-          const piColor = '#6366f1';
-          const piBg = '#eef2ff';
-          return (
-            <div className={`hud-accordion-card ${piOpen ? 'open' : ''}`} style={piOpen ? { borderColor: piColor, boxShadow: `0 0 0 2px ${piColor}12` } : {}}>
-              <button className="hud-accordion-header" onClick={() => setSelected(piOpen ? null : 'personalInfo')}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 6, background: piBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <User size={13} style={{ color: piColor }} />
-                  </div>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Personal Info</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: piCompletion.complete ? P.success : P.warning }}>
-                    {piCompletion.filled}/{piCompletion.total}
-                  </span>
-                  {piCompletion.complete
-                    ? <CheckCircle size={14} style={{ color: P.success }} />
-                    : <AlertTriangle size={14} style={{ color: P.warning }} />}
-                  {piOpen ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
-                </div>
-              </button>
-              {piOpen && (
-                <div className="hud-accordion-body">
-                  <PersonalInfoEditor payload={payload} filing={filing}
-                    onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                    computation={comp} itrType={itrType} user={user} userProfile={profile || null}
-                    whispers={getWhispersForSection(whispers, 'personalInfo')} />
-                  {(() => { const nx = getNextSection('personalInfo', active, payload, comp); return nx ? (
-                    <button className="ff-btn ff-btn-outline" onClick={() => setSelected(nx.id)} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-                      Continue to {nx.label} →
-                    </button>
-                  ) : null; })()}
-                </div>
-              )}
-            </div>
-          );
-        })()}
-
-        {/* All active income sources as collapsible cards */}
-        {SOURCES.filter(src => active.includes(src.id)).map(src => {
-          const isOpen = selected === src.id;
-          const Icon = src.icon;
-          const total = getTotalForSource(src.id);
-          const EditorComp = src.editor;
-          const imports = SOURCE_IMPORTS[src.id] || [];
-          const srcComplete = isSectionComplete(src.id, payload, comp);
-          return (
-            <div key={src.id} className={`hud-accordion-card ${isOpen ? 'open' : ''}`} style={isOpen ? { borderColor: src.color, boxShadow: `0 0 0 2px ${src.color}12` } : {}}>
-              <button className="hud-accordion-header" onClick={() => setSelected(isOpen ? null : src.id)}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 6, background: src.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={13} style={{ color: src.color }} />
-                  </div>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>{src.label}</span>
-                  {srcComplete && <CheckCircle size={12} style={{ color: P.success }} />}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {imports.length > 0 && (
-                    <span style={{ display: 'flex', gap: 4 }}>
-                      {imports.map(imp => (
-                        <span key={imp.type} onClick={(e) => { e.stopPropagation(); openImport(imp.type); }}
-                          style={{ fontSize: 10, fontWeight: 600, color: imp.color, background: `${imp.color}10`, border: `1px solid ${imp.color}30`, borderRadius: 10, padding: '2px 7px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                          <Upload size={9} /> {imp.label}
-                        </span>
-                      ))}
-                    </span>
-                  )}
-                  {total != null && <span style={{ fontSize: 12, fontWeight: 600, color: n(total) < 0 ? P.success : P.textSecondary, fontVariantNumeric: 'tabular-nums' }}>{fmt(total)}</span>}
-                  {isOpen ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
-                </div>
-              </button>
-              {isOpen && (
-                <div className="hud-accordion-body">
-                  <EditorComp payload={payload} filing={filing} selectedRegime={selectedRegime}
-                    onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                    activeSources={active} computation={comp} itrType={itrType}
-                    whispers={getWhispersForSection(whispers, src.id)} />
-                  {(() => { const nx = getNextSection(src.id, active, payload, comp); return nx ? (
-                    <button className="ff-btn ff-btn-outline" onClick={() => setSelected(nx.id)} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-                      Continue to {nx.label} →
-                    </button>
-                  ) : null; })()}
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Deductions card */}
-        <div className={`hud-accordion-card ${selected === 'deductions' ? 'open' : ''}`} style={selected === 'deductions' ? { borderColor: P.success, boxShadow: '0 0 0 2px rgba(22,163,74,0.08)' } : {}}>
-          <button className="hud-accordion-header" onClick={() => setSelected(selected === 'deductions' ? null : 'deductions')}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 24, height: 24, borderRadius: 6, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <CheckCircle size={13} style={{ color: P.success }} />
-              </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Deductions</span>
-              {isSectionComplete('deductions', payload, comp) && <CheckCircle size={12} style={{ color: P.success }} />}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span onClick={(e) => { e.stopPropagation(); openImport('form16'); }}
-                style={{ fontSize: 10, fontWeight: 600, color: '#059669', background: '#059669'+'10', border: '1px solid #059669'+'30', borderRadius: 10, padding: '2px 7px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                <Upload size={9} /> Form 16
+          {/* ── Card 4: RESULT ── */}
+          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
+          <div
+            className={`story-flow__card result ${!isRefund && bestRegime ? 'payable' : ''} ${selected === 'bank' ? 'active' : ''}`}
+            ref={(el) => { cardRefs.current.resultCard = el; }}
+          >
+            <div className="story-flow__card-header">
+              <span className="story-flow__card-title">
+                {bestRegime ? (isRefund ? 'Refund Due' : 'Tax Payable') : 'Result'}
               </span>
-              {bestRegime && n(bestRegime.deductions) > 0 && <span style={{ fontSize: 12, fontWeight: 600, color: P.success, fontVariantNumeric: 'tabular-nums' }}>{fmt(bestRegime.deductions)}</span>}
-              {selected === 'deductions' ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
             </div>
-          </button>
-          {selected === 'deductions' && (
-            <div className="hud-accordion-body">
-              <DeductionsEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
-                onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                activeSources={active} computation={comp} itrType={itrType}
-                whispers={getWhispersForSection(whispers, 'deductions')} />
-              <button className="ff-btn ff-btn-outline" onClick={() => setSelected('bank')} style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
-                Continue to Bank & Submit →
+            {bestRegime ? (
+              <>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                  {isRefund ? 'Refund Due' : 'Tax Payable'}
+                </div>
+                <div className={`story-flow__result-hero ${isRefund ? 'refund' : 'payable'}`}>
+                  <CountingNumber value={Math.abs(bestRegime.netPayable)} className="story-flow__result-hero" />
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
+                Add income to see result
+              </div>
+            )}
+            <div className="story-flow__result-actions">
+              <SmartButton label="Submit" icon={Send} onClick={handleSubmit} completeness={completeness} variant="submit" isLoading={isSubmitting} />
+              <button className="story-flow__result-icon-btn" onClick={downloadJSON} title="Download JSON" disabled={!completeness.complete} style={{ opacity: completeness.complete ? 1 : 0.5 }}>
+                <FileText size={13} />
+              </button>
+              <button className="story-flow__result-icon-btn" onClick={downloadPDF} title="Download PDF">
+                <Download size={13} />
               </button>
             </div>
-          )}
-        </div>
+            {/* Bank & Submit sub-item */}
+            <div className="story-flow__card-items">
+              <button
+                className={`story-flow__card-item ${selected === 'bank' ? 'active' : ''}`}
+                onClick={() => setSelected('bank')}
+                ref={(el) => { cardRefs.current.bank = el; }}
+              >
+                <div className="story-flow__card-item-icon" style={{ background: 'var(--bg-muted)' }}>
+                  <Landmark size={10} style={{ color: '#6b7280' }} />
+                </div>
+                <span className="story-flow__card-item-label">Bank & Submit</span>
+                <span className={`story-flow__card-item-status story-flow__card-item-status--${getCompletionStatus('bank', payload, comp)}`}>
+                  {getCompletionStatus('bank', payload, comp) === 'complete' && <Check size={7} />}
+                </span>
+              </button>
+            </div>
+          </div>
+          </MotionOrDiv>
 
-        {/* Bank & Submit card */}
-        <div className={`hud-accordion-card ${selected === 'bank' ? 'open' : ''}`} style={selected === 'bank' ? { borderColor: P.brand, boxShadow: '0 0 0 2px rgba(37,99,235,0.08)' } : {}}>
-          <button className="hud-accordion-header" onClick={() => setSelected(selected === 'bank' ? null : 'bank')}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 24, height: 24, borderRadius: 6, background: P.bgMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <CreditCard size={13} style={{ color: P.textMuted }} />
+          </MotionOrDiv>{/* end stagger container */}
+
+          {/* Delete confirmation */}
+          {showDeleteConfirm && (
+            <div className="story-flow__delete-confirm">
+              <span>Delete this filing?</span>
+              <div className="story-flow__delete-confirm-actions">
+                <button className="story-flow__delete-btn story-flow__delete-btn--cancel" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                <button className="story-flow__delete-btn story-flow__delete-btn--confirm" onClick={handleDelete}>Delete</button>
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary }}>Bank & Submit</span>
-              {isSectionComplete('bank', payload, comp) && <CheckCircle size={12} style={{ color: P.success }} />}
-            </div>
-            {selected === 'bank' ? <ChevronDown size={14} style={{ color: P.textLight }} /> : <ChevronRight size={14} style={{ color: P.textLight }} />}
-          </button>
-          {selected === 'bank' && (
-            <div className="hud-accordion-body">
-              {/* Tax Payment Guide — shows when tax is payable */}
-              <TaxPaymentGuide
-                computation={comp?.[selectedRegime] || comp?.new || comp}
-                pan={payload?.personalInfo?.pan}
-                assessmentYear={filing?.assessmentYear}
-                onChallanSaved={(taxData) => saveMut.mutateAsync({ taxes: taxData })}
-              />
-              <BankEditor payload={payload} filing={filing} selectedRegime={selectedRegime}
-                onSave={(updates) => saveMut.mutateAsync(updates)} isSaving={saveMut.isPending}
-                activeSources={active} computation={comp} onSubmit={handleSubmit}
-                isSubmitting={isSubmitting} bankData={bankData} setBankData={setBankData}
-                whispers={getWhispersForSection(whispers, 'bank')}
-                bankErrors={bankErrors} onDownloadJSON={downloadJSON} itrType={itrType} />
             </div>
           )}
+
+          {/* Import History Panel */}
+          {showImportHistory && (
+            <div style={{ marginTop: 8 }}>
+              <ImportHistoryPanel filingId={filingId} />
+            </div>
+          )}
+
+          {/* ── Flow Footer: Import + Progress ── */}
+          <div className="story-flow__footer">
+            <div className="story-overflow">
+              <button className="story-flow__footer-btn" onClick={() => openImport(null)}>
+                <Upload size={12} /> Import
+              </button>
+              <button
+                className="story-flow__footer-btn"
+                onClick={() => setShowOverflowMenu(p => !p)}
+                style={{ marginLeft: 4 }}
+                title="More"
+              >
+                <MoreHorizontal size={12} />
+              </button>
+              {showOverflowMenu && (
+                <div className="story-overflow__menu">
+                  <button className="story-overflow__item" onClick={() => { setShowImportHistory(prev => !prev); setShowOverflowMenu(false); }}>
+                    <Clock size={14} /> Import History
+                  </button>
+                  <button className="story-overflow__item danger" onClick={() => { setShowDeleteConfirm(true); setShowOverflowMenu(false); }}>
+                    <Trash2 size={14} /> Delete Filing
+                  </button>
+                </div>
+              )}
+            </div>
+            <span className="story-flow__footer-progress">
+              {completedCount}/{cardSections.length} complete
+            </span>
+          </div>
+
+        </nav>
+
+        {/* RIGHT: Editor Panel — only scrollable area */}
+        <main className="story-editor">
+          <FilerInfoCard payload={payload} filing={filing} itrType={itrType} />
+          <TaxComputationCard comp={comp} selectedRegime={selectedRegime} onNavigateToSection={(id) => setSelected(id)} />
+          {isSubmitted && (
+            <div style={{ padding: '10px 14px', marginBottom: 16, background: 'var(--color-info-bg)', border: '1px solid var(--color-info-border)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
+              <CheckCircle size={14} style={{ color: 'var(--color-info)', flexShrink: 0 }} />
+              This filing has been submitted and is read-only. You can view details and download JSON/PDF.
+            </div>
+          )}
+          {selected ? (
+            <div style={isSubmitted ? { pointerEvents: 'none', opacity: 0.7 } : {}}>
+              {renderEditor(selected)}
+              {renderDocInlineBlock(selected)}
+            </div>
+          ) : (
+            <div className="story-editor__empty">
+              {isSubmitted ? 'Select a section to view details' : 'Select a section from the story to start editing'}
+            </div>
+          )}
+        </main>
+
+      </div>{/* end story-panels */}
+
+      {/* ── Mobile Bottom Bar — visible on mobile ── */}
+      {bestRegime && (
+        <div className="story-mobile-bar">
+          <div>
+            <div className={`story-mobile-bar__amount ${isRefund ? 'refund' : 'payable'}`}>
+              {fmt(Math.abs(bestRegime.netPayable))}
+            </div>
+            <div className="story-mobile-bar__label">
+              {isRefund ? 'Refund Due' : 'Tax Payable'}
+            </div>
+          </div>
+          <div className="story-mobile-bar__regime">
+            {['old', 'new'].map(r => (
+              <button key={r} className={`story-regime-btn ${selectedRegime === r ? 'active' : ''}`}
+                onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
+                {r === 'old' ? 'Old' : 'New'}
+              </button>
+            ))}
+          </div>
+          <button className="story-mobile-bar__submit" onClick={handleSubmit}>
+            <Send size={13} /> Submit
+          </button>
         </div>
-
-        {/* Summary view when nothing is selected */}
-        {!selected && (
-          <SummaryView comp={comp} itrType={itrType} filing={filing} rec={rec} bestRegime={bestRegime} altRegime={altRegime} tds={tds} onEdit={setSelected} />
-        )}
-      </main>
-
-      {/* ── Right Panel: Document Checklist ── */}
-      <DocumentPanel
-        activeSources={active}
-        payload={payload}
-        panVerified={!!user?.panVerified}
-        onImport={openImport}
-        onNavigate={setSelected}
-      />
-
-      {/* ── Mobile: Floating document button ── */}
-      {(() => {
-        const docs = payload?._importMeta?.imports?.filter(i => i.status === 'confirmed') || [];
-        return <DocumentFloatButton count={docs.length} total={active.length + 4} onClick={() => openImport(null)} />;
-      })()}
+      )}
 
       {/* ── Import Modal Overlay ── */}
       {showImportModal && !importReviewData && (
@@ -788,195 +1151,11 @@ export default function ITR1Flow() {
           onClose={() => { setShowPaymentGate(false); setPendingAction(null); }}
         />
       )}
-
-      {/* ── Mobile Sticky Tax Bar ── */}
-      {bestRegime && tds && (
-        <div className="hud-mobile-tax-bar">
-          <div>
-            <div className="tax-label">{bestRegime.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'}</div>
-            <div className={`tax-amount ${bestRegime.netPayable <= 0 ? 'refund' : 'payable'}`}>
-              {fmt(Math.abs(bestRegime.netPayable))}
-            </div>
-          </div>
-          <button className="hud-btn-primary" style={{ padding: '8px 16px', fontSize: 12 }} onClick={() => setSelected('bank')}>
-            <Send size={13} /> Submit
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
-/* ── Summary View — Computation Story ── */
-function SummaryView({ comp, itrType, filing, rec, bestRegime, altRegime, tds, onEdit }) {
-  const income = comp?.income;
-  if (!comp) return (
-    <div>
-      <h2 className="step-title">Filing Summary</h2>
-      <p className="step-desc">Add income sources from the left panel to see your tax computation.</p>
-      <div className="step-card info" style={{ textAlign: 'center', padding: 32 }}>
-        <Briefcase size={32} color={P.brand} style={{ margin: '0 auto 8px' }} />
-        <div style={{ fontSize: 14, color: P.textMuted }}>Click an income source on the left to start</div>
-      </div>
-    </div>
-  );
-
-  const agri = n(comp?.agriculturalIncome);
-
-  return (
-    <div>
-      <h2 className="step-title">Tax Computation — {itrType}</h2>
-      <p className="step-desc">AY {filing?.assessmentYear} · PAN {filing?.taxpayerPan} · {rec === 'old' ? 'Old' : 'New'} Regime</p>
-
-      {/* ── Step 1: Your Income ── */}
-      <div className="step-card">
-        <div className="ff-section-title">1. Your Income</div>
-        {income?.salary?.netTaxable > 0 && (
-          <div className="ff-row" style={{ cursor: 'pointer' }} onClick={() => onEdit('salary')}>
-            <span className="ff-row-label">Salary (after std deduction ₹75,000)</span>
-            <span className="ff-row-value">{fmt(income.salary.netTaxable)}</span>
-          </div>
-        )}
-        {income?.salary?.netTaxable > 0 && income.salary.exemptAllowances > 0 && (
-          <div style={{ fontSize: 11, color: P.textLight, padding: '0 0 2px 12px' }}>
-            Gross {fmt(income.salary.grossSalary)} − Exempt {fmt(income.salary.exemptAllowances)} − Std ded ₹75,000 − PT {fmt(income.salary.professionalTax)}
-          </div>
-        )}
-        {income?.houseProperty?.netIncome != null && income.houseProperty.netIncome !== 0 && (
-          <SRow label={`House Property (${income.houseProperty.type === 'SELF_OCCUPIED' ? 'self-occupied' : 'let-out'})`} value={income.houseProperty.netIncome} onClick={() => onEdit('house_property')} />
-        )}
-        {income?.otherSources?.total > 0 && <SRow label="Other Sources" value={income.otherSources.total} onClick={() => onEdit('other')} />}
-        {income?.capitalGains?.totalTaxable > 0 && <SRow label="Capital Gains" value={income.capitalGains.totalTaxable} onClick={() => onEdit('capital_gains')} />}
-        {(income?.business?.netProfit > 0 || income?.presumptive?.totalIncome > 0) && <SRow label="Business / Profession" value={income.business?.netProfit || income.presumptive?.totalIncome} onClick={() => onEdit('business')} />}
-        <div className="ff-divider" />
-        <SRow label="Gross Total Income" value={income?.grossTotal} bold />
-        {agri > 0 && (
-          <div className="ff-row" style={{ marginTop: 2 }}>
-            <span className="ff-row-label" style={{ color: P.success }}>Agricultural Income (exempt)</span>
-            <span className="ff-row-value" style={{ color: P.success }}>{fmt(agri)}</span>
-          </div>
-        )}
-      </div>
-
-      {/* ── Step 2: Deductions ── */}
-      {bestRegime && n(bestRegime.deductions) > 0 && (
-        <div className="step-card" style={{ cursor: 'pointer' }} onClick={() => onEdit('deductions')}>
-          <div className="ff-section-title">2. Deductions (Chapter VI-A)</div>
-          {bestRegime.deductionBreakdown && Object.entries(bestRegime.deductionBreakdown).filter(([, v]) => n(v) > 0).map(([k, v]) => {
-            const labels = { section80C: '80C (PPF, ELSS, LIC...)', section80CCD1B: '80CCD(1B) NPS', section80CCD2: '80CCD(2) Employer NPS', section80D: '80D Health Insurance', section80E: '80E Education Loan', section80G: '80G Donations', section80TTA: '80TTA Savings Interest', section80TTB: '80TTB Senior Savings', section80GG: '80GG Rent', section80U: '80U Disability' };
-            return <SRow key={k} label={labels[k] || k} value={v} green />;
-          })}
-          <div className="ff-divider" />
-          <SRow label="Total Deductions" value={bestRegime.deductions} bold green />
-        </div>
-      )}
-
-      {/* ── Step 3: Taxable Income ── */}
-      <div className="step-card">
-        <div className="ff-section-title">3. Taxable Income</div>
-        <SRow label="Gross Total Income" value={income?.grossTotal} />
-        {n(bestRegime?.deductions) > 0 && <SRow label="Less: Deductions" value={-bestRegime.deductions} green />}
-        <div className="ff-divider" />
-        <SRow label="Total Taxable Income" value={bestRegime?.taxableIncome} bold />
-      </div>
-
-      {/* ── Step 4: Tax Calculation ── */}
-      {bestRegime?.slabBreakdown?.length > 0 && (
-        <div className="step-card">
-          <div className="ff-section-title">4. Tax Calculation ({rec === 'old' ? 'Old' : 'New'} Regime)</div>
-          {bestRegime.slabBreakdown.filter(s => s.tax > 0).map((s, i) => (
-            <div key={i} className="ff-row">
-              <span className="ff-row-label">{fmt(s.min)} – {s.max === Infinity ? 'Above' : fmt(s.max)} @ {s.rate}%</span>
-              <span className="ff-row-value">{fmt(s.tax)}</span>
-            </div>
-          ))}
-          {agri > 5000 && bestRegime.agriIntegrationApplied && (
-            <div style={{ fontSize: 11, color: P.warning, padding: '4px 0', lineHeight: 1.3 }}>
-              Tax computed using partial integration method — agri income ({fmt(agri)}) pushes other income into higher slabs
-            </div>
-          )}
-          <div className="ff-divider" />
-          <SRow label="Tax on Income" value={bestRegime.taxOnIncome} />
-          {n(bestRegime.rebate) > 0 && <SRow label="Less: Rebate u/s 87A" value={-bestRegime.rebate} green />}
-          {n(bestRegime.surcharge) > 0 && <SRow label="Surcharge" value={bestRegime.surcharge} />}
-          <SRow label="Health & Education Cess (4%)" value={bestRegime.cess} />
-          <div className="ff-divider" />
-          <SRow label="Total Tax Liability" value={bestRegime.totalTax} bold />
-        </div>
-      )}
-
-      {/* ── Step 5: Tax Paid ── */}
-      {tds && n(tds.total) > 0 && (
-        <div className="step-card">
-          <div className="ff-section-title">5. Tax Already Paid</div>
-          {n(tds.fromSalary) > 0 && <SRow label="TDS on Salary" value={tds.fromSalary} green />}
-          {n(tds.fromNonSalary) > 0 && <SRow label="TDS on Other Income" value={tds.fromNonSalary} green />}
-          {n(tds.fromCapitalGains) > 0 && <SRow label="TDS on Capital Gains" value={tds.fromCapitalGains} green />}
-          {n(tds.advanceTax) > 0 && <SRow label="Advance Tax" value={tds.advanceTax} green />}
-          {n(tds.selfAssessment) > 0 && <SRow label="Self-Assessment Tax" value={tds.selfAssessment} green />}
-          <div className="ff-divider" />
-          <SRow label="Total Tax Paid" value={tds.total} bold green />
-        </div>
-      )}
-
-      {/* ── Step 6: Result ── */}
-      <div className="step-card" style={{ background: bestRegime?.netPayable <= 0 ? '#f0fdf4' : '#fef2f2', borderColor: bestRegime?.netPayable <= 0 ? '#bbf7d0' : '#fecaca' }}>
-        <div className="ff-section-title">6. {bestRegime?.netPayable <= 0 ? 'Refund Due' : 'Balance Tax Payable'}</div>
-        <SRow label="Total Tax Liability" value={bestRegime?.totalTax} />
-        {tds && n(tds.total) > 0 && <SRow label="Less: Tax Paid" value={-tds.total} green />}
-        <div className="ff-divider" />
-        <SRow label={bestRegime?.netPayable <= 0 ? 'Refund Due to You' : 'Tax You Need to Pay'} value={Math.abs(bestRegime?.netPayable || 0)} bold color={bestRegime?.netPayable <= 0 ? P.success : P.error} />
-      </div>
-
-      {/* ── Regime Comparison ── */}
-      {bestRegime && altRegime && (
-        <div className="step-card">
-          <div className="ff-section-title">Regime Comparison</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <RegimeCard regime={bestRegime} label={rec === 'old' ? 'Old Regime' : 'New Regime'} recommended tds={tds} />
-            <RegimeCard regime={altRegime} label={rec === 'old' ? 'New Regime' : 'Old Regime'} tds={tds} />
-          </div>
-          {comp?.savings > 0 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, color: P.success, fontWeight: 600 }}>{rec === 'old' ? 'Old' : 'New'} regime saves {fmt(comp.savings)}</div>}
-        </div>
-      )}
-
-      {/* ── CA Insights ── */}
-      {bestRegime && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-          {/* Refund explanation */}
-          {bestRegime.netPayable < 0 && n(tds?.fromSalary) > 0 && (
-            <div style={{ padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, fontSize: 12, color: '#166534', lineHeight: 1.5 }}>
-              💡 Your employer deducted {fmt(tds.fromSalary)} as TDS, which is more than your actual tax liability. The excess {fmt(Math.abs(bestRegime.netPayable))} will be refunded after filing.
-            </div>
-          )}
-          {/* Zero tax explanation */}
-          {bestRegime.totalTax === 0 && n(income?.grossTotal) > 0 && (
-            <div style={{ padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, fontSize: 12, color: '#166534', lineHeight: 1.5 }}>
-              💡 Your taxable income is within the rebate limit — no tax to pay. {n(bestRegime.rebate) > 0 ? `Rebate of ${fmt(bestRegime.rebate)} under Section 87A covers your entire tax.` : ''}
-            </div>
-          )}
-          {/* Regime suggestion */}
-          {comp?.savings > 0 && comp.recommended !== rec && (
-            <div style={{ padding: '10px 14px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, fontSize: 12, color: '#92400e', lineHeight: 1.5 }}>
-              💡 Switching to {comp.recommended === 'old' ? 'Old' : 'New'} Regime would save you {fmt(comp.savings)}. {comp.recommended === 'old' ? 'Your deductions make the old regime more beneficial.' : 'The lower slab rates outweigh your deductions.'}
-            </div>
-          )}
-          {/* New regime trade-off */}
-          {rec === 'new' && n(altRegime?.deductions) > 0 && (
-            <div style={{ padding: '10px 14px', background: P.infoBg, border: `1px solid ${P.infoBorder}`, borderRadius: 8, fontSize: 12, color: P.secondaryDark || '#115E59', lineHeight: 1.5 }}>
-              💡 Under New Regime, you are not claiming {fmt(altRegime.deductions)} in deductions (80C, 80D, etc.). The lower slab rates compensate{comp?.recommended === 'new' ? ' — and save you more.' : ', but Old Regime may save more.'}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <button className="ff-btn ff-btn-outline" onClick={() => onEdit('deductions')}>Edit Deductions</button>
-        <button className="ff-btn ff-btn-primary" onClick={() => onEdit('bank')}>Review & Submit</button>
-      </div>
-    </div>
-  );
-}
+/* ── Helper Components (kept for potential future use) ── */
 
 function RegimeCard({ regime, label, recommended, tds }) {
   const net = regime.totalTax - n(tds?.total);

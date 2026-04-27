@@ -101,7 +101,10 @@ class ITR3ComputationService {
     ITR1ComputationService._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
 
-    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + income.otherSources.total +
+    // Normal income — exclude VDA (flat 30% separately)
+    const vdaGain = income.otherSources?.vdaGain || 0;
+    const vdaTax = income.otherSources?.vdaTax || 0;
+    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain) +
       income.capitalGains.stcg.other + income.foreignIncome.totalIncome + income.business.netProfit;
     const taxableNormal = Math.max(0, normalIncome - deductions.total);
 
@@ -131,7 +134,7 @@ class ITR3ComputationService {
     const stcgEquityTax = Math.round(stcgEquity * 20 / 100);
     const ltcgEquityTax = Math.round(ltcgEquity * 12.5 / 100);
     const ltcgOtherTax = Math.round(ltcgOther * 20 / 100);
-    const totalTaxOnIncome = normalTax + stcgEquityTax + ltcgEquityTax + ltcgOtherTax;
+    const totalTaxOnIncome = normalTax + stcgEquityTax + ltcgEquityTax + ltcgOtherTax + vdaTax;
 
     const rebateLimit = regime === 'old' ? 500000 : 700000;
     const rebateMax = regime === 'old' ? 12500 : 25000;

@@ -174,8 +174,10 @@ class ITR2ComputationService {
     ITR1ComputationService._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
 
-    // Normal income (taxed at slab rates)
-    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + income.otherSources.total + income.capitalGains.stcg.other + income.foreignIncome.totalIncome;
+    // Normal income (taxed at slab rates) — exclude VDA which is taxed at flat 30%
+    const vdaGain = income.otherSources?.vdaGain || 0;
+    const vdaTax = income.otherSources?.vdaTax || 0;
+    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain) + income.capitalGains.stcg.other + income.foreignIncome.totalIncome;
     const taxableNormal = Math.max(0, normalIncome - deductions.total);
 
     // Special rate incomes
@@ -210,7 +212,7 @@ class ITR2ComputationService {
     const ltcgEquityTax = Math.round(ltcgEquity * 12.5 / 100); // 12.5% for AY 2025-26
     const ltcgOtherTax = Math.round(ltcgOther * 20 / 100); // 20%
 
-    const totalTaxOnIncome = normalTax + stcgEquityTax + ltcgEquityTax + ltcgOtherTax;
+    const totalTaxOnIncome = normalTax + stcgEquityTax + ltcgEquityTax + ltcgOtherTax + vdaTax;
 
     // Rebate 87A — not available if special rate income exists (for new regime, only on normal income ≤ ₹7L)
     const rebateLimit = regime === 'old' ? 500000 : 700000;

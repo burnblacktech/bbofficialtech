@@ -322,15 +322,13 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <User size={14} /> Identity
             </div>
-            <div className="ff-grid-2">
+            <div className="ff-grid-3">
               <Field label="First Name *" value={form.firstName} onChange={v => updateField('firstName', v)} onBlur={() => handleBlur('firstName')} error={errors.firstName} locked={isLocked('firstName')} hint="As per PAN card" />
               <Field label="Middle Name" value={form.middleName} onChange={v => updateField('middleName', v)} locked={isLocked('middleName')} hint="Optional" />
-            </div>
-            <div className="ff-grid-2">
               <Field label="Last Name *" value={form.lastName} onChange={v => updateField('lastName', v)} onBlur={() => handleBlur('lastName')} error={errors.lastName} locked={isLocked('lastName')} hint="Surname as per PAN card" />
-              <Field label="PAN *" value={form.pan} onChange={v => updateField('pan', v.toUpperCase())} onBlur={() => handleBlur('pan')} error={errors.pan} locked={isLocked('pan')} hint="5 letters, 4 digits, 1 letter · e.g., ABCDE1234F" />
             </div>
-            <div className="ff-grid-2">
+            <div className="ff-grid-3">
+              <Field label="PAN *" value={form.pan} onChange={v => updateField('pan', v.toUpperCase())} onBlur={() => handleBlur('pan')} error={errors.pan} locked={isLocked('pan')} hint="e.g., ABCDE1234F" />
               <Field label="Date of Birth *" value={form.dob} onChange={v => updateField('dob', v)} onBlur={() => handleBlur('dob')} error={errors.dob} locked={isLocked('dob')} type="date"
                 hint={panVerified && panVerifiedDob && form.dob && form.dob !== panVerifiedDob
                   ? `⚠️ PAN records show ${formatDateDDMMYYYY(panVerifiedDob)}`
@@ -352,28 +350,28 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       {/* ── Section 2: Contact ── */}
       <div className="step-card editing">
         <div className="ff-section-title">Contact</div>
-        <div className="ff-grid-2">
-          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here · Use your primary email" />
-          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile · Starting with 6, 7, 8, or 9" />
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-          <div style={{ flex: 1 }}>
-            <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit Aadhaar · Recommended for e-verification" />
+        <div className="ff-grid-3">
+          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here" />
+          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile" />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+            <div style={{ flex: 1 }}>
+              <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
+            </div>
+            <AadhaarUploadButton onVerified={(data) => {
+              if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
+              if (data.name && !form.firstName) {
+                const parsed = parseFullName(data.name);
+                updateField('firstName', parsed.firstName);
+                updateField('middleName', parsed.middleName);
+                updateField('lastName', parsed.lastName);
+              }
+              if (data.dob && !form.dob) updateField('dob', data.dob);
+              if (data.gender && !form.gender) updateField('gender', data.gender === 'M' ? 'MALE' : data.gender === 'F' ? 'FEMALE' : 'OTHER');
+              if (data.address && !form.address?.flatDoorBuilding) {
+                updateField('address', { ...form.address, flatDoorBuilding: data.address });
+              }
+            }} />
           </div>
-          <AadhaarUploadButton onVerified={(data) => {
-            if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
-            if (data.name && !form.firstName) {
-              const parsed = parseFullName(data.name);
-              updateField('firstName', parsed.firstName);
-              updateField('middleName', parsed.middleName);
-              updateField('lastName', parsed.lastName);
-            }
-            if (data.dob && !form.dob) updateField('dob', data.dob);
-            if (data.gender && !form.gender) updateField('gender', data.gender === 'M' ? 'MALE' : data.gender === 'F' ? 'FEMALE' : 'OTHER');
-            if (data.address && !form.address?.flatDoorBuilding) {
-              updateField('address', { ...form.address, flatDoorBuilding: data.address });
-            }
-          }} />
         </div>
       </div>
 
@@ -382,16 +380,14 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <MapPin size={14} /> Address
         </div>
-        <div className="ff-grid-2">
-          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} hint="House/flat number · ITD: Residence No" />
-          <Field label="Premises Name" value={form.address.premisesName} onChange={v => updateAddress('premisesName', v)} hint="Building or apartment name · Optional" />
-        </div>
-        <div className="ff-grid-2">
+        <div className="ff-grid-3">
+          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} hint="House/flat number" />
+          <Field label="Premises Name" value={form.address.premisesName} onChange={v => updateAddress('premisesName', v)} hint="Building name · Optional" />
           <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
-          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
         </div>
-        <div className="ff-grid-2">
-          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} hint={isMetroCity(form.address.city) ? '🏙️ Metro city (50% HRA rate)' : undefined} />
+        <div className="ff-grid-3">
+          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
+          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} hint={isMetroCity(form.address.city) ? '🏙️ Metro city (50% HRA)' : undefined} />
           <div className="ff-field">
             <label className="ff-label">State *</label>
             <select className={`ff-select ${errors['address.stateCode'] ? 'error' : ''}`} value={form.address.stateCode} onChange={e => updateAddress('stateCode', e.target.value)} onBlur={() => handleBlur('address.stateCode')}>
@@ -401,8 +397,9 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             {errors['address.stateCode'] && <div className="ff-hint" style={{ color: P.error }}>{errors['address.stateCode']}</div>}
           </div>
         </div>
-        <div className="ff-grid-2">
-          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} hint="6-digit postal code · Of your current residence" />
+        <div className="ff-grid-3">
+          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} hint="6-digit postal code" />
+          <div />
           <div />
         </div>
       </div>
@@ -413,6 +410,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           <FileText size={14} /> Filing Metadata
         </div>
 
+        <div className="ff-grid-3">
         {/* Residential Status */}
         <div className="ff-field">
           <label className="ff-label">Residential Status *</label>
@@ -420,12 +418,6 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             {RES_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
-        {(form.residentialStatus === 'NRI' || form.residentialStatus === 'RNOR') && isITR1 && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '8px 12px', background: P.warningBg, borderRadius: 6, marginBottom: 12, fontSize: 12, color: P.warning }}>
-            <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 1 }} />
-            <span>ITR-1 is only available for Resident individuals. Your ITR type may change. Consider ITR-2.</span>
-          </div>
-        )}
 
         {/* Employer Category */}
         <div className="ff-field">
@@ -444,6 +436,14 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           </select>
           {isRevisedFiling && <div className="ff-hint">Filing type is set to Revised from the filing record.</div>}
         </div>
+        </div>
+
+        {(form.residentialStatus === 'NRI' || form.residentialStatus === 'RNOR') && isITR1 && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '8px 12px', background: P.warningBg, borderRadius: 6, marginBottom: 12, fontSize: 12, color: P.warning }}>
+            <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+            <span>ITR-1 is only available for Resident individuals. Your ITR type may change. Consider ITR-2.</span>
+          </div>
+        )}
 
         {/* Conditional: Revised return fields */}
         {form.filingStatus === 'R' && (

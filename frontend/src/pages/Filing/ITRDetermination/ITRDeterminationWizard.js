@@ -111,6 +111,8 @@ const ITRDeterminationWizard = () => {
         } catch { /* non-blocking */ }
         toast.success(`${recommendedITR} filing created`);
         navigate(`/filing/${filingId}/${routeMap[recommendedITR]}`);
+      } else {
+        toast.error('Filing created but ID not found in response. Please try again.');
       }
     },
     onError: (error) => {

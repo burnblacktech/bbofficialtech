@@ -85,26 +85,35 @@ class ITR4ComputationService {
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
+    // VDA income taxed at flat 30% separately
+    const vdaGain = income.otherSources?.vdaGain || 0;
+    const vdaTax = income.otherSources?.vdaTax || 0;
+    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain);
+
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
     const basicExemption = regime === 'old' ? 250000 : 300000;
 
     // Agricultural income partial integration
     let tax = 0;
     let slabBreakdown = [];
-    if (agriculturalIncome > 5000 && taxableIncome > basicExemption) {
-      const { tax: taxCombined } = ITR1ComputationService.applySlabs(taxableIncome + agriculturalIncome, slabs);
+    if (agriculturalIncome > 5000 && nonVdaTaxableIncome > basicExemption) {
+      const { tax: taxCombined } = ITR1ComputationService.applySlabs(nonVdaTaxableIncome + agriculturalIncome, slabs);
       const { tax: taxAgriExempt } = ITR1ComputationService.applySlabs(agriculturalIncome + basicExemption, slabs);
       tax = Math.max(0, taxCombined - taxAgriExempt);
-      slabBreakdown = ITR1ComputationService.applySlabs(taxableIncome, slabs).slabBreakdown;
+      slabBreakdown = ITR1ComputationService.applySlabs(nonVdaTaxableIncome, slabs).slabBreakdown;
     } else {
-      const result = ITR1ComputationService.applySlabs(taxableIncome, slabs);
+      const result = ITR1ComputationService.applySlabs(nonVdaTaxableIncome, slabs);
       tax = result.tax;
       slabBreakdown = result.slabBreakdown;
     }
 
+    // Add VDA flat tax
+    tax += vdaTax;
+
     const rebateLimit = regime === 'old' ? 500000 : 700000;
     const rebateMax = regime === 'old' ? 12500 : 25000;
-    const rebate = taxableIncome <= rebateLimit ? Math.min(tax, rebateMax) : 0;
+    const slabTax = tax - vdaTax;
+    const rebate = nonVdaTaxableIncome <= rebateLimit ? Math.min(slabTax, rebateMax) : 0;
     const taxAfterRebate = tax - rebate;
 
     let surchargeRate = 0;
@@ -114,7 +123,7 @@ class ITR4ComputationService {
 
     return {
       regime, grossTotalIncome: income.grossTotal, deductions: deductions.total, deductionBreakdown: deductions.breakdown,
-      taxableIncome, agriculturalIncome: agriculturalIncome || 0, slabBreakdown, taxOnIncome: tax, rebate, surcharge, surchargeRate, cess,
+      taxableIncome, agriculturalIncome: agriculturalIncome || 0, vdaGain, vdaTax, slabBreakdown, taxOnIncome: tax, rebate, surcharge, surchargeRate, cess,
       totalTax: taxAfterRebate + surcharge + cess,
     };
   }

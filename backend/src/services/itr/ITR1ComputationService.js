@@ -159,7 +159,18 @@ class ITR1ComputationService {
     const other = n(otherData.otherIncome);
     const total = savings + fd + div + (fpGross - fpExempt) + itRefund + winnings + gifts + other;
 
-    return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, interestOnITRefund: itRefund, winnings, gifts, other, total };
+    // VDA (crypto) gain is added to other income total
+    const vda = this.computeVDA(otherData);
+
+    return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, interestOnITRefund: itRefund, winnings, gifts, other, vdaGain: vda.gain, vdaTax: vda.tax, total: total + vda.gain };
+  }
+
+  static computeVDA(otherData) {
+    const saleValue = n(otherData?.vdaSaleValue);
+    const costOfAcquisition = n(otherData?.vdaCostOfAcquisition);
+    const gain = Math.max(0, saleValue - costOfAcquisition);
+    const tax = Math.round(gain * 0.30);
+    return { saleValue, costOfAcquisition, gain, tax };
   }
 
   // ── Salary Exemptions ──
@@ -233,7 +244,7 @@ class ITR1ComputationService {
     const ccd2Limit = employerCategory === 'GOV' ? Math.round(salaryForNPS * 0.14) : Math.round(salaryForNPS * 0.10);
     const s80ccd2Capped = salaryForNPS > 0 ? Math.min(s80ccd2, ccd2Limit) : s80ccd2;
 
-    const s80d = this.compute80D(d.section80D || { selfPremium: n(d.healthSelf), parentsPremium: n(d.healthParents) });
+    const s80d = this.compute80D(d.section80D || { selfPremium: n(d.healthSelf), parentsPremium: n(d.healthParents), selfSenior: d.selfSenior, parentsSenior: d.parentSenior });
     const s80e = n(d.section80E?.educationLoanInterest || d.eduLoan);
 
     // ── 80G: Categorized donations ──
@@ -274,7 +285,16 @@ class ITR1ComputationService {
 
     const s80u = n(d.disability);
 
-    const total = s80c + s80ccd1b + s80ccd2Capped + s80d + s80e + s80g + s80tta + s80ttb + s80gg + s80u;
+    // ── 80DD: Dependent disability — ₹75K (standard) or ₹1.25L (severe) ──
+    const s80dd = Math.min(n(d.dependentDisability), 125000);
+
+    // ── 80DDB: Medical treatment for specified diseases — ₹1L (₹1L for senior too) ──
+    const s80ddb = Math.min(n(d.medicalTreatment), 100000);
+
+    // ── 80EE/80EEA: First-time home buyer interest — ₹1.5L ──
+    const s80ee = Math.min(n(d.firstHomeBuyerInterest), 150000);
+
+    const total = s80c + s80ccd1b + s80ccd2Capped + s80d + s80e + s80g + s80tta + s80ttb + s80gg + s80u + s80dd + s80ddb + s80ee;
 
     return {
       total,
@@ -289,6 +309,9 @@ class ITR1ComputationService {
         section80TTB: s80ttb,
         section80GG: s80gg,
         section80U: s80u,
+        section80DD: s80dd,
+        section80DDB: s80ddb,
+        section80EE: s80ee,
       },
       warnings: deductionWarnings,
     };
@@ -317,6 +340,11 @@ class ITR1ComputationService {
     const deductions = regime === 'old' ? this.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
     const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
 
+    // VDA income is taxed at flat 30% separately from slab computation
+    const vdaGain = income.otherSources?.vdaGain || 0;
+    const vdaTax = income.otherSources?.vdaTax || 0;
+    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain);
+
     const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
     const basicExemption = regime === 'old' ? 250000 : 300000;
 
@@ -326,31 +354,36 @@ class ITR1ComputationService {
     let slabBreakdown = [];
     let agriIntegrationApplied = false;
 
-    if (agriculturalIncome > 5000 && taxableIncome > basicExemption) {
-      // Step 1: Tax on (agricultural + non-agricultural) combined
-      const combined = taxableIncome + agriculturalIncome;
+    if (agriculturalIncome > 5000 && nonVdaTaxableIncome > basicExemption) {
+      // Step 1: Tax on (agricultural + non-agricultural excluding VDA) combined
+      const combined = nonVdaTaxableIncome + agriculturalIncome;
       const { tax: taxOnCombined } = this.applySlabs(combined, slabs);
 
       // Step 2: Tax on (agricultural + basic exemption)
       const agriPlusExemption = agriculturalIncome + basicExemption;
       const { tax: taxOnAgriExemption } = this.applySlabs(agriPlusExemption, slabs);
 
-      // Step 3: Difference is the actual tax
+      // Step 3: Difference is the actual slab tax (on non-VDA income)
       tax = Math.max(0, taxOnCombined - taxOnAgriExemption);
       agriIntegrationApplied = true;
 
-      // Generate slab breakdown for display (on the combined amount, for transparency)
-      const result = this.applySlabs(taxableIncome, slabs);
+      // Generate slab breakdown for display (on the non-VDA taxable amount, for transparency)
+      const result = this.applySlabs(nonVdaTaxableIncome, slabs);
       slabBreakdown = result.slabBreakdown;
     } else {
-      const result = this.applySlabs(taxableIncome, slabs);
+      const result = this.applySlabs(nonVdaTaxableIncome, slabs);
       tax = result.tax;
       slabBreakdown = result.slabBreakdown;
     }
 
+    // Add VDA tax (flat 30%) to slab tax
+    tax += vdaTax;
+
     const rebateLimit = regime === 'old' ? 500000 : 700000;
     const rebateMax = regime === 'old' ? 12500 : 25000;
-    const rebate = taxableIncome <= rebateLimit ? Math.min(tax, rebateMax) : 0;
+    // Rebate applies only to non-VDA slab tax; check against non-VDA taxable income
+    const slabTax = tax - vdaTax;
+    const rebate = nonVdaTaxableIncome <= rebateLimit ? Math.min(slabTax, rebateMax) : 0;
 
     const taxAfterRebate = tax - rebate;
 
@@ -373,6 +406,8 @@ class ITR1ComputationService {
       taxableIncome,
       agriculturalIncome: agriculturalIncome || 0,
       agriIntegrationApplied,
+      vdaGain,
+      vdaTax,
       slabBreakdown,
       taxOnIncome: tax,
       rebate,
@@ -419,11 +454,12 @@ class ITR1ComputationService {
       fromNonSalary = fromFD + fromOther;
     }
 
+    const fromVDA = n(payload.taxes?.tds?.fromVDA);
     const advanceTax = n(payload.taxes?.advanceTax);
     const selfAssessment = n(payload.taxes?.selfAssessmentTax);
-    const total = fromSalary + fromNonSalary + advanceTax + selfAssessment;
+    const total = fromSalary + fromNonSalary + fromVDA + advanceTax + selfAssessment;
 
-    return { fromSalary, fromFD, fromOther, fromNonSalary, advanceTax, selfAssessment, total };
+    return { fromSalary, fromFD, fromOther, fromNonSalary, fromVDA, advanceTax, selfAssessment, total };
   }
 
   // ── Validation ──

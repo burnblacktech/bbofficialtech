@@ -20,6 +20,7 @@ const SECTION_CODE_OPTIONS = [
   { value: '194J', label: '194J — Professional' },
   { value: '194K', label: '194K — MF Income' },
   { value: '194N', label: '194N — Cash Withdrawal' },
+  { value: '194S', label: '194S — VDA/Crypto' },
   { value: 'OTH', label: 'Other' },
 ];
 
@@ -198,9 +199,9 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
 
       {/* Bank Details */}
       <div className="step-card editing">
-        <div className="ff-section-title">Bank Account for Refund</div>
+        <div className="ff-section-title">Your Bank Account for Refund</div>
         <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>If you are due a refund, ITD credits it to this account. Use the bank linked to your PAN.</div>
-        <div className="ff-grid-2">
+        <div className="ff-grid-3">
           <div className="ff-field">
             <label className="ff-label">Bank Name *</label>
             <input className={`ff-input ${errors.bankName ? 'error' : ''}`} type="text" value={form.bankName} onChange={e => update('bankName', e.target.value)} placeholder="e.g., State Bank of India" />
@@ -211,13 +212,13 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
             <input className={`ff-input ${errors.accountNumber ? 'error' : ''}`} type="text" value={form.accountNumber} onChange={e => update('accountNumber', e.target.value)} placeholder="e.g., 1234567890" />
             {errors.accountNumber ? <div className="ff-hint" style={{ color: P.error }}>{errors.accountNumber}</div> : <div className="ff-hint">Savings or current account · For refund credit</div>}
           </div>
-        </div>
-        <div className="ff-grid-2">
           <div className="ff-field">
             <label className="ff-label">IFSC Code</label>
             <input className={`ff-input ${errors.ifsc ? 'error' : ''}`} type="text" value={form.ifsc} onChange={e => update('ifsc', e.target.value.toUpperCase())} placeholder="e.g., SBIN0001234" />
             {errors.ifsc ? <div className="ff-hint" style={{ color: P.error }}>{errors.ifsc}</div> : <div className="ff-hint">11-character branch code · On cheque leaf or bank website</div>}
           </div>
+        </div>
+        <div className="ff-grid-3">
           <div className="ff-field">
             <label className="ff-label">Account Type</label>
             <select className="ff-select" value={form.accountType} onChange={e => update('accountType', e.target.value)}>
@@ -259,7 +260,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
                     <Trash2 size={14} />
                   </button>
                 </div>
-                <div className="ff-grid-2">
+                <div className="ff-grid-3">
                   <div className="ff-field">
                     <label className="ff-label" style={{ fontSize: 11 }}>Deductor TAN *</label>
                     <input className={`ff-input ${errs.deductorTan ? 'error' : ''}`} type="text" value={entry.deductorTan} onChange={e => updateTDSEntry(i, 'deductorTan', e.target.value.toUpperCase())} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="e.g., ABCD12345E" maxLength={10} />
@@ -271,7 +272,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
                     {errs.deductorName && <div className="ff-hint" style={{ color: P.error }}>{errs.deductorName}</div>}
                   </div>
                 </div>
-                <div className="ff-grid-2" style={{ marginTop: 6 }}>
+                <div className="ff-grid-3" style={{ marginTop: 6 }}>
                   <div className="ff-field">
                     <label className="ff-label" style={{ fontSize: 11 }}>Section Code *</label>
                     <select className={`ff-select ${errs.sectionCode ? 'error' : ''}`} value={entry.sectionCode} onChange={e => { updateTDSEntry(i, 'sectionCode', e.target.value); }} onBlur={() => validateTDSEntryOnBlur(i)}>
@@ -286,7 +287,7 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
                     {errs.amountPaid && <div className="ff-hint" style={{ color: P.error }}>{errs.amountPaid}</div>}
                   </div>
                 </div>
-                <div className="ff-grid-2" style={{ marginTop: 6 }}>
+                <div className="ff-grid-3" style={{ marginTop: 6 }}>
                   <div className="ff-field">
                     <label className="ff-label" style={{ fontSize: 11 }}>TDS Deducted (₹)</label>
                     <input className={`ff-input ${errs.tdsDeducted ? 'error' : ''}`} type="number" min="0" value={entry.tdsDeducted || ''} onChange={e => updateTDSEntry(i, 'tdsDeducted', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />

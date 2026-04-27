@@ -33,6 +33,7 @@ class ITR1JsonBuilder {
     const salary = computation.income.salary;
     const hp = computation.income.houseProperty;
     const other = computation.income.otherSources;
+    const vda = ITR1ComputationService.computeVDA(payload.income?.otherSources);
     const bank = payload.bankDetails || payload.bankAccount || {};
     const taxes = payload.taxes || {};
     const agri = Number(payload.income?.agriculturalIncome) || 0;
@@ -117,8 +118,19 @@ class ITR1JsonBuilder {
         DividendIncome: other.dividends || 0,
         WinningsFromLotteryEtc: other.winnings || 0,
         AnyOtherIncome: (other.gifts || 0) + (other.other || 0),
+        IncomeFromVDA: vda.gain || 0,
         IncomeFromOtherSources: other.total,
       },
+
+      // Schedule VDA — Virtual Digital Assets (when VDA gain > 0)
+      ...(vda.gain > 0 ? {
+        ScheduleVDA: {
+          SaleValue: vda.saleValue,
+          CostOfAcquisition: vda.costOfAcquisition,
+          NetGain: vda.gain,
+          TaxAtSpecialRate: vda.tax,
+        },
+      } : {}),
 
       // Schedule TDS1 — TDS on Salary
       ScheduleTDS1: (payload.income?.salary?.employers || []).map(emp => ({
@@ -165,10 +177,10 @@ class ITR1JsonBuilder {
         Section80CCD2: result.deductionBreakdown?.section80CCD2 || 0,
         Section80CCDTotal: (result.deductionBreakdown?.section80C || 0) + (result.deductionBreakdown?.section80CCD1B || 0) + (result.deductionBreakdown?.section80CCD2 || 0),
         Section80D: result.deductionBreakdown?.section80D || 0,
-        Section80DD: 0,
-        Section80DDB: 0,
+        Section80DD: result.deductionBreakdown?.section80DD || 0,
+        Section80DDB: result.deductionBreakdown?.section80DDB || 0,
         Section80E: result.deductionBreakdown?.section80E || 0,
-        Section80EE: 0,
+        Section80EE: result.deductionBreakdown?.section80EE || 0,
         Section80EEA: 0,
         Section80EEB: 0,
         Section80G: result.deductionBreakdown?.section80G || 0,

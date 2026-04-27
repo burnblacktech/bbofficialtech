@@ -46,6 +46,7 @@ import { formatCurrency, formatCompact } from '../../utils/formatCurrency';
 import { getGreeting } from '../../utils/greetingCopy';
 import useOnboardingStore from '../../store/useOnboardingStore';
 
+import CountingNumber from '../../components/UI/CountingNumber';
 import MetricCard from '../../components/Shared/MetricCard';
 import ActionCard from '../../components/Shared/ActionCard';
 import ProgressRing from '../../components/Shared/ProgressRing';
@@ -56,6 +57,7 @@ import useReadinessMilestones from '../../hooks/useReadinessMilestones';
 import useStreakTracking from '../../hooks/useStreakTracking';
 import useChartColors from '../../hooks/useChartColors';
 import { computeFilingProgress } from '../../utils/filingProgress';
+import '../Filing/filing-flow.css';
 
 /* ── Constants ── */
 const MONTH_LABELS = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
@@ -421,7 +423,7 @@ export default function UserDashboard() {
 
       {/* Empty state CTA when no data at all */}
       {!summaryLoading && !hasFinancialData && !showOnboarding && (
-        <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-8 text-center">
+        <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-8 text-center">
           <FileText size={40} className="mx-auto text-[var(--border-medium)] mb-3" />
           <p className="text-sm text-[var(--text-muted)] mb-4">
             Ready to take control of your finances? Start by logging your first income or filing your return.
@@ -533,14 +535,14 @@ function ReadinessSection({ readiness, expanded, onToggle }) {
 function MonthlyOverviewSection({ chartData, hasData, isCompact, isLoading }) {
   if (isLoading) {
     return (
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
+      <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
         <SkeletonLoader variant="chart" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
+    <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 size={16} className="text-[var(--text-light)]" />
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">Monthly Overview</h3>
@@ -614,14 +616,14 @@ function MonthlyCompactSummary({ chartData }) {
 function InvestmentProgressSection({ donutChartData, donutColors, donutData, hasData, isCompact, isLoading }) {
   if (isLoading) {
     return (
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
+      <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
         <SkeletonLoader variant="chart" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
+    <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5">
       <div className="flex items-center gap-2 mb-4">
         <PieChartIcon size={16} className="text-[var(--text-light)]" />
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">Investment Progress</h3>
@@ -703,7 +705,7 @@ function InvestmentCompactSummary({ donutData }) {
 /* ── Filings Section ── */
 function FilingsSection({ filings, isLoading, navigate }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
+    <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">Your Filings</h3>
         <span className="text-xs text-[var(--text-light)]">{filings.length}</span>
@@ -752,6 +754,22 @@ function FilingsSection({ filings, isLoading, navigate }) {
                     <div className="text-xs text-[var(--text-light)]">
                       {f.taxpayerPan} · {f.itrType || 'ITR-1'}
                     </div>
+                    {/* Tax computation summary */}
+                    {f.taxComputation && (
+                      <div className="text-xs mt-0.5">
+                        {(() => {
+                          const regime = f.selectedRegime || 'new';
+                          const result = f.taxComputation[regime === 'old' ? 'oldRegime' : 'newRegime'];
+                          if (!result) return null;
+                          const isRefundDue = result.netPayable <= 0;
+                          return (
+                            <span style={{ color: isRefundDue ? 'var(--color-success)' : 'var(--color-error)', fontWeight: 600 }}>
+                              {isRefundDue ? 'Refund' : 'Payable'}: <CountingNumber value={Math.abs(result.netPayable)} duration={600} />
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    )}
                     {progress && (
                       <div className="mt-1">
                         <span className="text-[10px] text-[var(--text-light)]">
@@ -808,7 +826,7 @@ function FilingsSection({ filings, isLoading, navigate }) {
 /* ── Recent Activity Section ── */
 function RecentActivitySection({ activity, isLoading }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
+    <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] overflow-hidden">
       <div className="px-4 py-3 border-b border-[var(--border-light)]">
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">Recent Activity</h3>
       </div>

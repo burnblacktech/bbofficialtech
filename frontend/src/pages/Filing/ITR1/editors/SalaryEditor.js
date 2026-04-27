@@ -186,12 +186,12 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
       {form && (
         <div className="step-card editing">
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="Company that pays your salary · Form 16 header" fieldSource={getFieldSource('name', editing)} />
             <F l="Employer TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="10-character Tax Deduction Number · Form 16 Part A" fieldSource={getFieldSource('tan', editing)} />
-          </div>
-          <div className="ff-grid-2">
             <F l="Total Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Total CTC for the year · Form 16 Part B, Sr. No. 1" fieldSource={getFieldSource('grossSalary', editing)} />
+          </div>
+          <div className="ff-grid-3">
             <F l="Tax Deducted by Employer (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="Tax deducted by employer · Form 16 Part A, last row" fieldSource={getFieldSource('tdsDeducted', editing)} />
           </div>
           <div className="ff-grid-3">
@@ -231,17 +231,18 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
                 </div>
               )}
 
-              <div className="ff-grid-2">
+              <div className="ff-grid-3">
                 <F l="Gratuity Received (₹)" v={form.gratuityReceived} c={v => setForm({ ...form, gratuityReceived: v })} h="Lump sum on retirement · Exempt limits vary by employer type" fieldSource={getFieldSource('gratuityReceived', editing)} />
                 <F l="Leave Encashment Received (₹)" v={form.leaveEncashmentReceived} c={v => setForm({ ...form, leaveEncashmentReceived: v })} h="Unused leave payout · Exempt limits vary by employer type" fieldSource={getFieldSource('leaveEncashmentReceived', editing)} />
+                {(employerCategory === 'PE' || employerCategory === 'GOV' || employerCategory === 'OTH' || employerCategory === 'PSU') && (
+                  <F l="Commuted Pension Received (₹)" v={form.commutedPensionReceived} c={v => setForm({ ...form, commutedPensionReceived: v })} h="One-time pension payout · Partial exemption applies" fieldSource={getFieldSource('commutedPensionReceived', editing)} />
+                )}
               </div>
 
-              {(employerCategory === 'PE' || employerCategory === 'GOV' || employerCategory === 'OTH' || employerCategory === 'PSU') && (
-                <div className="ff-grid-2">
-                  <F l="Commuted Pension Received (₹)" v={form.commutedPensionReceived} c={v => setForm({ ...form, commutedPensionReceived: v })} h="One-time pension payout · Partial exemption applies" fieldSource={getFieldSource('commutedPensionReceived', editing)} />
-                  {employerCategory === 'GOV' && (
-                    <F l="Entertainment Allowance (₹)" v={form.entertainmentAllowance} c={v => setForm({ ...form, entertainmentAllowance: v })} h="Govt employees only · Max ₹5,000 deduction" fieldSource={getFieldSource('entertainmentAllowance', editing)} />
-                  )}
+              {employerCategory === 'GOV' && (
+                <div className="ff-grid-3">
+                  <F l="Entertainment Allowance (₹)" v={form.entertainmentAllowance} c={v => setForm({ ...form, entertainmentAllowance: v })} h="Govt employees only · Max ₹5,000 deduction" fieldSource={getFieldSource('entertainmentAllowance', editing)} />
+                  <div /><div />
                 </div>
               )}
 

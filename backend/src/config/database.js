@@ -32,12 +32,14 @@ const needsSSL = (url) => {
   return url.includes('sslmode=require') || url.includes('neon.tech') || url.includes('supabase');
 };
 
+const isNeon = connectionString && connectionString.includes('neon.tech');
+
 const poolConfig = {
-  max: parseInt(process.env.DB_POOL_MAX) || (isServerless ? 3 : 20),
-  min: parseInt(process.env.DB_POOL_MIN) || (isServerless ? 1 : 5),
+  max: parseInt(process.env.DB_POOL_MAX) || (isServerless ? 3 : isNeon ? 5 : 20),
+  min: parseInt(process.env.DB_POOL_MIN) || (isServerless ? 1 : isNeon ? 0 : 5),
   acquire: 30000,
-  idle: isServerless ? 5000 : 10000,
-  evict: isServerless ? 3000 : 10000,
+  idle: isServerless ? 5000 : isNeon ? 5000 : 10000,
+  evict: isServerless ? 3000 : isNeon ? 3000 : 10000,
 };
 
 const logQuery = (sql, timing) => {
@@ -69,6 +71,7 @@ if (connectionString) {
     },
     pool: poolConfig,
     define: commonDefine,
+    retry: { max: 3 },
   });
 } else {
   enterpriseLogger.info(`Database: Local PostgreSQL (${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'burnblack_itr'})`);

@@ -76,8 +76,8 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Capital Gains</h2>
-      <p className="step-desc">Gains or losses from sale of shares, mutual funds, property, gold</p>
+      <h2 className="step-title">Profit or Loss from Selling Assets</h2>
+      <p className="step-desc">Record your asset sales — stocks, property, gold, crypto</p>
 
       {/* Existing transactions */}
       {txns.map((t, i) => editing === i ? null : (
@@ -100,7 +100,7 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
       {/* Edit form */}
       {form && (
         <div className="step-card editing">
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <div className="ff-field">
               <label className="ff-label">Asset Type</label>
               <select className="ff-select" value={form.assetType} onChange={e => setForm({ ...form, assetType: e.target.value })}>
@@ -116,11 +116,11 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
               {holdingHint && <div className="ff-hint">STCG: held {holdingHint.stcg} · LTCG: held {holdingHint.ltcg}</div>}
             </div>
           </div>
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <F l="Sale Date" v={form.saleDate} c={v => setForm({ ...form, saleDate: v })} t="date" />
             <F l="Purchase Date" v={form.purchaseDate} c={v => setForm({ ...form, purchaseDate: v })} t="date" />
           </div>
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <F l="Sale Value *" v={form.saleValue} c={v => setForm({ ...form, saleValue: v })} />
             <F l="Purchase Value *" v={form.purchaseValue} c={v => setForm({ ...form, purchaseValue: v })} />
           </div>

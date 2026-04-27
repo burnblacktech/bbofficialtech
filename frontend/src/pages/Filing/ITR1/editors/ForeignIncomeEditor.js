@@ -34,8 +34,8 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Foreign Income</h2>
-      <p className="step-desc">Income earned outside India and DTAA relief</p>
+      <h2 className="step-title">Income Earned Outside India</h2>
+      <p className="step-desc">Income earned abroad and DTAA relief</p>
 
       {incomes.map((inc, i) => editing === i ? null : (
         <div key={i} className="step-card">
@@ -54,7 +54,7 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
 
       {form && (
         <div className="step-card editing">
-          <div className="ff-grid-2">
+          <div className="ff-grid-3">
             <F l="Country *" v={form.country} c={v => setForm({ ...form, country: v })} t="text" />
             <div className="ff-field">
               <label className="ff-label">Income Type</label>
@@ -62,12 +62,13 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
                 {['salary', 'interest', 'dividend', 'capitalGains', 'rental', 'other'].map(o => <option key={o} value={o}>{o}</option>)}
               </select>
             </div>
-          </div>
-          <div className="ff-grid-2">
             <F l="Amount in INR (₹) *" v={form.amountINR} c={v => setForm({ ...form, amountINR: v })} />
+          </div>
+          <div className="ff-grid-3">
             <F l="Tax Paid Abroad (₹)" v={form.taxPaidAbroad} c={v => setForm({ ...form, taxPaidAbroad: v })} />
           </div>
           <label className="ff-check"><input type="checkbox" checked={form.dtaa} onChange={e => setForm({ ...form, dtaa: e.target.checked })} /> Claim DTAA relief</label>
+          <div className="ff-hint" style={{ marginTop: 4 }}>If you earned abroad and paid tax there, you may claim DTAA relief to avoid double taxation</div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button className="ff-btn ff-btn-primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
             <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); }}>Cancel</button>
