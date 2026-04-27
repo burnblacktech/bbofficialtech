@@ -595,6 +595,93 @@ router.post('/verify-aadhaar', authenticateToken, async (req, res) => {
 });
 
 // =====================================================
+// AADHAAR OTP VERIFICATION (2-step: generate OTP → submit OTP)
+// =====================================================
+
+/**
+ * Step 1: Generate OTP — sends OTP to Aadhaar-linked mobile
+ * POST /api/auth/aadhaar/generate-otp
+ * @body { aadhaarNumber: string } — 12-digit Aadhaar number
+ */
+router.post('/aadhaar/generate-otp', authenticateToken, async (req, res) => {
+  try {
+    const { aadhaarNumber } = req.body;
+    if (!aadhaarNumber || !/^\d{12}$/.test(aadhaarNumber)) {
+      return res.status(400).json({ success: false, error: 'Aadhaar number must be exactly 12 digits' });
+    }
+
+    const aadhaarService = require('../services/common/AadhaarVerificationService');
+    const result = await aadhaarService.generateOTP(aadhaarNumber);
+
+    res.json({
+      success: true,
+      data: {
+        clientId: result.clientId,
+        otpSent: result.otpSent,
+        validAadhaar: result.validAadhaar,
+      },
+      message: 'OTP sent to Aadhaar-linked mobile number',
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message || 'Failed to send OTP',
+      code: error.code || 'AADHAAR_OTP_ERROR',
+    });
+  }
+});
+
+/**
+ * Step 2: Submit OTP — verifies OTP and returns full Aadhaar profile
+ * POST /api/auth/aadhaar/submit-otp
+ * @body { clientId: string, otp: string } — client_id from step 1 + 6-digit OTP
+ */
+router.post('/aadhaar/submit-otp', authenticateToken, async (req, res) => {
+  try {
+    const { clientId, otp } = req.body;
+    if (!clientId) return res.status(400).json({ success: false, error: 'Client ID is required' });
+    if (!otp || !/^\d{6}$/.test(otp)) return res.status(400).json({ success: false, error: 'OTP must be exactly 6 digits' });
+
+    const aadhaarService = require('../services/common/AadhaarVerificationService');
+    const result = await aadhaarService.submitOTP(clientId, otp);
+
+    if (!result.success) {
+      return res.status(422).json({ success: false, error: 'Aadhaar OTP verification failed' });
+    }
+
+    // Mark user as Aadhaar verified
+    const userId = req.user.userId;
+    const user = await User.findByPk(userId);
+    if (user) {
+      user.aadhaarVerified = true;
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+      data: {
+        aadhaarNumber: result.aadhaarNumber,
+        aadhaarMasked: result.aadhaarMasked,
+        name: result.name,
+        dob: result.dob,
+        gender: result.gender,
+        address: result.address,
+        phone: result.phone,
+        photo: result.photo,
+        source: result.source,
+      },
+      message: 'Aadhaar verified successfully',
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message || 'OTP verification failed',
+      code: error.code || 'AADHAAR_OTP_ERROR',
+    });
+  }
+});
+
+// =====================================================
 // PASSWORD MANAGEMENT
 // =====================================================
 

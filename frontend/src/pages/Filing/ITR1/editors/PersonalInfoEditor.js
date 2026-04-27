@@ -621,19 +621,63 @@ function TrendingUpIcon({ size, ...props }) {
 }
 
 /**
- * AadhaarUploadButton — Upload eAadhaar PDF to extract Aadhaar number + personal details.
- * Calls POST /api/auth/verify-aadhaar with base64 file content.
- * Handles password-protected PDFs (Aadhaar number or share code).
+ * AadhaarUploadButton — OTP-based Aadhaar verification (primary) + PDF upload (fallback).
+ * Step 1: Enter Aadhaar → Send OTP to linked mobile
+ * Step 2: Enter OTP → Get verified profile data → auto-fill fields
+ * Fallback: Upload eAadhaar PDF if OTP not available
  */
 function AadhaarUploadButton({ onVerified }) {
   const fileRef = useRef(null);
-  const [uploading, setUploading] = useState(false);
-  const [needsPassword, setNeedsPassword] = useState(false);
+  const [mode, setMode] = useState('idle'); // idle | otp-sent | uploading | pdf-password
+  const [aadhaarInput, setAadhaarInput] = useState('');
+  const [otpInput, setOtpInput] = useState('');
+  const [clientId, setClientId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [pendingFile, setPendingFile] = useState(null);
 
+  // Step 1: Send OTP
+  const handleSendOTP = async () => {
+    const cleaned = aadhaarInput.replace(/\s/g, '');
+    if (!/^\d{12}$/.test(cleaned)) { toast.error('Enter a valid 12-digit Aadhaar number'); return; }
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/aadhaar/generate-otp', { aadhaarNumber: cleaned });
+      setClientId(res.data.data.clientId);
+      setMode('otp-sent');
+      toast.success('OTP sent to your Aadhaar-linked mobile');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to send OTP');
+    } finally { setLoading(false); }
+  };
+
+  // Step 2: Verify OTP
+  const handleVerifyOTP = async () => {
+    if (!/^\d{6}$/.test(otpInput)) { toast.error('Enter the 6-digit OTP'); return; }
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/aadhaar/submit-otp', { clientId, otp: otpInput });
+      const data = res.data?.data || {};
+      toast.success('Aadhaar verified — details auto-filled');
+      setMode('idle');
+      setAadhaarInput('');
+      setOtpInput('');
+      setClientId(null);
+      onVerified({
+        aadhaarNumber: data.aadhaarNumber,
+        name: data.name,
+        dob: data.dob,
+        gender: data.gender,
+        address: data.address?.fullAddress || data.address?.flatDoorBuilding,
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'OTP verification failed');
+    } finally { setLoading(false); }
+  };
+
+  // PDF fallback
   const handleFile = async (file, pwd) => {
-    setUploading(true);
+    setLoading(true);
     try {
       const reader = new FileReader();
       const base64 = await new Promise((resolve, reject) => {
@@ -641,79 +685,108 @@ function AadhaarUploadButton({ onVerified }) {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-
       const body = { fileContent: base64 };
       if (pwd) body.password = pwd;
-
       const res = await api.post('/auth/verify-aadhaar', body);
-      const data = res.data?.data || {};
-
       toast.success('Aadhaar verified — details auto-filled');
-      setNeedsPassword(false);
-      setPassword('');
+      setMode('idle');
       setPendingFile(null);
-      onVerified(data);
+      setPassword('');
+      onVerified(res.data?.data || {});
     } catch (err) {
-      const code = err.response?.data?.code;
       const msg = err.response?.data?.error || 'Aadhaar verification failed';
-
-      if (code === 'AADHAAR_PASSWORD_INCORRECT' || msg.toLowerCase().includes('password')) {
-        setNeedsPassword(true);
+      if (msg.toLowerCase().includes('password')) {
+        setMode('pdf-password');
         setPendingFile(file);
-        toast.error('PDF is password-protected. Enter your Aadhaar number or share code.');
-      } else {
-        toast.error(msg);
-      }
+        toast.error('PDF is password-protected');
+      } else { toast.error(msg); }
     } finally {
-      setUploading(false);
+      setLoading(false);
       if (fileRef.current) fileRef.current.value = '';
     }
   };
 
-  const handleSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) { toast.error('File must be under 10MB'); return; }
-    handleFile(file);
-  };
-
-  return (
-    <div>
-      <input ref={fileRef} type="file" accept=".pdf" onChange={handleSelect} style={{ display: 'none' }} />
-      <button
-        type="button"
-        onClick={() => fileRef.current?.click()}
-        disabled={uploading}
-        className="ff-btn ff-btn-outline"
-        style={{ padding: '6px 12px', fontSize: 12, whiteSpace: 'nowrap', marginBottom: 4 }}
-      >
-        {uploading ? <><Loader2 size={12} className="animate-spin" /> Verifying...</> : <><Upload size={12} /> Upload eAadhaar</>}
-      </button>
-
-      {needsPassword && (
-        <div style={{ marginTop: 6, padding: 10, background: P.bgMuted, borderRadius: 6, border: `1px solid ${P.borderLight}` }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: P.textSecondary, display: 'block', marginBottom: 4 }}>
-            PDF Password
-          </label>
-          <div style={{ display: 'flex', gap: 6 }}>
+  if (mode === 'idle') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
             <input
+              className="ff-input"
               type="text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Aadhaar number or share code"
-              style={{ flex: 1, padding: '6px 10px', border: `1px solid ${P.borderMedium}`, borderRadius: 4, fontSize: 12, outline: 'none' }}
+              value={aadhaarInput}
+              onChange={(e) => setAadhaarInput(e.target.value.replace(/[^\d\s]/g, '').slice(0, 14))}
+              placeholder="Enter 12-digit Aadhaar"
+              maxLength={14}
+              style={{ fontSize: 13 }}
             />
-            <button
-              onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }}
-              disabled={!password || uploading}
-              className="ff-btn ff-btn-primary"
-              style={{ padding: '6px 12px', fontSize: 11 }}
-            >
-              Unlock
-            </button>
           </div>
+          <button
+            type="button"
+            onClick={handleSendOTP}
+            disabled={loading || aadhaarInput.replace(/\s/g, '').length !== 12}
+            className="ff-btn ff-btn-primary"
+            style={{ padding: '8px 14px', fontSize: 12, whiteSpace: 'nowrap' }}
+          >
+            {loading ? <><Loader2 size={12} className="animate-spin" /> Sending...</> : 'Verify via OTP'}
+          </button>
         </div>
-      )}
-    </div>
-  );
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--text-light)' }}>or</span>
+          <input ref={fileRef} type="file" accept=".pdf" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} style={{ display: 'none' }} />
+          <button type="button" onClick={() => fileRef.current?.click()} className="ff-btn ff-btn-outline" style={{ padding: '4px 10px', fontSize: 11 }}>
+            <Upload size={11} /> Upload eAadhaar PDF
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'otp-sent') {
+    return (
+      <div style={{ padding: 10, background: 'var(--bg-muted)', borderRadius: 6, border: '1px solid var(--border-light)' }}>
+        <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>
+          OTP sent to your Aadhaar-linked mobile. Enter it below:
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <input
+            className="ff-input"
+            type="text"
+            value={otpInput}
+            onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            placeholder="6-digit OTP"
+            maxLength={6}
+            style={{ flex: 1, fontSize: 14, letterSpacing: '0.15em', textAlign: 'center' }}
+            autoFocus
+          />
+          <button
+            onClick={handleVerifyOTP}
+            disabled={loading || otpInput.length !== 6}
+            className="ff-btn ff-btn-primary"
+            style={{ padding: '8px 14px', fontSize: 12 }}
+          >
+            {loading ? <><Loader2 size={12} className="animate-spin" /> Verifying...</> : 'Verify'}
+          </button>
+        </div>
+        <button onClick={() => { setMode('idle'); setOtpInput(''); }} style={{ marginTop: 6, background: 'none', border: 'none', fontSize: 11, color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+          ← Back
+        </button>
+      </div>
+    );
+  }
+
+  if (mode === 'pdf-password') {
+    return (
+      <div style={{ padding: 10, background: 'var(--bg-muted)', borderRadius: 6, border: '1px solid var(--border-light)' }}>
+        <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>PDF Password</label>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <input className="ff-input" type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Aadhaar number or share code" style={{ flex: 1, fontSize: 12 }} />
+          <button onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }} disabled={!password || loading} className="ff-btn ff-btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>Unlock</button>
+        </div>
+        <button onClick={() => { setMode('idle'); setPassword(''); setPendingFile(null); }} style={{ marginTop: 6, background: 'none', border: 'none', fontSize: 11, color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>← Back</button>
+      </div>
+    );
+  }
+
+  return null;
 }
