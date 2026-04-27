@@ -14,7 +14,7 @@ import {
   ArrowLeft, Trash2, Upload, AlertTriangle,
   User, FileText, Landmark, Check, MoreHorizontal, Clock, Plus, X,
 } from 'lucide-react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import useUnsavedWarning from '../../../hooks/useUnsavedWarning';
@@ -379,7 +379,7 @@ export default function ITR1Flow() {
   const location = useLocation();
   const qc = useQueryClient();
   const { user, profile } = useAuth();
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
   const { data: filing, isLoading, isError } = useQuery({
     queryKey: ['filing', filingId],

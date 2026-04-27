@@ -4,7 +4,6 @@
 // =====================================================
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useReducedMotion } from 'framer-motion';
 
 /**
  * Formats a number with Indian locale grouping and a prefix.
@@ -37,7 +36,7 @@ export default function CountingNumber({
   zeroDisplay = '—',
 }) {
   const safeValue = Number(value) || 0;
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
   // Track the current displayed value (for interrupting animations)
   const currentRef = useRef(0);
