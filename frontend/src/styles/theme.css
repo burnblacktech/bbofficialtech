@@ -36,8 +36,8 @@
   --bg-muted: #F3F3F0;
 
   /* ── Borders (warm) ── */
-  --border-light: #E8E8E4;
-  --border-medium: #D4D4D0;
+  --border-light: #D8D8D4;
+  --border-medium: #C0C0BC;
   --border-focus: #D4AF37;
 
   /* ── Semantic ── */
@@ -189,8 +189,8 @@ body, input, select, textarea, button {
   --bg-card-elevated: rgba(255, 255, 255, 0.03);
 
   /* ── Borders ── */
-  --border-light: rgba(255, 255, 255, 0.08);
-  --border-medium: #444444;
+  --border-light: rgba(255, 255, 255, 0.12);
+  --border-medium: #555555;
   --border-focus: #E0C04D;
 
   /* ── Semantic ── */

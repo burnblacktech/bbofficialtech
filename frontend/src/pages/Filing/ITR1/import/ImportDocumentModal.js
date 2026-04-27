@@ -14,10 +14,13 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Upload, FileText, FileJson, AlertCircle, Loader2, CheckCircle,
+  X, Upload, FileText, FileJson, AlertCircle, Loader2, CheckCircle, Globe, Lock, RefreshCw,
 } from 'lucide-react';
 import api from '../../../../services/api';
 import P from '../../../../styles/palette';
+
+// ── Document types that support ITD portal fetch ──
+const ITD_FETCH_TYPES = ['26as', 'ais'];
 
 // ── Document type configs ──
 const DOC_TYPES = [
@@ -177,7 +180,16 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
   const [pendingFile, setPendingFile] = useState(null);
   const fileInputRef = useRef(null);
 
+  // ── ITD Portal fetch state (Tasks 9.1–9.3) ──
+  const [itdMode, setItdMode] = useState(false); // true = showing ITD fetch flow
+  const [itdState, setItdState] = useState('idle'); // idle | authenticating | authenticated | fetching | fetched
+  const [itdPan, setItdPan] = useState('');
+  const [itdPassword, setItdPassword] = useState('');
+  const [itdError, setItdError] = useState(null);
+  const [itdErrorCode, setItdErrorCode] = useState(null);
+
   const docType = DOC_TYPES.find((d) => d.id === selectedType);
+  const supportsItdFetch = ITD_FETCH_TYPES.includes(selectedType);
 
   // ── File handling ──
   const handleFile = useCallback(
@@ -251,6 +263,93 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
     setSelectedType(null);
     setError(null);
     setFileName(null);
+    // Reset ITD state
+    setItdMode(false);
+    setItdState('idle');
+    setItdPan('');
+    setItdPassword('');
+    setItdError(null);
+    setItdErrorCode(null);
+  };
+
+  // ── ITD Portal: switch to fetch mode ──
+  const startItdFetch = () => {
+    setItdMode(true);
+    setItdError(null);
+    setItdErrorCode(null);
+    setItdState('idle');
+    // Pre-fill PAN from preselectedType context (if available)
+    if (!itdPan) setItdPan('');
+  };
+
+  // ── ITD Portal: switch back to file upload ──
+  const switchToUpload = () => {
+    setItdMode(false);
+    setItdError(null);
+    setItdErrorCode(null);
+    setItdState('idle');
+    setItdPassword('');
+  };
+
+  // ── Task 9.1: ITD Portal authentication ──
+  const handleItdAuth = useCallback(async () => {
+    if (!itdPan || !itdPassword) return;
+    setItdError(null);
+    setItdErrorCode(null);
+    setItdState('authenticating');
+    try {
+      await api.post(`/filings/${filingId}/import/surepass/auth`, {
+        pan: itdPan,
+        itdPassword,
+      });
+      setItdState('authenticated');
+    } catch (err) {
+      const code = err.response?.data?.code;
+      const msg = err.response?.data?.error || err.response?.data?.message || 'Authentication failed. Please try again.';
+      setItdError(msg);
+      setItdErrorCode(code || null);
+      setItdState('idle');
+    } finally {
+      // Req 9.5: Clear password from React state immediately
+      setItdPassword('');
+    }
+  }, [filingId, itdPan, itdPassword]);
+
+  // ── Task 9.2: Fetch document after auth ──
+  const handleItdFetchDoc = useCallback(async (fetchType) => {
+    setItdError(null);
+    setItdErrorCode(null);
+    setItdState('fetching');
+    try {
+      const res = await api.post(`/filings/${filingId}/import/surepass/fetch`, {
+        documentType: fetchType,
+      });
+      setItdState('fetched');
+      const { extractedData, conflicts, fieldMapping, documentMeta, warnings } = res.data;
+      onImportParsed({ extractedData, conflicts, fieldMapping, documentMeta, documentType: fetchType, fileName: `ITD Portal (${fetchType.toUpperCase()})`, warnings: warnings || [] });
+    } catch (err) {
+      const code = err.response?.data?.code;
+      const msg = err.response?.data?.error || err.response?.data?.message || 'Failed to fetch data. Please try again.';
+      setItdError(msg);
+      setItdErrorCode(code || null);
+      // Session expired → need re-auth; otherwise stay authenticated for retry
+      if (code === 'ITR_SESSION_EXPIRED') {
+        setItdState('idle');
+      } else {
+        setItdState('authenticated');
+      }
+    }
+  }, [filingId, onImportParsed]);
+
+  // ── Task 9.3: Retry handler ──
+  const handleItdRetry = () => {
+    setItdError(null);
+    setItdErrorCode(null);
+    if (itdState === 'idle') {
+      // Re-auth scenario — just clear error, user can re-submit
+    } else if (itdState === 'authenticated') {
+      // Fetch failed — user can pick document type again
+    }
   };
 
   return (
@@ -278,7 +377,9 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
             <div>
               <h2 style={styles.title}>Import Documents</h2>
               <p style={styles.subtitle}>
-                {selectedType ? `Upload your ${docType?.label} file` : 'Select a document type to import'}
+                {selectedType
+                  ? (itdMode ? `Fetch ${docType?.label} from ITD portal` : `Upload your ${docType?.label} file`)
+                  : 'Select a document type to import'}
               </p>
             </div>
             <button style={styles.closeBtn} onClick={onClose} title="Close">
@@ -313,10 +414,192 @@ export default function ImportDocumentModal({ filingId, onClose, onImportParsed,
                   );
                 })}
               </div>
-            ) : (
-              /* ── Step 2: File upload ── */
+            ) : itdMode ? (
+              /* ── Step 2b: ITD Portal fetch flow (Tasks 9.1–9.3) ── */
               <div>
                 <button style={styles.backBtn} onClick={goBack}>← Change document type</button>
+
+                {/* ── Task 9.1: Auth form (idle state) ── */}
+                {itdState === 'idle' && (
+                  <div style={styles.itdAuthBox}>
+                    <div style={styles.itdAuthHeader}>
+                      <div style={{ ...styles.typeIcon, background: '#F0FDFA' }}>
+                        <Globe size={24} style={{ color: P.secondary }} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary }}>
+                          Connect to ITD Portal
+                        </div>
+                        <div style={{ fontSize: 12, color: P.textMuted, marginTop: 2 }}>
+                          Enter your e-filing credentials to fetch {docType?.label} data
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 16 }}>
+                      <label style={styles.itdLabel}>PAN</label>
+                      <input
+                        type="text"
+                        value={itdPan}
+                        onChange={(e) => setItdPan(e.target.value.toUpperCase())}
+                        placeholder="ABCDE1234F"
+                        maxLength={10}
+                        style={styles.itdInput}
+                      />
+                    </div>
+
+                    <div style={{ marginTop: 12 }}>
+                      <label style={styles.itdLabel}>ITD e-Filing Password</label>
+                      <input
+                        type="password"
+                        value={itdPassword}
+                        onChange={(e) => setItdPassword(e.target.value)}
+                        placeholder="Your incometax.gov.in password"
+                        style={styles.itdInput}
+                        autoFocus
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleItdAuth}
+                      disabled={!itdPan || !itdPassword}
+                      style={{
+                        ...styles.itdPrimaryBtn,
+                        opacity: (!itdPan || !itdPassword) ? 0.5 : 1,
+                        cursor: (!itdPan || !itdPassword) ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      <Lock size={14} />
+                      Connect to ITD Portal
+                    </button>
+
+                    <div style={{ fontSize: 11, color: P.textLight, marginTop: 10, textAlign: 'center' }}>
+                      Your password is sent securely and never stored
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Task 9.1: Authenticating state ── */}
+                {itdState === 'authenticating' && (
+                  <div style={styles.itdLoadingBox}>
+                    <Loader2 size={32} style={{ color: P.secondary, animation: 'spin 0.8s linear infinite' }} />
+                    <div style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary, marginTop: 12 }}>
+                      Connecting to ITD portal...
+                    </div>
+                    <div style={{ fontSize: 12, color: P.textMuted, marginTop: 4 }}>
+                      Verifying your credentials with incometax.gov.in
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Task 9.2: Document selection (authenticated state) ── */}
+                {itdState === 'authenticated' && (
+                  <div style={styles.itdAuthBox}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                      <CheckCircle size={18} style={{ color: P.success }} />
+                      <span style={{ fontSize: 14, fontWeight: 600, color: P.success }}>Connected to ITD Portal</span>
+                    </div>
+                    <div style={{ fontSize: 13, color: P.textSecondary, marginBottom: 16 }}>
+                      Select which document to fetch:
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <button
+                        onClick={() => handleItdFetchDoc('26as')}
+                        style={styles.itdDocBtn}
+                      >
+                        <FileJson size={16} style={{ color: '#0D9488' }} />
+                        Fetch Form 26AS
+                      </button>
+                      <button
+                        onClick={() => handleItdFetchDoc('ais')}
+                        style={styles.itdDocBtn}
+                      >
+                        <FileJson size={16} style={{ color: '#7c3aed' }} />
+                        Fetch AIS
+                      </button>
+                      <button
+                        onClick={() => handleItdFetchDoc('both')}
+                        style={{ ...styles.itdDocBtn, background: P.brandLight, borderColor: P.brand }}
+                      >
+                        <FileJson size={16} style={{ color: P.brandDark }} />
+                        Fetch Both (26AS + AIS)
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Task 9.2: Fetching state ── */}
+                {itdState === 'fetching' && (
+                  <div style={styles.itdLoadingBox}>
+                    <Loader2 size={32} style={{ color: P.secondary, animation: 'spin 0.8s linear infinite' }} />
+                    <div style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary, marginTop: 12 }}>
+                      Fetching your data...
+                    </div>
+                    <div style={{ fontSize: 12, color: P.textMuted, marginTop: 4 }}>
+                      Downloading from ITD portal — this may take a moment
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Task 9.3: Error display with retry + fallback ── */}
+                {itdError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ ...styles.errorBox, flexDirection: 'column', gap: 10 }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <AlertCircle size={16} style={{ color: P.error, flexShrink: 0, marginTop: 1 }} />
+                      <span>{itdError}</span>
+                    </div>
+
+                    {/* Rate limit: show wait message only */}
+                    {(itdErrorCode === 'SUREPASS_RATE_LIMITED' || itdErrorCode === 'ITR_AUTH_RATE_LIMITED') && (
+                      <div style={{ fontSize: 12, color: P.textMuted, paddingLeft: 24 }}>
+                        Please wait a few minutes before trying again.
+                      </div>
+                    )}
+
+                    {/* Session expired: re-auth prompt */}
+                    {itdErrorCode === 'ITR_SESSION_EXPIRED' && (
+                      <div style={{ fontSize: 12, color: P.textMuted, paddingLeft: 24 }}>
+                        Your session has expired. Please enter your credentials again.
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: 8, paddingLeft: 24 }}>
+                      {itdErrorCode !== 'SUREPASS_RATE_LIMITED' && itdErrorCode !== 'ITR_AUTH_RATE_LIMITED' && (
+                        <button onClick={handleItdRetry} style={styles.itdRetryBtn}>
+                          <RefreshCw size={12} />
+                          Retry
+                        </button>
+                      )}
+                      <button onClick={switchToUpload} style={styles.itdFallbackBtn}>
+                        <Upload size={12} />
+                        Upload PDF instead
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              /* ── Step 2a: File upload ── */
+              <div>
+                <button style={styles.backBtn} onClick={goBack}>← Change document type</button>
+
+                {/* ITD Portal fetch option for 26AS/AIS (Task 9.1) */}
+                {supportsItdFetch && (
+                  <button onClick={startItdFetch} style={styles.itdFetchBanner}>
+                    <Globe size={16} style={{ color: P.secondary }} />
+                    <span style={{ flex: 1, textAlign: 'left' }}>
+                      <span style={{ fontWeight: 600, color: P.textPrimary }}>Fetch from ITD Portal</span>
+                      <span style={{ display: 'block', fontSize: 11, color: P.textMuted, marginTop: 1 }}>
+                        Auto-import using your e-filing credentials
+                      </span>
+                    </span>
+                    <span style={{ fontSize: 12, color: P.secondary, fontWeight: 600 }}>→</span>
+                  </button>
+                )}
 
                 {/* Dropzone */}
                 <div
@@ -579,5 +862,116 @@ const styles = {
     fontSize: 12,
     color: P.success,
     fontWeight: 500,
+  },
+  // ── ITD Portal fetch styles (Tasks 9.1–9.3) ──
+  itdFetchBanner: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    width: '100%',
+    padding: '12px 14px',
+    marginBottom: 12,
+    background: P.secondaryLight,
+    border: `1px solid ${P.infoBorder}`,
+    borderRadius: 10,
+    cursor: 'pointer',
+    minHeight: 'auto',
+  },
+  itdAuthBox: {
+    padding: 20,
+    background: P.bgCard,
+    border: `1px solid ${P.borderLight}`,
+    borderRadius: 12,
+  },
+  itdAuthHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+  },
+  itdLabel: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: P.textSecondary,
+    display: 'block',
+    marginBottom: 4,
+  },
+  itdInput: {
+    width: '100%',
+    padding: '9px 12px',
+    border: `1px solid ${P.borderMedium}`,
+    borderRadius: 6,
+    fontSize: 13,
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  itdPrimaryBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    width: '100%',
+    marginTop: 16,
+    padding: '10px 16px',
+    background: P.secondary,
+    color: '#fff',
+    border: 'none',
+    borderRadius: 8,
+    fontSize: 13,
+    fontWeight: 600,
+    minHeight: 'auto',
+  },
+  itdLoadingBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '40px 20px',
+    background: P.bgCard,
+    border: `1px solid ${P.borderLight}`,
+    borderRadius: 12,
+    textAlign: 'center',
+  },
+  itdDocBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    width: '100%',
+    padding: '10px 14px',
+    background: P.bgCard,
+    border: `1px solid ${P.borderLight}`,
+    borderRadius: 8,
+    fontSize: 13,
+    fontWeight: 600,
+    color: P.textPrimary,
+    cursor: 'pointer',
+    minHeight: 'auto',
+    transition: 'border-color 0.15s',
+  },
+  itdRetryBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    padding: '6px 12px',
+    background: P.bgCard,
+    border: `1px solid ${P.borderMedium}`,
+    borderRadius: 6,
+    fontSize: 12,
+    fontWeight: 600,
+    color: P.textSecondary,
+    cursor: 'pointer',
+    minHeight: 'auto',
+  },
+  itdFallbackBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    padding: '6px 12px',
+    background: 'none',
+    border: `1px solid ${P.borderLight}`,
+    borderRadius: 6,
+    fontSize: 12,
+    fontWeight: 500,
+    color: P.textMuted,
+    cursor: 'pointer',
+    minHeight: 'auto',
   },
 };

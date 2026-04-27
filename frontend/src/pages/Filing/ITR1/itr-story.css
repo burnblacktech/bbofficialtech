@@ -109,8 +109,14 @@
   padding: 16px;
   background: var(--bg-card);
   border-right: 1px solid var(--border-light);
-  overflow: hidden; /* never scrolls — 4 cards + connectors fit */
+  overflow-y: auto; /* scrollable on small desktop screens */
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
 }
+.story-flow::-webkit-scrollbar { width: 4px; }
+.story-flow::-webkit-scrollbar-track { background: transparent; }
+.story-flow::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 2px; }
 
 /* ── Story Flow Cards ── */
 .story-flow__card {
