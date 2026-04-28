@@ -147,6 +147,7 @@ const payloadSchema = Joi.object({
   taxes: taxesSchema.allow(null),
   _selectedSources: Joi.array().items(Joi.string()).allow(null),
   _onboarding: Joi.object().unknown(true).allow(null),
+  _defaultsApplied: Joi.boolean().allow(null),
   _importMeta: Joi.object().unknown(true).allow(null),
   selectedRegime: Joi.string().valid('old', 'new').allow('', null),
 }).options({ allowUnknown: true, abortEarly: false });
