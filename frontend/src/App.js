@@ -86,6 +86,8 @@ const AdminCoupons = lazy(() => import('./pages/Admin/AdminCoupons'));
 const AdminHealth = lazy(() => import('./pages/Admin/AdminHealth'));
 const AdminFilingList = lazy(() => import('./pages/Admin/AdminFilingList'));
 const AdminFilingCreate = lazy(() => import('./pages/Admin/AdminFilingCreate'));
+const AdminFilingBrowser = lazy(() => import('./pages/Admin/FilingBrowser'));
+const AdminFilingBrowserDetail = lazy(() => import('./pages/Admin/FilingBrowserDetail'));
 const AdminProtectedRoute = lazy(() => import('./components/auth/AdminProtectedRoute'));
 
 // =====================================================
@@ -222,6 +224,8 @@ const AppContent = () => {
           <Route path="/admin/coupons" element={<Suspense fallback={<RouteLoader />}><AdminCoupons /></Suspense>} />
           <Route path="/admin/filing-mgmt" element={<Suspense fallback={<RouteLoader />}><AdminFilingList /></Suspense>} />
           <Route path="/admin/filing-mgmt/create" element={<Suspense fallback={<RouteLoader />}><AdminFilingCreate /></Suspense>} />
+          <Route path="/admin/filing-browser" element={<Suspense fallback={<RouteLoader />}><AdminFilingBrowser /></Suspense>} />
+          <Route path="/admin/filing-browser/:id" element={<Suspense fallback={<RouteLoader />}><AdminFilingBrowserDetail /></Suspense>} />
           <Route path="/admin/health" element={<Suspense fallback={<RouteLoader />}><AdminHealth /></Suspense>} />
         </Route>
       </Route>

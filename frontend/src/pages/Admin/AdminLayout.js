@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   FolderPlus,
+  Search,
 } from 'lucide-react';
 import P from '../../styles/palette';
 
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { path: '/admin/users', icon: Users, label: 'Users' },
   { path: '/admin/filings', icon: FileText, label: 'Filings' },
   { path: '/admin/filing-mgmt', icon: FolderPlus, label: 'Filing Mgmt' },
+  { path: '/admin/filing-browser', icon: Search, label: 'Browse All' },
   { path: '/admin/revenue', icon: DollarSign, label: 'Revenue' },
   { path: '/admin/eri', icon: Wifi, label: 'ERI Monitor' },
   { path: '/admin/coupons', icon: Tag, label: 'Coupons' },

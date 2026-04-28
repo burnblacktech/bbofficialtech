@@ -18,6 +18,7 @@ const AdminERIService = require('../services/admin/AdminERIService');
 const AdminCouponService = require('../services/admin/AdminCouponService');
 const AdminHealthService = require('../services/admin/AdminHealthService');
 const AdminFilingService = require('../services/admin/AdminFilingService');
+const AdminFilingBrowserService = require('../services/admin/AdminFilingBrowserService');
 
 // Apply auth + admin check + audit to all routes
 router.use(authenticateToken, requireAdmin, adminAuditMiddleware);
@@ -93,6 +94,32 @@ const listAdminFilingsSchema = Joi.object({
   includeDeleted: Joi.boolean().default(false),
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(20),
+});
+
+const filingBrowserListSchema = Joi.object({
+  search: Joi.string().max(200).allow('').optional(),
+  assessmentYear: Joi.string().pattern(/^\d{4}-\d{2}$/).optional(),
+  itrType: Joi.string().valid('ITR-1', 'ITR-2', 'ITR-3', 'ITR-4').optional(),
+  lifecycleState: Joi.string().valid(
+    'draft', 'review_pending', 'reviewed', 'approved_by_ca',
+    'submitted_to_eri', 'eri_in_progress', 'eri_success', 'eri_failed',
+  ).optional(),
+  paymentStatus: Joi.string().valid('paid', 'unpaid', 'free').optional(),
+  includeDeleted: Joi.boolean().default(false),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(25),
+});
+
+const filingBrowserExportSchema = Joi.object({
+  search: Joi.string().max(200).allow('').optional(),
+  assessmentYear: Joi.string().pattern(/^\d{4}-\d{2}$/).optional(),
+  itrType: Joi.string().valid('ITR-1', 'ITR-2', 'ITR-3', 'ITR-4').optional(),
+  lifecycleState: Joi.string().valid(
+    'draft', 'review_pending', 'reviewed', 'approved_by_ca',
+    'submitted_to_eri', 'eri_in_progress', 'eri_success', 'eri_failed',
+  ).optional(),
+  paymentStatus: Joi.string().valid('paid', 'unpaid', 'free').optional(),
+  includeDeleted: Joi.boolean().default(false),
 });
 
 // ══════════════════════════════════════════════════════
@@ -291,6 +318,39 @@ router.get('/coupons/:couponId/usage', async (req, res, next) => {
 router.get('/health', async (req, res, next) => {
   try {
     const data = await AdminHealthService.getHealthData();
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+});
+
+// ══════════════════════════════════════════════════════
+// FILING BROWSER — Browse ALL filings on the platform
+// ══════════════════════════════════════════════════════
+
+router.get('/filing-browser', async (req, res, next) => {
+  try {
+    const { error, value } = filingBrowserListSchema.validate(req.query, { stripUnknown: true });
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message, code: 'VALIDATION_ERROR' });
+    }
+    const data = await AdminFilingBrowserService.list(value);
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+});
+
+router.get('/filing-browser/export', async (req, res, next) => {
+  try {
+    const { error, value } = filingBrowserExportSchema.validate(req.query, { stripUnknown: true });
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message, code: 'VALIDATION_ERROR' });
+    }
+    const data = await AdminFilingBrowserService.exportList(value);
+    res.json({ success: true, data });
+  } catch (err) { next(err); }
+});
+
+router.get('/filing-browser/:filingId', async (req, res, next) => {
+  try {
+    const data = await AdminFilingBrowserService.detail(req.params.filingId);
     res.json({ success: true, data });
   } catch (err) { next(err); }
 });

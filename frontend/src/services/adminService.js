@@ -41,6 +41,11 @@ const adminService = {
   deleteAdminFiling: (filingId) => api.delete(`/admin/filings/${filingId}`).then((r) => r.data),
   getAdminFilings: (params) => api.get('/admin/filings', { params }).then((r) => r.data),
 
+  // ── Filing Browser ──
+  getFilingBrowser: (params) => api.get('/admin/filing-browser', { params }).then((r) => r.data),
+  getFilingBrowserDetail: (filingId) => api.get(`/admin/filing-browser/${filingId}`).then((r) => r.data),
+  exportFilingBrowser: (params) => api.get('/admin/filing-browser/export', { params }).then((r) => r.data),
+
   // ── Health ──
   getHealth: () => api.get('/admin/health').then((r) => r.data),
 };
