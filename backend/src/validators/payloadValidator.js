@@ -146,6 +146,7 @@ const payloadSchema = Joi.object({
   bankDetails: bankDetailsSchema.allow(null),
   taxes: taxesSchema.allow(null),
   _selectedSources: Joi.array().items(Joi.string()).allow(null),
+  _onboarding: Joi.object().unknown(true).allow(null),
   _importMeta: Joi.object().unknown(true).allow(null),
   selectedRegime: Joi.string().valid('old', 'new').allow('', null),
 }).options({ allowUnknown: true, abortEarly: false });
