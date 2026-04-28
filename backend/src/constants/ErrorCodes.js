@@ -84,6 +84,12 @@ module.exports = {
     PF_REFUND_API_UNAVAIL: 'PF_REFUND_API_UNAVAIL',           // 503 — ITD API unavailable
     PF_NOT_FILED: 'PF_NOT_FILED',                             // 409 — filing not in eri_success state
 
+    // Auto-Fill
+    ITR_SESSION_EXPIRED: 'ITR_SESSION_EXPIRED',               // 401 — SurePass session expired
+    SUREPASS_SERVICE_UNAVAILABLE: 'SUREPASS_SERVICE_UNAVAILABLE', // 503 — ITD portal down
+    FILING_NOT_EDITABLE: 'FILING_NOT_EDITABLE',               // 400 — filing not in draft state
+    INVALID_RESOLUTION: 'INVALID_RESOLUTION',                 // 400 — bad conflict resolution
+
     // PDF Generation
     PDF_GENERATION_FAILED: 'PDF_GENERATION_FAILED',           // 500 — PDFKit error
 

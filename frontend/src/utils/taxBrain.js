@@ -316,4 +316,83 @@ export function getWhispersForSection(whispers, section) {
     .sort((a, b) => a.priority - b.priority);
 }
 
-export default { generateWhispers, getWhispersForSection };
+export function generateRecommendations(payload, comp, regime) {
+  if (!payload || !comp) return [];
+  const recommendations = [];
+
+  if (regime === 'new') {
+    // Under new regime, only show regime comparison suggestion
+    const oldTax = comp.oldRegime?.totalTax || 0;
+    const newTax = comp.newRegime?.totalTax || 0;
+    if (oldTax < newTax) {
+      recommendations.push({
+        id: 'switch_old', title: 'Consider Old Regime',
+        description: `Old regime would save you ₹${(newTax - oldTax).toLocaleString('en-IN')}. You have deductions that make old regime beneficial.`,
+        savingsAmount: newTax - oldTax, section: 'regime', actionType: 'switch', priority: 1,
+      });
+    }
+    return recommendations.slice(0, 5);
+  }
+
+  // Old regime recommendations
+  const d = payload.deductions || {};
+  const marginalRate = (comp.oldRegime?.taxableIncome || 0) > 1000000 ? 30
+    : (comp.oldRegime?.taxableIncome || 0) > 500000 ? 20 : 5;
+
+  // 80C gap
+  const raw80C = n(d.ppf) + n(d.elss) + n(d.lic) + n(d.nsc) + n(d.tuitionFees)
+    + n(d.homeLoanPrincipal) + n(d.sukanyaSamriddhi) + n(d.fiveYearFD) + n(d.otherC);
+  const remaining80C = 150000 - raw80C;
+  if (remaining80C > 0) {
+    const savings = Math.round(remaining80C * marginalRate / 100);
+    recommendations.push({
+      id: '80c_gap', title: 'Maximize 80C Investments',
+      description: `You have ₹${remaining80C.toLocaleString('en-IN')} remaining in 80C. Invest in PPF, ELSS, or tax-saver FDs to save ₹${savings.toLocaleString('en-IN')} in tax.`,
+      savingsAmount: savings, section: 'deductions', actionType: 'invest', priority: 2,
+    });
+  }
+
+  // NPS 80CCD(1B)
+  if (!n(d.nps)) {
+    const npsSavings = Math.round(50000 * marginalRate / 100);
+    recommendations.push({
+      id: 'nps', title: 'Invest in NPS',
+      description: `Invest up to ₹50,000 in NPS for an additional deduction under 80CCD(1B) — save ₹${npsSavings.toLocaleString('en-IN')} in tax.`,
+      savingsAmount: npsSavings, section: 'deductions', actionType: 'invest', priority: 3,
+    });
+  }
+
+  // Health insurance 80D
+  if (!n(d.healthSelf)) {
+    const healthSavings = Math.round(25000 * marginalRate / 100);
+    recommendations.push({
+      id: 'health', title: 'Get Health Insurance',
+      description: `Claim up to ₹25,000 under 80D for health insurance premium — save ₹${healthSavings.toLocaleString('en-IN')} in tax.`,
+      savingsAmount: healthSavings, section: 'deductions', actionType: 'claim', priority: 4,
+    });
+  }
+
+  // Parents health insurance
+  if (!n(d.healthParents) && n(d.healthSelf) > 0) {
+    const parentSavings = Math.round(25000 * marginalRate / 100);
+    recommendations.push({
+      id: 'health_parents', title: 'Insure Your Parents',
+      description: `Claim up to ₹25,000 (₹50,000 if senior) under 80D for parents' health insurance — save ₹${parentSavings.toLocaleString('en-IN')}.`,
+      savingsAmount: parentSavings, section: 'deductions', actionType: 'claim', priority: 5,
+    });
+  }
+
+  // Education loan
+  if (!n(d.eduLoan) && (payload.income?.salary?.employers?.length > 0)) {
+    recommendations.push({
+      id: 'edu_loan', title: 'Education Loan Interest',
+      description: 'If you have an education loan, claim the full interest amount under 80E — no upper limit.',
+      savingsAmount: 0, section: 'deductions', actionType: 'info', priority: 10,
+    });
+  }
+
+  // Sort by savings descending, limit to 5
+  return recommendations.sort((a, b) => b.savingsAmount - a.savingsAmount).slice(0, 5);
+}
+
+export default { generateWhispers, getWhispersForSection, generateRecommendations };

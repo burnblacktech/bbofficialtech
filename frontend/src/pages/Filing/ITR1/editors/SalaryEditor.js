@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Plus, Edit2, Trash2, AlertCircle, Info, Database } from 'lucide-react';
 import { validateSalaryStep } from '../../../../utils/itrValidation';
 import { isMetroCity } from '../../../../constants/indianStates';
+import { computeHRA, detectHRADiscrepancy } from '../../../../utils/hraCalculator';
+import { detectEmployerCategory } from '../../../../utils/smartDefaults';
 import TaxWhisper from '../../../../components/common/TaxWhisper';
 import { getIncomeSummary } from '../../../../services/financeService';
 import { formatCurrency } from '../../../../utils/formatCurrency';
@@ -86,18 +88,42 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
     }).catch(() => { /* best-effort */ });
   };
 
-  // HRA auto-calculation hint
-  const suggestedHRA = useMemo(() => {
+  // Task 10.4: Full HRA calculator integration
+  const hraResult = useMemo(() => {
     if (!form) return null;
     const hraReceived = n(form.allowances?.hra?.received);
     const basicDA = n(form.basicPlusDA);
     const rent = n(form.rentPaid);
-    if (!hraReceived || !basicDA || !rent) return null;
-    const metro = isMetroCity(form.cityOfEmployment);
-    const metroRate = metro ? 0.50 : 0.40;
-    const val = Math.max(0, Math.min(hraReceived, rent - 0.10 * basicDA, metroRate * basicDA));
-    return { amount: Math.round(val), isMetro: metro };
+    const city = form.cityOfEmployment || '';
+    const metro = city === 'metro' || isMetroCity(city);
+    return computeHRA(basicDA, hraReceived, rent, metro);
   }, [form]);
+
+  // Task 10.4: HRA whisper — rent missing but HRA received entered
+  const hraWhisper = useMemo(() => {
+    if (!form) return null;
+    const hraReceived = n(form.allowances?.hra?.received);
+    const rent = n(form.rentPaid);
+    if (hraReceived > 0 && rent <= 0) {
+      return 'Enter rent paid to claim HRA exemption. Without rent, HRA exemption is ₹0.';
+    }
+    return null;
+  }, [form]);
+
+  // Task 10.4: HRA discrepancy detection
+  const hraDiscrepancy = useMemo(() => {
+    if (!form || !hraResult) return false;
+    const manualExempt = n(form.allowances?.hra?.exempt);
+    if (manualExempt <= 0) return false;
+    return detectHRADiscrepancy(hraResult.exemption, manualExempt);
+  }, [form, hraResult]);
+
+  // Task 10.7: Auto-detect employer category from TAN
+  const detectedCategory = useMemo(() => {
+    if (!form?.tan) return null;
+    const cat = detectEmployerCategory(form.tan);
+    return cat !== 'OTH' ? cat : null;
+  }, [form?.tan]);
 
   const save = () => {
     if (!form?.name || !form?.grossSalary) {
@@ -200,10 +226,62 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
             <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="State tax on salary · Usually ₹200/month" fieldSource={getFieldSource('deductions.professionalTax', editing)} />
           </div>
 
-          {suggestedHRA && (
-            <div className="ff-hint" style={{ marginTop: 4, color: P.secondary || '#0D9488' }}>
+          {/* Task 10.4: HRA Calculator Breakdown */}
+          {hraResult && hraResult.exemption > 0 && (
+            <div style={{
+              marginTop: 8, padding: '10px 12px', borderRadius: 'var(--radius-md)',
+              background: 'var(--color-success-bg)', border: '1px solid var(--color-success-border)',
+            }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-success)', marginBottom: 6 }}>
+                HRA Exemption: ₹{hraResult.exemption.toLocaleString('en-IN')}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                <div>Actual HRA: ₹{hraResult.components.actualHRA.toLocaleString('en-IN')}{hraResult.limitingFactor === 'actualHRA' ? ' ← limiting' : ''}</div>
+                <div>{form.cityOfEmployment === 'metro' || isMetroCity(form.cityOfEmployment) ? '50%' : '40%'} of Basic: ₹{hraResult.components.percentOfBasic.toLocaleString('en-IN')}{hraResult.limitingFactor === 'percentOfBasic' ? ' ← limiting' : ''}</div>
+                <div>Rent − 10% Basic: ₹{hraResult.components.rentMinusTenPercent.toLocaleString('en-IN')}{hraResult.limitingFactor === 'rentMinusTenPercent' ? ' ← limiting' : ''}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Task 10.4: HRA whisper — rent missing */}
+          {hraWhisper && (
+            <div className="ff-hint" style={{ marginTop: 4, color: 'var(--color-warning)' }}>
               <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-              Suggested HRA exemption: ₹{suggestedHRA.amount.toLocaleString('en-IN')} (based on {suggestedHRA.isMetro ? 'metro' : 'non-metro'} rate)
+              {hraWhisper}
+            </div>
+          )}
+
+          {/* Task 10.4: HRA discrepancy warning */}
+          {hraDiscrepancy && hraResult && (
+            <div style={{
+              marginTop: 6, padding: '8px 12px', borderRadius: 'var(--radius-md)',
+              background: 'var(--color-warning-bg)', border: '1px solid var(--color-warning-border)',
+              fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <AlertCircle size={14} style={{ color: 'var(--color-warning)', flexShrink: 0 }} />
+              <span>
+                Manual HRA exempt (₹{n(form.allowances?.hra?.exempt).toLocaleString('en-IN')}) differs from computed (₹{hraResult.exemption.toLocaleString('en-IN')}) by more than ₹100.{' '}
+                <button
+                  onClick={() => setForm({
+                    ...form,
+                    allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: String(hraResult.exemption) } },
+                  })}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                    color: 'var(--brand-primary)', fontWeight: 600, fontSize: 12, fontFamily: 'inherit',
+                  }}
+                >
+                  Use computed value
+                </button>
+              </span>
+            </div>
+          )}
+
+          {/* Task 10.7: Auto-detected employer category */}
+          {detectedCategory && (
+            <div className="ff-hint" style={{ marginTop: 4, color: '#16a34a' }}>
+              <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+              TAN detected as {detectedCategory === 'GOV' ? 'Government' : detectedCategory} employer
             </div>
           )}
 
@@ -248,7 +326,20 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
               <div className="ff-grid-3">
                 <F l="Basic + DA (₹)" v={form.basicPlusDA} c={v => setForm({ ...form, basicPlusDA: v })} h="Basic salary + DA · For HRA calculation" fieldSource={getFieldSource('basicPlusDA', editing)} />
-                <F l="City of Employment" v={form.cityOfEmployment} c={v => setForm({ ...form, cityOfEmployment: v })} t="text" h="Office location · Metro cities get 50% HRA rate" fieldSource={getFieldSource('cityOfEmployment', editing)} />
+                <div className="ff-field">
+                  <label className="ff-label">City of Employment</label>
+                  <select
+                    className="ff-input"
+                    value={form.cityOfEmployment || ''}
+                    onChange={e => setForm({ ...form, cityOfEmployment: e.target.value })}
+                    aria-label="City of employment — metro or non-metro"
+                  >
+                    <option value="">Select...</option>
+                    <option value="metro">Metro (Mumbai, Delhi, Kolkata, Chennai)</option>
+                    <option value="non-metro">Non-Metro</option>
+                  </select>
+                  <div className="ff-hint">Metro cities get 50% HRA rate, non-metro 40%</div>
+                </div>
                 <F l="Rent Paid (₹)" v={form.rentPaid} c={v => setForm({ ...form, rentPaid: v })} h="Annual rent paid · For HRA exemption calculation" fieldSource={getFieldSource('rentPaid', editing)} />
               </div>
             </div>

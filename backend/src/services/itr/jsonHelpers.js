@@ -112,24 +112,55 @@ function buildVerification(pi) {
 
 /** Build Chapter VI-A deductions block */
 function buildDeductions(result, regime) {
-  if (regime !== 'old') return { TotalChapVIADeductions: result.deductionBreakdown?.section80CCD2 || 0 };
+  if (regime !== 'old') return { Section80CCD2: result.deductionBreakdown?.section80CCD2 || 0, TotalChapVIADeductions: result.deductionBreakdown?.section80CCD2 || 0 };
   const b = result.deductionBreakdown || {};
+
+  const section80C = b.section80C || 0;
+  const section80CCC = 0;
+  const section80CCDEmployeeOrSE = 0;
+  const section80CCD1B = b.section80CCD1B || 0;
+  const section80CCD2 = b.section80CCD2 || 0;
+  const section80D = b.section80D || 0;
+  const section80DD = b.section80DD || 0;
+  const section80DDB = b.section80DDB || 0;
+  const section80E = b.section80E || 0;
+  const section80EE = b.section80EE || 0;
+  const section80EEA = 0;
+  const section80EEB = 0;
+  const section80G = b.section80G || 0;
+  const section80GG = b.section80GG || 0;
+  const section80GGA = 0;
+  const section80GGC = 0;
+  const section80TTA = b.section80TTA || 0;
+  const section80TTB = b.section80TTB || 0;
+  const section80U = b.section80U || 0;
+
+  const total = section80C + section80CCC + section80CCDEmployeeOrSE + section80CCD1B + section80CCD2
+    + section80D + section80DD + section80DDB + section80E + section80EE + section80EEA + section80EEB
+    + section80G + section80GG + section80GGA + section80GGC + section80TTA + section80TTB + section80U;
+
   return {
-    Section80C: b.section80C || 0,
-    Section80CCC: 0,
-    Section80CCD1B: b.section80CCD1B || 0,
-    Section80CCD2: b.section80CCD2 || 0,
-    Section80D: b.section80D || 0,
-    Section80DD: b.section80DD || 0,
-    Section80DDB: b.section80DDB || 0,
-    Section80E: b.section80E || 0,
-    Section80EE: b.section80EE || 0,
-    Section80G: b.section80G || 0,
-    Section80GG: b.section80GG || 0,
-    Section80TTA: b.section80TTA || 0,
-    Section80TTB: b.section80TTB || 0,
-    Section80U: b.section80U || 0,
-    TotalChapVIADeductions: result.deductions,
+    Section80C: section80C,
+    Section80CCC: section80CCC,
+    Section80CCDEmployeeOrSE: section80CCDEmployeeOrSE,
+    Section80CCD1B: section80CCD1B,
+    Section80CCD2: section80CCD2,
+    Section80CCDTotal: section80C + section80CCD1B + section80CCD2,
+    Section80D: section80D,
+    Section80DD: section80DD,
+    Section80DDB: section80DDB,
+    Section80E: section80E,
+    Section80EE: section80EE,
+    Section80EEA: section80EEA,
+    Section80EEB: section80EEB,
+    Section80G: section80G,
+    Section80GG: section80GG,
+    Section80GGA: section80GGA,
+    Section80GGC: section80GGC,
+    Section80TTA: section80TTA,
+    Section80TTB: section80TTB,
+    Section80U: section80U,
+    TotalChapVIADeductions: total,
   };
 }
 

@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 const FilingService = require('../services/core/FilingService');
 const { authenticateToken } = require('../middleware/auth');
-const { ITRFiling, IncomeEntry, ExpenseEntry, InvestmentEntry } = require('../models');
+const { ITRFiling, IncomeEntry, ExpenseEntry, InvestmentEntry, AuditEvent } = require('../models');
 const SubmissionStateMachine = require('../domain/SubmissionStateMachine');
 const STATES = require('../domain/SubmissionStates');
 const ReviewRequirementService = require('../services/itr/ReviewRequirementService');
@@ -22,6 +22,10 @@ const TaxRegimeCalculatorV2 = require('../services/itr/TaxRegimeCalculatorV2');
 const ERIOutcomeService = require('../services/ERIOutcomeService');
 const FilingCompletenessService = require('../services/itr/FilingCompletenessService');
 const { AppError } = require('../middleware/errorHandler');
+const paymentGateMiddleware = require('../middleware/paymentGate');
+const deepMerge = require('../utils/deepMerge');
+const computationCache = require('../services/itr/ComputationCache');
+const { ComputationCache } = require('../services/itr/ComputationCache');
 
 /**
  * mapTrackedDataToPayload
@@ -236,6 +240,7 @@ router.post('/prefill', authenticateToken, async (req, res, next) => {
 /**
  * Get filing details
  * GET /api/filings/:id
+ * Supports txnOffset and txnLimit query params for capital gains pagination
  */
 router.get('/:id', authenticateToken, async (req, res, next) => {
     try {
@@ -244,11 +249,78 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
 
         const filing = await FilingService.getFiling(id, userId);
 
+        // Task 9.4: Paginate capitalGains.transactions if > 100 entries
+        const txnOffset = parseInt(req.query.txnOffset) || 0;
+        const txnLimit = parseInt(req.query.txnLimit) || 0;
+        const transactions = filing.jsonPayload?.income?.capitalGains?.transactions;
+        if (Array.isArray(transactions) && transactions.length > 100 && (txnOffset > 0 || txnLimit > 0)) {
+            const limit = txnLimit > 0 ? txnLimit : 100;
+            const paginatedTxns = transactions.slice(txnOffset, txnOffset + limit);
+            // Return paginated view with metadata
+            filing.jsonPayload = {
+                ...filing.jsonPayload,
+                income: {
+                    ...filing.jsonPayload.income,
+                    capitalGains: {
+                        ...filing.jsonPayload.income.capitalGains,
+                        transactions: paginatedTxns,
+                        _pagination: {
+                            total: transactions.length,
+                            offset: txnOffset,
+                            limit,
+                            hasMore: txnOffset + limit < transactions.length,
+                        },
+                    },
+                },
+            };
+        }
+
         res.status(200).json({
             success: true,
             data: filing,
         });
 
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * Get paginated snapshots for a filing
+ * GET /api/filings/:id/snapshots
+ * Query params: page (default 1), limit (default 20)
+ */
+router.get('/:id/snapshots', authenticateToken, async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.userId;
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+        const offset = (page - 1) * limit;
+
+        // Verify filing exists and user owns it
+        const filing = await ITRFiling.findByPk(id);
+        if (!filing) throw new AppError('Filing not found', 404);
+        if (filing.createdBy !== userId) throw new AppError('Not authorized', 403);
+
+        const FilingSnapshot = require('../models/FilingSnapshot');
+        const { count, rows } = await FilingSnapshot.findAndCountAll({
+            where: { filingId: id },
+            order: [['version', 'DESC']],
+            limit,
+            offset,
+        });
+
+        res.status(200).json({
+            success: true,
+            data: rows,
+            pagination: {
+                page,
+                limit,
+                total: count,
+                totalPages: Math.ceil(count / limit),
+            },
+        });
     } catch (error) {
         next(error);
     }
@@ -277,12 +349,13 @@ router.get('/', authenticateToken, async (req, res, next) => {
 /**
  * Update filing
  * PUT /api/filings/:id
+ * Body size limit: 2MB (route-level override)
  */
-router.put('/:id', authenticateToken, async (req, res, next) => {
+router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
         const userId = req.user.userId;
-        const { jsonPayload, lifecycleState, selectedRegime } = req.body;
+        const { jsonPayload, lifecycleState, selectedRegime, version } = req.body;
 
         // Get the filing
         const filing = await ITRFiling.findByPk(id);
@@ -317,19 +390,99 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
             );
         }
 
-        // Update fields
+        // Optimistic locking — optional for backward compat
+        if (version !== undefined) {
+            if (version !== filing.version) {
+                return res.status(409).json({
+                    success: false,
+                    error: 'VERSION_CONFLICT',
+                    code: 'VERSION_CONFLICT',
+                    data: filing,
+                });
+            }
+        }
+
+        // Deep merge jsonPayload instead of direct assignment
+        let mergedPayload = filing.jsonPayload;
         if (jsonPayload !== undefined) {
-            filing.jsonPayload = jsonPayload;
+            mergedPayload = deepMerge(filing.jsonPayload || {}, jsonPayload);
+        }
+
+        // Task 9.3: Reject payloads > 1MB after merge
+        if (jsonPayload !== undefined) {
+            const payloadSize = JSON.stringify(mergedPayload).length;
+            if (payloadSize > 1048576) { // 1MB = 1024 * 1024
+                return res.status(413).json({
+                    success: false,
+                    code: 'PAYLOAD_TOO_LARGE',
+                    error: 'Filing data too large',
+                    maxSize: '1MB',
+                });
+            }
+        }
+
+        // Payload validation (Task 3.2)
+        const { validatePayload } = require('../validators/payloadValidator');
+        const validationResult = validatePayload(mergedPayload);
+        if (validationResult.error) {
+            return res.status(400).json({
+                success: false,
+                code: 'PAYLOAD_VALIDATION_FAILED',
+                errors: validationResult.error.details,
+            });
+        }
+
+        // Task 9.2: Warn about inapplicable sections for current ITR type
+        const warnings = [];
+        const itrType = filing.itrType || 'ITR-1';
+        const incomeData = mergedPayload.income || {};
+
+        const ITR_APPLICABLE_SECTIONS = {
+            'ITR-1': ['salary', 'houseProperty', 'otherSources'],
+            'ITR-2': ['salary', 'houseProperty', 'otherSources', 'capitalGains', 'foreignIncome'],
+            'ITR-3': ['salary', 'houseProperty', 'otherSources', 'capitalGains', 'foreignIncome', 'business'],
+            'ITR-4': ['salary', 'houseProperty', 'otherSources', 'presumptive'],
+        };
+        const applicable = ITR_APPLICABLE_SECTIONS[itrType] || ITR_APPLICABLE_SECTIONS['ITR-1'];
+        const sectionChecks = {
+            salary: () => incomeData.salary?.employers?.length > 0,
+            houseProperty: () => incomeData.houseProperty?.type && !['NONE', 'none'].includes(incomeData.houseProperty.type),
+            otherSources: () => !!(incomeData.otherSources && Object.values(incomeData.otherSources).some(v => Number(v) > 0)),
+            capitalGains: () => incomeData.capitalGains?.transactions?.length > 0,
+            foreignIncome: () => incomeData.foreignIncome?.incomes?.length > 0,
+            business: () => incomeData.business?.businesses?.length > 0,
+            presumptive: () => incomeData.presumptive?.entries?.length > 0,
+        };
+        for (const [section, hasData] of Object.entries(sectionChecks)) {
+            if (!applicable.includes(section) && hasData()) {
+                warnings.push(`Section "${section}" contains data but is not applicable to ${itrType}. It will be ignored during computation.`);
+            }
+        }
+
+        // Persist
+        if (jsonPayload !== undefined) {
+            filing.jsonPayload = mergedPayload;
         }
         if (selectedRegime !== undefined) {
             filing.selectedRegime = selectedRegime;
         }
 
+        // Increment version if optimistic lock was used
+        if (version !== undefined) {
+            filing.version = filing.version + 1;
+        }
+
         await filing.save();
+
+        // Invalidate computation cache for this filing on payload change
+        if (jsonPayload !== undefined) {
+            computationCache.invalidate(id);
+        }
 
         res.status(200).json({
             success: true,
             data: filing,
+            ...(warnings.length > 0 && { warnings }),
         });
 
     } catch (error) {
@@ -338,18 +491,42 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
 });
 
 /**
- * Delete a draft filing
+ * Delete a filing (soft-delete)
  * DELETE /api/filings/:id
+ * Allowed states: draft, eri_failed
  */
 router.delete('/:id', authenticateToken, async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.id);
-        if (!filing) throw new AppError('Filing not found', 404);
-        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
-        if (filing.lifecycleState !== STATES.DRAFT) {
-            throw new AppError('Only draft filings can be deleted', 400, 'CANNOT_DELETE_NON_DRAFT');
+
+        // Ownership check — return 404 (not 403) to prevent information leakage
+        if (!filing || filing.createdBy !== req.user.userId) {
+            throw new AppError('Filing not found', 404, 'FILING_NOT_FOUND');
         }
-        await filing.destroy();
+
+        const DELETABLE_STATES = [STATES.DRAFT, STATES.ERI_FAILED];
+        if (!DELETABLE_STATES.includes(filing.lifecycleState)) {
+            throw new AppError(
+                `Filing cannot be deleted in state "${filing.lifecycleState}". Allowed states: ${DELETABLE_STATES.join(', ')}`,
+                403,
+                'FILING_NOT_DELETABLE',
+            );
+        }
+
+        // Soft-delete instead of hard-delete
+        filing.deletedAt = new Date();
+        await filing.save();
+
+        // Audit logging (fire-and-forget)
+        AuditEvent.logEvent({
+            entityType: 'ITRFiling',
+            entityId: filing.id,
+            eventType: 'FILING_DELETED_BY_USER',
+            actorId: req.user.userId,
+            actorRole: req.user.role || 'END_USER',
+            metadata: { lifecycleState: filing.lifecycleState },
+        }).catch(() => {});
+
         res.json({ success: true, message: 'Filing deleted' });
     } catch (error) { next(error); }
 });
@@ -373,7 +550,7 @@ router.get('/:filingId/validate', authenticateToken, async (req, res, next) => {
  * Submit filing to ERI (S20.A: Direct submission)
  * POST /api/filings/:filingId/submit
  */
-router.post('/:filingId/submit', authenticateToken, async (req, res, next) => {
+router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -797,8 +974,16 @@ router.post('/:filingId/itr1/compute', authenticateToken, async (req, res, next)
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
 
+        // Check computation cache
+        const payload = filing.jsonPayload || {};
+        const payloadHash = ComputationCache.hashPayload(payload);
+        const cached = computationCache.get(filingId, payloadHash);
+        if (cached) {
+            return res.status(200).json({ success: true, data: cached });
+        }
+
         const ITR1ComputationService = require('../services/itr/ITR1ComputationService');
-        const computation = ITR1ComputationService.compute(filing.jsonPayload || {});
+        const computation = ITR1ComputationService.compute(payload);
 
         // Save computation result on filing + update taxLiability/refundAmount
         const recommended = computation.recommended || 'new';
@@ -809,6 +994,9 @@ router.post('/:filingId/itr1/compute', authenticateToken, async (req, res, next)
           taxLiability: netPayable > 0 ? netPayable : 0,
           refundAmount: netPayable < 0 ? Math.abs(netPayable) : 0,
         });
+
+        // Store in cache
+        computationCache.set(filingId, payloadHash, computation);
 
         res.status(200).json({ success: true, data: computation });
     } catch (error) {
@@ -890,12 +1078,18 @@ router.post('/:filingId/itr2/compute', authenticateToken, async (req, res, next)
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
 
+        const payload = filing.jsonPayload || {};
+        const payloadHash = ComputationCache.hashPayload(payload);
+        const cached = computationCache.get(req.params.filingId, payloadHash);
+        if (cached) return res.json({ success: true, data: cached });
+
         const ITR2ComputationService = require('../services/itr/ITR2ComputationService');
-        const computation = ITR2ComputationService.compute(filing.jsonPayload || {});
+        const computation = ITR2ComputationService.compute(payload);
         const rec2 = computation.recommended || 'new';
         const best2 = computation[rec2 === 'old' ? 'oldRegime' : 'newRegime'];
         const net2 = best2?.netPayable || 0;
         await filing.update({ taxComputation: computation, taxLiability: net2 > 0 ? net2 : 0, refundAmount: net2 < 0 ? Math.abs(net2) : 0 });
+        computationCache.set(req.params.filingId, payloadHash, computation);
         res.json({ success: true, data: computation });
     } catch (error) { next(error); }
 });
@@ -948,12 +1142,19 @@ router.post('/:filingId/itr3/compute', authenticateToken, async (req, res, next)
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const payload = filing.jsonPayload || {};
+        const payloadHash = ComputationCache.hashPayload(payload);
+        const cached = computationCache.get(req.params.filingId, payloadHash);
+        if (cached) return res.json({ success: true, data: cached });
+
         const ITR3 = require('../services/itr/ITR3ComputationService');
-        const computation = ITR3.compute(filing.jsonPayload || {});
+        const computation = ITR3.compute(payload);
         const rec3 = computation.recommended || 'new';
         const best3 = computation[rec3 === 'old' ? 'oldRegime' : 'newRegime'];
         const net3 = best3?.netPayable || 0;
         await filing.update({ taxComputation: computation, taxLiability: net3 > 0 ? net3 : 0, refundAmount: net3 < 0 ? Math.abs(net3) : 0 });
+        computationCache.set(req.params.filingId, payloadHash, computation);
         res.json({ success: true, data: computation });
     } catch (error) { next(error); }
 });
@@ -993,12 +1194,19 @@ router.post('/:filingId/itr4/compute', authenticateToken, async (req, res, next)
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+        const payload = filing.jsonPayload || {};
+        const payloadHash = ComputationCache.hashPayload(payload);
+        const cached = computationCache.get(req.params.filingId, payloadHash);
+        if (cached) return res.json({ success: true, data: cached });
+
         const ITR4 = require('../services/itr/ITR4ComputationService');
-        const computation = ITR4.compute(filing.jsonPayload || {});
+        const computation = ITR4.compute(payload);
         const rec4 = computation.recommended || 'new';
         const best4 = computation[rec4 === 'old' ? 'oldRegime' : 'newRegime'];
         const net4 = best4?.netPayable || 0;
         await filing.update({ taxComputation: computation, taxLiability: net4 > 0 ? net4 : 0, refundAmount: net4 < 0 ? Math.abs(net4) : 0 });
+        computationCache.set(req.params.filingId, payloadHash, computation);
         res.json({ success: true, data: computation });
     } catch (error) { next(error); }
 });
@@ -1071,18 +1279,9 @@ router.post('/:filingId/prefill-from-tracked', authenticateToken, async (req, re
         // 5. Map tracked data to payload fragment
         const prefillPayload = mapTrackedDataToPayload(incomeEntries, expenseEntries, investmentEntries);
 
-        // 6. Merge into existing jsonPayload (shallow merge)
+        // 6. Merge into existing jsonPayload using deepMerge
         const existingPayload = filing.jsonPayload || {};
-        const mergedPayload = { ...existingPayload, ...prefillPayload };
-
-        // Deep merge income if both exist
-        if (existingPayload.income && prefillPayload.income) {
-            mergedPayload.income = { ...existingPayload.income, ...prefillPayload.income };
-        }
-        // Deep merge deductions if both exist
-        if (existingPayload.deductions && prefillPayload.deductions) {
-            mergedPayload.deductions = { ...existingPayload.deductions, ...prefillPayload.deductions };
-        }
+        const mergedPayload = deepMerge(existingPayload, prefillPayload);
 
         await filing.update({ jsonPayload: mergedPayload });
 
@@ -1127,6 +1326,187 @@ router.post('/:filingId/prefill-from-tracked', authenticateToken, async (req, re
         next(error);
     }
 });
+
+// =====================================================
+// AUTO-FILL ENDPOINTS (Requirement 1)
+// =====================================================
+
+const { AutoFillService } = require('../services/import/AutoFillService');
+
+/**
+ * Trigger auto-fill pipeline
+ * POST /api/filings/:id/auto-fill
+ * Fetches 26AS + AIS via SurePass, maps to filing payload, detects conflicts.
+ * Requirements: 1.1, 1.5, 1.6, 1.7
+ */
+router.post('/:id/auto-fill', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    // Load filing
+    const filing = await ITRFiling.findByPk(id);
+    if (!filing) {
+      throw new AppError('Filing not found', 404, 'RESOURCE_NOT_FOUND');
+    }
+
+    // Ownership check
+    if (filing.createdBy !== userId) {
+      throw new AppError('Not authorized to auto-fill this filing', 403, 'FORBIDDEN');
+    }
+
+    // Draft state check
+    if (filing.lifecycleState !== STATES.DRAFT) {
+      throw new AppError(
+        'Cannot auto-fill a submitted filing. Only draft filings can be auto-filled.',
+        400,
+        'FILING_NOT_EDITABLE',
+      );
+    }
+
+    // Delegate to AutoFillService — it handles PAN check, SurePass session,
+    // 26AS/AIS fetch, mapping, and conflict detection internally.
+    // Throws PAN_NOT_VERIFIED (400), ITR_SESSION_EXPIRED (401),
+    // or SUREPASS_SERVICE_UNAVAILABLE (503) on failure.
+    const result = await AutoFillService.autoFill(id, userId);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        mappedPayload: result.mappedPayload,
+        conflicts: result.conflicts,
+        summary: result.summary,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * Resolve auto-fill conflicts
+ * POST /api/filings/:id/auto-fill/resolve
+ * Applies user-chosen resolutions to the filing's jsonPayload.
+ * Requirements: 1.7
+ */
+router.post('/:id/auto-fill/resolve', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+    const { resolutions } = req.body;
+
+    // Validate request body
+    if (!Array.isArray(resolutions) || resolutions.length === 0) {
+      throw new AppError(
+        'resolutions must be a non-empty array of { field, keepValue }',
+        400,
+        'INVALID_RESOLUTION',
+      );
+    }
+
+    // Validate each resolution entry
+    for (const r of resolutions) {
+      if (!r.field || !['existing', 'new'].includes(r.keepValue)) {
+        throw new AppError(
+          `Invalid resolution: each entry must have a "field" string and "keepValue" of "existing" or "new"`,
+          400,
+          'INVALID_RESOLUTION',
+        );
+      }
+    }
+
+    // Load filing
+    const filing = await ITRFiling.findByPk(id);
+    if (!filing) {
+      throw new AppError('Filing not found', 404, 'RESOURCE_NOT_FOUND');
+    }
+
+    // Ownership check
+    if (filing.createdBy !== userId) {
+      throw new AppError('Not authorized to update this filing', 403, 'FORBIDDEN');
+    }
+
+    // Draft state check
+    if (filing.lifecycleState !== STATES.DRAFT) {
+      throw new AppError(
+        'Cannot resolve conflicts on a submitted filing.',
+        400,
+        'FILING_NOT_EDITABLE',
+      );
+    }
+
+    // Read auto-fill metadata to get the last mapped payload
+    const autoFillMeta = filing.jsonPayload?._autoFill || {};
+    const existingPayload = filing.jsonPayload || {};
+
+    // Apply resolutions: for 'new', set the field from the mapped payload;
+    // for 'existing', leave the current value (no-op).
+    const updatedPayload = { ...existingPayload };
+
+    for (const { field, keepValue } of resolutions) {
+      if (keepValue === 'new') {
+        // Set the new value at the dot-notation path
+        _setNestedValue(updatedPayload, field, _getNestedValue(autoFillMeta.lastMappedPayload || {}, field));
+      }
+      // 'existing' → keep current value, nothing to do
+    }
+
+    // Record resolved conflicts in metadata
+    updatedPayload._autoFill = {
+      ...autoFillMeta,
+      conflicts: [
+        ...(autoFillMeta.conflicts || []),
+        ...resolutions.map(r => ({ field: r.field, resolution: r.keepValue, resolvedAt: new Date().toISOString() })),
+      ],
+    };
+
+    await filing.update({ jsonPayload: updatedPayload });
+
+    res.status(200).json({
+      success: true,
+      data: { updatedPayload },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * Set a value at a dot-notation path in a nested object.
+ * Creates intermediate objects as needed.
+ * @param {object} obj - Target object
+ * @param {string} path - Dot-notation path (e.g. 'income.salary.employers[0].grossSalary')
+ * @param {*} value - Value to set
+ */
+function _setNestedValue(obj, path, value) {
+  const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+  let current = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const key = parts[i];
+    const nextKey = parts[i + 1];
+    if (current[key] === undefined || current[key] === null) {
+      current[key] = /^\d+$/.test(nextKey) ? [] : {};
+    }
+    current = current[key];
+  }
+  current[parts[parts.length - 1]] = value;
+}
+
+/**
+ * Get a value at a dot-notation path from a nested object.
+ * @param {object} obj - Source object
+ * @param {string} path - Dot-notation path
+ * @returns {*} Value at path, or undefined
+ */
+function _getNestedValue(obj, path) {
+  const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+  let current = obj;
+  for (const part of parts) {
+    if (current === undefined || current === null) return undefined;
+    current = current[part];
+  }
+  return current;
+}
 
 // Mount document import sub-routes
 router.use('/', require('./import'));

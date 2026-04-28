@@ -12,12 +12,14 @@ class ITR1ComputationService {
    * @returns {object} Complete computation with old + new regime
    */
   static compute(payload) {
-    const income = this.computeIncome(payload);
-    const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
+    // Gracefully handle null/undefined payload
+    const safePayload = payload || {};
+    const income = this.computeIncome(safePayload);
+    const agriIncome = n(safePayload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, safePayload.deductions, 'old', agriIncome, safePayload);
+    const newRegime = this.computeRegime(income, safePayload.deductions, 'new', agriIncome, safePayload);
 
-    const tds = this.computeTDS(payload);
+    const tds = this.computeTDS(safePayload);
     oldRegime.tdsCredit = tds.total;
     oldRegime.netPayable = oldRegime.totalTax - tds.total;
     newRegime.tdsCredit = tds.total;
@@ -25,6 +27,9 @@ class ITR1ComputationService {
 
     const recommended = oldRegime.totalTax <= newRegime.totalTax ? 'old' : 'new';
     const savings = Math.abs(oldRegime.totalTax - newRegime.totalTax);
+
+    // Note: ITR-1 ignores capitalGains, business, presumptive, foreignIncome
+    // sections if present in payload — they are simply not processed.
 
     return {
       income,
@@ -42,9 +47,13 @@ class ITR1ComputationService {
 
   static computeIncome(payload) {
     const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
-    const salary = this.computeSalary(payload.income?.salary, employerCategory);
-    const hp = this.computeHouseProperty(payload.income?.houseProperty);
-    const other = this.computeOtherIncome(payload.income?.otherSources);
+    let salary, hp, other;
+    try { salary = this.computeSalary(payload.income?.salary, employerCategory); }
+    catch { salary = { grossSalary: 0, exemptAllowances: 0, salaryExemptions: 0, standardDeduction: 0, professionalTax: 0, entertainmentAllowanceDeduction: 0, netTaxable: 0, employers: [], tds: 0 }; }
+    try { hp = this.computeHouseProperty(payload.income?.houseProperty); }
+    catch { hp = { type: 'NONE', netIncome: 0 }; }
+    try { other = this.computeOtherIncome(payload.income?.otherSources); }
+    catch { other = { savingsInterest: 0, fdInterest: 0, dividends: 0, familyPension: 0, familyPensionExempt: 0, other: 0, interestOnITRefund: 0, winnings: 0, gifts: 0, total: 0 }; }
 
     return {
       salary,

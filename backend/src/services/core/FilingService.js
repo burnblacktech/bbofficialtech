@@ -156,6 +156,8 @@ class FilingService {
                 lifecycleState: filing.lifecycleState,
                 jsonPayload: filing.jsonPayload,
                 selectedRegime: filing.selectedRegime,
+                version: filing.version,
+                itrType: filing.itrType,
                 createdAt: filing.createdAt,
                 updatedAt: filing.updatedAt,
                 completion,

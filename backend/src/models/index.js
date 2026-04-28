@@ -85,6 +85,15 @@ ITRFiling.hasMany(IncomeEntry, { foreignKey: 'usedInFilingId', as: 'incomeEntrie
 ITRFiling.hasMany(ExpenseEntry, { foreignKey: 'usedInFilingId', as: 'expenseEntries' });
 ITRFiling.hasMany(InvestmentEntry, { foreignKey: 'usedInFilingId', as: 'investmentEntries' });
 
+// ── Billing: User ↔ Order ──
+const Order = require('./Order');
+User.hasMany(Order, { foreignKey: 'userId', as: 'orders' });
+Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// ── Billing: ITRFiling ↔ Order ──
+ITRFiling.hasMany(Order, { foreignKey: 'filingId', as: 'orders' });
+Order.belongsTo(ITRFiling, { foreignKey: 'filingId', as: 'filing' });
+
 module.exports = {
   User,
   ITRFiling,
@@ -100,7 +109,7 @@ module.exports = {
   InvestmentEntry,
   InAppNotification,
   Notification: require('./Notification'),
-  Order: require('./Order'),
+  Order,
   FamilyMember: require('./FamilyMember'),
   VaultDocument: require('./VaultDocument'),
   Coupon: require('./Coupon'),

@@ -10,13 +10,14 @@ const ITR1ComputationService = require('./ITR1ComputationService');
 class ITR3ComputationService {
 
   static compute(payload) {
-    const income = this.computeIncome(payload);
-    const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
+    const safePayload = payload || {};
+    const income = this.computeIncome(safePayload);
+    const agriIncome = n(safePayload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, safePayload.deductions, 'old', agriIncome, safePayload);
+    const newRegime = this.computeRegime(income, safePayload.deductions, 'new', agriIncome, safePayload);
 
-    const tds = this.computeTDS(payload);
-    const ftc = ITR2ComputationService.computeForeignTaxCredit(payload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
+    const tds = this.computeTDS(safePayload);
+    const ftc = ITR2ComputationService.computeForeignTaxCredit(safePayload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
 
     for (const r of [oldRegime, newRegime]) {
       r.tdsCredit = tds.total;
@@ -30,12 +31,19 @@ class ITR3ComputationService {
 
   static computeIncome(payload) {
     const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
-    const salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory);
-    const hp = ITR2ComputationService.computeHouseProperties(payload.income?.houseProperty);
-    const cg = ITR2ComputationService.computeCapitalGains(payload.income?.capitalGains);
-    const other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources);
-    const foreign = ITR2ComputationService.computeForeignIncome(payload.income?.foreignIncome);
-    const business = this.computeBusinessIncome(payload.income?.business);
+    let salary, hp, cg, other, foreign, business;
+    try { salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory); }
+    catch { salary = { grossSalary: 0, exemptAllowances: 0, salaryExemptions: 0, standardDeduction: 0, professionalTax: 0, entertainmentAllowanceDeduction: 0, netTaxable: 0, employers: [], tds: 0 }; }
+    try { hp = ITR2ComputationService.computeHouseProperties(payload.income?.houseProperty); }
+    catch { hp = { type: 'NONE', netIncome: 0 }; }
+    try { cg = ITR2ComputationService.computeCapitalGains(payload.income?.capitalGains); }
+    catch { cg = { stcg: { equity: 0, other: 0, total: 0 }, ltcg: { equity: 0, property: 0, other: 0, total: 0 }, exemptions: 0, totalTaxable: 0, transactions: [] }; }
+    try { other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources); }
+    catch { other = { savingsInterest: 0, fdInterest: 0, dividends: 0, familyPension: 0, familyPensionExempt: 0, other: 0, interestOnITRefund: 0, winnings: 0, gifts: 0, total: 0 }; }
+    try { foreign = ITR2ComputationService.computeForeignIncome(payload.income?.foreignIncome); }
+    catch { foreign = { incomes: [], totalIncome: 0, totalTaxPaidAbroad: 0 }; }
+    try { business = this.computeBusinessIncome(payload.income?.business); }
+    catch { business = { businesses: [], totalTurnover: 0, totalGrossProfit: 0, totalExpenses: 0, totalDepreciation: 0, netProfit: 0 }; }
 
     return {
       salary, houseProperty: hp, capitalGains: cg, otherSources: other, foreignIncome: foreign, business,

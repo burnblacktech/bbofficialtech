@@ -3,7 +3,7 @@
 // Single source of truth for filing lifecycle
 // =====================================================
 
-const { DataTypes } = require('sequelize');
+const { DataTypes, Op } = require('sequelize');
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 
@@ -253,6 +253,17 @@ const ITRFiling = sequelize.define('ITRFiling', {
   },
 
   // =====================================================
+  // OPTIMISTIC LOCKING
+  // =====================================================
+  version: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'version',
+    comment: 'Optimistic lock version — incremented on every successful PUT',
+  },
+
+  // =====================================================
   // PROGRESS TRACKING
   // =====================================================
   progress: {
@@ -273,6 +284,17 @@ const ITRFiling = sequelize.define('ITRFiling', {
   },
 
   // =====================================================
+  // SOFT DELETE
+  // =====================================================
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
+    field: 'deleted_at',
+    comment: 'Soft-delete timestamp. NULL = active filing.',
+  },
+
+  // =====================================================
   // AUDIT
   // =====================================================
 }, {
@@ -283,6 +305,13 @@ const ITRFiling = sequelize.define('ITRFiling', {
   underscored: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
+  defaultScope: {
+    where: { deletedAt: { [Op.is]: null } },
+  },
+  scopes: {
+    withDeleted: { where: {} },
+    onlyDeleted: { where: { deletedAt: { [Op.not]: null } } },
+  },
   indexes: [
     {
       fields: ['created_by', 'assessment_year'],
@@ -298,7 +327,7 @@ const ITRFiling = sequelize.define('ITRFiling', {
       unique: true,
       where: {
         ack_number: {
-          [require('sequelize').Op.ne]: null,
+          [Op.ne]: null,
         },
       },
     },

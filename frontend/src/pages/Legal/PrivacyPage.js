@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         </Section>
 
         <Section t="4. PAN and Aadhaar Verification">
-          PAN verification is performed via SurePass, an authorized KYC API provider. We send your PAN to SurePass to verify your identity and retrieve your name and date of birth. Aadhaar, if provided, is used solely for e-verification of your filed return via the Income Tax Department portal. We do not store your Aadhaar number in plain text — only a masked version for reference.
+          PAN verification is performed via an authorized KYC API provider. We send your PAN to verify your identity and retrieve your name and date of birth. Aadhaar, if provided, is used solely for e-verification of your filed return via the Income Tax Department portal. We do not store your Aadhaar number in plain text — only a masked version for reference.
         </Section>
 
         <Section t="5. Data Storage and Security">
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
           <br /><br />
           • <strong>Income Tax Department:</strong> When you authorize us to submit your return via ERI, we transmit your ITR data to ITD.
           <br />
-          • <strong>SurePass:</strong> Your PAN is sent for identity verification.
+          • <strong>KYC Provider:</strong> Your PAN is sent for identity verification.
           <br />
           • <strong>Razorpay:</strong> Payment information is processed by Razorpay (PCI-DSS compliant). We do not store your card details.
           <br />

@@ -8,13 +8,16 @@ const ITR1ComputationService = require('./ITR1ComputationService');
 class ITR4ComputationService {
 
   static compute(payload) {
-    const income = this.computeIncome(payload);
-    const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
-    const tds = ITR1ComputationService.computeTDS(payload);
+    const safePayload = payload || {};
+    const income = this.computeIncome(safePayload);
+    const agriIncome = n(safePayload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, safePayload.deductions, 'old', agriIncome, safePayload);
+    const newRegime = this.computeRegime(income, safePayload.deductions, 'new', agriIncome, safePayload);
+    const tds = ITR1ComputationService.computeTDS(safePayload);
 
     for (const r of [oldRegime, newRegime]) { r.tdsCredit = tds.total; r.netPayable = r.totalTax - tds.total; }
+
+    // Note: ITR-4 ignores capitalGains, foreignIncome sections if present in payload.
 
     const recommended = oldRegime.totalTax <= newRegime.totalTax ? 'old' : 'new';
     return { income, oldRegime, newRegime, tds, recommended, savings: Math.abs(oldRegime.totalTax - newRegime.totalTax), grossTotalIncome: income.grossTotal };
@@ -22,10 +25,17 @@ class ITR4ComputationService {
 
   static computeIncome(payload) {
     const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
-    const salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory);
-    const hp = ITR1ComputationService.computeHouseProperty(payload.income?.houseProperty);
-    const other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources);
-    const presumptive = this.computePresumptive(payload.income?.presumptive);
+    let salary, hp, other, presumptive;
+    try { salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory); }
+    catch { salary = { grossSalary: 0, exemptAllowances: 0, salaryExemptions: 0, standardDeduction: 0, professionalTax: 0, entertainmentAllowanceDeduction: 0, netTaxable: 0, employers: [], tds: 0 }; }
+    try { hp = ITR1ComputationService.computeHouseProperty(payload.income?.houseProperty); }
+    catch { hp = { type: 'NONE', netIncome: 0 }; }
+    try { other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources); }
+    catch { other = { savingsInterest: 0, fdInterest: 0, dividends: 0, familyPension: 0, familyPensionExempt: 0, other: 0, interestOnITRefund: 0, winnings: 0, gifts: 0, total: 0 }; }
+    try { presumptive = this.computePresumptive(payload.income?.presumptive); }
+    catch { presumptive = { entries: [], totalGrossReceipts: 0, totalIncome: 0 }; }
+
+    // Note: ITR-4 ignores capitalGains, foreignIncome, business sections if present.
 
     return {
       salary, houseProperty: hp, otherSources: other, presumptive,

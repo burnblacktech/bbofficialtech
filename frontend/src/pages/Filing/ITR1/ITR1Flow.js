@@ -43,6 +43,15 @@ import TaxComputationCard from '../../../components/Filing/TaxComputationCard';
 import SmartButton from '../../../components/UI/SmartButton';
 import CountingNumber from '../../../components/UI/CountingNumber';
 import { validateFilingCompleteness } from '../../../utils/filingCompletenessValidator';
+import ProgressRing from '../../../components/Filing/ProgressRing';
+import ReadinessChecklist from '../../../components/Filing/ReadinessChecklist';
+import RecommendationsPanel from '../../../components/Filing/RecommendationsPanel';
+import OnboardingFlow from '../../../components/Filing/OnboardingFlow';
+import AutoFillOrchestrator from '../../../components/Filing/AutoFillOrchestrator';
+import { computeProgress } from '../../../utils/progressScorer';
+import { deriveChecklist } from '../../../utils/readinessDeriver';
+import { generateRecommendations } from '../../../utils/taxBrain';
+import { getDefaults, validateRegimeSwitch, checkITR1Applicability } from '../../../utils/smartDefaults';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
@@ -57,11 +66,15 @@ const SOURCES = [
 ];
 
 // ITR type based on active sources
-function getITRType(active, urlPath) {
-  if (urlPath?.includes('/itr4')) return 'ITR-4';
-  if (urlPath?.includes('/itr3')) return 'ITR-3';
-  if (urlPath?.includes('/itr2')) return 'ITR-2';
-  if (active.includes('business')) return 'ITR-3';
+function getITRType(active, payload) {
+  if (active.includes('business')) {
+    // Distinguish ITR-3 (full business) from ITR-4 (presumptive)
+    // If user has presumptive entries but NO full business entries → ITR-4
+    const hasPresumptive = (payload?.income?.presumptive?.entries || []).length > 0;
+    const hasFullBusiness = (payload?.income?.business?.businesses || []).length > 0;
+    if (hasPresumptive && !hasFullBusiness) return 'ITR-4';
+    return 'ITR-3';
+  }
   if (active.includes('capital_gains') || active.includes('foreign')) return 'ITR-2';
   return 'ITR-1';
 }
@@ -403,6 +416,9 @@ export default function ITR1Flow() {
   const [pendingAction, setPendingAction] = useState(null);
   const [showOverflowMenu, setShowOverflowMenu] = useState(false);
   const [showImportHistory, setShowImportHistory] = useState(false);
+  const [showAutoFill, setShowAutoFill] = useState(false);
+  const [showRegimeConfirm, setShowRegimeConfirm] = useState(null);
+  const [showRecommendations, setShowRecommendations] = useState(false);
 
   // Focus management refs
   const cardRefs = useRef({});
@@ -412,9 +428,12 @@ export default function ITR1Flow() {
   const [globalDirty, setGlobalDirty] = useState(false);
   useUnsavedWarning(globalDirty);
 
-  // Init from filing
+  // Init from filing — only on first load, not on every refetch
+  const filingInitializedRef = useRef(false);
   useEffect(() => {
     if (!filing) return;
+    if (filingInitializedRef.current) return; // Skip re-init on refetch
+    filingInitializedRef.current = true;
     const p = filing.jsonPayload || {};
 
     const s = new Set();
@@ -439,15 +458,48 @@ export default function ITR1Flow() {
     const bd = p.bankDetails || {};
     if (bd.bankName || bd.accountNumber) setBankData({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
     setSelectedRegime(filing.selectedRegime || p.selectedRegime || 'new');
+
+    // Task 10.7: Apply smart defaults on new filing creation
+    if (!p._defaultsApplied && !p.personalInfo?.residentialStatus) {
+      const defaults = getDefaults();
+      saveMut.mutate({
+        personalInfo: {
+          residentialStatus: defaults.residentialStatus,
+          filingStatus: defaults.filingStatus,
+          employerCategory: defaults.employerCategory,
+        },
+        _defaultsApplied: true,
+      });
+    }
   }, [filing]);
 
   const saveMut = useMutation({
     mutationFn: async (updates) => {
-      const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, updates) };
+      const currentPayload = filing?.jsonPayload || {};
+      const body = { jsonPayload: deepMerge(currentPayload, updates) };
       if (updates.selectedRegime) { body.selectedRegime = updates.selectedRegime; setSelectedRegime(updates.selectedRegime); }
-      await api.put(`/filings/${filingId}`, body);
+      // Task 10.2: Include version for optimistic locking
+      if (filing?.version !== undefined) { body.version = filing.version; }
+
       try {
-        const itr = getITRType(active, location.pathname);
+        await api.put(`/filings/${filingId}`, body);
+      } catch (err) {
+        // Task 10.2: On 409 VERSION_CONFLICT, refetch + re-merge + retry once
+        if (err.response?.status === 409 && err.response?.data?.code === 'VERSION_CONFLICT') {
+          const serverFiling = err.response.data.data;
+          const serverPayload = serverFiling?.jsonPayload || {};
+          const remergedPayload = deepMerge(serverPayload, updates);
+          const retryBody = { jsonPayload: remergedPayload };
+          if (updates.selectedRegime) retryBody.selectedRegime = updates.selectedRegime;
+          if (serverFiling?.version !== undefined) retryBody.version = serverFiling.version;
+          await api.put(`/filings/${filingId}`, retryBody);
+        } else {
+          throw err;
+        }
+      }
+
+      try {
+        const itr = getITRType(active, filing?.jsonPayload);
         const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
         setComp(r.data.data);
       } catch (compErr) {
@@ -457,12 +509,19 @@ export default function ITR1Flow() {
     },
     onMutate: () => { setGlobalDirty(true); },
     onSuccess: () => { setGlobalDirty(false); qc.invalidateQueries({ queryKey: ['filing', filingId] }); },
-    onError: (e) => { setGlobalDirty(false); toast.error(e.response?.data?.error || 'Save failed'); },
+    onError: (e) => {
+      setGlobalDirty(false);
+      if (e.response?.status === 409) {
+        toast.error('Save conflict — please refresh');
+      } else {
+        toast.error(e.response?.data?.error || 'Save failed');
+      }
+    },
   });
 
   const recompute = useCallback(async () => {
     try {
-      const itr = getITRType(active, location.pathname);
+      const itr = getITRType(active, filing?.jsonPayload);
       const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
       setComp(r.data.data);
     } catch { /* silent */ }
@@ -481,7 +540,7 @@ export default function ITR1Flow() {
   const activeInitializedRef = useRef(false);
   useEffect(() => {
     if (!filing) return;
-    const itr = getITRType(active, location.pathname);
+    const itr = getITRType(active, filing?.jsonPayload);
     const ep = EP_MAP[itr] || 'itr1';
     const currentEp = location.pathname.split('/').pop();
     if (currentEp !== ep) {
@@ -492,7 +551,16 @@ export default function ITR1Flow() {
       activeInitializedRef.current = true;
       return;
     }
-    saveMut.mutate({ _selectedSources: active });
+    // Persist selected sources without triggering recompute (just a metadata save)
+    const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, { _selectedSources: active }) };
+    if (filing?.version !== undefined) body.version = filing.version;
+    api.put(`/filings/${filingId}`, body).then(() => {
+      // Recompute with the NEW ITR type after sources are persisted
+      const newItr = getITRType(active, filing?.jsonPayload);
+      return api.post(`/filings/${filingId}/${EP_MAP[newItr] || 'itr1'}/compute`);
+    }).then((r) => {
+      setComp(r.data.data);
+    }).catch(() => { /* silent — non-critical */ });
   }, [active]); // eslint-disable-line
 
   // Auto-expand PersonalInfo when empty or incomplete on first open
@@ -542,6 +610,12 @@ export default function ITR1Flow() {
     const timer = setTimeout(() => {
       const el = document.querySelector('.story-card--open');
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Task 10.8: Focus first interactive element in editor
+      const editor = document.querySelector('.story-editor');
+      if (editor) {
+        const focusable = editor.querySelector('input, button, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusable) focusable.focus();
+      }
     }, 100);
     return () => clearTimeout(timer);
   }, [selected]);
@@ -569,6 +643,44 @@ export default function ITR1Flow() {
     if (!active.includes(id)) setSelected(id);
   };
 
+  // Task 10.7: Regime switch with safety confirmation
+  const handleRegimeSwitch = useCallback((newRegime) => {
+    if (newRegime === selectedRegime) return;
+    const check = validateRegimeSwitch(selectedRegime, newRegime, comp);
+    if (!check.safe) {
+      setShowRegimeConfirm({ newRegime, taxIncrease: check.taxIncrease });
+    } else {
+      setSelectedRegime(newRegime);
+      saveMut.mutate({ selectedRegime: newRegime });
+    }
+  }, [selectedRegime, comp, saveMut]);
+
+  const confirmRegimeSwitch = useCallback(() => {
+    if (!showRegimeConfirm) return;
+    setSelectedRegime(showRegimeConfirm.newRegime);
+    saveMut.mutate({ selectedRegime: showRegimeConfirm.newRegime });
+    setShowRegimeConfirm(null);
+  }, [showRegimeConfirm, saveMut]);
+
+  // Task 10.2: Readiness checklist navigation
+  const handleReadinessNavigate = useCallback((section, field) => {
+    const sectionMap = {
+      'Personal Info': 'personalInfo',
+      'Income': 'salary',
+      'Bank': 'bank',
+      'Salary': 'salary',
+      'Other Income': 'other',
+      'House Property': 'house_property',
+      'Capital Gains': 'capital_gains',
+      'Business': 'business',
+      'Deductions': 'deductions',
+      'Taxes Paid': 'bank',
+      'General': 'personalInfo',
+    };
+    const target = sectionMap[section] || 'personalInfo';
+    setSelected(target);
+  }, []);
+
   const handleDelete = async () => {
     try {
       await api.delete(`/filings/${filingId}`);
@@ -594,7 +706,7 @@ export default function ITR1Flow() {
 
   const downloadJSON = async () => {
     try {
-      const itr = getITRType(active, location.pathname);
+      const itr = getITRType(active, filing?.jsonPayload);
       const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/json`);
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(r.data, null, 2)]));
@@ -613,7 +725,7 @@ export default function ITR1Flow() {
 
   const downloadPDF = async () => {
     try {
-      const itr = getITRType(active, location.pathname);
+      const itr = getITRType(active, filing?.jsonPayload);
       const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/pdf`, { responseType: 'blob' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([r.data], { type: 'application/pdf' }));
@@ -624,7 +736,7 @@ export default function ITR1Flow() {
   };
 
   const payload = filing?.jsonPayload || {};
-  const itrType = getITRType(active, location.pathname);
+  const itrType = getITRType(active, filing?.jsonPayload);
   const income = comp?.income;
 
   const whispers = useMemo(
@@ -730,6 +842,51 @@ export default function ITR1Flow() {
 
   // Task 7.3: Filing completeness for SmartButton gating (must be before early returns)
   const completeness = useMemo(() => validateFilingCompleteness(payload, itrType), [payload, itrType]);
+
+  // Task 10.1: Progress ring data
+  const progress = useMemo(() => computeProgress(payload, itrType), [payload, itrType]);
+
+  // Task 10.1: Navigate to next incomplete section
+  const handleProgressClick = useCallback(() => {
+    if (progress.nextIncomplete) {
+      const sectionMap = {
+        'personal_info': 'personalInfo',
+        'income': 'salary',
+        'bank': 'bank',
+        'salary': 'salary',
+        'other_income': 'other',
+        'house_property': 'house_property',
+        'capital_gains': 'capital_gains',
+        'business': 'business',
+        'deductions': 'deductions',
+        'taxes_paid': 'bank',
+      };
+      const target = sectionMap[progress.nextIncomplete] || progress.nextIncomplete;
+      setSelected(target);
+    }
+  }, [progress]);
+
+  // Task 10.2: Readiness checklist data
+  const readiness = useMemo(() => deriveChecklist(payload, itrType), [payload, itrType]);
+
+  // Task 10.5: Recommendations data
+  const recommendations = useMemo(
+    () => generateRecommendations(payload, comp, selectedRegime),
+    [payload, comp, selectedRegime],
+  );
+
+  // Task 10.7: ITR-1 applicability check
+  const itr1Check = useMemo(() => {
+    const grossTotal = comp?.income?.grossTotal || 0;
+    return checkITR1Applicability(grossTotal);
+  }, [comp]);
+
+  // Task 10.5: First-time user detection
+  const isFirstFiling = useMemo(() => {
+    if (!user?.id) return false;
+    // Check if this is the user's only filing (no prior records)
+    return !filing?.jsonPayload?._onboarding?.welcomeDismissed && !filing?.jsonPayload?._defaultsApplied;
+  }, [user, filing]);
 
   if (isLoading) return <div className="story-loading"><Loader2 size={28} className="animate-spin" /></div>;
 
@@ -851,6 +1008,7 @@ export default function ITR1Flow() {
                         className="story-flow__card-item-remove"
                         onClick={(e) => { e.stopPropagation(); toggleSource(item.id); }}
                         title={`Remove ${item.label}`}
+                        aria-label={`Remove ${item.label}`}
                       >
                         <X size={10} />
                       </button>
@@ -930,7 +1088,7 @@ export default function ITR1Flow() {
                 <button
                   key={r}
                   className={`story-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-                  onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}
+                  onClick={() => handleRegimeSwitch(r)}
                 >
                   {r === 'old' ? 'Old' : 'New'}
                 </button>
@@ -976,10 +1134,10 @@ export default function ITR1Flow() {
             )}
             <div className="story-flow__result-actions">
               <SmartButton label="Submit" icon={Send} onClick={handleSubmit} completeness={completeness} variant="submit" isLoading={isSubmitting} />
-              <button className="story-flow__result-icon-btn" onClick={downloadJSON} title="Download JSON" disabled={!completeness.complete} style={{ opacity: completeness.complete ? 1 : 0.5 }}>
+              <button className="story-flow__result-icon-btn" onClick={downloadJSON} title="Download JSON" aria-label="Download JSON" disabled={!completeness.complete} style={{ opacity: completeness.complete ? 1 : 0.5 }}>
                 <FileText size={13} />
               </button>
-              <button className="story-flow__result-icon-btn" onClick={downloadPDF} title="Download PDF">
+              <button className="story-flow__result-icon-btn" onClick={downloadPDF} title="Download PDF" aria-label="Download PDF">
                 <Download size={13} />
               </button>
             </div>
@@ -1004,6 +1162,51 @@ export default function ITR1Flow() {
 
           </MotionOrDiv>{/* end stagger container */}
 
+          {/* Task 10.2: Readiness Checklist — below RESULT card */}
+          <ReadinessChecklist
+            items={readiness.items}
+            summaryText={readiness.summaryText}
+            allBlockersResolved={readiness.allBlockersResolved}
+            onNavigate={handleReadinessNavigate}
+          />
+
+          {/* Task 10.5: Recommendations Panel — collapsible section */}
+          {recommendations.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <button
+                onClick={() => setShowRecommendations(p => !p)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
+                  background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0', fontFamily: 'inherit',
+                  fontSize: 12, fontWeight: 600, color: 'var(--text-muted)',
+                }}
+                aria-expanded={showRecommendations}
+                aria-label="Toggle tax-saving recommendations"
+              >
+                <span>💡 {recommendations.length} tax-saving tip{recommendations.length > 1 ? 's' : ''}</span>
+                <span style={{ fontSize: 10 }}>{showRecommendations ? '▲' : '▼'}</span>
+              </button>
+              {showRecommendations && (
+                <RecommendationsPanel
+                  recommendations={recommendations}
+                  onNavigate={(section) => setSelected(section)}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Task 10.7: ITR-1 applicability warning */}
+          {!itr1Check.applicable && itrType === 'ITR-1' && (
+            <div style={{
+              padding: '8px 12px', marginTop: 8, borderRadius: 'var(--radius-md)',
+              background: 'var(--color-warning-bg)', border: '1px solid var(--color-warning-border)',
+              fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <AlertTriangle size={14} style={{ color: 'var(--color-warning)', flexShrink: 0 }} />
+              <span>{itr1Check.message}</span>
+            </div>
+          )}
+
           {/* Delete confirmation */}
           {showDeleteConfirm && (
             <div className="story-flow__delete-confirm">
@@ -1025,7 +1228,7 @@ export default function ITR1Flow() {
           {/* ── Flow Footer: Import + Progress ── */}
           <div className="story-flow__footer">
             <div className="story-overflow">
-              <button className="story-flow__footer-btn" onClick={() => openImport(null)}>
+              <button className="story-flow__footer-btn" onClick={() => openImport(null)} aria-label="Import documents">
                 <Upload size={12} /> Import
               </button>
               <button
@@ -1033,6 +1236,7 @@ export default function ITR1Flow() {
                 onClick={() => setShowOverflowMenu(p => !p)}
                 style={{ marginLeft: 4 }}
                 title="More"
+                aria-label="More options"
               >
                 <MoreHorizontal size={12} />
               </button>
@@ -1047,9 +1251,13 @@ export default function ITR1Flow() {
                 </div>
               )}
             </div>
-            <span className="story-flow__footer-progress">
-              {completedCount}/{cardSections.length} complete
-            </span>
+            {/* Task 10.1: ProgressRing replaces text counter */}
+            <ProgressRing
+              percentage={progress.percentage}
+              color={progress.color}
+              sections={progress.sections}
+              onClickNext={handleProgressClick}
+            />
           </div>
 
         </nav>
@@ -1057,7 +1265,9 @@ export default function ITR1Flow() {
         {/* RIGHT: Editor Panel — only scrollable area */}
         <main className="story-editor">
           <FilerInfoCard payload={payload} filing={filing} itrType={itrType} />
-          <TaxComputationCard comp={comp} selectedRegime={selectedRegime} onNavigateToSection={(id) => setSelected(id)} />
+          <div aria-live="polite" aria-atomic="true">
+            <TaxComputationCard comp={comp} selectedRegime={selectedRegime} onNavigateToSection={(id) => setSelected(id)} onSwitchRegime={handleRegimeSwitch} />
+          </div>
           {isSubmitted && (
             <div style={{ padding: '10px 14px', marginBottom: 16, background: 'var(--color-info-bg)', border: '1px solid var(--color-info-border)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
               <CheckCircle size={14} style={{ color: 'var(--color-info)', flexShrink: 0 }} />
@@ -1092,7 +1302,7 @@ export default function ITR1Flow() {
           <div className="story-mobile-bar__regime">
             {['old', 'new'].map(r => (
               <button key={r} className={`story-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-                onClick={() => { setSelectedRegime(r); saveMut.mutate({ selectedRegime: r }); }}>
+                onClick={() => handleRegimeSwitch(r)}>
                 {r === 'old' ? 'Old' : 'New'}
               </button>
             ))}
@@ -1152,6 +1362,61 @@ export default function ITR1Flow() {
           }}
           onClose={() => { setShowPaymentGate(false); setPendingAction(null); }}
         />
+      )}
+
+      {/* Task 10.5: OnboardingFlow for first-time users */}
+      <OnboardingFlow
+        isFirstFiling={isFirstFiling}
+        onStartAutoFill={() => setShowAutoFill(true)}
+        onSkip={() => {
+          saveMut.mutate({ _onboarding: { welcomeDismissed: true } });
+        }}
+      />
+
+      {/* Task 10.5: AutoFillOrchestrator */}
+      {showAutoFill && (
+        <AutoFillOrchestrator
+          filingId={filingId}
+          payload={payload}
+          onComplete={(mergedPayload, summary) => {
+            setShowAutoFill(false);
+            qc.invalidateQueries({ queryKey: ['filing', filingId] });
+            recompute();
+            toast.success(`Auto-fill complete — ${summary?.fieldsPopulated || 0} fields populated`);
+          }}
+          onError={() => { /* error handled inside component */ }}
+          onFallbackImport={() => { setShowAutoFill(false); openImport(null); }}
+        />
+      )}
+
+      {/* Task 10.7: Regime switch confirmation dialog */}
+      {showRegimeConfirm && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', zIndex: 100,
+          }}
+          role="dialog" aria-modal="true" aria-label="Confirm regime switch"
+        >
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: 24,
+            maxWidth: 380, width: '90vw', boxShadow: 'var(--shadow-md)',
+          }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
+              Switch Regime?
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.5 }}>
+              Switching to {showRegimeConfirm.newRegime === 'old' ? 'Old' : 'New'} regime will increase your tax by{' '}
+              <strong style={{ color: 'var(--color-error)' }}>
+                ₹{(showRegimeConfirm.taxIncrease || 0).toLocaleString('en-IN')}
+              </strong>. Are you sure?
+            </div>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button className="ff-btn ff-btn-outline" onClick={() => setShowRegimeConfirm(null)}>Cancel</button>
+              <button className="ff-btn ff-btn-primary" onClick={confirmRegimeSwitch}>Switch Anyway</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

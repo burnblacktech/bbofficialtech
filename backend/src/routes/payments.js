@@ -1,13 +1,51 @@
 /**
- * Payment Routes — Razorpay order creation + verification
+ * Payment Routes — Razorpay order creation, verification, webhooks, history, receipts
  */
 
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const PaymentService = require('../services/PaymentService');
+const InvoiceService = require('../services/InvoiceService');
 const { PLANS, getRequiredPlan } = require('../constants/pricingPlans');
 const enterpriseLogger = require('../utils/logger');
+
+/**
+ * POST /api/payments/webhook
+ * Razorpay webhook — no JWT auth, raw body for HMAC verification
+ */
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const signature = req.headers['x-razorpay-signature'];
+    if (!signature) {
+      enterpriseLogger.warn('Webhook: missing signature header');
+      return res.status(400).json({ error: 'Missing signature' });
+    }
+
+    // Parse raw body
+    const body = typeof req.body === 'string' ? req.body : req.body.toString('utf8');
+    let payload;
+    try {
+      payload = JSON.parse(body);
+    } catch {
+      return res.status(400).json({ error: 'Invalid JSON body' });
+    }
+
+    const eventType = payload.event;
+    if (!eventType) {
+      return res.status(400).json({ error: 'Missing event type' });
+    }
+
+    const result = await PaymentService.handleWebhookEvent(eventType, payload, signature, body);
+    return res.status(200).json({ success: true, ...result });
+  } catch (err) {
+    if (err.code === 'INVALID_WEBHOOK_SIGNATURE') {
+      return res.status(400).json({ error: err.message });
+    }
+    enterpriseLogger.error('Webhook processing error', { error: err.message });
+    return res.status(200).json({ success: false, error: 'Internal processing error' });
+  }
+});
 
 /**
  * GET /api/payments/plans
@@ -94,6 +132,48 @@ router.post('/verify', authenticateToken, async (req, res, next) => {
     });
   } catch (err) {
     enterpriseLogger.error('Payment verification failed', { error: err.message });
+    next(err);
+  }
+});
+
+/**
+ * GET /api/payments/history
+ * Payment history for authenticated user
+ */
+router.get('/history', authenticateToken, async (req, res, next) => {
+  try {
+    const orders = await PaymentService.getPaymentHistory(req.user.userId);
+    res.json({ success: true, data: orders });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * GET /api/payments/:orderId/receipt
+ * Download PDF receipt for a paid order
+ */
+router.get('/:orderId/receipt', authenticateToken, async (req, res, next) => {
+  try {
+    const order = await PaymentService.getOrderForReceipt(req.params.orderId, req.user.userId);
+
+    // Build invoice data if not already present
+    if (!order.metadata?.invoice) {
+      const { User } = require('../models');
+      const user = await User.findByPk(order.userId);
+      await InvoiceService.buildInvoiceData(order, user, order.filing);
+      await order.reload();
+    }
+
+    const pdfBuffer = await InvoiceService.generatePDF(order);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="invoice-${order.invoiceNumber || order.id}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
+    res.send(pdfBuffer);
+  } catch (err) {
     next(err);
   }
 });

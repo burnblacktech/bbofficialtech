@@ -799,3 +799,33 @@
     animation: none !important;
   }
 }
+
+/* ── 13. Accessibility Enhancements (Task 10.8) ── */
+
+/* Visible focus indicators — 2px solid brand gold outline */
+.story-flow__card:focus-visible,
+.story-flow__card-item:focus-visible,
+.story-flow__card-item-btn:focus-visible,
+.story-flow__footer-btn:focus-visible,
+.story-flow__result-icon-btn:focus-visible,
+.story-regime-btn:focus-visible,
+.story-overflow__item:focus-visible,
+.story-mobile-bar__submit:focus-visible,
+.readiness-item:focus-visible,
+.tax-computation-card__metric--clickable:focus-visible,
+.tax-computation-card__compare-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Focus ring for ProgressRing */
+.story-flow__footer [role="button"]:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* Readiness track color variable */
+:root {
+  --readiness-track: var(--border-light, #e5e7eb);
+}

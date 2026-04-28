@@ -34,14 +34,20 @@ const Coupon = sequelize.define('Coupon', {
     field: 'current_uses',
   },
   validFrom: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.DATE,
     allowNull: false,
     field: 'valid_from',
   },
   validUntil: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.DATE,
     allowNull: false,
     field: 'valid_until',
+  },
+  maxDiscount: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'max_discount',
+    comment: 'Maximum discount in paise for percent-type coupons',
   },
   isActive: {
     type: DataTypes.BOOLEAN,

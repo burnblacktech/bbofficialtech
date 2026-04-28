@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, Clock, Loader2, ArrowLeft, Download, ExternalLink } from 'lucide-react';
 import { Page, Card, Button, Row, Badge, Alert, Divider } from '../../components/ds';
+import PostFilingGuide from '../../components/Filing/PostFilingGuide';
 import api from '../../services/api';
 import P from '../../styles/palette';
 import toast from 'react-hot-toast';
@@ -98,6 +99,18 @@ export default function SubmissionStatus() {
             );
           })()}
         </Alert>
+      )}
+
+      {/* Task 10.6: PostFilingGuide for submitted/accepted filings */}
+      {(state === 'eri_success' || state === 'submitted_to_eri') && (
+        <PostFilingGuide
+          filing={{
+            lifecycleState: state,
+            submittedAt: data?.submittedAt || data?.filedAt,
+            assessmentYear: data?.assessmentYear,
+          }}
+          computation={data?.computation}
+        />
       )}
 
       {/* Manual filing instructions */}

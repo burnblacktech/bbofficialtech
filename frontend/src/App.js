@@ -68,6 +68,9 @@ const IncomeTracker = lazy(() => import('./pages/Finance/IncomeTracker'));
 const ExpenseTracker = lazy(() => import('./pages/Finance/ExpenseTracker'));
 const InvestmentLogger = lazy(() => import('./pages/Finance/InvestmentLogger'));
 
+// Payments
+const PaymentHistory = lazy(() => import('./pages/Payments/PaymentHistory'));
+
 // Unified Settings Hub
 const SettingsHub = lazy(() => import('./pages/Settings/SettingsHub'));
 
@@ -81,6 +84,8 @@ const AdminRevenue = lazy(() => import('./pages/Admin/AdminRevenue'));
 const AdminERI = lazy(() => import('./pages/Admin/AdminERI'));
 const AdminCoupons = lazy(() => import('./pages/Admin/AdminCoupons'));
 const AdminHealth = lazy(() => import('./pages/Admin/AdminHealth'));
+const AdminFilingList = lazy(() => import('./pages/Admin/AdminFilingList'));
+const AdminFilingCreate = lazy(() => import('./pages/Admin/AdminFilingCreate'));
 const AdminProtectedRoute = lazy(() => import('./components/auth/AdminProtectedRoute'));
 
 // =====================================================
@@ -177,6 +182,9 @@ const AppContent = () => {
         <Route path="/family" element={<Page><FamilyPage /></Page>} />
         <Route path="/vault" element={<Page><VaultPage /></Page>} />
 
+        {/* Payments */}
+        <Route path="/payments" element={<Page><PaymentHistory /></Page>} />
+
         {/* Post-Filing */}
         <Route path="/post-filing/:filingId/refund" element={<Page><RefundTracker /></Page>} />
         <Route path="/post-filing/:filingId/cpc" element={<Page><CPCDecoder /></Page>} />
@@ -212,6 +220,8 @@ const AppContent = () => {
           <Route path="/admin/revenue" element={<Suspense fallback={<RouteLoader />}><AdminRevenue /></Suspense>} />
           <Route path="/admin/eri" element={<Suspense fallback={<RouteLoader />}><AdminERI /></Suspense>} />
           <Route path="/admin/coupons" element={<Suspense fallback={<RouteLoader />}><AdminCoupons /></Suspense>} />
+          <Route path="/admin/filing-mgmt" element={<Suspense fallback={<RouteLoader />}><AdminFilingList /></Suspense>} />
+          <Route path="/admin/filing-mgmt/create" element={<Suspense fallback={<RouteLoader />}><AdminFilingCreate /></Suspense>} />
           <Route path="/admin/health" element={<Suspense fallback={<RouteLoader />}><AdminHealth /></Suspense>} />
         </Route>
       </Route>

@@ -6,6 +6,7 @@ import {
   PiggyBank, HeartPulse, Home, GraduationCap, Heart,
 } from 'lucide-react';
 import { validateDonation80G } from '../../../../utils/itrValidation';
+import { validateDeductionLimit } from '../../../../utils/smartDefaults';
 import useAutoSave from '../../../../hooks/useAutoSave';
 import { getExpensesSummary } from '../../../../services/financeService';
 import api from '../../../../services/api';
@@ -630,6 +631,11 @@ function DeductionField({ fieldKey, value, onChange, source }) {
   const meta = FIELD_META[fieldKey];
   if (!meta) return null;
 
+  // Task 10.7: Inline deduction limit validation
+  const limitCheck = meta.section && meta.limit
+    ? validateDeductionLimit(meta.section, n(value))
+    : null;
+
   return (
     <div className="ff-field">
       <label className="ff-label" htmlFor={`ded-${fieldKey}`}>
@@ -651,7 +657,13 @@ function DeductionField({ fieldKey, value, onChange, source }) {
         onChange={(e) => onChange(e.target.value)}
         placeholder="0"
         aria-describedby={`tip-${fieldKey}`}
+        style={limitCheck && !limitCheck.withinLimit ? { borderColor: 'var(--color-warning)' } : undefined}
       />
+      {limitCheck && !limitCheck.withinLimit && (
+        <div className="ff-hint" style={{ color: 'var(--color-warning)', fontSize: 11 }}>
+          Exceeds §{meta.section} limit of {rs(limitCheck.limit)} by {rs(limitCheck.excess)}
+        </div>
+      )}
       {source && source !== 'manual' && (
         <div className="ff-hint">
           Source: {SOURCE_LABELS[source] || source}

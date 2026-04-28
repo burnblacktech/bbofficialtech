@@ -151,6 +151,33 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
   const panVerified = !!user?.panVerified;
   // DOB from PAN verification (authoritative source from ITD)
   const panVerifiedDob = user?.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : '';
+
+  // Sync DOB + name from user when PAN verification completes (profile refresh)
+  useEffect(() => {
+    if (!user) return;
+    setForm(prev => {
+      const updates = {};
+      if (user.dateOfBirth && !prev.dob) {
+        updates.dob = String(user.dateOfBirth).slice(0, 10);
+      }
+      if (user.fullName && !prev.firstName) {
+        const parts = (user.fullName || '').trim().split(/\s+/);
+        if (parts.length >= 2) {
+          updates.firstName = parts[0];
+          updates.lastName = parts[parts.length - 1];
+          if (parts.length > 2) updates.middleName = parts.slice(1, -1).join(' ');
+        } else if (parts.length === 1) {
+          updates.firstName = parts[0];
+        }
+      }
+      if (user.panNumber && !prev.pan) {
+        updates.pan = user.panNumber;
+      }
+      if (Object.keys(updates).length === 0) return prev;
+      return { ...prev, ...updates };
+    });
+  }, [user?.dateOfBirth, user?.fullName, user?.panNumber]); // eslint-disable-line
+
   const hasSalary = (payload?.income?.salary?.employers || []).length > 0;
   const isRevisedFiling = filing?.filingType === 'revised';
   const isITR1 = itrType === 'ITR-1';
@@ -731,12 +758,8 @@ function AadhaarUploadButton({ onVerified }) {
             {loading ? <><Loader2 size={12} className="animate-spin" /> Sending...</> : 'Verify via OTP'}
           </button>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, color: 'var(--text-light)' }}>or</span>
-          <input ref={fileRef} type="file" accept=".pdf" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} style={{ display: 'none' }} />
-          <button type="button" onClick={() => fileRef.current?.click()} className="ff-btn ff-btn-outline" style={{ padding: '4px 10px', fontSize: 11 }}>
-            <Upload size={11} /> Upload eAadhaar PDF
-          </button>
+        <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>
+          OTP will be sent to your Aadhaar-linked mobile number
         </div>
       </div>
     );

@@ -1,5 +1,5 @@
 /**
- * PAN Verification — Verifies via SurePass API, shows name + DOB
+ * PAN Verification — Verifies PAN, shows name + DOB
  */
 
 import { useState } from 'react';
@@ -68,7 +68,7 @@ export default function PANVerification() {
 
         {!isVerified && (
           <button className="ff-btn ff-btn-primary" onClick={handleVerify} disabled={verifying} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
-            {verifying ? <><Loader2 size={16} className="animate-spin" /> Verifying with SurePass...</> : <><Shield size={16} /> Verify PAN</>}
+            {verifying ? <><Loader2 size={16} className="animate-spin" /> Verifying...</> : <><Shield size={16} /> Verify PAN</>}
           </button>
         )}
       </div>

@@ -14,6 +14,7 @@ const enterpriseLogger = require('../utils/logger');
 const { AppError } = require('../middleware/errorHandler');
 const { PLANS, getRequiredPlan, generateInvoiceNumber } = require('../constants/pricingPlans');
 const Order = require('../models/Order');
+const CouponService = require('./CouponService');
 const { sequelize } = require('../config/database');
 
 let Razorpay;
@@ -67,7 +68,6 @@ class PaymentService {
     // Determine plan + price
     const plan = getRequiredPlan(itrType, grossIncome);
     if (plan.id === 'free') {
-      // Create a free order (no Razorpay needed)
       const order = await Order.create({
         userId, filingId, planId: plan.id,
         amount: 0, totalAmount: 0, gstAmount: 0, status: 'paid', paidAt: new Date(),
@@ -76,18 +76,18 @@ class PaymentService {
       return { alreadyPaid: false, free: true, order };
     }
 
-    let amountPaise = plan.price * 100;
+    const basePaise = plan.price * 100;
     let discount = 0;
 
-    // Apply coupon
+    // Apply coupon via CouponService (database-driven)
     if (couponCode) {
-      const couponDiscount = this._applyCoupon(couponCode, amountPaise);
-      discount = couponDiscount;
-      amountPaise = Math.max(amountPaise - discount, 0);
+      const couponResult = await CouponService.applyCoupon(couponCode, basePaise);
+      discount = couponResult.discount;
     }
 
-    const gstPaise = Math.round(amountPaise * plan.gstRate);
-    const totalPaise = amountPaise + gstPaise;
+    const amountAfterDiscount = Math.max(basePaise - discount, 0);
+    const gstPaise = Math.round(amountAfterDiscount * plan.gstRate);
+    const totalPaise = amountAfterDiscount + gstPaise;
 
     // Create Razorpay order
     const rz = getRazorpay();
@@ -105,7 +105,7 @@ class PaymentService {
     // Save order in DB
     const order = await Order.create({
       userId, filingId, planId: plan.id,
-      amount: amountPaise, discount, gstAmount: gstPaise, totalAmount: totalPaise,
+      amount: basePaise, discount, gstAmount: gstPaise, totalAmount: totalPaise,
       razorpayOrderId: rzOrder.id, couponCode: couponCode || null, status: 'created',
     });
 
@@ -148,19 +148,186 @@ class PaymentService {
       throw new AppError('Payment verification failed — signature mismatch', 400);
     }
 
-    // Mark as paid
-    order.razorpayPaymentId = razorpayPaymentId;
-    order.razorpaySignature = razorpaySignature;
-    order.status = 'paid';
-    order.paidAt = new Date();
-    order.invoiceNumber = generateInvoiceNumber(await this._nextInvoiceSeq());
-    await order.save();
+    // Wrap coupon increment + order update in a single transaction
+    const transaction = await sequelize.transaction();
+    try {
+      order.razorpayPaymentId = razorpayPaymentId;
+      order.razorpaySignature = razorpaySignature;
+      order.status = 'paid';
+      order.paidAt = new Date();
+      order.invoiceNumber = generateInvoiceNumber(await this._nextInvoiceSeq());
+      await order.save({ transaction });
+
+      // Increment coupon usage atomically
+      if (order.couponCode) {
+        await CouponService.incrementUsage(order.couponCode, transaction);
+      }
+
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
 
     enterpriseLogger.info('Payment verified', {
       orderId: order.id, paymentId: razorpayPaymentId, amount: order.totalAmount / 100,
     });
 
     return { alreadyPaid: false, order };
+  }
+
+  /**
+   * Handle Razorpay webhook events
+   * @param {string} eventType - e.g. 'payment.captured', 'payment.failed'
+   * @param {object} payload - Parsed webhook body
+   * @param {string} signature - x-razorpay-signature header
+   * @param {string} rawBody - Raw request body string for HMAC verification
+   */
+  static async handleWebhookEvent(eventType, payload, signature, rawBody) {
+    // Verify webhook signature
+    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!secret) {
+      enterpriseLogger.error('RAZORPAY_WEBHOOK_SECRET not configured');
+      throw new AppError('Webhook secret not configured', 500);
+    }
+
+    const expectedSig = crypto
+      .createHmac('sha256', secret)
+      .update(rawBody || JSON.stringify(payload))
+      .digest('hex');
+
+    if (expectedSig !== signature) {
+      enterpriseLogger.warn('Invalid webhook signature', { eventType });
+      throw new AppError('Invalid webhook signature', 400, 'INVALID_WEBHOOK_SIGNATURE');
+    }
+
+    const paymentEntity = payload.payload?.payment?.entity;
+    if (!paymentEntity) {
+      enterpriseLogger.warn('Webhook payload missing payment entity', { eventType });
+      return { processed: false, reason: 'Missing payment entity' };
+    }
+
+    const razorpayOrderId = paymentEntity.order_id;
+    const razorpayPaymentId = paymentEntity.id;
+
+    const order = await Order.findOne({ where: { razorpayOrderId } });
+    if (!order) {
+      enterpriseLogger.warn('Webhook: order not found', { razorpayOrderId, eventType });
+      return { processed: false, reason: 'Order not found' };
+    }
+
+    if (eventType === 'payment.captured') {
+      // Idempotent — skip if already paid
+      if (order.status === 'paid') {
+        return { processed: true, idempotent: true };
+      }
+
+      const transaction = await sequelize.transaction();
+      try {
+        order.razorpayPaymentId = razorpayPaymentId;
+        order.status = 'paid';
+        order.paidAt = new Date();
+        if (!order.invoiceNumber) {
+          order.invoiceNumber = generateInvoiceNumber(await this._nextInvoiceSeq());
+        }
+        await order.save({ transaction });
+
+        if (order.couponCode) {
+          await CouponService.incrementUsage(order.couponCode, transaction);
+        }
+
+        await transaction.commit();
+      } catch (err) {
+        await transaction.rollback();
+        throw err;
+      }
+
+      enterpriseLogger.info('Webhook: payment captured', { orderId: order.id, razorpayPaymentId });
+      return { processed: true };
+    }
+
+    if (eventType === 'payment.failed') {
+      if (order.status === 'failed') {
+        return { processed: true, idempotent: true };
+      }
+      order.status = 'failed';
+      order.razorpayPaymentId = razorpayPaymentId;
+      await order.save();
+
+      enterpriseLogger.info('Webhook: payment failed', { orderId: order.id, razorpayPaymentId });
+      return { processed: true };
+    }
+
+    enterpriseLogger.info('Webhook: unhandled event type', { eventType });
+    return { processed: false, reason: `Unhandled event: ${eventType}` };
+  }
+
+  /**
+   * Get payment history for a user
+   * @param {string} userId
+   * @returns {Array} orders sorted by createdAt DESC
+   */
+  static async getPaymentHistory(userId) {
+    const orders = await Order.findAll({
+      where: { userId },
+      order: [['createdAt', 'DESC']],
+      include: [
+        {
+          model: require('../models/ITRFiling'),
+          as: 'filing',
+          attributes: ['assessmentYear', 'itrType'],
+          required: false,
+        },
+      ],
+    });
+
+    return orders.map((o) => ({
+      orderId: o.id,
+      assessmentYear: o.filing?.assessmentYear || null,
+      itrType: o.filing?.itrType || null,
+      planName: PLANS[o.planId]?.name || o.planId,
+      amount: o.amount,
+      discount: o.discount,
+      gstAmount: o.gstAmount,
+      totalAmount: o.totalAmount,
+      status: o.status,
+      paidAt: o.paidAt,
+      invoiceNumber: o.invoiceNumber,
+      createdAt: o.createdAt,
+    }));
+  }
+
+  /**
+   * Get a specific order for receipt generation (with ownership check)
+   * @param {string} orderId
+   * @param {string} userId
+   * @returns {object} Order instance
+   */
+  static async getOrderForReceipt(orderId, userId) {
+    const order = await Order.findByPk(orderId, {
+      include: [
+        {
+          model: require('../models/ITRFiling'),
+          as: 'filing',
+          attributes: ['assessmentYear', 'itrType', 'taxpayerPan'],
+          required: false,
+        },
+      ],
+    });
+
+    if (!order) {
+      throw new AppError('Order not found', 404, 'ORDER_NOT_FOUND');
+    }
+
+    if (order.userId !== userId) {
+      throw new AppError('You do not have access to this order', 403, 'FORBIDDEN');
+    }
+
+    if (order.status !== 'paid') {
+      throw new AppError('Receipt available only for paid orders', 400, 'ORDER_NOT_PAID');
+    }
+
+    return order;
   }
 
   /**
@@ -181,21 +348,6 @@ class PaymentService {
         paidAt: order.paidAt,
       },
     };
-  }
-
-  // Simple coupon logic — expand later
-  static _applyCoupon(code, amountPaise) {
-    const coupons = {
-      'LAUNCH50': { type: 'percent', value: 50, maxDiscount: 15000 },
-      'FIRST100': { type: 'flat', value: 10000 },
-      'EARLYBIRD': { type: 'percent', value: 30, maxDiscount: 10000 },
-      'FRIEND25': { type: 'percent', value: 25, maxDiscount: 7500 },
-    };
-    const coupon = coupons[code.toUpperCase()];
-    if (!coupon) return 0;
-    if (coupon.type === 'flat') return Math.min(coupon.value, amountPaise);
-    const disc = Math.round(amountPaise * coupon.value / 100);
-    return Math.min(disc, coupon.maxDiscount || disc, amountPaise);
   }
 
   static async _nextInvoiceSeq() {

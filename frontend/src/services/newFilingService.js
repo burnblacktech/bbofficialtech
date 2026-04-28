@@ -10,6 +10,7 @@ const newFilingService = {
   getReadiness: (id) => api.get(`/filings/${id}/readiness`),
   getTaxBreakdown: (id) => api.get(`/filings/${id}/tax-breakdown`),
   getOverview: (id) => api.get(`/filings/${id}/overview`),
+  deleteFiling: (filingId) => api.delete(`/filings/${filingId}`).then((r) => r.data),
 };
 
 export default newFilingService;

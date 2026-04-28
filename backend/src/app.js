@@ -107,7 +107,11 @@ app.use(
 // PARSING & COMPRESSION
 // =====================================================
 
-app.use(express.json({ limit: '10mb' }));
+app.use((req, res, next) => {
+  // Skip JSON parsing for webhook route — needs raw body for HMAC verification
+  if (req.originalUrl === '/api/payments/webhook') return next();
+  express.json({ limit: '10mb' })(req, res, next);
+});
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression({ level: 6, threshold: 1024 }));
 

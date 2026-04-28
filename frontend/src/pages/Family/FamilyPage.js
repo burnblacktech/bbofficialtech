@@ -178,7 +178,7 @@ export default function FamilyPage() {
       )}
 
       <Alert tone="info" icon={<Shield size={14} />} style={{ marginTop: 12 }}>
-        Family members' PANs are verified via SurePass. Maximum 4 members (including yourself) per Family Pack.
+        Family members' PANs are verified securely. Maximum 4 members (including yourself) per Family Pack.
       </Alert>
     </Page>
   );

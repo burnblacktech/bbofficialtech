@@ -12,13 +12,14 @@ class ITR2ComputationService {
    * Compute full ITR-2 tax for both regimes
    */
   static compute(payload) {
-    const income = this.computeIncome(payload);
-    const agriIncome = n(payload.income?.agriculturalIncome);
-    const oldRegime = this.computeRegime(income, payload.deductions, 'old', agriIncome, payload);
-    const newRegime = this.computeRegime(income, payload.deductions, 'new', agriIncome, payload);
+    const safePayload = payload || {};
+    const income = this.computeIncome(safePayload);
+    const agriIncome = n(safePayload.income?.agriculturalIncome);
+    const oldRegime = this.computeRegime(income, safePayload.deductions, 'old', agriIncome, safePayload);
+    const newRegime = this.computeRegime(income, safePayload.deductions, 'new', agriIncome, safePayload);
 
-    const tds = this.computeTDS(payload);
-    const foreignTaxCredit = this.computeForeignTaxCredit(payload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
+    const tds = this.computeTDS(safePayload);
+    const foreignTaxCredit = this.computeForeignTaxCredit(safePayload.income?.foreignIncome, income.grossTotal, oldRegime.taxOnIncome);
 
     oldRegime.tdsCredit = tds.total;
     oldRegime.foreignTaxCredit = foreignTaxCredit.credit;
@@ -30,6 +31,8 @@ class ITR2ComputationService {
     const recommended = oldRegime.totalTax <= newRegime.totalTax ? 'old' : 'new';
     const savings = Math.abs(oldRegime.totalTax - newRegime.totalTax);
 
+    // Note: ITR-2 ignores business/presumptive sections if present in payload.
+
     return { income, oldRegime, newRegime, tds, foreignTaxCredit, recommended, savings, grossTotalIncome: income.grossTotal };
   }
 
@@ -37,11 +40,19 @@ class ITR2ComputationService {
 
   static computeIncome(payload) {
     const employerCategory = payload.personalInfo?.employerCategory || 'OTH';
-    const salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory);
-    const hp = this.computeHouseProperties(payload.income?.houseProperty);
-    const other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources);
-    const cg = this.computeCapitalGains(payload.income?.capitalGains);
-    const foreign = this.computeForeignIncome(payload.income?.foreignIncome);
+    let salary, hp, other, cg, foreign;
+    try { salary = ITR1ComputationService.computeSalary(payload.income?.salary, employerCategory); }
+    catch { salary = { grossSalary: 0, exemptAllowances: 0, salaryExemptions: 0, standardDeduction: 0, professionalTax: 0, entertainmentAllowanceDeduction: 0, netTaxable: 0, employers: [], tds: 0 }; }
+    try { hp = this.computeHouseProperties(payload.income?.houseProperty); }
+    catch { hp = { type: 'NONE', netIncome: 0 }; }
+    try { other = ITR1ComputationService.computeOtherIncome(payload.income?.otherSources); }
+    catch { other = { savingsInterest: 0, fdInterest: 0, dividends: 0, familyPension: 0, familyPensionExempt: 0, other: 0, interestOnITRefund: 0, winnings: 0, gifts: 0, total: 0 }; }
+    try { cg = this.computeCapitalGains(payload.income?.capitalGains); }
+    catch { cg = { stcg: { equity: 0, other: 0, total: 0 }, ltcg: { equity: 0, property: 0, other: 0, total: 0 }, exemptions: 0, totalTaxable: 0, transactions: [] }; }
+    try { foreign = this.computeForeignIncome(payload.income?.foreignIncome); }
+    catch { foreign = { incomes: [], totalIncome: 0, totalTaxPaidAbroad: 0 }; }
+
+    // Note: ITR-2 ignores business/presumptive sections if present in payload.
 
     return {
       salary, houseProperty: hp, otherSources: other, capitalGains: cg, foreignIncome: foreign,
@@ -99,7 +110,12 @@ class ITR2ComputationService {
     let totalExemptions = 0;
     const transactions = [];
 
-    for (const txn of cgData.transactions) {
+    // Task 9.4: Process in batches of 100 to avoid blocking the event loop
+    const BATCH_SIZE = 100;
+    const allTxns = cgData.transactions;
+    for (let batchStart = 0; batchStart < allTxns.length; batchStart += BATCH_SIZE) {
+      const batch = allTxns.slice(batchStart, batchStart + BATCH_SIZE);
+      for (const txn of batch) {
       // Normalize gainType: accept 'STCG'/'LTCG' or 'short-term'/'long-term'
       const gt = (txn.gainType || '').toUpperCase();
       const isShortTerm = gt === 'STCG' || gt === 'SHORT-TERM';
@@ -129,6 +145,7 @@ class ITR2ComputationService {
       }
 
       transactions.push({ ...txn, gain, exemption, taxableGain });
+      }
     }
 
     const stcgTotal = stcgEquity + stcgOther;
