@@ -36,7 +36,19 @@ export const AuthProvider = ({ children }) => {
     const isAdmin = currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'PLATFORM_ADMIN';
     if (isAdmin) return null;
 
-    if (profileFetchInProgress.current) return null;
+    if (profileFetchInProgress.current) {
+      // Wait for the in-progress fetch to complete instead of skipping
+      return new Promise((resolve) => {
+        const check = setInterval(() => {
+          if (!profileFetchInProgress.current) {
+            clearInterval(check);
+            resolve(null);
+          }
+        }, 100);
+        // Timeout after 5s
+        setTimeout(() => { clearInterval(check); resolve(null); }, 5000);
+      });
+    }
 
     try {
       profileFetchInProgress.current = true;

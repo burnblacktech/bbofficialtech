@@ -178,6 +178,20 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
     });
   }, [user?.dateOfBirth, user?.fullName, user?.panNumber]); // eslint-disable-line
 
+  // Fallback: if PAN is verified but DOB is still missing, re-fetch profile
+  const dobFetchAttempted = useRef(false);
+  useEffect(() => {
+    if (panVerified && !panVerifiedDob && !dobFetchAttempted.current) {
+      dobFetchAttempted.current = true;
+      api.get('/auth/profile').then((res) => {
+        const profile = res.data?.user || res.data;
+        if (profile?.dateOfBirth) {
+          setForm(prev => prev.dob ? prev : { ...prev, dob: String(profile.dateOfBirth).slice(0, 10) });
+        }
+      }).catch(() => {});
+    }
+  }, [panVerified, panVerifiedDob]); // eslint-disable-line
+
   const hasSalary = (payload?.income?.salary?.employers || []).length > 0;
   const isRevisedFiling = filing?.filingType === 'revised';
   const isITR1 = itrType === 'ITR-1';
