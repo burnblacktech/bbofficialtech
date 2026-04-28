@@ -3,7 +3,7 @@
  * No separate login/signup page needed for the primary flow.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services';
@@ -19,10 +19,13 @@ export default function LandingPage() {
   const [tab, setTab] = useState('login');
 
   // If already logged in, redirect to appropriate dashboard
-  if (user) {
-    navigate(user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard', { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
+
+  if (user) return null;
 
   return (
     <div style={S.page}>

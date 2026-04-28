@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Briefcase, Home, TrendingUp, Building2, DollarSign, Globe,
@@ -398,8 +398,7 @@ export default function ITR1Flow() {
 
   // Guard: if filingId is missing or literally "undefined", redirect to start
   if (!filingId || filingId === 'undefined') {
-    navigate('/filing/start', { replace: true });
-    return null;
+    return <Navigate to="/filing/start" replace />;
   }
 
   const { data: filing, isLoading, isError } = useQuery({
