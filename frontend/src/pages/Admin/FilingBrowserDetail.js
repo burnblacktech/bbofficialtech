@@ -13,11 +13,13 @@ import adminService from '../../services/adminService';
 import JsonViewer from './components/JsonViewer';
 import P from '../../styles/palette';
 
+/* eslint-disable camelcase */
 const STATE_TONES = {
   draft: 'default', review_pending: 'warning', reviewed: 'info',
   approved_by_ca: 'info', submitted_to_eri: 'info', eri_in_progress: 'warning',
   eri_success: 'success', eri_failed: 'error',
 };
+/* eslint-enable camelcase */
 const PAYMENT_TONES = { paid: 'success', unpaid: 'warning', free: 'default' };
 
 function fmt(ts) {
