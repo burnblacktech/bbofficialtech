@@ -489,15 +489,9 @@ export default function ITR1Flow() {
 
       try {
         const res = await api.put(`/filings/${filingId}`, body);
-        // ITR type auto-switch: if backend detected a type change, navigate only if not already on correct route
+        // ITR type auto-switch: just show a toast, don't navigate (same component handles all ITR types)
         if (res.data?.itrTypeChanged && res.data?.newItrType) {
-          const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[res.data.newItrType] || 'itr1';
-          const currentPath = window.location.pathname;
-          if (!currentPath.endsWith(`/${route}`)) {
-            toast.success(`ITR type updated to ${res.data.newItrType}`);
-            navigate(`/filing/${filingId}/${route}`, { replace: true });
-            return;
-          }
+          toast.success(`Form updated to ${res.data.newItrType}`, { id: 'itr-switch' });
         }
       } catch (err) {
         // Task 10.2: On 409 VERSION_CONFLICT, refetch + re-merge + retry once
@@ -508,16 +502,7 @@ export default function ITR1Flow() {
           const retryBody = { jsonPayload: remergedPayload };
           if (updates.selectedRegime) retryBody.selectedRegime = updates.selectedRegime;
           if (serverFiling?.version !== undefined) retryBody.version = serverFiling.version;
-          const retryRes = await api.put(`/filings/${filingId}`, retryBody);
-          if (retryRes.data?.itrTypeChanged && retryRes.data?.newItrType) {
-            const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[retryRes.data.newItrType] || 'itr1';
-            const currentPath = window.location.pathname;
-            if (!currentPath.endsWith(`/${route}`)) {
-              toast.success(`ITR type updated to ${retryRes.data.newItrType}`);
-              navigate(`/filing/${filingId}/${route}`, { replace: true });
-              return;
-            }
-          }
+          await api.put(`/filings/${filingId}`, retryBody);
         } else {
           throw err;
         }
@@ -565,23 +550,17 @@ export default function ITR1Flow() {
   const activeInitializedRef = useRef(false);
   useEffect(() => {
     if (!filing) return;
-    const itr = getITRType(active, filing?.jsonPayload);
-    const ep = EP_MAP[itr] || 'itr1';
-    const currentEp = location.pathname.split('/').pop();
-    if (currentEp !== ep) {
-      navigate(`/filing/${filingId}/${ep}`, { replace: true });
-    }
     // Skip save on initial mount — only persist when user actually changes sources
     if (!activeInitializedRef.current) {
       activeInitializedRef.current = true;
       return;
     }
-    // Persist selected sources without triggering recompute (just a metadata save)
+    // Persist selected sources (metadata save — backend will auto-update itrType)
     const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, { _selectedSources: active }) };
     if (filing?.version !== undefined) body.version = filing.version;
-    api.put(`/filings/${filingId}`, body).then(() => {
-      // Recompute with the NEW ITR type after sources are persisted
-      const newItr = getITRType(active, filing?.jsonPayload);
+    api.put(`/filings/${filingId}`, body).then((res) => {
+      // Recompute with the correct ITR type
+      const newItr = res.data?.newItrType || getITRType(active, filing?.jsonPayload);
       return api.post(`/filings/${filingId}/${EP_MAP[newItr] || 'itr1'}/compute`);
     }).then((r) => {
       setComp(r.data.data);
