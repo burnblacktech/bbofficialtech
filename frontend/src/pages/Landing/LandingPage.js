@@ -18,9 +18,9 @@ export default function LandingPage() {
   const { user, login, loginWithOAuth } = useAuth();
   const [tab, setTab] = useState('login');
 
-  // If already logged in, redirect to dashboard
+  // If already logged in, redirect to appropriate dashboard
   if (user) {
-    navigate('/dashboard', { replace: true });
+    navigate(user.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard', { replace: true });
     return null;
   }
 
@@ -226,7 +226,7 @@ function SignupForm({ loginWithOAuth, navigate, onSwitch }) {
       if (res.success) {
         toast.success('Account created!');
         const lr = await authService.login({ email: form.email.toLowerCase(), password: form.password });
-        if (lr.success) { await loginWithOAuth(lr.user, lr.accessToken, lr.refreshToken); navigate('/dashboard'); }
+        if (lr.success) { await loginWithOAuth(lr.user, lr.accessToken, lr.refreshToken); navigate(lr.user?.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard'); }
       }
     } catch (err) {
       const msg = err.response?.data?.error;
