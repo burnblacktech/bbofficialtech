@@ -347,6 +347,23 @@ router.get('/', authenticateToken, async (req, res, next) => {
 });
 
 /**
+ * Derive the correct ITR type from a filing's merged payload.
+ * Priority: Business (ITR-3) > Presumptive (ITR-4) > Capital Gains/Foreign (ITR-2) > Default (ITR-1)
+ */
+function deriveITRType(payload) {
+    const income = payload?.income || {};
+    const hasBusiness = (income.business?.businesses || []).length > 0;
+    const hasPresumptive = (income.presumptive?.entries || []).length > 0;
+    const hasCapitalGains = (income.capitalGains?.transactions || []).length > 0;
+    const hasForeignIncome = (income.foreignIncome?.incomes || []).length > 0;
+
+    if (hasBusiness) return 'ITR-3';
+    if (hasPresumptive) return 'ITR-4';
+    if (hasCapitalGains || hasForeignIncome) return 'ITR-2';
+    return 'ITR-1';
+}
+
+/**
  * Update filing
  * PUT /api/filings/:id
  * Body size limit: 2MB (route-level override)
@@ -459,6 +476,19 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
             }
         }
 
+        // ── ITR Type Auto-Switch ──
+        // Re-evaluate ITR type based on merged payload income signals
+        let itrTypeChanged = false;
+        let newItrType = null;
+        if (jsonPayload !== undefined) {
+            const derived = deriveITRType(mergedPayload);
+            if (derived && derived !== filing.itrType) {
+                filing.itrType = derived;
+                itrTypeChanged = true;
+                newItrType = derived;
+            }
+        }
+
         // Persist
         if (jsonPayload !== undefined) {
             filing.jsonPayload = mergedPayload;
@@ -483,6 +513,7 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
             success: true,
             data: filing,
             ...(warnings.length > 0 && { warnings }),
+            ...(itrTypeChanged && { itrTypeChanged: true, newItrType }),
         });
 
     } catch (error) {

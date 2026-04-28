@@ -482,7 +482,14 @@ export default function ITR1Flow() {
       if (filing?.version !== undefined) { body.version = filing.version; }
 
       try {
-        await api.put(`/filings/${filingId}`, body);
+        const res = await api.put(`/filings/${filingId}`, body);
+        // ITR type auto-switch: if backend detected a type change, navigate
+        if (res.data?.itrTypeChanged && res.data?.newItrType) {
+          toast.success(`ITR type updated to ${res.data.newItrType}`);
+          const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[res.data.newItrType] || 'itr1';
+          navigate(`/filing/${filingId}/${route}`, { replace: true });
+          return;
+        }
       } catch (err) {
         // Task 10.2: On 409 VERSION_CONFLICT, refetch + re-merge + retry once
         if (err.response?.status === 409 && err.response?.data?.code === 'VERSION_CONFLICT') {
@@ -492,7 +499,13 @@ export default function ITR1Flow() {
           const retryBody = { jsonPayload: remergedPayload };
           if (updates.selectedRegime) retryBody.selectedRegime = updates.selectedRegime;
           if (serverFiling?.version !== undefined) retryBody.version = serverFiling.version;
-          await api.put(`/filings/${filingId}`, retryBody);
+          const retryRes = await api.put(`/filings/${filingId}`, retryBody);
+          if (retryRes.data?.itrTypeChanged && retryRes.data?.newItrType) {
+            toast.success(`ITR type updated to ${retryRes.data.newItrType}`);
+            const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[retryRes.data.newItrType] || 'itr1';
+            navigate(`/filing/${filingId}/${route}`, { replace: true });
+            return;
+          }
         } else {
           throw err;
         }
