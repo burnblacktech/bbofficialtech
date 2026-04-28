@@ -57,10 +57,10 @@ class AdminStatsService {
     const [results] = await sequelize.query(
       `SELECT DATE_TRUNC(:trunc, created_at) as period, COUNT(*) as count
        FROM itr_filings
-       WHERE created_at >= NOW() - INTERVAL '${range}'
+       WHERE created_at >= NOW() - INTERVAL :range
        GROUP BY period
        ORDER BY period`,
-      { replacements: { trunc } },
+      { replacements: { trunc, range } },
     );
 
     return results;

@@ -24,7 +24,7 @@ const requireAdmin = (req, res, next) => {
 
     if (req.user.role !== 'SUPER_ADMIN') {
       enterpriseLogger.warn('Admin access denied', {
-        userId: req.user.id,
+        userId: req.user.userId,
         userRole: req.user.role,
         path: req.path,
         method: req.method,

@@ -20,13 +20,13 @@ function adminAuditMiddleware(req, res, next) {
       const AuditEvent = require('../models/AuditEvent');
       const entityType = deriveEntityType(req.path);
       const entityId =
-        req.params.id || req.params.userId || req.params.couponId || (req.user && req.user.id) || null;
+        req.params.id || req.params.userId || req.params.couponId || (req.user && req.user.userId) || null;
 
       AuditEvent.logEvent({
         entityType,
         entityId: entityId || '00000000-0000-0000-0000-000000000000',
         eventType: `ADMIN_${req.method}_${entityType}`,
-        actorId: req.user && req.user.id,
+        actorId: req.user && req.user.userId,
         actorRole: 'SUPER_ADMIN',
         metadata: {
           method: req.method,
