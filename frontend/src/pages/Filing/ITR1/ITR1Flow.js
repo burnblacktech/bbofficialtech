@@ -490,12 +490,15 @@ export default function ITR1Flow() {
 
       try {
         const res = await api.put(`/filings/${filingId}`, body);
-        // ITR type auto-switch: if backend detected a type change, navigate
+        // ITR type auto-switch: if backend detected a type change, navigate only if not already on correct route
         if (res.data?.itrTypeChanged && res.data?.newItrType) {
-          toast.success(`ITR type updated to ${res.data.newItrType}`);
           const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[res.data.newItrType] || 'itr1';
-          navigate(`/filing/${filingId}/${route}`, { replace: true });
-          return;
+          const currentPath = window.location.pathname;
+          if (!currentPath.endsWith(`/${route}`)) {
+            toast.success(`ITR type updated to ${res.data.newItrType}`);
+            navigate(`/filing/${filingId}/${route}`, { replace: true });
+            return;
+          }
         }
       } catch (err) {
         // Task 10.2: On 409 VERSION_CONFLICT, refetch + re-merge + retry once
@@ -508,10 +511,13 @@ export default function ITR1Flow() {
           if (serverFiling?.version !== undefined) retryBody.version = serverFiling.version;
           const retryRes = await api.put(`/filings/${filingId}`, retryBody);
           if (retryRes.data?.itrTypeChanged && retryRes.data?.newItrType) {
-            toast.success(`ITR type updated to ${retryRes.data.newItrType}`);
             const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[retryRes.data.newItrType] || 'itr1';
-            navigate(`/filing/${filingId}/${route}`, { replace: true });
-            return;
+            const currentPath = window.location.pathname;
+            if (!currentPath.endsWith(`/${route}`)) {
+              toast.success(`ITR type updated to ${retryRes.data.newItrType}`);
+              navigate(`/filing/${filingId}/${route}`, { replace: true });
+              return;
+            }
           }
         } else {
           throw err;

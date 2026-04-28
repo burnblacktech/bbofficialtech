@@ -348,16 +348,23 @@ router.get('/', authenticateToken, async (req, res, next) => {
 
 /**
  * Derive the correct ITR type from a filing's merged payload.
+ * Checks both actual income data AND selected sources (_selectedSources).
  * Priority: Business (ITR-3) > Presumptive (ITR-4) > Capital Gains/Foreign (ITR-2) > Default (ITR-1)
  */
 function deriveITRType(payload) {
     const income = payload?.income || {};
-    const hasBusiness = (income.business?.businesses || []).length > 0;
-    const hasPresumptive = (income.presumptive?.entries || []).length > 0;
-    const hasCapitalGains = (income.capitalGains?.transactions || []).length > 0;
-    const hasForeignIncome = (income.foreignIncome?.incomes || []).length > 0;
+    const sources = payload?._selectedSources || [];
 
-    if (hasBusiness) return 'ITR-3';
+    const hasBusiness = (income.business?.businesses || []).length > 0 || sources.includes('business');
+    const hasPresumptive = (income.presumptive?.entries || []).length > 0;
+    const hasCapitalGains = (income.capitalGains?.transactions || []).length > 0 || sources.includes('capital_gains');
+    const hasForeignIncome = (income.foreignIncome?.incomes || []).length > 0 || sources.includes('foreign');
+
+    if (hasBusiness) {
+        // If presumptive entries exist but no full business data, it's ITR-4
+        if (hasPresumptive && !(income.business?.businesses || []).length) return 'ITR-4';
+        return 'ITR-3';
+    }
     if (hasPresumptive) return 'ITR-4';
     if (hasCapitalGains || hasForeignIncome) return 'ITR-2';
     return 'ITR-1';
