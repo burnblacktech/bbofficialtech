@@ -1030,6 +1030,11 @@ export default function ITR1Flow() {
                 );
               })}
               {/* Inactive sources — toggle to add */}
+              {SOURCES.filter(src => !active.includes(src.id)).length > 0 && (
+                <div style={{ fontSize: 9, color: 'var(--text-light)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, padding: '6px 0 2px', borderTop: '1px dashed var(--border-light)', marginTop: 4 }}>
+                  + Add income source
+                </div>
+              )}
               {SOURCES.filter(src => !active.includes(src.id)).map(src => (
                 <button
                   key={src.id}
