@@ -89,6 +89,7 @@ const AdminFilingCreate = lazy(() => import('./pages/Admin/AdminFilingCreate'));
 const AdminFilingBrowser = lazy(() => import('./pages/Admin/FilingBrowser'));
 const AdminFilingBrowserDetail = lazy(() => import('./pages/Admin/FilingBrowserDetail'));
 const AdminProtectedRoute = lazy(() => import('./components/auth/AdminProtectedRoute'));
+const AdminGSTChecker = lazy(() => import('./pages/Admin/GSTChecker'));
 
 // =====================================================
 // HELPERS
@@ -227,6 +228,7 @@ const AppContent = () => {
           <Route path="/admin/filing-browser" element={<Suspense fallback={<RouteLoader />}><AdminFilingBrowser /></Suspense>} />
           <Route path="/admin/filing-browser/:id" element={<Suspense fallback={<RouteLoader />}><AdminFilingBrowserDetail /></Suspense>} />
           <Route path="/admin/health" element={<Suspense fallback={<RouteLoader />}><AdminHealth /></Suspense>} />
+          <Route path="/admin/gst-checker" element={<Suspense fallback={<RouteLoader />}><AdminGSTChecker /></Suspense>} />
         </Route>
       </Route>
 

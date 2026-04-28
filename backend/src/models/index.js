@@ -18,6 +18,7 @@ const IncomeEntry = require('./IncomeEntry');
 const ExpenseEntry = require('./ExpenseEntry');
 const InvestmentEntry = require('./InvestmentEntry');
 const InAppNotification = require('./InAppNotification');
+const GSTLookup = require('./GSTLookup');
 
 // Define MVP associations inline (replaces associations.js)
 // ── User ↔ CAFirm ──
@@ -113,4 +114,5 @@ module.exports = {
   FamilyMember: require('./FamilyMember'),
   VaultDocument: require('./VaultDocument'),
   Coupon: require('./Coupon'),
+  GSTLookup,
 };

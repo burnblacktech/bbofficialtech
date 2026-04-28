@@ -19,6 +19,7 @@ const AdminCouponService = require('../services/admin/AdminCouponService');
 const AdminHealthService = require('../services/admin/AdminHealthService');
 const AdminFilingService = require('../services/admin/AdminFilingService');
 const AdminFilingBrowserService = require('../services/admin/AdminFilingBrowserService');
+const GSTCheckerService = require('../services/admin/GSTCheckerService');
 
 // Apply auth + admin check + audit to all routes
 router.use(authenticateToken, requireAdmin, adminAuditMiddleware);
@@ -120,6 +121,14 @@ const filingBrowserExportSchema = Joi.object({
   ).optional(),
   paymentStatus: Joi.string().valid('paid', 'unpaid', 'free').optional(),
   includeDeleted: Joi.boolean().default(false),
+});
+
+const gstCheckSchema = Joi.object({
+  gstin: Joi.string().length(15)
+    .pattern(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
+    .required()
+    .messages({ 'string.pattern.base': 'GSTIN must be a valid 15-character GST number' }),
+  forceRefresh: Joi.boolean().default(false),
 });
 
 // ══════════════════════════════════════════════════════
@@ -396,6 +405,21 @@ router.get('/filings', async (req, res, next) => {
     }
     const data = await AdminFilingService.listFilings(req.user.userId, value);
     res.json({ success: true, data });
+  } catch (err) { next(err); }
+});
+
+// ══════════════════════════════════════════════════════
+// GST CHECKER
+// ══════════════════════════════════════════════════════
+
+router.post('/gst-check', async (req, res, next) => {
+  try {
+    const { error, value } = gstCheckSchema.validate(req.body, { stripUnknown: true });
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message });
+    }
+    const result = await GSTCheckerService.lookup(value.gstin, value.forceRefresh);
+    res.json({ success: true, data: result });
   } catch (err) { next(err); }
 });
 

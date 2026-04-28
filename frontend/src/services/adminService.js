@@ -48,6 +48,9 @@ const adminService = {
 
   // ── Health ──
   getHealth: () => api.get('/admin/health').then((r) => r.data),
+
+  // ── GST Checker ──
+  checkGST: (data) => api.post('/admin/gst-check', data).then((r) => r.data),
 };
 
 export default adminService;

@@ -18,6 +18,7 @@ import {
   X,
   FolderPlus,
   Search,
+  FileSearch,
 } from 'lucide-react';
 import P from '../../styles/palette';
 
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { path: '/admin/eri', icon: Wifi, label: 'ERI Monitor' },
   { path: '/admin/coupons', icon: Tag, label: 'Coupons' },
   { path: '/admin/health', icon: Activity, label: 'Health' },
+  { path: '/admin/gst-checker', icon: FileSearch, label: 'GST Checker' },
 ];
 
 const SIDEBAR_WIDTH = 220;
