@@ -396,9 +396,16 @@ export default function ITR1Flow() {
   const { user, profile } = useAuth();
   const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
+  // Guard: if filingId is missing or literally "undefined", redirect to start
+  if (!filingId || filingId === 'undefined') {
+    navigate('/filing/start', { replace: true });
+    return null;
+  }
+
   const { data: filing, isLoading, isError } = useQuery({
     queryKey: ['filing', filingId],
     queryFn: async () => (await api.get(`/filings/${filingId}`)).data.data,
+    enabled: !!filingId && filingId !== 'undefined',
   });
 
   const [active, setActive] = useState(['salary']);
