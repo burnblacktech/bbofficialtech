@@ -445,14 +445,14 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
             }
         }
 
-        // Payload validation (Task 3.2)
+        // Payload validation (Task 3.2) — relaxed: log warnings but don't block saves
+        // Real validation happens at submission time via ITRApplicabilityService
         const { validatePayload } = require('../validators/payloadValidator');
         const validationResult = validatePayload(mergedPayload);
         if (validationResult.error) {
-            return res.status(400).json({
-                success: false,
-                code: 'PAYLOAD_VALIDATION_FAILED',
-                errors: validationResult.error.details,
+            enterpriseLogger.warn('Payload validation warning (non-blocking)', {
+                filingId: id,
+                errors: validationResult.error.details?.map(d => d.message).slice(0, 5),
             });
         }
 
