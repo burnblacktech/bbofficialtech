@@ -555,9 +555,8 @@ export default function ITR1Flow() {
       activeInitializedRef.current = true;
       return;
     }
-    // Persist selected sources (metadata save — backend will auto-update itrType)
+    // Persist selected sources (metadata save — no version lock, non-critical)
     const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, { _selectedSources: active }) };
-    if (filing?.version !== undefined) body.version = filing.version;
     api.put(`/filings/${filingId}`, body).then((res) => {
       // Recompute with the correct ITR type
       const newItr = res.data?.newItrType || getITRType(active, filing?.jsonPayload);
