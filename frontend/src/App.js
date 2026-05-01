@@ -123,26 +123,10 @@ const Bare = ({ children, message = 'Loading...' }) => (
 // =====================================================
 
 const AppContent = () => {
-  // Handle admin impersonation token from URL
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const impersonateToken = params.get('impersonate');
-    if (impersonateToken) {
-      localStorage.setItem('accessToken', impersonateToken);
-      localStorage.setItem('isImpersonation', 'true');
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
-      window.location.reload();
-    }
-  }, []);
 
   return (
   <div className="app">
-    {localStorage.getItem('isImpersonation') === 'true' && (
-      <div style={{ background: '#DC2626', color: '#fff', padding: '6px 16px', fontSize: 12, fontWeight: 600, textAlign: 'center', position: 'sticky', top: 0, zIndex: 9999 }}>
-        ⚠️ ADMIN IMPERSONATION MODE — Viewing as another user · <button onClick={() => { localStorage.removeItem('isImpersonation'); localStorage.removeItem('accessToken'); window.close(); }} style={{ background: 'none', border: '1px solid #fff', color: '#fff', padding: '2px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 11, marginLeft: 8, minHeight: 'auto' }}>Exit</button>
-      </div>
-    )}
+
     <Routes>
       {/* ── Public ── */}
       <Route path="/" element={<Bare><LandingPage /></Bare>} />

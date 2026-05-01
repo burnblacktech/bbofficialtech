@@ -4,6 +4,13 @@
 
 require('dotenv').config();
 
+// SAFETY: Block alter-based sync in production. Use versioned migrations instead.
+if (process.env.NODE_ENV === 'production' && !process.env.ALLOW_SYNC_MIGRATE) {
+  console.error('ERROR: sync-based migration is disabled in production.');
+  console.error('Use versioned SQL migrations or set ALLOW_SYNC_MIGRATE=1 to override.');
+  process.exit(1);
+}
+
 const { sequelize } = require('../config/database');
 const enterpriseLogger = require('../utils/logger');
 

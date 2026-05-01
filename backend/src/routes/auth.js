@@ -52,8 +52,8 @@ const signAccessToken = (user) => jwt.sign(
     role: user.role,
     caFirmId: user.caFirmId || null,
   },
-  process.env.JWT_SECRET || 'fallback-secret',
-  { expiresIn: '1h' },
+  process.env.JWT_SECRET,
+  { algorithm: 'HS256', expiresIn: '15m' },
 );
 
 /** Create a session and return the raw refresh token */
@@ -931,6 +931,15 @@ router.get('/google/callback',
   googleOAuthCallbackLimiter,
   checkGoogleOAuthConfig,
   (req, res, next) => {
+    // Validate OAuth state parameter to prevent CSRF
+    const expectedState = req.session.oauthState;
+    delete req.session.oauthState; // one-time use
+    if (!expectedState || req.query.state !== expectedState) {
+      const frontendUrl = getOAuthFrontendUrl(req);
+      enterpriseLogger.warn('OAuth state mismatch', { ip: req.ip });
+      return res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent('Invalid OAuth state. Please try again.')}`);
+    }
+
     passport.authenticate('google', { session: false }, (err, user, info) => {
       const frontendUrl = getOAuthFrontendUrl(req);
 
@@ -969,7 +978,7 @@ router.get('/google/callback',
 
       const frontendUrl = getOAuthFrontendUrl(req);
       const userData = encodeURIComponent(JSON.stringify(userResponse(user)));
-      res.redirect(`${frontendUrl}/auth/google/success?token=${token}&refreshToken=${refreshToken}&user=${userData}`);
+      res.redirect(`${frontendUrl}/auth/google/success?user=${userData}`);
     } catch (error) {
       enterpriseLogger.error('Google OAuth callback error', { error: error.message });
       const frontendUrl = getOAuthFrontendUrl(req);

@@ -54,6 +54,16 @@ router.get('/health', async (req, res) => {
     health.status = 'degraded';
   }
 
+  try {
+    const redisService = require('../services/core/RedisService');
+    const redisReady = redisService.isReady();
+    health.services.redis = { connected: redisReady };
+    if (!redisReady) { health.status = 'degraded'; }
+  } catch (error) {
+    health.services.redis = { connected: false, error: error.message };
+    health.status = 'degraded';
+  }
+
   const statusCode = health.status === 'healthy' ? 200 : 503;
   res.status(statusCode).json(health);
 });

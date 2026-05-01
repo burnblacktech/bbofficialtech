@@ -42,7 +42,7 @@ app.use(cookieParser());
 
 // Session (for OAuth state)
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-session-secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   name: 'burnblack.sid',
@@ -79,8 +79,9 @@ app.use(
         return callback(null, true);
       }
 
-      // Allow Vercel preview deployments
-      if (origin.endsWith('.vercel.app')) {
+      // Allow pinned Vercel deployment (set ALLOWED_VERCEL_DOMAIN, e.g. "myapp.vercel.app")
+      const vercelDomain = process.env.ALLOWED_VERCEL_DOMAIN;
+      if (vercelDomain && origin === `https://${vercelDomain}`) {
         return callback(null, true);
       }
 
@@ -140,6 +141,18 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   req.startTime = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - req.startTime;
+    if (req.originalUrl === '/api/health') return; // skip health checks
+    const level = duration > 1000 ? 'warn' : 'info';
+    enterpriseLogger[level]('request_completed', {
+      method: req.method,
+      url: req.originalUrl,
+      status: res.statusCode,
+      duration,
+      requestId: req.id,
+    });
+  });
   next();
 });
 

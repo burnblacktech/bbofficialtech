@@ -17,14 +17,14 @@ class FilingSnapshotService {
      * @param {string} userId - User who triggered snapshot
      * @returns {Promise<object>} Created snapshot
      */
-    async createSnapshot(filingId, trigger, userId) {
+    async createSnapshot(filingId, trigger, userId, options = {}) {
         try {
-            const filing = await ITRFiling.findByPk(filingId);
+            const filing = await ITRFiling.findByPk(filingId, options);
             if (!filing) {
                 throw new AppError('Filing not found', 404);
             }
 
-            const version = await this.getNextVersion(filingId);
+            const version = await this.getNextVersion(filingId, options);
 
             const snapshot = await FilingSnapshot.create({
                 filingId,
@@ -42,7 +42,7 @@ class FilingSnapshotService {
                     },
                 },
                 comment: trigger,
-            });
+            }, options);
 
             enterpriseLogger.info('Snapshot created', {
                 filingId,
@@ -136,7 +136,7 @@ class FilingSnapshotService {
      * @param {string} filingId - Filing ID
      * @returns {Promise<number>}
      */
-    async getNextVersion(filingId) {
+    async getNextVersion(filingId, options = {}) {
         const lastSnapshot = await FilingSnapshot.findOne({
             where: { filingId },
             order: [['version', 'DESC']],

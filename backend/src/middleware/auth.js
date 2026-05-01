@@ -44,7 +44,7 @@ const authenticateToken = (req, res, next) => {
       });
     }
 
-    jwt.verify(token, JWT_SECRET, { clockTolerance: 60 }, (err, user) => {
+    jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"], clockTolerance: 60 }, (err, user) => {
       if (err) {
         enterpriseLogger.warn('Invalid token attempt', {
           error: err.message,
@@ -86,7 +86,7 @@ const optionalAuth = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token) {
-      jwt.verify(token, JWT_SECRET, { clockTolerance: 60 }, (err, user) => {
+      jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"], clockTolerance: 60 }, (err, user) => {
         if (!err) {
           req.user = user;
         }

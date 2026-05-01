@@ -6,7 +6,7 @@
 const { Op, literal, fn, col } = require('sequelize');
 const { User, ITRFiling, AuditEvent } = require('../../models');
 const { sequelize } = require('../../config/database');
-const AppError = require('../../utils/AppError');
+const { AppError } = require('../../utils/errorClasses');
 const enterpriseLogger = require('../../utils/logger');
 
 const DELETABLE_STATES = ['draft', 'eri_failed'];
@@ -22,7 +22,7 @@ class AdminFilingService {
     // Look up target user by PAN
     const targetUser = await User.findOne({ where: { panNumber: pan } });
     if (!targetUser) {
-      throw new AppError('USER_NOT_FOUND', `No user found for PAN ${pan}`, 404);
+      throw new AppError( `No user found for PAN ${pan}`, 404);
     }
 
     // Check for existing active filing with same combo
@@ -35,9 +35,9 @@ class AdminFilingService {
     });
     if (existing) {
       throw new AppError(
-        'DUPLICATE_FILING',
         'Active filing already exists for this user, assessment year, and ITR type',
         409,
+        'DUPLICATE_FILING',
         { existingFilingId: existing.id },
       );
     }
@@ -62,9 +62,9 @@ class AdminFilingService {
       // Race condition: partial unique index catches concurrent duplicates
       if (err.name === 'SequelizeUniqueConstraintError') {
         throw new AppError(
-          'DUPLICATE_FILING',
           'Active filing already exists for this user, assessment year, and ITR type',
           409,
+          'DUPLICATE_FILING',
         );
       }
       throw err;
@@ -93,7 +93,7 @@ class AdminFilingService {
    */
   async batchCreateFilings({ pans, assessmentYear, itrType }, adminId) {
     if (pans.length > 50) {
-      throw new AppError('BATCH_SIZE_EXCEEDED', 'Batch size cannot exceed 50 PANs', 400);
+      throw new AppError('Batch size cannot exceed 50 PANs', 400, 'BATCH_SIZE_EXCEEDED');
     }
 
     const succeeded = [];
@@ -141,7 +141,7 @@ class AdminFilingService {
   async deleteFiling(filingId, adminId) {
     const filing = await ITRFiling.scope('withDeleted').findByPk(filingId);
     if (!filing || filing.deletedAt) {
-      throw new AppError('FILING_NOT_FOUND', 'Filing not found', 404);
+      throw new AppError('Filing not found', 404, 'FILING_NOT_FOUND');
     }
 
     if (!DELETABLE_STATES.includes(filing.lifecycleState)) {

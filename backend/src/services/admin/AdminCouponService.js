@@ -5,7 +5,7 @@
 
 const { Op } = require('sequelize');
 const { Coupon, Order, User } = require('../../models');
-const AppError = require('../../utils/AppError');
+const { AppError } = require('../../utils/errorClasses');
 
 class AdminCouponService {
   /**
@@ -41,7 +41,7 @@ class AdminCouponService {
     // Check code uniqueness
     const existing = await Coupon.findOne({ where: { code } });
     if (existing) {
-      throw new AppError('COUPON_CODE_EXISTS', 'Coupon code already exists', 409);
+      throw new AppError('Coupon code already exists', 409, 'COUPON_CODE_EXISTS');
     }
 
     const coupon = await Coupon.create({

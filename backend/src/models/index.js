@@ -38,12 +38,12 @@ CAFirm.hasMany(User, {
 User.hasMany(ITRFiling, {
   foreignKey: 'createdBy',
   as: 'filings',
-  onDelete: 'CASCADE',
+  onDelete: 'RESTRICT',
 });
 ITRFiling.belongsTo(User, {
   foreignKey: 'createdBy',
   as: 'creator',
-  onDelete: 'CASCADE',
+  onDelete: 'RESTRICT',
 });
 
 // ── ITRFiling ↔ CAFirm ──

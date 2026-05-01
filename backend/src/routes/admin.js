@@ -204,8 +204,8 @@ router.post('/users/:userId/impersonate', async (req, res, next) => {
         caFirmId: targetUser.caFirmId || null,
         impersonatedBy: req.user.userId,
       },
-      process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '30m' },
+      process.env.JWT_SECRET,
+      { algorithm: 'HS256', expiresIn: '30m' },
     );
 
     enterpriseLogger.info('Admin impersonation', {

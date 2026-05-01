@@ -321,18 +321,51 @@ User.prototype.getFirmContext = function () {
   };
 };
 
+// =====================================================
+// FIELD ENCRYPTION HOOKS (PAN at rest)
+// =====================================================
+const { encrypt, decrypt } = require('../utils/fieldEncryption');
+
+const encryptSensitiveFields = (user) => {
+  if (user.changed('panNumber') && user.panNumber) {
+    user.panNumber = encrypt(user.panNumber);
+  }
+  if (user.changed('verifiedPans') && Array.isArray(user.verifiedPans)) {
+    user.verifiedPans = user.verifiedPans.map((entry) =>
+      entry.pan ? { ...entry, pan: encrypt(entry.pan) } : entry,
+    );
+  }
+};
+
+const decryptSensitiveFields = (user) => {
+  if (!user) return;
+  if (user.panNumber) user.setDataValue('panNumber', decrypt(user.panNumber));
+  if (Array.isArray(user.verifiedPans)) {
+    user.setDataValue('verifiedPans', user.verifiedPans.map((entry) =>
+      entry.pan ? { ...entry, pan: decrypt(entry.pan) } : entry,
+    ));
+  }
+};
+
 // Hooks
 User.beforeCreate(async (user) => {
-  // Password hashing is handled by auth routes (auth.js)
-  // Do NOT hash here - would cause double-hashing
   user.email = user.email.toLowerCase();
+  encryptSensitiveFields(user);
 });
 
 User.beforeUpdate(async (user) => {
-  // Password hashing is handled by auth routes (auth.js)
-  // Do NOT hash here - would cause double-hashing
   if (user.changed('email')) {
     user.email = user.email.toLowerCase();
+  }
+  encryptSensitiveFields(user);
+});
+
+User.afterFind((result) => {
+  if (!result) return;
+  if (Array.isArray(result)) {
+    result.forEach(decryptSensitiveFields);
+  } else {
+    decryptSensitiveFields(result);
   }
 });
 

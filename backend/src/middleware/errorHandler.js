@@ -61,6 +61,19 @@ const globalErrorHandler = (err, req, res, next) => {
     enterpriseLogger.error('Application error', logData, { stack: appError.stack });
   }
 
+  // Report to Sentry (server errors and unexpected client errors)
+  if (!appError.isOperational || appError.statusCode >= 500) {
+    try {
+      const Sentry = require('@sentry/node');
+      Sentry.withScope((scope) => {
+        scope.setTag('correlationId', appError.correlationId);
+        scope.setUser({ id: req.user?.userId });
+        scope.setExtra('code', appError.code);
+        Sentry.captureException(err);
+      });
+    } catch { /* Sentry not initialized — skip */ }
+  }
+
   // Send standardized error response
   const errorResponse = appError.toJSON();
 

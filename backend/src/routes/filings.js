@@ -676,7 +676,7 @@ router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async
             }
         );
 
-        await filing.save();
+        // filing.save() is handled inside transition() within a DB transaction
 
         // TODO: Trigger ERI submission worker (Ring 3)
 

@@ -12,11 +12,34 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    enterpriseLogger.error('ErrorBoundary caught an error', { error, errorInfo });
+    const section = this.props.name || 'unknown';
+    enterpriseLogger.error('ErrorBoundary caught an error', { error, errorInfo, section });
+    try {
+      const Sentry = require('@sentry/react');
+      Sentry.captureException(error, { extra: { componentStack: errorInfo?.componentStack, section } });
+    } catch { /* Sentry not initialized */ }
   }
 
   render() {
     if (this.state.hasError) {
+      // Section-level: compact inline fallback
+      if (this.props.name) {
+        return (
+          <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 my-2">
+            <p className="text-sm font-medium text-red-800">
+              {this.props.name} failed to load.
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="mt-2 text-xs text-red-600 underline hover:text-red-800"
+            >
+              Try again
+            </button>
+          </div>
+        );
+      }
+
+      // Full-page fallback (top-level boundary)
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50">
           <div className="max-w-md w-full bg-white shadow-elevation-3 rounded-xl p-6">
@@ -25,10 +48,10 @@ class ErrorBoundary extends React.Component {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center" role="alert">
               <h3 className="text-heading-4 font-medium text-slate-900">Something went wrong</h3>
               <p className="mt-2 text-body-regular text-slate-500">
-                We're sorry, but something unexpected happened. Please try refreshing the page.
+                We&apos;re sorry, but something unexpected happened. Please try refreshing the page.
               </p>
               <button
                 onClick={() => window.location.reload()}

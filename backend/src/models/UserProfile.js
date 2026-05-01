@@ -97,6 +97,18 @@ const UserProfile = sequelize.define('UserProfile', {
     allowNull: true,
     defaultValue: {},
   },
+  // Deterministic HMAC hashes for indexed lookups on encrypted fields
+  panNumberHash: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'pan_number_hash',
+  },
+  aadhaarNumberHash: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'aadhaar_number_hash',
+  },
+
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -115,12 +127,46 @@ const UserProfile = sequelize.define('UserProfile', {
   underscored: true,
   indexes: [
     { fields: ['user_id'], unique: true },
-    { fields: ['pan_number'], unique: true },
-    { fields: ['aadhaar_number'], unique: true },
-
+    { fields: ['pan_number_hash'], unique: true },
+    { fields: ['aadhaar_number_hash'], unique: true },
   ],
 });
 
+// =====================================================
+// FIELD ENCRYPTION HOOKS (PAN, Aadhaar, bank account at rest)
+// =====================================================
+const { encrypt, decrypt, hmacHash } = require('../utils/fieldEncryption');
 
+const SENSITIVE_FIELDS = ['panNumber', 'aadhaarNumber', 'accountNumber'];
+const HASH_FIELDS = { panNumber: 'panNumberHash', aadhaarNumber: 'aadhaarNumberHash' };
+
+UserProfile.beforeCreate((profile) => {
+  for (const field of SENSITIVE_FIELDS) {
+    if (profile[field]) {
+      if (HASH_FIELDS[field]) profile[HASH_FIELDS[field]] = hmacHash(profile[field]);
+      profile[field] = encrypt(profile[field]);
+    }
+  }
+});
+
+UserProfile.beforeUpdate((profile) => {
+  for (const field of SENSITIVE_FIELDS) {
+    if (profile.changed(field) && profile[field]) {
+      if (HASH_FIELDS[field]) profile[HASH_FIELDS[field]] = hmacHash(profile[field]);
+      profile[field] = encrypt(profile[field]);
+    }
+  }
+});
+
+UserProfile.afterFind((result) => {
+  const decryptProfile = (p) => {
+    if (!p) return;
+    for (const field of SENSITIVE_FIELDS) {
+      if (p[field]) p.setDataValue(field, decrypt(p[field]));
+    }
+  };
+  if (Array.isArray(result)) result.forEach(decryptProfile);
+  else decryptProfile(result);
+});
 
 module.exports = UserProfile;

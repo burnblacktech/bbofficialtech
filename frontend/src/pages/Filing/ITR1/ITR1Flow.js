@@ -39,6 +39,7 @@ import PersonalInfoEditor, { getCompletionInfo } from './editors/PersonalInfoEdi
 import TaxPaymentGuide from './TaxPaymentGuide';
 import PaymentGate from './PaymentGate';
 import FilerInfoCard from './editors/FilerInfoCard';
+import ErrorBoundary from '../../../components/ErrorBoundary';
 import TaxComputationCard from '../../../components/Filing/TaxComputationCard';
 import SmartButton from '../../../components/UI/SmartButton';
 import CountingNumber from '../../../components/UI/CountingNumber';
@@ -1284,7 +1285,7 @@ export default function ITR1Flow() {
           )}
           {selected ? (
             <div style={isSubmitted ? { pointerEvents: 'none', opacity: 0.7 } : {}}>
-              {renderEditor(selected)}
+              <ErrorBoundary name={selected}>{renderEditor(selected)}</ErrorBoundary>
               {renderDocInlineBlock(selected)}
             </div>
           ) : (

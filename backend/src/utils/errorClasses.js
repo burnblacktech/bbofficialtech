@@ -18,6 +18,31 @@ class AppError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
+  // Static factories for common errors
+  static badRequest(message, code = 'VALIDATION_FAILED', details = {}) {
+    return new AppError(message, 400, code, details);
+  }
+
+  static validationFailed(details, message = 'Validation failed') {
+    return new AppError(message, 422, 'VALIDATION_FAILED', details);
+  }
+
+  static unauthorized(message = 'Authentication required') {
+    return new AppError(message, 401, 'AUTH_REQUIRED');
+  }
+
+  static forbidden(message = 'Access denied', code = 'FORBIDDEN') {
+    return new AppError(message, 403, code);
+  }
+
+  static notFound(resource = 'Resource', details = {}) {
+    return new AppError(`${resource} not found`, 404, 'RESOURCE_NOT_FOUND', details);
+  }
+
+  static invalidState(message = 'Invalid operation for current state', details = {}) {
+    return new AppError(message, 409, 'INVALID_STATE_TRANSITION', details);
+  }
+
   toJSON() {
     return {
       status: 'error',
@@ -43,7 +68,7 @@ class ExternalServiceError extends AppError {
 
 class ErrorFactory {
   static fromError(err) {
-    if (err instanceof AppError) return err;
+    if (err instanceof AppError) {return err;}
 
     const appError = new AppError(
       err.message || 'Internal server error',

@@ -10,6 +10,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  timeout: 30000, // 30s default; file uploads override per-request
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -53,5 +54,17 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+/**
+ * Create an AbortController-backed cancel token for use in useEffect cleanup.
+ * Usage:
+ *   const { signal, cancel } = createCancelToken();
+ *   api.get('/foo', { signal });
+ *   return () => cancel();  // in useEffect cleanup
+ */
+export const createCancelToken = () => {
+  const controller = new AbortController();
+  return { signal: controller.signal, cancel: () => controller.abort() };
+};
 
 export default api;

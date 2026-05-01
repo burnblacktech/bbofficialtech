@@ -1,10 +1,12 @@
 /**
  * Google OAuth Success — Processes OAuth callback and redirects
+ * Tokens are delivered via httpOnly cookie, NOT URL params.
  */
 
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import api from '../../services/api';
 
 export default function GoogleOAuthSuccess() {
   const { loginWithOAuth } = useAuth();
@@ -12,26 +14,36 @@ export default function GoogleOAuthSuccess() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    const refreshToken = searchParams.get('refreshToken');
     const userJson = searchParams.get('user');
 
-    if (token && userJson) {
+    if (!userJson) {
+      window.location.href = '/login?error=oauth_failed&message=Missing authentication data';
+      return;
+    }
+
+    (async () => {
       try {
         const user = JSON.parse(decodeURIComponent(userJson));
-        loginWithOAuth(user, token, refreshToken).then((result) => {
-          if (!result.success) {
-            window.location.href = `/login?error=oauth_failed&message=${encodeURIComponent(result.message || 'Authentication failed')}`;
-            return;
-          }
-          try { window.location.replace('/home'); } catch { navigate('/home', { replace: true }); }
-        }).catch(() => { window.location.href = '/login?error=oauth_failed'; });
+
+        // Access token comes from the httpOnly refresh-token cookie
+        const { data } = await api.post('/auth/refresh');
+        const accessToken = data.accessToken;
+
+        if (!accessToken) {
+          window.location.href = '/login?error=oauth_failed&message=Token exchange failed';
+          return;
+        }
+
+        const result = await loginWithOAuth(user, accessToken);
+        if (!result.success) {
+          window.location.href = `/login?error=oauth_failed&message=${encodeURIComponent(result.message || 'Authentication failed')}`;
+          return;
+        }
+        try { window.location.replace('/home'); } catch { navigate('/home', { replace: true }); }
       } catch {
-        window.location.href = `/login?error=oauth_failed&message=${encodeURIComponent('Failed to process authentication data')}`;
+        window.location.href = '/login?error=oauth_failed&message=Failed to process authentication data';
       }
-    } else {
-      window.location.href = '/login?error=oauth_failed&message=Missing authentication data';
-    }
+    })();
   }, [loginWithOAuth, searchParams, navigate]);
 
   return (

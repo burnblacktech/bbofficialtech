@@ -4,6 +4,20 @@
 
 require('dotenv').config();
 
+// Sentry must init before all other imports
+if (process.env.SENTRY_DSN) {
+  const Sentry = require('@sentry/node');
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 1.0,
+    beforeSend(event) {
+      if (event.request?.cookies) delete event.request.cookies;
+      return event;
+    },
+  });
+}
+
 const http = require('http');
 const enterpriseLogger = require('./utils/logger');
 const { testConnection, closeDatabase } = require('./config/database');

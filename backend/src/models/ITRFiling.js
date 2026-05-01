@@ -348,6 +348,14 @@ const ITRFiling = sequelize.define('ITRFiling', {
 
 enterpriseLogger.info('ITRFiling model defined');
 
+ITRFiling.afterFind((result) => {
+  const decryptFiling = (f) => {
+    if (f && f.taxpayerPan) f.setDataValue('taxpayerPan', decrypt(f.taxpayerPan));
+  };
+  if (Array.isArray(result)) result.forEach(decryptFiling);
+  else decryptFiling(result);
+});
+
 module.exports = ITRFiling;
 
 // =====================================================
@@ -396,7 +404,10 @@ ITRFiling.prototype.canBeApprovedBy = function (user) {
 // HOOKS
 // =====================================================
 
+const { encrypt, decrypt } = require('../utils/fieldEncryption');
+
 ITRFiling.beforeCreate(async (filing) => {
+  if (filing.taxpayerPan) filing.taxpayerPan = encrypt(filing.taxpayerPan);
   enterpriseLogger.info('Creating ITR Filing', {
     caFirmId: filing.caFirmId,
     createdBy: filing.createdBy,
@@ -412,6 +423,9 @@ ITRFiling.afterCreate(async (filing) => {
 });
 
 ITRFiling.beforeUpdate(async (filing) => {
+  if (filing.changed('taxpayerPan') && filing.taxpayerPan) {
+    filing.taxpayerPan = encrypt(filing.taxpayerPan);
+  }
   // Log state changes
   if (filing.changed('lifecycleState')) {
     enterpriseLogger.warn('Direct lifecycleState mutation detected', {
@@ -421,6 +435,14 @@ ITRFiling.beforeUpdate(async (filing) => {
       stack: new Error().stack,
     });
   }
+});
+
+ITRFiling.afterFind((result) => {
+  const decryptFiling = (f) => {
+    if (f && f.taxpayerPan) f.setDataValue('taxpayerPan', decrypt(f.taxpayerPan));
+  };
+  if (Array.isArray(result)) result.forEach(decryptFiling);
+  else decryptFiling(result);
 });
 
 module.exports = ITRFiling;

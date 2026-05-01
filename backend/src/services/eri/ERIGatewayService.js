@@ -1,7 +1,7 @@
 const axios = require('axios');
 const crypto = require('crypto');
 const enterpriseLogger = require('../../utils/logger');
-const AppError = require('../../utils/AppError');
+const { AppError } = require('../../utils/errorClasses');
 const ErrorCodes = require('../../constants/ErrorCodes');
 const { mapERIError } = require('../../utils/eriErrorMapper');
 const forge = require('node-forge');
@@ -67,7 +67,7 @@ class ERIGatewayService {
 
     if (!this.p12CertPath || !this.p12Password) {
       if (this.mode === 'SANDBOX') return 'MOCK_SIGNATURE_FALLBACK';
-      throw new AppError(ErrorCodes.UPSTREAM_ERROR, 'ERI_P12_CERT_PATH or ERI_P12_PASSWORD not configured', 500);
+      throw new AppError('ERI_P12_CERT_PATH or ERI_P12_PASSWORD not configured', 500, ErrorCodes.UPSTREAM_ERROR);
     }
 
     try {
@@ -93,7 +93,7 @@ class ERIGatewayService {
       return Buffer.from(der, 'binary').toString('base64');
     } catch (error) {
       enterpriseLogger.error('CMS Signing Failed', { error: error.message });
-      throw new AppError(ErrorCodes.UPSTREAM_ERROR, 'Digital Signing Failed', 500, { cause: error.message });
+      throw new AppError('Digital Signing Failed', 500, ErrorCodes.UPSTREAM_ERROR, { cause: error.message });
     }
   }
 
@@ -258,7 +258,7 @@ class ERIGatewayService {
       const d = res.data;
       if (!d.successFlag) {
         const errors = (d.errors || []).map(e => ({ code: e.errCd, field: e.errFld, category: e.errCtg }));
-        throw new AppError(ErrorCodes.SUBMISSION_REJECTED, `ITD ${action} failed`, 422, { errors });
+        throw new AppError(`ITD ${action} failed`, 422, ErrorCodes.SUBMISSION_REJECTED, { errors });
       }
       enterpriseLogger.info(`ERI ${action} successful`, { arn: d.arnNumber, txn: d.transactionNo });
       return { successFlag: true, arnNumber: d.arnNumber || null, ackNumber: d.arnNumber || null, transactionNo: d.transactionNo, status: d.httpStatus || 'ACCEPTED', timestamp: new Date().toISOString() };
@@ -340,7 +340,7 @@ class ERIGatewayService {
   }
 
   // ── Legacy aliases for backward compatibility ──
-  async validatePAN(pan) { if (this.mode === 'MOCK') return this.mockPanVerification(pan); throw new AppError(ErrorCodes.UPSTREAM_ERROR, 'Use SurePass for PAN validation', 501); }
+  async validatePAN(pan) { if (this.mode === 'MOCK') return this.mockPanVerification(pan); throw new AppError('Use SurePass for PAN validation', 501, ErrorCodes.UPSTREAM_ERROR); }
   async getPrefilledData(pan, ay) { if (this.mode === 'MOCK') return this.mockPreviousItrData(pan, ay); return this.requestPrefillOTP(pan, ay, 'E'); }
   async getForm26AS() { return { success: true, data: { tds: [] }, message: '26AS is part of prefill — use requestPrefillOTP + getPrefill' }; }
   async getAIS() { return { success: true, data: { incomes: [] }, message: 'AIS is part of prefill — use requestPrefillOTP + getPrefill' }; }
@@ -605,7 +605,7 @@ class ERIGatewayService {
     };
     const mapped = map[code];
     if (mapped) {
-      return new AppError(mapped.appCode, desc, mapped.status, { eriCode: code });
+      return new AppError(desc, mapped.status, mapped.appCode, { eriCode: code });
     }
     return new AppError(ErrorCodes.ERI_CLIENT_ADD_FAILED, desc, 500, { eriCode: code });
   }

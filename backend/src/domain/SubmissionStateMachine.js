@@ -240,27 +240,33 @@ class SubmissionStateMachine {
         // S27: Validate payment gate BEFORE transition
         this.validatePaymentGate(filing, targetState);
 
-        // S19: Create snapshot BEFORE transition (if state actually changes)
-        if (previousState !== targetState) {
-            const trigger = ACTION_TRIGGERS[targetState] || `transition_to_${targetState}`;
+        // Wrap snapshot + state update + save in a transaction for atomicity
+        const { sequelize } = require('../config/database');
+        await sequelize.transaction(async (t) => {
+            // S19: Create snapshot BEFORE transition (if state actually changes)
+            if (previousState !== targetState) {
+                const trigger = ACTION_TRIGGERS[targetState] || `transition_to_${targetState}`;
 
-            await FilingSnapshotService.createSnapshot(
-                filing.id,
-                trigger,
-                actorContext?.userId || 'system'
-            );
+                await FilingSnapshotService.createSnapshot(
+                    filing.id,
+                    trigger,
+                    actorContext?.userId || 'system',
+                    { transaction: t },
+                );
 
-            enterpriseLogger.info('Snapshot created for transition', {
-                filingId: filing.id,
-                from: previousState,
-                to: targetState,
-                trigger,
-                actor: actorContext?.userId
-            });
-        }
+                enterpriseLogger.info('Snapshot created for transition', {
+                    filingId: filing.id,
+                    from: previousState,
+                    to: targetState,
+                    trigger,
+                    actor: actorContext?.userId,
+                });
+            }
 
-        // Update state
-        filing.lifecycleState = targetState;
+            // Update state and persist atomically
+            filing.lifecycleState = targetState;
+            await filing.save({ transaction: t });
+        });
 
         // Structured logging
         enterpriseLogger.info('FILING_STATE_TRANSITION', {

@@ -62,8 +62,8 @@ const authenticateWithCookies = async (req, res, next) => {
         role: user.role,
         caFirmId: user.caFirmId || null,
       },
-      process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '15m' },
+      process.env.JWT_SECRET,
+      { algorithm: 'HS256', expiresIn: '15m' },
     );
 
     // Update session last active
@@ -190,8 +190,8 @@ const handleTokenRefresh = async (req, res) => {
         role: user.role,
         caFirmId: user.caFirmId || null,
       },
-      process.env.JWT_SECRET || 'fallback-secret',
-      { expiresIn: '15m' },
+      process.env.JWT_SECRET,
+      { algorithm: 'HS256', expiresIn: '15m' },
     );
 
     // Update session last active

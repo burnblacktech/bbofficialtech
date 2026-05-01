@@ -6,7 +6,7 @@
 const { Op, fn, col, literal } = require('sequelize');
 const { User, ITRFiling, Order, AuditEvent, UserSession, PasswordResetToken } = require('../../models');
 const { sequelize } = require('../../config/database');
-const AppError = require('../../utils/AppError');
+const { AppError } = require('../../utils/errorClasses');
 const enterpriseLogger = require('../../utils/logger');
 
 class AdminUserService {
@@ -63,7 +63,7 @@ class AdminUserService {
       ],
     });
     if (!user) {
-      throw new AppError('USER_NOT_FOUND', 'User not found', 404);
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
     }
 
     // Filing summary
@@ -131,13 +131,13 @@ class AdminUserService {
   async deactivateUser(userId, adminId) {
     const user = await User.findByPk(userId);
     if (!user) {
-      throw new AppError('USER_NOT_FOUND', 'User not found', 404);
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
     }
     if (user.role === 'SUPER_ADMIN') {
-      throw new AppError('CANNOT_DEACTIVATE_ADMIN', 'SUPER_ADMIN accounts cannot be deactivated', 403);
+      throw new AppError('SUPER_ADMIN accounts cannot be deactivated', 403, 'CANNOT_DEACTIVATE_ADMIN');
     }
     if (user.status === 'disabled') {
-      throw new AppError('USER_ALREADY_DISABLED', 'Account is already disabled', 409);
+      throw new AppError('Account is already disabled', 409, 'USER_ALREADY_DISABLED');
     }
 
     user.status = 'disabled';
@@ -157,10 +157,10 @@ class AdminUserService {
   async reactivateUser(userId, adminId) {
     const user = await User.findByPk(userId);
     if (!user) {
-      throw new AppError('USER_NOT_FOUND', 'User not found', 404);
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
     }
     if (user.status === 'active') {
-      throw new AppError('USER_ALREADY_ACTIVE', 'Account is already active', 409);
+      throw new AppError('Account is already active', 409, 'USER_ALREADY_ACTIVE');
     }
 
     user.status = 'active';
@@ -176,7 +176,7 @@ class AdminUserService {
   async triggerPasswordReset(userId, adminId) {
     const user = await User.findByPk(userId);
     if (!user) {
-      throw new AppError('USER_NOT_FOUND', 'User not found', 404);
+      throw new AppError('User not found', 404, 'USER_NOT_FOUND');
     }
     if (user.authProvider === 'google') {
       throw new AppError('OAUTH_NO_PASSWORD_RESET', 'OAuth-only accounts cannot have passwords reset', 400);

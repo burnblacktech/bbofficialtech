@@ -6,7 +6,7 @@
 
 const { Op, literal } = require('sequelize');
 const { ITRFiling, User, Order } = require('../../models');
-const AppError = require('../../utils/AppError');
+const { AppError } = require('../../utils/errorClasses');
 
 class AdminFilingBrowserService {
   /**
@@ -111,7 +111,7 @@ class AdminFilingBrowserService {
     });
 
     if (!filing) {
-      throw new AppError('FILING_NOT_FOUND', 'Filing not found', 404);
+      throw new AppError('Filing not found', 404, 'FILING_NOT_FOUND');
     }
 
     const orders = filing.orders || [];
@@ -199,9 +199,9 @@ class AdminFilingBrowserService {
 
     if (count > 10000) {
       throw new AppError(
-        'EXPORT_LIMIT_EXCEEDED',
         'Export exceeds 10,000 records. Apply additional filters to narrow results.',
         400,
+        'EXPORT_LIMIT_EXCEEDED',
       );
     }
 
