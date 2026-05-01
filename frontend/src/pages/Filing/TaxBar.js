@@ -17,7 +17,7 @@ export default function TaxBar({ filingId, filing }) {
 
   if (!computation || !r) {
     return (
-      <div className="filing-taxbar" style={{ justifyContent: 'center', alignItems: 'center', opacity: 0.5 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', opacity: 0.5, flex: 1 }}>
         <p style={{ fontSize: 12, textAlign: 'center', color: 'var(--text-muted)' }}>
           Fill data to see computation
         </p>
@@ -29,7 +29,7 @@ export default function TaxBar({ filingId, filing }) {
   const isRefund = netPayable < 0;
 
   return (
-    <div className="filing-taxbar">
+    <>
       {/* Regime toggle */}
       <div className="regime-toggle">
         <button
@@ -80,7 +80,7 @@ export default function TaxBar({ filingId, filing }) {
         <button className="taxbar__btn">Download JSON</button>
         <button className="taxbar__btn taxbar__btn--primary">Submit Filing</button>
       </div>
-    </div>
+    </>
   );
 }
 

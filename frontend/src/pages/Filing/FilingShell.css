@@ -4,7 +4,7 @@
 
 .filing-shell {
   display: grid;
-  height: calc(100vh - 48px); /* below top bar */
+  height: 100vh; /* below top bar */
   overflow: hidden;
   background: var(--bg-page, #FAFAF8);
   transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);

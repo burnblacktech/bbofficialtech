@@ -35,11 +35,11 @@ export default function FilingShell({ filingId, filing }) {
   return (
     <motion.div
       className={`filing-shell filing-shell--${mode}`}
-      variants={shellVariants}
-      animate={mode}
-      transition={springs.slide}
-      style={{ gridTemplateColumns: isZoomed ? '48px 1fr 260px' : '1fr 0fr 0fr' }}
-      {...m({ layout: true })}
+      {...m({
+        variants: shellVariants,
+        animate: mode,
+        transition: springs.slide,
+      })}
     >
       <div className="filing-timeline">
         {isZoomed ? (

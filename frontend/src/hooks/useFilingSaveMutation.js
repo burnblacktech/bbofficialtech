@@ -31,7 +31,7 @@ export function getITRType(active, payload) {
 
 export default function useFilingSaveMutation(filingId) {
   const qc = useQueryClient();
-  const { activeSources, setComputation, setDirty, setSelectedRegime } = useFilingStore();
+  const { setComputation, setDirty, setSelectedRegime } = useFilingStore();
 
   return useMutation({
     mutationFn: async (updates) => {
@@ -51,7 +51,7 @@ export default function useFilingSaveMutation(filingId) {
       }
 
       try {
-        const itr = getITRType(activeSources, filing?.jsonPayload);
+        const itr = getITRType(useFilingStore.getState().activeSources, filing?.jsonPayload);
         const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
         setComputation(r.data.data);
       } catch { /* computation failure is non-blocking */ }
