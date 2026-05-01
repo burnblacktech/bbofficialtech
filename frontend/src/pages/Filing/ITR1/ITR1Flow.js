@@ -497,12 +497,12 @@ export default function ITR1Flow() {
       } catch (err) {
         // Task 10.2: On 409 VERSION_CONFLICT, refetch + re-merge + retry once
         if (err.response?.status === 409 && err.response?.data?.code === 'VERSION_CONFLICT') {
-          const serverFiling = err.response.data.data;
-          const serverPayload = serverFiling?.jsonPayload || {};
-          const remergedPayload = deepMerge(serverPayload, updates);
-          const retryBody = { jsonPayload: remergedPayload };
+          // Re-fetch fresh filing, re-merge local changes, retry once
+          const { data: freshData } = await api.get(`/filings/${filingId}`);
+          const freshFiling = freshData.data;
+          const remergedPayload = deepMerge(freshFiling?.jsonPayload || {}, updates);
+          const retryBody = { jsonPayload: remergedPayload, version: freshFiling?.version };
           if (updates.selectedRegime) retryBody.selectedRegime = updates.selectedRegime;
-          if (serverFiling?.version !== undefined) retryBody.version = serverFiling.version;
           await api.put(`/filings/${filingId}`, retryBody);
         } else {
           throw err;
@@ -556,8 +556,8 @@ export default function ITR1Flow() {
       activeInitializedRef.current = true;
       return;
     }
-    // Persist selected sources (metadata save — no version lock, non-critical)
-    const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, { _selectedSources: active }) };
+    // Persist selected sources
+    const body = { jsonPayload: deepMerge(filing?.jsonPayload || {}, { _selectedSources: active }), version: filing?.version };
     api.put(`/filings/${filingId}`, body).then((res) => {
       // Recompute with the correct ITR type
       const newItr = res.data?.newItrType || getITRType(active, filing?.jsonPayload);

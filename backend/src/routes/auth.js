@@ -860,8 +860,8 @@ router.post('/forgot-password',
       );
 
       try {
-        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken.token}`;
-        await emailService.sendPasswordResetEmail(email, resetToken.token, resetUrl);
+        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+        await emailService.sendPasswordResetEmail(email, resetToken, resetUrl);
       } catch (emailError) {
         enterpriseLogger.error('Failed to send password reset email', { email, error: emailError.message });
       }

@@ -43,8 +43,10 @@ function deepMerge(target, source) {
     result[key] = target[key];
   }
 
-  // Merge source keys on top
+  // Merge source keys on top (skip dangerous prototype-polluting keys)
+  const DANGEROUS = new Set(['__proto__', 'constructor', 'prototype']);
   for (const key of Object.keys(source)) {
+    if (DANGEROUS.has(key)) continue;
     const srcVal = source[key];
     const tgtVal = result[key];
 

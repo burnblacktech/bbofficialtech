@@ -14,6 +14,7 @@ const { AppError } = require('../middleware/errorHandler');
 const TRANSITIONS = {
     [STATES.DRAFT]: [
         STATES.READY_FOR_SUBMISSION, // S27: After payment gate cleared
+        STATES.SUBMITTED_TO_ERI,      // S20.A: Direct submission (MVP self-filing)
         STATES.REVIEW_PENDING,        // Mode B/C: User requests CA
         STATES.DRAFT                  // Self-loop for saves
     ],
