@@ -3,6 +3,7 @@
 // =====================================================
 
 import axios from 'axios';
+import { tokenStore } from './tokenStore';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL
   || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api');
@@ -16,7 +17,7 @@ const api = axios.create({
 
 // Request interceptor: attach access token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.get();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -45,13 +46,13 @@ api.interceptors.response.use(
         const refreshResponse = await refreshPromise;
 
         if (refreshResponse.data?.accessToken) {
-          localStorage.setItem('accessToken', refreshResponse.data.accessToken);
+          tokenStore.set(refreshResponse.data.accessToken);
           originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.accessToken}`;
           return api(originalRequest);
         }
       } catch {
         refreshPromise = null;
-        localStorage.removeItem('accessToken');
+        tokenStore.clear();
         localStorage.removeItem('user');
         window.location.href = '/login';
       }

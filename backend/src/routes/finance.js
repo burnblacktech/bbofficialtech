@@ -83,9 +83,13 @@ const incomeUpdateSchema = Joi.object({
 router.get('/income', authenticateToken, async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
+    const limit = Math.min(parseInt(req.query.limit) || 100, 500);
+    const offset = parseInt(req.query.offset) || 0;
     const entries = await IncomeEntry.findAll({
       where: { userId: req.user.userId, financialYear: fy },
       order: [['date_received', 'DESC'], ['created_at', 'DESC']],
+      limit,
+      offset,
     });
     res.json({ success: true, data: entries });
   } catch (error) {
@@ -207,9 +211,13 @@ const expenseUpdateSchema = Joi.object({
 router.get('/expenses', authenticateToken, async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
+    const limit = Math.min(parseInt(req.query.limit) || 100, 500);
+    const offset = parseInt(req.query.offset) || 0;
     const entries = await ExpenseEntry.findAll({
       where: { userId: req.user.userId, financialYear: fy },
       order: [['date_paid', 'DESC'], ['created_at', 'DESC']],
+      limit,
+      offset,
     });
     res.json({ success: true, data: entries });
   } catch (error) {
@@ -342,9 +350,13 @@ const investmentUpdateSchema = Joi.object({
 router.get('/investments', authenticateToken, async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
+    const limit = Math.min(parseInt(req.query.limit) || 100, 500);
+    const offset = parseInt(req.query.offset) || 0;
     const entries = await InvestmentEntry.findAll({
       where: { userId: req.user.userId, financialYear: fy },
       order: [['deduction_section', 'ASC'], ['date_of_investment', 'DESC'], ['created_at', 'DESC']],
+      limit,
+      offset,
     });
 
     // Group by deduction section
@@ -599,6 +611,7 @@ router.get('/dashboard-summary', authenticateToken, async (req, res, next) => {
       InvestmentEntry.findAll({ where: { userId, financialYear: fy }, raw: true }),
       ITRFiling.findAll({
         where: { createdBy: userId },
+        attributes: ['id', 'assessmentYear', 'itrType', 'lifecycleState', 'progress', 'taxLiability', 'refundAmount', 'created_at'],
         order: [['created_at', 'DESC']],
         limit: 10,
       }),

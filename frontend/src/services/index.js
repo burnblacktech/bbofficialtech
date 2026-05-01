@@ -3,20 +3,21 @@
 // =====================================================
 
 import api from './api';
+import { tokenStore } from './tokenStore';
 
 // ── Auth Service ──
 export const authService = {
   async login(credentials) {
     const res = await api.post('/auth/login', credentials);
     if (res.data.accessToken) {
-      localStorage.setItem('accessToken', res.data.accessToken);
+      tokenStore.set(res.data.accessToken);
       localStorage.setItem('user', JSON.stringify(res.data.user));
     }
     return { success: true, user: res.data.user, accessToken: res.data.accessToken };
   },
 
   handleOAuthLogin(user, token, refreshToken) {
-    localStorage.setItem('accessToken', token);
+    tokenStore.set(token);
     localStorage.setItem('user', JSON.stringify(user));
     return { success: true, user };
   },
@@ -24,7 +25,8 @@ export const authService = {
   async logout() {
     try { await api.post('/auth/logout'); } catch { /* ignore */ }
     // Clear ALL sensitive keys — not just accessToken/user
-    const keysToRemove = ['accessToken', 'user', 'adminToken', 'adminUser', 'userId', 'rememberedEmail'];
+    tokenStore.clear();
+    const keysToRemove = ['user', 'adminToken', 'adminUser', 'userId', 'rememberedEmail'];
     keysToRemove.forEach((k) => localStorage.removeItem(k));
     // Clear error logs that may contain userId/URLs
     Object.keys(localStorage).filter((k) => k.startsWith('error_')).forEach((k) => localStorage.removeItem(k));

@@ -433,9 +433,14 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
             });
         }
 
-        // Deep merge jsonPayload instead of direct assignment
+        // Pre-merge size guard — reject before expensive merge if combined size is clearly too large
         let mergedPayload = filing.jsonPayload;
         if (jsonPayload !== undefined) {
+            const patchSize = JSON.stringify(jsonPayload).length;
+            const existingSize = JSON.stringify(filing.jsonPayload || {}).length;
+            if (patchSize + existingSize > 2097152) { // 2MB combined = definitely over 1MB merged
+                return res.status(413).json({ success: false, code: 'PAYLOAD_TOO_LARGE', error: 'Filing data too large' });
+            }
             mergedPayload = deepMerge(filing.jsonPayload || {}, jsonPayload);
         }
 

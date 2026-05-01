@@ -91,8 +91,8 @@ router.post('/determine', authenticateToken, async (req, res, next) => {
         const wantsPresumptive = additionalInfo?.wantsPresumptive || false;
         const turnover = additionalInfo?.businessTurnover || 0;
 
-        const ITRDomainCore = require('../domain/ITRDomainCore');
-        let result = ITRDomainCore.determineITR(signals);
+        const { determineITR } = require('../domain/ITRDomainCore');
+        let result = determineITR(signals);
 
         // Override to ITR-4 if presumptive conditions met
         if (wantsPresumptive && (signals.businessIncome > 0 || signals.professionalIncome > 0)) {

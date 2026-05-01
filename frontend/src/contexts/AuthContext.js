@@ -72,6 +72,16 @@ export const AuthProvider = ({ children }) => {
       try {
         const currentUser = authService.getCurrentUser();
         if (currentUser) {
+          // Proactively refresh access token on page load (token is in-memory, lost on reload)
+          try {
+            const { default: api } = await import('../services/api');
+            const { tokenStore } = await import('../services/tokenStore');
+            if (!tokenStore.get()) {
+              const { data } = await api.post('/auth/refresh');
+              if (data?.accessToken) tokenStore.set(data.accessToken);
+            }
+          } catch { /* refresh failed — will redirect to login on next API call */ }
+
           setUser(currentUser);
           setIsAuthenticated(true);
 

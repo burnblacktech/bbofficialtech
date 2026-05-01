@@ -777,10 +777,11 @@ router.post('/send-otp', authRateLimit, async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ success: false, error: 'Email is required' });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const OTPService = require('../services/core/OTPService');
+    const { code, expiresAt } = await OTPService.generateOTP(email, 'email');
 
     try {
-      await emailService.sendOTPEmail(email, otp, 'registration');
+      await emailService.sendOTPEmail(email, code, 'registration');
     } catch (emailError) {
       enterpriseLogger.error('Failed to send OTP email', { email, error: emailError.message });
       return res.status(500).json({ success: false, error: 'Failed to send OTP. Please try again.' });
@@ -789,10 +790,11 @@ router.post('/send-otp', authRateLimit, async (req, res) => {
     res.json({
       success: true,
       message: 'OTP sent successfully',
-      // TODO: Remove hardcoded OTP before production
-      ...(process.env.NODE_ENV !== 'production' && { otp: '123456' }),
+      expiresAt,
+      // Dev mode: OTP is logged by OTPService, not returned in response
     });
   } catch (error) {
+    if (error.code === 'OTP_LOCKED_OUT') return res.status(429).json({ success: false, error: error.message });
     enterpriseLogger.error('Send OTP failed', { error: error.message });
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
@@ -803,11 +805,14 @@ router.post('/verify-otp', authRateLimit, async (req, res) => {
     const { email, otp } = req.body;
     if (!email || !otp) return res.status(400).json({ success: false, error: 'Email and OTP are required' });
 
-    // TODO: Implement real OTP verification with Redis/DB storage
-    if (otp === '123456' || otp.length === 6) {
+    const OTPService = require('../services/core/OTPService');
+    const result = await OTPService.verifyOTP(email, otp, 'email');
+
+    if (result.valid) {
       res.json({ success: true, message: 'OTP verified successfully' });
     } else {
-      res.status(400).json({ success: false, error: 'Invalid OTP' });
+      const messages = { expired: 'OTP has expired. Please request a new one.', locked_out: 'Too many failed attempts. Try again in 30 minutes.', invalid: 'Invalid OTP. Please try again.' };
+      res.status(400).json({ success: false, error: messages[result.reason] || 'Invalid OTP' });
     }
   } catch (error) {
     enterpriseLogger.error('Verify OTP failed', { error: error.message });

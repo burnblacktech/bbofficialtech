@@ -55,6 +55,7 @@ const IncomeEntry = sequelize.define('IncomeEntry', {
   tableName: 'income_entries',
   timestamps: true,
   underscored: true,
+  paranoid: true,
   indexes: [
     { fields: ['user_id', 'financial_year'] },
     { fields: ['user_id', 'source_type'] },

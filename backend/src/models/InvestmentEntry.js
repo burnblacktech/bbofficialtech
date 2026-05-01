@@ -65,6 +65,7 @@ const InvestmentEntry = sequelize.define('InvestmentEntry', {
   tableName: 'investment_entries',
   timestamps: true,
   underscored: true,
+  paranoid: true,
   indexes: [
     { fields: ['user_id', 'financial_year'] },
     { fields: ['user_id', 'deduction_section'] },

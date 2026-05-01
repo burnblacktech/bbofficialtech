@@ -184,7 +184,7 @@ class FilingService {
             const filings = await ITRFiling.findAll({
                 where: { createdBy: userId },
                 order: [['created_at', 'DESC']],
-                attributes: ['id', 'assessmentYear', 'taxpayerPan', 'itrType', 'filingType', 'lifecycleState', 'selectedRegime', 'taxComputation', 'jsonPayload', 'created_at', 'updated_at'],
+                attributes: ['id', 'assessmentYear', 'taxpayerPan', 'itrType', 'filingType', 'lifecycleState', 'selectedRegime', 'progress', 'taxLiability', 'refundAmount', 'version', 'created_at', 'updated_at'],
             });
 
             return filings.map(f => ({
@@ -195,8 +195,10 @@ class FilingService {
                 filingType: f.filingType,
                 lifecycleState: f.lifecycleState,
                 selectedRegime: f.selectedRegime,
-                taxComputation: f.taxComputation,
-                jsonPayload: f.jsonPayload,
+                progress: f.progress,
+                taxLiability: f.taxLiability,
+                refundAmount: f.refundAmount,
+                version: f.version,
                 createdAt: f.createdAt,
                 updatedAt: f.updatedAt,
             }));

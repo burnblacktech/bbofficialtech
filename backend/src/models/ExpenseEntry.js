@@ -60,6 +60,7 @@ const ExpenseEntry = sequelize.define('ExpenseEntry', {
   tableName: 'expense_entries',
   timestamps: true,
   underscored: true,
+  paranoid: true,
   indexes: [
     { fields: ['user_id', 'financial_year'] },
     { fields: ['user_id', 'category'] },
