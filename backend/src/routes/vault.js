@@ -62,9 +62,27 @@ router.get('/matching/:filingId', authenticateToken, async (req, res, next) => {
   try {
     const { ITRFiling } = require('../models');
     const filing = await ITRFiling.findByPk(req.params.filingId);
-    if (!filing) return res.status(404).json({ success: false, error: 'Filing not found' });
+    if (!filing || filing.createdBy !== req.user.userId) return res.status(404).json({ success: false, error: 'Filing not found' });
     const docs = await VaultService.getMatchingDocuments(req.user.userId, filing.assessmentYear);
     res.json({ success: true, data: docs });
+  } catch (err) { next(err); }
+});
+
+/**
+ * GET /vault/documents/:id/download
+ * Returns a pre-signed R2 URL (redirect) or streams the file (local dev).
+ */
+router.get('/documents/:id/download', authenticateToken, async (req, res, next) => {
+  try {
+    const result = await VaultService.getDownloadUrl(req.params.id, req.user.userId);
+    if (result.url) {
+      // R2: redirect to pre-signed URL
+      return res.redirect(result.url);
+    }
+    // Local: stream the buffer
+    res.setHeader('Content-Type', result.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${result.fileName}"`);
+    res.send(result.buffer);
   } catch (err) { next(err); }
 });
 
