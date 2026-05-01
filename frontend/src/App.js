@@ -42,6 +42,7 @@ const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
 const ITRDeterminationWizard = lazy(() => import('./pages/Filing/ITRDetermination/ITRDeterminationWizard'));
 const SubmissionStatus = lazy(() => import('./pages/Filing/SubmissionStatus'));
 const ITR1Flow = lazy(() => import('./pages/Filing/ITR1/ITR1Flow'));
+const FilingPage = lazy(() => import('./pages/Filing/FilingPage'));
 
 // ITR
 const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
@@ -183,7 +184,10 @@ const AppContent = () => {
         {/* Filing: start */}
         <Route path="/filing/start" element={<Page message="Loading..."><ITRDeterminationWizard /></Page>} />
 
-        {/* ITR filing — unified HUD inside main layout */}
+        {/* Orbital Filing Engine (new UX) */}
+        <Route path="/filing/:filingId" element={<Bare><FilingPage /></Bare>} />
+
+        {/* ITR filing — legacy HUD (kept for backward compat) */}
         <Route path="/filing/:filingId/itr1" element={<Page message="Loading..."><ITR1Flow /></Page>} />
         <Route path="/filing/:filingId/itr2" element={<Page message="Loading..."><ITR1Flow /></Page>} />
         <Route path="/filing/:filingId/itr3" element={<Page message="Loading..."><ITR1Flow /></Page>} />
