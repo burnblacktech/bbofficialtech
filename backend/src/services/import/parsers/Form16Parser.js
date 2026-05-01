@@ -83,11 +83,11 @@ class Form16Parser {
     if (ayMatch) result.assessmentYear = ayMatch[1].replace(/\s/g, '');
 
     // TAN: 10-char alphanumeric (4 alpha + 5 digit + 1 alpha)
-    const tanMatch = text.match(/(?:TAN|Tax\s*Deduction.*?Number)\s*[:\-]?\s*([A-Z]{4}\d{5}[A-Z])/i);
+    const tanMatch = text.match(/(?:TAN|TAN\s*of\s*the\s*Deductor|Tax\s*Deduction.*?Number)\s*[:\-]?\s*([A-Za-z]{4}\d{5}[A-Za-z])/i);
     if (tanMatch) result.employerTAN = tanMatch[1].toUpperCase();
 
     // Employer name: after "Name of the Employer" or "Name and address of the Employer"
-    const empMatch = text.match(/Name\s*(?:and\s*address\s*)?of\s*the\s*(?:Employer|Deductor)\s*[:\-]?\s*(.+?)(?:\n|TAN|PAN)/i);
+    const empMatch = text.match(/Name\s*(?:and\s*address\s*)?of\s*the\s*(?:Employer|Deductor)\s*[:\-]?\s*(.+?)(?:\s*(?:TAN|PAN|Address|CIT|Commissioner)\b|\n)/i);
     if (empMatch) result.employerName = empMatch[1].trim().replace(/\s+/g, ' ');
 
     // Total TDS: "Total Tax Deposited" or "Total amount of tax deposited"

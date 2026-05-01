@@ -27,14 +27,14 @@ class DataMapper {
     if (partB.lta) map['income.salary.employers[0].allowances.lta.exempt'] = partB.lta;
     if (partB.professionalTax) map['income.salary.employers[0].deductions.professionalTax'] = partB.professionalTax;
 
-    // Chapter VI-A deductions
+    // Chapter VI-A deductions — map to canonical jsonPayload paths
     const ded = partB.deductions || {};
-    if (ded['80C']) map['deductions.ppf'] = ded['80C']; // Map to flat deduction fields
-    if (ded['80CCD1B']) map['deductions.nps'] = ded['80CCD1B'];
-    if (ded['80D']) map['deductions.healthSelf'] = ded['80D'];
-    if (ded['80E']) map['deductions.eduLoan'] = ded['80E'];
-    if (ded['80G']) map['deductions.donations'] = ded['80G'];
-    if (ded['80TTA']) map['deductions.savingsInt'] = ded['80TTA'];
+    if (ded['80C']) map['deductions.section80C.ppf'] = ded['80C'];
+    if (ded['80CCD1B']) map['deductions.section80CCD1B.nps'] = ded['80CCD1B'];
+    if (ded['80D']) map['deductions.section80D.selfPremium'] = ded['80D'];
+    if (ded['80E']) map['deductions.section80E.educationLoanInterest'] = ded['80E'];
+    if (ded['80G']) map['deductions.donations80G'] = [{ doneeName: 'From Form 16', amount: ded['80G'], category: '100_no_limit' }];
+    if (ded['80TTA']) map['deductions.section80TTA.savingsInterest'] = ded['80TTA'];
 
     return map;
   }
