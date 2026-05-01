@@ -715,11 +715,21 @@ router.put('/set-password', authenticateToken, async (req, res) => {
     }
 
     await user.save();
-    enterpriseLogger.info('Password updated', { userId, hadPreviousPassword: hadPasswordBefore });
+
+    // Revoke ALL sessions (including current) — stolen tokens are now invalid
+    await UserSession.revokeAllSessions(userId);
+
+    // Create a fresh session for the current user
+    const newRefreshToken = await createSession(user, req);
+    setRefreshTokenCookie(res, newRefreshToken);
+    const newAccessToken = signAccessToken(user);
+
+    enterpriseLogger.info('Password updated, all sessions revoked', { userId, hadPreviousPassword: hadPasswordBefore });
 
     res.json({
       success: true,
-      message: 'Password updated successfully',
+      message: 'Password updated successfully. All other sessions have been logged out.',
+      accessToken: newAccessToken,
       user: { id: user.id, email: user.email, hasPassword: true, authProvider: user.authProvider },
     });
   } catch (error) {

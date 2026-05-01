@@ -23,8 +23,11 @@ export const authService = {
 
   async logout() {
     try { await api.post('/auth/logout'); } catch { /* ignore */ }
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    // Clear ALL sensitive keys — not just accessToken/user
+    const keysToRemove = ['accessToken', 'user', 'adminToken', 'adminUser', 'userId', 'rememberedEmail'];
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+    // Clear error logs that may contain userId/URLs
+    Object.keys(localStorage).filter((k) => k.startsWith('error_')).forEach((k) => localStorage.removeItem(k));
   },
 
   async getProfile() {

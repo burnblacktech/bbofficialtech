@@ -132,9 +132,10 @@ class PaymentService {
   /**
    * Verify Razorpay payment signature and mark order as paid
    */
-  static async verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature) {
+  static async verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature, userId) {
     const order = await Order.findOne({ where: { razorpayOrderId } });
     if (!order) throw new AppError('Order not found', 404);
+    if (userId && order.userId !== userId) throw new AppError('Order not found', 404);
     if (order.status === 'paid') return { alreadyPaid: true, order };
 
     // Verify signature

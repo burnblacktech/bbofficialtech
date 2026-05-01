@@ -163,7 +163,7 @@ export function getCardSummary(sectionId, payload, comp, income, selectedRegime)
       const info = getCompletionInfo(pi);
       return {
         number: pi.fullName || null,
-        summary: pi.pan ? `PAN: ${pi.pan}` : null,
+        summary: pi.pan ? `PAN: ${maskPan(pi.pan)}` : null,
         completionText: `${info.filled}/${info.total} fields`,
       };
     }

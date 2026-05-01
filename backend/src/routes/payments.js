@@ -77,6 +77,9 @@ router.get('/required-plan', authenticateToken, (req, res) => {
  */
 router.get('/status/:filingId', authenticateToken, async (req, res, next) => {
   try {
+    const { ITRFiling } = require('../models');
+    const filing = await ITRFiling.findByPk(req.params.filingId);
+    if (!filing || filing.createdBy !== req.user.userId) return res.status(404).json({ success: false, error: 'Filing not found' });
     const result = await PaymentService.getPaymentStatus(req.params.filingId);
     res.json({ success: true, data: result });
   } catch (err) { next(err); }
@@ -90,6 +93,10 @@ router.post('/create-order', authenticateToken, async (req, res, next) => {
   try {
     const { filingId, itrType, grossIncome, couponCode } = req.body;
     if (!filingId) return res.status(400).json({ success: false, error: 'filingId is required' });
+
+    const { ITRFiling } = require('../models');
+    const filing = await ITRFiling.findByPk(filingId);
+    if (!filing || filing.createdBy !== req.user.userId) return res.status(404).json({ success: false, error: 'Filing not found' });
 
     const result = await PaymentService.createOrder(
       req.user.userId, filingId, itrType || 'ITR-1', grossIncome || 0, couponCode,
@@ -120,7 +127,7 @@ router.post('/verify', authenticateToken, async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Missing payment details' });
     }
 
-    const result = await PaymentService.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+    const result = await PaymentService.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature, req.user.userId);
 
     res.json({
       success: true,

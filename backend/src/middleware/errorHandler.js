@@ -136,19 +136,7 @@ const notFoundHandler = (req, res) => {
       url: req.originalUrl,
       requestId: req.id,
     },
-    availableRoutes: [
-      '/api',
-      '/api/docs',
-      '/api/routes',
-      '/api/health',
-      '/api/auth',
-      '/api/itr',
-      '/api/users',
-      '/api/admin',
-      '/api/documents',
-      '/api/notifications',
-      '/api/tickets',
-    ],
+    ...(process.env.NODE_ENV !== 'production' && { availableRoutes: ['/api/health', '/api/auth', '/api/filings', '/api/tax'] }),
   });
 };
 

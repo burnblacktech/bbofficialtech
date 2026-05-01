@@ -331,7 +331,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
               </div>
               <div className="ff-kv-row">
                 <span className="ff-kv-label">PAN</span>
-                <span className="ff-kv-value mono">{form.pan}</span>
+                <span className="ff-kv-value mono">{form.pan ? form.pan.replace(/^.{5}/, 'XXXXX') : ''}</span>
               </div>
               <div className="ff-kv-row">
                 <span className="ff-kv-label">Date of Birth</span>

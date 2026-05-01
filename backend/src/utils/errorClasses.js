@@ -44,9 +44,14 @@ class AppError extends Error {
   }
 
   toJSON() {
+    // Don't leak internal error details (SQL, connection strings) in 500 responses
+    const safeMessage = (this.isOperational || this.statusCode < 500)
+      ? this.message
+      : 'Internal server error';
+
     return {
       status: 'error',
-      message: this.message,
+      message: safeMessage,
       code: this.code,
       statusCode: this.statusCode,
       category: this.category,

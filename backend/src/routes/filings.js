@@ -1094,7 +1094,7 @@ router.get('/:filingId/itr1/json', authenticateToken, async (req, res, next) => 
         const ITR1JsonBuilder = require('../services/itr/ITR1JsonBuilder');
         const json = ITR1JsonBuilder.build(filing.jsonPayload || {}, filing.assessmentYear);
 
-        const filename = `ITR1_${filing.taxpayerPan}_AY${filing.assessmentYear}.json`;
+        const filename = `ITR1_${filing.taxpayerPan.replace(/^.{5}/, "XXXXX")}_AY${filing.assessmentYear}.json`;
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
@@ -1169,7 +1169,7 @@ router.get('/:filingId/itr2/json', authenticateToken, async (req, res, next) => 
 
         const ITR2JsonBuilder = require('../services/itr/ITR2JsonBuilder');
         const json = ITR2JsonBuilder.build(filing.jsonPayload || {}, filing.assessmentYear);
-        res.setHeader('Content-Disposition', `attachment; filename="ITR2_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
+        res.setHeader('Content-Disposition', `attachment; filename="ITR2_${filing.taxpayerPan.replace(/^.{5}/, "XXXXX")}_AY${filing.assessmentYear}.json"`);
         res.json(json);
     } catch (error) { next(error); }
 });
@@ -1222,7 +1222,7 @@ router.get('/:filingId/itr3/json', authenticateToken, async (req, res, next) => 
             return res.status(422).json({ success: false, error: `Filing incomplete. ${blockers.length} issue(s) to fix.`, code: 'FILING_INCOMPLETE', issues: blockers.slice(0, 10) });
         }
         const ITR3Json = require('../services/itr/ITR3JsonBuilder');
-        res.setHeader('Content-Disposition', `attachment; filename="ITR3_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
+        res.setHeader('Content-Disposition', `attachment; filename="ITR3_${filing.taxpayerPan.replace(/^.{5}/, "XXXXX")}_AY${filing.assessmentYear}.json"`);
         res.json(ITR3Json.build(filing.jsonPayload || {}, filing.assessmentYear));
     } catch (error) { next(error); }
 });
@@ -1275,7 +1275,7 @@ router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => 
             return res.status(422).json({ success: false, error: `Filing incomplete. ${blockers.length} issue(s) to fix.`, code: 'FILING_INCOMPLETE', issues: blockers.slice(0, 10) });
         }
         const ITR4Json = require('../services/itr/ITR4JsonBuilder');
-        res.setHeader('Content-Disposition', `attachment; filename="ITR4_${filing.taxpayerPan}_AY${filing.assessmentYear}.json"`);
+        res.setHeader('Content-Disposition', `attachment; filename="ITR4_${filing.taxpayerPan.replace(/^.{5}/, "XXXXX")}_AY${filing.assessmentYear}.json"`);
         res.json(ITR4Json.build(filing.jsonPayload || {}, filing.assessmentYear));
     } catch (error) { next(error); }
 });

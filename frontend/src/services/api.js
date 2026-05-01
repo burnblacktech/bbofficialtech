@@ -23,7 +23,9 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor: handle 401 → refresh token
+// Refresh lock — prevents thundering herd when multiple 401s fire concurrently
+let refreshPromise = null;
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -33,11 +35,14 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshResponse = await axios.post(
-          `${API_BASE_URL}/auth/refresh`,
-          {},
-          { withCredentials: true },
-        );
+        // If a refresh is already in-flight, wait for it instead of firing another
+        if (!refreshPromise) {
+          refreshPromise = axios
+            .post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true })
+            .finally(() => { refreshPromise = null; });
+        }
+
+        const refreshResponse = await refreshPromise;
 
         if (refreshResponse.data?.accessToken) {
           localStorage.setItem('accessToken', refreshResponse.data.accessToken);
@@ -45,6 +50,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch {
+        refreshPromise = null;
         localStorage.removeItem('accessToken');
         localStorage.removeItem('user');
         window.location.href = '/login';
@@ -57,10 +63,6 @@ api.interceptors.response.use(
 
 /**
  * Create an AbortController-backed cancel token for use in useEffect cleanup.
- * Usage:
- *   const { signal, cancel } = createCancelToken();
- *   api.get('/foo', { signal });
- *   return () => cancel();  // in useEffect cleanup
  */
 export const createCancelToken = () => {
   const controller = new AbortController();
