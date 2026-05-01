@@ -20,23 +20,31 @@ const authenticateWithCookies = async (req, res, next) => {
       });
     }
 
-    // Find session by refresh token
-    const sessions = await UserSession.findAll({
-      where: {
-        revoked: false,
-        expiresAt: {
-          [require('sequelize').Op.gt]: new Date(),
-        },
-      },
-    });
-
+    // O(1) lookup by sessionId cookie, fallback to bcrypt scan
     let validSession = null;
-    for (const session of sessions) {
-      const bcrypt = require('bcryptjs');
-      const isValid = await bcrypt.compare(refreshToken, session.refreshTokenHash);
-      if (isValid) {
-        validSession = session;
-        break;
+    const sessionId = req.cookies.sessionId;
+    if (sessionId) {
+      const session = await UserSession.findByPk(sessionId);
+      if (session && !session.revoked && session.expiresAt > new Date()) {
+        const bcrypt = require('bcryptjs');
+        if (await bcrypt.compare(refreshToken, session.refreshTokenHash)) {
+          validSession = session;
+        }
+      }
+    }
+    if (!validSession) {
+      // Fallback: scan user's sessions only (requires JWT hint)
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.decode(req.headers.authorization?.replace('Bearer ', '') || '');
+      if (decoded?.userId) {
+        const { Op } = require('sequelize');
+        const sessions = await UserSession.findAll({
+          where: { userId: decoded.userId, revoked: false, expiresAt: { [Op.gt]: new Date() } },
+        });
+        const bcrypt = require('bcryptjs');
+        for (const s of sessions) {
+          if (await bcrypt.compare(refreshToken, s.refreshTokenHash)) { validSession = s; break; }
+        }
       }
     }
 
@@ -143,23 +151,31 @@ const handleTokenRefresh = async (req, res) => {
       });
     }
 
-    // Find session by refresh token
-    const sessions = await UserSession.findAll({
-      where: {
-        revoked: false,
-        expiresAt: {
-          [require('sequelize').Op.gt]: new Date(),
-        },
-      },
-    });
-
+    // O(1) lookup by sessionId cookie, fallback to bcrypt scan
     let validSession = null;
-    for (const session of sessions) {
-      const bcrypt = require('bcryptjs');
-      const isValid = await bcrypt.compare(refreshToken, session.refreshTokenHash);
-      if (isValid) {
-        validSession = session;
-        break;
+    const sessionId = req.cookies.sessionId;
+    if (sessionId) {
+      const session = await UserSession.findByPk(sessionId);
+      if (session && !session.revoked && session.expiresAt > new Date()) {
+        const bcrypt = require('bcryptjs');
+        if (await bcrypt.compare(refreshToken, session.refreshTokenHash)) {
+          validSession = session;
+        }
+      }
+    }
+    if (!validSession) {
+      // Fallback: scan user's sessions only (requires JWT hint)
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.decode(req.headers.authorization?.replace('Bearer ', '') || '');
+      if (decoded?.userId) {
+        const { Op } = require('sequelize');
+        const sessions = await UserSession.findAll({
+          where: { userId: decoded.userId, revoked: false, expiresAt: { [Op.gt]: new Date() } },
+        });
+        const bcrypt = require('bcryptjs');
+        for (const s of sessions) {
+          if (await bcrypt.compare(refreshToken, s.refreshTokenHash)) { validSession = s; break; }
+        }
       }
     }
 

@@ -415,16 +415,22 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
             );
         }
 
-        // Optimistic locking — optional for backward compat
-        if (version !== undefined) {
-            if (version !== filing.version) {
-                return res.status(409).json({
-                    success: false,
-                    error: 'VERSION_CONFLICT',
-                    code: 'VERSION_CONFLICT',
-                    data: filing,
-                });
-            }
+        // Optimistic locking — mandatory to prevent silent overwrites
+        if (version === undefined || version === null) {
+            return res.status(400).json({
+                success: false,
+                error: 'version field is required to prevent concurrent update conflicts',
+                code: 'VERSION_REQUIRED',
+                currentVersion: filing.version,
+            });
+        }
+        if (version !== filing.version) {
+            return res.status(409).json({
+                success: false,
+                error: 'Filing was modified by another request. Please reload and try again.',
+                code: 'VERSION_CONFLICT',
+                currentVersion: filing.version,
+            });
         }
 
         // Deep merge jsonPayload instead of direct assignment
@@ -592,25 +598,18 @@ router.get('/:filingId/validate', authenticateToken, async (req, res, next) => {
 router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async (req, res, next) => {
     try {
         const { filingId } = req.params;
-        const filing = await ITRFiling.findByPk(filingId);
+        const { sequelize } = require('../config/database');
 
-        if (!filing) {
-            throw new AppError('Filing not found', 404);
-        }
-
-        // Check ownership
-        if (filing.createdBy !== req.user.userId) {
-            throw new AppError('Not authorized to submit this filing', 403);
-        }
-
-        // Check current state
-        if (filing.lifecycleState !== STATES.DRAFT) {
-            throw new AppError(
-                `Cannot submit filing in ${filing.lifecycleState} state`,
-                400,
-                'INVALID_STATE'
-            );
-        }
+        // Use row-level lock to prevent concurrent submit race condition
+        const filing = await sequelize.transaction(async (t) => {
+            const f = await ITRFiling.findByPk(filingId, { lock: t.LOCK.UPDATE, transaction: t });
+            if (!f) throw new AppError('Filing not found', 404);
+            if (f.createdBy !== req.user.userId) throw new AppError('Not authorized to submit this filing', 403);
+            if (f.lifecycleState !== STATES.DRAFT) {
+                throw new AppError(`Cannot submit filing in ${f.lifecycleState} state`, 400, 'INVALID_STATE');
+            }
+            return f;
+        });
 
         // S22: Filing completeness gate
         const completeness = FilingCompletenessService.validate(filing);

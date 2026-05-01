@@ -64,7 +64,7 @@ const createSession = async (user, req) => {
   const maxConcurrentSessions = parseInt(process.env.MAX_CONCURRENT_SESSIONS) || 3;
   await UserSession.enforceConcurrentLimit(user.id, maxConcurrentSessions, user.email);
 
-  await UserSession.create({
+  const session = await UserSession.create({
     userId: user.id,
     refreshTokenHash,
     deviceInfo: req.headers['user-agent'] || 'Unknown',
@@ -73,7 +73,17 @@ const createSession = async (user, req) => {
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
   });
 
-  return refreshToken;
+  return { refreshToken, sessionId: session.id };
+};
+
+/** Set both refresh token and session ID cookies */
+const setSessionCookies = (res, { refreshToken, sessionId }) => {
+  setRefreshTokenCookie(res, refreshToken);
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.cookie('sessionId', sessionId, {
+    httpOnly: true, secure: isProduction, sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, path: '/',
+  });
 };
 
 /** Standard user response shape */
@@ -97,7 +107,7 @@ const userResponse = (user) => ({
 // =====================================================
 
 router.post('/register',
-  process.env.NODE_ENV === 'production' ? authRateLimit : (req, res, next) => next(),
+  authRateLimit,
   auditAuthEvents('register'),
   async (req, res) => {
     try {
@@ -126,15 +136,20 @@ router.post('/register',
       }
 
       const existingUser = await User.findOne({
-        where: { email: email.toLowerCase(), authProvider: 'local' },
+        where: { email: email.toLowerCase() },
       });
       if (existingUser) {
-        return res.status(409).json({ success: false, error: 'User with this email already exists' });
+        // Don't reveal that the email exists — return same shape as success
+        return res.status(200).json({
+          success: true,
+          message: 'Registration successful. Please check your email to verify your account.',
+        });
       }
 
       const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12;
       const passwordHash = await bcrypt.hash(password, saltRounds);
       const verificationToken = uuidv4();
+      const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
 
       const newUser = await User.create({
         email: email.toLowerCase(),
@@ -146,6 +161,7 @@ router.post('/register',
         status: 'active',
         emailVerified: false,
         verificationToken,
+        metadata: { verificationTokenExpiresAt },
       });
 
       // Send verification email (non-blocking)
@@ -182,6 +198,12 @@ router.post('/verify-email', async (req, res) => {
     if (!user) {
       return res.status(400).json({ success: false, error: 'Invalid or expired verification token' });
     }
+
+    // Check token expiry (24h)
+    const expiresAt = user.metadata?.verificationTokenExpiresAt;
+    if (expiresAt && new Date(expiresAt) < new Date()) {
+      return res.status(400).json({ success: false, error: 'Verification token has expired. Please request a new one.' });
+    }
     if (user.emailVerified) {
       return res.json({ success: true, message: 'Email already verified' });
     }
@@ -201,8 +223,9 @@ router.post('/resend-verification', authenticateToken, async (req, res) => {
     if (!user) return res.status(404).json({ success: false, error: 'User not found' });
     if (user.emailVerified) return res.status(400).json({ success: false, error: 'Email is already verified' });
 
-    const verificationToken = user.verificationToken || uuidv4();
-    if (!user.verificationToken) await user.update({ verificationToken });
+    const verificationToken = uuidv4();
+    const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    await user.update({ verificationToken, metadata: { ...user.metadata, verificationTokenExpiresAt } });
 
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/email-verification?token=${verificationToken}`;
     await emailService.sendVerificationEmail(user.email, verificationUrl);
@@ -220,8 +243,8 @@ router.post('/resend-verification', authenticateToken, async (req, res) => {
 // =====================================================
 
 router.post('/login',
-  process.env.NODE_ENV === 'production' ? progressiveRateLimit() : (req, res, next) => next(),
-  process.env.NODE_ENV === 'production' ? recordFailedAttempt : (req, res, next) => next(),
+  progressiveRateLimit(),
+  recordFailedAttempt,
   auditFailedAuth('login'),
   async (req, res) => {
     try {
@@ -250,7 +273,7 @@ router.post('/login',
       }
 
       const token = signAccessToken(user);
-      const refreshToken = await createSession(user, req);
+      const sessionResult = await createSession(user, req);
 
       AuditService.logAuthEvent({
         actorId: user.id,
@@ -259,7 +282,7 @@ router.post('/login',
       }).catch(err => enterpriseLogger.error('Audit failed', { error: err.message }));
 
       enterpriseLogger.info('User logged in', { userId: user.id });
-      setRefreshTokenCookie(res, refreshToken);
+      setSessionCookies(res, sessionResult);
 
       res.json({
         success: true,
@@ -281,27 +304,34 @@ router.post('/refresh', handleTokenRefresh);
 
 router.post('/logout', async (req, res) => {
   try {
+    const sessionId = req.cookies.sessionId;
     const refreshToken = req.cookies.refreshToken;
 
-    if (refreshToken) {
-      const sessions = await UserSession.findAll({
-        where: {
-          revoked: false,
-          expiresAt: { [require('sequelize').Op.gt]: new Date() },
-        },
-      });
-
-      for (const session of sessions) {
-        const isMatch = await bcrypt.compare(refreshToken, session.refreshTokenHash);
-        if (isMatch) {
-          await session.update({ revoked: true, revokedAt: new Date() });
-          enterpriseLogger.info('Session revoked on logout', { userId: session.userId, sessionId: session.id });
-          break;
+    if (sessionId) {
+      // O(1) lookup by session ID
+      const session = await UserSession.findByPk(sessionId);
+      if (session && !session.revoked) {
+        await session.update({ revoked: true, revokedAt: new Date() });
+        enterpriseLogger.info('Session revoked on logout', { userId: session.userId, sessionId: session.id });
+      }
+    } else if (refreshToken) {
+      // Fallback: scan by userId only (not all sessions)
+      const decoded = require('jsonwebtoken').decode(req.headers.authorization?.replace('Bearer ', ''));
+      if (decoded?.userId) {
+        const sessions = await UserSession.findAll({
+          where: { userId: decoded.userId, revoked: false, expiresAt: { [require('sequelize').Op.gt]: new Date() } },
+        });
+        for (const session of sessions) {
+          if (await bcrypt.compare(refreshToken, session.refreshTokenHash)) {
+            await session.update({ revoked: true, revokedAt: new Date() });
+            break;
+          }
         }
       }
     }
 
     clearRefreshTokenCookie(res);
+    res.clearCookie('sessionId', { httpOnly: true, sameSite: 'strict', path: '/' });
     res.json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
     enterpriseLogger.error('Logout failed', { error: error.message });
@@ -720,8 +750,8 @@ router.put('/set-password', authenticateToken, async (req, res) => {
     await UserSession.revokeAllSessions(userId);
 
     // Create a fresh session for the current user
-    const newRefreshToken = await createSession(user, req);
-    setRefreshTokenCookie(res, newRefreshToken);
+    const newSessionResult = await createSession(user, req);
+    setSessionCookies(res, newSessionResult);
     const newAccessToken = signAccessToken(user);
 
     enterpriseLogger.info('Password updated, all sessions revoked', { userId, hadPreviousPassword: hadPasswordBefore });
@@ -807,7 +837,7 @@ router.post('/validate-reset-token', async (req, res) => {
 });
 
 router.post('/forgot-password',
-  process.env.NODE_ENV === 'production' ? authRateLimit : (req, res, next) => next(),
+  authRateLimit,
   auditAuthEvents('forgot_password'),
   async (req, res) => {
     try {
@@ -844,7 +874,7 @@ router.post('/forgot-password',
   });
 
 router.post('/reset-password',
-  process.env.NODE_ENV === 'production' ? authRateLimit : (req, res, next) => next(),
+  authRateLimit,
   auditAuthEvents('reset_password'),
   async (req, res) => {
     try {
@@ -975,7 +1005,7 @@ router.get('/google/callback',
     try {
       const user = req.user;
       const token = signAccessToken(user);
-      const refreshToken = await createSession(user, req);
+      const sessionResult = await createSession(user, req);
 
       await user.update({ lastLoginAt: new Date() });
 
@@ -984,7 +1014,7 @@ router.get('/google/callback',
       }).catch(err => enterpriseLogger.error('Audit failed', { error: err.message }));
 
       enterpriseLogger.info('Google OAuth login successful', { userId: user.id });
-      setRefreshTokenCookie(res, refreshToken);
+      setSessionCookies(res, sessionResult);
 
       const frontendUrl = getOAuthFrontendUrl(req);
       const userData = encodeURIComponent(JSON.stringify(userResponse(user)));

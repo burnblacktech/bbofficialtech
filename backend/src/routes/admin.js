@@ -203,6 +203,7 @@ router.post('/users/:userId/impersonate', async (req, res, next) => {
         role: targetUser.role,
         caFirmId: targetUser.caFirmId || null,
         impersonatedBy: req.user.userId,
+        scope: 'read-only',
       },
       process.env.JWT_SECRET,
       { algorithm: 'HS256', expiresIn: '30m' },

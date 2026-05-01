@@ -59,6 +59,15 @@ const authenticateToken = (req, res, next) => {
         });
       }
 
+      // Enforce read-only scope for impersonation tokens
+      if (user.scope === 'read-only' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'Impersonation tokens are read-only',
+          code: 'IMPERSONATION_READ_ONLY',
+        });
+      }
+
       req.user = user;
       next();
     });
