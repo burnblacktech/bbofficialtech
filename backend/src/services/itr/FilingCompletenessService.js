@@ -49,7 +49,7 @@ class FilingCompletenessService {
     };
   }
 
-  static _validatePersonalInfo(payload, filing, errors) {
+  static _validatePersonalInfo(payload, filing, errors, warnings) {
     const pi = payload.personalInfo || {};
     const pan = filing.taxpayerPan || pi.pan;
 

@@ -1077,6 +1077,7 @@ router.get('/:filingId/itr1/json', authenticateToken, async (req, res, next) => 
 
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        if (filing.itrType && filing.itrType !== 'ITR-1') throw new AppError(`This filing is ${filing.itrType}, not ITR-1`, 400, 'ITR_TYPE_MISMATCH');
 
         // Validate completeness before generating JSON
         const validation = FilingCompletenessService.validate(filing);
@@ -1158,6 +1159,7 @@ router.get('/:filingId/itr2/json', authenticateToken, async (req, res, next) => 
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        if (filing.itrType && filing.itrType !== 'ITR-2') throw new AppError(`This filing is ${filing.itrType}, not ITR-2`, 400, 'ITR_TYPE_MISMATCH');
 
         const validation = FilingCompletenessService.validate(filing);
         const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
@@ -1213,6 +1215,7 @@ router.get('/:filingId/itr3/json', authenticateToken, async (req, res, next) => 
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        if (filing.itrType && filing.itrType !== 'ITR-3') throw new AppError(`This filing is ${filing.itrType}, not ITR-3`, 400, 'ITR_TYPE_MISMATCH');
         const validation = FilingCompletenessService.validate(filing);
         const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
         if (blockers.length > 0) {
@@ -1265,6 +1268,7 @@ router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => 
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
         if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+        if (filing.itrType && filing.itrType !== 'ITR-4') throw new AppError(`This filing is ${filing.itrType}, not ITR-4`, 400, 'ITR_TYPE_MISMATCH');
         const validation = FilingCompletenessService.validate(filing);
         const blockers = (validation.errors || []).filter(e => e.severity === 'blocker' || !e.severity);
         if (blockers.length > 0) {
