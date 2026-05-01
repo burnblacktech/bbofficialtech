@@ -14,9 +14,10 @@ export const prefersReducedMotion = () =>
 export const m = (props) => (prefersReducedMotion() ? {} : props);
 
 // ── Grid variants for FilingShell ──
+// Grid animation handled by CSS transition (Framer can't interpolate fr↔px)
 export const shellVariants = {
-  overview: { gridTemplateColumns: '1fr 0fr 0fr' },
-  zoomed: { gridTemplateColumns: '48px 1fr 260px' },
+  overview: {},
+  zoomed: {},
 };
 
 // ── Editor panel ──

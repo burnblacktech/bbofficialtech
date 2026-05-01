@@ -311,9 +311,24 @@
   }
 }
 
+/* ── Hide 0fr columns in overview ── */
+.filing-shell--overview .filing-editor,
+.filing-shell--overview .filing-taxbar {
+  display: none;
+}
+
 /* ── Mobile ── */
 @media (max-width: 768px) {
+  .filing-shell--overview { grid-template-columns: 1fr; }
   .filing-shell--zoomed { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-  .filing-timeline { display: none; }
+  .filing-shell--zoomed .filing-timeline { display: none; }
   .filing-taxbar { display: none; }
+
+  .orbital { padding: 8px; overflow: auto; }
+  .orbital__ring { min-width: 350px; }
+  .orbital__node-circle { width: 32px; height: 32px; }
+  .orbital__node-label { font-size: 9px; }
+  .orbital__node-amount { display: none; }
+  .orbital__hub { min-width: 160px; padding: 8px 12px; }
+  .orbital__hub-row { font-size: 10px; }
 }

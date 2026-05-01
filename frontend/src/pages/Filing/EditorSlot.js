@@ -72,9 +72,14 @@ export default function EditorSlot({ filingId, filing }) {
     whispers: getWhispersForSection(whispers, zoomedSection),
   };
 
-  const extraProps = zoomedSection === 'personalInfo'
-    ? { user, userProfile: null }
-    : {};
+  const extraProps = {};
+  if (zoomedSection === 'personalInfo') {
+    extraProps.user = user;
+    extraProps.userProfile = null;
+  }
+  if (zoomedSection === 'deductions') {
+    extraProps.onUploadProof = () => {}; // TODO: wire to import modal
+  }
 
   return (
     <AnimatePresence mode="popLayout" custom={direction}>

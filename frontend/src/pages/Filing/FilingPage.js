@@ -20,26 +20,26 @@ export default function FilingPage() {
   });
 
   // Initialize store from filing — once
+  // Synchronous store init — avoids one-frame flash with wrong regime/sources
   const initializedRef = useRef(false);
-  useEffect(() => {
-    if (!filing || initializedRef.current) return;
+  if (filing && !initializedRef.current) {
     initializedRef.current = true;
-
     const payload = filing.jsonPayload || {};
     const saved = payload._selectedSources;
-    if (Array.isArray(saved) && saved.length > 0) {
-      setActiveSources(saved);
-    }
+    if (Array.isArray(saved) && saved.length > 0) setActiveSources(saved);
     setSelectedRegime(filing.selectedRegime || payload.selectedRegime || 'new');
+  }
 
-    // Initial computation
-    const itrType = filing.itrType || 'ITR-1';
-    const ep = EP_MAP[itrType] || 'itr1';
-    api
-      .post(`/filings/${filingId}/${ep}/compute`)
+  // Async: initial computation (runs once after mount)
+  const computedRef = useRef(false);
+  useEffect(() => {
+    if (!filing || computedRef.current) return;
+    computedRef.current = true;
+    const ep = EP_MAP[filing.itrType || 'ITR-1'] || 'itr1';
+    api.post(`/filings/${filingId}/${ep}/compute`)
       .then((r) => setComputation(r.data.data))
       .catch((err) => console.warn('Initial computation failed:', err.message));
-  }, [filing, filingId, setActiveSources, setSelectedRegime, setComputation]);
+  }, [filing, filingId, setComputation]);
 
   if (isLoading) {
     return (
