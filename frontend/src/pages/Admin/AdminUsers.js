@@ -70,7 +70,7 @@ export default function AdminUsers() {
     return (
       <div>
         <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 16px' }}>Users</h1>
-        <Card style={{ padding: 32, textAlign: 'center' }}>
+        <Card style={{ padding: 16, textAlign: 'center' }}>
           <div style={{ fontSize: 14, color: P.error, marginBottom: 12 }}>{error}</div>
           <Button variant="outline" onClick={retry}>
             <RefreshCw size={14} style={{ marginRight: 6 }} /> Retry
@@ -123,7 +123,7 @@ export default function AdminUsers() {
       {/* Table */}
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 20, textAlign: 'center' }}>
             <Loader2 size={20} className="animate-spin" color={P.textMuted} />
           </div>
         ) : (
@@ -153,7 +153,7 @@ export default function AdminUsers() {
                 <tbody>
                   {(data?.users || []).length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ padding: 32, textAlign: 'center', color: P.textMuted }}>
+                      <td colSpan={7} style={{ padding: 16, textAlign: 'center', color: P.textMuted }}>
                         No users found
                       </td>
                     </tr>

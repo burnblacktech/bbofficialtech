@@ -43,7 +43,7 @@ export default function PaymentHistory() {
   return (
     <Page title="Payment History" subtitle="All your filing payments and invoices" maxWidth={800}>
       {isLoading && (
-        <div style={{ textAlign: 'center', padding: 40 }}>
+        <div style={{ textAlign: 'center', padding: 20 }}>
           <Loader2 size={24} className="animate-spin" style={{ color: '#999' }} />
         </div>
       )}
@@ -56,7 +56,7 @@ export default function PaymentHistory() {
 
       {data && data.length === 0 && (
         <Card>
-          <div style={{ textAlign: 'center', padding: '32px 16px', color: '#666' }}>
+          <div style={{ textAlign: 'center', padding: '16px', color: '#666' }}>
             <Receipt size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
             <p style={{ margin: 0, fontSize: 14 }}>No payments yet</p>
           </div>

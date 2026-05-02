@@ -234,9 +234,9 @@ export default function VaultPage() {
 
       {/* Document grid */}
       {isLoading ? (
-        <div style={{ padding: 40, textAlign: 'center' }}><Loader2 size={24} className="animate-spin" color={P.textMuted} /></div>
+        <div style={{ padding: 20, textAlign: 'center' }}><Loader2 size={24} className="animate-spin" color={P.textMuted} /></div>
       ) : docs.length === 0 ? (
-        <Card variant="muted" style={{ textAlign: 'center', padding: 40 }}>
+        <Card variant="muted" style={{ textAlign: 'center', padding: 20 }}>
           <FolderOpen size={36} color={P.borderMedium} style={{ margin: '0 auto 8px' }} />
           <div style={{ fontSize: 14, fontWeight: 600, color: P.textSecondary }}>No documents yet</div>
           <div style={{ fontSize: 13, color: P.textMuted, marginTop: 4 }}>

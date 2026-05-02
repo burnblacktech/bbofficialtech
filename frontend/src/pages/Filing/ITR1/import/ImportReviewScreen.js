@@ -800,7 +800,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: 40,
+    padding: 20,
     textAlign: 'center',
   },
   footer: {

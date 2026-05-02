@@ -50,7 +50,7 @@ export default function SubmissionStatus() {
     return () => clearInterval(interval);
   }, [filingId]);
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Loader2 size={28} className="animate-spin" color={P.textMuted} /></div>;
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Loader2 size={28} className="animate-spin" color={P.textMuted} /></div>;
 
   const state = data?.lifecycleState || 'draft';
   const st = STATUS_MAP[state] || STATUS_MAP.draft;
@@ -58,7 +58,7 @@ export default function SubmissionStatus() {
 
   return (
     <Page title="Submission Status" maxWidth={520}>
-      <Card style={{ textAlign: 'center', padding: 32 }}>
+      <Card style={{ textAlign: 'center', padding: 16 }}>
         <Icon size={48} color={st.tone === 'success' ? P.success : st.tone === 'error' ? P.error : st.tone === 'brand' ? P.brand : P.textMuted} style={{ margin: '0 auto 12px' }} />
         <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
           <Badge tone={st.tone}>{st.label}</Badge>

@@ -817,7 +817,7 @@ const styles = {
   dropzone: {
     border: '2px dashed',
     borderRadius: 12,
-    padding: 40,
+    padding: 20,
     textAlign: 'center',
     cursor: 'pointer',
     transition: 'border-color 0.15s, background 0.15s',

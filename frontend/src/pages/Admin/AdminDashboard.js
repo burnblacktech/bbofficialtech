@@ -81,7 +81,7 @@ export default function AdminDashboard() {
         <h1 style={{ fontSize: 24, fontWeight: 700, color: P.textPrimary, margin: '0 0 20px' }}>
           Admin Dashboard
         </h1>
-        <Card style={{ padding: 32, textAlign: 'center' }}>
+        <Card style={{ padding: 16, textAlign: 'center' }}>
           <div style={{ fontSize: 14, color: P.error, marginBottom: 12 }}>{error}</div>
           <Button variant="outline" onClick={fetchAll}>
             <RefreshCw size={14} style={{ marginRight: 6 }} /> Retry

@@ -60,7 +60,7 @@
 /* ── Buttons ── */
 .ff-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border-radius: var(--radius-md);
+  padding: 6px 14px; border-radius: 6px;
   font-size: 13px; font-weight: 500; cursor: pointer;
   transition: all 0.15s; border: none; line-height: 1;
 }
@@ -537,3 +537,31 @@
 @media (max-width: 768px) {
   .bb-card { padding: 12px; }
 }
+
+
+/* =====================================================
+   Unified Button Scale — 3 sizes, consistent everywhere
+   ===================================================== */
+.bb-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  font-weight: 500; cursor: pointer; border: none; border-radius: 6px;
+  transition: background 0.12s, opacity 0.12s; line-height: 1;
+  white-space: nowrap; font-family: inherit;
+}
+.bb-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.bb-btn:active:not(:disabled) { transform: scale(0.97); }
+
+/* Sizes */
+.bb-btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 5px; }
+.bb-btn-md { padding: 6px 14px; font-size: 13px; }
+.bb-btn-lg { padding: 8px 18px; font-size: 14px; }
+
+/* Variants */
+.bb-btn-primary { background: var(--brand-primary, #D4AF37); color: #0F0F0F; font-weight: 600; }
+.bb-btn-primary:hover:not(:disabled) { opacity: 0.88; }
+.bb-btn-secondary { background: var(--bg-muted, #f3f3f0); color: var(--text-secondary, #4b5563); border: 1px solid var(--border-light, #E8E8E4); }
+.bb-btn-secondary:hover:not(:disabled) { background: var(--bg-card-hover, #eaeae6); }
+.bb-btn-ghost { background: transparent; color: var(--text-muted, #9ca3af); padding-left: 4px; padding-right: 4px; }
+.bb-btn-ghost:hover:not(:disabled) { color: var(--text-secondary, #4b5563); }
+.bb-btn-danger { background: transparent; color: var(--color-error, #DC2626); }
+.bb-btn-danger:hover:not(:disabled) { background: var(--color-error-bg, #fef2f2); }

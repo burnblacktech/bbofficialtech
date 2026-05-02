@@ -46,7 +46,7 @@ export default function FilingBrowserDetail() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
+      <div style={{ padding: 20, textAlign: 'center' }}>
         <Loader2 size={24} className="animate-spin" color={P.textMuted} />
       </div>
     );
@@ -59,7 +59,7 @@ export default function FilingBrowserDetail() {
         <Button variant="ghost" onClick={() => navigate('/admin/filing-browser')} style={{ marginBottom: 12 }}>
           <ArrowLeft size={14} /> Back to Filing Browser
         </Button>
-        <Card style={{ padding: 32, textAlign: 'center' }}>
+        <Card style={{ padding: 16, textAlign: 'center' }}>
           <div style={{ fontSize: 14, color: P.error, marginBottom: 12 }}>
             {is404 ? 'Filing not found' : 'Failed to load filing detail'}
           </div>

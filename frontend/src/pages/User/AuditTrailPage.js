@@ -99,11 +99,11 @@ export default function AuditTrailPage() {
       </div>
 
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 20 }}>
           <Loader2 size={24} className="animate-spin" color={P.textMuted} />
         </div>
       ) : filteredEvents.length === 0 ? (
-        <Card variant="muted" style={{ textAlign: 'center', padding: 32 }}>
+        <Card variant="muted" style={{ textAlign: 'center', padding: 16 }}>
           <Clock size={32} color={P.borderMedium} style={{ margin: '0 auto 8px' }} />
           <div style={{ fontSize: 14, fontWeight: 600, color: P.textMuted }}>No activity yet</div>
           <div style={{ fontSize: 12, color: P.textLight, marginTop: 4 }}>

@@ -30,7 +30,7 @@ export default function RefundTracker() {
     queryFn: async () => (await api.get(`/post-filing/${filingId}/summary`)).data.data,
   });
 
-  if (isLoading) return <div style={{ padding: 40, textAlign: 'center' }}><Loader2 size={24} className="animate-spin" color={P.textMuted} /></div>;
+  if (isLoading) return <div style={{ padding: 20, textAlign: 'center' }}><Loader2 size={24} className="animate-spin" color={P.textMuted} /></div>;
 
   if (!data?.hasRefund) {
     return (
@@ -47,7 +47,7 @@ export default function RefundTracker() {
     <Page title="Refund Tracker" maxWidth={520}>
       <Card style={{ textAlign: 'center', padding: 28 }}>
         <Icon size={40} color={st.tone === 'success' ? P.success : st.tone === 'error' ? P.error : P.brand} style={{ margin: '0 auto 10px' }} />
-        <div style={{ fontSize: 28, fontWeight: 700, fontFamily: 'var(--font-mono)', color: P.success, marginBottom: 4 }}>
+        <div style={{ fontSize: 22, fontWeight: 700, fontFamily: 'var(--font-mono)', color: P.success, marginBottom: 4 }}>
           ₹{Number(data.amount || 0).toLocaleString('en-IN')}
         </div>
         <Badge tone={st.tone}>{st.label}</Badge>

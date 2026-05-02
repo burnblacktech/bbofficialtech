@@ -129,7 +129,7 @@ export default function AdminUserDetail() {
   // ── Loading state ──
   if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
+      <div style={{ padding: 20, textAlign: 'center' }}>
         <Loader2 size={24} className="animate-spin" color={P.textMuted} />
       </div>
     );
@@ -142,7 +142,7 @@ export default function AdminUserDetail() {
         <Button variant="ghost" onClick={() => navigate('/admin/users')} style={{ marginBottom: 12 }}>
           <ArrowLeft size={14} /> Back to Users
         </Button>
-        <Card style={{ padding: 32, textAlign: 'center' }}>
+        <Card style={{ padding: 16, textAlign: 'center' }}>
           <div style={{ fontSize: 14, color: P.error, marginBottom: 12 }}>{error}</div>
           <Button variant="outline" onClick={fetchUser}>
             <RefreshCw size={14} style={{ marginRight: 6 }} /> Retry
@@ -409,11 +409,11 @@ function AuditTab({ auditData, auditLoading, auditPage, setAuditPage, auditEvent
 
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         {auditLoading ? (
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 20, textAlign: 'center' }}>
             <Loader2 size={20} className="animate-spin" color={P.textMuted} />
           </div>
         ) : events.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: P.textMuted, fontSize: 13 }}>
+          <div style={{ padding: 16, textAlign: 'center', color: P.textMuted, fontSize: 13 }}>
             No audit events found
           </div>
         ) : (

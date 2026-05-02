@@ -11,7 +11,7 @@ export default function AdminProtectedRoute() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Loader2 size={28} className="animate-spin" color="#999" /></div>;
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Loader2 size={28} className="animate-spin" color="#999" /></div>;
   }
 
   if (!user) return <Navigate to="/" replace />;

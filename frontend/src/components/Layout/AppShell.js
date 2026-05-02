@@ -119,6 +119,7 @@ export const AppShell = ({ children }) => {
             className={`${isFilingFlow ? 'p-0' : isMobile ? 'p-4' : 'p-6'} ${
               isMobile && !isFilingFlow ? 'pb-24' : ''
             }`}
+            style={isFilingFlow ? undefined : { maxWidth: 1080, margin: '0 auto' }}
           >
             <AnimatePresence mode="wait">
               <motion.div

@@ -176,16 +176,16 @@ export default function FilingBrowser() {
       {/* Table */}
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         {isLoading ? (
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 20, textAlign: 'center' }}>
             <Loader2 size={20} className="animate-spin" color={P.textMuted} />
           </div>
         ) : isError ? (
-          <div style={{ padding: 32, textAlign: 'center' }}>
+          <div style={{ padding: 16, textAlign: 'center' }}>
             <div style={{ color: P.error, fontSize: 13, marginBottom: 8 }}>Failed to load filings</div>
             <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
           </div>
         ) : filings.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: P.textMuted, fontSize: 13 }}>
+          <div style={{ padding: 16, textAlign: 'center', color: P.textMuted, fontSize: 13 }}>
             No filings found
           </div>
         ) : (

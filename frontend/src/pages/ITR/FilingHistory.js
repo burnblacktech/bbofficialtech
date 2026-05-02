@@ -36,9 +36,9 @@ export default function FilingHistory() {
       <p className="step-desc">All your ITR filings</p>
 
       {isLoading ? (
-        <div className="step-card" style={{ textAlign: 'center', padding: 32, color: P.textMuted }}>Loading...</div>
+        <div className="step-card" style={{ textAlign: 'center', padding: 16, color: P.textMuted }}>Loading...</div>
       ) : filings.length === 0 ? (
-        <div className="step-card" style={{ textAlign: 'center', padding: 32 }}>
+        <div className="step-card" style={{ textAlign: 'center', padding: 16 }}>
           <FileText size={32} color={P.borderMedium} style={{ margin: '0 auto 8px' }} />
           <p style={{ color: P.textMuted, fontSize: 14 }}>No filings yet</p>
           <button className="ff-btn ff-btn-primary" onClick={() => navigate('/filing/start')} style={{ marginTop: 12 }}>File ITR</button>

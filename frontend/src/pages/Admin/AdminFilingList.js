@@ -184,11 +184,11 @@ export default function AdminFilingList() {
       {/* Table */}
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         {isLoading ? (
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 20, textAlign: 'center' }}>
             <Loader2 size={20} className="animate-spin" color={P.textMuted} />
           </div>
         ) : filings.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: P.textMuted }}>
+          <div style={{ padding: 16, textAlign: 'center', color: P.textMuted }}>
             No filings found
           </div>
         ) : (

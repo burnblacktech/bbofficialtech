@@ -20,7 +20,7 @@ export default function Acknowledgment() {
     enabled: !!filingId,
   });
 
-  if (isLoading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Loader2 size={28} className="animate-spin" color={P.textMuted} /></div>;
+  if (isLoading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><Loader2 size={28} className="animate-spin" color={P.textMuted} /></div>;
 
   const downloadJSON = async () => {
     try {
@@ -36,7 +36,7 @@ export default function Acknowledgment() {
 
   return (
     <Page title="Filing Acknowledgment" maxWidth={520}>
-      <Card variant="success" style={{ textAlign: 'center', padding: 32 }}>
+      <Card variant="success" style={{ textAlign: 'center', padding: 16 }}>
         <CheckCircle size={48} color={P.success} style={{ margin: '0 auto 12px' }} />
         <div style={{ fontSize: 18, fontWeight: 700, color: P.success, marginBottom: 4 }}>ITR Filed Successfully</div>
         <div style={{ fontSize: 13, color: P.textMuted }}>Your return has been submitted to the Income Tax Department</div>

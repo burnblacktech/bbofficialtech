@@ -56,7 +56,7 @@ export default function EmailVerification() {
           <span style={{ fontSize: 18, fontWeight: 700, color: P.textPrimary }}>BurnBlack</span>
         </div>
 
-        <div className="step-card" style={{ textAlign: 'center', padding: 32 }}>
+        <div className="step-card" style={{ textAlign: 'center', padding: 16 }}>
           <Icon size={40} color={colors[status]} className={status === 'verifying' ? 'animate-spin' : ''} style={{ margin: '0 auto 12px' }} />
           <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>{titles[status]}</div>
 

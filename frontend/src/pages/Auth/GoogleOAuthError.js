@@ -13,7 +13,7 @@ export default function GoogleOAuthError() {
 
   return (
     <div style={{ maxWidth: 420, margin: '80px auto', padding: '0 16px' }}>
-      <div className="step-card error" style={{ textAlign: 'center', padding: 32 }}>
+      <div className="step-card error" style={{ textAlign: 'center', padding: 16 }}>
         <AlertCircle size={40} color="#ef4444" style={{ margin: '0 auto 12px' }} />
         <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>Authentication Failed</div>
         <div style={{ fontSize: 14, color: '#6b7280' }}>{message}</div>

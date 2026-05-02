@@ -50,7 +50,7 @@ export default function SessionManagement() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: '#6b7280' }}><Loader2 size={24} className="animate-spin" /></div>
+        <div style={{ textAlign: 'center', padding: 20, color: '#6b7280' }}><Loader2 size={24} className="animate-spin" /></div>
       ) : sessions.length === 0 ? (
         <div className="step-card"><p style={{ color: '#6b7280', fontSize: 14 }}>No active sessions</p></div>
       ) : (

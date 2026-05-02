@@ -202,11 +202,11 @@ export default function AdminCoupons() {
       {/* Coupon list table */}
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         {isLoading ? (
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 20, textAlign: 'center' }}>
             <Loader2 size={20} className="animate-spin" color={P.textMuted} />
           </div>
         ) : coupons.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: P.textMuted }}>No coupons found</div>
+          <div style={{ padding: 16, textAlign: 'center', color: P.textMuted }}>No coupons found</div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
@@ -367,11 +367,11 @@ export default function AdminCoupons() {
             </div>
 
             {usageLoading ? (
-              <div style={{ padding: 40, textAlign: 'center' }}>
+              <div style={{ padding: 20, textAlign: 'center' }}>
                 <Loader2 size={20} className="animate-spin" color={P.textMuted} />
               </div>
             ) : (usageData?.orders || []).length === 0 ? (
-              <div style={{ padding: 32, textAlign: 'center', color: P.textMuted, fontSize: 13 }}>
+              <div style={{ padding: 16, textAlign: 'center', color: P.textMuted, fontSize: 13 }}>
                 No orders found for this coupon
               </div>
             ) : (
