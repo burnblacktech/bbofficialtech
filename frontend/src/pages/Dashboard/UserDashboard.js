@@ -235,7 +235,7 @@ export default function UserDashboard() {
   const hasMonthlyData = chartData.some((d) => d.income > 0 || d.expense > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Deadline Banner */}
       <DeadlineBanner dl={dl} />
 
@@ -423,7 +423,7 @@ export default function UserDashboard() {
 
       {/* Empty state CTA when no data at all */}
       {!summaryLoading && !hasFinancialData && !showOnboarding && (
-        <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-8 text-center">
+        <div className="bb-card rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5 text-center">
           <FileText size={40} className="mx-auto text-[var(--border-medium)] mb-3" />
           <p className="text-sm text-[var(--text-muted)] mb-4">
             Ready to take control of your finances? Start by logging your first income or filing your return.
@@ -549,7 +549,7 @@ function MonthlyOverviewSection({ chartData, hasData, isCompact, isLoading }) {
       </div>
 
       {!hasData ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
+        <div className="flex flex-col items-center justify-center py-4 text-center">
           <BarChart3 size={32} className="text-[var(--border-medium)] mb-2" />
           <p className="text-xs text-[var(--text-muted)]">
             Start logging income and expenses to see your monthly overview
@@ -630,7 +630,7 @@ function InvestmentProgressSection({ donutChartData, donutColors, donutData, has
       </div>
 
       {!hasData ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
+        <div className="flex flex-col items-center justify-center py-4 text-center">
           <PieChartIcon size={32} className="text-[var(--border-medium)] mb-2" />
           <p className="text-xs text-[var(--text-muted)]">
             Your deduction progress at a glance
@@ -714,7 +714,7 @@ function FilingsSection({ filings, isLoading, navigate }) {
       {isLoading ? (
         <div className="p-4"><SkeletonLoader variant="list-row" count={2} /></div>
       ) : filings.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8">
+        <div className="flex flex-col items-center justify-center py-4">
           <FileText size={32} className="text-[var(--border-medium)] mb-2" />
           <p className="text-xs text-[var(--text-muted)] mb-3">
             Ready to file? It takes about 15 minutes for most salaried individuals.
@@ -834,7 +834,7 @@ function RecentActivitySection({ activity, isLoading }) {
       {isLoading ? (
         <div className="p-4"><SkeletonLoader variant="list-row" count={3} /></div>
       ) : activity.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8">
+        <div className="flex flex-col items-center justify-center py-4">
           <Clock size={28} className="text-[var(--border-medium)] mb-2" />
           <p className="text-xs text-[var(--text-muted)]">No recent activity</p>
         </div>

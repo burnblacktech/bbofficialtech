@@ -36,7 +36,7 @@ const AuthLayout = ({ children, title, subtitle }) => {
 
       {/* Main Content */}
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-elevation-4 sm:rounded-xl sm:px-10 border border-gray-100">
+        <div className="bg-white py-5 px-4 shadow-elevation-4 sm:rounded-xl sm:px-10 border border-gray-100">
           {children}
         </div>
       </div>

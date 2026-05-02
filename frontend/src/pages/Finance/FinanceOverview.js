@@ -115,7 +115,7 @@ export default function FinanceOverview() {
         <SkeletonLoader variant="card" count={3} />
       ) : allZero ? (
         /* Empty state */
-        <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-8 text-center mb-6">
+        <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-5 text-center mb-6">
           <TrendingUp size={36} className="mx-auto mb-3 text-[var(--border-medium)]" />
           <p className="text-sm font-semibold text-[var(--text-primary)] mb-1">
             Start tracking your finances for FY {selectedFY}

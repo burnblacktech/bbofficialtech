@@ -307,7 +307,7 @@ export default function InvestmentLogger() {
 
       {/* Section Progress + Entries */}
       {!entriesLoading && allEntries.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Tax Saved Estimate */}
           <div className="rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-card)] p-4">
             <div className="flex items-center justify-between">

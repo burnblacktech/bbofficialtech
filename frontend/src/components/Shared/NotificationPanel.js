@@ -151,7 +151,7 @@ export default function NotificationPanel({ isOpen, onClose }) {
             {isLoading ? (
               <div className="p-4 text-center text-xs text-[var(--text-muted)]">Loading…</div>
             ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-8 text-center">
+              <div className="flex flex-col items-center gap-2 py-4 text-center">
                 <Bell size={24} className="text-[var(--text-light)]" />
                 <p className="text-sm font-medium text-[var(--text-muted)]">All caught up!</p>
                 <p className="text-xs text-[var(--text-light)]">No notifications yet</p>

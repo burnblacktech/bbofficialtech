@@ -155,7 +155,7 @@ export default function DocumentImport({
               </div>
 
               {isProcessing && (
-                <div className="flex flex-col items-center py-8 gap-3">
+                <div className="flex flex-col items-center py-4 gap-3">
                   <Loader2 size={24} className="animate-spin" style={{ color: 'var(--brand-primary)' }} />
                   <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {type === 'salary' ? 'Extracting salary components...' : 'Extracting fund entries...'}
