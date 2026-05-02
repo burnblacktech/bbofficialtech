@@ -480,7 +480,7 @@
 .story-editor {
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px 24px;
+  padding: 16px 24px;
   background: var(--bg-page);
   scrollbar-width: thin;
   scrollbar-color: var(--border-medium) transparent;
@@ -496,6 +496,11 @@
   height: 100%;
   font-size: 14px;
   color: var(--text-muted);
+}
+
+/* Content width cap — prevents forms from stretching to viewport edge */
+.story-editor > * {
+  max-width: 720px;
 }
 
 /* Compact editor overrides inside .story-editor */

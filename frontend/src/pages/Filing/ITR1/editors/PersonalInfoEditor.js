@@ -341,7 +341,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             <div className="ff-source-badge"><Shield size={11} /> From PAN verification</div>
           </div>
           {/* Gender still editable — not from PAN */}
-          <div className="step-card editing">
+          <div className="step-card editing" style={{ maxWidth: 240 }}>
             <div className="ff-field">
               <label className="ff-label">Gender *</label>
               <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
@@ -438,10 +438,8 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             {errors['address.stateCode'] && <div className="ff-hint" style={{ color: P.error }}>{errors['address.stateCode']}</div>}
           </div>
         </div>
-        <div className="ff-grid-3">
+        <div style={{ maxWidth: 200 }}>
           <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} hint="6-digit postal code" />
-          <div />
-          <div />
         </div>
       </div>
 
