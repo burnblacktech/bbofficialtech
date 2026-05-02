@@ -178,6 +178,25 @@ class VaultService {
     });
   }
 
+  /**
+   * Get a pre-signed URL or buffer for a raw S3 key (no DB lookup).
+   */
+  static async getDownloadUrlForKey(s3Key, mimeType, fileName) {
+    const s3 = getS3();
+    if (s3) {
+      const { GetObjectCommand } = require('@aws-sdk/client-s3');
+      const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+      const url = await getSignedUrl(s3, new GetObjectCommand({
+        Bucket: getBucket(), Key: s3Key,
+        ResponseContentDisposition: `attachment; filename="${fileName || 'document'}"`,
+        ResponseContentType: mimeType || 'application/octet-stream',
+      }), { expiresIn: SIGNED_URL_EXPIRY });
+      return { url };
+    }
+    const buffer = await this._getLocal(s3Key);
+    return { buffer, mimeType, fileName };
+  }
+
   // ── Storage layer: R2 (production) / local filesystem (dev) ──
 
   static async _upload(key, buffer, contentType) {

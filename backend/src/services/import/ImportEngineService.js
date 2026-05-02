@@ -187,12 +187,19 @@ class ImportEngineService {
         status: 'confirmed',
       };
 
-      // Store original file (base64) if provided
+      // Store original file in R2 (not in jsonPayload — avoids DB bloat)
       if (fileContent) {
+        const mimeType = MIME_MAP[documentType] || 'application/octet-stream';
+        const buffer = Buffer.from(fileContent, 'base64');
+        const s3Key = `imports/${filingId}/${importId}.${mimeType.split('/')[1] || 'bin'}`;
+        try {
+          const VaultService = require('../vault/VaultService');
+          await VaultService._upload(s3Key, buffer, mimeType);
+        } catch { /* storage failure is non-blocking */ }
         importMeta.originalFile = {
-          content: fileContent.length > 5 * 1024 * 1024 ? null : fileContent, // Skip if > 5MB
-          mimeType: MIME_MAP[documentType] || 'application/octet-stream',
-          sizeBytes: Buffer.from(fileContent, 'base64').length,
+          s3Key,
+          mimeType,
+          sizeBytes: buffer.length,
           fileName: fileName || `${documentType}_import`,
         };
       }

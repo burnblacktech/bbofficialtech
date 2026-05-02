@@ -87,6 +87,26 @@ router.get('/:filingId/import/history', authenticateToken, async (req, res, next
   } catch (error) { next(error); }
 });
 
+// Download imported file from R2
+router.get('/:filingId/import/:importId/file', authenticateToken, async (req, res, next) => {
+  try {
+    const filing = await ITRFiling.findByPk(req.params.filingId);
+    if (!filing) throw new AppError('Filing not found', 404);
+    if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
+
+    const imports = filing.jsonPayload?._importMeta?.imports || [];
+    const imp = imports.find((i) => i.importId === req.params.importId);
+    if (!imp?.originalFile?.s3Key) throw new AppError('Import file not found', 404);
+
+    const VaultService = require('../services/vault/VaultService');
+    const result = await VaultService.getDownloadUrlForKey(imp.originalFile.s3Key, imp.originalFile.mimeType, imp.originalFile.fileName);
+    if (result.url) return res.redirect(result.url);
+    res.setHeader('Content-Type', imp.originalFile.mimeType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${imp.originalFile.fileName}"`);
+    res.send(result.buffer);
+  } catch (error) { next(error); }
+});
+
 // TDS Reconciliation — compare 26AS TDS entries against filing income
 router.get('/:filingId/reconcile-tds', authenticateToken, async (req, res, next) => {
   try {
