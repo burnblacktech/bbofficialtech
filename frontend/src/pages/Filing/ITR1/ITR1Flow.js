@@ -1273,10 +1273,6 @@ export default function ITR1Flow() {
 
         {/* RIGHT: Editor Panel — only scrollable area */}
         <main className="story-editor">
-          <FilerInfoCard payload={payload} filing={filing} itrType={itrType} />
-          <div aria-live="polite" aria-atomic="true">
-            <TaxComputationCard comp={comp} selectedRegime={selectedRegime} onNavigateToSection={(id) => setSelected(id)} onSwitchRegime={handleRegimeSwitch} />
-          </div>
           {isSubmitted && (
             <div style={{ padding: '10px 14px', marginBottom: 16, background: 'var(--color-info-bg)', border: '1px solid var(--color-info-border)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
               <CheckCircle size={14} style={{ color: 'var(--color-info)', flexShrink: 0 }} />
@@ -1294,6 +1290,80 @@ export default function ITR1Flow() {
             </div>
           )}
         </main>
+
+        {/* RIGHT: Insights Panel — tax cockpit */}
+        <aside className="story-insights">
+          {/* Tax Computation */}
+          <div className="insight-card">
+            <div className="insight-card__title">Tax Summary</div>
+            <div className="insight-regime">
+              {['old', 'new'].map((r) => (
+                <button key={r} className={`insight-regime__btn ${selectedRegime === r ? 'insight-regime__btn--active' : ''}`} onClick={() => handleRegimeSwitch(r)}>
+                  {r === 'old' ? 'Old' : 'New'}
+                </button>
+              ))}
+            </div>
+            {bestRegime ? (
+              <>
+                <div className="insight-card__row"><span className="insight-card__label">Gross Income</span><span className="insight-card__value">{fmt(bestRegime.grossTotalIncome)}</span></div>
+                <div className="insight-card__row"><span className="insight-card__label">Deductions</span><span className="insight-card__value">{fmt(bestRegime.deductions)}</span></div>
+                <div className="insight-card__row"><span className="insight-card__label">Taxable</span><span className="insight-card__value" style={{ fontWeight: 700 }}>{fmt(bestRegime.taxableIncome)}</span></div>
+                <hr className="insight-card__divider" />
+                <div className="insight-card__row"><span className="insight-card__label">Tax</span><span className="insight-card__value">{fmt(bestRegime.totalTax)}</span></div>
+                <div className="insight-card__row"><span className="insight-card__label">TDS</span><span className="insight-card__value">{fmt(bestRegime.tdsCredit)}</span></div>
+                <hr className="insight-card__divider" />
+                <div className={`insight-card__result ${isRefund ? 'insight-card__result--refund' : 'insight-card__result--payable'}`}>
+                  {isRefund ? 'Refund' : 'Payable'}: {fmt(Math.abs(bestRegime.netPayable))}
+                </div>
+                {comp?.savings > 0 && (
+                  <div style={{ fontSize: 11, textAlign: 'center', color: 'var(--color-success)', fontWeight: 600, marginTop: 2 }}>
+                    Save {fmt(comp.savings)} with {comp.recommended === 'old' ? 'Old' : 'New'} Regime
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', padding: '8px 0' }}>Fill data to see computation</div>
+            )}
+          </div>
+
+          {/* Readiness */}
+          <div className="insight-card">
+            <div className="insight-card__title">Filing Readiness</div>
+            <div className="insight-readiness">
+              {[
+                { id: 'personalInfo', label: 'Personal Info' },
+                ...cardSections.map((s) => ({ id: s.id, label: s.label })),
+                { id: 'deductions', label: 'Deductions' },
+                { id: 'bank', label: 'Bank & Submit' },
+              ].map((s) => {
+                const done = isSectionComplete(s.id, payload, comp);
+                return (
+                  <div key={s.id} className="insight-readiness__item" onClick={() => setSelected(s.id)} style={{ cursor: 'pointer' }}>
+                    <span className={`insight-readiness__dot insight-readiness__dot--${done ? 'done' : 'pending'}`} />
+                    <span style={selected === s.id ? { fontWeight: 600, color: 'var(--text-primary)' } : undefined}>{s.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Tax Whispers */}
+          {whispers.length > 0 && (
+            <div className="insight-card">
+              <div className="insight-card__title">Tax Tips</div>
+              {whispers.slice(0, 3).map((w, i) => (
+                <div key={i} className="insight-whisper" style={{ marginBottom: i < 2 ? 4 : 0 }}>{w.message || w}</div>
+              ))}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="insight-actions">
+            <button className="insight-actions__btn" onClick={downloadJSON}>Download JSON</button>
+            <button className="insight-actions__btn" onClick={downloadPDF}>Download PDF</button>
+            {!isSubmitted && <button className="insight-actions__btn insight-actions__btn--primary" onClick={handleSubmit}>Submit Filing</button>}
+          </div>
+        </aside>
 
       </div>{/* end story-panels */}
 

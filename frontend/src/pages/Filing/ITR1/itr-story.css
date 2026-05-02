@@ -94,12 +94,12 @@
   50% { opacity: 0.4; }
 }
 
-/* ── 3. Two-Panel Grid: Story Flow (280px) + Editor (1fr) ── */
+/* ── 3. Three-Panel Cockpit: Story (220px) + Editor (1fr) + Insights (260px) ── */
 .story-panels {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 220px 1fr 260px;
   flex: 1;
-  overflow: hidden; /* panels manage their own scroll */
+  overflow: hidden;
 }
 
 /* ── 4. Left: Story Flow Panel ── */
@@ -498,11 +498,6 @@
   color: var(--text-muted);
 }
 
-/* Content width cap — prevents forms from stretching to viewport edge */
-.story-editor > * {
-  max-width: 720px;
-}
-
 /* Compact editor overrides inside .story-editor */
 .story-editor .step-title { font-size: 16px; margin-bottom: 2px; }
 .story-editor .step-desc { font-size: 12px; margin-bottom: 12px; }
@@ -687,7 +682,8 @@
   .story-panels {
     display: flex;
     flex-direction: column;
-    grid-template-columns: none;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   /* Story flow becomes horizontal scrollable strip */
