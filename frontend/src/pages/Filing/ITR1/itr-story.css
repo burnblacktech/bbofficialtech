@@ -97,7 +97,7 @@
 /* ── 3. Three-Panel Cockpit: Story (220px) + Editor (1fr) + Insights (260px) ── */
 .story-panels {
   display: grid;
-  grid-template-columns: 220px 1fr 260px;
+  grid-template-columns: 240px 1fr 280px;
   flex: 1;
   overflow: hidden;
 }
@@ -145,7 +145,7 @@
 
 .story-flow__card-icon {
   width: 24px;
-  height: 24px;
+  height: 12px;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -330,7 +330,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 24px;
+  height: 12px;
   color: var(--border-medium);
   font-size: 14px;
   user-select: none;
@@ -509,9 +509,12 @@
 .story-editor .ff-input,
 .story-editor .ff-select { padding: 8px 10px; font-size: 13px; }
 .story-editor .ff-hint { font-size: 11px; }
+.story-editor .ff-input[type="number"],
+.story-editor .ff-input[inputmode="numeric"] { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .story-editor .ff-grid-2 { gap: 10px; }
 .story-editor .ff-btn { padding: 8px 14px; font-size: 13px; }
-.story-editor .ff-locked-card { padding: 10px 12px; margin-bottom: 10px; }
+.story-editor .ff-locked-card { padding: 12px; margin-bottom: 10px; }
+.story-editor .dd-card { border-radius: var(--radius-md); }
 .story-editor .ff-kv-grid { gap: 4px; }
 .story-editor .ff-kv-row { padding: 3px 0; }
 
@@ -543,7 +546,7 @@
 }
 .hud-doc-inline-icon {
   width: 24px;
-  height: 24px;
+  height: 12px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -683,6 +686,9 @@
     display: flex;
     flex-direction: column;
     grid-template-columns: 1fr;
+  }
+  .story-insights {
+    display: none;
     grid-template-rows: auto 1fr;
   }
 
