@@ -1,0 +1,46 @@
+:root {
+  /* Spacing (4px base) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
+
+  /* Typography */
+  --font-body: 'Satoshi', -apple-system, sans-serif;
+  --font-mono: 'DM Mono', 'SF Mono', monospace;
+  --fs-xs: 11px; --fs-sm: 12px; --fs-md: 13px; --fs-lg: 14px; --fs-xl: 16px; --fs-2xl: 20px;
+  --fw-normal: 400; --fw-medium: 500; --fw-semi: 600; --fw-bold: 700;
+
+  /* Layout */
+  --max-page: 1080px; --max-form: 760px;
+
+  /* Grid */
+  --grid-gap: 10px; --field-gap: 6px;
+
+  /* Radii */
+  --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-full: 999px;
+
+  /* Shadows */
+  --sh-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --sh-md: 0 2px 6px rgba(0,0,0,0.06);
+  --sh-focus: 0 0 0 3px rgba(212,175,55,0.12);
+  --sh-focus-error: 0 0 0 3px rgba(239,68,68,0.08);
+
+  /* Transitions */
+  --tr-fast: 0.12s ease; --tr-normal: 0.2s ease;
+
+  /* Colors — canonical names (reference theme.css values) */
+  --c-brand: var(--brand-primary, #D4AF37);
+  --c-brand-dark: var(--brand-black, #0F0F0F);
+  --c-bg: var(--bg-page, #FAFAF8);
+  --c-card: var(--bg-card, #fff);
+  --c-card-hover: var(--bg-card-hover, #f3f3f0);
+  --c-muted: var(--bg-muted, #f3f3f0);
+  --c-border: var(--border-light, #E8E8E4);
+  --c-border-med: var(--border-medium, #d4d4d0);
+  --c-text: var(--text-primary, #111827);
+  --c-text-2: var(--text-secondary, #4b5563);
+  --c-text-3: var(--text-muted, #9ca3af);
+  --c-text-4: var(--text-light, #d1d5db);
+  --c-success: var(--color-success, #16A34A);
+  --c-error: var(--color-error, #DC2626);
+  --c-warning: var(--color-warning, #CA8A04);
+  --c-info: var(--color-info, #0D9488);
+}
