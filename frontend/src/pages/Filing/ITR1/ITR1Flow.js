@@ -1330,12 +1330,7 @@ export default function ITR1Flow() {
           <div className="insight-card">
             <div className="insight-card__title">Filing Readiness</div>
             <div className="insight-readiness">
-              {[
-                { id: 'personalInfo', label: 'Personal Info' },
-                ...cardSections.map((s) => ({ id: s.id, label: s.label })),
-                { id: 'deductions', label: 'Deductions' },
-                { id: 'bank', label: 'Bank & Submit' },
-              ].map((s) => {
+              {cardSections.map((s) => {
                 const done = isSectionComplete(s.id, payload, comp);
                 return (
                   <div key={s.id} className="insight-readiness__item" onClick={() => setSelected(s.id)} style={{ cursor: 'pointer' }}>

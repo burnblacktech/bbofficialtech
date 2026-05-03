@@ -338,16 +338,14 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                 <span className="ff-kv-value">{formatDateDDMMYYYY(form.dob)}</span>
               </div>
             </div>
-            <div className="ff-source-badge"><Shield size={11} /> From PAN verification</div>
-          </div>
-          {/* Gender still editable — not from PAN */}
-          <div className="step-card editing" style={{ maxWidth: 240 }}>
-            <div className="ff-field">
-              <label className="ff-label">Gender *</label>
-              <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
-                {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-              {errors.gender && <div className="ff-hint" style={{ color: P.error }}>{errors.gender}</div>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
+              <div className="ff-source-badge" style={{ margin: 0 }}><Shield size={11} /> From PAN verification</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <label className="ff-label" style={{ margin: 0, fontSize: 11 }}>Gender</label>
+                <select className="ff-select" value={form.gender} onChange={e => updateField('gender', e.target.value)} style={{ padding: '3px 24px 3px 8px', fontSize: 12, width: 'auto', minWidth: 80 }}>
+                  {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
             </div>
           </div>
         </>
@@ -391,9 +389,11 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       {/* ── Section 2: Contact ── */}
       <div className="step-card editing">
         <div className="ff-section-title">Contact</div>
-        <div className="ff-grid-3">
+        <div className="ff-grid-2">
           <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here" />
           <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile" />
+        </div>
+        <div className="ff-grid-2" style={{ marginTop: 4 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
             <div style={{ flex: 1 }}>
               <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
@@ -413,6 +413,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
               }
             }} />
           </div>
+          <div />
         </div>
       </div>
 
@@ -422,24 +423,20 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           <MapPin size={14} /> Address
         </div>
         <div className="ff-grid-3">
-          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} hint="House/flat number" />
-          <Field label="Premises Name" value={form.address.premisesName} onChange={v => updateAddress('premisesName', v)} hint="Building name · Optional" />
+          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
           <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
+          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
         </div>
         <div className="ff-grid-3">
-          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
-          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} hint={isMetroCity(form.address.city) ? '🏙️ Metro city (50% HRA)' : undefined} />
           <div className="ff-field">
             <label className="ff-label">State *</label>
             <select className={`ff-select ${errors['address.stateCode'] ? 'error' : ''}`} value={form.address.stateCode} onChange={e => updateAddress('stateCode', e.target.value)} onBlur={() => handleBlur('address.stateCode')}>
               <option value="">Select state</option>
               {INDIAN_STATES.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
             </select>
-            {errors['address.stateCode'] && <div className="ff-hint" style={{ color: P.error }}>{errors['address.stateCode']}</div>}
           </div>
-        </div>
-        <div style={{ maxWidth: 200 }}>
-          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} hint="6-digit postal code" />
+          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
+          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
         </div>
       </div>
 
