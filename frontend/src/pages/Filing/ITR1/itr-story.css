@@ -516,6 +516,25 @@
 .story-editor .ff-locked-card { padding: 12px; margin-bottom: 10px; }
 .story-editor .dd-card { border-radius: var(--radius-md); }
 .story-editor .ff-kv-grid { gap: 4px; }
+
+/* ── Prevent any field from stretching beyond reasonable width ── */
+/* Fields not inside a grid get auto-constrained */
+.story-editor .ff-field:not(.ff-grid-2 .ff-field):not(.ff-grid-3 .ff-field) {
+  max-width: 280px;
+}
+/* NumericFields should never be wider than 240px */
+.story-editor .ff-field input[inputmode="numeric"],
+.story-editor .ff-field input[type="number"] {
+  max-width: 200px;
+}
+/* Select fields (like Gender, State) should be compact */
+.story-editor .ff-select {
+  max-width: 240px;
+}
+/* Grids inside step-cards: ensure minimum 2-col layout */
+.story-editor .step-card > .ff-field {
+  max-width: 280px;
+}
 .story-editor .ff-kv-row { padding: 3px 0; }
 
 /* ── 6. Document Inline Block ── */
