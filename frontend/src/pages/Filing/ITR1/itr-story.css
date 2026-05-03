@@ -674,6 +674,80 @@
   color: #fff;
 }
 
+
+/* ── 10. Insights Panel — Tax cockpit sidebar ── */
+.story-insights {
+  display: flex; flex-direction: column; gap: 10px; padding: 14px;
+  background: var(--bg-page); border-left: 1px solid var(--border-light);
+  overflow-y: auto; scrollbar-width: thin;
+}
+.insight-card {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 12px;
+}
+.insight-card__title {
+  font-size: 11px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px;
+}
+.insight-card__row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 2px 0; font-size: 12px;
+}
+.insight-card__label { color: var(--text-muted); }
+.insight-card__value {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  color: var(--text-primary); font-weight: 500; white-space: nowrap;
+}
+.insight-card__divider { border: none; border-top: 1px solid var(--border-light); margin: 5px 0; }
+.insight-card__result {
+  text-align: center; font-size: 15px; font-weight: 700;
+  padding: 6px 0 2px; font-family: var(--font-mono);
+}
+.insight-card__result--refund { color: var(--color-success); }
+.insight-card__result--payable { color: var(--color-error); }
+.insight-regime {
+  display: inline-flex; gap: 2px; background: var(--bg-muted);
+  border-radius: 6px; padding: 2px; margin-bottom: 8px;
+}
+.insight-regime__btn {
+  padding: 4px 12px; border: none; border-radius: 4px; font-size: 11px;
+  font-weight: 600; cursor: pointer; background: transparent;
+  color: var(--text-muted); transition: all 0.12s; min-height: auto; font-family: inherit;
+}
+.insight-regime__btn--active {
+  background: var(--bg-card); color: var(--brand-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.insight-readiness { display: flex; flex-direction: column; gap: 4px; }
+.insight-readiness__item {
+  display: flex; align-items: center; gap: 8px; font-size: 12px;
+  color: var(--text-muted); padding: 3px 4px; border-radius: 4px;
+  cursor: pointer; transition: background 0.1s;
+}
+.insight-readiness__item:hover { background: var(--bg-card-hover); }
+.insight-readiness__dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.insight-readiness__dot--done { background: var(--color-success); }
+.insight-readiness__dot--pending { background: var(--border-medium); }
+.insight-whisper {
+  font-size: 11px; color: var(--text-secondary); line-height: 1.4;
+  padding: 6px 8px; background: var(--bg-muted); border-radius: 4px;
+}
+.insight-actions {
+  display: flex; flex-direction: column; gap: 5px;
+  margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border-light);
+}
+.insight-actions__btn {
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  padding: 6px 12px; border: 1px solid var(--border-light); border-radius: 6px;
+  background: var(--bg-card); color: var(--text-secondary); font-size: 12px;
+  font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.1s; min-height: auto;
+}
+.insight-actions__btn:hover { background: var(--bg-card-hover); }
+.insight-actions__btn--primary {
+  background: var(--brand-primary); color: var(--brand-black, #0F0F0F);
+  border-color: var(--brand-primary); font-weight: 600;
+}
+
 /* ── 11. Mobile Overrides ── */
 @media (max-width: 768px) {
   .story-dashboard {
