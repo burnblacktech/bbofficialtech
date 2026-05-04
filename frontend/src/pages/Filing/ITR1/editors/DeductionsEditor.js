@@ -1,4 +1,4 @@
-﻿import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Save, Plus, Trash2, Database, TrendingUp, X, Upload,
@@ -10,7 +10,7 @@ import { validateDeductionLimit } from '../../../../utils/smartDefaults';
 import useAutoSave from '../../../../hooks/useAutoSave';
 import { getExpensesSummary } from '../../../../services/financeService';
 import api from '../../../../services/api';
-import '../../filing-flow.css';
+import { Field, Select, Grid, Card, Section, Button, Badge, Money, Divider } from '../../../../components/ds';
 
 /* ─── helpers ─── */
 const n = (v) => Number(v) || 0;
@@ -94,10 +94,6 @@ const EMPTY_DONATION = { doneeName: '', doneePan: '', amount: '', category: '' }
 /* ─── 80C field keys (for progress bar) ─── */
 const FIELDS_80C = ['ppf','elss','lic','tuitionFees','homeLoanPrincipal','sukanyaSamriddhi','fiveYearFD','nsc','otherC'];
 
-/* ═══════════════════════════════════════════════════════
-   DeductionsEditor — Complete rewrite
-   Life-category cards, tooltips, 80C progress, smart tips
-   ═══════════════════════════════════════════════════════ */
 export default function DeductionsEditor({
   payload, onSave, selectedRegime: regimeProp, filing,
   computation, onUploadProof,
@@ -109,35 +105,23 @@ export default function DeductionsEditor({
   const [dismissedTips, setDismissedTips] = useState(new Set());
   const [expanded, setExpanded] = useState({ invest: true, health: false, home: false, education: false, giving: false });
 
-  /* ── Active fields (activate/deactivate pattern) ── */
   const [activeFields, setActiveFields] = useState(() => {
     const initial = new Set();
-    Object.keys(FIELD_META).forEach(key => {
-      if (n(d[key]) > 0) initial.add(key);
-    });
+    Object.keys(FIELD_META).forEach(key => { if (n(d[key]) > 0) initial.add(key); });
     return initial;
   });
 
-  /* ── Senior citizen toggles for 80D ── */
   const [seniorToggles, setSeniorToggles] = useState({
     selfSenior: d.selfSenior || false,
     parentSenior: d.parentSenior || false,
   });
 
-  const activateField = (key) => {
-    setActiveFields(prev => new Set([...prev, key]));
-  };
-
+  const activateField = (key) => setActiveFields(prev => new Set([...prev, key]));
   const deactivateField = (key) => {
-    setActiveFields(prev => {
-      const next = new Set(prev);
-      next.delete(key);
-      return next;
-    });
+    setActiveFields(prev => { const next = new Set(prev); next.delete(key); return next; });
     update(key, '');
   };
 
-  /* ── Tracked deductions query ── */
   const filingFY = filing?.financialYear || filing?.assessmentYear;
   const { data: trackedExpenses } = useQuery({
     queryKey: ['tracked-deductions', filingFY],
@@ -158,7 +142,6 @@ export default function DeductionsEditor({
     }).catch(() => {});
   };
 
-  /* ── Form state (16 existing + 5 new) ── */
   const [form, setForm] = useState({
     ppf: d.ppf || '', elss: d.elss || '', lic: d.lic || '',
     tuitionFees: d.tuitionFees || '', homeLoanPrincipal: d.homeLoanPrincipal || '',
@@ -167,7 +150,6 @@ export default function DeductionsEditor({
     nps: d.nps || '', healthSelf: d.healthSelf || '', healthParents: d.healthParents || '',
     eduLoan: d.eduLoan || '', savingsInt: d.savingsInt || '',
     rentPaid: d.rentPaid || '', disability: d.disability || '',
-    // New fields
     employerNps: d.employerNps || '',
     dependentDisability: d.dependentDisability || '',
     medicalTreatment: d.medicalTreatment || '',
@@ -175,7 +157,6 @@ export default function DeductionsEditor({
     seniorSavingsInt: d.seniorSavingsInt || '',
   });
 
-  /* ── Donations 80G ── */
   const initDonations80G = () => {
     if (d.donations80G?.length) return d.donations80G;
     if (n(d.donations) > 0) return [{ doneeName: '', doneePan: '', amount: d.donations, category: '50_with_limit' }];
@@ -184,17 +165,14 @@ export default function DeductionsEditor({
   const [donations80G, setDonations80G] = useState(initDonations80G);
   const [donationErrors, setDonationErrors] = useState({});
 
-  /* ── Auto-save ── */
   const buildPayload = useCallback(() => ({
     deductions: { ...form, ...seniorToggles, donations80G: donations80G.filter(e => e.doneeName || n(e.amount) > 0) },
     selectedRegime: regime,
   }), [form, seniorToggles, donations80G, regime]);
 
   const { markDirty } = useAutoSave(onSave, buildPayload);
-
   const update = (key, val) => { setForm(prev => ({ ...prev, [key]: val })); markDirty(); };
 
-  /* ── Donation helpers ── */
   const updateDonation = (idx, field, val) => {
     setDonations80G(prev => prev.map((e, i) => i === idx ? { ...e, [field]: val } : e));
     markDirty();
@@ -216,17 +194,14 @@ export default function DeductionsEditor({
     setDonationErrors(prev => { const next = { ...prev }; delete next[idx]; return next; });
   };
 
-  /* ── Regime change ── */
   const changeRegime = (r) => {
     setRegime(r);
     onSave({ deductions: { ...form, donations80G: donations80G.filter(e => e.doneeName || n(e.amount) > 0) }, selectedRegime: r });
   };
-
   const handleSave = () => {
     onSave({ deductions: { ...form, donations80G: donations80G.filter(e => e.doneeName || n(e.amount) > 0) }, selectedRegime: regime });
   };
 
-  /* ── Computed totals ── */
   const raw80C = FIELDS_80C.reduce((s, k) => s + n(form[k]), 0);
   const cap80C = Math.min(raw80C, 150000);
   const capNps = Math.min(n(form.nps), 50000);
@@ -238,17 +213,10 @@ export default function DeductionsEditor({
     + n(form.eduLoan) + capTta + n(form.seniorSavingsInt) + total80G + capRent
     + n(form.firstHomeBuyerInterest);
 
-  /* ── 80C progress bar ── */
   const progressPct = Math.min(100, raw80C / 150000 * 100);
   const barColor = raw80C > 150000 ? '#dc2626' : progressPct > 75 ? '#ca8a04' : '#16a34a';
+  const categoryTotal = (cat) => cat.hasDonations ? total80G : cat.fields.reduce((s, k) => s + n(form[k]), 0);
 
-  /* ── Category total helper ── */
-  const categoryTotal = (cat) => {
-    if (cat.hasDonations) return total80G;
-    return cat.fields.reduce((s, k) => s + n(form[k]), 0);
-  };
-
-  /* ── Smart tips ── */
   const computeTips = () => {
     if (regime !== 'old') return [];
     const tips = [];
@@ -260,13 +228,11 @@ export default function DeductionsEditor({
   };
   const tips = computeTips();
 
-  /* ── Regime comparison ── */
   const oldTax = n(computation?.oldRegime?.totalTax);
   const newTax = n(computation?.newRegime?.totalTax);
   const savings = Math.abs(oldTax - newTax);
   const betterRegime = oldTax <= newTax ? 'Old regime' : 'New regime';
 
-  /* ── Tracked deductions ── */
   const handleUseTrackedDeductions = () => {
     const hasExisting = n(form.ppf) + n(form.elss) + n(form.lic) + n(form.nps) + n(form.healthSelf) > 0;
     if (hasExisting) { setShowReplaceConfirm(true); return; }
@@ -283,13 +249,9 @@ export default function DeductionsEditor({
     markDirty();
   };
 
-  /* ── Toggle expand/collapse ── */
   const toggleCard = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
   const handleCardKeyDown = (e, id) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCard(id); } };
 
-  /* ═══════════════════════════════════════════════════════
-     RENDER
-     ═══════════════════════════════════════════════════════ */
   return (
     <div className="ff-page">
       <div className="ff-content">
@@ -297,17 +259,17 @@ export default function DeductionsEditor({
         <p className="step-desc">Claim deductions to reduce your taxable income</p>
 
         {/* ── 1. Regime Comparison Banner ── */}
-        <div className="step-card" style={{ marginBottom: 14 }}>
+        <Card style={{ marginBottom: 14 }}>
           <div style={{ display: 'flex', gap: 0, marginBottom: computation ? 10 : 0 }}>
             {['old', 'new'].map(r => (
-              <button
+              <Button
                 key={r}
-                className={`ff-btn ${regime === r ? 'ff-btn-primary' : 'ff-btn-outline'}`}
+                variant={regime === r ? 'primary' : 'secondary'}
                 style={{ borderRadius: r === 'old' ? '6px 0 0 6px' : '0 6px 6px 0', flex: 1 }}
                 onClick={() => changeRegime(r)}
               >
                 {r === 'old' ? 'Old Regime' : 'New Regime'}
-              </button>
+              </Button>
             ))}
           </div>
           {computation && (
@@ -315,258 +277,50 @@ export default function DeductionsEditor({
               Old: {fmt(oldTax)} · New: {fmt(newTax)} · {betterRegime} saves {fmt(savings)}
             </div>
           )}
-        </div>
+        </Card>
 
         {/* ── 2. Tracked Deductions Banner ── */}
         {trackedDeductionTotal > 0 && regime === 'old' && (
-          <div className="step-card info" style={{ marginBottom: 14 }}>
+          <Card style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
                 <Database size={13} style={{ verticalAlign: -2, marginRight: 6 }} />
                 Tracked deductions: {rs(trackedDeductionTotal)}
               </span>
-              <button className="ff-btn ff-btn-outline" style={{ padding: '6px 12px', fontSize: 12 }} onClick={handleUseTrackedDeductions}>
+              <Button variant="secondary" size="sm" onClick={handleUseTrackedDeductions}>
                 Use Tracked Data
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* ── 3. Replace Confirmation Dialog ── */}
         {showReplaceConfirm && (
-          <div className="step-card error" style={{ marginBottom: 14 }}>
+          <Card style={{ marginBottom: 14 }}>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 10px' }}>
               You already have deduction values entered. Replace them with tracked data?
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="ff-btn ff-btn-primary" style={{ fontSize: 12, padding: '6px 14px' }} onClick={applyTrackedDeductions}>Replace</button>
-              <button className="ff-btn ff-btn-outline" style={{ fontSize: 12, padding: '6px 14px' }} onClick={() => setShowReplaceConfirm(false)}>Cancel</button>
+              <Button variant="primary" size="sm" onClick={applyTrackedDeductions}>Replace</Button>
+              <Button variant="secondary" size="sm" onClick={() => setShowReplaceConfirm(false)}>Cancel</Button>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* ── 4. New Regime: standard deduction only ── */}
         {regime === 'new' ? (
-          <div className="step-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
+          <Card style={{ textAlign: 'center', padding: '32px 20px' }}>
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 4 }}>
               Under the new regime, only the standard deduction of <strong>₹75,000</strong> applies.
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
               Switch to old regime to claim additional deductions.
             </div>
-          </div>
+          </Card>
         ) : (
           <>
             {/* ── 5. Old Regime: Category Cards ── */}
-            {CATEGORIES.map(cat => {
-              const CatIcon = cat.icon;
-              const catTotal = categoryTotal(cat);
-              const isExpanded = expanded[cat.id];
-
-              return (
-                <div key={cat.id} className="dd-card">
-                  {/* Card Header */}
-                  <button
-                    className="dd-card-header"
-                    onClick={() => toggleCard(cat.id)}
-                    onKeyDown={(e) => handleCardKeyDown(e, cat.id)}
-                    aria-expanded={isExpanded}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <div className="dd-card-icon" style={{ background: cat.id === 'invest' ? '#f0fdf4' : cat.id === 'health' ? '#fef2f2' : cat.id === 'home' ? '#f5f3ff' : cat.id === 'education' ? '#eff6ff' : '#fdf2f8' }}>
-                      <CatIcon size={14} style={{ color: cat.id === 'invest' ? '#059669' : cat.id === 'health' ? '#dc2626' : cat.id === 'home' ? '#7c3aed' : cat.id === 'education' ? '#2563eb' : '#db2777' }} />
-                    </div>
-                    <span className="dd-card-title">{cat.title}</span>
-                    <span className="dd-card-badge">{cat.sectionBadge}</span>
-                    <span className="dd-card-total">{catTotal > 0 ? rs(catTotal) : ''}</span>
-                    <span className="dd-card-chevron">
-                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </span>
-                  </button>
-
-                  {/* Card Body */}
-                  {isExpanded && (
-                    <div className="dd-card-body">
-                      {/* Upload Proof Button */}
-                      {onUploadProof && (
-                        <div className="dd-card-upload">
-                          <button
-                            className="ff-btn ff-btn-outline"
-                            style={{ fontSize: 12, padding: '6px 12px' }}
-                            onClick={() => onUploadProof(cat.docType)}
-                            aria-label={cat.uploadLabel}
-                          >
-                            <Upload size={12} /> {cat.uploadLabel}
-                          </button>
-                        </div>
-                      )}
-
-                      {/* 80C Progress Bar (Investments only) */}
-                      {cat.hasProgressBar && (
-                        <>
-                          <div className="dd-progress">
-                            <div className="dd-progress-bar" style={{ width: `${progressPct}%`, background: barColor }} />
-                          </div>
-                          <div className="dd-progress-text">
-                            {raw80C > 150000
-                              ? <span style={{ color: '#dc2626' }}>{rs(raw80C)} — exceeds limit by {rs(raw80C - 150000)}</span>
-                              : <span>{rs(raw80C)} used · {rs(150000 - raw80C)} remaining</span>
-                            }
-                          </div>
-                        </>
-                      )}
-
-                      {/* Deduction Fields — Activate/Deactivate Pattern */}
-                      {cat.fields.length > 0 && (
-                        <div>
-                          {cat.fields.map(fieldKey => {
-                            const meta = FIELD_META[fieldKey];
-                            const val = n(form[fieldKey]);
-                            const isActive = val > 0 || activeFields.has(fieldKey);
-                            const source = getFieldSource(fieldKey);
-
-                            if (!isActive) {
-                              return (
-                                <button key={fieldKey} className="dd-item dd-item--inactive" onClick={() => activateField(fieldKey)}>
-                                  <Plus size={12} />
-                                  <div style={{ flex: 1, minWidth: 0 }}>
-                                    <span className="dd-item-label">{meta.label}</span>
-                                    <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2, lineHeight: 1.3 }}>
-                                      {meta.hint}{meta.limit ? ` · Max ${rs(meta.limit)}` : ''}
-                                    </div>
-                                  </div>
-                                  <span className="dd-item-badge">§{meta.section}</span>
-                                </button>
-                              );
-                            }
-
-                            return (
-                              <div key={fieldKey} className="dd-item dd-item--active">
-                                <div className="dd-item-header">
-                                  <span className="dd-item-label">{meta.label}</span>
-                                  <span className="dd-item-badge">§{meta.section}</span>
-                                  {val > 0 && <span className="dd-item-amount">{rs(val)}</span>}
-                                  <button className="dd-item-remove" onClick={() => deactivateField(fieldKey)} title="Remove">
-                                    <X size={10} />
-                                  </button>
-                                </div>
-                                <div className="dd-item-body">
-                                  {/* Senior citizen toggle for 80D fields */}
-                                  {meta.seniorToggleKey && (
-                                    <label className="ff-check" style={{ marginBottom: 10 }}>
-                                      <input
-                                        type="checkbox"
-                                        checked={!!seniorToggles[meta.seniorToggleKey]}
-                                        onChange={(e) => {
-                                          setSeniorToggles(prev => ({ ...prev, [meta.seniorToggleKey]: e.target.checked }));
-                                          markDirty();
-                                        }}
-                                      />
-                                      {meta.seniorToggleKey === 'selfSenior' ? 'I am 60 years or older (senior citizen)' : 'Parent is 60 years or older (senior citizen)'}
-                                    </label>
-                                  )}
-                                  <div className="ff-field">
-                                    <label className="ff-label" htmlFor={`ded-${fieldKey}`}>{meta.label}</label>
-                                    <input
-                                      id={`ded-${fieldKey}`}
-                                      className="ff-input"
-                                      type="number"
-                                      value={form[fieldKey]}
-                                      onChange={e => {
-                                        if (source && source !== 'manual') {
-                                          handleManualOverride(`deductions.${fieldKey}`, form[fieldKey], e.target.value, source);
-                                        }
-                                        update(fieldKey, e.target.value);
-                                      }}
-                                      placeholder="0"
-                                    />
-                                    <div className="ff-hint">
-                                      {meta.hint}
-                                      {meta.seniorLimit
-                                        ? ` · Limit: ${rs(seniorToggles[meta.seniorToggleKey] ? meta.seniorLimit : meta.limit)}${seniorToggles[meta.seniorToggleKey] ? ' (senior)' : ''}`
-                                        : meta.limit ? ` · Limit: ${rs(meta.limit)}` : ''
-                                      }
-                                      {source && source !== 'manual' && <span> · Source: {SOURCE_LABELS[source] || source}</span>}
-                                    </div>
-                                    {meta.seniorLimit && val > (seniorToggles[meta.seniorToggleKey] ? meta.seniorLimit : meta.limit) && (
-                                      <div className="ff-hint" style={{ color: 'var(--color-warning)', marginTop: 4 }}>
-                                        ⚠ Amount exceeds the {rs(seniorToggles[meta.seniorToggleKey] ? meta.seniorLimit : meta.limit)} limit — ITD may disallow the excess
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Donations 80G (Giving Back only) */}
-                      {cat.hasDonations && (
-                        <div>
-                          {donations80G.length === 0 && (
-                            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>
-                              No donations added yet. Add a donation or use a preset below.
-                            </p>
-                          )}
-
-                          {donations80G.map((entry, idx) => (
-                            <div key={idx} className="step-card editing" style={{ padding: 14, marginBottom: 10 }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Donation {idx + 1}</span>
-                                <button className="ff-btn ff-btn-danger" onClick={() => removeDonation(idx)} aria-label={`Remove donation ${idx + 1}`}>
-                                  <Trash2 size={13} />
-                                </button>
-                              </div>
-                              <div className="ff-grid-2">
-                                <div className="ff-field">
-                                  <label className="ff-label">Donee Name</label>
-                                  <input className={`ff-input ${donationErrors[idx]?.doneeName ? 'error' : ''}`} value={entry.doneeName} onChange={(e) => updateDonation(idx, 'doneeName', e.target.value)} onBlur={() => validateDonationOnBlur(idx)} placeholder="Organisation name" />
-                                  {donationErrors[idx]?.doneeName && <div className="ff-hint" style={{ color: 'var(--color-error)' }}>{donationErrors[idx].doneeName}</div>}
-                                </div>
-                                <div className="ff-field">
-                                  <label className="ff-label">Donee PAN</label>
-                                  <input className={`ff-input ${donationErrors[idx]?.doneePan ? 'error' : ''}`} value={entry.doneePan} onChange={(e) => updateDonation(idx, 'doneePan', e.target.value.toUpperCase())} onBlur={() => validateDonationOnBlur(idx)} placeholder="AAAAA0000A" maxLength={10} style={{ textTransform: 'uppercase' }} />
-                                  {donationErrors[idx]?.doneePan && <div className="ff-hint" style={{ color: 'var(--color-error)' }}>{donationErrors[idx].doneePan}</div>}
-                                </div>
-                                <div className="ff-field">
-                                  <label className="ff-label">Amount</label>
-                                  <input className={`ff-input ${donationErrors[idx]?.amount ? 'error' : ''}`} type="number" value={entry.amount} onChange={(e) => updateDonation(idx, 'amount', e.target.value)} onBlur={() => validateDonationOnBlur(idx)} placeholder="0" />
-                                  {donationErrors[idx]?.amount && <div className="ff-hint" style={{ color: 'var(--color-error)' }}>{donationErrors[idx].amount}</div>}
-                                </div>
-                                <div className="ff-field">
-                                  <label className="ff-label">Deduction Category</label>
-                                  <select className="ff-select" value={entry.category} onChange={(e) => updateDonation(idx, 'category', e.target.value)}>
-                                    <option value="">Select category</option>
-                                    {DONATION_CATEGORY_OPTIONS.map(opt => (
-                                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-
-                          <button className="ff-btn ff-btn-add" onClick={addDonation}>
-                            <Plus size={13} /> Add Donation
-                          </button>
-
-                          {/* Preset buttons */}
-                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-                            {DONEE_PRESETS.map(preset => (
-                              <button key={preset.doneeName} className="ff-btn ff-btn-outline" style={{ fontSize: 11, padding: '4px 10px' }} onClick={() => addPresetDonation(preset)}>
-                                + {preset.doneeName}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {CATEGORIES.map(cat => renderCategoryCard(cat))}
 
             {/* ── 6. Smart Tips ── */}
             {tips.length > 0 && (
@@ -587,88 +341,234 @@ export default function DeductionsEditor({
             )}
 
             {/* ── 7. Summary Card ── */}
-            <div className="step-card summary">
-              <div className="ff-section-title">Deduction Summary</div>
-              <div className="ff-row">
-                <span className="ff-row-label">Regime</span>
-                <span className="ff-row-value">{regime === 'old' ? 'Old Regime' : 'New Regime'}</span>
-              </div>
-              <div className="ff-divider" />
+            <Card muted>
+              <Section title="Deduction Summary" />
+              <Money label="Regime" value={regime === 'old' ? 'Old Regime' : 'New Regime'} />
+              <Divider />
               {CATEGORIES.map(cat => {
                 const ct = categoryTotal(cat);
                 if (ct <= 0) return null;
-                return (
-                  <div key={cat.id} className="ff-row">
-                    <span className="ff-row-label">{cat.title}</span>
-                    <span className="ff-row-value">{rs(ct)}</span>
-                  </div>
-                );
+                return <Money key={cat.id} label={cat.title} value={rs(ct)} />;
               })}
-              <div className="ff-divider" />
-              <div className="ff-row">
-                <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Deductions</span>
-                <span className="ff-row-value bold green">{rs(total)}</span>
-              </div>
-            </div>
+              <Divider />
+              <Money label="Total Deductions" value={rs(total)} bold color="green" />
+            </Card>
 
             {/* ── 8. Save Button ── */}
-            <div style={{ marginTop: 14 }}>
-              <button className="ff-btn ff-btn-primary" onClick={handleSave} style={{ width: '100%', justifyContent: 'center' }}>
-                <Save size={14} /> Save Deductions
-              </button>
-            </div>
+            <Button variant="primary" onClick={handleSave} style={{ width: '100%', marginTop: 14 }}>
+              <Save size={14} /> Save Deductions
+            </Button>
           </>
         )}
       </div>
     </div>
   );
-}
 
-/* ═══════════════════════════════════════════════════════
-   DeductionField — Reusable field with tooltip
-   ═══════════════════════════════════════════════════════ */
-function DeductionField({ fieldKey, value, onChange, source }) {
-  const meta = FIELD_META[fieldKey];
-  if (!meta) return null;
+  function renderCategoryCard(cat) {
+    const CatIcon = cat.icon;
+    const catTotal = categoryTotal(cat);
+    const isExpanded = expanded[cat.id];
 
-  // Task 10.7: Inline deduction limit validation
-  const limitCheck = meta.section && meta.limit
-    ? validateDeductionLimit(meta.section, n(value))
-    : null;
-
-  return (
-    <div className="ff-field">
-      <label className="ff-label" htmlFor={`ded-${fieldKey}`}>
-        {meta.label}
-        <span style={{ fontSize: 10, color: 'var(--text-light)', marginLeft: 6 }}>§{meta.section}</span>
-        <span className="dd-tooltip-wrap" style={{ marginLeft: 4 }}>
-          <HelpCircle size={12} className="dd-tooltip-icon" tabIndex={0} aria-label="What's this?" />
-          <span className="dd-tooltip" role="tooltip" id={`tip-${fieldKey}`}>
-            {meta.hint}
-            {meta.limit && <span style={{ display: 'block', marginTop: 4, fontWeight: 500 }}>Limit: {rs(meta.limit)}</span>}
+    return (
+      <Card key={cat.id} active={isExpanded}>
+        {/* Card Header */}
+        <button
+          className="dd-card-header"
+          onClick={() => toggleCard(cat.id)}
+          onKeyDown={(e) => handleCardKeyDown(e, cat.id)}
+          aria-expanded={isExpanded}
+          role="button"
+          tabIndex={0}
+        >
+          <div className="dd-card-icon" style={{ background: cat.id === 'invest' ? '#f0fdf4' : cat.id === 'health' ? '#fef2f2' : cat.id === 'home' ? '#f5f3ff' : cat.id === 'education' ? '#eff6ff' : '#fdf2f8' }}>
+            <CatIcon size={14} style={{ color: cat.id === 'invest' ? '#059669' : cat.id === 'health' ? '#dc2626' : cat.id === 'home' ? '#7c3aed' : cat.id === 'education' ? '#2563eb' : '#db2777' }} />
+          </div>
+          <span className="dd-card-title">{cat.title}</span>
+          <Badge>{cat.sectionBadge}</Badge>
+          <span className="dd-card-total">{catTotal > 0 ? rs(catTotal) : ''}</span>
+          <span className="dd-card-chevron">
+            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </span>
-        </span>
-      </label>
-      <input
-        id={`ded-${fieldKey}`}
-        className="ff-input"
-        type="number"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="0"
-        aria-describedby={`tip-${fieldKey}`}
-        style={limitCheck && !limitCheck.withinLimit ? { borderColor: 'var(--color-warning)' } : undefined}
-      />
-      {limitCheck && !limitCheck.withinLimit && (
-        <div className="ff-hint" style={{ color: 'var(--color-warning)', fontSize: 11 }}>
-          Exceeds §{meta.section} limit of {rs(limitCheck.limit)} by {rs(limitCheck.excess)}
+        </button>
+
+        {/* Card Body */}
+        {isExpanded && (
+          <div className="dd-card-body">
+            {onUploadProof && (
+              <div className="dd-card-upload">
+                <Button variant="secondary" size="sm" onClick={() => onUploadProof(cat.docType)} aria-label={cat.uploadLabel}>
+                  <Upload size={12} /> {cat.uploadLabel}
+                </Button>
+              </div>
+            )}
+
+            {/* 80C Progress Bar */}
+            {cat.hasProgressBar && (
+              <>
+                <div className="dd-progress">
+                  <div className="dd-progress-bar" style={{ width: `${progressPct}%`, background: barColor }} />
+                </div>
+                <div className="dd-progress-text">
+                  {raw80C > 150000
+                    ? <span style={{ color: '#dc2626' }}>{rs(raw80C)} — exceeds limit by {rs(raw80C - 150000)}</span>
+                    : <span>{rs(raw80C)} used · {rs(150000 - raw80C)} remaining</span>
+                  }
+                </div>
+              </>
+            )}
+
+            {/* Deduction Fields */}
+            {cat.fields.length > 0 && <div>{cat.fields.map(fieldKey => renderDeductionField(fieldKey))}</div>}
+
+            {/* Donations 80G */}
+            {cat.hasDonations && renderDonationsSection()}
+          </div>
+        )}
+      </Card>
+    );
+  }
+
+  function renderDeductionField(fieldKey) {
+    const meta = FIELD_META[fieldKey];
+    const val = n(form[fieldKey]);
+    const isActive = val > 0 || activeFields.has(fieldKey);
+    const source = getFieldSource(fieldKey);
+
+    if (!isActive) {
+      return (
+        <button key={fieldKey} className="dd-item dd-item--inactive" onClick={() => activateField(fieldKey)}>
+          <Plus size={12} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span className="dd-item-label">{meta.label}</span>
+            <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2, lineHeight: 1.3 }}>
+              {meta.hint}{meta.limit ? ` · Max ${rs(meta.limit)}` : ''}
+            </div>
+          </div>
+          <Badge>§{meta.section}</Badge>
+        </button>
+      );
+    }
+
+    const limitHint = meta.seniorLimit
+      ? ` · Limit: ${rs(seniorToggles[meta.seniorToggleKey] ? meta.seniorLimit : meta.limit)}${seniorToggles[meta.seniorToggleKey] ? ' (senior)' : ''}`
+      : meta.limit ? ` · Limit: ${rs(meta.limit)}` : '';
+    const sourceHint = source && source !== 'manual' ? ` · Source: ${SOURCE_LABELS[source] || source}` : '';
+    const effectiveLimit = meta.seniorLimit ? (seniorToggles[meta.seniorToggleKey] ? meta.seniorLimit : meta.limit) : meta.limit;
+    const overLimit = meta.seniorLimit && val > effectiveLimit;
+
+    return (
+      <div key={fieldKey} className="dd-item dd-item--active">
+        <div className="dd-item-header">
+          <span className="dd-item-label">{meta.label}</span>
+          <Badge>§{meta.section}</Badge>
+          {val > 0 && <span className="dd-item-amount">{rs(val)}</span>}
+          <button className="dd-item-remove" onClick={() => deactivateField(fieldKey)} title="Remove">
+            <X size={10} />
+          </button>
         </div>
-      )}
-      {source && source !== 'manual' && (
-        <div className="ff-hint">
-          Source: {SOURCE_LABELS[source] || source}
+        <div className="dd-item-body">
+          {meta.seniorToggleKey && (
+            <label className="ff-check" style={{ marginBottom: 10 }}>
+              <input
+                type="checkbox"
+                checked={!!seniorToggles[meta.seniorToggleKey]}
+                onChange={(e) => {
+                  setSeniorToggles(prev => ({ ...prev, [meta.seniorToggleKey]: e.target.checked }));
+                  markDirty();
+                }}
+              />
+              {meta.seniorToggleKey === 'selfSenior' ? 'I am 60 years or older (senior citizen)' : 'Parent is 60 years or older (senior citizen)'}
+            </label>
+          )}
+          <Field
+            label={meta.label}
+            type="number"
+            value={form[fieldKey]}
+            onChange={v => {
+              if (source && source !== 'manual') {
+                handleManualOverride(`deductions.${fieldKey}`, form[fieldKey], v, source);
+              }
+              update(fieldKey, v);
+            }}
+            hint={`${meta.hint}${limitHint}${sourceHint}`}
+          />
+          {overLimit && (
+            <div className="ds-hint" style={{ color: 'var(--color-warning)', marginTop: 4 }}>
+              ⚠ Amount exceeds the {rs(effectiveLimit)} limit — ITD may disallow the excess
+            </div>
+          )}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  function renderDonationsSection() {
+    return (
+      <div>
+        {donations80G.length === 0 && (
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>
+            No donations added yet. Add a donation or use a preset below.
+          </p>
+        )}
+
+        {donations80G.map((entry, idx) => (
+          <Card key={idx} style={{ padding: 14, marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Donation {idx + 1}</span>
+              <Button variant="secondary" size="sm" onClick={() => removeDonation(idx)} aria-label={`Remove donation ${idx + 1}`}>
+                <Trash2 size={13} />
+              </Button>
+            </div>
+            <Grid cols={2}>
+              <Field
+                label="Donee Name"
+                value={entry.doneeName}
+                onChange={(v) => updateDonation(idx, 'doneeName', v)}
+                onBlur={() => validateDonationOnBlur(idx)}
+                error={donationErrors[idx]?.doneeName}
+                placeholder="Organisation name"
+              />
+              <Field
+                label="Donee PAN"
+                value={entry.doneePan}
+                onChange={(v) => updateDonation(idx, 'doneePan', v.toUpperCase())}
+                onBlur={() => validateDonationOnBlur(idx)}
+                error={donationErrors[idx]?.doneePan}
+                placeholder="AAAAA0000A"
+                maxLength={10}
+                style={{ textTransform: 'uppercase' }}
+              />
+              <Field
+                label="Amount"
+                type="number"
+                value={entry.amount}
+                onChange={(v) => updateDonation(idx, 'amount', v)}
+                onBlur={() => validateDonationOnBlur(idx)}
+                error={donationErrors[idx]?.amount}
+              />
+              <Select
+                label="Deduction Category"
+                value={entry.category}
+                onChange={(v) => updateDonation(idx, 'category', v)}
+                options={DONATION_CATEGORY_OPTIONS}
+                placeholder="Select category"
+              />
+            </Grid>
+          </Card>
+        ))}
+
+        <Button variant="secondary" onClick={addDonation}>
+          <Plus size={13} /> Add Donation
+        </Button>
+
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+          {DONEE_PRESETS.map(preset => (
+            <Button key={preset.doneeName} variant="secondary" size="sm" onClick={() => addPresetDonation(preset)}>
+              + {preset.doneeName}
+            </Button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 }

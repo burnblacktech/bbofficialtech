@@ -1,30 +1,36 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
 import { validateCapitalGainsStep } from '../../../../utils/itrValidation';
-import P from '../../../../styles/palette';
-import '../../filing-flow.css';
+import { Field, Select, Grid, Card, Section, Button, Divider, Money, Alert } from '../../../../components/ds';
 
 const n = (v) => Number(v) || 0;
-const fmt = (v) => `\u20B9${n(v).toLocaleString('en-IN')}`;
+const fmt = (v) => `₹${n(v).toLocaleString('en-IN')}`;
 const EMPTY = { assetType: 'equity', gainType: 'LTCG', saleValue: '', purchaseValue: '', indexedCost: '', expenses: '', exemption: '', saleDate: '', purchaseDate: '', tdsOnSale: '' };
 
-const ASSET_LABELS = {
-  equity: 'Listed Equity / Shares',
-  mutualFund: 'Equity Mutual Funds',
-  property: 'Property / Real Estate',
-  debtMF: 'Debt Mutual Funds',
-  gold: 'Gold / Sovereign Gold Bonds',
-  other: 'Other Assets',
-};
+const ASSET_OPTIONS = [
+  { value: 'equity', label: 'Listed Equity / Shares' },
+  { value: 'mutualFund', label: 'Equity Mutual Funds' },
+  { value: 'property', label: 'Property / Real Estate' },
+  { value: 'debtMF', label: 'Debt Mutual Funds' },
+  { value: 'gold', label: 'Gold / Sovereign Gold Bonds' },
+  { value: 'other', label: 'Other Assets' },
+];
+
+const ASSET_LABELS = Object.fromEntries(ASSET_OPTIONS.map(o => [o.value, o.label]));
 
 const HOLDING_HINTS = {
-  equity: { stcg: '< 12 months', ltcg: '\u2265 12 months' },
-  mutualFund: { stcg: '< 12 months', ltcg: '\u2265 12 months' },
-  property: { stcg: '< 24 months', ltcg: '\u2265 24 months' },
-  debtMF: { stcg: '< 36 months', ltcg: '\u2265 36 months' },
-  gold: { stcg: '< 36 months', ltcg: '\u2265 36 months' },
-  other: { stcg: '< 36 months', ltcg: '\u2265 36 months' },
+  equity: { stcg: '< 12 months', ltcg: '≥ 12 months' },
+  mutualFund: { stcg: '< 12 months', ltcg: '≥ 12 months' },
+  property: { stcg: '< 24 months', ltcg: '≥ 24 months' },
+  debtMF: { stcg: '< 36 months', ltcg: '≥ 36 months' },
+  gold: { stcg: '< 36 months', ltcg: '≥ 36 months' },
+  other: { stcg: '< 36 months', ltcg: '≥ 36 months' },
 };
+
+const GAIN_TYPE_OPTIONS = [
+  { value: 'STCG', label: 'Short Term (STCG)' },
+  { value: 'LTCG', label: 'Long Term (LTCG)' },
+];
 
 export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
   const existing = payload?.income?.capitalGains?.transactions || [];
@@ -61,11 +67,9 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
     onSave({ taxes: { tds: { fromCapitalGains: n(tdsCG) } } });
   };
 
-  // Calculate gains per transaction (can be negative = loss)
   const gain = (t) => n(t.saleValue) - (n(t.indexedCost) || n(t.purchaseValue)) - n(t.expenses);
   const netGain = (t) => gain(t) - n(t.exemption);
 
-  // Aggregate by type — allow losses to offset within same category
   const stcgEquity = txns.filter(t => t.gainType === 'STCG' && ['equity', 'mutualFund'].includes(t.assetType)).reduce((s, t) => s + netGain(t), 0);
   const stcgOther = txns.filter(t => t.gainType === 'STCG' && !['equity', 'mutualFund'].includes(t.assetType)).reduce((s, t) => s + netGain(t), 0);
   const ltcgEquity = txns.filter(t => t.gainType === 'LTCG' && ['equity', 'mutualFund'].includes(t.assetType)).reduce((s, t) => s + netGain(t), 0);
@@ -81,112 +85,104 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
 
       {/* Existing transactions */}
       {txns.map((t, i) => editing === i ? null : (
-        <div key={i} className="step-card">
+        <Card key={i}>
           <div className="ff-item">
             <div>
               <div className="ff-item-name">{ASSET_LABELS[t.assetType] || t.assetType} — {t.gainType}</div>
               <div className="ff-item-detail">
-                Sale: {fmt(t.saleValue)} · Cost: {fmt(t.indexedCost || t.purchaseValue)} · {netGain(t) >= 0 ? 'Gain' : 'Loss'}: <span style={{ color: netGain(t) >= 0 ? P.textPrimary : P.error, fontWeight: 600 }}>{fmt(Math.abs(netGain(t)))}</span>
+                Sale: {fmt(t.saleValue)} · Cost: {fmt(t.indexedCost || t.purchaseValue)} · {netGain(t) >= 0 ? 'Gain' : 'Loss'}: <span style={{ color: netGain(t) >= 0 ? 'var(--c-text)' : 'var(--c-error)', fontWeight: 600 }}>{fmt(Math.abs(netGain(t)))}</span>
               </div>
             </div>
             <div className="ff-item-actions">
-              <button className="ff-btn-ghost" onClick={() => { setForm({ ...t }); setEditing(i); }}><Edit2 size={15} /></button>
-              <button className="ff-btn-danger" onClick={() => remove(i)}><Trash2 size={15} /></button>
+              <Button variant="ghost" size="sm" onClick={() => { setForm({ ...t }); setEditing(i); }}><Edit2 size={15} /></Button>
+              <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
             </div>
           </div>
-        </div>
+        </Card>
       ))}
 
       {/* Edit form */}
       {form && (
-        <div className="step-card editing">
-          <div className="ff-grid-3">
-            <div className="ff-field">
-              <label className="ff-label">Asset Type</label>
-              <select className="ff-select" value={form.assetType} onChange={e => setForm({ ...form, assetType: e.target.value })}>
-                {Object.entries(ASSET_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
-            </div>
-            <div className="ff-field">
-              <label className="ff-label">Gain Type</label>
-              <select className="ff-select" value={form.gainType} onChange={e => setForm({ ...form, gainType: e.target.value })}>
-                <option value="STCG">Short Term (STCG)</option>
-                <option value="LTCG">Long Term (LTCG)</option>
-              </select>
-              {holdingHint && <div className="ff-hint">STCG: held {holdingHint.stcg} · LTCG: held {holdingHint.ltcg}</div>}
-            </div>
-          </div>
-          <div className="ff-grid-3">
-            <F l="Sale Date" v={form.saleDate} c={v => setForm({ ...form, saleDate: v })} t="date" />
-            <F l="Purchase Date" v={form.purchaseDate} c={v => setForm({ ...form, purchaseDate: v })} t="date" />
-          </div>
-          <div className="ff-grid-3">
-            <F l="Sale Value *" v={form.saleValue} c={v => setForm({ ...form, saleValue: v })} />
-            <F l="Purchase Value *" v={form.purchaseValue} c={v => setForm({ ...form, purchaseValue: v })} />
-          </div>
-          <div className="ff-grid-3">
-            <F l="Indexed Cost" v={form.indexedCost} c={v => setForm({ ...form, indexedCost: v })} h="Inflation-adjusted cost · For LTCG on property/debt" />
-            <F l="Expenses" v={form.expenses} c={v => setForm({ ...form, expenses: v })} h="Brokerage, stamp duty, legal fees" />
-            <F l="Exemption (54/54EC/54F)" v={form.exemption} c={v => setForm({ ...form, exemption: v })} />
-          </div>
-          <F l="TDS Deducted on This Sale" v={form.tdsOnSale} c={v => setForm({ ...form, tdsOnSale: v })} h="10% TDS on LTCG > ₹1L · From broker statement" />
+        <Card active>
+          <Grid cols={3}>
+            <Select label="Asset Type" value={form.assetType} onChange={v => setForm({ ...form, assetType: v })} options={ASSET_OPTIONS} />
+            <Select
+              label="Gain Type"
+              value={form.gainType}
+              onChange={v => setForm({ ...form, gainType: v })}
+              options={GAIN_TYPE_OPTIONS}
+              hint={holdingHint ? `STCG: held ${holdingHint.stcg} · LTCG: held ${holdingHint.ltcg}` : undefined}
+            />
+          </Grid>
+          <Grid cols={3}>
+            <Field label="Sale Date" type="date" value={form.saleDate} onChange={v => setForm({ ...form, saleDate: v })} />
+            <Field label="Purchase Date" type="date" value={form.purchaseDate} onChange={v => setForm({ ...form, purchaseDate: v })} />
+          </Grid>
+          <Grid cols={3}>
+            <Field label="Sale Value *" type="number" value={form.saleValue} onChange={v => setForm({ ...form, saleValue: v })} placeholder="0" />
+            <Field label="Purchase Value *" type="number" value={form.purchaseValue} onChange={v => setForm({ ...form, purchaseValue: v })} placeholder="0" />
+          </Grid>
+          <Grid cols={3}>
+            <Field label="Indexed Cost" type="number" value={form.indexedCost} onChange={v => setForm({ ...form, indexedCost: v })} hint="Inflation-adjusted cost · For LTCG on property/debt" placeholder="0" />
+            <Field label="Expenses" type="number" value={form.expenses} onChange={v => setForm({ ...form, expenses: v })} hint="Brokerage, stamp duty, legal fees" placeholder="0" />
+            <Field label="Exemption (54/54EC/54F)" type="number" value={form.exemption} onChange={v => setForm({ ...form, exemption: v })} placeholder="0" />
+          </Grid>
+          <Field label="TDS Deducted on This Sale" type="number" value={form.tdsOnSale} onChange={v => setForm({ ...form, tdsOnSale: v })} hint="10% TDS on LTCG > ₹1L · From broker statement" placeholder="0" />
 
           {/* Live gain preview */}
           {n(form.saleValue) > 0 && (
-            <div style={{ padding: '8px 12px', background: netGain(form) >= 0 ? P.successBg : P.errorBg, borderRadius: 8, marginTop: 8, fontSize: 13 }}>
+            <Alert variant={netGain(form) >= 0 ? 'success' : 'error'} style={{ marginTop: 8 }}>
               {netGain(form) >= 0 ? 'Gain' : 'Loss'}: <span style={{ fontWeight: 700 }}>{fmt(Math.abs(netGain(form)))}</span>
-              {n(form.exemption) > 0 && <span style={{ color: P.textMuted }}> (after {fmt(form.exemption)} exemption)</span>}
-            </div>
+              {n(form.exemption) > 0 && <span style={{ opacity: 0.7 }}> (after {fmt(form.exemption)} exemption)</span>}
+            </Alert>
           )}
 
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="ff-btn ff-btn-primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Transaction'}</button>
-            <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); setErrors({}); }}>Cancel</button>
+            <Button variant="primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Transaction'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); setErrors({}); }}>Cancel</Button>
           </div>
-        </div>
+        </Card>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(txns.length); setErrors({}); }}><Plus size={15} /> Add Transaction</button>}
+      {!form && (
+        <Button variant="secondary" onClick={() => { setForm({ ...EMPTY }); setEditing(txns.length); setErrors({}); }} style={{ marginTop: 8 }}>
+          <Plus size={15} /> Add Transaction
+        </Button>
+      )}
 
       {Object.keys(errors).length > 0 && (
-        <div className="ff-errors">
-          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
-          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
-        </div>
+        <Alert variant="error" style={{ marginTop: 8 }}>
+          <AlertCircle size={14} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
+        </Alert>
       )}
 
       {/* TDS on Capital Gains */}
       {txns.length > 0 && (
-        <div className="step-card editing" style={{ marginTop: 8 }}>
-          <div className="ff-section-title">TDS on Capital Gains</div>
-          <F l="Total TDS Deducted by Broker" v={tdsCG} c={v => setTdsCG(v)} h="Total TDS on capital gains · From broker certificate or 26AS" />
-          <button className="ff-btn ff-btn-outline" onClick={saveTds} style={{ marginTop: 8, fontSize: 12 }}>Save TDS</button>
-        </div>
+        <Card active style={{ marginTop: 8 }}>
+          <Section title="TDS on Capital Gains" />
+          <Field label="Total TDS Deducted by Broker" type="number" value={tdsCG} onChange={v => setTdsCG(v)} hint="Total TDS on capital gains · From broker certificate or 26AS" placeholder="0" />
+          <Button variant="secondary" size="sm" onClick={saveTds} style={{ marginTop: 8 }}>Save TDS</Button>
+        </Card>
       )}
 
       {/* Summary */}
       {txns.length > 0 && (
-        <div className="step-card summary">
-          <div className="ff-section-title">Capital Gains Summary</div>
-          {stcgEquity !== 0 && <div className="ff-row"><span className="ff-row-label">STCG — Equity/MF (20%)</span><span className={`ff-row-value bold ${stcgEquity < 0 ? 'red' : ''}`}>{fmt(stcgEquity)}</span></div>}
-          {stcgOther !== 0 && <div className="ff-row"><span className="ff-row-label">STCG — Other (slab rate)</span><span className={`ff-row-value bold ${stcgOther < 0 ? 'red' : ''}`}>{fmt(stcgOther)}</span></div>}
-          {ltcgEquity !== 0 && <div className="ff-row"><span className="ff-row-label">LTCG — Equity/MF (12.5%, {'\u20B9'}1.25L exempt)</span><span className={`ff-row-value bold ${ltcgEquity < 0 ? 'red' : ''}`}>{fmt(ltcgEquity)}</span></div>}
-          {ltcgOther !== 0 && <div className="ff-row"><span className="ff-row-label">LTCG — Property/Other (20%)</span><span className={`ff-row-value bold ${ltcgOther < 0 ? 'red' : ''}`}>{fmt(ltcgOther)}</span></div>}
-          <div className="ff-divider" />
-          <div className="ff-row"><span className="ff-row-label">Net Capital Gains</span><span className={`ff-row-value bold ${totalCG < 0 ? 'red' : ''}`}>{fmt(totalCG)}</span></div>
-          {n(tdsCG) > 0 && <div className="ff-row"><span className="ff-row-label">TDS Credit</span><span className="ff-row-value green">{fmt(tdsCG)}</span></div>}
+        <Card muted>
+          <Section title="Capital Gains Summary" />
+          {stcgEquity !== 0 && <Money label="STCG — Equity/MF (20%)" value={fmt(stcgEquity)} bold color={stcgEquity < 0 ? 'red' : undefined} />}
+          {stcgOther !== 0 && <Money label="STCG — Other (slab rate)" value={fmt(stcgOther)} bold color={stcgOther < 0 ? 'red' : undefined} />}
+          {ltcgEquity !== 0 && <Money label="LTCG — Equity/MF (12.5%, ₹1.25L exempt)" value={fmt(ltcgEquity)} bold color={ltcgEquity < 0 ? 'red' : undefined} />}
+          {ltcgOther !== 0 && <Money label="LTCG — Property/Other (20%)" value={fmt(ltcgOther)} bold color={ltcgOther < 0 ? 'red' : undefined} />}
+          <Divider />
+          <Money label="Net Capital Gains" value={fmt(totalCG)} bold color={totalCG < 0 ? 'red' : undefined} />
+          {n(tdsCG) > 0 && <Money label="TDS Credit" value={fmt(tdsCG)} color="green" />}
 
-          {/* Tax rate info */}
-          <div style={{ marginTop: 8, padding: '8px 10px', background: P.infoBg, borderRadius: 6, display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-            <Info size={14} color={P.brand} style={{ flexShrink: 0, marginTop: 1 }} />
-            <div style={{ fontSize: 11, color: P.textMuted, lineHeight: 1.5 }}>
-              STCG equity: 20% · LTCG equity: 12.5% (first {'\u20B9'}1.25L exempt) · LTCG property/other: 20% with indexation · STCG other: taxed at slab rates · Losses can offset gains of same type
-            </div>
-          </div>
-        </div>
+          <Alert variant="info" style={{ marginTop: 8 }}>
+            <Info size={14} style={{ flexShrink: 0, verticalAlign: -2, marginRight: 4 }} />
+            STCG equity: 20% · LTCG equity: 12.5% (first ₹1.25L exempt) · LTCG property/other: 20% with indexation · STCG other: taxed at slab rates · Losses can offset gains of same type
+          </Alert>
+        </Card>
       )}
     </div>
   );
 }
-
-const F = ({ l, v, c, h, t = 'number' }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder={t === 'date' ? '' : '0'} />{h && <div className="ff-hint">{h}</div>}</div>);

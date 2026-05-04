@@ -7,6 +7,7 @@ import useAutoSave from '../../../../hooks/useAutoSave';
 import api from '../../../../services/api';
 import toast from 'react-hot-toast';
 import P from '../../../../styles/palette';
+import { Field, Select, Grid, Card, Section, Button } from '../../../../components/ds';
 import '../../filing-flow.css';
 
 /**
@@ -319,12 +320,12 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       {panVerified && isLocked('firstName') && isLocked('lastName') && isLocked('pan') && isLocked('dob') ? (
         <>
           {/* Locked Data Card — PAN-verified fields as compact read-only display */}
-          <div className="ff-locked-card">
+          <Card muted>
             <div className="ff-locked-card-header">
               <Lock size={13} /> Identity
               <span className="ff-verified-dot"><Shield size={11} /> PAN Verified</span>
             </div>
-            <div className="ff-kv-grid">
+            <Grid cols={3}>
               <div className="ff-kv-row">
                 <span className="ff-kv-label">Name</span>
                 <span className="ff-kv-value">{[form.firstName, form.middleName, form.lastName].filter(Boolean).join(' ')}</span>
@@ -337,17 +338,12 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                 <span className="ff-kv-label">Date of Birth</span>
                 <span className="ff-kv-value">{formatDateDDMMYYYY(form.dob)}</span>
               </div>
-            </div>
+            </Grid>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
               <div className="ff-source-badge" style={{ margin: 0 }}><Shield size={11} /> From PAN verification</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <label className="ff-label" style={{ margin: 0, fontSize: 11 }}>Gender</label>
-                <select className="ff-select" value={form.gender} onChange={e => updateField('gender', e.target.value)} style={{ padding: '3px 24px 3px 8px', fontSize: 12, width: 'auto', minWidth: 80 }}>
-                  {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              </div>
+              <Select value={form.gender} onChange={v => updateField('gender', v)} options={GENDER_OPTIONS} style={{ width: 'auto', minWidth: 80 }} />
             </div>
-          </div>
+          </Card>
         </>
       ) : (
         <>
@@ -357,16 +353,14 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
               <Shield size={13} /> PAN Verified — Name, DOB, and PAN are locked
             </div>
           )}
-          <div className="step-card editing">
-            <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <User size={14} /> Identity
-            </div>
-            <div className="ff-grid-3">
+          <Card active>
+            <Section icon={User} title="Identity" />
+            <Grid cols={3}>
               <Field label="First Name *" value={form.firstName} onChange={v => updateField('firstName', v)} onBlur={() => handleBlur('firstName')} error={errors.firstName} locked={isLocked('firstName')} hint="As per PAN card" />
               <Field label="Middle Name" value={form.middleName} onChange={v => updateField('middleName', v)} locked={isLocked('middleName')} hint="Optional" />
               <Field label="Last Name *" value={form.lastName} onChange={v => updateField('lastName', v)} onBlur={() => handleBlur('lastName')} error={errors.lastName} locked={isLocked('lastName')} hint="Surname as per PAN card" />
-            </div>
-            <div className="ff-grid-3">
+            </Grid>
+            <Grid cols={3}>
               <Field label="PAN *" value={form.pan} onChange={v => updateField('pan', v.toUpperCase())} onBlur={() => handleBlur('pan')} error={errors.pan} locked={isLocked('pan')} hint="e.g., ABCDE1234F" />
               <Field label="Date of Birth *" value={form.dob} onChange={v => updateField('dob', v)} onBlur={() => handleBlur('dob')} error={errors.dob} locked={isLocked('dob')} type="date"
                 hint={panVerified && panVerifiedDob && form.dob && form.dob !== panVerifiedDob
@@ -374,26 +368,20 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                   : panVerified && panVerifiedDob && form.dob === panVerifiedDob
                     ? '✓ Matches PAN records'
                     : 'DD/MM/YYYY · As per PAN card'} />
-              <div className="ff-field">
-                <label className="ff-label">Gender *</label>
-                <select className={`ff-select ${errors.gender ? 'error' : ''}`} value={form.gender} onChange={e => { updateField('gender', e.target.value); }} onBlur={() => handleBlur('gender')}>
-                  {GENDER_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-                {errors.gender && <div className="ff-hint" style={{ color: P.error }}>{errors.gender}</div>}
-              </div>
-            </div>
-          </div>
+              <Select label="Gender *" value={form.gender} onChange={v => updateField('gender', v)} onBlur={() => handleBlur('gender')} error={errors.gender} options={GENDER_OPTIONS} placeholder="Select gender" />
+            </Grid>
+          </Card>
         </>
       )}
 
       {/* ── Section 2: Contact ── */}
-      <div className="step-card editing">
-        <div className="ff-section-title">Contact</div>
-        <div className="ff-grid-2">
+      <Card active>
+        <Section title="Contact" />
+        <Grid cols={2}>
           <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here" />
           <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile" />
-        </div>
-        <div className="ff-grid-2" style={{ marginTop: 4 }}>
+        </Grid>
+        <Grid cols={2} style={{ marginTop: 4 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
             <div style={{ flex: 1 }}>
               <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
@@ -414,65 +402,38 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             }} />
           </div>
           <div />
-        </div>
-      </div>
+        </Grid>
+      </Card>
 
       {/* ── Section 3: Address ── */}
-      <div className="step-card editing">
-        <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <MapPin size={14} /> Address
-        </div>
-        <div className="ff-grid-3">
+      <Card active>
+        <Section icon={MapPin} title="Address" />
+        <Grid cols={3}>
           <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
           <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
           <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
-        </div>
-        <div className="ff-grid-3">
-          <div className="ff-field">
-            <label className="ff-label">State *</label>
-            <select className={`ff-select ${errors['address.stateCode'] ? 'error' : ''}`} value={form.address.stateCode} onChange={e => updateAddress('stateCode', e.target.value)} onBlur={() => handleBlur('address.stateCode')}>
-              <option value="">Select state</option>
-              {INDIAN_STATES.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
-            </select>
-          </div>
+        </Grid>
+        <Grid cols={3}>
+          <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} onBlur={() => handleBlur('address.stateCode')} error={errors['address.stateCode']} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select state" />
           <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
           <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
-        </div>
-      </div>
+        </Grid>
+      </Card>
 
       {/* ── Section 4: Filing Metadata ── */}
-      <div className="step-card editing">
-        <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <FileText size={14} /> Filing Metadata
-        </div>
+      <Card active>
+        <Section icon={FileText} title="Filing Metadata" />
 
-        <div className="ff-grid-3">
+        <Grid cols={3}>
         {/* Residential Status */}
-        <div className="ff-field">
-          <label className="ff-label">Residential Status *</label>
-          <select className="ff-select" value={form.residentialStatus} onChange={e => updateField('residentialStatus', e.target.value)}>
-            {RES_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-        </div>
+        <Select label="Residential Status *" value={form.residentialStatus} onChange={v => updateField('residentialStatus', v)} options={RES_STATUS_OPTIONS} />
 
         {/* Employer Category */}
-        <div className="ff-field">
-          <label className="ff-label">Employer Category *</label>
-          <select className="ff-select" value={form.employerCategory} onChange={e => updateField('employerCategory', e.target.value)} disabled={noSalaryLock}>
-            {EMPLOYER_CAT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          {noSalaryLock && <div className="ff-hint">Applicable only for salaried taxpayers.</div>}
-        </div>
+        <Select label="Employer Category *" value={form.employerCategory} onChange={v => updateField('employerCategory', v)} options={EMPLOYER_CAT_OPTIONS} disabled={noSalaryLock} hint={noSalaryLock ? 'Applicable only for salaried taxpayers.' : undefined} />
 
         {/* Filing Status */}
-        <div className="ff-field">
-          <label className="ff-label">Filing Status *</label>
-          <select className="ff-select" value={form.filingStatus} onChange={e => updateField('filingStatus', e.target.value)} disabled={isRevisedFiling}>
-            {FILING_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          {isRevisedFiling && <div className="ff-hint">Filing type is set to Revised from the filing record.</div>}
-        </div>
-        </div>
+        <Select label="Filing Status *" value={form.filingStatus} onChange={v => updateField('filingStatus', v)} options={FILING_STATUS_OPTIONS} disabled={isRevisedFiling} hint={isRevisedFiling ? 'Filing type is set to Revised from the filing record.' : undefined} />
+        </Grid>
 
         {(form.residentialStatus === 'NRI' || form.residentialStatus === 'RNOR') && isITR1 && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '8px 12px', background: P.warningBg, borderRadius: 6, marginBottom: 12, fontSize: 12, color: P.warning }}>
@@ -483,25 +444,20 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
 
         {/* Conditional: Revised return fields */}
         {form.filingStatus === 'R' && (
-          <div className="ff-grid-2">
+          <Grid cols={2}>
             <Field label="Original Ack Number *" value={form.originalAckNumber} onChange={v => updateField('originalAckNumber', v)} onBlur={() => handleBlur('originalAckNumber')} error={errors.originalAckNumber} hint="Acknowledgment number of the original filing" />
             <Field label="Original Filing Date" value={form.originalFilingDate} onChange={v => updateField('originalFilingDate', v)} type="date" hint="Date the original return was filed" />
-          </div>
+          </Grid>
         )}
 
         {/* Conditional: Updated return reason */}
         {form.filingStatus === 'U' && (
-          <div className="ff-field">
-            <label className="ff-label">Reason for Updated Return *</label>
-            <select className={`ff-select ${errors.updatedReturnReason ? 'error' : ''}`} value={form.updatedReturnReason} onChange={e => updateField('updatedReturnReason', e.target.value)} onBlur={() => handleBlur('updatedReturnReason')}>
-              <option value="">Select reason</option>
-              <option value="INCOME_NOT_REPORTED">Income not reported earlier</option>
-              <option value="WRONG_HEAD">Income reported under wrong head</option>
-              <option value="DEDUCTION_OVERCLAIMED">Deduction/exemption over-claimed</option>
-              <option value="OTHER">Other</option>
-            </select>
-            {errors.updatedReturnReason && <div className="ff-hint" style={{ color: P.error }}>{errors.updatedReturnReason}</div>}
-          </div>
+          <Select label="Reason for Updated Return *" value={form.updatedReturnReason} onChange={v => updateField('updatedReturnReason', v)} onBlur={() => handleBlur('updatedReturnReason')} error={errors.updatedReturnReason} placeholder="Select reason" options={[
+            { value: 'INCOME_NOT_REPORTED', label: 'Income not reported earlier' },
+            { value: 'WRONG_HEAD', label: 'Income reported under wrong head' },
+            { value: 'DEDUCTION_OVERCLAIMED', label: 'Deduction/exemption over-claimed' },
+            { value: 'OTHER', label: 'Other' },
+          ]} />
         )}
 
         {/* Belated return warning */}
@@ -511,14 +467,12 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             <span>Belated returns filed after the due date may attract interest under Section 234A.</span>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* ── Section 5: LTCG Mini-Section (ITR-1 only) ── */}
       {isITR1 && (
-        <div className="step-card editing">
-          <div className="ff-section-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <TrendingUpIcon size={14} /> LTCG under Section 112A (ITR-1)
-          </div>
+        <Card active>
+          <Section icon={TrendingUpIcon} title="LTCG under Section 112A (ITR-1)" />
           <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>
             From AY 2025-26, ITR-1 allows LTCG up to ₹1.25 lakh from listed equity/MF under Section 112A, provided there are no losses to carry forward.
           </div>
@@ -533,47 +487,18 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
             <input type="checkbox" checked={!!form.ltcg112A.noLossToCarryForward} onChange={e => updateLtcg('noLossToCarryForward', e.target.checked)} />
             I confirm there are no capital gains losses to carry forward
           </label>
-        </div>
+        </Card>
       )}
 
       {/* ── Save Button ── */}
-      <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 4 }}>
+      <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 4 }}>
         {isSaving ? <><span className="ff-spinner" /> Saving...</> : <><Save size={14} /> Save Personal Info</>}
-      </button>
+      </Button>
     </div>
   );
 }
 
-/* ── Reusable Field Component ── */
-function Field({ label, value, onChange, onBlur, error, locked, type = 'text', hint }) {
-  // Date fields use custom DD/MM/YYYY input instead of native date picker
-  if (type === 'date') {
-    return (
-      <div className="ff-field">
-        <label className="ff-label">{label} {locked && <Lock size={11} style={{ verticalAlign: -1, color: P.textLight }} />}</label>
-        <DateInput value={value} onChange={onChange} onBlur={onBlur} locked={locked} error={error} />
-        {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div> : hint ? <div className="ff-hint">{hint}</div> : null}
-      </div>
-    );
-  }
-  return (
-    <div className="ff-field">
-      <label className="ff-label">{label} {locked && <Lock size={11} style={{ verticalAlign: -1, color: P.textLight }} />}</label>
-      <input
-        className={`ff-input ${error ? 'error' : ''}`}
-        type={type}
-        value={value || ''}
-        onChange={e => onChange(e.target.value)}
-        onBlur={onBlur}
-        readOnly={locked}
-        disabled={locked}
-        placeholder={type === 'number' ? '0' : ''}
-      />
-      {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div> : hint ? <div className="ff-hint">{hint}</div> : null}
-    </div>
-  );
-}
-
+/* ── DateInput Component ── */
 /**
  * DateInput — DD/MM/YYYY text input with auto-formatting.
  * Stores value as YYYY-MM-DD internally but displays as DD/MM/YYYY.
@@ -757,15 +682,14 @@ function AadhaarUploadButton({ onVerified }) {
               style={{ fontSize: 13 }}
             />
           </div>
-          <button
-            type="button"
+          <Button
+            variant="primary"
             onClick={handleSendOTP}
             disabled={loading || aadhaarInput.replace(/\s/g, '').length !== 12}
-            className="ff-btn ff-btn-primary"
             style={{ padding: '8px 14px', fontSize: 12, whiteSpace: 'nowrap' }}
           >
             {loading ? <><Loader2 size={12} className="animate-spin" /> Sending...</> : 'Verify via OTP'}
-          </button>
+          </Button>
         </div>
         <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>
           OTP will be sent to your Aadhaar-linked mobile number
@@ -791,14 +715,14 @@ function AadhaarUploadButton({ onVerified }) {
             style={{ flex: 1, fontSize: 14, letterSpacing: '0.15em', textAlign: 'center' }}
             autoFocus
           />
-          <button
+          <Button
+            variant="primary"
             onClick={handleVerifyOTP}
             disabled={loading || otpInput.length !== 6}
-            className="ff-btn ff-btn-primary"
             style={{ padding: '8px 14px', fontSize: 12 }}
           >
             {loading ? <><Loader2 size={12} className="animate-spin" /> Verifying...</> : 'Verify'}
-          </button>
+          </Button>
         </div>
         <button onClick={() => { setMode('idle'); setOtpInput(''); }} style={{ marginTop: 6, background: 'none', border: 'none', fontSize: 11, color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
           ← Back
@@ -813,7 +737,7 @@ function AadhaarUploadButton({ onVerified }) {
         <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>PDF Password</label>
         <div style={{ display: 'flex', gap: 6 }}>
           <input className="ff-input" type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Aadhaar number or share code" style={{ flex: 1, fontSize: 12 }} />
-          <button onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }} disabled={!password || loading} className="ff-btn ff-btn-primary" style={{ padding: '6px 12px', fontSize: 11 }}>Unlock</button>
+          <Button variant="primary" onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }} disabled={!password || loading} style={{ padding: '6px 12px', fontSize: 11 }}>Unlock</Button>
         </div>
         <button onClick={() => { setMode('idle'); setPassword(''); setPendingFile(null); }} style={{ marginTop: 6, background: 'none', border: 'none', fontSize: 11, color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>← Back</button>
       </div>

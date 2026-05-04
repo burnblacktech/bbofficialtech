@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Download, Save, CheckCircle, ExternalLink, Shield, Info, Plus, Trash2 } from 'lucide-react';
 import { validateBankAccount, validateTDS2Entry } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
-import P from '../../../../styles/palette';
-import '../../filing-flow.css';
+import { Field, Select, Grid, Card, Section, Row, Button, Badge, Divider, Money, Alert } from '../../../../components/ds';
 
 const num = (v) => Number(v) || 0;
 const fmt = (v) => `₹${num(v).toLocaleString('en-IN')}`;
@@ -38,13 +37,10 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
   const [dirty, setDirty] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
 
-  // Taxes paid state
   const savedTaxes = payload?.taxes || {};
 
-  // Initialize nonSalaryTDS: prefer nonSalaryEntries, fall back to old flat fields for backward compat
   const initNonSalaryTDS = () => {
     if (savedTaxes.tds?.nonSalaryEntries?.length) return savedTaxes.tds.nonSalaryEntries;
-    // Backward compat: migrate old flat fields into a single entry
     const oldFD = num(savedTaxes.tds?.fromFD);
     const oldOther = num(savedTaxes.tds?.fromOther);
     if (oldFD > 0 || oldOther > 0) {
@@ -68,7 +64,6 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
     const bd = payload?.bankDetails || {};
     if (bd.bankName || bd.accountNumber) setForm({ bankName: bd.bankName || '', accountNumber: bd.accountNumber || '', ifsc: bd.ifsc || '', accountType: bd.accountType || 'SAVINGS' });
     const tx = payload?.taxes || {};
-    // Re-initialize nonSalaryTDS from payload
     if (tx.tds?.nonSalaryEntries?.length) {
       setNonSalaryTDS(tx.tds.nonSalaryEntries);
     } else {
@@ -105,10 +100,8 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
     setDirty(false);
   };
 
-  // Taxes paid save
   const advanceTotal = advanceEntries.reduce((s, e) => s + num(e.amount), 0);
   const satTotal = satEntries.reduce((s, e) => s + num(e.amount), 0);
-
   const nonSalaryTDSTotal = nonSalaryTDS.reduce((s, e) => s + num(e.tdsClaimed), 0);
 
   const handleSaveTaxes = useCallback(() => {
@@ -180,7 +173,6 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
   const hasErrors = errors && Object.keys(errors).length > 0;
   const best = computation?.[computation?.recommended === 'old' ? 'oldRegime' : 'newRegime'];
 
-  // Readiness checks
   const grossTotal = computation?.income?.grossTotal || 0;
   const incomeWithinLimit = !((itrType === 'ITR-1' || itrType === 'ITR-4') && grossTotal > 5000000);
   const checks = [
@@ -198,289 +190,276 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
       <p className="step-desc">Enter taxes already paid, bank details for refund, and download your ITR JSON</p>
 
       {/* Bank Details */}
-      <div className="step-card editing">
-        <div className="ff-section-title">Your Bank Account for Refund</div>
-        <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>If you are due a refund, ITD credits it to this account. Use the bank linked to your PAN.</div>
-        <div className="ff-grid-3">
-          <div className="ff-field">
-            <label className="ff-label">Bank Name *</label>
-            <input className={`ff-input ${errors.bankName ? 'error' : ''}`} type="text" value={form.bankName} onChange={e => update('bankName', e.target.value)} placeholder="e.g., State Bank of India" />
-            {errors.bankName ? <div className="ff-hint" style={{ color: P.error }}>{errors.bankName}</div> : <div className="ff-hint">Bank for refund credit · As on cheque book or passbook</div>}
-          </div>
-          <div className="ff-field">
-            <label className="ff-label">Account Number *</label>
-            <input className={`ff-input ${errors.accountNumber ? 'error' : ''}`} type="text" value={form.accountNumber} onChange={e => update('accountNumber', e.target.value)} placeholder="e.g., 1234567890" />
-            {errors.accountNumber ? <div className="ff-hint" style={{ color: P.error }}>{errors.accountNumber}</div> : <div className="ff-hint">Savings or current account · For refund credit</div>}
-          </div>
-          <div className="ff-field">
-            <label className="ff-label">IFSC Code</label>
-            <input className={`ff-input ${errors.ifsc ? 'error' : ''}`} type="text" value={form.ifsc} onChange={e => update('ifsc', e.target.value.toUpperCase())} placeholder="e.g., SBIN0001234" />
-            {errors.ifsc ? <div className="ff-hint" style={{ color: P.error }}>{errors.ifsc}</div> : <div className="ff-hint">11-character branch code · On cheque leaf or bank website</div>}
-          </div>
-        </div>
-        <div className="ff-grid-3">
-          <div className="ff-field">
-            <label className="ff-label">Account Type</label>
-            <select className="ff-select" value={form.accountType} onChange={e => update('accountType', e.target.value)}>
-              <option value="SAVINGS">Savings</option>
-              <option value="CURRENT">Current</option>
-            </select>
-          </div>
-        </div>
+      <Card active>
+        <Section title="Your Bank Account for Refund" />
+        <Alert variant="info">If you are due a refund, ITD credits it to this account. Use the bank linked to your PAN.</Alert>
+        <Grid cols={3} style={{ marginTop: 12 }}>
+          <Field
+            label="Bank Name *"
+            value={form.bankName}
+            onChange={v => update('bankName', v)}
+            error={errors.bankName}
+            hint={!errors.bankName ? 'Bank for refund credit · As on cheque book or passbook' : undefined}
+            placeholder="e.g., State Bank of India"
+          />
+          <Field
+            label="Account Number *"
+            value={form.accountNumber}
+            onChange={v => update('accountNumber', v)}
+            error={errors.accountNumber}
+            hint={!errors.accountNumber ? 'Savings or current account · For refund credit' : undefined}
+            placeholder="e.g., 1234567890"
+          />
+          <Field
+            label="IFSC Code"
+            value={form.ifsc}
+            onChange={v => update('ifsc', v.toUpperCase())}
+            error={errors.ifsc}
+            hint={!errors.ifsc ? '11-character branch code · On cheque leaf or bank website' : undefined}
+            placeholder="e.g., SBIN0001234"
+          />
+        </Grid>
+        <Grid cols={3}>
+          <Select
+            label="Account Type"
+            value={form.accountType}
+            onChange={v => update('accountType', v)}
+            options={[{ value: 'SAVINGS', label: 'Savings' }, { value: 'CURRENT', label: 'Current' }]}
+          />
+        </Grid>
         {dirty && (
-          <button className="ff-btn ff-btn-primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 8 }}>
+          <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 8 }}>
             {isSaving ? 'Saving...' : <><Save size={14} /> Save Bank Details</>}
-          </button>
+          </Button>
         )}
-      </div>
+      </Card>
 
       {/* Taxes Paid */}
-      <div className="step-card editing">
-        <div className="ff-section-title">Taxes Already Paid</div>
-        <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>
+      <Card active>
+        <Section title="Taxes Already Paid" />
+        <Alert variant="info">
           Enter TDS from sources other than salary, advance tax, and self-assessment tax paid during the year. These reduce your final tax liability.
-        </div>
+        </Alert>
 
-        {/* TDS from non-salary sources — itemized */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <label className="ff-label" style={{ margin: 0 }}>TDS on Non-Salary Income (Schedule TDS2)</label>
-            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={addTDSEntry}>
-              <Plus size={12} /> Add TDS Entry
-            </button>
-          </div>
-          <div className="ff-hint" style={{ marginBottom: 8 }}>TDS deducted on FD interest, rent, professional fees, etc. Enter each deductor separately with their TAN and section code.</div>
+        {/* TDS from non-salary sources */}
+        <div style={{ marginTop: 16, marginBottom: 16 }}>
+          <Row style={{ justifyContent: 'space-between', marginBottom: 8 }} align="center">
+            <span className="ds-label" style={{ margin: 0 }}>TDS on Non-Salary Income (Schedule TDS2)</span>
+            <Button variant="ghost" size="sm" onClick={addTDSEntry}><Plus size={12} /> Add TDS Entry</Button>
+          </Row>
+          <div className="ds-hint" style={{ marginBottom: 8 }}>TDS deducted on FD interest, rent, professional fees, etc. Enter each deductor separately with their TAN and section code.</div>
           {nonSalaryTDS.map((entry, i) => {
             const errs = tdsEntryErrors[i] || {};
             return (
-              <div key={i} style={{ padding: 12, background: P.bgMuted, borderRadius: 8, marginBottom: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: P.textSecondary }}>Entry {i + 1}</span>
-                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, minHeight: 'auto', minWidth: 'auto' }} onClick={() => removeTDSEntry(i)} title="Remove">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-                <div className="ff-grid-3">
-                  <div className="ff-field">
-                    <label className="ff-label" style={{ fontSize: 11 }}>Deductor TAN *</label>
-                    <input className={`ff-input ${errs.deductorTan ? 'error' : ''}`} type="text" value={entry.deductorTan} onChange={e => updateTDSEntry(i, 'deductorTan', e.target.value.toUpperCase())} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="e.g., ABCD12345E" maxLength={10} />
-                    {errs.deductorTan && <div className="ff-hint" style={{ color: P.error }}>{errs.deductorTan}</div>}
-                  </div>
-                  <div className="ff-field">
-                    <label className="ff-label" style={{ fontSize: 11 }}>Deductor Name *</label>
-                    <input className={`ff-input ${errs.deductorName ? 'error' : ''}`} type="text" value={entry.deductorName} onChange={e => updateTDSEntry(i, 'deductorName', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="e.g., State Bank of India" />
-                    {errs.deductorName && <div className="ff-hint" style={{ color: P.error }}>{errs.deductorName}</div>}
-                  </div>
-                </div>
-                <div className="ff-grid-3" style={{ marginTop: 6 }}>
-                  <div className="ff-field">
-                    <label className="ff-label" style={{ fontSize: 11 }}>Section Code *</label>
-                    <select className={`ff-select ${errs.sectionCode ? 'error' : ''}`} value={entry.sectionCode} onChange={e => { updateTDSEntry(i, 'sectionCode', e.target.value); }} onBlur={() => validateTDSEntryOnBlur(i)}>
-                      <option value="">Select section...</option>
-                      {SECTION_CODE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                    </select>
-                    {errs.sectionCode && <div className="ff-hint" style={{ color: P.error }}>{errs.sectionCode}</div>}
-                  </div>
-                  <div className="ff-field">
-                    <label className="ff-label" style={{ fontSize: 11 }}>Amount Paid / Credited (₹)</label>
-                    <input className={`ff-input ${errs.amountPaid ? 'error' : ''}`} type="number" min="0" value={entry.amountPaid || ''} onChange={e => updateTDSEntry(i, 'amountPaid', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />
-                    {errs.amountPaid && <div className="ff-hint" style={{ color: P.error }}>{errs.amountPaid}</div>}
-                  </div>
-                </div>
-                <div className="ff-grid-3" style={{ marginTop: 6 }}>
-                  <div className="ff-field">
-                    <label className="ff-label" style={{ fontSize: 11 }}>TDS Deducted (₹)</label>
-                    <input className={`ff-input ${errs.tdsDeducted ? 'error' : ''}`} type="number" min="0" value={entry.tdsDeducted || ''} onChange={e => updateTDSEntry(i, 'tdsDeducted', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />
-                    {errs.tdsDeducted && <div className="ff-hint" style={{ color: P.error }}>{errs.tdsDeducted}</div>}
-                  </div>
-                  <div className="ff-field">
-                    <label className="ff-label" style={{ fontSize: 11 }}>TDS Claimed This Year (₹)</label>
-                    <input className={`ff-input ${errs.tdsClaimed ? 'error' : ''}`} type="number" min="0" value={entry.tdsClaimed || ''} onChange={e => updateTDSEntry(i, 'tdsClaimed', e.target.value)} onBlur={() => validateTDSEntryOnBlur(i)} placeholder="0" />
-                    {errs.tdsClaimed && <div className="ff-hint" style={{ color: P.error }}>{errs.tdsClaimed}</div>}
-                  </div>
-                </div>
-              </div>
+              <Card key={i} muted style={{ marginBottom: 8 }}>
+                <Row style={{ justifyContent: 'space-between', marginBottom: 8 }} align="center">
+                  <Badge>Entry {i + 1}</Badge>
+                  <Button variant="ghost" size="sm" onClick={() => removeTDSEntry(i)}><Trash2 size={14} /></Button>
+                </Row>
+                <Grid cols={3}>
+                  <Field
+                    label="Deductor TAN *"
+                    value={entry.deductorTan}
+                    onChange={v => updateTDSEntry(i, 'deductorTan', v.toUpperCase())}
+                    onBlur={() => validateTDSEntryOnBlur(i)}
+                    error={errs.deductorTan}
+                    placeholder="e.g., ABCD12345E"
+                    maxLength={10}
+                  />
+                  <Field
+                    label="Deductor Name *"
+                    value={entry.deductorName}
+                    onChange={v => updateTDSEntry(i, 'deductorName', v)}
+                    onBlur={() => validateTDSEntryOnBlur(i)}
+                    error={errs.deductorName}
+                    placeholder="e.g., State Bank of India"
+                  />
+                </Grid>
+                <Grid cols={3} style={{ marginTop: 6 }}>
+                  <Select
+                    label="Section Code *"
+                    value={entry.sectionCode}
+                    onChange={v => updateTDSEntry(i, 'sectionCode', v)}
+                    onBlur={() => validateTDSEntryOnBlur(i)}
+                    error={errs.sectionCode}
+                    options={SECTION_CODE_OPTIONS}
+                    placeholder="Select section..."
+                  />
+                  <Field
+                    label="Amount Paid / Credited (₹)"
+                    type="number"
+                    value={entry.amountPaid}
+                    onChange={v => updateTDSEntry(i, 'amountPaid', v)}
+                    onBlur={() => validateTDSEntryOnBlur(i)}
+                    error={errs.amountPaid}
+                    placeholder="0"
+                  />
+                </Grid>
+                <Grid cols={3} style={{ marginTop: 6 }}>
+                  <Field
+                    label="TDS Deducted (₹)"
+                    type="number"
+                    value={entry.tdsDeducted}
+                    onChange={v => updateTDSEntry(i, 'tdsDeducted', v)}
+                    onBlur={() => validateTDSEntryOnBlur(i)}
+                    error={errs.tdsDeducted}
+                    placeholder="0"
+                  />
+                  <Field
+                    label="TDS Claimed This Year (₹)"
+                    type="number"
+                    value={entry.tdsClaimed}
+                    onChange={v => updateTDSEntry(i, 'tdsClaimed', v)}
+                    onBlur={() => validateTDSEntryOnBlur(i)}
+                    error={errs.tdsClaimed}
+                    placeholder="0"
+                  />
+                </Grid>
+              </Card>
             );
           })}
-          {nonSalaryTDS.length > 0 && (
-            <div className="ff-row" style={{ marginTop: 4 }}>
-              <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Non-Salary TDS</span>
-              <span className="ff-row-value bold">{fmt(nonSalaryTDSTotal)}</span>
-            </div>
-          )}
+          {nonSalaryTDS.length > 0 && <Money label="Total Non-Salary TDS" value={fmt(nonSalaryTDSTotal)} bold />}
         </div>
 
         {/* Advance Tax */}
         <div style={{ marginTop: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <label className="ff-label" style={{ margin: 0 }}>Advance Tax Paid</label>
-            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => { setAdvanceEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); markTaxDirty(); }}>
+          <Row style={{ justifyContent: 'space-between', marginBottom: 8 }} align="center">
+            <span className="ds-label" style={{ margin: 0 }}>Advance Tax Paid</span>
+            <Button variant="ghost" size="sm" onClick={() => { setAdvanceEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); markTaxDirty(); }}>
               <Plus size={12} /> Add Challan
-            </button>
-          </div>
-          <div className="ff-hint" style={{ marginBottom: 8 }}>Quarterly tax payments made during the financial year. Enter each challan separately.</div>
+            </Button>
+          </Row>
+          <div className="ds-hint" style={{ marginBottom: 8 }}>Quarterly tax payments made during the financial year. Enter each challan separately.</div>
           {advanceEntries.map((entry, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-end', marginBottom: 8, padding: 10, background: P.bgMuted, borderRadius: 8 }}>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>BSR Code</label>
-                <input className="ff-input" type="text" maxLength={7} value={entry.bsrCode} onChange={e => updateChallan(advanceEntries, setAdvanceEntries, i, 'bsrCode', e.target.value)} placeholder="7 digits" />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>Challan No.</label>
-                <input className="ff-input" type="text" value={entry.challanNo} onChange={e => updateChallan(advanceEntries, setAdvanceEntries, i, 'challanNo', e.target.value)} placeholder="Serial no." />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>Date</label>
-                <input className="ff-input" type="date" value={entry.dateOfDeposit} onChange={e => updateChallan(advanceEntries, setAdvanceEntries, i, 'dateOfDeposit', e.target.value)} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>Amount (₹)</label>
-                <input className="ff-input" type="number" min="0" value={entry.amount || ''} onChange={e => updateChallan(advanceEntries, setAdvanceEntries, i, 'amount', e.target.value)} placeholder="0" />
-              </div>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, marginBottom: 2, minHeight: 'auto', minWidth: 'auto' }} onClick={() => { setAdvanceEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); markTaxDirty(); }} title="Remove">
-                <Trash2 size={14} />
-              </button>
-            </div>
+            <Card key={i} muted style={{ marginBottom: 8 }}>
+              <Row align="flex-end" gap="sm">
+                <Field label="BSR Code" value={entry.bsrCode} onChange={v => updateChallan(advanceEntries, setAdvanceEntries, i, 'bsrCode', v)} placeholder="7 digits" maxLength={7} style={{ flex: 1 }} />
+                <Field label="Challan No." value={entry.challanNo} onChange={v => updateChallan(advanceEntries, setAdvanceEntries, i, 'challanNo', v)} placeholder="Serial no." style={{ flex: 1 }} />
+                <Field label="Date" type="date" value={entry.dateOfDeposit} onChange={v => updateChallan(advanceEntries, setAdvanceEntries, i, 'dateOfDeposit', v)} style={{ flex: 1 }} />
+                <Field label="Amount (₹)" type="number" value={entry.amount} onChange={v => updateChallan(advanceEntries, setAdvanceEntries, i, 'amount', v)} placeholder="0" style={{ flex: 1 }} />
+                <Button variant="ghost" size="sm" onClick={() => { setAdvanceEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); markTaxDirty(); }}>
+                  <Trash2 size={14} />
+                </Button>
+              </Row>
+            </Card>
           ))}
-          {advanceEntries.length > 0 && (
-            <div className="ff-row" style={{ marginTop: 4 }}>
-              <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Advance Tax</span>
-              <span className="ff-row-value bold">{fmt(advanceTotal)}</span>
-            </div>
-          )}
+          {advanceEntries.length > 0 && <Money label="Total Advance Tax" value={fmt(advanceTotal)} bold />}
         </div>
 
         {/* Self-Assessment Tax */}
         <div style={{ marginTop: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <label className="ff-label" style={{ margin: 0 }}>Self-Assessment Tax Paid</label>
-            <button className="ff-btn ff-btn-outline" style={{ padding: '3px 10px', fontSize: 12 }} onClick={() => { setSatEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); markTaxDirty(); }}>
+          <Row style={{ justifyContent: 'space-between', marginBottom: 8 }} align="center">
+            <span className="ds-label" style={{ margin: 0 }}>Self-Assessment Tax Paid</span>
+            <Button variant="ghost" size="sm" onClick={() => { setSatEntries(prev => [...prev, { ...EMPTY_CHALLAN }]); setTaxDirty(true); markTaxDirty(); }}>
               <Plus size={12} /> Add Challan
-            </button>
-          </div>
-          <div className="ff-hint" style={{ marginBottom: 8 }}>Tax paid before filing when your total tax exceeds TDS. Enter challan details from your bank receipt.</div>
+            </Button>
+          </Row>
+          <div className="ds-hint" style={{ marginBottom: 8 }}>Tax paid before filing when your total tax exceeds TDS. Enter challan details from your bank receipt.</div>
           {satEntries.map((entry, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-end', marginBottom: 8, padding: 10, background: P.bgMuted, borderRadius: 8 }}>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>BSR Code</label>
-                <input className="ff-input" type="text" maxLength={7} value={entry.bsrCode} onChange={e => updateChallan(satEntries, setSatEntries, i, 'bsrCode', e.target.value)} placeholder="7 digits" />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>Challan No.</label>
-                <input className="ff-input" type="text" value={entry.challanNo} onChange={e => updateChallan(satEntries, setSatEntries, i, 'challanNo', e.target.value)} placeholder="Serial no." />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>Date</label>
-                <input className="ff-input" type="date" value={entry.dateOfDeposit} onChange={e => updateChallan(satEntries, setSatEntries, i, 'dateOfDeposit', e.target.value)} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="ff-label" style={{ fontSize: 11 }}>Amount (₹)</label>
-                <input className="ff-input" type="number" min="0" value={entry.amount || ''} onChange={e => updateChallan(satEntries, setSatEntries, i, 'amount', e.target.value)} placeholder="0" />
-              </div>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.textLight, padding: 4, marginBottom: 2, minHeight: 'auto', minWidth: 'auto' }} onClick={() => { setSatEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); markTaxDirty(); }} title="Remove">
-                <Trash2 size={14} />
-              </button>
-            </div>
+            <Card key={i} muted style={{ marginBottom: 8 }}>
+              <Row align="flex-end" gap="sm">
+                <Field label="BSR Code" value={entry.bsrCode} onChange={v => updateChallan(satEntries, setSatEntries, i, 'bsrCode', v)} placeholder="7 digits" maxLength={7} style={{ flex: 1 }} />
+                <Field label="Challan No." value={entry.challanNo} onChange={v => updateChallan(satEntries, setSatEntries, i, 'challanNo', v)} placeholder="Serial no." style={{ flex: 1 }} />
+                <Field label="Date" type="date" value={entry.dateOfDeposit} onChange={v => updateChallan(satEntries, setSatEntries, i, 'dateOfDeposit', v)} style={{ flex: 1 }} />
+                <Field label="Amount (₹)" type="number" value={entry.amount} onChange={v => updateChallan(satEntries, setSatEntries, i, 'amount', v)} placeholder="0" style={{ flex: 1 }} />
+                <Button variant="ghost" size="sm" onClick={() => { setSatEntries(prev => prev.filter((_, j) => j !== i)); setTaxDirty(true); markTaxDirty(); }}>
+                  <Trash2 size={14} />
+                </Button>
+              </Row>
+            </Card>
           ))}
-          {satEntries.length > 0 && (
-            <div className="ff-row" style={{ marginTop: 4 }}>
-              <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Self-Assessment Tax</span>
-              <span className="ff-row-value bold">{fmt(satTotal)}</span>
-            </div>
-          )}
+          {satEntries.length > 0 && <Money label="Total Self-Assessment Tax" value={fmt(satTotal)} bold />}
         </div>
 
         {/* Total taxes paid summary */}
         {(nonSalaryTDSTotal + advanceTotal + satTotal > 0) && (
           <>
-            <div className="ff-divider" />
-            <div className="ff-row">
-              <span className="ff-row-label" style={{ fontWeight: 600 }}>Total Additional Taxes Paid</span>
-              <span className="ff-row-value bold green">{fmt(nonSalaryTDSTotal + advanceTotal + satTotal)}</span>
-            </div>
+            <Divider />
+            <Money label="Total Additional Taxes Paid" value={fmt(nonSalaryTDSTotal + advanceTotal + satTotal)} bold color="green" />
           </>
         )}
 
         {taxDirty && (
-          <button className="ff-btn ff-btn-primary" onClick={handleSaveTaxes} disabled={isSaving} style={{ marginTop: 10 }}>
+          <Button variant="primary" onClick={handleSaveTaxes} disabled={isSaving} style={{ marginTop: 10 }}>
             {isSaving ? 'Saving...' : <><Save size={14} /> Save Taxes Paid</>}
-          </button>
+          </Button>
         )}
-      </div>
+      </Card>
 
       {/* Tax Summary */}
       {best && (
-        <div className="step-card summary">
-          <div className="ff-section-title">Your Tax Summary</div>
-          <div className="ff-row"><span className="ff-row-label">Gross Total Income</span><span className="ff-row-value">{fmt(computation.income?.grossTotal)}</span></div>
-          <div className="ff-row"><span className="ff-row-label">Deductions</span><span className="ff-row-value green">- {fmt(best.deductions)}</span></div>
-          <div className="ff-row"><span className="ff-row-label">Taxable Income</span><span className="ff-row-value bold">{fmt(best.taxableIncome)}</span></div>
-          <div className="ff-divider" />
-          <div className="ff-row"><span className="ff-row-label">Tax ({computation.recommended} regime)</span><span className="ff-row-value bold">{fmt(best.totalTax)}</span></div>
-          {computation.tds && computation.tds.fromSalary > 0 && <div className="ff-row"><span className="ff-row-label">TDS from Salary</span><span className="ff-row-value green">{fmt(computation.tds.fromSalary)}</span></div>}
-          {computation.tds && (computation.tds.fromFD + computation.tds.fromOther) > 0 && <div className="ff-row"><span className="ff-row-label">TDS from FD / Other</span><span className="ff-row-value green">{fmt(computation.tds.fromFD + computation.tds.fromOther)}</span></div>}
-          {computation.tds && computation.tds.fromCapitalGains > 0 && <div className="ff-row"><span className="ff-row-label">TDS on Capital Gains</span><span className="ff-row-value green">{fmt(computation.tds.fromCapitalGains)}</span></div>}
-          {computation.tds && computation.tds.advanceTax > 0 && <div className="ff-row"><span className="ff-row-label">Advance Tax</span><span className="ff-row-value green">{fmt(computation.tds.advanceTax)}</span></div>}
-          {computation.tds && computation.tds.selfAssessment > 0 && <div className="ff-row"><span className="ff-row-label">Self-Assessment Tax</span><span className="ff-row-value green">{fmt(computation.tds.selfAssessment)}</span></div>}
-          {computation.tds && <div className="ff-row"><span className="ff-row-label" style={{ fontWeight: 600 }}>Total Tax Credits</span><span className="ff-row-value green bold">{fmt(computation.tds.total)}</span></div>}
-          <div className="ff-divider" />
-          <div className="ff-row">
-            <span className="ff-row-label" style={{ fontWeight: 600 }}>{best.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'}</span>
-            <span className={`ff-row-value bold ${best.netPayable <= 0 ? 'green' : 'red'}`}>{fmt(Math.abs(best.netPayable || 0))}</span>
-          </div>
-        </div>
+        <Card muted>
+          <Section title="Your Tax Summary" />
+          <Money label="Gross Total Income" value={fmt(computation.income?.grossTotal)} />
+          <Money label="Deductions" value={`- ${fmt(best.deductions)}`} color="green" />
+          <Money label="Taxable Income" value={fmt(best.taxableIncome)} bold />
+          <Divider />
+          <Money label={`Tax (${computation.recommended} regime)`} value={fmt(best.totalTax)} bold />
+          {computation.tds && computation.tds.fromSalary > 0 && <Money label="TDS from Salary" value={fmt(computation.tds.fromSalary)} color="green" />}
+          {computation.tds && (computation.tds.fromFD + computation.tds.fromOther) > 0 && <Money label="TDS from FD / Other" value={fmt(computation.tds.fromFD + computation.tds.fromOther)} color="green" />}
+          {computation.tds && computation.tds.fromCapitalGains > 0 && <Money label="TDS on Capital Gains" value={fmt(computation.tds.fromCapitalGains)} color="green" />}
+          {computation.tds && computation.tds.advanceTax > 0 && <Money label="Advance Tax" value={fmt(computation.tds.advanceTax)} color="green" />}
+          {computation.tds && computation.tds.selfAssessment > 0 && <Money label="Self-Assessment Tax" value={fmt(computation.tds.selfAssessment)} color="green" />}
+          {computation.tds && <Money label="Total Tax Credits" value={fmt(computation.tds.total)} bold color="green" />}
+          <Divider />
+          <Money
+            label={best.netPayable <= 0 ? 'Refund Due' : 'Tax Payable'}
+            value={fmt(Math.abs(best.netPayable || 0))}
+            bold
+            color={best.netPayable <= 0 ? 'green' : 'red'}
+          />
+        </Card>
       )}
 
       {/* Readiness Checklist */}
-      <div className="step-card">
-        <div className="ff-section-title">Filing Readiness</div>
+      <Card>
+        <Section title="Filing Readiness" />
         {checks.map((c, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '4px 0', fontSize: 13 }}>
-            <CheckCircle size={16} color={c.ok ? P.success : P.borderMedium} style={{ flexShrink: 0, marginTop: 1 }} />
+            <CheckCircle size={16} color={c.ok ? 'var(--c-success)' : 'var(--c-border)'} style={{ flexShrink: 0, marginTop: 1 }} />
             <div>
-              <span style={{ color: c.ok ? P.textPrimary : P.textLight }}>{c.label}</span>
-              {c.warn && <div style={{ fontSize: 11, color: P.error, marginTop: 1 }}>{c.warn}</div>}
+              <span style={{ color: c.ok ? 'var(--c-text)' : 'var(--c-text-muted)' }}>{c.label}</span>
+              {c.warn && <div style={{ fontSize: 11, color: 'var(--c-error)', marginTop: 1 }}>{c.warn}</div>}
             </div>
           </div>
         ))}
         {allReady && (
-          <div style={{ marginTop: 8, padding: '8px 12px', background: P.successBg, borderRadius: 8, fontSize: 13, color: P.success, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Shield size={14} /> Your filing is ready for submission
-          </div>
+          <Alert variant="success" style={{ marginTop: 8 }}>
+            <Shield size={14} style={{ verticalAlign: -2, marginRight: 6 }} /> Your filing is ready for submission
+          </Alert>
         )}
-      </div>
+      </Card>
 
       {/* Download & Submit */}
-      <div className="step-card" style={{ background: P.brandLight, borderColor: P.brand }}>
-        <div className="ff-section-title">Download & Submit</div>
-
+      <Card active>
+        <Section title="Download & Submit" />
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-          <button className="ff-btn ff-btn-primary" onClick={handleDownload} disabled={!allReady} style={{ flex: 1, justifyContent: 'center' }}>
+          <Button variant="primary" onClick={handleDownload} disabled={!allReady} style={{ flex: 1, justifyContent: 'center' }}>
             <Download size={15} /> Download ITR JSON
-          </button>
+          </Button>
         </div>
 
         {downloaded && (
-          <div className="step-card success" style={{ marginBottom: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: P.textPrimary, marginBottom: 10 }}>
-              <CheckCircle size={16} color={P.success} style={{ verticalAlign: -3, marginRight: 6 }} />
+          <Card>
+            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>
+              <CheckCircle size={16} color="var(--c-success)" style={{ verticalAlign: -3, marginRight: 6 }} />
               JSON Downloaded! Now submit it to the Income Tax Department:
             </div>
-            <ol style={{ margin: '0 0 0 20px', padding: 0, fontSize: 13, color: P.textSecondary, lineHeight: 1.8 }}>
-              <li>Go to <a href="https://www.incometax.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: P.brand, fontWeight: 500 }}>incometax.gov.in <ExternalLink size={11} style={{ verticalAlign: -1 }} /></a> and login with your PAN</li>
+            <ol style={{ margin: '0 0 0 20px', padding: 0, fontSize: 13, color: 'var(--c-text-secondary)', lineHeight: 1.8 }}>
+              <li>Go to <a href="https://www.incometax.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--c-brand)', fontWeight: 500 }}>incometax.gov.in <ExternalLink size={11} style={{ verticalAlign: -1 }} /></a> and login with your PAN</li>
               <li>Click <strong>e-File</strong> → <strong>Income Tax Returns</strong> → <strong>File Income Tax Return</strong></li>
               <li>Select <strong>AY {filing?.assessmentYear}</strong> and <strong>{filing?.itrType || 'ITR-1'}</strong></li>
               <li>Choose <strong>"Upload JSON"</strong> and upload the file you just downloaded</li>
               <li>Verify the data and <strong>Submit</strong></li>
               <li>Complete <strong>e-Verification</strong> using Aadhaar OTP (fastest — takes 2 minutes)</li>
             </ol>
-            <div style={{ marginTop: 10, padding: '8px 10px', background: P.warningBg, borderRadius: 6, fontSize: 12, color: P.warning, display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-              <Info size={14} style={{ flexShrink: 0, marginTop: 1 }} />
-              <span>You must e-verify within 30 days of filing, otherwise your return is treated as not filed.</span>
-            </div>
-          </div>
+            <Alert variant="warning" style={{ marginTop: 10 }}>
+              <Info size={14} style={{ flexShrink: 0, marginTop: 1, verticalAlign: -2, marginRight: 4 }} />
+              You must e-verify within 30 days of filing, otherwise your return is treated as not filed.
+            </Alert>
+          </Card>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

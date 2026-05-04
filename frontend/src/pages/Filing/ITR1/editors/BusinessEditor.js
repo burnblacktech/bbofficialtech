@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
-import '../../filing-flow.css';
+import { Field, Select, Grid, Card, Section, Button, Money, Alert } from '../../../../components/ds';
 
 const n = (v) => Number(v) || 0;
 const P_EMPTY = { section: '44AD', grossReceipts: '', isDigital: true, declaredIncome: '' };
 const R_EMPTY = { name: '', turnover: '', grossProfit: '', expenses: { rent: '', salary: '', interest: '', other: '' }, depreciation: '' };
+
+const SECTION_OPTIONS = [
+  { value: '44AD', label: '44AD — Business' },
+  { value: '44ADA', label: '44ADA — Profession' },
+  { value: '44AE', label: '44AE — Goods Carriage' },
+];
 
 export default function BusinessEditor({ payload, onSave, isSaving }) {
   const [mode, setMode] = useState(payload?.income?.presumptive ? 'presumptive' : payload?.income?.business ? 'regular' : 'presumptive');
@@ -60,76 +66,72 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
       </div>
 
       {items.map((item, i) => editing === i ? null : (
-        <div key={i} className="step-card">
+        <Card key={i}>
           <div className="ff-item">
             <div>
               <div className="ff-item-name">{mode === 'presumptive' ? `${item.section} — ₹${n(item.grossReceipts).toLocaleString('en-IN')}` : item.name}</div>
               <div className="ff-item-detail">{mode === 'presumptive' ? `Declared: ₹${n(item.declaredIncome).toLocaleString('en-IN')}` : `Turnover: ₹${n(item.turnover).toLocaleString('en-IN')}`}</div>
             </div>
             <div className="ff-item-actions">
-              <button className="ff-btn-ghost" onClick={() => { setForm({ ...item }); setEditing(i); }}><Edit2 size={15} /></button>
-              <button className="ff-btn-danger" onClick={() => remove(mode === 'presumptive' ? pList : rList, mode === 'presumptive' ? setPList : setRList, mode === 'presumptive' ? 'presumptive' : 'business', i)}><Trash2 size={15} /></button>
+              <Button variant="ghost" size="sm" onClick={() => { setForm({ ...item }); setEditing(i); }}><Edit2 size={15} /></Button>
+              <Button variant="danger" size="sm" onClick={() => remove(mode === 'presumptive' ? pList : rList, mode === 'presumptive' ? setPList : setRList, mode === 'presumptive' ? 'presumptive' : 'business', i)}><Trash2 size={15} /></Button>
             </div>
           </div>
-        </div>
+        </Card>
       ))}
 
       {form && mode === 'presumptive' && (
-        <div className="step-card editing">
-          <div className="ff-field">
-            <label className="ff-label">Section</label>
-            <select className="ff-select" value={form.section} onChange={e => setForm({ ...form, section: e.target.value })}>
-              <option value="44AD">44AD — Business</option><option value="44ADA">44ADA — Profession</option><option value="44AE">44AE — Goods Carriage</option>
-            </select>
-          </div>
-          <F l="Gross Receipts (₹)" v={form.grossReceipts} c={v => setForm({ ...form, grossReceipts: v })} />
+        <Card active>
+          <Select label="Section" value={form.section} onChange={v => setForm({ ...form, section: v })} options={SECTION_OPTIONS} />
+          <Field label="Gross Receipts (₹)" type="number" value={form.grossReceipts} onChange={v => setForm({ ...form, grossReceipts: v })} placeholder="0" />
           <label className="ff-check"><input type="checkbox" checked={form.isDigital} onChange={e => setForm({ ...form, isDigital: e.target.checked })} /> Digital receipts ({'>'} 95%)</label>
-          <F l="Declared Income (₹)" v={form.declaredIncome} c={v => setForm({ ...form, declaredIncome: v })} h={`Min ${minRate(form)}% of receipts = ₹${Math.round(n(form.grossReceipts) * minRate(form) / 100).toLocaleString('en-IN')}`} />
+          <Field label="Declared Income (₹)" type="number" value={form.declaredIncome} onChange={v => setForm({ ...form, declaredIncome: v })} hint={`Min ${minRate(form)}% of receipts = ₹${Math.round(n(form.grossReceipts) * minRate(form) / 100).toLocaleString('en-IN')}`} placeholder="0" />
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="ff-btn ff-btn-primary" onClick={saveP} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-            <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); }}>Cancel</button>
+            <Button variant="primary" onClick={saveP} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {form && mode === 'regular' && (
-        <div className="step-card editing">
-          <div className="ff-grid-3">
-            <F l="Business Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" />
-            <F l="Turnover (₹)" v={form.turnover} c={v => setForm({ ...form, turnover: v })} />
-          </div>
-          <F l="Gross Profit (₹)" v={form.grossProfit} c={v => setForm({ ...form, grossProfit: v })} />
-          <div className="ff-section-title">Expenses</div>
-          <div className="ff-grid-3">
-            <F l="Rent" v={form.expenses?.rent} c={v => setForm({ ...form, expenses: { ...form.expenses, rent: v } })} />
-            <F l="Salary" v={form.expenses?.salary} c={v => setForm({ ...form, expenses: { ...form.expenses, salary: v } })} />
-            <F l="Interest" v={form.expenses?.interest} c={v => setForm({ ...form, expenses: { ...form.expenses, interest: v } })} />
-            <F l="Other" v={form.expenses?.other} c={v => setForm({ ...form, expenses: { ...form.expenses, other: v } })} />
-          </div>
-          <F l="Depreciation (₹)" v={form.depreciation} c={v => setForm({ ...form, depreciation: v })} />
+        <Card active>
+          <Grid cols={3}>
+            <Field label="Business Name *" value={form.name} onChange={v => setForm({ ...form, name: v })} />
+            <Field label="Turnover (₹)" type="number" value={form.turnover} onChange={v => setForm({ ...form, turnover: v })} placeholder="0" />
+          </Grid>
+          <Field label="Gross Profit (₹)" type="number" value={form.grossProfit} onChange={v => setForm({ ...form, grossProfit: v })} placeholder="0" />
+          <Section title="Expenses" />
+          <Grid cols={3}>
+            <Field label="Rent" type="number" value={form.expenses?.rent} onChange={v => setForm({ ...form, expenses: { ...form.expenses, rent: v } })} placeholder="0" />
+            <Field label="Salary" type="number" value={form.expenses?.salary} onChange={v => setForm({ ...form, expenses: { ...form.expenses, salary: v } })} placeholder="0" />
+            <Field label="Interest" type="number" value={form.expenses?.interest} onChange={v => setForm({ ...form, expenses: { ...form.expenses, interest: v } })} placeholder="0" />
+            <Field label="Other" type="number" value={form.expenses?.other} onChange={v => setForm({ ...form, expenses: { ...form.expenses, other: v } })} placeholder="0" />
+          </Grid>
+          <Field label="Depreciation (₹)" type="number" value={form.depreciation} onChange={v => setForm({ ...form, depreciation: v })} placeholder="0" />
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="ff-btn ff-btn-primary" onClick={saveR} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-            <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); }}>Cancel</button>
+            <Button variant="primary" onClick={saveR} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
           </div>
-        </div>
+        </Card>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm(mode === 'presumptive' ? { ...P_EMPTY } : { ...R_EMPTY }); setEditing(items.length); setErrors({}); }}><Plus size={15} /> Add {mode === 'presumptive' ? 'Entry' : 'Business'}</button>}
+      {!form && (
+        <Button variant="secondary" onClick={() => { setForm(mode === 'presumptive' ? { ...P_EMPTY } : { ...R_EMPTY }); setEditing(items.length); setErrors({}); }} style={{ marginTop: 8 }}>
+          <Plus size={15} /> Add {mode === 'presumptive' ? 'Entry' : 'Business'}
+        </Button>
+      )}
 
       {Object.keys(errors).length > 0 && (
-        <div className="ff-errors">
-          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
-          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
-        </div>
+        <Alert variant="error" style={{ marginTop: 8 }}>
+          <AlertCircle size={14} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
+        </Alert>
       )}
 
       {items.length > 0 && (
-        <div className="step-card summary">
-          <div className="ff-row"><span className="ff-row-label">Total Income</span><span className="ff-row-value bold">₹{(mode === 'presumptive' ? pList.reduce((s, e) => s + n(e.declaredIncome), 0) : rList.reduce((s, b) => s + n(b.grossProfit) - netExp(b) - n(b.depreciation), 0)).toLocaleString('en-IN')}</span></div>
-        </div>
+        <Card muted>
+          <Money label="Total Income" value={`₹${(mode === 'presumptive' ? pList.reduce((s, e) => s + n(e.declaredIncome), 0) : rList.reduce((s, b) => s + n(b.grossProfit) - netExp(b) - n(b.depreciation), 0)).toLocaleString('en-IN')}`} bold />
+        </Card>
       )}
     </div>
   );
 }
-
-const F = ({ l, v, c, h, t = 'number' }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />{h && <div className="ff-hint">{h}</div>}</div>);

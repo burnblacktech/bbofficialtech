@@ -10,6 +10,7 @@ import { getIncomeSummary } from '../../../../services/financeService';
 import { formatCurrency } from '../../../../utils/formatCurrency';
 import api from '../../../../services/api';
 import P from '../../../../styles/palette';
+import { Field, Select, Grid, Card, Button } from '../../../../components/ds';
 import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
@@ -196,35 +197,35 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
       )}
 
       {employers.map((emp, i) => editing === i ? null : (
-        <div key={i} className="step-card">
+        <Card key={i}>
           <div className="ff-item">
             <div>
               <div className="ff-item-name">{emp.name}</div>
               <div className="ff-item-detail">Gross: ₹{n(emp.grossSalary).toLocaleString('en-IN')} · TDS: ₹{n(emp.tdsDeducted).toLocaleString('en-IN')}</div>
             </div>
             <div className="ff-item-actions">
-              <button className="ff-btn-ghost" onClick={() => { setForm({ ...emp }); setEditing(i); }}><Edit2 size={15} /></button>
-              <button className="ff-btn-danger" onClick={() => remove(i)}><Trash2 size={15} /></button>
+              <Button variant="ghost" size="sm" onClick={() => { setForm({ ...emp }); setEditing(i); }}><Edit2 size={15} /></Button>
+              <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
             </div>
           </div>
-        </div>
+        </Card>
       ))}
 
       {form && (
-        <div className="step-card editing">
-          <div className="ff-grid-3">
-            <F l="Employer Name *" v={form.name} c={v => setForm({ ...form, name: v })} t="text" h="Company that pays your salary · Form 16 header" fieldSource={getFieldSource('name', editing)} />
-            <F l="Employer TAN" v={form.tan} c={v => setForm({ ...form, tan: v.toUpperCase() })} t="text" h="10-character Tax Deduction Number · Form 16 Part A" fieldSource={getFieldSource('tan', editing)} />
-            <F l="Total Salary (₹) *" v={form.grossSalary} c={v => setForm({ ...form, grossSalary: v })} h="Total CTC for the year · Form 16 Part B, Sr. No. 1" fieldSource={getFieldSource('grossSalary', editing)} />
-          </div>
-          <div className="ff-grid-3">
-            <F l="Tax Deducted by Employer (₹)" v={form.tdsDeducted} c={v => setForm({ ...form, tdsDeducted: v })} h="Tax deducted by employer · Form 16 Part A, last row" fieldSource={getFieldSource('tdsDeducted', editing)} />
-          </div>
-          <div className="ff-grid-3">
-            <F l="HRA Received" v={form.allowances?.hra?.received} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} h="House Rent Allowance · From salary slip" fieldSource={getFieldSource('allowances.hra.received', editing)} />
-            <F l="HRA Exempt" v={form.allowances?.hra?.exempt} c={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} h="Tax-free HRA portion · Form 16 Part B" fieldSource={getFieldSource('allowances.hra.exempt', editing)} />
-            <F l="Professional Tax" v={form.deductions?.professionalTax} c={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} h="State tax on salary · Usually ₹200/month" fieldSource={getFieldSource('deductions.professionalTax', editing)} />
-          </div>
+        <Card active>
+          <Grid cols={3}>
+            <Field label="Employer Name *" value={form.name} onChange={v => setForm({ ...form, name: v })} type="text" hint="Company that pays your salary · Form 16 header" disabled={getFieldSource('name', editing)?.editLock === 'locked'} />
+            <Field label="Employer TAN" value={form.tan} onChange={v => setForm({ ...form, tan: v.toUpperCase() })} type="text" hint="10-character Tax Deduction Number · Form 16 Part A" disabled={getFieldSource('tan', editing)?.editLock === 'locked'} />
+            <Field label="Total Salary (₹) *" value={form.grossSalary} onChange={v => setForm({ ...form, grossSalary: v })} type="number" hint="Total CTC for the year · Form 16 Part B, Sr. No. 1" disabled={getFieldSource('grossSalary', editing)?.editLock === 'locked'} />
+          </Grid>
+          <Grid cols={3}>
+            <Field label="Tax Deducted by Employer (₹)" value={form.tdsDeducted} onChange={v => setForm({ ...form, tdsDeducted: v })} type="number" hint="Tax deducted by employer · Form 16 Part A, last row" disabled={getFieldSource('tdsDeducted', editing)?.editLock === 'locked'} />
+          </Grid>
+          <Grid cols={3}>
+            <Field label="HRA Received" value={form.allowances?.hra?.received} onChange={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, received: v } } })} type="number" hint="House Rent Allowance · From salary slip" disabled={getFieldSource('allowances.hra.received', editing)?.editLock === 'locked'} />
+            <Field label="HRA Exempt" value={form.allowances?.hra?.exempt} onChange={v => setForm({ ...form, allowances: { ...form.allowances, hra: { ...form.allowances?.hra, exempt: v } } })} type="number" hint="Tax-free HRA portion · Form 16 Part B" disabled={getFieldSource('allowances.hra.exempt', editing)?.editLock === 'locked'} />
+            <Field label="Professional Tax" value={form.deductions?.professionalTax} onChange={v => setForm({ ...form, deductions: { ...form.deductions, professionalTax: v } })} type="number" hint="State tax on salary · Usually ₹200/month" disabled={getFieldSource('deductions.professionalTax', editing)?.editLock === 'locked'} />
+          </Grid>
 
           {/* Task 10.4: HRA Calculator Breakdown */}
           {hraResult && hraResult.exemption > 0 && (
@@ -309,50 +310,37 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
                 </div>
               )}
 
-              <div className="ff-grid-3">
-                <F l="Gratuity Received (₹)" v={form.gratuityReceived} c={v => setForm({ ...form, gratuityReceived: v })} h="Lump sum on retirement · Exempt limits vary by employer type" fieldSource={getFieldSource('gratuityReceived', editing)} />
-                <F l="Leave Encashment Received (₹)" v={form.leaveEncashmentReceived} c={v => setForm({ ...form, leaveEncashmentReceived: v })} h="Unused leave payout · Exempt limits vary by employer type" fieldSource={getFieldSource('leaveEncashmentReceived', editing)} />
+              <Grid cols={3}>
+                <Field label="Gratuity Received (₹)" value={form.gratuityReceived} onChange={v => setForm({ ...form, gratuityReceived: v })} type="number" hint="Lump sum on retirement · Exempt limits vary by employer type" disabled={getFieldSource('gratuityReceived', editing)?.editLock === 'locked'} />
+                <Field label="Leave Encashment Received (₹)" value={form.leaveEncashmentReceived} onChange={v => setForm({ ...form, leaveEncashmentReceived: v })} type="number" hint="Unused leave payout · Exempt limits vary by employer type" disabled={getFieldSource('leaveEncashmentReceived', editing)?.editLock === 'locked'} />
                 {(employerCategory === 'PE' || employerCategory === 'GOV' || employerCategory === 'OTH' || employerCategory === 'PSU') && (
-                  <F l="Commuted Pension Received (₹)" v={form.commutedPensionReceived} c={v => setForm({ ...form, commutedPensionReceived: v })} h="One-time pension payout · Partial exemption applies" fieldSource={getFieldSource('commutedPensionReceived', editing)} />
+                  <Field label="Commuted Pension Received (₹)" value={form.commutedPensionReceived} onChange={v => setForm({ ...form, commutedPensionReceived: v })} type="number" hint="One-time pension payout · Partial exemption applies" disabled={getFieldSource('commutedPensionReceived', editing)?.editLock === 'locked'} />
                 )}
-              </div>
+              </Grid>
 
               {employerCategory === 'GOV' && (
-                <div className="ff-grid-3">
-                  <F l="Entertainment Allowance (₹)" v={form.entertainmentAllowance} c={v => setForm({ ...form, entertainmentAllowance: v })} h="Govt employees only · Max ₹5,000 deduction" fieldSource={getFieldSource('entertainmentAllowance', editing)} />
+                <Grid cols={3}>
+                  <Field label="Entertainment Allowance (₹)" value={form.entertainmentAllowance} onChange={v => setForm({ ...form, entertainmentAllowance: v })} type="number" hint="Govt employees only · Max ₹5,000 deduction" disabled={getFieldSource('entertainmentAllowance', editing)?.editLock === 'locked'} />
                   <div /><div />
-                </div>
+                </Grid>
               )}
 
-              <div className="ff-grid-3">
-                <F l="Basic + DA (₹)" v={form.basicPlusDA} c={v => setForm({ ...form, basicPlusDA: v })} h="Basic salary + DA · For HRA calculation" fieldSource={getFieldSource('basicPlusDA', editing)} />
-                <div className="ff-field">
-                  <label className="ff-label">City of Employment</label>
-                  <select
-                    className="ff-input"
-                    value={form.cityOfEmployment || ''}
-                    onChange={e => setForm({ ...form, cityOfEmployment: e.target.value })}
-                    aria-label="City of employment — metro or non-metro"
-                  >
-                    <option value="">Select...</option>
-                    <option value="metro">Metro (Mumbai, Delhi, Kolkata, Chennai)</option>
-                    <option value="non-metro">Non-Metro</option>
-                  </select>
-                  <div className="ff-hint">Metro cities get 50% HRA rate, non-metro 40%</div>
-                </div>
-                <F l="Rent Paid (₹)" v={form.rentPaid} c={v => setForm({ ...form, rentPaid: v })} h="Annual rent paid · For HRA exemption calculation" fieldSource={getFieldSource('rentPaid', editing)} />
-              </div>
+              <Grid cols={3}>
+                <Field label="Basic + DA (₹)" value={form.basicPlusDA} onChange={v => setForm({ ...form, basicPlusDA: v })} type="number" hint="Basic salary + DA · For HRA calculation" disabled={getFieldSource('basicPlusDA', editing)?.editLock === 'locked'} />
+                <Select label="City of Employment" value={form.cityOfEmployment || ''} onChange={v => setForm({ ...form, cityOfEmployment: v })} options={[{ value: 'metro', label: 'Metro (Mumbai, Delhi, Kolkata, Chennai)' }, { value: 'non-metro', label: 'Non-Metro' }]} placeholder="Select..." hint="Metro cities get 50% HRA rate, non-metro 40%" />
+                <Field label="Rent Paid (₹)" value={form.rentPaid} onChange={v => setForm({ ...form, rentPaid: v })} type="number" hint="Annual rent paid · For HRA exemption calculation" disabled={getFieldSource('rentPaid', editing)?.editLock === 'locked'} />
+              </Grid>
             </div>
           )}
 
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="ff-btn ff-btn-primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-            <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); }}>Cancel</button>
+            <Button variant="primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
           </div>
-        </div>
+        </Card>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(employers.length); setErrors({}); }}><Plus size={15} /> Add Employer</button>}
+      {!form && <Button variant="secondary" onClick={() => { setForm({ ...EMPTY }); setEditing(employers.length); setErrors({}); }}><Plus size={15} /> Add Employer</Button>}
 
       {Object.keys(errors).length > 0 && (
         <div className="ff-errors">
@@ -362,43 +350,14 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
       )}
 
       {employers.length > 0 && (
-        <div className="step-card summary">
+        <Card>
           <div className="ff-row"><span className="ff-row-label">Total Gross</span><span className="ff-row-value bold">₹{employers.reduce((s, e) => s + n(e.grossSalary), 0).toLocaleString('en-IN')}</span></div>
           <div className="ff-row"><span className="ff-row-label">Std Deduction</span><span className="ff-row-value">- ₹75,000</span></div>
           <div className="ff-row"><span className="ff-row-label">Total TDS</span><span className="ff-row-value green">₹{employers.reduce((s, e) => s + n(e.tdsDeducted), 0).toLocaleString('en-IN')}</span></div>
-        </div>
+        </Card>
       )}
 
       <TaxWhisper whispers={whispers} />
     </div>
   );
 }
-
-const F = ({ l, v, c, t = 'number', h, fieldSource }) => {
-  const editLock = fieldSource?.editLock || 'free';
-  const isLocked = editLock === 'locked';
-  return (
-    <div className="ff-field">
-      <label className="ff-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        {l}
-        {isLocked && <span title="Value from 26AS/AIS — edit by re-importing" style={{ color: P.textLight, fontSize: 11 }}>🔒</span>}
-      </label>
-      <input
-        className="ff-input"
-        type={t}
-        value={v || ''}
-        onChange={e => c(e.target.value)}
-        placeholder="0"
-        disabled={isLocked}
-        readOnly={isLocked}
-        style={isLocked ? { opacity: 0.7, cursor: 'not-allowed' } : undefined}
-      />
-      {h && <div className="ff-hint">{h}</div>}
-      {fieldSource?.source && fieldSource.source !== 'manual' && (
-        <div className="ff-hint" style={{ fontSize: 10, color: P.textLight }}>
-          From {SOURCE_LABELS[fieldSource.source] || fieldSource.source}
-        </div>
-      )}
-    </div>
-  );
-};

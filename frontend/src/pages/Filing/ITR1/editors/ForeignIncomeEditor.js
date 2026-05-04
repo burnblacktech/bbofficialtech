@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import { validateForeignIncomeStep } from '../../../../utils/itrValidation';
-import '../../filing-flow.css';
+import { Field, Select, Grid, Card, Button, Money, Alert } from '../../../../components/ds';
 
 const n = (v) => Number(v) || 0;
 const EMPTY = { country: '', incomeType: 'salary', amountINR: '', taxPaidAbroad: '', dtaa: false };
+
+const INCOME_TYPE_OPTIONS = [
+  { value: 'salary', label: 'salary' },
+  { value: 'interest', label: 'interest' },
+  { value: 'dividend', label: 'dividend' },
+  { value: 'capitalGains', label: 'capitalGains' },
+  { value: 'rental', label: 'rental' },
+  { value: 'other', label: 'other' },
+];
 
 export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
   const existing = payload?.income?.foreignIncome?.incomes || [];
@@ -38,61 +47,57 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
       <p className="step-desc">Income earned abroad and DTAA relief</p>
 
       {incomes.map((inc, i) => editing === i ? null : (
-        <div key={i} className="step-card">
+        <Card key={i}>
           <div className="ff-item">
             <div>
               <div className="ff-item-name">{inc.country} — {inc.incomeType}</div>
               <div className="ff-item-detail">₹{n(inc.amountINR).toLocaleString('en-IN')}{inc.dtaa ? ' · DTAA' : ''}</div>
             </div>
             <div className="ff-item-actions">
-              <button className="ff-btn-ghost" onClick={() => { setForm({ ...inc }); setEditing(i); }}><Edit2 size={15} /></button>
-              <button className="ff-btn-danger" onClick={() => remove(i)}><Trash2 size={15} /></button>
+              <Button variant="ghost" size="sm" onClick={() => { setForm({ ...inc }); setEditing(i); }}><Edit2 size={15} /></Button>
+              <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
             </div>
           </div>
-        </div>
+        </Card>
       ))}
 
       {form && (
-        <div className="step-card editing">
-          <div className="ff-grid-3">
-            <F l="Country *" v={form.country} c={v => setForm({ ...form, country: v })} t="text" />
-            <div className="ff-field">
-              <label className="ff-label">Income Type</label>
-              <select className="ff-select" value={form.incomeType} onChange={e => setForm({ ...form, incomeType: e.target.value })}>
-                {['salary', 'interest', 'dividend', 'capitalGains', 'rental', 'other'].map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </div>
-            <F l="Amount in INR (₹) *" v={form.amountINR} c={v => setForm({ ...form, amountINR: v })} />
-          </div>
-          <div className="ff-grid-3">
-            <F l="Tax Paid Abroad (₹)" v={form.taxPaidAbroad} c={v => setForm({ ...form, taxPaidAbroad: v })} />
-          </div>
+        <Card active>
+          <Grid cols={3}>
+            <Field label="Country *" value={form.country} onChange={v => setForm({ ...form, country: v })} placeholder="e.g., USA" />
+            <Select label="Income Type" value={form.incomeType} onChange={v => setForm({ ...form, incomeType: v })} options={INCOME_TYPE_OPTIONS} />
+            <Field label="Amount in INR (₹) *" type="number" value={form.amountINR} onChange={v => setForm({ ...form, amountINR: v })} placeholder="0" />
+          </Grid>
+          <Grid cols={3}>
+            <Field label="Tax Paid Abroad (₹)" type="number" value={form.taxPaidAbroad} onChange={v => setForm({ ...form, taxPaidAbroad: v })} placeholder="0" />
+          </Grid>
           <label className="ff-check"><input type="checkbox" checked={form.dtaa} onChange={e => setForm({ ...form, dtaa: e.target.checked })} /> Claim DTAA relief</label>
-          <div className="ff-hint" style={{ marginTop: 4 }}>If you earned abroad and paid tax there, you may claim DTAA relief to avoid double taxation</div>
+          <div className="ds-hint" style={{ marginTop: 4 }}>If you earned abroad and paid tax there, you may claim DTAA relief to avoid double taxation</div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="ff-btn ff-btn-primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-            <button className="ff-btn ff-btn-outline" onClick={() => { setForm(null); setEditing(null); }}>Cancel</button>
+            <Button variant="primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
           </div>
-        </div>
+        </Card>
       )}
 
-      {!form && <button className="ff-btn ff-btn-add" onClick={() => { setForm({ ...EMPTY }); setEditing(incomes.length); setErrors({}); }}><Plus size={15} /> Add Foreign Income</button>}
+      {!form && (
+        <Button variant="secondary" onClick={() => { setForm({ ...EMPTY }); setEditing(incomes.length); setErrors({}); }} style={{ marginTop: 8 }}>
+          <Plus size={15} /> Add Foreign Income
+        </Button>
+      )}
 
       {Object.keys(errors).length > 0 && (
-        <div className="ff-errors">
-          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
-          <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
-        </div>
+        <Alert variant="error" style={{ marginTop: 8 }}>
+          <AlertCircle size={14} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
+        </Alert>
       )}
 
       {incomes.length > 0 && (
-        <div className="step-card summary">
-          <div className="ff-row"><span className="ff-row-label">Total Foreign Income</span><span className="ff-row-value bold">₹{total.toLocaleString('en-IN')}</span></div>
-          {dtaaCredit > 0 && <div className="ff-row"><span className="ff-row-label">DTAA Credit</span><span className="ff-row-value green">₹{dtaaCredit.toLocaleString('en-IN')}</span></div>}
-        </div>
+        <Card muted>
+          <Money label="Total Foreign Income" value={`₹${total.toLocaleString('en-IN')}`} bold />
+          {dtaaCredit > 0 && <Money label="DTAA Credit" value={`₹${dtaaCredit.toLocaleString('en-IN')}`} color="green" />}
+        </Card>
       )}
     </div>
   );
 }
-
-const F = ({ l, v, c, h, t = 'number' }) => (<div className="ff-field"><label className="ff-label">{l}</label><input className="ff-input" type={t} value={v || ''} onChange={e => c(e.target.value)} placeholder="0" />{h && <div className="ff-hint">{h}</div>}</div>);
