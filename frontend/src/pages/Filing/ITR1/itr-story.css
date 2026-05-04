@@ -104,7 +104,7 @@
 /* ── 3. Three-Panel Cockpit: Story (220px) + Editor (1fr) + Insights (260px) ── */
 .story-panels {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 260px 1fr;
   flex: 1;
   overflow: hidden;
 }
