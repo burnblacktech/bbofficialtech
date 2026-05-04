@@ -43,7 +43,7 @@ export default function SessionManagement() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h1 className="step-title">Active Sessions</h1>
         {sessions.length > 1 && (
-          <button className="ff-btn ff-btn-outline" onClick={revokeAll} style={{ fontSize: 12 }}>
+          <button className="ds-btn ds-btn-md ds-btn-secondary" onClick={revokeAll} style={{ fontSize: 12 }}>
             <LogOut size={14} /> Revoke All
           </button>
         )}
@@ -65,7 +65,7 @@ export default function SessionManagement() {
                 </div>
               </div>
               {!s.isCurrent && (
-                <button className="ff-btn-danger" onClick={() => revoke(s.id)}><LogOut size={14} /></button>
+                <button className="ds-btn ds-btn-sm ds-btn-danger" onClick={() => revoke(s.id)}><LogOut size={14} /></button>
               )}
             </div>
           </div>

@@ -1486,8 +1486,8 @@ export default function ITR1Flow() {
               </strong>. Are you sure?
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button className="ff-btn ff-btn-outline" onClick={() => setShowRegimeConfirm(null)}>Cancel</button>
-              <button className="ff-btn ff-btn-primary" onClick={confirmRegimeSwitch}>Switch Anyway</button>
+              <button className="ds-btn ds-btn-md ds-btn-secondary" onClick={() => setShowRegimeConfirm(null)}>Cancel</button>
+              <button className="ds-btn ds-btn-md ds-btn-primary" onClick={confirmRegimeSwitch}>Switch Anyway</button>
             </div>
           </div>
         </div>
@@ -1504,10 +1504,10 @@ function RegimeCard({ regime, label, recommended, tds }) {
     <div style={{ padding: 12, borderRadius: 8, border: recommended ? `2px solid ${P.brand}` : `1px solid ${P.borderLight}`, background: recommended ? P.brandLight : P.bgCard, position: 'relative' }}>
       {recommended && <span style={{ position: 'absolute', top: -8, right: 8, fontSize: 10, fontWeight: 700, color: '#fff', background: P.brand, padding: '1px 8px', borderRadius: 10 }}>BEST</span>}
       <div style={{ fontSize: 13, fontWeight: 700, color: P.textPrimary, marginBottom: 6 }}>{label}</div>
-      <div className="ff-row"><span className="ff-row-label">Taxable</span><span className="ff-row-value">{fmt(regime.taxableIncome)}</span></div>
-      <div className="ff-row"><span className="ff-row-label">Deductions</span><span className="ff-row-value green">{fmt(regime.deductions)}</span></div>
-      <div className="ff-row"><span className="ff-row-label">Tax</span><span className="ff-row-value bold">{fmt(regime.totalTax)}</span></div>
-      {n(tds?.total) > 0 && <div className="ff-row"><span className="ff-row-label">After TDS</span><span className={`ff-row-value bold ${net <= 0 ? 'green' : 'red'}`}>{net <= 0 ? 'Refund ' : ''}{fmt(Math.abs(net))}</span></div>}
+      <div className="ds-summary"><span className="ds-summary__label">Taxable</span><span className="ds-summary__value">{fmt(regime.taxableIncome)}</span></div>
+      <div className="ds-summary"><span className="ds-summary__label">Deductions</span><span className="ds-summary__value ds-summary__value--green">{fmt(regime.deductions)}</span></div>
+      <div className="ds-summary"><span className="ds-summary__label">Tax</span><span className="ds-summary__value ds-summary__value--bold">{fmt(regime.totalTax)}</span></div>
+      {n(tds?.total) > 0 && <div className="ds-summary"><span className="ds-summary__label">After TDS</span><span className={`ff-row-value bold ${net <= 0 ? 'green' : 'red'}`}>{net <= 0 ? 'Refund ' : ''}{fmt(Math.abs(net))}</span></div>}
     </div>
   );
 }
@@ -1515,8 +1515,8 @@ function RegimeCard({ regime, label, recommended, tds }) {
 function SRow({ label, value, bold, green, color, onClick }) {
   const valCls = `ff-row-value${bold ? ' bold' : ''}${green ? ' green' : ''}${n(value) < 0 ? ' green' : ''}`;
   return (
-    <div className="ff-row" style={onClick ? { cursor: 'pointer' } : {}} onClick={onClick}>
-      <span className="ff-row-label">{label}</span>
+    <div className="ds-summary" style={onClick ? { cursor: 'pointer' } : {}} onClick={onClick}>
+      <span className="ds-summary__label">{label}</span>
       <span className={valCls} style={color ? { color } : {}}>{n(value) < 0 ? '- ' : ''}{fmt(value)}</span>
     </div>
   );

@@ -4,9 +4,10 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, CheckCircle, Loader2, ArrowRight, ArrowLeft, User } from 'lucide-react';
+import { Shield, CheckCircle, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import { Card, Field, Button } from '../../components/ds';
 import P from '../../styles/palette';
 import toast from 'react-hot-toast';
 import '../Filing/filing-flow.css';
@@ -40,65 +41,55 @@ export default function PANVerification() {
 
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
-      <button className="ff-btn ff-btn-ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
+      <Button variant="ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
         <ArrowLeft size={14} /> Dashboard
-      </button>
+      </Button>
       <h1 className="step-title">PAN Verification</h1>
       <p className="step-desc">Verify your PAN to start filing</p>
 
-      <div className="step-card editing">
-        <div className="ff-field" style={{ position: 'relative' }}>
-          <label className="ff-label">PAN Number</label>
-          <input
-            className="ff-input"
-            type="text"
-            value={pan}
-            onChange={e => { setPan(e.target.value.toUpperCase()); setResult(null); }}
-            placeholder="ABCDE1234F"
-            maxLength={10}
-            style={{ textTransform: 'uppercase' }}
-            disabled={isVerified && pan === existingPan}
-          />
+      <Card active style={{ position: 'relative' }}>
+        <Field label="PAN Number" value={pan} onChange={v => { setPan(v.toUpperCase()); setResult(null); }} placeholder="ABCDE1234F" disabled={isVerified && pan === existingPan} style={{ textTransform: 'uppercase' }}>
+          <input className="ds-input" type="text" value={pan} onChange={e => { setPan(e.target.value.toUpperCase()); setResult(null); }} placeholder="ABCDE1234F" maxLength={10} style={{ textTransform: 'uppercase' }} disabled={isVerified && pan === existingPan} />
           {isVerified && pan === existingPan && (
             <span style={{ position: 'absolute', right: 12, top: 30, display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: P.success }}>
               <CheckCircle size={14} /> Verified
             </span>
           )}
-        </div>
+        </Field>
 
         {!isVerified && (
-          <button className="ff-btn ff-btn-primary" onClick={handleVerify} disabled={verifying} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
+          <Button variant="primary" onClick={handleVerify} disabled={verifying} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
             {verifying ? <><Loader2 size={16} className="animate-spin" /> Verifying...</> : <><Shield size={16} /> Verify PAN</>}
-          </button>
+          </Button>
         )}
-      </div>
+      </Card>
 
       {/* Verification result */}
       {(result || isVerified) && (
-        <div className="step-card success">
+        <Card style={{ marginTop: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <CheckCircle size={20} color={P.success} />
             <span style={{ fontSize: 15, fontWeight: 600, color: P.textPrimary }}>PAN Verified</span>
           </div>
-          <div className="ff-row"><span className="ff-row-label">PAN</span><span className="ff-row-value bold">{result?.pan || existingPan}</span></div>
+          <div className="ds-summary"><span className="ds-summary__label">PAN</span><span className="ds-summary__value ds-summary__value--bold">{result?.pan || existingPan}</span></div>
           {result?.name && (
             <>
-              <div className="ff-row"><span className="ff-row-label">Name (as per PAN)</span><span className="ff-row-value">{result.name}</span></div>
+              <div className="ds-summary"><span className="ds-summary__label">Name (as per PAN)</span><span className="ds-summary__value">{result.name}</span></div>
               {user?.fullName && user.fullName !== result.name && (
-                <div className="ff-hint" style={{ color: P.warning, marginTop: 4 }}>
+                <div className="ds-hint" style={{ color: P.warning, marginTop: 4 }}>
                   Your profile name was "{user.fullName}" — updated to match PAN records.
                 </div>
               )}
             </>
           )}
-          {result?.dateOfBirth && <div className="ff-row"><span className="ff-row-label">Date of Birth</span><span className="ff-row-value">{result.dateOfBirth}</span></div>}
-          {result?.source && <div className="ff-row"><span className="ff-row-label">Source</span><span className="ff-row-value" style={{ fontSize: 11, color: P.textLight }}>{result.source}</span></div>}
-        </div>
+          {result?.dateOfBirth && <div className="ds-summary"><span className="ds-summary__label">Date of Birth</span><span className="ds-summary__value">{result.dateOfBirth}</span></div>}
+          {result?.source && <div className="ds-summary"><span className="ds-summary__label">Source</span><span className="ds-summary__value" style={{ fontSize: 11, color: P.textLight }}>{result.source}</span></div>}
+        </Card>
       )}
 
-      <button className="ff-btn ff-btn-primary" onClick={() => navigate('/filing/start')} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }}>
+      <Button variant="primary" onClick={() => navigate('/filing/start')} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }}>
         Proceed to Filing <ArrowRight size={16} />
-      </button>
+      </Button>
     </div>
   );
 }

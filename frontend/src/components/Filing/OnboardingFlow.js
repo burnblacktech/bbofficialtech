@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FileText, Edit3, Send, Sparkles, X } from 'lucide-react';
+import { Button } from '../ds';
 
 const LS_KEY = 'bb_onboarding_tooltips_dismissed';
 
@@ -94,10 +95,10 @@ export default function OnboardingFlow({ isFirstFiling = false, onStartAutoFill,
               })}
             </div>
 
-            <button className="ff-btn ff-btn-primary" style={{ width: '100%', justifyContent: 'center', marginBottom: 8 }}
+            <Button variant="primary" style={{ width: '100%', justifyContent: 'center', marginBottom: 8 }}
               onClick={handleAutoFill}>
               <Sparkles size={14} /> Auto-fill my return
-            </button>
+            </Button>
             <button onClick={handleSkip}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: 12,
@@ -125,10 +126,10 @@ export default function OnboardingFlow({ isFirstFiling = false, onStartAutoFill,
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>
               Try auto-fill to import your tax data, or click any section to begin.
             </div>
-            <button className="ff-btn ff-btn-primary" style={{ padding: '6px 12px', fontSize: 12 }}
+            <Button variant="primary" style={{ padding: '6px 12px', fontSize: 12 }}
               onClick={handleAutoFill}>
               Auto-fill my return
-            </button>
+            </Button>
           </div>
           <button onClick={() => setShowNudge(false)} aria-label="Dismiss"
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--text-light)' }}>

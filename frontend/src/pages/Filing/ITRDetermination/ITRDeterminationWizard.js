@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Briefcase, Home, TrendingUp, DollarSign, Globe, ArrowRight, ArrowLeft, CheckCircle, Loader2, Shield, Database } from 'lucide-react';
+import { Button, Card, Section, Field, Select } from '../../../components/ds';
 import api from '../../../services/api';
 import newFilingService from '../../../services/newFilingService';
 import { getIncomeSummary, getExpensesSummary, getInvestmentsSummary } from '../../../services/financeService';
@@ -231,47 +232,40 @@ const ITRDeterminationWizard = () => {
       <div className="ff-content" style={{ maxWidth: 640 }}>
         <h1 className="step-title" style={{ fontSize: 26, marginBottom: 8 }}>File Your ITR</h1>
         <p className="step-desc">Tell us about your income and we'll pick the right form</p>
-        <button className="ff-btn ff-btn-ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
+        <Button variant="ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
           <ArrowLeft size={14} /> Back to Dashboard
-        </button>
+        </Button>
 
         {/* Section 1: PAN + AY */}
-        <div className="step-card">
-          <div className="ff-section-title"><Shield size={16} style={{ display: 'inline', marginRight: 6 }} />Identity & Year</div>
+        <Card>
+          <Section icon={Shield} title="Identity & Year" />
           <div className="ff-grid-2">
-            <div className="ff-field">
-              <label className="ff-label">PAN Number *</label>
+            <Field label="PAN Number *" error={panError}>
               <div style={{ position: 'relative' }}>
-                <input className={`ff-input ${panError ? 'error' : ''}`} value={pan} onChange={e => { setPan(e.target.value.toUpperCase()); setPanError(''); }} placeholder="ABCDE1234F" maxLength={10} style={{ textTransform: 'uppercase', paddingRight: panIsVerified && pan === panFromProfile ? '90px' : '12px' }} disabled={panIsVerified && pan === panFromProfile} />
+                <input className={`ds-input ${panError ? 'error' : ''}`} value={pan} onChange={e => { setPan(e.target.value.toUpperCase()); setPanError(''); }} placeholder="ABCDE1234F" maxLength={10} style={{ textTransform: 'uppercase', paddingRight: panIsVerified && pan === panFromProfile ? '90px' : '12px' }} disabled={panIsVerified && pan === panFromProfile} />
                 {panIsVerified && pan === panFromProfile && (
                   <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: '#16a34a', background: '#f0fdf4', padding: '2px 8px', borderRadius: 12 }}>
                     <CheckCircle size={12} /> Verified
                   </span>
                 )}
               </div>
-              {panError && <div className="ff-hint" style={{ color: '#ef4444' }}>{panError}</div>}
-              {panIsVerified && pan === panFromProfile && <div className="ff-hint">PAN verified from your profile. <button onClick={() => setPan('')} style={{ color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Change</button></div>}
-            </div>
-            <div className="ff-field">
-              <label className="ff-label">Assessment Year</label>
-              <select className="ff-select" value={assessmentYear} onChange={e => setAssessmentYear(e.target.value)}>
-                {fileableAYs.map(ay => <option key={ay.value} value={ay.value}>{ay.label}</option>)}
-              </select>
-            </div>
+            </Field>
+            <Select label="Assessment Year" value={assessmentYear} onChange={v => setAssessmentYear(v)} options={fileableAYs.map(ay => ({ value: ay.value, label: ay.label }))} />
           </div>
-        </div>
+          {panIsVerified && pan === panFromProfile && <div className="ds-hint">PAN verified from your profile. <button onClick={() => setPan('')} style={{ color: '#D4AF37', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>Change</button></div>}
+        </Card>
 
         {/* Section 2: Income Sources */}
-        <div className="step-card">
-          <div className="ff-section-title">What income do you have?</div>
+        <Card>
+          <Section title="What income do you have?" />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {INCOME_SOURCES.map(src => {
               const selected = sources.includes(src.id);
               const Icon = src.icon;
               return (
-                <div key={src.id} className={`ff-option ${selected ? 'selected' : ''}`}
+                <Card key={src.id} active={selected}
                   onClick={() => toggleSource(src.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', padding: '12px 16px' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', padding: '12px 16px', cursor: 'pointer' }}>
                   <div style={{ width: 36, height: 36, borderRadius: 8, background: selected ? '#D4AF37' : '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Icon size={18} color={selected ? '#0F0F0F' : '#6b7280'} />
                   </div>
@@ -282,24 +276,24 @@ const ITRDeterminationWizard = () => {
                   <div style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${selected ? '#D4AF37' : '#d1d5db'}`, background: selected ? '#D4AF37' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {selected && <CheckCircle size={14} color="#0F0F0F" />}
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
-        </div>
+        </Card>
 
         {/* Section 3: Conditional follow-ups */}
         {(sources.includes('house_property') || sources.includes('business') || sources.includes('capital_gains')) && (
-          <div className="step-card">
-            <div className="ff-section-title">A few more details</div>
+          <Card>
+            <Section title="A few more details" />
 
             {sources.includes('house_property') && (
-              <div className="ff-field">
-                <label className="ff-label">How many properties?</label>
+              <div className="ds-field">
+                <label className="ds-label">How many properties?</label>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {[1, 2, '3+'].map(c => {
                     const val = typeof c === 'number' ? c : 3;
-                    return <div key={c} className={`ff-option ${houseCount === val ? 'selected' : ''}`} onClick={() => setHouseCount(val)} style={{ padding: '8px 16px' }}>{c}</div>;
+                    return <Card key={c} active={houseCount === val} onClick={() => setHouseCount(val)} style={{ padding: '8px 16px', cursor: 'pointer' }}>{c}</Card>;
                   })}
                 </div>
               </div>
@@ -307,10 +301,7 @@ const ITRDeterminationWizard = () => {
 
             {sources.includes('business') && (
               <>
-                <div className="ff-field">
-                  <label className="ff-label">Annual turnover (approx ₹)</label>
-                  <input className="ff-input" type="number" value={businessTurnover} onChange={e => setBusinessTurnover(e.target.value)} placeholder="e.g., 1500000" />
-                </div>
+                <Field label="Annual turnover (approx ₹)" type="number" value={businessTurnover} onChange={v => setBusinessTurnover(v)} placeholder="e.g., 1500000" />
                 {(Number(businessTurnover) || 0) <= 20000000 && (
                   <label className="ff-check">
                     <input type="checkbox" checked={wantsPresumptive} onChange={e => setWantsPresumptive(e.target.checked)} />
@@ -319,18 +310,18 @@ const ITRDeterminationWizard = () => {
                 )}
               </>
             )}
-          </div>
+          </Card>
         )}
 
         {/* Section 4: Quick profile flags */}
-        <div className="step-card">
-          <div className="ff-section-title">About you</div>
+        <Card>
+          <Section title="About you" />
           <label className="ff-check"><input type="checkbox" checked={isDirector} onChange={e => setIsDirector(e.target.checked)} />I am a director in a company</label>
           <label className="ff-check"><input type="checkbox" checked={hasForeignAssets} onChange={e => setHasForeignAssets(e.target.checked)} />I have foreign income or assets</label>
-        </div>
+        </Card>
 
         {/* Section 5: ITR Recommendation (live) */}
-        <div className="step-card success" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Card className="success" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16, color: '#111827', marginBottom: 2 }}>
               {recommendedITR} — {ITR_INFO[recommendedITR].name}
@@ -340,11 +331,11 @@ const ITRDeterminationWizard = () => {
             </div>
           </div>
           <CheckCircle size={24} color="#16a34a" />
-        </div>
+        </Card>
 
         {/* Pre-Fill Bridge — Tracked Data Summary Card */}
         {hasTrackedData && (
-          <div className="step-card" style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
+          <Card style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <Database size={18} style={{ color: '#059669' }} />
               <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Tracked Data Available</div>
@@ -370,23 +361,23 @@ const ITRDeterminationWizard = () => {
               )}
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="ff-btn ff-btn-primary" onClick={handleUseTrackedData} disabled={prefillMutation.isPending}
+              <Button variant="primary" onClick={handleUseTrackedData} disabled={prefillMutation.isPending}
                 style={{ flex: 1, justifyContent: 'center', padding: '10px 16px' }}>
                 {prefillMutation.isPending ? <><Loader2 size={16} className="animate-spin" /> Pre-filling...</> : <><Database size={14} /> Use My Tracked Data</>}
-              </button>
-              <button className="ff-btn ff-btn-outline" onClick={handleStart} disabled={createMutation.isPending}
+              </Button>
+              <Button variant="outline" onClick={handleStart} disabled={createMutation.isPending}
                 style={{ flex: 1, justifyContent: 'center', padding: '10px 16px' }}>
                 Start Fresh
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         )}
 
         {/* Start Button */}
-        <button className="ff-btn ff-btn-primary" onClick={handleStart} disabled={createMutation.isPending}
+        <Button variant="primary" onClick={handleStart} disabled={createMutation.isPending}
           style={{ width: '100%', justifyContent: 'center', padding: '14px 24px', fontSize: 16, marginTop: 8 }}>
           {createMutation.isPending ? <><Loader2 size={18} className="animate-spin" /> Creating filing...</> : <>Start {recommendedITR} Filing <ArrowRight size={18} /></>}
-        </button>
+        </Button>
 
         <p style={{ textAlign: 'center', fontSize: 12, color: '#9ca3af', marginTop: 12 }}>
           You can change income sources later. Data is saved as you go.

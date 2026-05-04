@@ -186,23 +186,23 @@ function LoginForm({ login, navigate }) {
   return (
     <form onSubmit={handleSubmit} style={{ padding: '0 24px 24px' }}>
       {error && <div style={S.errorBox}><AlertCircle size={14} /> {error}</div>}
-      <div className="ff-field">
-        <label className="ff-label">Email</label>
-        <input className="ff-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" />
+      <div className="ds-field">
+        <label className="ds-label">Email</label>
+        <input className="ds-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" />
       </div>
-      <div className="ff-field" style={{ position: 'relative' }}>
-        <label className="ff-label">Password</label>
-        <input className="ff-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" autoComplete="current-password" />
+      <div className="ds-field" style={{ position: 'relative' }}>
+        <label className="ds-label">Password</label>
+        <input className="ds-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" autoComplete="current-password" />
         <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}>{showPw ? <EyeOff size={16} /> : <Eye size={16} />}</button>
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
         <Link to="/forgot-password" style={{ fontSize: 12, color: P.brand, fontWeight: 500 }}>Forgot password?</Link>
       </div>
-      <button className="ff-btn ff-btn-primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
+      <button className="ds-btn ds-btn-md ds-btn-primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
         {loading ? <><Loader2 size={16} className="animate-spin" /> Signing in...</> : <>Sign In <ArrowRight size={16} /></>}
       </button>
       <div style={S.divider}><span style={S.dividerText}>or</span></div>
-      <button type="button" className="ff-btn ff-btn-outline" onClick={() => authService.googleLoginRedirect()} style={{ width: '100%', justifyContent: 'center' }}>
+      <button type="button" className="ds-btn ds-btn-md ds-btn-secondary" onClick={() => authService.googleLoginRedirect()} style={{ width: '100%', justifyContent: 'center' }}>
         <GoogleIcon /> Continue with Google
       </button>
     </form>
@@ -240,28 +240,28 @@ function SignupForm({ loginWithOAuth, navigate, onSwitch }) {
   return (
     <form onSubmit={handleSubmit} style={{ padding: '0 24px 24px' }}>
       {error && <div style={S.errorBox}><AlertCircle size={14} /> {error}</div>}
-      <div className="ff-field">
-        <label className="ff-label">Full Name</label>
-        <input className="ff-input" type="text" value={form.fullName} onChange={e => set('fullName', e.target.value)} placeholder="As per PAN card" />
+      <div className="ds-field">
+        <label className="ds-label">Full Name</label>
+        <input className="ds-input" type="text" value={form.fullName} onChange={e => set('fullName', e.target.value)} placeholder="As per PAN card" />
       </div>
-      <div className="ff-field">
-        <label className="ff-label">Email</label>
-        <input className="ff-input" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="you@example.com" />
+      <div className="ds-field">
+        <label className="ds-label">Email</label>
+        <input className="ds-input" type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="you@example.com" />
       </div>
-      <div className="ff-field" style={{ position: 'relative' }}>
-        <label className="ff-label">Password</label>
-        <input className="ff-input" type={showPw ? 'text' : 'password'} value={form.password} onChange={e => set('password', e.target.value)} placeholder="Min 8 characters" />
+      <div className="ds-field" style={{ position: 'relative' }}>
+        <label className="ds-label">Password</label>
+        <input className="ds-input" type={showPw ? 'text' : 'password'} value={form.password} onChange={e => set('password', e.target.value)} placeholder="Min 8 characters" />
         <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}>{showPw ? <EyeOff size={16} /> : <Eye size={16} />}</button>
       </div>
       <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 11, color: P.textMuted, marginBottom: 12, cursor: 'pointer', lineHeight: 1.4 }}>
         <input type="checkbox" checked={form.agreeTerms} onChange={e => set('agreeTerms', e.target.checked)} style={{ marginTop: 2, accentColor: P.brand, minWidth: 14, minHeight: 14 }} />
         <span>I agree to the <a href="/terms" style={{ color: P.brand }}>Terms</a> and <a href="/privacy" style={{ color: P.brand }}>Privacy Policy</a></span>
       </label>
-      <button className="ff-btn ff-btn-primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
+      <button className="ds-btn ds-btn-md ds-btn-primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
         {loading ? <><Loader2 size={16} className="animate-spin" /> Creating...</> : <>Create Account <ArrowRight size={16} /></>}
       </button>
       <div style={S.divider}><span style={S.dividerText}>or</span></div>
-      <button type="button" className="ff-btn ff-btn-outline" onClick={() => authService.googleLoginRedirect()} style={{ width: '100%', justifyContent: 'center' }}>
+      <button type="button" className="ds-btn ds-btn-md ds-btn-secondary" onClick={() => authService.googleLoginRedirect()} style={{ width: '100%', justifyContent: 'center' }}>
         <GoogleIcon /> Continue with Google
       </button>
     </form>

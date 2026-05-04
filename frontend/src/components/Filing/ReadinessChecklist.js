@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { CheckCircle, AlertCircle, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Card } from '../ds';
 
 const iconMap = {
   done: { Icon: CheckCircle, color: 'var(--color-success)' },
@@ -24,7 +25,7 @@ export default function ReadinessChecklist({ items = [], summaryText = '', allBl
   const ChevronIcon = expanded ? ChevronUp : ChevronDown;
 
   return (
-    <div className="step-card" style={{ padding: '12px 14px' }}>
+    <Card style={{ padding: '12px 14px' }}>
       <button
         onClick={() => setExpanded(!expanded)}
         style={{
@@ -67,6 +68,6 @@ export default function ReadinessChecklist({ items = [], summaryText = '', allBl
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

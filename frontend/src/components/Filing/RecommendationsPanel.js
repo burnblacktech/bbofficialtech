@@ -5,18 +5,19 @@
 
 import React from 'react';
 import { Lightbulb, ArrowRight } from 'lucide-react';
+import { Card } from '../ds';
 
 const fmt = (v) => `₹${(Number(v) || 0).toLocaleString('en-IN')}`;
 
 export default function RecommendationsPanel({ recommendations = [], onNavigate }) {
   if (!recommendations.length) {
     return (
-      <div className="step-card" style={{ padding: '16px 14px', textAlign: 'center' }}>
+      <Card style={{ padding: '16px 14px', textAlign: 'center' }}>
         <Lightbulb size={20} style={{ color: 'var(--text-light)', marginBottom: 6 }} />
         <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
           No recommendations right now. Add income data to get tax-saving tips.
         </p>
-      </div>
+      </Card>
     );
   }
 
@@ -25,7 +26,7 @@ export default function RecommendationsPanel({ recommendations = [], onNavigate 
     .slice(0, 5);
 
   return (
-    <div className="step-card" style={{ padding: '14px' }}>
+    <Card style={{ padding: '14px' }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
         <Lightbulb size={14} style={{ color: 'var(--color-warning)' }} />
         Tax-Saving Tips
@@ -64,6 +65,6 @@ export default function RecommendationsPanel({ recommendations = [], onNavigate 
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

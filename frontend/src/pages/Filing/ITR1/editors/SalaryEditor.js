@@ -246,7 +246,7 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
           {/* Task 10.4: HRA whisper — rent missing */}
           {hraWhisper && (
-            <div className="ff-hint" style={{ marginTop: 4, color: 'var(--color-warning)' }}>
+            <div className="ds-hint" style={{ marginTop: 4, color: 'var(--color-warning)' }}>
               <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
               {hraWhisper}
             </div>
@@ -280,7 +280,7 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
           {/* Task 10.7: Auto-detected employer category */}
           {detectedCategory && (
-            <div className="ff-hint" style={{ marginTop: 4, color: '#16a34a' }}>
+            <div className="ds-hint" style={{ marginTop: 4, color: '#16a34a' }}>
               <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
               TAN detected as {detectedCategory === 'GOV' ? 'Government' : detectedCategory} employer
             </div>
@@ -289,22 +289,22 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
           {/* Retirement Benefits & Allowances */}
           {employerCategory !== 'NA' && (
             <div style={{ marginTop: 16 }}>
-              <h4 className="ff-label" style={{ fontWeight: 600, marginBottom: 8 }}>Retirement Benefits &amp; Allowances</h4>
+              <h4 className="ds-label" style={{ fontWeight: 600, marginBottom: 8 }}>Retirement Benefits &amp; Allowances</h4>
 
               {employerCategory === 'GOV' && (
-                <div className="ff-hint" style={{ marginBottom: 8, color: '#16a34a' }}>
+                <div className="ds-hint" style={{ marginBottom: 8, color: '#16a34a' }}>
                   <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
                   Government employees: gratuity and leave encashment are fully exempt
                 </div>
               )}
               {(employerCategory === 'OTH' || employerCategory === 'PSU') && (
-                <div className="ff-hint" style={{ marginBottom: 8, color: P.warning }}>
+                <div className="ds-hint" style={{ marginBottom: 8, color: P.warning }}>
                   <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
                   Gratuity exempt up to ₹20L, leave encashment up to ₹25L
                 </div>
               )}
               {employerCategory === 'PE' && (
-                <div className="ff-hint" style={{ marginBottom: 8, color: P.warning }}>
+                <div className="ds-hint" style={{ marginBottom: 8, color: P.warning }}>
                   <Info size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
                   Pension income is fully taxable as salary
                 </div>
@@ -351,9 +351,9 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
       {employers.length > 0 && (
         <Card>
-          <div className="ff-row"><span className="ff-row-label">Total Gross</span><span className="ff-row-value bold">₹{employers.reduce((s, e) => s + n(e.grossSalary), 0).toLocaleString('en-IN')}</span></div>
-          <div className="ff-row"><span className="ff-row-label">Std Deduction</span><span className="ff-row-value">- ₹75,000</span></div>
-          <div className="ff-row"><span className="ff-row-label">Total TDS</span><span className="ff-row-value green">₹{employers.reduce((s, e) => s + n(e.tdsDeducted), 0).toLocaleString('en-IN')}</span></div>
+          <div className="ds-summary"><span className="ds-summary__label">Total Gross</span><span className="ds-summary__value ds-summary__value--bold">₹{employers.reduce((s, e) => s + n(e.grossSalary), 0).toLocaleString('en-IN')}</span></div>
+          <div className="ds-summary"><span className="ds-summary__label">Std Deduction</span><span className="ds-summary__value">- ₹75,000</span></div>
+          <div className="ds-summary"><span className="ds-summary__label">Total TDS</span><span className="ds-summary__value ds-summary__value--green">₹{employers.reduce((s, e) => s + n(e.tdsDeducted), 0).toLocaleString('en-IN')}</span></div>
         </Card>
       )}
 

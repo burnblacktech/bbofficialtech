@@ -7,7 +7,7 @@
 import React, { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
-import '../../pages/Filing/filing-flow.css';
+import { Button } from '../ds';
 
 /**
  * SmartButton — Submit or download button gated by filing completeness.
@@ -67,26 +67,16 @@ export default function SmartButton({
     position: 'relative',
   };
 
-  const buttonClass = [
-    'ff-btn',
-    isSubmit ? 'ff-btn-primary' : 'ff-btn-outline',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
   return (
     <div
       style={{ position: 'relative', display: 'inline-flex' }}
       onMouseEnter={() => !isComplete && setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <button
-        type="button"
-        className={buttonClass}
+      <Button
+        variant={isSubmit ? 'primary' : 'outline'}
         style={buttonStyle}
         onClick={handleClick}
-        aria-disabled={!isComplete}
-        aria-describedby={!isComplete ? 'smart-btn-tooltip' : undefined}
       >
         {isLoading ? (
           <Loader2 size={16} style={{ animation: 'spin 0.6s linear infinite' }} />
@@ -94,7 +84,7 @@ export default function SmartButton({
           <Icon size={16} />
         ) : null}
         {label}
-      </button>
+      </Button>
 
       {/* CSS tooltip — no library */}
       {showTooltip && !isComplete && tooltipText && (

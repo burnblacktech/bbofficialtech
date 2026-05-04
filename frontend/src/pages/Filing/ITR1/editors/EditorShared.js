@@ -36,7 +36,7 @@ function SourceIndicator({ fieldSource }) {
   const label = SOURCE_LABELS[fieldSource.source] || fieldSource.source;
   const date = formatImportDate(fieldSource.importedAt);
   return (
-    <div className="ff-hint" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: P.textLight }}>
+    <div className="ds-hint" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: P.textLight }}>
       <Info size={10} />
       <span>From {label}{date ? ` · ${date}` : ''}</span>
     </div>
@@ -69,13 +69,13 @@ export function NumericField({ label, value, onChange, hint, error, disabled, fi
   };
 
   return (
-    <div className="ff-field">
-      <label className="ff-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+    <div className="ds-field">
+      <label className="ds-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         {label}
         {isLocked && <Lock size={12} style={{ color: P.textLight }} title="Value from 26AS/AIS — edit by re-importing" />}
       </label>
       <input
-        className={`ff-input ${error ? 'error' : ''}`}
+        className={`ds-input ${error ? 'error' : ''}`}
         type="number"
         value={value || ''}
         onChange={e => onChange(e.target.value)}
@@ -95,8 +95,8 @@ export function NumericField({ label, value, onChange, hint, error, disabled, fi
           </div>
         </div>
       )}
-      {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div>
-        : hint ? <div className="ff-hint">{hint}</div> : null}
+      {error ? <div className="ds-hint" style={{ color: P.error }}>{error}</div>
+        : hint ? <div className="ds-hint">{hint}</div> : null}
       <SourceIndicator fieldSource={fieldSource} />
     </div>
   );
@@ -127,13 +127,13 @@ export function TextField({ label, value, onChange, onBlur, hint, error, placeho
   };
 
   return (
-    <div className="ff-field">
-      <label className="ff-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+    <div className="ds-field">
+      <label className="ds-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         {label}
         {isLocked && <Lock size={12} style={{ color: P.textLight }} title="Value from 26AS/AIS — edit by re-importing" />}
       </label>
       <input
-        className={`ff-input ${error ? 'error' : ''}`}
+        className={`ds-input ${error ? 'error' : ''}`}
         type="text"
         value={value || ''}
         onChange={e => onChange(e.target.value)}
@@ -155,8 +155,8 @@ export function TextField({ label, value, onChange, onBlur, hint, error, placeho
           </div>
         </div>
       )}
-      {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div>
-        : hint ? <div className="ff-hint">{hint}</div> : null}
+      {error ? <div className="ds-hint" style={{ color: P.error }}>{error}</div>
+        : hint ? <div className="ds-hint">{hint}</div> : null}
       <SourceIndicator fieldSource={fieldSource} />
     </div>
   );
@@ -167,13 +167,13 @@ export function TextField({ label, value, onChange, onBlur, hint, error, placeho
  */
 export function SelectField({ label, value, onChange, onBlur, options, error, hint }) {
   return (
-    <div className="ff-field">
-      <label className="ff-label">{label}</label>
-      <select className={`ff-select ${error ? 'error' : ''}`} value={value || ''} onChange={e => onChange(e.target.value)} onBlur={onBlur}>
+    <div className="ds-field">
+      <label className="ds-label">{label}</label>
+      <select className={`ds-select ${error ? 'error' : ''}`} value={value || ''} onChange={e => onChange(e.target.value)} onBlur={onBlur}>
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
-      {error ? <div className="ff-hint" style={{ color: P.error }}>{error}</div>
-        : hint ? <div className="ff-hint">{hint}</div> : null}
+      {error ? <div className="ds-hint" style={{ color: P.error }}>{error}</div>
+        : hint ? <div className="ds-hint">{hint}</div> : null}
     </div>
   );
 }
@@ -184,8 +184,8 @@ export function SelectField({ label, value, onChange, onBlur, options, error, hi
 export function SummaryRow({ label, value, bold, green, red }) {
   const color = green ? P.success : red ? P.error : P.textPrimary;
   return (
-    <div className="ff-row">
-      <span className="ff-row-label">{label}</span>
+    <div className="ds-summary">
+      <span className="ds-summary__label">{label}</span>
       <span className={`ff-row-value ${bold ? 'bold' : ''}`} style={{ color, fontFamily: 'var(--font-mono)' }}>
         ₹{n(value).toLocaleString('en-IN')}
       </span>
@@ -220,7 +220,7 @@ export function EditorHeader({ title, subtitle, filled, total, complete }) {
  */
 export function SaveButton({ onClick, isSaving, label = 'Save' }) {
   return (
-    <button className="ff-btn ff-btn-primary" onClick={onClick} disabled={isSaving}
+    <button className="ds-btn ds-btn-md ds-btn-primary" onClick={onClick} disabled={isSaving}
       style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
       {isSaving ? <><span className="ff-spinner" /> Saving...</> : <><Save size={14} /> {label}</>}
     </button>
@@ -231,5 +231,5 @@ export function SaveButton({ onClick, isSaving, label = 'Save' }) {
  * Divider — Horizontal line in summary cards.
  */
 export function Divider() {
-  return <div className="ff-divider" />;
+  return <div className="ds-divider" />;
 }

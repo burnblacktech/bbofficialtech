@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { authService } from '../../services';
 import { Mail, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { Card, Button, Spinner } from '../../components/ds';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 import '../Filing/filing-flow.css';
@@ -56,8 +57,12 @@ export default function EmailVerification() {
           <span style={{ fontSize: 18, fontWeight: 700, color: P.textPrimary }}>BurnBlack</span>
         </div>
 
-        <div className="step-card" style={{ textAlign: 'center', padding: 16 }}>
-          <Icon size={40} color={colors[status]} className={status === 'verifying' ? 'animate-spin' : ''} style={{ margin: '0 auto 12px' }} />
+        <Card style={{ textAlign: 'center', padding: 16 }}>
+          {status === 'verifying' ? (
+            <Spinner size={40} />
+          ) : (
+            <Icon size={40} color={colors[status]} style={{ margin: '0 auto 12px' }} />
+          )}
           <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>{titles[status]}</div>
 
           {status === 'pending' && <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>We sent a verification link to your email. Click it to verify your account.</p>}
@@ -67,16 +72,16 @@ export default function EmailVerification() {
 
           {(status === 'pending' || status === 'error' || status === 'expired') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-              <button className="ff-btn ff-btn-primary" onClick={resend} disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
+              <Button variant="primary" onClick={resend} disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
                 {loading ? <><RefreshCw size={14} className="animate-spin" /> Sending...</> : 'Resend Verification Email'}
-              </button>
-              <Link to="/login" className="ff-btn ff-btn-outline" style={{ width: '100%', justifyContent: 'center', textDecoration: 'none' }}>Back to Login</Link>
+              </Button>
+              <Link to="/login" style={{ textDecoration: 'none' }}><Button variant="secondary" style={{ width: '100%', justifyContent: 'center' }}>Back to Login</Button></Link>
             </div>
           )}
           {status === 'success' && (
-            <Link to="/dashboard" className="ff-btn ff-btn-primary" style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', marginTop: 12 }}>Go to Dashboard</Link>
+            <Link to="/dashboard" style={{ textDecoration: 'none' }}><Button variant="primary" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>Go to Dashboard</Button></Link>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

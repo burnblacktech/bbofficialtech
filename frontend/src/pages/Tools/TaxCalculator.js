@@ -6,6 +6,7 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Card, Field, Button, Section } from '../../components/ds';
 import P from '../../styles/palette';
 import '../Filing/filing-flow.css';
 
@@ -87,16 +88,16 @@ export default function TaxCalculator() {
             </div>
             <span style={{ fontSize: 16, fontWeight: 700, color: P.brand }}>BurnBlack</span>
           </div>
-          <button className="ff-btn ff-btn-primary" onClick={() => navigate('/signup')} style={{ padding: '8px 16px', fontSize: 13 }}>
+          <Button variant="primary" onClick={() => navigate('/signup')} size="sm" style={{ padding: '8px 16px', fontSize: 13 }}>
             File ITR Free <ArrowRight size={14} />
-          </button>
+          </Button>
         </div>
       </nav>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 24px 48px' }}>
-        <button className="ff-btn ff-btn-ghost" onClick={() => navigate(-1)} style={{ marginBottom: 12, padding: '4px 0', color: P.textMuted }}>
+        <Button variant="ghost" onClick={() => navigate(-1)} style={{ marginBottom: 12, padding: '4px 0', color: P.textMuted }}>
           <ArrowLeft size={14} /> Back
-        </button>
+        </Button>
 
         <h1 style={{ fontSize: 24, fontWeight: 900, color: P.textPrimary, marginBottom: 4 }}>Income Tax Calculator</h1>
         <p style={{ fontSize: 14, color: P.textMuted, marginBottom: 24 }}>AY 2025-26 · Old vs New Regime · Instant comparison</p>
@@ -104,27 +105,27 @@ export default function TaxCalculator() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
           {/* Left: Inputs */}
           <div>
-            <div className="step-card editing">
-              <div className="ff-section-title">Income</div>
-              <F l="Annual Salary (CTC)" v={salary} c={setSalary} h="Gross salary before deductions" />
-              <F l="Other Income" v={otherIncome} c={setOtherIncome} h="FD interest, dividends, rent, etc." />
-            </div>
+            <Card active>
+              <Section title="Income" />
+              <Field label="Annual Salary (CTC)" type="number" value={salary} onChange={setSalary} hint="Gross salary before deductions" placeholder="0" />
+              <Field label="Other Income" type="number" value={otherIncome} onChange={setOtherIncome} hint="FD interest, dividends, rent, etc." placeholder="0" />
+            </Card>
 
-            <div className="step-card editing">
-              <div className="ff-section-title">Deductions (Old Regime)</div>
-              <F l="80C (PPF, ELSS, LIC...)" v={s80c} c={setS80c} h="Max ₹1,50,000" />
-              <F l="80D (Health Insurance)" v={s80d} c={setS80d} h="Self ₹25K + Parents ₹25K" />
-              <F l="80CCD(1B) NPS" v={nps} c={setNps} h="Additional ₹50,000" />
-              <F l="HRA Exemption" v={hraExempt} c={setHraExempt} h="Tax-free portion of HRA" />
-              <div className="ff-hint" style={{ marginTop: 4, color: P.textLight }}>
+            <Card active style={{ marginTop: 12 }}>
+              <Section title="Deductions (Old Regime)" />
+              <Field label="80C (PPF, ELSS, LIC...)" type="number" value={s80c} onChange={setS80c} hint="Max ₹1,50,000" placeholder="0" />
+              <Field label="80D (Health Insurance)" type="number" value={s80d} onChange={setS80d} hint="Self ₹25K + Parents ₹25K" placeholder="0" />
+              <Field label="80CCD(1B) NPS" type="number" value={nps} onChange={setNps} hint="Additional ₹50,000" placeholder="0" />
+              <Field label="HRA Exemption" type="number" value={hraExempt} onChange={setHraExempt} hint="Tax-free portion of HRA" placeholder="0" />
+              <div className="ds-hint" style={{ marginTop: 4, color: P.textLight }}>
                 Standard deduction of ₹75,000 is auto-applied in both regimes.
               </div>
-            </div>
+            </Card>
 
-            <div className="step-card editing">
-              <div className="ff-section-title">TDS Already Paid</div>
-              <F l="TDS Deducted by Employer" v={tds} c={setTds} h="From Form 16 Part A" />
-            </div>
+            <Card active style={{ marginTop: 12 }}>
+              <Section title="TDS Already Paid" />
+              <Field label="TDS Deducted by Employer" type="number" value={tds} onChange={setTds} hint="From Form 16 Part A" placeholder="0" />
+            </Card>
           </div>
 
           {/* Right: Results */}
@@ -142,39 +143,39 @@ export default function TaxCalculator() {
             )}
 
             {/* Detailed breakdown */}
-            <div className="step-card summary">
-              <div className="ff-section-title">Breakdown ({recommended === 'old' ? 'Old' : 'New'} Regime)</div>
-              <div className="ff-row"><span className="ff-row-label">Gross Income</span><span className="ff-row-value">{fmt(totalIncome)}</span></div>
-              <div className="ff-row"><span className="ff-row-label">Standard Deduction</span><span className="ff-row-value green">-{fmt(75000)}</span></div>
+            <Card>
+              <Section title={`Breakdown (${recommended === 'old' ? 'Old' : 'New'} Regime)`} />
+              <div className="ds-summary"><span className="ds-summary__label">Gross Income</span><span className="ds-summary__value">{fmt(totalIncome)}</span></div>
+              <div className="ds-summary"><span className="ds-summary__label">Standard Deduction</span><span className="ds-summary__value ds-summary__value--green">-{fmt(75000)}</span></div>
               {recommended === 'old' && n(totalDeductions) > 0 && (
-                <div className="ff-row"><span className="ff-row-label">Chapter VI-A Deductions</span><span className="ff-row-value green">-{fmt(totalDeductions)}</span></div>
+                <div className="ds-summary"><span className="ds-summary__label">Chapter VI-A Deductions</span><span className="ds-summary__value ds-summary__value--green">-{fmt(totalDeductions)}</span></div>
               )}
-              <div className="ff-divider" />
-              <div className="ff-row"><span className="ff-row-label">Taxable Income</span><span className="ff-row-value bold">{fmt(recommended === 'old' ? oldRegime.taxable : newRegime.taxable)}</span></div>
-              <div className="ff-row"><span className="ff-row-label">Tax</span><span className="ff-row-value">{fmt(recommended === 'old' ? oldRegime.tax : newRegime.tax)}</span></div>
+              <div className="ds-divider" />
+              <div className="ds-summary"><span className="ds-summary__label">Taxable Income</span><span className="ds-summary__value ds-summary__value--bold">{fmt(recommended === 'old' ? oldRegime.taxable : newRegime.taxable)}</span></div>
+              <div className="ds-summary"><span className="ds-summary__label">Tax</span><span className="ds-summary__value">{fmt(recommended === 'old' ? oldRegime.tax : newRegime.tax)}</span></div>
               {(recommended === 'old' ? oldRegime.rebate : newRegime.rebate) > 0 && (
-                <div className="ff-row"><span className="ff-row-label">Rebate 87A</span><span className="ff-row-value green">-{fmt(recommended === 'old' ? oldRegime.rebate : newRegime.rebate)}</span></div>
+                <div className="ds-summary"><span className="ds-summary__label">Rebate 87A</span><span className="ds-summary__value ds-summary__value--green">-{fmt(recommended === 'old' ? oldRegime.rebate : newRegime.rebate)}</span></div>
               )}
-              <div className="ff-row"><span className="ff-row-label">Cess (4%)</span><span className="ff-row-value">{fmt(recommended === 'old' ? oldRegime.cess : newRegime.cess)}</span></div>
-              <div className="ff-divider" />
-              <div className="ff-row"><span className="ff-row-label">Total Tax</span><span className="ff-row-value bold">{fmt(recommended === 'old' ? oldRegime.total : newRegime.total)}</span></div>
-              {n(tds) > 0 && <div className="ff-row"><span className="ff-row-label">TDS Paid</span><span className="ff-row-value green">-{fmt(tds)}</span></div>}
+              <div className="ds-summary"><span className="ds-summary__label">Cess (4%)</span><span className="ds-summary__value">{fmt(recommended === 'old' ? oldRegime.cess : newRegime.cess)}</span></div>
+              <div className="ds-divider" />
+              <div className="ds-summary"><span className="ds-summary__label">Total Tax</span><span className="ds-summary__value ds-summary__value--bold">{fmt(recommended === 'old' ? oldRegime.total : newRegime.total)}</span></div>
+              {n(tds) > 0 && <div className="ds-summary"><span className="ds-summary__label">TDS Paid</span><span className="ds-summary__value ds-summary__value--green">-{fmt(tds)}</span></div>}
               {n(tds) > 0 && (
                 <>
-                  <div className="ff-divider" />
+                  <div className="ds-divider" />
                   {(() => {
                     const best = recommended === 'old' ? oldRegime : newRegime;
                     const net = best.total - n(tds);
-                    return <div className="ff-row"><span className="ff-row-label" style={{ fontWeight: 600 }}>{net <= 0 ? 'Refund Due' : 'Tax Payable'}</span><span className={`ff-row-value bold ${net <= 0 ? 'green' : 'red'}`}>{fmt(Math.abs(net))}</span></div>;
+                    return <div className="ds-summary"><span className="ds-summary__label" style={{ fontWeight: 600 }}>{net <= 0 ? 'Refund Due' : 'Tax Payable'}</span><span className={`ff-row-value bold ${net <= 0 ? 'green' : 'red'}`}>{fmt(Math.abs(net))}</span></div>;
                   })()}
                 </>
               )}
-            </div>
+            </Card>
 
             {/* CTA */}
-            <button className="ff-btn ff-btn-primary" onClick={() => navigate('/signup')} style={{ width: '100%', justifyContent: 'center', marginTop: 16, padding: '12px 0', fontSize: 15 }}>
+            <Button variant="primary" onClick={() => navigate('/signup')} style={{ width: '100%', justifyContent: 'center', marginTop: 16, padding: '12px 0', fontSize: 15 }}>
               File Your ITR Now <ArrowRight size={16} />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -199,11 +200,3 @@ function RegimeCard({ label, regime, recommended, tds }) {
     </div>
   );
 }
-
-const F = ({ l, v, c, h }) => (
-  <div className="ff-field">
-    <label className="ff-label">{l}</label>
-    <input className="ff-input" type="number" value={v} onChange={e => c(e.target.value)} placeholder="0" />
-    {h && <div className="ff-hint">{h}</div>}
-  </div>
-);

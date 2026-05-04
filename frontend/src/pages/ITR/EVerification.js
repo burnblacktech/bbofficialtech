@@ -4,6 +4,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { Shield, ArrowLeft } from 'lucide-react';
+import { Card, Button, Alert } from '../../components/ds';
 import '../Filing/filing-flow.css';
 
 export default function EVerification() {
@@ -14,7 +15,7 @@ export default function EVerification() {
       <h1 className="step-title">E-Verification</h1>
       <p className="step-desc">Verify your filed ITR with the Income Tax Department</p>
 
-      <div className="step-card info">
+      <Alert variant="info">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <Shield size={20} color="#D4AF37" />
           <div>
@@ -24,11 +25,11 @@ export default function EVerification() {
             </div>
           </div>
         </div>
-      </div>
+      </Alert>
 
-      <button className="ff-btn ff-btn-outline" onClick={() => navigate('/dashboard')} style={{ marginTop: 16 }}>
+      <Button variant="secondary" onClick={() => navigate('/dashboard')} style={{ marginTop: 16 }}>
         <ArrowLeft size={16} /> Back to Dashboard
-      </button>
+      </Button>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { authService } from '../../services';
 import { Eye, EyeOff, CheckCircle, Loader2 } from 'lucide-react';
+import { Card, Field, Button, Alert } from '../../components/ds';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 import '../Filing/filing-flow.css';
@@ -50,42 +51,40 @@ export default function ResetPassword() {
           <span style={{ fontSize: 18, fontWeight: 700, color: P.textPrimary }}>BurnBlack</span>
         </div>
 
-        <div className="step-card" style={{ padding: 24 }}>
+        <Card style={{ padding: 24 }}>
           {done ? (
             <div style={{ textAlign: 'center' }}>
               <CheckCircle size={40} color="#16a34a" style={{ margin: '0 auto 12px' }} />
               <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>Password Updated</div>
               <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>Redirecting to login...</p>
-              <Link to="/login" className="ff-btn ff-btn-primary" style={{ width: '100%', justifyContent: 'center', textDecoration: 'none' }}>Go to Login</Link>
+              <Link to="/login" style={{ textDecoration: 'none' }}><Button variant="primary" style={{ width: '100%', justifyContent: 'center' }}>Go to Login</Button></Link>
             </div>
           ) : (
             <>
               <h2 className="step-title">New Password</h2>
               <p className="step-desc">Choose a strong password for your account</p>
 
-              {error && <div className="ff-errors" style={{ marginBottom: 12 }}><div className="ff-errors-title">{error}</div></div>}
+              {error && <Alert variant="error" className="ds-mb-sm">{error}</Alert>}
 
               <form onSubmit={handleSubmit}>
-                <div className="ff-field" style={{ position: 'relative' }}>
-                  <label className="ff-label">New Password</label>
-                  <input className="ff-input" type={show ? 'text' : 'password'} value={pw} onChange={e => setPw(e.target.value)} placeholder="Min 8 characters" />
+                <Field label="New Password" type={show ? 'text' : 'password'} style={{ position: 'relative' }}>
+                  <input className="ds-input" type={show ? 'text' : 'password'} value={pw} onChange={e => setPw(e.target.value)} placeholder="Min 8 characters" />
                   <button type="button" onClick={() => setShow(!show)} style={{ position: 'absolute', right: 12, top: 30, background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}><PwIcon size={16} /></button>
-                </div>
-                <div className="ff-field">
-                  <label className="ff-label">Confirm Password</label>
-                  <input className="ff-input" type={show ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Repeat password" />
-                  {confirm && pw !== confirm && <div className="ff-hint" style={{ color: '#ef4444' }}>Passwords don't match</div>}
-                </div>
-                <button className="ff-btn ff-btn-primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
+                </Field>
+                <Field label="Confirm Password" type={show ? 'text' : 'password'} value={confirm} onChange={setConfirm} placeholder="Repeat password"
+                  hint={confirm && pw !== confirm ? undefined : undefined}
+                  error={confirm && pw !== confirm ? "Passwords don't match" : undefined}
+                />
+                <Button variant="primary" type="submit" disabled={loading} style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}>
                   {loading ? <><Loader2 size={16} className="animate-spin" /> Updating...</> : 'Update Password'}
-                </button>
+                </Button>
               </form>
               <p style={{ textAlign: 'center', fontSize: 13, color: '#6b7280', marginTop: 12 }}>
                 <Link to="/login" style={{ color: '#D4AF37', fontWeight: 600 }}>Back to Login</Link>
               </p>
             </>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

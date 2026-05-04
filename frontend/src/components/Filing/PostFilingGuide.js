@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { CheckCircle, Clock, AlertTriangle, Upload } from 'lucide-react';
+import { Card } from '../ds';
 
 const ADVANCE_TAX_DATES = ['Jun 15', 'Sep 15', 'Dec 15', 'Mar 15'];
 const ADVANCE_TAX_PCTS = [0.15, 0.30, 0.30, 0.25];
@@ -53,7 +54,7 @@ export default function PostFilingGuide({ filing = {}, computation }) {
   const isPayable = netPayable > 0;
 
   return (
-    <div className="step-card" style={{ padding: '16px 14px' }}>
+    <Card style={{ padding: '16px 14px' }}>
       <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>
         Post-Filing Guide {assessmentYear ? `— AY ${assessmentYear}` : ''}
       </div>
@@ -141,6 +142,6 @@ export default function PostFilingGuide({ filing = {}, computation }) {
           <li>E-verify using Aadhaar OTP, net banking, or DSC</li>
         </ol>
       </div>
-    </div>
+    </Card>
   );
 }

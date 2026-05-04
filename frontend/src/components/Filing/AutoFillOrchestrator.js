@@ -465,7 +465,7 @@ function ConflictResolutionUI({ conflicts, resolutions, setResolutions, onResolv
         })}
       </div>
 
-      <button className="ff-btn ff-btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={onResolve}>
+      <button className="ds-btn ds-btn-md ds-btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={onResolve}>
         <CheckCircle size={14} /> Apply &amp; continue
       </button>
     </motion.div>
@@ -538,14 +538,14 @@ function ErrorFallback({ message, onRetry, onFallbackImport }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <button
-          className="ff-btn ff-btn-primary"
+          className="ds-btn ds-btn-md ds-btn-primary"
           style={{ width: '100%', justifyContent: 'center' }}
           onClick={onFallbackImport}
         >
           <Upload size={14} /> Import Form 16 instead
         </button>
         <button
-          className="ff-btn ff-btn-outline"
+          className="ds-btn ds-btn-md ds-btn-secondary"
           style={{ width: '100%', justifyContent: 'center' }}
           onClick={onRetry}
         >

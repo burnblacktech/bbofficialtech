@@ -5,6 +5,7 @@
 
 import React, { useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
+import { Button } from '../ds';
 
 const fmt = (v) => `₹${(Number(v) || 0).toLocaleString('en-IN')}`;
 
@@ -83,10 +84,10 @@ export default function RegimeComparatorModal({ comparison, selectedRegime, onSw
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{explanation}</div>
           </div>
           {selectedRegime !== recommended && (
-            <button className="ff-btn ff-btn-primary" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+            <Button variant="primary" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
               onClick={() => onSwitchRegime?.(recommended)}>
               Switch to {recLabel}
-            </button>
+            </Button>
           )}
         </div>
 

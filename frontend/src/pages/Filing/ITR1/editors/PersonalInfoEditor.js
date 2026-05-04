@@ -473,7 +473,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       {isITR1 && (
         <Card active>
           <Section icon={TrendingUpIcon} title="LTCG under Section 112A (ITR-1)" />
-          <div className="ff-hint" style={{ marginBottom: 12, marginTop: -8 }}>
+          <div className="ds-hint" style={{ marginBottom: 12, marginTop: -8 }}>
             From AY 2025-26, ITR-1 allows LTCG up to ₹1.25 lakh from listed equity/MF under Section 112A, provided there are no losses to carry forward.
           </div>
           <Field label="LTCG Amount (₹)" value={form.ltcg112A.amount} onChange={v => updateLtcg('amount', v)} type="number" hint="Total LTCG from listed equity shares or equity mutual funds" />
@@ -557,7 +557,7 @@ function DateInput({ value, onChange, onBlur, locked, error }) {
 
   return (
     <input
-      className={`ff-input ${error ? 'error' : ''}`}
+      className={`ds-input ${error ? 'error' : ''}`}
       type="text"
       inputMode="numeric"
       value={locked ? toDisplay(value) : text}
@@ -673,7 +673,7 @@ function AadhaarUploadButton({ onVerified }) {
         <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
           <div style={{ flex: 1 }}>
             <input
-              className="ff-input"
+              className="ds-input"
               type="text"
               value={aadhaarInput}
               onChange={(e) => setAadhaarInput(e.target.value.replace(/[^\d\s]/g, '').slice(0, 14))}
@@ -706,7 +706,7 @@ function AadhaarUploadButton({ onVerified }) {
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           <input
-            className="ff-input"
+            className="ds-input"
             type="text"
             value={otpInput}
             onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -736,7 +736,7 @@ function AadhaarUploadButton({ onVerified }) {
       <div style={{ padding: 10, background: 'var(--bg-muted)', borderRadius: 6, border: '1px solid var(--border-light)' }}>
         <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>PDF Password</label>
         <div style={{ display: 'flex', gap: 6 }}>
-          <input className="ff-input" type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Aadhaar number or share code" style={{ flex: 1, fontSize: 12 }} />
+          <input className="ds-input" type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Aadhaar number or share code" style={{ flex: 1, fontSize: 12 }} />
           <Button variant="primary" onClick={() => { if (pendingFile && password) handleFile(pendingFile, password); }} disabled={!password || loading} style={{ padding: '6px 12px', fontSize: 11 }}>Unlock</Button>
         </div>
         <button onClick={() => { setMode('idle'); setPassword(''); setPendingFile(null); }} style={{ marginTop: 6, background: 'none', border: 'none', fontSize: 11, color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>← Back</button>

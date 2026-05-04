@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import { AlertCircle, ExternalLink, CheckCircle, ChevronDown, ChevronUp, Copy } from 'lucide-react';
+import { Button, Card, Section, Field } from '../../../components/ds';
 import P from '../../../styles/palette';
 
 const fmt = (v) => `₹${Math.abs(Number(v) || 0).toLocaleString('en-IN')}`;
@@ -66,8 +67,8 @@ export default function TaxPaymentGuide({ computation, pan, assessmentYear, onCh
 
       {/* Expandable payment instructions */}
       {expanded && (
-        <div className="step-card editing" style={{ fontSize: 13, lineHeight: 1.6 }}>
-          <div className="ff-section-title">Pay via e-Pay Tax (ITD Portal)</div>
+        <Card className="editing" style={{ fontSize: 13, lineHeight: 1.6 }}>
+          <Section title="Pay via e-Pay Tax (ITD Portal)" />
 
           {/* Pre-filled details for easy copy */}
           <div style={{ background: P.bgMuted, borderRadius: 8, padding: 12, marginBottom: 12 }}>
@@ -99,14 +100,12 @@ export default function TaxPaymentGuide({ computation, pan, assessmentYear, onCh
           <div style={{ padding: '8px 12px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 6, fontSize: 12, color: P.warning }}>
             💡 After payment, it takes 2-3 hours for the challan to reflect in 26AS. You can file immediately using the challan details.
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Challan entry */}
-      <div className="step-card editing">
-        <div className="ff-section-title">
-          {saved ? <><CheckCircle size={14} style={{ color: P.success }} /> Challan Recorded</> : 'Enter Challan Details (after payment)'}
-        </div>
+      <Card className="editing">
+        <Section title={saved ? <><CheckCircle size={14} style={{ color: P.success }} /> Challan Recorded</> : 'Enter Challan Details (after payment)'} />
         {saved ? (
           <div style={{ fontSize: 13, color: P.success }}>
             Self-assessment tax of {fmt(challan.amount)} recorded. This will be included in your filing.
@@ -114,32 +113,19 @@ export default function TaxPaymentGuide({ computation, pan, assessmentYear, onCh
         ) : (
           <>
             <div className="ff-grid-2">
-              <div className="ff-field">
-                <label className="ff-label">BSR Code</label>
-                <input className="ff-input" value={challan.bsrCode} onChange={e => setChallan(p => ({ ...p, bsrCode: e.target.value }))} placeholder="7-digit code" maxLength={7} />
-                <div className="ff-hint">From challan receipt</div>
-              </div>
-              <div className="ff-field">
-                <label className="ff-label">Challan Serial No.</label>
-                <input className="ff-input" value={challan.challanNo} onChange={e => setChallan(p => ({ ...p, challanNo: e.target.value }))} placeholder="5-digit number" maxLength={5} />
-              </div>
+              <Field label="BSR Code" value={challan.bsrCode} onChange={v => setChallan(p => ({ ...p, bsrCode: v }))} placeholder="7-digit code" hint="From challan receipt" />
+              <Field label="Challan Serial No." value={challan.challanNo} onChange={v => setChallan(p => ({ ...p, challanNo: v }))} placeholder="5-digit number" />
             </div>
             <div className="ff-grid-2">
-              <div className="ff-field">
-                <label className="ff-label">Date of Deposit</label>
-                <input className="ff-input" type="date" value={challan.dateOfDeposit} onChange={e => setChallan(p => ({ ...p, dateOfDeposit: e.target.value }))} />
-              </div>
-              <div className="ff-field">
-                <label className="ff-label">Amount Paid (₹)</label>
-                <input className="ff-input" type="number" value={challan.amount} onChange={e => setChallan(p => ({ ...p, amount: e.target.value }))} placeholder={String(netPayable)} />
-              </div>
+              <Field label="Date of Deposit" type="date" value={challan.dateOfDeposit} onChange={v => setChallan(p => ({ ...p, dateOfDeposit: v }))} />
+              <Field label="Amount Paid (₹)" type="number" value={challan.amount} onChange={v => setChallan(p => ({ ...p, amount: v }))} placeholder={String(netPayable)} />
             </div>
-            <button className="ff-btn ff-btn-primary" onClick={handleSaveChallan} style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}>
+            <Button variant="primary" onClick={handleSaveChallan} style={{ width: '100%', justifyContent: 'center', marginTop: 4 }}>
               <CheckCircle size={14} /> Save Challan Details
-            </button>
+            </Button>
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
