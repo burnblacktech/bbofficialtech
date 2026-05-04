@@ -944,14 +944,14 @@ export default function ITR1Flow() {
         </div>
         <button
           onClick={() => {
-            const ts = useThemeStore.getState();
-            ts.setTheme(ts.resolvedTheme === 'dark' ? 'light' : 'dark');
+            const { resolvedTheme: rt, setTheme: st } = useThemeStore.getState();
+            st(rt === 'dark' ? 'light' : 'dark');
           }}
           className="story-top-bar__theme-toggle"
           title="Toggle dark/light mode"
           aria-label="Toggle theme"
         >
-          {useThemeStore.getState().resolvedTheme === 'dark' ? '☀️' : '🌙'}
+          ◐
         </button>
         <div className={`story-top-bar__save ${saveMut.isPending ? 'saving' : ''}`}>
           <span className="story-top-bar__save-dot" />
