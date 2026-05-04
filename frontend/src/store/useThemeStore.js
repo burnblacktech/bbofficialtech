@@ -11,8 +11,8 @@ function resolveTheme(theme) {
 const useThemeStore = create(
   persist(
     (set) => ({
-      theme: 'system',
-      resolvedTheme: 'light',
+      theme: 'dark',
+      resolvedTheme: 'dark',
 
       setTheme: (theme) => {
         const resolved = resolveTheme(theme);

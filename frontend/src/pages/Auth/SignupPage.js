@@ -10,7 +10,6 @@ import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Card, Field, Grid, Button, Alert } from '../../components/ds';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 export default function SignupPage() {
   const navigate = useNavigate();

@@ -10,7 +10,6 @@ import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { sanitizeEmail, sanitizePassword } from '../../utils/sanitize';
 import { Card, Field, Button, Alert } from '../../components/ds';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

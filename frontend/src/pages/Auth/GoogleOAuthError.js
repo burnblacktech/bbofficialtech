@@ -5,7 +5,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Card, Button, Alert } from '../../components/ds';
-import '../Filing/filing-flow.css';
 
 export default function GoogleOAuthError() {
   const navigate = useNavigate();

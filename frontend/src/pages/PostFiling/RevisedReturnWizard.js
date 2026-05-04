@@ -30,7 +30,7 @@ export default function RevisedReturnWizard() {
     onSuccess: (data) => {
       toast.success('Revised return created');
       const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[data.itrType] || 'itr1';
-      navigate(`/filing/${data.id}/${route}`);
+      navigate(`/filing/${data.id}`);
     },
     onError: (e) => toast.error(e.response?.data?.error || 'Failed to create revised return'),
   });

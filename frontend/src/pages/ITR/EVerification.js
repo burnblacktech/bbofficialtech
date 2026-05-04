@@ -5,7 +5,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Shield, ArrowLeft } from 'lucide-react';
 import { Card, Button, Alert } from '../../components/ds';
-import '../Filing/filing-flow.css';
 
 export default function EVerification() {
   const navigate = useNavigate();

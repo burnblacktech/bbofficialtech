@@ -5,7 +5,6 @@
  * Pure render component — no state, no hooks.
  */
 import { User, Shield, Calendar, FileText } from 'lucide-react';
-import '../../filing-flow.css';
 
 const STATUS_MAP = { O: 'Original', R: 'Revised', B: 'Belated', U: 'Updated' };
 

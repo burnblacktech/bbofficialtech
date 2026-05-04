@@ -9,7 +9,6 @@ import { Eye, EyeOff, CheckCircle, Loader2 } from 'lucide-react';
 import { Card, Field, Button, Alert } from '../../components/ds';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 export default function ResetPassword() {
   const navigate = useNavigate();

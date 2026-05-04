@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { Monitor, Smartphone, LogOut, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import '../../pages/Filing/filing-flow.css';
 
 export default function SessionManagement() {
   const [sessions, setSessions] = useState([]);

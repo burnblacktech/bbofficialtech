@@ -8,7 +8,6 @@ import { FileText, ArrowLeft, Clock, CheckCircle, AlertCircle, ArrowRight } from
 import { itrService } from '../../services';
 import { Card, Button, Spinner } from '../../components/ds';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 /* eslint-disable camelcase */
 const STATES = {
@@ -49,7 +48,7 @@ export default function FilingHistory() {
           const st = STATES[f.lifecycleState] || STATES.draft;
           const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
           return (
-            <Card key={f.id} style={{ cursor: 'pointer', marginBottom: 8 }} onClick={() => navigate(`/filing/${f.id}/${route}`)}>
+            <Card key={f.id} style={{ cursor: 'pointer', marginBottom: 8 }} onClick={() => navigate(`/filing/${f.id}`)}>
               <div className="ds-item">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <FileText size={18} color={P.textLight} />

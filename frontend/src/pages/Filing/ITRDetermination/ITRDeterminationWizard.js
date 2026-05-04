@@ -16,7 +16,6 @@ import { getIncomeSummary, getExpensesSummary, getInvestmentsSummary } from '../
 import { getFileableAYs, ayToFY } from '../../../utils/assessmentYear';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import toast from 'react-hot-toast';
-import '../filing-flow.css';
 
 const INCOME_SOURCES = [
   { id: 'salary', icon: Briefcase, label: 'Salary / Pension', desc: 'Income from employment' },

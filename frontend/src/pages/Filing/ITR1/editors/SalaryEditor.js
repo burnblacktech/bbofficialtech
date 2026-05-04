@@ -11,7 +11,6 @@ import { formatCurrency } from '../../../../utils/formatCurrency';
 import api from '../../../../services/api';
 import P from '../../../../styles/palette';
 import { Field, Select, Grid, Card, Button } from '../../../../components/ds';
-import '../../filing-flow.css';
 
 const n = (v) => Number(v) || 0;
 const EMPTY = {

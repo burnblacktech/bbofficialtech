@@ -8,7 +8,6 @@ import api from '../../../../services/api';
 import toast from 'react-hot-toast';
 import P from '../../../../styles/palette';
 import { Field, Select, Grid, Card, Section, Button } from '../../../../components/ds';
-import '../../filing-flow.css';
 
 /**
  * Parse fullName into firstName / middleName / lastName

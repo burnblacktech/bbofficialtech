@@ -10,7 +10,6 @@ import api from '../../services/api';
 import { Card, Field, Button } from '../../components/ds';
 import P from '../../styles/palette';
 import toast from 'react-hot-toast';
-import '../Filing/filing-flow.css';
 
 export default function PANVerification() {
   const navigate = useNavigate();

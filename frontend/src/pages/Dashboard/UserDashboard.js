@@ -57,7 +57,6 @@ import useReadinessMilestones from '../../hooks/useReadinessMilestones';
 import useStreakTracking from '../../hooks/useStreakTracking';
 import useChartColors from '../../hooks/useChartColors';
 import { computeFilingProgress } from '../../utils/filingProgress';
-import '../Filing/filing-flow.css';
 
 /* ── Constants ── */
 const MONTH_LABELS = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
@@ -311,7 +310,7 @@ export default function UserDashboard() {
             onClick={() => {
               const draft = filings.find((f) => f.lifecycleState === 'draft');
               const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[draft?.itrType] || 'itr1';
-              navigate(draft ? `/filing/${draft.id}/${route}` : '/filing/start');
+              navigate(draft ? `/filing/${draft.id}` : '/filing/start');
             }}
           />
         ) : dl.daysLeft <= 30 && !dl.isPastDue ? (
@@ -739,7 +738,7 @@ function FilingsSection({ filings, isLoading, navigate }) {
             return (
               <div
                 key={f.id}
-                onClick={() => navigate(`/filing/${f.id}/${route}`)}
+                onClick={() => navigate(`/filing/${f.id}`)}
                 className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-[var(--bg-card-hover)] transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -803,7 +802,7 @@ function FilingsSection({ filings, isLoading, navigate }) {
                       className="text-[11px] font-semibold text-[var(--brand-primary)] bg-[var(--brand-primary-light)] border border-[var(--brand-primary)]30 rounded-md px-2 py-1 flex items-center gap-1 hover:bg-[var(--brand-primary)] hover:text-white transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/filing/${f.id}/${route}`);
+                        navigate(`/filing/${f.id}`);
                       }}
                     >
                       Continue Filing

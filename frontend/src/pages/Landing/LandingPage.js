@@ -11,7 +11,6 @@ import { Shield, CheckCircle, ArrowRight, Eye, EyeOff, AlertCircle, Loader2 } fr
 import { sanitizeEmail, sanitizePassword } from '../../utils/sanitize';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();

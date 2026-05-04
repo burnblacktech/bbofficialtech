@@ -9,7 +9,6 @@ import { Mail, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { Card, Button, Spinner } from '../../components/ds';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 export default function EmailVerification() {
   const navigate = useNavigate();

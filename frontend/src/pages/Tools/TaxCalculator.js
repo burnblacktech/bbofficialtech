@@ -8,7 +8,6 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Field, Button, Section } from '../../components/ds';
 import P from '../../styles/palette';
-import '../Filing/filing-flow.css';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `\u20B9${Math.abs(n(v)).toLocaleString('en-IN')}`;
