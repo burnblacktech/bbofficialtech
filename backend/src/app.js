@@ -40,8 +40,11 @@ app.use(
 
 app.use(cookieParser());
 
-// Session (for OAuth state)
-app.use(session({
+// Session (for OAuth state) — Redis store in production, memory in dev
+const RedisStore = require('connect-redis').default;
+const redisService = require('./services/core/RedisService');
+
+const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
@@ -52,7 +55,18 @@ app.use(session({
     maxAge: 15 * 60 * 1000,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   },
-}));
+};
+
+// Use Redis if available
+try {
+  const client = redisService.getClient?.();
+  if (client) {
+    sessionConfig.store = new RedisStore({ client, prefix: 'sess:' });
+    enterpriseLogger.info('Session store: Redis');
+  }
+} catch { /* Redis unavailable — falls back to MemoryStore */ }
+
+app.use(session(sessionConfig));
 
 app.use(passport.initialize());
 
