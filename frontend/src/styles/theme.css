@@ -182,14 +182,14 @@ body, input, select, textarea, button {
   --text-white: #111111;
 
   /* ── Backgrounds ── */
-  --bg-page: #111111;
+  --bg-page: #0F0F0F;
   --bg-card: #1A1A1A;
   --bg-card-hover: rgba(255, 255, 255, 0.04);
   --bg-muted: #2A2A2A;
   --bg-card-elevated: rgba(255, 255, 255, 0.03);
 
   /* ── Borders ── */
-  --border-light: rgba(255, 255, 255, 0.12);
+  --border-light: #333333;
   --border-medium: #555555;
   --border-focus: #E0C04D;
 

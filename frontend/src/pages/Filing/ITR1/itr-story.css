@@ -71,6 +71,13 @@
 .story-top-bar__name { font-weight: 500; color: var(--text-secondary); }
 .story-top-bar__pan { font-family: var(--font-mono); font-size: 11px; }
 
+.story-top-bar__theme-toggle {
+  background: none; border: none; cursor: pointer; font-size: 16px;
+  padding: 4px 8px; border-radius: var(--r-md); min-height: auto;
+  transition: background var(--tr-fast);
+}
+.story-top-bar__theme-toggle:hover { background: var(--bg-card-hover); }
+
 .story-top-bar__save {
   display: inline-flex;
   align-items: center;
@@ -97,7 +104,7 @@
 /* ── 3. Three-Panel Cockpit: Story (220px) + Editor (1fr) + Insights (260px) ── */
 .story-panels {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 220px 1fr;
   flex: 1;
   overflow: hidden;
 }
@@ -106,7 +113,7 @@
 .story-flow {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 0;
   background: var(--bg-card);
   border-right: 1px solid var(--border-light);
   overflow-y: auto; /* scrollable on small desktop screens */
