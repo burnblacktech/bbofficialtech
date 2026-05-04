@@ -48,12 +48,12 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
 
       {incomes.map((inc, i) => editing === i ? null : (
         <Card key={i}>
-          <div className="ff-item">
+          <div className="ds-item">
             <div>
-              <div className="ff-item-name">{inc.country} — {inc.incomeType}</div>
-              <div className="ff-item-detail">₹{n(inc.amountINR).toLocaleString('en-IN')}{inc.dtaa ? ' · DTAA' : ''}</div>
+              <div className="ds-item__name">{inc.country} — {inc.incomeType}</div>
+              <div className="ds-item__detail">₹{n(inc.amountINR).toLocaleString('en-IN')}{inc.dtaa ? ' · DTAA' : ''}</div>
             </div>
-            <div className="ff-item-actions">
+            <div className="ds-item__actions">
               <Button variant="ghost" size="sm" onClick={() => { setForm({ ...inc }); setEditing(i); }}><Edit2 size={15} /></Button>
               <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
             </div>
@@ -71,7 +71,7 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
           <Grid cols={3}>
             <Field label="Tax Paid Abroad (₹)" type="number" value={form.taxPaidAbroad} onChange={v => setForm({ ...form, taxPaidAbroad: v })} placeholder="0" />
           </Grid>
-          <label className="ff-check"><input type="checkbox" checked={form.dtaa} onChange={e => setForm({ ...form, dtaa: e.target.checked })} /> Claim DTAA relief</label>
+          <label className="ds-check"><input type="checkbox" checked={form.dtaa} onChange={e => setForm({ ...form, dtaa: e.target.checked })} /> Claim DTAA relief</label>
           <div className="ds-hint" style={{ marginTop: 4 }}>If you earned abroad and paid tax there, you may claim DTAA relief to avoid double taxation</div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <Button variant="primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>

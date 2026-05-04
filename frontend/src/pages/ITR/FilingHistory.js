@@ -50,12 +50,12 @@ export default function FilingHistory() {
           const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[f.itrType] || 'itr1';
           return (
             <Card key={f.id} style={{ cursor: 'pointer', marginBottom: 8 }} onClick={() => navigate(`/filing/${f.id}/${route}`)}>
-              <div className="ff-item">
+              <div className="ds-item">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <FileText size={18} color={P.textLight} />
                   <div>
-                    <div className="ff-item-name">AY {f.assessmentYear} · {f.itrType || 'ITR-1'}</div>
-                    <div className="ff-item-detail">PAN: {f.taxpayerPan}</div>
+                    <div className="ds-item__name">AY {f.assessmentYear} · {f.itrType || 'ITR-1'}</div>
+                    <div className="ds-item__detail">PAN: {f.taxpayerPan}</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

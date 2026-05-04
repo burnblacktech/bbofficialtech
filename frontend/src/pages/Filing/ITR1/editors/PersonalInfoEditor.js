@@ -321,26 +321,26 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         <>
           {/* Locked Data Card — PAN-verified fields as compact read-only display */}
           <Card muted>
-            <div className="ff-locked-card-header">
+            <div className="ds-kv__header">
               <Lock size={13} /> Identity
-              <span className="ff-verified-dot"><Shield size={11} /> PAN Verified</span>
+              <span className="ds-verified"><Shield size={11} /> PAN Verified</span>
             </div>
             <Grid cols={3}>
-              <div className="ff-kv-row">
-                <span className="ff-kv-label">Name</span>
-                <span className="ff-kv-value">{[form.firstName, form.middleName, form.lastName].filter(Boolean).join(' ')}</span>
+              <div className="ds-kv__row">
+                <span className="ds-kv__label">Name</span>
+                <span className="ds-kv__value">{[form.firstName, form.middleName, form.lastName].filter(Boolean).join(' ')}</span>
               </div>
-              <div className="ff-kv-row">
-                <span className="ff-kv-label">PAN</span>
-                <span className="ff-kv-value mono">{form.pan ? form.pan.replace(/^.{5}/, 'XXXXX') : ''}</span>
+              <div className="ds-kv__row">
+                <span className="ds-kv__label">PAN</span>
+                <span className="ds-kv__value mono">{form.pan ? form.pan.replace(/^.{5}/, 'XXXXX') : ''}</span>
               </div>
-              <div className="ff-kv-row">
-                <span className="ff-kv-label">Date of Birth</span>
-                <span className="ff-kv-value">{formatDateDDMMYYYY(form.dob)}</span>
+              <div className="ds-kv__row">
+                <span className="ds-kv__label">Date of Birth</span>
+                <span className="ds-kv__value">{formatDateDDMMYYYY(form.dob)}</span>
               </div>
             </Grid>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
-              <div className="ff-source-badge" style={{ margin: 0 }}><Shield size={11} /> From PAN verification</div>
+              <div className="ds-source" style={{ margin: 0 }}><Shield size={11} /> From PAN verification</div>
               <Select value={form.gender} onChange={v => updateField('gender', v)} options={GENDER_OPTIONS} style={{ width: 'auto', minWidth: 80 }} />
             </div>
           </Card>
@@ -483,7 +483,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
               <span>LTCG exceeds ₹1.25L limit for ITR-1. Use ITR-2 for higher capital gains.</span>
             </div>
           )}
-          <label className="ff-check">
+          <label className="ds-check">
             <input type="checkbox" checked={!!form.ltcg112A.noLossToCarryForward} onChange={e => updateLtcg('noLossToCarryForward', e.target.checked)} />
             I confirm there are no capital gains losses to carry forward
           </label>
@@ -492,7 +492,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
 
       {/* ── Save Button ── */}
       <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 4 }}>
-        {isSaving ? <><span className="ff-spinner" /> Saving...</> : <><Save size={14} /> Save Personal Info</>}
+        {isSaving ? <><span className="ds-spinner" /> Saving...</> : <><Save size={14} /> Save Personal Info</>}
       </Button>
     </div>
   );

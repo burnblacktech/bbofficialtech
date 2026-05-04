@@ -86,14 +86,14 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
       {/* Existing transactions */}
       {txns.map((t, i) => editing === i ? null : (
         <Card key={i}>
-          <div className="ff-item">
+          <div className="ds-item">
             <div>
-              <div className="ff-item-name">{ASSET_LABELS[t.assetType] || t.assetType} — {t.gainType}</div>
-              <div className="ff-item-detail">
+              <div className="ds-item__name">{ASSET_LABELS[t.assetType] || t.assetType} — {t.gainType}</div>
+              <div className="ds-item__detail">
                 Sale: {fmt(t.saleValue)} · Cost: {fmt(t.indexedCost || t.purchaseValue)} · {netGain(t) >= 0 ? 'Gain' : 'Loss'}: <span style={{ color: netGain(t) >= 0 ? 'var(--c-text)' : 'var(--c-error)', fontWeight: 600 }}>{fmt(Math.abs(netGain(t)))}</span>
               </div>
             </div>
-            <div className="ff-item-actions">
+            <div className="ds-item__actions">
               <Button variant="ghost" size="sm" onClick={() => { setForm({ ...t }); setEditing(i); }}><Edit2 size={15} /></Button>
               <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
             </div>

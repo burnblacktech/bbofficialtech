@@ -253,8 +253,8 @@ export default function DeductionsEditor({
   const handleCardKeyDown = (e, id) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCard(id); } };
 
   return (
-    <div className="ff-page">
-      <div className="ff-content">
+    <div className="ds-content">
+      <div className="ds-content">
         <h2 className="step-title">Deductions</h2>
         <p className="step-desc">Claim deductions to reduce your taxable income</p>
 
@@ -328,10 +328,10 @@ export default function DeductionsEditor({
                 {tips.map(tip => {
                   const TipIcon = tip.icon;
                   return (
-                    <div key={tip.id} className="dd-tip">
+                    <div key={tip.id} className="ds-tip">
                       <TipIcon size={14} style={{ flexShrink: 0, marginTop: 1 }} />
                       <span>{tip.msg}</span>
-                      <button className="dd-tip-dismiss" onClick={() => setDismissedTips(prev => new Set([...prev, tip.id]))} aria-label="Dismiss tip">
+                      <button className="ds-tip__dismiss" onClick={() => setDismissedTips(prev => new Set([...prev, tip.id]))} aria-label="Dismiss tip">
                         <X size={12} />
                       </button>
                     </div>
@@ -373,29 +373,29 @@ export default function DeductionsEditor({
       <Card key={cat.id} active={isExpanded}>
         {/* Card Header */}
         <button
-          className="dd-card-header"
+          className="ds-section"
           onClick={() => toggleCard(cat.id)}
           onKeyDown={(e) => handleCardKeyDown(e, cat.id)}
           aria-expanded={isExpanded}
           role="button"
           tabIndex={0}
         >
-          <div className="dd-card-icon" style={{ background: cat.id === 'invest' ? '#f0fdf4' : cat.id === 'health' ? '#fef2f2' : cat.id === 'home' ? '#f5f3ff' : cat.id === 'education' ? '#eff6ff' : '#fdf2f8' }}>
+          <div className="ds-section" style={{ background: cat.id === 'invest' ? '#f0fdf4' : cat.id === 'health' ? '#fef2f2' : cat.id === 'home' ? '#f5f3ff' : cat.id === 'education' ? '#eff6ff' : '#fdf2f8' }}>
             <CatIcon size={14} style={{ color: cat.id === 'invest' ? '#059669' : cat.id === 'health' ? '#dc2626' : cat.id === 'home' ? '#7c3aed' : cat.id === 'education' ? '#2563eb' : '#db2777' }} />
           </div>
-          <span className="dd-card-title">{cat.title}</span>
+          <span className="ds-section">{cat.title}</span>
           <Badge>{cat.sectionBadge}</Badge>
-          <span className="dd-card-total">{catTotal > 0 ? rs(catTotal) : ''}</span>
-          <span className="dd-card-chevron">
+          <span className="ds-summary__value">{catTotal > 0 ? rs(catTotal) : ''}</span>
+          <span className="ds-section">
             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </span>
         </button>
 
         {/* Card Body */}
         {isExpanded && (
-          <div className="dd-card-body">
+          <div className="ds-card__body">
             {onUploadProof && (
-              <div className="dd-card-upload">
+              <div className="ds-card__upload">
                 <Button variant="secondary" size="sm" onClick={() => onUploadProof(cat.docType)} aria-label={cat.uploadLabel}>
                   <Upload size={12} /> {cat.uploadLabel}
                 </Button>
@@ -405,10 +405,10 @@ export default function DeductionsEditor({
             {/* 80C Progress Bar */}
             {cat.hasProgressBar && (
               <>
-                <div className="dd-progress">
-                  <div className="dd-progress-bar" style={{ width: `${progressPct}%`, background: barColor }} />
+                <div className="ds-progress">
+                  <div className="ds-progress__bar" style={{ width: `${progressPct}%`, background: barColor }} />
                 </div>
-                <div className="dd-progress-text">
+                <div className="ds-progress__text">
                   {raw80C > 150000
                     ? <span style={{ color: '#dc2626' }}>{rs(raw80C)} — exceeds limit by {rs(raw80C - 150000)}</span>
                     : <span>{rs(raw80C)} used · {rs(150000 - raw80C)} remaining</span>
@@ -436,10 +436,10 @@ export default function DeductionsEditor({
 
     if (!isActive) {
       return (
-        <button key={fieldKey} className="dd-item dd-item--inactive" onClick={() => activateField(fieldKey)}>
+        <button key={fieldKey} className="ds-deduction ds-deduction--inactive" onClick={() => activateField(fieldKey)}>
           <Plus size={12} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <span className="dd-item-label">{meta.label}</span>
+            <span className="ds-deduction__label">{meta.label}</span>
             <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2, lineHeight: 1.3 }}>
               {meta.hint}{meta.limit ? ` · Max ${rs(meta.limit)}` : ''}
             </div>
@@ -457,18 +457,18 @@ export default function DeductionsEditor({
     const overLimit = meta.seniorLimit && val > effectiveLimit;
 
     return (
-      <div key={fieldKey} className="dd-item dd-item--active">
-        <div className="dd-item-header">
-          <span className="dd-item-label">{meta.label}</span>
+      <div key={fieldKey} className="ds-deduction ds-deduction--active">
+        <div className="ds-deduction__header">
+          <span className="ds-deduction__label">{meta.label}</span>
           <Badge>§{meta.section}</Badge>
-          {val > 0 && <span className="dd-item-amount">{rs(val)}</span>}
-          <button className="dd-item-remove" onClick={() => deactivateField(fieldKey)} title="Remove">
+          {val > 0 && <span className="ds-deduction__amount">{rs(val)}</span>}
+          <button className="ds-deduction__remove" onClick={() => deactivateField(fieldKey)} title="Remove">
             <X size={10} />
           </button>
         </div>
-        <div className="dd-item-body">
+        <div className="ds-deduction__body">
           {meta.seniorToggleKey && (
-            <label className="ff-check" style={{ marginBottom: 10 }}>
+            <label className="ds-check" style={{ marginBottom: 10 }}>
               <input
                 type="checkbox"
                 checked={!!seniorToggles[meta.seniorToggleKey]}

@@ -166,7 +166,7 @@ export default function TaxCalculator() {
                   {(() => {
                     const best = recommended === 'old' ? oldRegime : newRegime;
                     const net = best.total - n(tds);
-                    return <div className="ds-summary"><span className="ds-summary__label" style={{ fontWeight: 600 }}>{net <= 0 ? 'Refund Due' : 'Tax Payable'}</span><span className={`ff-row-value bold ${net <= 0 ? 'green' : 'red'}`}>{fmt(Math.abs(net))}</span></div>;
+                    return <div className="ds-summary"><span className="ds-summary__label" style={{ fontWeight: 600 }}>{net <= 0 ? 'Refund Due' : 'Tax Payable'}</span><span className={`ds-summary__value bold ${net <= 0 ? 'green' : 'red'}`}>{fmt(Math.abs(net))}</span></div>;
                   })()}
                 </>
               )}

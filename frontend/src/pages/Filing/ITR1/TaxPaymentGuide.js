@@ -112,11 +112,11 @@ export default function TaxPaymentGuide({ computation, pan, assessmentYear, onCh
           </div>
         ) : (
           <>
-            <div className="ff-grid-2">
+            <div className="ds-grid-2">
               <Field label="BSR Code" value={challan.bsrCode} onChange={v => setChallan(p => ({ ...p, bsrCode: v }))} placeholder="7-digit code" hint="From challan receipt" />
               <Field label="Challan Serial No." value={challan.challanNo} onChange={v => setChallan(p => ({ ...p, challanNo: v }))} placeholder="5-digit number" />
             </div>
-            <div className="ff-grid-2">
+            <div className="ds-grid-2">
               <Field label="Date of Deposit" type="date" value={challan.dateOfDeposit} onChange={v => setChallan(p => ({ ...p, dateOfDeposit: v }))} />
               <Field label="Amount Paid (₹)" type="number" value={challan.amount} onChange={v => setChallan(p => ({ ...p, amount: v }))} placeholder={String(netPayable)} />
             </div>

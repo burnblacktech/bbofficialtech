@@ -198,12 +198,12 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
       {employers.map((emp, i) => editing === i ? null : (
         <Card key={i}>
-          <div className="ff-item">
+          <div className="ds-item">
             <div>
-              <div className="ff-item-name">{emp.name}</div>
-              <div className="ff-item-detail">Gross: ₹{n(emp.grossSalary).toLocaleString('en-IN')} · TDS: ₹{n(emp.tdsDeducted).toLocaleString('en-IN')}</div>
+              <div className="ds-item__name">{emp.name}</div>
+              <div className="ds-item__detail">Gross: ₹{n(emp.grossSalary).toLocaleString('en-IN')} · TDS: ₹{n(emp.tdsDeducted).toLocaleString('en-IN')}</div>
             </div>
-            <div className="ff-item-actions">
+            <div className="ds-item__actions">
               <Button variant="ghost" size="sm" onClick={() => { setForm({ ...emp }); setEditing(i); }}><Edit2 size={15} /></Button>
               <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
             </div>
@@ -343,8 +343,8 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
       {!form && <Button variant="secondary" onClick={() => { setForm({ ...EMPTY }); setEditing(employers.length); setErrors({}); }}><Plus size={15} /> Add Employer</Button>}
 
       {Object.keys(errors).length > 0 && (
-        <div className="ff-errors">
-          <div className="ff-errors-title"><AlertCircle size={14} /> Validation</div>
+        <div className="ds-errors">
+          <div className="ds-errors__title"><AlertCircle size={14} /> Validation</div>
           <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul>
         </div>
       )}

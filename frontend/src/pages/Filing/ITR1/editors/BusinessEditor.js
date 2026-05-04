@@ -59,20 +59,20 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {[['presumptive', 'Simple Estimate (Presumptive)'], ['regular', 'Full Accounts (Regular Books)']].map(([k, label]) => (
-          <div key={k} className={`ff-option${mode === k ? ' selected' : ''}`} onClick={() => setMode(k)}>
-            <div className="ff-option-label">{label}</div>
+          <div key={k} className={`ds-option${mode === k ? ' selected' : ''}`} onClick={() => setMode(k)}>
+            <div className="ds-option__label">{label}</div>
           </div>
         ))}
       </div>
 
       {items.map((item, i) => editing === i ? null : (
         <Card key={i}>
-          <div className="ff-item">
+          <div className="ds-item">
             <div>
-              <div className="ff-item-name">{mode === 'presumptive' ? `${item.section} — ₹${n(item.grossReceipts).toLocaleString('en-IN')}` : item.name}</div>
-              <div className="ff-item-detail">{mode === 'presumptive' ? `Declared: ₹${n(item.declaredIncome).toLocaleString('en-IN')}` : `Turnover: ₹${n(item.turnover).toLocaleString('en-IN')}`}</div>
+              <div className="ds-item__name">{mode === 'presumptive' ? `${item.section} — ₹${n(item.grossReceipts).toLocaleString('en-IN')}` : item.name}</div>
+              <div className="ds-item__detail">{mode === 'presumptive' ? `Declared: ₹${n(item.declaredIncome).toLocaleString('en-IN')}` : `Turnover: ₹${n(item.turnover).toLocaleString('en-IN')}`}</div>
             </div>
-            <div className="ff-item-actions">
+            <div className="ds-item__actions">
               <Button variant="ghost" size="sm" onClick={() => { setForm({ ...item }); setEditing(i); }}><Edit2 size={15} /></Button>
               <Button variant="danger" size="sm" onClick={() => remove(mode === 'presumptive' ? pList : rList, mode === 'presumptive' ? setPList : setRList, mode === 'presumptive' ? 'presumptive' : 'business', i)}><Trash2 size={15} /></Button>
             </div>
@@ -84,7 +84,7 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
         <Card active>
           <Select label="Section" value={form.section} onChange={v => setForm({ ...form, section: v })} options={SECTION_OPTIONS} />
           <Field label="Gross Receipts (₹)" type="number" value={form.grossReceipts} onChange={v => setForm({ ...form, grossReceipts: v })} placeholder="0" />
-          <label className="ff-check"><input type="checkbox" checked={form.isDigital} onChange={e => setForm({ ...form, isDigital: e.target.checked })} /> Digital receipts ({'>'} 95%)</label>
+          <label className="ds-check"><input type="checkbox" checked={form.isDigital} onChange={e => setForm({ ...form, isDigital: e.target.checked })} /> Digital receipts ({'>'} 95%)</label>
           <Field label="Declared Income (₹)" type="number" value={form.declaredIncome} onChange={v => setForm({ ...form, declaredIncome: v })} hint={`Min ${minRate(form)}% of receipts = ₹${Math.round(n(form.grossReceipts) * minRate(form) / 100).toLocaleString('en-IN')}`} placeholder="0" />
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <Button variant="primary" onClick={saveP} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>

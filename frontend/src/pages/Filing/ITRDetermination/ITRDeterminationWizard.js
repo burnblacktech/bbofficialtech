@@ -223,13 +223,13 @@ const ITRDeterminationWizard = () => {
   };
 
   return (
-    <div className="ff-page">
+    <div className="ds-content">
       {checkingExisting ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
           <Loader2 size={28} className="animate-spin" style={{ color: '#6b7280' }} />
         </div>
       ) : (
-      <div className="ff-content" style={{ maxWidth: 640 }}>
+      <div className="ds-content" style={{ maxWidth: 640 }}>
         <h1 className="step-title" style={{ fontSize: 26, marginBottom: 8 }}>File Your ITR</h1>
         <p className="step-desc">Tell us about your income and we'll pick the right form</p>
         <Button variant="ghost" onClick={() => navigate('/dashboard')} style={{ marginBottom: 12, padding: '4px 0' }}>
@@ -239,7 +239,7 @@ const ITRDeterminationWizard = () => {
         {/* Section 1: PAN + AY */}
         <Card>
           <Section icon={Shield} title="Identity & Year" />
-          <div className="ff-grid-2">
+          <div className="ds-grid-2">
             <Field label="PAN Number *" error={panError}>
               <div style={{ position: 'relative' }}>
                 <input className={`ds-input ${panError ? 'error' : ''}`} value={pan} onChange={e => { setPan(e.target.value.toUpperCase()); setPanError(''); }} placeholder="ABCDE1234F" maxLength={10} style={{ textTransform: 'uppercase', paddingRight: panIsVerified && pan === panFromProfile ? '90px' : '12px' }} disabled={panIsVerified && pan === panFromProfile} />
@@ -303,7 +303,7 @@ const ITRDeterminationWizard = () => {
               <>
                 <Field label="Annual turnover (approx ₹)" type="number" value={businessTurnover} onChange={v => setBusinessTurnover(v)} placeholder="e.g., 1500000" />
                 {(Number(businessTurnover) || 0) <= 20000000 && (
-                  <label className="ff-check">
+                  <label className="ds-check">
                     <input type="checkbox" checked={wantsPresumptive} onChange={e => setWantsPresumptive(e.target.checked)} />
                     Use presumptive taxation (simpler, no books needed)
                   </label>
@@ -316,8 +316,8 @@ const ITRDeterminationWizard = () => {
         {/* Section 4: Quick profile flags */}
         <Card>
           <Section title="About you" />
-          <label className="ff-check"><input type="checkbox" checked={isDirector} onChange={e => setIsDirector(e.target.checked)} />I am a director in a company</label>
-          <label className="ff-check"><input type="checkbox" checked={hasForeignAssets} onChange={e => setHasForeignAssets(e.target.checked)} />I have foreign income or assets</label>
+          <label className="ds-check"><input type="checkbox" checked={isDirector} onChange={e => setIsDirector(e.target.checked)} />I am a director in a company</label>
+          <label className="ds-check"><input type="checkbox" checked={hasForeignAssets} onChange={e => setHasForeignAssets(e.target.checked)} />I have foreign income or assets</label>
         </Card>
 
         {/* Section 5: ITR Recommendation (live) */}

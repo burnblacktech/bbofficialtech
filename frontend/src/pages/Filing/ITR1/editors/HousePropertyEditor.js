@@ -58,8 +58,8 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {[['none', "I don't own property"], ['selfOccupied', 'I live in my own house'], ['letOut', 'I rent out my property']].map(([k, label]) => (
-          <div key={k} className={`ff-option${type === k ? ' selected' : ''}`} onClick={() => changeType(k)}>
-            <div className="ff-option-label">{label}</div>
+          <div key={k} className={`ds-option${type === k ? ' selected' : ''}`} onClick={() => changeType(k)}>
+            <div className="ds-option__label">{label}</div>
           </div>
         ))}
       </div>

@@ -1507,13 +1507,13 @@ function RegimeCard({ regime, label, recommended, tds }) {
       <div className="ds-summary"><span className="ds-summary__label">Taxable</span><span className="ds-summary__value">{fmt(regime.taxableIncome)}</span></div>
       <div className="ds-summary"><span className="ds-summary__label">Deductions</span><span className="ds-summary__value ds-summary__value--green">{fmt(regime.deductions)}</span></div>
       <div className="ds-summary"><span className="ds-summary__label">Tax</span><span className="ds-summary__value ds-summary__value--bold">{fmt(regime.totalTax)}</span></div>
-      {n(tds?.total) > 0 && <div className="ds-summary"><span className="ds-summary__label">After TDS</span><span className={`ff-row-value bold ${net <= 0 ? 'green' : 'red'}`}>{net <= 0 ? 'Refund ' : ''}{fmt(Math.abs(net))}</span></div>}
+      {n(tds?.total) > 0 && <div className="ds-summary"><span className="ds-summary__label">After TDS</span><span className={`ds-summary__value bold ${net <= 0 ? 'green' : 'red'}`}>{net <= 0 ? 'Refund ' : ''}{fmt(Math.abs(net))}</span></div>}
     </div>
   );
 }
 
 function SRow({ label, value, bold, green, color, onClick }) {
-  const valCls = `ff-row-value${bold ? ' bold' : ''}${green ? ' green' : ''}${n(value) < 0 ? ' green' : ''}`;
+  const valCls = `ds-summary__value${bold ? ' bold' : ''}${green ? ' green' : ''}${n(value) < 0 ? ' green' : ''}`;
   return (
     <div className="ds-summary" style={onClick ? { cursor: 'pointer' } : {}} onClick={onClick}>
       <span className="ds-summary__label">{label}</span>

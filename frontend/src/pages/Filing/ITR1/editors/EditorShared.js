@@ -186,7 +186,7 @@ export function SummaryRow({ label, value, bold, green, red }) {
   return (
     <div className="ds-summary">
       <span className="ds-summary__label">{label}</span>
-      <span className={`ff-row-value ${bold ? 'bold' : ''}`} style={{ color, fontFamily: 'var(--font-mono)' }}>
+      <span className={`ds-summary__value ${bold ? 'bold' : ''}`} style={{ color, fontFamily: 'var(--font-mono)' }}>
         ₹{n(value).toLocaleString('en-IN')}
       </span>
     </div>
@@ -222,7 +222,7 @@ export function SaveButton({ onClick, isSaving, label = 'Save' }) {
   return (
     <button className="ds-btn ds-btn-md ds-btn-primary" onClick={onClick} disabled={isSaving}
       style={{ width: '100%', justifyContent: 'center', marginBottom: 12 }}>
-      {isSaving ? <><span className="ff-spinner" /> Saving...</> : <><Save size={14} /> {label}</>}
+      {isSaving ? <><span className="ds-spinner" /> Saving...</> : <><Save size={14} /> {label}</>}
     </button>
   );
 }

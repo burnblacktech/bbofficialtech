@@ -56,12 +56,12 @@ export default function SessionManagement() {
       ) : (
         sessions.map(s => (
           <div key={s.id} className="step-card" style={{ marginBottom: 8 }}>
-            <div className="ff-item">
+            <div className="ds-item">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {s.deviceType === 'mobile' ? <Smartphone size={18} color="#6b7280" /> : <Monitor size={18} color="#6b7280" />}
                 <div>
-                  <div className="ff-item-name">{s.browser || 'Unknown'} on {s.os || 'Unknown'}</div>
-                  <div className="ff-item-detail">{s.ipAddress} · {s.isCurrent ? 'Current session' : new Date(s.lastActive || s.createdAt).toLocaleDateString()}</div>
+                  <div className="ds-item__name">{s.browser || 'Unknown'} on {s.os || 'Unknown'}</div>
+                  <div className="ds-item__detail">{s.ipAddress} · {s.isCurrent ? 'Current session' : new Date(s.lastActive || s.createdAt).toLocaleDateString()}</div>
                 </div>
               </div>
               {!s.isCurrent && (
