@@ -97,7 +97,7 @@
 /* ── 3. Three-Panel Cockpit: Story (220px) + Editor (1fr) + Insights (260px) ── */
 .story-panels {
   display: grid;
-  grid-template-columns: 240px 1fr 280px;
+  grid-template-columns: 200px 1fr;
   flex: 1;
   overflow: hidden;
 }
@@ -106,7 +106,7 @@
 .story-flow {
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 10px;
   background: var(--bg-card);
   border-right: 1px solid var(--border-light);
   overflow-y: auto; /* scrollable on small desktop screens */
@@ -154,7 +154,7 @@
 }
 
 .story-flow__card-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
@@ -162,7 +162,7 @@
 }
 
 .story-flow__card-amount {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -172,8 +172,8 @@
 
 /* Sub-items list (INCOME card) */
 .story-flow__card-items {
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 4px;
+  padding-top: 4px;
   border-top: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
@@ -480,7 +480,7 @@
 .story-editor {
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 24px;
+  padding: 10px 16px;
   background: var(--bg-page);
   scrollbar-width: thin;
   scrollbar-color: var(--border-medium) transparent;
@@ -693,6 +693,8 @@
   color: #fff;
 }
 
+
+.story-insights { display: none !important; }
 
 /* ── 10. Insights Panel — Tax cockpit sidebar ── */
 .story-insights {
