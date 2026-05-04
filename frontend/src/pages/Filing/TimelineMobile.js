@@ -47,8 +47,8 @@ export default function TimelineMobile({ filing, computation }) {
   const { zoomIn, activeSources, selectedRegime } = useFilingStore();
   const payload = filing?.jsonPayload || {};
 
-  const visible = SECTIONS.filter(s =>
-    ['personalInfo', 'deductions', 'bank'].includes(s.id) || activeSources.includes(s.id)
+  const visible = SECTIONS.filter((s) =>
+    ['personalInfo', 'deductions', 'bank'].includes(s.id) || activeSources.includes(s.id),
   );
 
   const r = computation?.[selectedRegime === 'old' ? 'oldRegime' : 'newRegime'];
