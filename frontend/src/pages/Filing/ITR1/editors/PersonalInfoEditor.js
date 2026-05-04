@@ -395,8 +395,60 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
               }
               if (data.dob && !form.dob) updateField('dob', data.dob);
               if (data.gender && !form.gender) updateField('gender', data.gender === 'M' ? 'MALE' : data.gender === 'F' ? 'FEMALE' : 'OTHER');
-              if (data.address && !form.address?.flatDoorBuilding) {
-                updateField('address', { ...form.address, flatDoorBuilding: data.address });
+              if (data.address) {
+                const addr = form.address || {};
+                let parsed = {};
+                if (typeof data.address === 'object') {
+                  // Backend returns structured address — use directly
+                  parsed = {
+                    flatDoorBuilding: data.address.flatDoorBuilding || '',
+                    premisesName: data.address.premisesName || '',
+                    areaLocality: data.address.areaLocality || '',
+                    city: data.address.city || '',
+                    stateCode: data.address.stateCode || '',
+                    pincode: data.address.pincode || '',
+                  };
+                  // Map state name to code if stateCode is empty but we have fullAddress
+                  if (!parsed.stateCode && data.address.fullAddress) {
+                    const st = INDIAN_STATES.find(s => data.address.fullAddress.toLowerCase().includes(s.name.toLowerCase()));
+                    if (st) parsed.stateCode = st.code;
+                  }
+                } else {
+                  // Fallback: parse address string
+                  const raw = String(data.address);
+                  const pincodeMatch = raw.match(/\b(\d{6})\b/);
+                  if (pincodeMatch) parsed.pincode = pincodeMatch[1];
+                  const st = INDIAN_STATES.find(s => raw.toLowerCase().includes(s.name.toLowerCase()));
+                  if (st) parsed.stateCode = st.code;
+                  const roadPattern = /(.+?)\b(road|street|marg|lane|nagar|colony|sector)\b/i;
+                  const roadMatch = raw.match(roadPattern);
+                  if (roadMatch) {
+                    parsed.flatDoorBuilding = roadMatch[1].replace(/,\s*$/, '').trim();
+                    // Extract road/street portion up to next comma
+                    const afterFlat = raw.slice(roadMatch[1].length);
+                    const roadEnd = afterFlat.indexOf(',');
+                    parsed.roadStreet = (roadEnd >= 0 ? afterFlat.slice(0, roadEnd) : afterFlat.split(/\s*[-–]\s*/)[0]).trim();
+                  }
+                  // City: segment before state or after last comma
+                  const segments = raw.replace(/\b\d{6}\b/, '').split(/[,\-–]/).map(s => s.trim()).filter(Boolean);
+                  if (st) {
+                    const stIdx = segments.findIndex(s => s.toLowerCase().includes(st.name.toLowerCase()));
+                    if (stIdx > 0) parsed.city = segments[stIdx - 1];
+                  } else if (segments.length > 1) {
+                    parsed.city = segments[segments.length - 1];
+                  }
+                  if (!parsed.flatDoorBuilding && segments.length) parsed.flatDoorBuilding = segments[0];
+                  if (!parsed.roadStreet && segments.length > 2) parsed.areaLocality = segments[1];
+                }
+                // Only fill empty fields
+                const merged = { ...addr };
+                for (const [key, val] of Object.entries(parsed)) {
+                  if (val && !addr[key]) merged[key] = val;
+                }
+                if (JSON.stringify(merged) !== JSON.stringify(addr)) {
+                  updateField('address', merged);
+                  toast.success('Address auto-filled from Aadhaar');
+                }
               }
             }} />
           </div>
@@ -628,7 +680,7 @@ function AadhaarUploadButton({ onVerified }) {
         name: data.name,
         dob: data.dob,
         gender: data.gender,
-        address: data.address?.fullAddress || data.address?.flatDoorBuilding,
+        address: data.address,
       });
     } catch (err) {
       toast.error(err.response?.data?.error || 'OTP verification failed');

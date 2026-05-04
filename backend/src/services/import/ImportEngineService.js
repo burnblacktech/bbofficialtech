@@ -10,6 +10,8 @@ const { sequelize } = require('../../config/database');
 const AuditService = require('../core/AuditService');
 const FilingSnapshotService = require('../itr/FilingSnapshotService');
 const Form16Parser = require('./parsers/Form16Parser');
+const BrokerStatementParser = require('./parsers/BrokerStatementParser');
+const BankStatementParser = require('./parsers/BankStatementParser');
 const Form16AParser = require('./parsers/Form16AParser');
 const Form16BParser = require('./parsers/Form16BParser');
 const Form16CParser = require('./parsers/Form16CParser');
@@ -21,7 +23,7 @@ const { AppError } = require('../../middleware/errorHandler');
 const ErrorCodes = require('../../constants/ErrorCodes');
 const enterpriseLogger = require('../../utils/logger');
 
-const SIZE_LIMITS = { form16: 10 * 1024 * 1024, form16a: 10 * 1024 * 1024, form16b: 10 * 1024 * 1024, form16c: 10 * 1024 * 1024, '26as': 5 * 1024 * 1024, ais: 10 * 1024 * 1024 };
+const SIZE_LIMITS = { form16: 10 * 1024 * 1024, form16a: 10 * 1024 * 1024, form16b: 10 * 1024 * 1024, form16c: 10 * 1024 * 1024, '26as': 5 * 1024 * 1024, ais: 10 * 1024 * 1024, broker: 10 * 1024 * 1024, bank_statement: 10 * 1024 * 1024 };
 const MIME_MAP = { form16: 'application/pdf', form16a: 'application/pdf', form16b: 'application/pdf', form16c: 'application/pdf', '26as': 'application/json', ais: 'application/json' };
 
 class ImportEngineService {
@@ -123,6 +125,18 @@ class ImportEngineService {
         if (parseErr instanceof AppError) throw parseErr;
         throw new AppError(`Form 16C parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
       }
+    } else if (documentType === 'broker') {
+      try { parsed = await BrokerStatementParser.parse(buffer, req?.body?.brokerHint); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Broker statement parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
+    } else if (documentType === 'bank_statement') {
+      try { parsed = await BankStatementParser.parse(buffer, { bankName: req?.body?.bankHint }); }
+      catch (parseErr) {
+        if (parseErr instanceof AppError) throw parseErr;
+        throw new AppError(`Bank statement parsing failed: ${parseErr.message}`, 422, ErrorCodes.IMPORT_PARSE_FAILED);
+      }
     }
 
     // 5. Map to jsonPayload paths
@@ -133,6 +147,8 @@ class ImportEngineService {
     else if (documentType === 'form16a') mappedData = DataMapper.mapForm16A(parsed);
     else if (documentType === 'form16b') mappedData = DataMapper.mapForm16B(parsed);
     else if (documentType === 'form16c') mappedData = DataMapper.mapForm16C(parsed);
+    else if (documentType === 'broker') mappedData = DataMapper.mapBroker(parsed);
+    else if (documentType === 'bank_statement') mappedData = DataMapper.mapBankStatement(parsed);
     else mappedData = DataMapper.mapAIS(parsed);
 
     // 6. Detect conflicts
@@ -333,6 +349,8 @@ class ImportEngineService {
     else if (documentType === 'form16a') mappedData = DataMapper.mapForm16A(parsed);
     else if (documentType === 'form16b') mappedData = DataMapper.mapForm16B(parsed);
     else if (documentType === 'form16c') mappedData = DataMapper.mapForm16C(parsed);
+    else if (documentType === 'broker') mappedData = DataMapper.mapBroker(parsed);
+    else if (documentType === 'bank_statement') mappedData = DataMapper.mapBankStatement(parsed);
     else mappedData = DataMapper.mapAIS(parsed);
 
     const fieldMapping = this.buildFieldMapping(mappedData);

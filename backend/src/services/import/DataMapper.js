@@ -275,6 +275,26 @@ class DataMapper {
     }
     current[parts[parts.length - 1]] = value;
   }
+
+  static mapBroker(parsed) {
+    const map = {};
+    (parsed.transactions || []).forEach((t, i) => {
+      map[`income.capitalGains.transactions[${i}].gainType`] = t.gainType;
+      map[`income.capitalGains.transactions[${i}].assetType`] = t.assetType || 'equity';
+      map[`income.capitalGains.transactions[${i}].saleValue`] = t.saleValue;
+      map[`income.capitalGains.transactions[${i}].purchaseValue`] = t.purchaseValue;
+      map[`income.capitalGains.transactions[${i}].expenses`] = t.expenses || 0;
+    });
+    return map;
+  }
+
+  static mapBankStatement(parsed) {
+    const map = {};
+    if (parsed.savingsInterest) map['income.otherSources.savingsInterest'] = parsed.savingsInterest;
+    if (parsed.fdInterest) map['income.otherSources.fdInterest'] = parsed.fdInterest;
+    if (parsed.tdsOnInterest) map['taxes.tds.fromFD'] = parsed.tdsOnInterest;
+    return map;
+  }
 }
 
 module.exports = DataMapper;
