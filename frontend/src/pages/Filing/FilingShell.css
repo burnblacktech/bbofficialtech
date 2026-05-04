@@ -339,3 +339,58 @@
   .orbital__hub { min-width: 160px; padding: 8px 12px; }
   .orbital__hub-row { font-size: 10px; }
 }
+
+/* ── Mobile Timeline ── */
+.mobile-timeline { padding: 12px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; }
+.mobile-timeline__summary {
+  background: var(--c-card, #fff); border: 1px solid var(--c-border, #E8E8E4);
+  border-radius: var(--r-lg, 8px); padding: 10px 12px;
+}
+.mobile-timeline__summary-row {
+  display: flex; justify-content: space-between; padding: 2px 0;
+  font-size: 12px; color: var(--c-text-2, #4b5563);
+}
+.mobile-timeline__summary-row .mono {
+  font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums;
+  font-weight: 500; color: var(--c-text, #111);
+}
+.mobile-timeline__list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mobile-timeline__card {
+  display: flex; align-items: center; gap: 8px; padding: 10px;
+  background: var(--c-card, #fff); border: 1px solid var(--c-border, #E8E8E4);
+  border-radius: var(--r-lg, 8px); cursor: pointer; font-family: inherit;
+  text-align: left; transition: border-color 0.12s; min-height: auto;
+}
+.mobile-timeline__card:hover { border-color: var(--c-brand, #D4AF37); }
+.mobile-timeline__icon {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.mobile-timeline__info { flex: 1; min-width: 0; }
+.mobile-timeline__label { display: block; font-size: 12px; font-weight: 500; color: var(--c-text, #111); }
+.mobile-timeline__amount { display: block; font-size: 11px; font-family: var(--font-mono, monospace); color: var(--c-text-3, #9ca3af); margin-top: 1px; }
+.mobile-timeline__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-border-med, #d4d4d0); flex-shrink: 0; }
+.mobile-timeline__dot.done { background: var(--c-success, #16A34A); }
+
+/* Mobile bottom bar for zoomed state */
+.mobile-bottom-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  padding: 8px 12px; background: var(--c-card, #fff);
+  border-top: 1px solid var(--c-border, #E8E8E4);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 768px) {
+  .filing-shell--overview { grid-template-columns: 1fr; height: 100vh; }
+  .filing-shell--overview .filing-editor,
+  .filing-shell--overview .filing-taxbar { display: none; }
+  .filing-shell--overview .filing-timeline { border-right: none; }
+
+  .filing-shell--zoomed { grid-template-columns: 1fr; grid-template-rows: 1fr auto; height: 100vh; }
+  .filing-shell--zoomed .filing-timeline { display: none; }
+  .filing-shell--zoomed .filing-taxbar { display: none; }
+  .filing-shell--zoomed .filing-editor { padding-bottom: 60px; }
+
+  .filing-progress { display: none; }
+  .mobile-bottom-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+}
