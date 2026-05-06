@@ -39,7 +39,7 @@ const GoogleOAuthError = lazy(() => import('./pages/Auth/GoogleOAuthError'));
 const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
 
 // Filing flow
-const ITRDeterminationWizard = lazy(() => import('./pages/Filing/ITRDetermination/ITRDeterminationWizard'));
+const FilingStart = lazy(() => import('./pages/Filing/FilingStart'));
 const SubmissionStatus = lazy(() => import('./pages/Filing/SubmissionStatus'));
 const ITR1Flow = lazy(() => import('./pages/Filing/ITR1/ITR1Flow'));
 const FilingPage = lazy(() => import('./pages/Filing/FilingPage'));
@@ -182,7 +182,7 @@ const AppContent = () => {
         <Route path="/itr/pan-verification" element={<Page><PANVerification /></Page>} />
 
         {/* Filing: start */}
-        <Route path="/filing/start" element={<Page message="Loading..."><ITRDeterminationWizard /></Page>} />
+        <Route path="/filing/start" element={<Page message="Loading..."><FilingStart /></Page>} />
 
         {/* Orbital Filing Engine (new UX) */}
         <Route path="/filing/:filingId" element={<Bare><FilingPage /></Bare>} />
