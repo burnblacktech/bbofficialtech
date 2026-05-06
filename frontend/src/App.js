@@ -185,7 +185,7 @@ const AppContent = () => {
         <Route path="/filing/start" element={<Page message="Loading..."><FilingStart /></Page>} />
 
         {/* Orbital Filing Engine (new UX) */}
-        <Route path="/filing/:filingId" element={<Bare><FilingPage /></Bare>} />
+        <Route path="/filing/:filingId" element={<Page message="Loading..."><ITR1Flow /></Page>} />
         <Route path="/filing/:filingId/v2" element={<Bare><FilingPage /></Bare>} />
 
         {/* ITR filing — legacy HUD (kept for backward compat) */}
