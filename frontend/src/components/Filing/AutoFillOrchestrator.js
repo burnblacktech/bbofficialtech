@@ -177,6 +177,19 @@ export default function AutoFillOrchestrator({
       aria-modal="true"
       aria-label="Auto-fill progress"
     >
+      {/* Close/Skip button */}
+      <button
+        onClick={() => { abortRef.current?.abort(); onComplete?.(null, null); }}
+        style={{
+          position: 'absolute', top: 16, right: 16, background: 'none', border: 'none',
+          color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 101, opacity: 0.7,
+          lineHeight: 1, padding: 8, minHeight: 'auto',
+        }}
+        aria-label="Skip auto-fill"
+        title="Skip auto-fill"
+      >
+        ✕
+      </button>
       <AnimatePresence mode="wait">
         {isProcessing && (
           <ProgressOverlay key="progress" stage={stage} />
