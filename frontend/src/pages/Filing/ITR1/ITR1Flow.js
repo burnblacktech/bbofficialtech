@@ -1470,6 +1470,7 @@ export default function ITR1Flow() {
           payload={payload}
           onComplete={(mergedPayload, summary) => {
             setShowAutoFill(false);
+            if (!mergedPayload) return; // user skipped
             qc.invalidateQueries({ queryKey: ['filing', filingId] });
             recompute();
             toast.success(`Auto-fill complete — ${summary?.fieldsPopulated || 0} fields populated`);
