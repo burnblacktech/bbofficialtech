@@ -64,6 +64,13 @@ router.get('/health', async (req, res) => {
     health.status = 'degraded';
   }
 
+  // External services — check if configured
+  health.services.surepass = { configured: !!process.env.SUREPASS_API_KEY };
+  health.services.razorpay = {
+    configured: !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET),
+  };
+  health.services.r2 = { configured: !!process.env.R2_ENDPOINT };
+
   const statusCode = health.status === 'healthy' ? 200 : 503;
   res.status(statusCode).json(health);
 });

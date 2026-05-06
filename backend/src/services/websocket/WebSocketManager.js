@@ -4,6 +4,7 @@
 // Uses Redis pub/sub for cross-instance messaging
 // =====================================================
 
+const jwt = require('jsonwebtoken');
 const enterpriseLogger = require('../../utils/logger');
 const redisService = require('../core/RedisService');
 
@@ -35,13 +36,22 @@ class WebSocketManager {
         server: httpServer,
         path: '/ws',
         verifyClient: (info) => {
-          // Extract userId and token from query string
           const url = new URL(info.req.url, `http://${info.req.headers.host}`);
           const userId = url.searchParams.get('userId');
           const token = url.searchParams.get('token');
-          
-          // Basic validation - in production, verify JWT token
-          return !!(userId && token);
+
+          if (!userId || !token) return false;
+
+          try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+              algorithms: ['HS256'],
+              clockTolerance: 60,
+            });
+            return decoded.id === userId || decoded.userId === userId;
+          } catch (err) {
+            enterpriseLogger.warn('WebSocket JWT verification failed', { userId, error: err.message });
+            return false;
+          }
         },
       });
 

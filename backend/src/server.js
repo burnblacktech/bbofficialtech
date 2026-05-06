@@ -4,6 +4,10 @@
 
 require('dotenv').config();
 
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'development') {
+  console.warn(`[WARNING] NODE_ENV is "${process.env.NODE_ENV || 'undefined'}". Set to "production" or "development".`);
+}
+
 // Sentry must init before all other imports
 if (process.env.SENTRY_DSN) {
   const Sentry = require('@sentry/node');
@@ -87,6 +91,16 @@ const startServer = async () => {
       enterpriseLogger.info(`Server listening on ${HOST}:${PORT}`, {
         environment: process.env.NODE_ENV || 'development',
       });
+
+      // Critical feature flag check
+      if (process.env.NODE_ENV === 'production') {
+        const featureFlags = require('./common/featureFlags');
+        const critical = ['feature_payment_razorpay', 'feature_eri_live', 'feature_pan_verification_live'];
+        const off = critical.filter(f => !featureFlags.isEnabled(f));
+        if (off.length) {
+          enterpriseLogger.warn('Critical feature flags are OFF in production', { disabledFlags: off });
+        }
+      }
 
       // WebSocket (optional)
       if (wsManager) {
