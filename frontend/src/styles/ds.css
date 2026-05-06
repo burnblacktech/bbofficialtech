@@ -146,3 +146,50 @@
 /* ── DS: Tip ── */
 .ds-tip { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: #f0fdfa; border: 1px solid #99f6e4; border-radius: var(--r-md); margin-bottom: var(--sp-2); font-size: var(--fs-sm); color: var(--c-text-2); line-height: 1.4; }
 .ds-tip__dismiss { background: none; border: none; color: var(--c-text-4); cursor: pointer; padding: 2px; margin-left: auto; flex-shrink: 0; min-height: auto; }
+
+/* ── Formula Bar — live tax equation strip ── */
+.formula-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 12px; margin-bottom: 8px;
+  background: var(--bg-card, #1A1A1A); border: 1px solid var(--border-light, #333);
+  border-radius: var(--r-sm, 4px); font-family: var(--font-mono); font-size: 12px;
+  overflow-x: auto; white-space: nowrap;
+}
+.formula-bar__label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--text-muted, #888); text-transform: uppercase; flex-shrink: 0;
+}
+.formula-bar__equation { display: flex; align-items: center; gap: 6px; flex: 1; }
+.formula-bar__val { color: var(--text-primary, #E5E5E5); font-variant-numeric: tabular-nums; }
+.formula-bar__val--highlight { color: var(--brand-primary, #D4AF37); font-weight: 600; }
+.formula-bar__op { color: var(--text-muted, #888); font-size: 11px; }
+.formula-bar__result { font-weight: 700; font-size: 13px; }
+.formula-bar__result.refund { color: var(--color-success, #16A34A); }
+.formula-bar__result.payable { color: var(--color-error, #DC2626); }
+.formula-bar__regime {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+  color: var(--brand-primary, #D4AF37); flex-shrink: 0;
+}
+
+/* ── Summary Cards — 4-up metric grid ── */
+.summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.summary-cards__card {
+  padding: 10px 12px; border: 1px solid var(--border-light, #333);
+  border-radius: var(--r-sm, 4px); background: var(--bg-card, #1A1A1A);
+}
+.summary-cards__label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted, #888); margin-bottom: 4px;
+}
+.summary-cards__value {
+  font-size: 16px; font-weight: 600; font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums; color: var(--text-primary, #E5E5E5);
+}
+.summary-cards__card--success .summary-cards__value { color: var(--color-success, #16A34A); }
+.summary-cards__card--brand .summary-cards__value { color: var(--brand-primary, #D4AF37); }
+.summary-cards__card--muted .summary-cards__value { color: var(--text-muted, #888); }
+
+@media (max-width: 768px) {
+  .summary-cards { grid-template-columns: repeat(2, 1fr); }
+  .formula-bar { font-size: 11px; }
+}

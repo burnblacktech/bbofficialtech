@@ -41,6 +41,8 @@ import TaxPaymentGuide from './TaxPaymentGuide';
 import PaymentGate from './PaymentGate';
 import FilerInfoCard from './editors/FilerInfoCard';
 import ErrorBoundary from '../../../components/ErrorBoundary';
+import FormulaBar from '../../../components/Filing/FormulaBar';
+import SummaryCards from '../../../components/Filing/SummaryCards';
 import TaxComputationCard from '../../../components/Filing/TaxComputationCard';
 import SmartButton from '../../../components/UI/SmartButton';
 import CountingNumber from '../../../components/UI/CountingNumber';
@@ -1285,6 +1287,8 @@ export default function ITR1Flow() {
 
         {/* RIGHT: Editor Panel — only scrollable area */}
         <main className="story-editor">
+          <FormulaBar computation={comp} selectedRegime={selectedRegime} />
+          <SummaryCards computation={comp} selectedRegime={selectedRegime} tds={comp?.tds} />
           {isSubmitted && (
             <div style={{ padding: '10px 14px', marginBottom: 16, background: 'var(--color-info-bg)', border: '1px solid var(--color-info-border)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
               <CheckCircle size={14} style={{ color: 'var(--color-info)', flexShrink: 0 }} />
