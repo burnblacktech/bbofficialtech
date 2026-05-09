@@ -29,11 +29,6 @@ export default function DeductionOptimizer({ data }) {
         <span className="dash-v2__chart-title">Deduction Optimizer</span>
         <button onClick={() => navigate('/finance/investments')} style={{ background: 'none', border: 'none', fontSize: 11, color: 'var(--bb-brand)', cursor: 'pointer' }}>Manage →</button>
       </div>
-        <span style={{ fontSize: 'var(--bb-fs-xs)', color: 'var(--bb-fg-muted)' }}>
-          <Zap size={12} color="var(--bb-brand)" style={{ display: 'inline', marginRight: 4 }} />
-          <span style={{ color: 'var(--bb-brand)', fontWeight: 500 }}>₹{formatK(potential)}</span> potential savings
-        </span>
-      </div>
       <div style={{ marginBottom: 'var(--bb-space-4)', padding: 'var(--bb-space-3)', borderRadius: 'var(--bb-radius-md)', background: 'var(--bb-bg-elevated)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--bb-fs-xs)', color: 'var(--bb-fg-muted)', marginBottom: 6 }}>
           <span>Total Utilized</span>
