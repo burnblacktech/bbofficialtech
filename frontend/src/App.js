@@ -96,14 +96,6 @@ const AdminGSTChecker = lazy(() => import('./pages/Admin/GSTChecker'));
 // HELPERS
 // =====================================================
 
-function AcknowledgmentRedirect() {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search || '');
-  const filingId = params.get('filingId') || location.state?.filingId || null;
-  if (!filingId) return <Navigate to="/dashboard" replace />;
-  return <Navigate to={`/acknowledgment/${filingId}`} replace state={{ ...(location.state || {}), filingId }} />;
-}
-
 // Wrap route element with Suspense + Layout
 const Page = ({ children, message = 'Loading...' }) => (
   <Layout>
@@ -188,19 +180,11 @@ const AppContent = () => {
         {/* Filing: Report view (default) + Editor view */}
         <Route path="/filing/:filingId" element={<Bare><FilingReport /></Bare>} />
         <Route path="/filing/:filingId/edit" element={<Page message="Loading..."><ITR1Flow /></Page>} />
-        <Route path="/filing/:filingId/report" element={<Bare><FilingReport /></Bare>} />
-
-        {/* ITR filing — legacy HUD (kept for backward compat) */}
-        <Route path="/filing/:filingId/itr1" element={<Page message="Loading..."><ITR1Flow /></Page>} />
-        <Route path="/filing/:filingId/itr2" element={<Page message="Loading..."><ITR1Flow /></Page>} />
-        <Route path="/filing/:filingId/itr3" element={<Page message="Loading..."><ITR1Flow /></Page>} />
-        <Route path="/filing/:filingId/itr4" element={<Page message="Loading..."><ITR1Flow /></Page>} />
         <Route path="/filing/:filingId/submission-status" element={<Page><SubmissionStatus /></Page>} />
 
         {/* ITR utilities */}
         <Route path="/itr/history" element={<Page><FilingHistory /></Page>} />
         <Route path="/itr/e-verify" element={<Page><EVerification /></Page>} />
-        <Route path="/itr/acknowledgment" element={<Page><AcknowledgmentRedirect /></Page>} />
         <Route path="/acknowledgment/:filingId" element={<Page><Acknowledgment /></Page>} />
       </Route>
 
