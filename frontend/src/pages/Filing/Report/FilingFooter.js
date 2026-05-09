@@ -22,6 +22,21 @@ export default function FilingFooter({ completeness, filingId, onSubmit }) {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    try {
+      const { data } = await api.get(`/filings/${filingId}/computation-pdf`, { responseType: 'blob' });
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `TaxComputation_${filingId.slice(0, 8)}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('PDF downloaded');
+    } catch (err) {
+      toast.error(err?.userMessage || 'Failed to download PDF');
+    }
+  };
+
   const handlePrint = () => window.print();
 
   return (
@@ -54,7 +69,7 @@ export default function FilingFooter({ completeness, filingId, onSubmit }) {
         </div>
         <div className="fr-footer__actions">
           <button className="fr-footer__action" onClick={handleDownloadJSON}><FileJson size={14} /> JSON</button>
-          <button className="fr-footer__action"><FileText size={14} /> PDF</button>
+          <button className="fr-footer__action" onClick={handleDownloadPDF}><FileText size={14} /> PDF</button>
           <button className="fr-footer__action" onClick={handlePrint}><Printer size={14} /> Print</button>
         </div>
       </div>
