@@ -15,10 +15,23 @@ const FY_OPTIONS = ['2024-25', '2023-24', '2022-23'];
 export default function DashboardV2() {
   const [fy, setFy] = useState('2024-25');
 
-  const { data, isLoading } = useQuery({
+  const { data: raw, isLoading } = useQuery({
     queryKey: ['dashboard-summary', fy],
     queryFn: () => getDashboardSummary(fy),
   });
+
+  // Map backend shape to component expectations
+  const data = raw ? {
+    overview: {
+      grossIncome: raw.financialSummary?.totalIncome || 0,
+      deductions: raw.financialSummary?.totalDeductions || 0,
+      taxableIncome: Math.max(0, (raw.financialSummary?.totalIncome || 0) - (raw.financialSummary?.totalDeductions || 0)),
+      taxLiability: raw.financialSummary?.estimatedTax || 0,
+    },
+    monthlyTrend: raw.monthlyOverview || [],
+    deductions: raw.investmentProgress || [],
+    filings: raw.filings || [],
+  } : null;
 
   if (isLoading) {
     return <Page><div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}><Spinner size="lg" /></div></Page>;
