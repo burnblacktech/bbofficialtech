@@ -121,16 +121,43 @@ class ITR1ComputationService {
 
   static computeHouseProperty(hpData) {
     if (!hpData || !hpData.type) {
+      // Support properties array for multiple properties
+      if (hpData?.properties && Array.isArray(hpData.properties)) {
+        let totalNet = 0;
+        for (const prop of hpData.properties) {
+          const result = this.computeHouseProperty(prop);
+          totalNet += result.netIncome;
+        }
+        return { type: 'MULTIPLE', netIncome: totalNet };
+      }
       return { type: 'NONE', netIncome: 0 };
     }
 
-    // Normalize type: frontend sends camelCase, backend expects UPPER_SNAKE
+    // Normalize type
     const typeMap = {
       selfoccupied: 'SELF_OCCUPIED', selfOccupied: 'SELF_OCCUPIED', 'SELF_OCCUPIED': 'SELF_OCCUPIED', self_occupied: 'SELF_OCCUPIED',
       letout: 'LET_OUT', letOut: 'LET_OUT', 'LET_OUT': 'LET_OUT', let_out: 'LET_OUT',
+      both: 'BOTH', BOTH: 'BOTH',
       none: 'NONE', NONE: 'NONE',
     };
     const normalizedType = typeMap[hpData.type] || (hpData.type ? hpData.type.toUpperCase().replace(/([a-z])([A-Z])/g, '$1_$2') : 'NONE');
+
+    if (normalizedType === 'NONE') {
+      return { type: 'NONE', netIncome: 0 };
+    }
+
+    // BOTH: self-occupied + let-out combined
+    if (normalizedType === 'BOTH') {
+      const selfOccInterest = Math.min(n(hpData.selfOccupiedInterest || hpData.interestSelfOccupied), 200000);
+      const rent = n(hpData.annualRentReceived);
+      const municipal = n(hpData.municipalTaxesPaid);
+      const nav = Math.max(0, rent - municipal);
+      const stdDed = Math.round(nav * 0.30);
+      const letOutInterest = n(hpData.interestLetOut || hpData.interestOnHomeLoan);
+      const letOutNet = nav - stdDed - letOutInterest;
+      const totalNet = -selfOccInterest + letOutNet;
+      return { type: 'BOTH', selfOccupiedLoss: -selfOccInterest, letOutIncome: letOutNet, netIncome: totalNet };
+    }
 
     if (normalizedType === 'NONE') {
       return { type: 'NONE', netIncome: 0 };
@@ -276,8 +303,17 @@ class ITR1ComputationService {
 
     // ── 80TTA vs 80TTB: mutually exclusive ──
     // Senior citizens (age ≥ 60) should use 80TTB (₹50K), others use 80TTA (₹10K)
-    // Use selfSenior flag from 80D section (already persisted by DeductionsEditor)
-    const isSenior = d.isSeniorCitizen || d.selfSenior || false;
+    // Auto-detect from DOB if isSeniorCitizen flag not explicitly set
+    const dob = payload?.personalInfo?.dateOfBirth;
+    const ay = payload?.assessmentYear;
+    let isSenior = d.isSeniorCitizen || d.selfSenior || false;
+    if (!isSenior && dob && ay) {
+      const ayStart = parseInt(ay?.split('-')[0]) || 2026;
+      const fyEnd = new Date(`${ayStart}-03-31`);
+      const birth = new Date(dob);
+      const age = Math.floor((fyEnd - birth) / (365.25 * 24 * 60 * 60 * 1000));
+      isSenior = age >= 60;
+    }
     let s80tta = 0;
     let s80ttb = 0;
     if (isSenior) {
@@ -314,7 +350,10 @@ class ITR1ComputationService {
     // ── 80EE/80EEA: First-time home buyer interest — ₹1.5L ──
     const s80ee = Math.min(n(d.firstHomeBuyerInterest), 150000);
 
-    const total = s80c + s80ccd1b + s80ccd2Capped + s80d + s80e + s80g + s80tta + s80ttb + s80gg + s80u + s80dd + s80ddb + s80ee;
+    // ── 80QQB: Royalty income for authors — ₹3L cap ──
+    const s80qqb = Math.min(n(d.royalty80QQB || d.section80QQB?.royalty), 300000);
+
+    const total = s80c + s80ccd1b + s80ccd2Capped + s80d + s80e + s80g + s80tta + s80ttb + s80gg + s80u + s80dd + s80ddb + s80ee + s80qqb;
 
     return {
       total,
@@ -332,6 +371,7 @@ class ITR1ComputationService {
         section80DD: s80dd,
         section80DDB: s80ddb,
         section80EE: s80ee,
+        section80QQB: s80qqb,
       },
       warnings: deductionWarnings,
     };
@@ -358,7 +398,14 @@ class ITR1ComputationService {
     // Store gross total for 80G adjusted total income computation (v1 simplification)
     this._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? this.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
-    const taxableIncome = Math.max(0, income.grossTotal - deductions.total);
+
+    // In new regime, 80CCD(2) employer NPS is still allowed
+    let newRegime80CCD2 = 0;
+    if (regime === 'new' && deductionData) {
+      const d = deductionData;
+      newRegime80CCD2 = n(d.section80CCD2?.employerNps || d.employerNps);
+    }
+    const taxableIncome = Math.max(0, income.grossTotal - deductions.total - newRegime80CCD2);
 
     // VDA income is taxed at flat 30% separately from slab computation
     const vdaGain = income.otherSources?.vdaGain || 0;
@@ -565,7 +612,7 @@ function n(val) { return Number(val) || 0; }
 function getOldRegimeSlabs(dateOfBirth, assessmentYear) {
   if (!dateOfBirth) return OLD_SLABS;
   const ayStart = parseInt(assessmentYear?.split('-')[0]) || 2025;
-  const fyEnd = new Date(`${ayStart - 1}-03-31`);
+  const fyEnd = new Date(`${ayStart}-03-31`);
   const birth = new Date(dateOfBirth);
   const ageAtFYEnd = Math.floor((fyEnd - birth) / (365.25 * 24 * 60 * 60 * 1000));
   if (ageAtFYEnd >= 80) return OLD_SLABS_SUPER_SENIOR;
