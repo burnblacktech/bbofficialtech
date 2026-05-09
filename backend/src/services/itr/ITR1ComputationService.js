@@ -77,8 +77,8 @@ class ITR1ComputationService {
     for (const emp of salaryData.employers) {
       const gross = n(emp.grossSalary);
       const hraExempt = n(emp.allowances?.hra?.exempt);
-      const ltaExempt = n(emp.allowances?.lta?.exempt);
-      const otherExempt = n(emp.allowances?.other);
+      const ltaExempt = n(emp.allowances?.lta?.exempt || emp.allowances?.lta?.claimed || emp.allowances?.lta);
+      const otherExempt = n(emp.allowances?.other || emp.allowances?.otherExempt);
       const profTax = n(emp.deductions?.professionalTax || emp.professionalTax);
       const empTds = n(emp.tdsDeducted);
 
@@ -105,8 +105,11 @@ class ITR1ComputationService {
     let entertainmentAllowanceDeduction = 0;
     if (employerCategory === 'GOV') {
       const totalEntertainment = salaryData.employers.reduce((sum, emp) => sum + n(emp.entertainmentAllowance), 0);
-      const totalBasicPlusDA = salaryData.employers.reduce((sum, emp) => sum + n(emp.basicPlusDA), 0);
-      entertainmentAllowanceDeduction = Math.min(totalEntertainment, 5000, Math.round(0.20 * totalBasicPlusDA));
+      const totalBasicPlusDA = salaryData.employers.reduce((sum, emp) => sum + n(emp.basicPlusDA || emp.basicSalary), 0);
+      // If basicPlusDA not provided, use min(actual, 5000) — the 20% rule only further limits
+      entertainmentAllowanceDeduction = totalBasicPlusDA > 0
+        ? Math.min(totalEntertainment, 5000, Math.round(0.20 * totalBasicPlusDA))
+        : Math.min(totalEntertainment, 5000);
       entertainmentAllowanceDeduction = Math.max(0, entertainmentAllowanceDeduction);
     }
 
@@ -233,7 +236,7 @@ class ITR1ComputationService {
     // 80CCD(1B) = additional NPS (₹50K, OUTSIDE the 80C limit)
     // 80CCD(2) = employer NPS (separate, no limit overlap)
     const raw80CItems = n(c.ppf) + n(c.elss) + n(c.lifeInsurance || c.lic) + n(c.nsc) +
-      n(c.tuitionFees) + n(c.homeLoanPrincipal) + n(c.sukanyaSamriddhi) + n(c.fiveYearFD) + n(c.otherC);
+      n(c.tuitionFees) + n(c.homeLoanPrincipal) + n(c.sukanyaSamriddhi || c.sukanya) + n(c.fiveYearFD) + n(c.epf) + n(c.otherC);
     const npsEmployee = n(d.npsEmployee || d.section80CCD1?.nps); // 80CCD(1) — part of 80C limit
     const raw80CCE = raw80CItems + npsEmployee; // Combined 80C + 80CCC + 80CCD(1)
     const s80c = Math.min(raw80CCE, 150000); // 80CCE cap: ₹1.5L

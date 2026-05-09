@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Briefcase, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 const MONO = { fontFamily: "'DM Mono', monospace" };
 
-export default function IncomeBand({ incomes }) {
+export default function IncomeBand({ incomes, onSave }) {
   const [expanded, setExpanded] = useState(null);
+  const amountRef = useRef(null);
   const total = incomes.reduce((s, i) => s + (i.amount || 0), 0);
+
+  const handleSave = (idx) => {
+    const val = parseFloat(amountRef.current?.value) || 0;
+    const updated = incomes.map((item, i) => i === idx ? { ...item, amount: val } : item);
+    onSave({ sources: updated });
+    setExpanded(null);
+  };
 
   return (
     <div className="fr-band" id="income">
@@ -32,17 +40,11 @@ export default function IncomeBand({ incomes }) {
                 <div className="fr-editor__grid">
                   <div className="fr-editor__field">
                     <label>Gross Amount</label>
-                    <input defaultValue={item.amount || 0} />
+                    <input ref={amountRef} defaultValue={item.amount || 0} />
                   </div>
-                  {item.type === 'salary' && (
-                    <div className="fr-editor__field">
-                      <label>Standard Deduction</label>
-                      <input defaultValue={item.standardDeduction || 75000} />
-                    </div>
-                  )}
                 </div>
                 <div style={{ marginTop: 12 }}>
-                  <button className="fr-editor__save">Save</button>
+                  <button className="fr-editor__save" onClick={() => handleSave(idx)}>Save</button>
                 </div>
               </div>
             )}

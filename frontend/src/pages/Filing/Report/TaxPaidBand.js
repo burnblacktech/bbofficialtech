@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Pencil } from 'lucide-react';
 
 const MONO = { fontFamily: "'DM Mono', monospace" };
 
-export default function TaxPaidBand({ tdsEntries }) {
+export default function TaxPaidBand({ tdsEntries, onSave }) {
   const [editing, setEditing] = useState(null);
+  const nameRef = useRef(null);
+  const tanRef = useRef(null);
+  const amountRef = useRef(null);
   const total = tdsEntries.reduce((s, t) => s + (t.amount || 0), 0);
+
+  const handleSave = (idx) => {
+    const updated = tdsEntries.map((entry, i) =>
+      i === idx
+        ? {
+            ...entry,
+            deductorName: nameRef.current?.value,
+            tan: tanRef.current?.value,
+            amount: parseFloat(amountRef.current?.value) || 0,
+          }
+        : entry,
+    );
+    onSave({ entries: updated });
+    setEditing(null);
+  };
 
   return (
     <div className="fr-band" id="tax-paid">
@@ -32,19 +50,19 @@ export default function TaxPaidBand({ tdsEntries }) {
               <div className="fr-editor__grid">
                 <div className="fr-editor__field">
                   <label>Deductor Name</label>
-                  <input defaultValue={entry.deductorName || ''} />
+                  <input ref={nameRef} defaultValue={entry.deductorName || ''} />
                 </div>
                 <div className="fr-editor__field">
                   <label>TAN</label>
-                  <input defaultValue={entry.tan || ''} />
+                  <input ref={tanRef} defaultValue={entry.tan || ''} />
                 </div>
                 <div className="fr-editor__field">
                   <label>Amount</label>
-                  <input defaultValue={entry.amount || 0} />
+                  <input ref={amountRef} defaultValue={entry.amount || 0} />
                 </div>
               </div>
               <div style={{ marginTop: 12 }}>
-                <button className="fr-editor__save">Save</button>
+                <button className="fr-editor__save" onClick={() => handleSave(idx)}>Save</button>
               </div>
             </div>
           )}

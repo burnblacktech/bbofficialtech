@@ -17,15 +17,27 @@ export default function FilingReport() {
   const { filingId } = useParams();
   const [regime, setRegime] = useState('new');
 
-  const { data: filing, isLoading } = useQuery({
+  const { data: filing, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['filing', filingId],
     queryFn: () => api.get(`/filings/${filingId}`).then((r) => r.data),
+    enabled: !!filingId,
   });
 
   const { data: computation, mutate: computeTax } = useMutation({
     mutationFn: (selectedRegime) =>
       api.post(`/filings/${filingId}/itr1/compute`, { regime: selectedRegime }).then((r) => r.data),
   });
+
+  const recompute = useCallback(() => computeTax(regime), [computeTax, regime]);
+
+  const handleBandSave = useCallback(async (section, updates) => {
+    const data = filing?.data || filing || {};
+    const payload = data.jsonPayload || {};
+    const merged = { ...payload, [section]: { ...(payload[section] || {}), ...updates } };
+    await api.put(`/filings/${filingId}`, { jsonPayload: merged, version: data.version });
+    await refetch();
+    recompute();
+  }, [filing, filingId, refetch, recompute]);
 
   const handleRegimeChange = useCallback((r) => {
     setRegime(r);
@@ -38,7 +50,26 @@ export default function FilingReport() {
     return <div className="filing-report" style={{ padding: 48, textAlign: 'center', color: '#888' }}>Loading…</div>;
   }
 
+  if (isError) {
+    return (
+      <div className="filing-report" style={{ padding: 48, textAlign: 'center', color: '#c0392b' }}>
+        Failed to load filing{error?.message ? `: ${error.message}` : ''}
+      </div>
+    );
+  }
+
   const data = filing?.data || filing || {};
+  const jp = data.jsonPayload || {};
+
+  if (!data.id && !data.pan) {
+    return (
+      <div className="filing-report" style={{ padding: 48, textAlign: 'center', color: '#888' }}>
+        <p style={{ fontSize: 16, marginBottom: 8 }}>No filing data yet</p>
+        <p style={{ fontSize: 13 }}>Start by adding your income sources to generate your tax report.</p>
+      </div>
+    );
+  }
+
   const comp = computation?.data || computation || {};
   const completeness = comp.completeness || data.completeness || 0;
   const taxResult = comp.taxPayable ?? comp.refund ?? 0;
@@ -46,7 +77,7 @@ export default function FilingReport() {
 
   const sections = [
     { id: 'identity', label: 'Identity', complete: !!data.pan },
-    { id: 'income', label: 'Income', complete: (data.incomes?.length || 0) > 0 },
+    { id: 'income', label: 'Income', complete: (data.incomes?.length || jp.income?.sources?.length || 0) > 0 },
     { id: 'deductions', label: 'Deductions', complete: true },
     { id: 'computation', label: 'Computation', complete: !!comp.totalTaxableIncome },
     { id: 'tax-paid', label: 'Tax Paid', complete: (data.tdsEntries?.length || 0) > 0 },
@@ -75,12 +106,12 @@ export default function FilingReport() {
                 <span>{regime === 'new' ? 'New' : 'Old'} Regime</span>
               </div>
             </header>
-            <IdentityBand data={data} />
-            <IncomeBand incomes={data.incomes || []} />
-            <DeductionsBand deductions={data.deductions || []} regime={regime} />
+            <IdentityBand data={data} onSave={(updates) => handleBandSave('identity', updates)} />
+            <IncomeBand incomes={data.incomes || []} onSave={(updates) => handleBandSave('income', updates)} />
+            <DeductionsBand deductions={data.deductions || []} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} />
             <ComputationBand computation={comp} regime={regime} onRegimeChange={handleRegimeChange} />
-            <TaxPaidBand tdsEntries={data.tdsEntries || []} />
-            <BankBand bankAccount={data.bankAccount} />
+            <TaxPaidBand tdsEntries={data.tdsEntries || []} onSave={(updates) => handleBandSave('taxPaid', updates)} />
+            <BankBand bankAccount={data.bankAccount} onSave={(updates) => handleBandSave('bankAccount', updates)} />
             <FilingFooter completeness={completeness} filingId={filingId} />
           </div>
         </main>

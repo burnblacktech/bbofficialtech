@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Check, Pencil } from 'lucide-react';
 
-export default function IdentityBand({ data }) {
+export default function IdentityBand({ data, onSave }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(data.name || '');
+
+  const handleSave = () => {
+    onSave({ name });
+    setEditing(false);
+  };
 
   return (
     <div className="fr-band" id="identity">
@@ -37,7 +42,7 @@ export default function IdentityBand({ data }) {
             </div>
           </div>
           <div style={{ marginTop: 12 }}>
-            <button className="fr-editor__save" onClick={() => setEditing(false)}>Save</button>
+            <button className="fr-editor__save" onClick={handleSave}>Save</button>
           </div>
         </div>
       )}

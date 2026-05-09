@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const MONO = { fontFamily: "'DM Mono', monospace" };
 const LIMITS = { '80C': 150000, '80D': 75000, '80CCD1B': 50000, '80TTA': 10000 };
 
-export default function DeductionsBand({ deductions, regime }) {
+export default function DeductionsBand({ deductions, regime, onSave }) {
   const [expanded, setExpanded] = useState(null);
+  const amountRef = useRef(null);
   const total = deductions.reduce((s, d) => s + (d.amount || 0), 0);
+
+  const handleSave = (idx) => {
+    const val = parseFloat(amountRef.current?.value) || 0;
+    const updated = deductions.map((d, i) => i === idx ? { ...d, amount: val } : d);
+    onSave({ items: updated });
+    setExpanded(null);
+  };
 
   return (
     <div className="fr-band" id="deductions">
@@ -50,7 +58,7 @@ export default function DeductionsBand({ deductions, regime }) {
                 <div className="fr-editor__grid">
                   <div className="fr-editor__field">
                     <label>Amount Claimed</label>
-                    <input defaultValue={item.amount || 0} />
+                    <input ref={amountRef} defaultValue={item.amount || 0} />
                   </div>
                   <div className="fr-editor__field">
                     <label>Maximum Limit</label>
@@ -58,7 +66,7 @@ export default function DeductionsBand({ deductions, regime }) {
                   </div>
                 </div>
                 <div style={{ marginTop: 12 }}>
-                  <button className="fr-editor__save">Save</button>
+                  <button className="fr-editor__save" onClick={() => handleSave(idx)}>Save</button>
                 </div>
               </div>
             )}
