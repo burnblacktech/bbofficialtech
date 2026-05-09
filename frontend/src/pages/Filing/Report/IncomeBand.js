@@ -3,7 +3,7 @@ import { Briefcase, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 const MONO = { fontFamily: "'DM Mono', monospace" };
 
-export default function IncomeBand({ incomes, onSave }) {
+export default function IncomeBand({ incomes, onSave, filingId }) {
   const [expanded, setExpanded] = useState(null);
   const amountRef = useRef(null);
   const total = incomes.reduce((s, i) => s + (i.amount || 0), 0);
@@ -54,7 +54,7 @@ export default function IncomeBand({ incomes, onSave }) {
       {incomes.length === 0 && (
         <div style={{ fontSize: 13, color: 'var(--fr-muted)', padding: '8px 0' }}>No income sources added</div>
       )}
-      <button className="fr-add-link"><Plus size={12} /> Add income source</button>
+      <a href={`/filing/${filingId}/edit`} className="fr-add-link" style={{ textDecoration: 'none' }}><Plus size={12} /> Add income source</a>
     </div>
   );
 }

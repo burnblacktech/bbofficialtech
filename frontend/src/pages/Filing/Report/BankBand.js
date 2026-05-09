@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Building2 } from 'lucide-react';
 
-export default function BankBand({ bankAccount, onSave }) {
+export default function BankBand({ bankAccount, onSave, filingId }) {
   const [editing, setEditing] = useState(false);
   const bank = bankAccount || {};
   const nameRef = useRef(null);

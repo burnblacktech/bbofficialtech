@@ -156,17 +156,22 @@ export default function FilingReport() {
                     <span>{regime === 'new' ? 'New' : 'Old'} Regime</span>
                   </div>
                 </div>
-                <a href={`/filing/${filingId}/edit`} style={{ padding: '8px 16px', background: 'var(--fr-gold)', color: 'var(--fr-bg)', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
-                  Edit Filing
-                </a>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <a href={`/filing/${filingId}/edit?import=true`} style={{ padding: '8px 16px', background: 'var(--fr-secondary)', color: 'var(--fr-fg)', borderRadius: 6, fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--fr-border)' }}>
+                    Import Data
+                  </a>
+                  <a href={`/filing/${filingId}/edit`} style={{ padding: '8px 16px', background: 'var(--fr-gold)', color: 'var(--fr-bg)', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                    Edit Filing
+                  </a>
+                </div>
               </div>
             </header>
             <IdentityBand data={identity} onSave={(updates) => handleBandSave('personalInfo', updates)} />
-            <IncomeBand incomes={incomes} onSave={(updates) => handleBandSave('income', updates)} />
-            <DeductionsBand deductions={deductions} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} />
+            <IncomeBand incomes={incomes} onSave={(updates) => handleBandSave('income', updates)} filingId={filingId} />
+            <DeductionsBand deductions={deductions} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} filingId={filingId} />
             <ComputationBand computation={selectedComp || {}} regime={regime} onRegimeChange={handleRegimeChange} />
             <TaxPaidBand tdsEntries={tdsEntries} onSave={(updates) => handleBandSave('taxes', updates)} />
-            <BankBand bankAccount={bankAccount} onSave={(updates) => handleBandSave('bankDetails', updates)} />
+            <BankBand bankAccount={bankAccount} onSave={(updates) => handleBandSave('bankDetails', updates)} filingId={filingId} />
             <FilingFooter completeness={completeness} filingId={filingId} />
           </div>
         </main>

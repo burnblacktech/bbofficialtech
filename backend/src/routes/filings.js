@@ -981,8 +981,27 @@ router.get('/:filingId/export/json', authenticateToken, authorize(['END_USER', '
             throw new AppError('Not authorized to export this filing', 403);
         }
 
-        // Generate canonical export from snapshot
-        const exportData = await FilingExportService.exportFiling(filingId);
+        // Use ITD-format JSON builder when jsonPayload exists
+        const payload = filing.jsonPayload;
+        const itrType = (filing.itrType || '').toUpperCase().replace('-', '');
+        let exportData;
+
+        if (payload && itrType) {
+            const builders = {
+                ITR1: require('../services/itr/ITR1JsonBuilder'),
+                ITR2: require('../services/itr/ITR2JsonBuilder'),
+                ITR3: require('../services/itr/ITR3JsonBuilder'),
+                ITR4: require('../services/itr/ITR4JsonBuilder'),
+            };
+            const Builder = builders[itrType];
+            if (Builder) {
+                exportData = Builder.build(payload, filing.assessmentYear);
+            } else {
+                exportData = await FilingExportService.exportFiling(filingId);
+            }
+        } else {
+            exportData = await FilingExportService.exportFiling(filingId);
+        }
 
         // Set download headers
         const filename = FilingExportService.getExportFilename(filing);

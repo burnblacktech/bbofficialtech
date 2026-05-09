@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 const MONO = { fontFamily: "'DM Mono', monospace" };
 const LIMITS = { '80C': 150000, '80D': 75000, '80CCD1B': 50000, '80TTA': 10000 };
 
-export default function DeductionsBand({ deductions, regime, onSave }) {
+export default function DeductionsBand({ deductions, regime, onSave, filingId }) {
   const [expanded, setExpanded] = useState(null);
   const amountRef = useRef(null);
   const total = deductions.reduce((s, d) => s + (d.amount || 0), 0);
@@ -76,6 +76,7 @@ export default function DeductionsBand({ deductions, regime, onSave }) {
       {deductions.length === 0 && (
         <div style={{ fontSize: 13, color: 'var(--fr-muted)', padding: '8px 0' }}>No deductions claimed</div>
       )}
+      <a href={`/filing/${filingId}/edit`} className="fr-add-link" style={{ textDecoration: 'none' }}><Plus size={12} /> Add deduction</a>
     </div>
   );
 }
