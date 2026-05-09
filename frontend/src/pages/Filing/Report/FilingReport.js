@@ -144,14 +144,21 @@ export default function FilingReport() {
         <main className="fr-main">
           <div className="fr-document">
             <header style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 11, color: 'var(--fr-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>BurnBlack</div>
-              <h1 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 8px' }}>Tax Filing Report</h1>
-              <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--fr-muted)' }}>
-                <span>AY {data.assessmentYear || '2025-26'}</span>
-                <span>•</span>
-                <span>{data.itrType || 'ITR-1'}</span>
-                <span>•</span>
-                <span>{regime === 'new' ? 'New' : 'Old'} Regime</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 11, color: 'var(--fr-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>BurnBlack</div>
+                  <h1 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 8px' }}>Tax Filing Report</h1>
+                  <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--fr-muted)' }}>
+                    <span>AY {data.assessmentYear || '2025-26'}</span>
+                    <span>•</span>
+                    <span>{data.itrType || 'ITR-1'}</span>
+                    <span>•</span>
+                    <span>{regime === 'new' ? 'New' : 'Old'} Regime</span>
+                  </div>
+                </div>
+                <a href={`/filing/${filingId}/edit`} style={{ padding: '8px 16px', background: 'var(--fr-gold)', color: 'var(--fr-bg)', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                  Edit Filing
+                </a>
               </div>
             </header>
             <IdentityBand data={identity} onSave={(updates) => handleBandSave('personalInfo', updates)} />
