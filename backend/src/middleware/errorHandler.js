@@ -77,6 +77,12 @@ const globalErrorHandler = (err, req, res, next) => {
   // Send standardized error response
   const errorResponse = appError.toJSON();
 
+  // Temporary: expose error detail for debugging 500s
+  if (appError.statusCode >= 500) {
+    errorResponse._debug = appError.message;
+    errorResponse._stack = (appError.stack || '').split('\n').slice(0, 3).join(' | ');
+  }
+
   // Add request context
   errorResponse.request = {
     method: req.method,
