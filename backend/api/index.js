@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
         dbReady = true;
         console.log('DB connected and synced');
       } catch (dbErr) {
-        console.error('DB connection failed:', dbErr.message);
+        console.error('DB init failed:', dbErr.message, dbErr.stack);
         // Continue anyway — some routes don't need DB
       }
     }
