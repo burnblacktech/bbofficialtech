@@ -24,8 +24,11 @@ export default function FilingReport() {
   });
 
   const { data: computation, mutate: computeTax } = useMutation({
-    mutationFn: (selectedRegime) =>
-      api.post(`/filings/${filingId}/itr1/compute`, { regime: selectedRegime }).then((r) => r.data),
+    mutationFn: (selectedRegime) => {
+      const itrType = (filing?.data || filing)?.itrType || 'ITR-1';
+      const ep = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[itrType] || 'itr1';
+      return api.post(`/filings/${filingId}/${ep}/compute`, { regime: selectedRegime }).then((r) => r.data);
+    },
   });
 
   const recompute = useCallback(() => computeTax(regime), [computeTax, regime]);
@@ -52,8 +55,12 @@ export default function FilingReport() {
 
   if (isError) {
     return (
-      <div className="filing-report" style={{ padding: 48, textAlign: 'center', color: '#c0392b' }}>
-        Failed to load filing{error?.message ? `: ${error.message}` : ''}
+      <div className="filing-report" style={{ padding: 48, textAlign: 'center' }}>
+        <p style={{ color: '#c0392b', marginBottom: 12 }}>Failed to load filing{error?.message ? `: ${error.message}` : ''}</p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <Link to="/dashboard" style={{ padding: '8px 16px', background: 'var(--fr-secondary, #f3f4f6)', borderRadius: 6, fontSize: 13, textDecoration: 'none', color: 'var(--fr-fg, #111)' }}>← Dashboard</Link>
+          <button onClick={() => refetch()} style={{ padding: '8px 16px', background: 'var(--fr-gold, #D4AF37)', color: '#0F0F0F', borderRadius: 6, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer' }}>Retry</button>
+        </div>
       </div>
     );
   }
@@ -63,16 +70,21 @@ export default function FilingReport() {
 
   if (!data.id && !data.taxpayerPan) {
     return (
-      <div className="filing-report" style={{ padding: 48, textAlign: 'center', color: '#888' }}>
-        <p style={{ fontSize: 16, marginBottom: 8 }}>No filing data yet</p>
-        <p style={{ fontSize: 13 }}>Start by adding your income sources to generate your tax report.</p>
+      <div className="filing-report" style={{ padding: 48, textAlign: 'center' }}>
+        <div style={{ fontSize: 28, marginBottom: 8 }}>📄</div>
+        <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, color: 'var(--fr-fg, #111)' }}>Your filing is ready to fill</p>
+        <p style={{ fontSize: 13, color: '#888', marginBottom: 16, maxWidth: 360, margin: '0 auto 16px' }}>Add your personal info and income sources to generate your tax computation report.</p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <Link to={`/filing/${filingId}/edit`} style={{ padding: '10px 20px', background: 'var(--fr-gold, #D4AF37)', color: '#0F0F0F', borderRadius: 6, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Get Started →</Link>
+          <Link to="/dashboard" style={{ padding: '10px 20px', background: 'var(--fr-secondary, #f3f4f6)', border: '1px solid var(--fr-border, #e5e7eb)', borderRadius: 6, fontSize: 14, textDecoration: 'none', color: 'var(--fr-fg, #111)' }}>← Dashboard</Link>
+        </div>
       </div>
     );
   }
 
   // Map filing data to band component shapes
   const identity = {
-    name: jp.personalInfo?.firstName ? `${jp.personalInfo.firstName} ${jp.personalInfo.lastName || ''}`.trim() : (data.taxpayerPan || ''),
+    name: jp.personalInfo?.firstName ? `${jp.personalInfo.firstName} ${jp.personalInfo.lastName || ''}`.trim() : '',
     pan: data.taxpayerPan,
     panVerified: true,
     assessmentYear: data.assessmentYear,
@@ -167,10 +179,31 @@ export default function FilingReport() {
               </div>
             </header>
             <IdentityBand data={identity} onSave={(updates) => handleBandSave('personalInfo', updates)} />
-            <IncomeBand incomes={incomes} onSave={(updates) => handleBandSave('income', updates)} filingId={filingId} />
-            <DeductionsBand deductions={deductions} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} filingId={filingId} />
-            <ComputationBand computation={selectedComp || {}} regime={regime} onRegimeChange={handleRegimeChange} />
-            <TaxPaidBand tdsEntries={tdsEntries} onSave={(updates) => handleBandSave('taxes', updates)} />
+            {incomes.length > 0 ? (
+              <IncomeBand incomes={incomes} onSave={(updates) => handleBandSave('income', updates)} filingId={filingId} />
+            ) : (
+              <div className="fr-band fr-band--empty" style={{ padding: '12px 16px', border: '1px dashed var(--fr-border, #e5e7eb)', borderRadius: 8, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 13, color: 'var(--fr-muted, #888)' }}>Income — not added yet</span>
+                <Link to={`/filing/${filingId}/edit`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
+              </div>
+            )}
+            {deductions.length > 0 ? (
+              <DeductionsBand deductions={deductions} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} filingId={filingId} />
+            ) : (
+              <div className="fr-band fr-band--empty" style={{ padding: '12px 16px', border: '1px dashed var(--fr-border, #e5e7eb)', borderRadius: 8, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 13, color: 'var(--fr-muted, #888)' }}>Deductions — none claimed</span>
+                <Link to={`/filing/${filingId}/edit`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
+              </div>
+            )}
+            {selectedComp?.totalTax != null && <ComputationBand computation={selectedComp || {}} regime={regime} onRegimeChange={handleRegimeChange} />}
+            {tdsEntries.length > 0 ? (
+              <TaxPaidBand tdsEntries={tdsEntries} onSave={(updates) => handleBandSave('taxes', updates)} />
+            ) : (
+              <div className="fr-band fr-band--empty" style={{ padding: '12px 16px', border: '1px dashed var(--fr-border, #e5e7eb)', borderRadius: 8, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 13, color: 'var(--fr-muted, #888)' }}>Tax Paid / TDS — none recorded</span>
+                <Link to={`/filing/${filingId}/edit`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
+              </div>
+            )}
             <BankBand bankAccount={bankAccount} onSave={(updates) => handleBandSave('bankDetails', updates)} filingId={filingId} />
             <FilingFooter completeness={completeness} filingId={filingId} />
           </div>

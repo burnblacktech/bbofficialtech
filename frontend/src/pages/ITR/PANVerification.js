@@ -86,9 +86,12 @@ export default function PANVerification() {
         </Card>
       )}
 
-      <Button variant="primary" onClick={() => navigate('/filing/start')} style={{ width: '100%', justifyContent: 'center', marginTop: 16 }}>
+      <Button variant="primary" onClick={() => navigate('/filing/start')} disabled={!isVerified && !result} style={{ width: '100%', justifyContent: 'center', marginTop: 16, opacity: (isVerified || result) ? 1 : 0.4 }}>
         Proceed to Filing <ArrowRight size={16} />
       </Button>
+      {!isVerified && !result && (
+        <p style={{ textAlign: 'center', fontSize: 12, color: P.textMuted, marginTop: 8 }}>Verify your PAN first to continue</p>
+      )}
     </div>
   );
 }

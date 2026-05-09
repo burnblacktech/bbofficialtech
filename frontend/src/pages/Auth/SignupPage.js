@@ -91,12 +91,18 @@ export default function SignupPage() {
             </Grid>
             {form.password && (
               <div style={{ marginTop: -8, marginBottom: 8, fontSize: 11 }}>
-                <div style={{ display: 'flex', gap: 4, marginBottom: 2 }}>
+                <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
                   {[1,2,3,4].map(i => (
                     <div key={i} style={{ height: 3, flex: 1, borderRadius: 2, background: getStrength(form.password) >= i ? ['','#ef4444','#f59e0b','#22c55e','#16a34a'][getStrength(form.password)] : '#e5e7eb' }} />
                   ))}
                 </div>
                 <span style={{ color: '#6b7280' }}>{['','Weak','Fair','Good','Strong'][getStrength(form.password)]}</span>
+                <div style={{ marginTop: 4, display: 'flex', flexWrap: 'wrap', gap: '2px 12px' }}>
+                  <span style={{ color: form.password.length >= 8 ? '#16a34a' : '#9ca3af' }}>{form.password.length >= 8 ? '✓' : '○'} 8+ chars</span>
+                  <span style={{ color: /[A-Z]/.test(form.password) && /[a-z]/.test(form.password) ? '#16a34a' : '#9ca3af' }}>{/[A-Z]/.test(form.password) && /[a-z]/.test(form.password) ? '✓' : '○'} Upper + lower</span>
+                  <span style={{ color: /\d/.test(form.password) ? '#16a34a' : '#9ca3af' }}>{/\d/.test(form.password) ? '✓' : '○'} Number</span>
+                  <span style={{ color: /[^A-Za-z0-9]/.test(form.password) ? '#16a34a' : '#9ca3af' }}>{/[^A-Za-z0-9]/.test(form.password) ? '✓' : '○'} Special char</span>
+                </div>
               </div>
             )}
 

@@ -230,10 +230,12 @@ function SignupForm({ loginWithOAuth, navigate, onSwitch }) {
     if (!form.agreeTerms) { setError('Please agree to Terms & Privacy Policy'); return; }
     setLoading(true);
     try {
-      const res = await authService.register({ fullName: form.fullName, email: form.email.toLowerCase(), phone: form.phone.replace(/\D/g, ''), password: form.password });
+      const cleanEmail = sanitizeEmail(form.email);
+      const cleanPassword = sanitizePassword(form.password);
+      const res = await authService.register({ fullName: form.fullName.trim(), email: cleanEmail, phone: form.phone.replace(/\D/g, ''), password: cleanPassword });
       if (res.success) {
         toast.success('Account created!');
-        const lr = await authService.login({ email: form.email.toLowerCase(), password: form.password });
+        const lr = await authService.login({ email: cleanEmail, password: cleanPassword });
         if (lr.success) { await loginWithOAuth(lr.user, lr.accessToken, lr.refreshToken); navigate(lr.user?.role === 'SUPER_ADMIN' ? '/admin' : '/dashboard'); }
       }
     } catch (err) {

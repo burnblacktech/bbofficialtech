@@ -28,10 +28,26 @@ export default function SubmissionStatus() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Normalize nested ERIOutcomeService response to flat shape
+    const normalize = (raw) => {
+      if (!raw) return null;
+      if (raw.lifecycleState) return raw;
+      return {
+        lifecycleState: raw.status?.state || 'draft',
+        acknowledgmentNumber: raw.eri?.acknowledgementRef || null,
+        submittedAt: raw.meta?.submittedAt || null,
+        filedAt: raw.meta?.submittedAt || null,
+        filingId: raw.meta?.filingId || null,
+        errorMessage: raw.status?.state === 'eri_failed' ? raw.userMessage?.body : null,
+        assessmentYear: raw.meta?.assessmentYear || null,
+        itrType: raw.meta?.itrType || null,
+      };
+    };
+
     const fetchStatus = async () => {
       try {
         const res = await api.get(`/filings/${filingId}/submission-status`);
-        setData(res.data.data);
+        setData(normalize(res.data.data));
       } catch {
         toast.error('Failed to load submission status');
       } finally { setLoading(false); }
@@ -42,9 +58,9 @@ export default function SubmissionStatus() {
     const interval = setInterval(async () => {
       try {
         const res = await api.get(`/filings/${filingId}/submission-status`);
-        setData(res.data.data);
-        const st = res.data.data?.lifecycleState;
-        if (st === 'eri_success' || st === 'eri_failed') clearInterval(interval);
+        const normalized = normalize(res.data.data);
+        setData(normalized);
+        if (normalized?.lifecycleState === 'eri_success' || normalized?.lifecycleState === 'eri_failed') clearInterval(interval);
       } catch { /* silent */ }
     }, 30000);
     return () => clearInterval(interval);
@@ -132,10 +148,7 @@ export default function SubmissionStatus() {
           <ArrowLeft size={14} /> Dashboard
         </Button>
         {(state === 'draft' || state === 'eri_failed') && data?.filingId && (
-          <Button variant="outline" onClick={() => {
-            const route = data.itrType ? { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[data.itrType] || 'itr1' : 'itr1';
-            navigate(`/filing/${filingId}/${route}`);
-          }}>
+          <Button variant="outline" onClick={() => navigate(`/filing/${filingId}/edit`)}>
             Edit Filing
           </Button>
         )}

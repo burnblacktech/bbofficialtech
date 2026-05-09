@@ -474,16 +474,17 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       {/* ── Section 4: Filing Metadata ── */}
       <Card active>
         <Section icon={FileText} title="Filing Metadata" />
+        <p className="ds-hint" style={{ marginTop: -8, marginBottom: 12 }}>These fields are required by the Income Tax Department. Most salaried individuals can use the defaults below.</p>
 
         <Grid cols={3}>
         {/* Residential Status */}
-        <Select label="Residential Status *" value={form.residentialStatus} onChange={v => updateField('residentialStatus', v)} options={RES_STATUS_OPTIONS} />
+        <Select label="Residential Status *" value={form.residentialStatus} onChange={v => updateField('residentialStatus', v)} options={RES_STATUS_OPTIONS} hint="Select 'Resident' if you lived in India for 182+ days this year" />
 
         {/* Employer Category */}
-        <Select label="Employer Category *" value={form.employerCategory} onChange={v => updateField('employerCategory', v)} options={EMPLOYER_CAT_OPTIONS} disabled={noSalaryLock} hint={noSalaryLock ? 'Applicable only for salaried taxpayers.' : undefined} />
+        <Select label="Employer Category *" value={form.employerCategory} onChange={v => updateField('employerCategory', v)} options={EMPLOYER_CAT_OPTIONS} disabled={noSalaryLock} hint={noSalaryLock ? 'Not applicable — no salary income added.' : 'Select your employer type (most people: Private Sector)'} />
 
         {/* Filing Status */}
-        <Select label="Filing Status *" value={form.filingStatus} onChange={v => updateField('filingStatus', v)} options={FILING_STATUS_OPTIONS} disabled={isRevisedFiling} hint={isRevisedFiling ? 'Filing type is set to Revised from the filing record.' : undefined} />
+        <Select label="Filing Status *" value={form.filingStatus} onChange={v => updateField('filingStatus', v)} options={FILING_STATUS_OPTIONS} disabled={isRevisedFiling} hint={isRevisedFiling ? 'Filing type is set to Revised from the filing record.' : 'Select Original if this is your first filing for this year'} />
         </Grid>
 
         {(form.residentialStatus === 'NRI' || form.residentialStatus === 'RNOR') && isITR1 && (
@@ -523,21 +524,28 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       {/* ── Section 5: LTCG Mini-Section (ITR-1 only) ── */}
       {isITR1 && (
         <Card active>
-          <Section icon={TrendingUpIcon} title="LTCG under Section 112A (ITR-1)" />
-          <div className="ds-hint" style={{ marginBottom: 12, marginTop: -8 }}>
-            From AY 2025-26, ITR-1 allows LTCG up to ₹1.25 lakh from listed equity/MF under Section 112A, provided there are no losses to carry forward.
-          </div>
-          <Field label="LTCG Amount (₹)" value={form.ltcg112A.amount} onChange={v => updateLtcg('amount', v)} type="number" hint="Total LTCG from listed equity shares or equity mutual funds" />
-          {Number(form.ltcg112A.amount) > 125000 && (
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '8px 12px', background: P.errorBg, borderRadius: 6, marginBottom: 12, fontSize: 12, color: P.error }}>
-              <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 1 }} />
-              <span>LTCG exceeds ₹1.25L limit for ITR-1. Use ITR-2 for higher capital gains.</span>
-            </div>
-          )}
-          <label className="ds-check">
-            <input type="checkbox" checked={!!form.ltcg112A.noLossToCarryForward} onChange={e => updateLtcg('noLossToCarryForward', e.target.checked)} />
-            I confirm there are no capital gains losses to carry forward
+          <label className="ds-check" style={{ marginBottom: form.ltcg112A.amount || form.ltcg112A.noLossToCarryForward ? 12 : 0 }}>
+            <input type="checkbox" checked={!!(form.ltcg112A.amount || form.ltcg112A.noLossToCarryForward)} onChange={e => { if (!e.target.checked) { updateLtcg('amount', ''); updateLtcg('noLossToCarryForward', false); } else { updateLtcg('noLossToCarryForward', true); } }} />
+            <span>I sold listed shares or equity mutual funds this year <span style={{ fontSize: 11, color: P.textLight }}>(LTCG u/s 112A)</span></span>
           </label>
+          {(form.ltcg112A.amount || form.ltcg112A.noLossToCarryForward) && (
+            <>
+              <div className="ds-hint" style={{ marginBottom: 12 }}>
+                ITR-1 allows LTCG up to ₹1.25 lakh from listed equity/MF. No losses to carry forward.
+              </div>
+              <Field label="LTCG Amount (₹)" value={form.ltcg112A.amount} onChange={v => updateLtcg('amount', v)} type="number" hint="Total LTCG from listed equity shares or equity mutual funds" />
+              {Number(form.ltcg112A.amount) > 125000 && (
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '8px 12px', background: P.errorBg, borderRadius: 6, marginBottom: 12, fontSize: 12, color: P.error }}>
+                  <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+                  <span>LTCG exceeds ₹1.25L limit for ITR-1. Use ITR-2 for higher capital gains.</span>
+                </div>
+              )}
+              <label className="ds-check">
+                <input type="checkbox" checked={!!form.ltcg112A.noLossToCarryForward} onChange={e => updateLtcg('noLossToCarryForward', e.target.checked)} />
+                I confirm there are no capital gains losses to carry forward
+              </label>
+            </>
+          )}
         </Card>
       )}
 
@@ -545,6 +553,11 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
       <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ marginTop: 4 }}>
         {isSaving ? <><span className="ds-spinner" /> Saving...</> : <><Save size={14} /> Save Personal Info</>}
       </Button>
+      {completion.complete && !dirty && (
+        <p style={{ fontSize: 12, color: P.success, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <CheckCircle size={13} /> Personal info complete. Close this panel to continue with your income details.
+        </p>
+      )}
     </div>
   );
 }

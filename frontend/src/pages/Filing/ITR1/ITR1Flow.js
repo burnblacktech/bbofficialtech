@@ -165,8 +165,9 @@ export function getCardSummary(sectionId, payload, comp, income, selectedRegime)
     case 'personalInfo': {
       const pi = payload?.personalInfo || {};
       const info = getCompletionInfo(pi);
+      const name = [pi.firstName, pi.lastName].filter(Boolean).join(' ');
       return {
-        number: pi.fullName || null,
+        number: name || null,
         summary: pi.pan ? `PAN: ${maskPan(pi.pan)}` : null,
         completionText: `${info.filled}/${info.total} fields`,
       };
@@ -740,7 +741,7 @@ export default function ITR1Flow() {
   const downloadPDF = async () => {
     try {
       const itr = getITRType(active, filing?.jsonPayload);
-      const r = await api.get(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/pdf`, { responseType: 'blob' });
+      const r = await api.get(`/filings/${filingId}/computation-pdf`, { responseType: 'blob' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([r.data], { type: 'application/pdf' }));
       a.download = `${itr.replace('-', '')}_AY${filing?.assessmentYear}.pdf`; a.click();
@@ -962,7 +963,7 @@ export default function ITR1Flow() {
           <span className="story-top-bar__ay">AY {filing?.assessmentYear}</span>
         </div>
         <div className="story-top-bar__user">
-          <span className="story-top-bar__name">{payload?.personalInfo?.fullName}</span>
+          <span className="story-top-bar__name">{[payload?.personalInfo?.firstName, payload?.personalInfo?.lastName].filter(Boolean).join(' ')}</span>
           <span className="story-top-bar__pan">{maskedPan}</span>
         </div>
         <button
@@ -1178,11 +1179,11 @@ export default function ITR1Flow() {
             )}
             <div className="story-flow__result-actions">
               <SmartButton label="Submit" icon={Send} onClick={handleSubmit} completeness={completeness} variant="submit" isLoading={isSubmitting} />
-              <button className="story-flow__result-icon-btn" onClick={downloadJSON} title="Download JSON" aria-label="Download JSON" disabled={!completeness.complete} style={{ opacity: completeness.complete ? 1 : 0.5 }}>
-                <FileText size={13} />
-              </button>
               <button className="story-flow__result-icon-btn" onClick={downloadPDF} title="Download PDF" aria-label="Download PDF">
                 <Download size={13} />
+              </button>
+              <button className="story-flow__result-icon-btn" onClick={downloadJSON} title="Export ITD JSON (Advanced)" aria-label="Export ITD JSON" disabled={!completeness.complete} style={{ opacity: completeness.complete ? 0.5 : 0.3, fontSize: 9 }}>
+                <FileText size={11} />
               </button>
             </div>
             {/* Bank & Submit sub-item */}
@@ -1391,8 +1392,8 @@ export default function ITR1Flow() {
 
           {/* Actions */}
           <div className="insight-actions">
-            <button className="insight-actions__btn" onClick={downloadJSON}>Download JSON</button>
-            <button className="insight-actions__btn" onClick={downloadPDF}>Download PDF</button>
+            <button className="insight-actions__btn insight-actions__btn--secondary" onClick={downloadPDF}>Download PDF</button>
+            <button className="insight-actions__btn" onClick={downloadJSON} style={{ fontSize: 11, opacity: 0.7 }}>Export ITD JSON</button>
             {!isSubmitted && <button className="insight-actions__btn insight-actions__btn--primary" onClick={handleSubmit}>Submit Filing</button>}
           </div>
         </aside>

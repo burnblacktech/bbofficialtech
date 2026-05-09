@@ -36,7 +36,7 @@ export default function MonthlyTrend({ data = [] }) {
             <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--bb-fg-muted)', fontSize: 10 }} tickFormatter={formatK} />
             <Tooltip contentStyle={{ background: 'var(--bb-bg-elevated)', border: '1px solid var(--bb-border)', borderRadius: 6, color: 'var(--bb-fg-primary)' }} formatter={(v) => `₹${formatK(v)}`} />
             <Area type="monotone" dataKey="income" stroke="var(--bb-status-success)" strokeWidth={2} fill="url(#incGrad)" />
-            <Area type="monotone" dataKey="expenses" stroke="var(--bb-status-error)" strokeWidth={2} fill="url(#expGrad)" />
+            <Area type="monotone" dataKey="expense" stroke="var(--bb-status-error)" strokeWidth={2} fill="url(#expGrad)" />
           </AreaChart>
         </ResponsiveContainer>
       </div>
