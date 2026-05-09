@@ -48,6 +48,9 @@ const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
 const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
 const EVerification = lazy(() => import('./pages/ITR/EVerification'));
 
+// Filing Report (new design)
+const FilingReport = lazy(() => import('./pages/Filing/Report/FilingReport'));
+
 // User
 const AuditTrailPage = lazy(() => import('./pages/User/AuditTrailPage'));
 const Acknowledgment = lazy(() => import('./pages/Acknowledgment'));
@@ -182,6 +185,7 @@ const AppContent = () => {
 
         {/* Orbital Filing Engine (new UX) */}
         <Route path="/filing/:filingId" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        <Route path="/filing/:filingId/report" element={<Bare><FilingReport /></Bare>} />
 
         {/* ITR filing — legacy HUD (kept for backward compat) */}
         <Route path="/filing/:filingId/itr1" element={<Page message="Loading..."><ITR1Flow /></Page>} />
