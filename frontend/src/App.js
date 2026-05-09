@@ -147,8 +147,8 @@ const AppContent = () => {
         <Route path="/home" element={<Bare><HomeRedirect /></Bare>} />
 
         {/* Dashboard */}
-        <Route path="/dashboard" element={<Page message="Loading dashboard..."><UserDashboard /></Page>} />
-        <Route path="/dashboard/v2" element={<Bare><DashboardV2 /></Bare>} />
+        <Route path="/dashboard" element={<Bare><DashboardV2 /></Bare>} />
+        <Route path="/dashboard/classic" element={<Page message="Loading dashboard..."><UserDashboard /></Page>} />
 
         {/* Unified Settings Hub */}
         <Route path="/settings" element={<Page><SettingsHub /></Page>} />
@@ -185,8 +185,9 @@ const AppContent = () => {
         {/* Filing: start */}
         <Route path="/filing/start" element={<Page message="Loading..."><FilingStart /></Page>} />
 
-        {/* Orbital Filing Engine (new UX) */}
-        <Route path="/filing/:filingId" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        {/* Filing: Report view (default) + Editor view */}
+        <Route path="/filing/:filingId" element={<Bare><FilingReport /></Bare>} />
+        <Route path="/filing/:filingId/edit" element={<Page message="Loading..."><ITR1Flow /></Page>} />
         <Route path="/filing/:filingId/report" element={<Bare><FilingReport /></Bare>} />
 
         {/* ITR filing — legacy HUD (kept for backward compat) */}
