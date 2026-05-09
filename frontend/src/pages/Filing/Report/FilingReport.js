@@ -61,7 +61,7 @@ export default function FilingReport() {
   const data = filing?.data || filing || {};
   const jp = data.jsonPayload || {};
 
-  if (!data.id && !data.pan) {
+  if (!data.id && !data.taxpayerPan) {
     return (
       <div className="filing-report" style={{ padding: 48, textAlign: 'center', color: '#888' }}>
         <p style={{ fontSize: 16, marginBottom: 8 }}>No filing data yet</p>
@@ -70,18 +70,66 @@ export default function FilingReport() {
     );
   }
 
+  // Map filing data to band component shapes
+  const identity = {
+    name: jp.personalInfo?.firstName ? `${jp.personalInfo.firstName} ${jp.personalInfo.lastName || ''}`.trim() : (data.taxpayerPan || ''),
+    pan: data.taxpayerPan,
+    panVerified: true,
+    assessmentYear: data.assessmentYear,
+  };
+
+  const incomes = [];
+  if (jp.income?.salary?.employers?.length) {
+    for (const emp of jp.income.salary.employers) {
+      incomes.push({ label: `Salary — ${emp.name || 'Employer'}`, type: 'salary', amount: emp.grossSalary || 0 });
+    }
+  }
+  if (jp.income?.houseProperty?.type && jp.income.houseProperty.type !== 'NONE') {
+    incomes.push({ label: 'House Property', type: 'houseProperty', amount: jp.income.houseProperty.annualRentReceived || -(jp.income.houseProperty.interestOnHomeLoan || 0) });
+  }
+  if (jp.income?.otherSources) {
+    const os = jp.income.otherSources;
+    const osTotal = (os.savingsInterest || 0) + (os.fdInterest || 0) + (os.dividendIncome || 0) + (os.otherIncome || 0) + (os.familyPension || 0);
+    if (osTotal > 0) incomes.push({ label: 'Other Sources', type: 'otherSources', amount: osTotal });
+  }
+  if (jp.income?.capitalGains?.transactions?.length) {
+    const cgTotal = jp.income.capitalGains.transactions.reduce((s, t) => s + (t.gain || t.saleValue - t.purchaseValue || 0), 0);
+    incomes.push({ label: 'Capital Gains', type: 'capitalGains', amount: cgTotal });
+  }
+
+  const deductions = [];
+  const d = jp.deductions || {};
+  if (d.ppf || d.elss || d.lic || d.epf || d.tuitionFees) deductions.push({ section: '80C', label: 'PPF, ELSS, LIC, EPF', amount: Math.min((d.ppf||0)+(d.elss||0)+(d.lic||0)+(d.epf||0)+(d.tuitionFees||0)+(d.homeLoanPrincipal||0), 150000), limit: 150000 });
+  if (d.nps) deductions.push({ section: '80CCD(1B)', label: 'NPS', amount: Math.min(d.nps, 50000), limit: 50000 });
+  if (d.section80D) deductions.push({ section: '80D', label: 'Health Insurance', amount: (d.section80D.selfPremium||0)+(d.section80D.parentsPremium||0), limit: 100000 });
+  if (d.eduLoan) deductions.push({ section: '80E', label: 'Education Loan', amount: d.eduLoan, limit: null });
+
+  const tdsEntries = [];
+  if (jp.income?.salary?.employers?.length) {
+    for (const emp of jp.income.salary.employers) {
+      if (emp.tdsDeducted) tdsEntries.push({ label: `TDS — ${emp.name || 'Employer'}`, amount: emp.tdsDeducted });
+    }
+  }
+
+  const bankAccount = jp.bankDetails || jp.bankAccount || null;
+
   const comp = computation?.data || computation || {};
-  const completeness = comp.completeness || data.completeness || 0;
-  const taxResult = comp.taxPayable ?? comp.refund ?? 0;
-  const isRefund = (comp.refund && comp.refund > 0) || taxResult < 0;
+  const oldTax = comp.oldRegime?.totalTax || 0;
+  const newTax = comp.newRegime?.totalTax || 0;
+  const recommended = comp.recommended || (oldTax <= newTax ? 'old' : 'new');
+  const selectedComp = regime === 'old' ? comp.oldRegime : comp.newRegime;
+  const tdsTotal = tdsEntries.reduce((s, t) => s + (t.amount || 0), 0);
+  const taxResult = selectedComp ? (tdsTotal - (selectedComp.totalTax || 0)) : 0;
+  const isRefund = taxResult > 0;
+  const completeness = incomes.length > 0 ? (identity.name !== data.taxpayerPan ? 50 : 30) + (deductions.length > 0 ? 25 : 0) + (bankAccount ? 25 : 0) : 0;
 
   const sections = [
-    { id: 'identity', label: 'Identity', complete: !!data.pan },
-    { id: 'income', label: 'Income', complete: (data.incomes?.length || jp.income?.sources?.length || 0) > 0 },
-    { id: 'deductions', label: 'Deductions', complete: true },
-    { id: 'computation', label: 'Computation', complete: !!comp.totalTaxableIncome },
-    { id: 'tax-paid', label: 'Tax Paid', complete: (data.tdsEntries?.length || 0) > 0 },
-    { id: 'bank', label: 'Bank Account', complete: !!data.bankAccount },
+    { id: 'identity', label: 'Identity', complete: !!identity.name },
+    { id: 'income', label: 'Income', complete: incomes.length > 0 },
+    { id: 'deductions', label: 'Deductions', complete: deductions.length > 0 },
+    { id: 'computation', label: 'Computation', complete: !!selectedComp?.totalTax },
+    { id: 'tax-paid', label: 'Tax Paid', complete: tdsEntries.length > 0 },
+    { id: 'bank', label: 'Bank Account', complete: !!bankAccount },
   ];
 
   return (
@@ -106,12 +154,12 @@ export default function FilingReport() {
                 <span>{regime === 'new' ? 'New' : 'Old'} Regime</span>
               </div>
             </header>
-            <IdentityBand data={data} onSave={(updates) => handleBandSave('identity', updates)} />
-            <IncomeBand incomes={data.incomes || []} onSave={(updates) => handleBandSave('income', updates)} />
-            <DeductionsBand deductions={data.deductions || []} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} />
-            <ComputationBand computation={comp} regime={regime} onRegimeChange={handleRegimeChange} />
-            <TaxPaidBand tdsEntries={data.tdsEntries || []} onSave={(updates) => handleBandSave('taxPaid', updates)} />
-            <BankBand bankAccount={data.bankAccount} onSave={(updates) => handleBandSave('bankAccount', updates)} />
+            <IdentityBand data={identity} onSave={(updates) => handleBandSave('personalInfo', updates)} />
+            <IncomeBand incomes={incomes} onSave={(updates) => handleBandSave('income', updates)} />
+            <DeductionsBand deductions={deductions} regime={regime} onSave={(updates) => handleBandSave('deductions', updates)} />
+            <ComputationBand computation={selectedComp || {}} regime={regime} onRegimeChange={handleRegimeChange} />
+            <TaxPaidBand tdsEntries={tdsEntries} onSave={(updates) => handleBandSave('taxes', updates)} />
+            <BankBand bankAccount={bankAccount} onSave={(updates) => handleBandSave('bankDetails', updates)} />
             <FilingFooter completeness={completeness} filingId={filingId} />
           </div>
         </main>

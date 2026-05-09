@@ -13,8 +13,10 @@ function Row({ label, value, bold }) {
 
 export default function ComputationBand({ computation, regime, onRegimeChange }) {
   const c = computation || {};
-  const resultAmt = Math.abs(c.taxPayable ?? c.refund ?? 0);
-  const isRefund = (c.refund && c.refund > 0) || (c.taxPayable && c.taxPayable < 0);
+  const tdsCredit = c.tdsCredit || 0;
+  const totalTax = c.totalTax || 0;
+  const netPayable = totalTax - tdsCredit;
+  const isRefund = netPayable < 0;
 
   return (
     <div className="fr-band" id="computation">
@@ -27,31 +29,25 @@ export default function ComputationBand({ computation, regime, onRegimeChange })
       </div>
       <div className="fr-computation">
         <Row label="Gross Total Income" value={c.grossTotalIncome} />
-        <Row label="Less: Deductions" value={c.totalDeductions} />
+        <Row label="Less: Deductions" value={c.deductions} />
         <div className="fr-comp-divider" />
-        <Row label="Total Taxable Income" value={c.totalTaxableIncome} bold />
+        <Row label="Taxable Income" value={c.taxableIncome} bold />
         <div className="fr-comp-divider" />
-        <Row label="Tax on Total Income" value={c.taxOnIncome} />
-        <Row label="Add: Surcharge" value={c.surcharge} />
-        <Row label="Add: Health & Education Cess (4%)" value={c.cess} />
+        <Row label="Tax on Income" value={c.taxOnIncome} />
+        {c.rebate > 0 && <Row label="Less: Rebate u/s 87A" value={c.rebate} />}
+        {c.surcharge > 0 && <Row label="Add: Surcharge" value={c.surcharge} />}
+        <Row label="Add: Cess (4%)" value={c.cess} />
         <div className="fr-comp-divider" />
-        <Row label="Total Tax Liability" value={c.totalTaxLiability} bold />
-        <Row label="Less: TDS / Advance Tax" value={c.totalTaxPaid} />
+        <Row label="Total Tax" value={totalTax} bold />
+        {tdsCredit > 0 && <Row label="Less: TDS" value={tdsCredit} />}
         <div className="fr-comp-divider--double" />
         <div className="fr-comp-row fr-comp-row--bold">
-          <span>{isRefund ? 'Refund' : 'Tax Payable'}</span>
+          <span>{isRefund ? 'REFUND' : 'TAX PAYABLE'}</span>
           <span className="fr-comp-result" style={{ ...MONO, color: isRefund ? 'var(--fr-success)' : 'var(--fr-error)' }}>
-            ₹{resultAmt.toLocaleString('en-IN')}
+            ₹{Math.abs(netPayable).toLocaleString('en-IN')}
           </span>
         </div>
       </div>
-      {c.comparison && (
-        <div style={{ marginTop: 12, fontSize: 12, color: 'var(--fr-muted)', textAlign: 'center' }}>
-          {c.comparison.betterRegime === regime
-            ? `You save ₹${(c.comparison.savings || 0).toLocaleString('en-IN')} with ${regime} regime`
-            : `Switch to ${c.comparison.betterRegime} regime to save ₹${(c.comparison.savings || 0).toLocaleString('en-IN')}`}
-        </div>
-      )}
     </div>
   );
 }
