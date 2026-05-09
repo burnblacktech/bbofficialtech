@@ -159,10 +159,10 @@ export default function FilingReport() {
                 <div style={{ display: 'flex', gap: 8 }}>
                   <Link to={`/filing/${filingId}/edit?import=true`} style={{ padding: '8px 16px', background: 'var(--fr-secondary)', color: 'var(--fr-fg)', borderRadius: 6, fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--fr-border)' }}>
                     Import Data
-                  </a>
+                  </Link>
                   <Link to={`/filing/${filingId}/edit`} style={{ padding: '8px 16px', background: 'var(--fr-gold)', color: 'var(--fr-bg)', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                     Edit Filing
-                  </a>
+                  </Link>
                 </div>
               </div>
             </header>
