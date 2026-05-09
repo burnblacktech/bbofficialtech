@@ -100,12 +100,19 @@ class ITR4ComputationService {
     const vdaTax = income.otherSources?.vdaTax || 0;
     const winnings = income.otherSources?.winnings || 0;
     const winningsTax = income.otherSources?.winningsTax || 0;
-    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain - winnings);
 
     const dob = payload?.personalInfo?.dateOfBirth || payload?.personalDetails?.dateOfBirth;
     const ay = payload?.assessmentYear;
     const slabs = regime === 'old' ? ITR1ComputationService.getOldRegimeSlabs(dob, ay) : NEW_SLABS;
-    const basicExemption = regime === 'old' ? (slabs[0].max) : 300000;
+    const basicExemption = regime === 'old' ? (slabs[0].max) : 400000;
+
+    // 80CCD(2) employer NPS allowed in new regime
+    let newRegime80CCD2 = 0;
+    if (regime === 'new' && deductionData) {
+      newRegime80CCD2 = n(deductionData.section80CCD2?.employerNps || deductionData.employerNps);
+    }
+    const adjustedTaxableIncome = Math.max(0, taxableIncome - newRegime80CCD2);
+    const nonVdaTaxableIncome = Math.max(0, adjustedTaxableIncome - vdaGain - winnings);
 
     // Agricultural income partial integration
     let tax = 0;
@@ -124,14 +131,14 @@ class ITR4ComputationService {
     // Add VDA flat tax
     tax += vdaTax + winningsTax;
 
-    const rebateLimit = regime === 'old' ? 500000 : 700000;
-    const rebateMax = regime === 'old' ? 12500 : 25000;
+    const rebateLimit = regime === 'old' ? 500000 : 1200000;
+    const rebateMax = regime === 'old' ? 12500 : 60000;
     const slabTax = tax - vdaTax - winningsTax;
     const rebate = nonVdaTaxableIncome <= rebateLimit ? Math.min(slabTax, rebateMax) : 0;
     const taxAfterRebate = tax - rebate;
 
     let surchargeRate = 0;
-    if (income.grossTotal > 5000000) surchargeRate = 10;
+    if (adjustedTaxableIncome > 5000000) surchargeRate = 10;
     // AY 2025-26: New regime caps surcharge at 25%
     if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
     const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
@@ -183,7 +190,7 @@ class ITR4ComputationService {
 }
 
 const OLD_SLABS = [{ min: 0, max: 250000, rate: 0 }, { min: 250000, max: 500000, rate: 5 }, { min: 500000, max: 1000000, rate: 20 }, { min: 1000000, max: Infinity, rate: 30 }];
-const NEW_SLABS = [{ min: 0, max: 300000, rate: 0 }, { min: 300000, max: 700000, rate: 5 }, { min: 700000, max: 1000000, rate: 10 }, { min: 1000000, max: 1200000, rate: 15 }, { min: 1200000, max: 1500000, rate: 20 }, { min: 1500000, max: Infinity, rate: 30 }];
+const NEW_SLABS = [{ min: 0, max: 400000, rate: 0 }, { min: 400000, max: 800000, rate: 5 }, { min: 800000, max: 1200000, rate: 10 }, { min: 1200000, max: 1600000, rate: 15 }, { min: 1600000, max: 2000000, rate: 20 }, { min: 2000000, max: 2400000, rate: 25 }, { min: 2400000, max: Infinity, rate: 30 }];
 function n(val) { return Number(val) || 0; }
 
 module.exports = ITR4ComputationService;
