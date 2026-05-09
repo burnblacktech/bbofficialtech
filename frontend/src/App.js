@@ -37,6 +37,7 @@ const GoogleOAuthError = lazy(() => import('./pages/Auth/GoogleOAuthError'));
 
 // Dashboard
 const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
+const DashboardV2 = lazy(() => import('./pages/Dashboard/DashboardV2'));
 
 // Filing flow
 const FilingStart = lazy(() => import('./pages/Filing/FilingStart'));
@@ -147,6 +148,7 @@ const AppContent = () => {
 
         {/* Dashboard */}
         <Route path="/dashboard" element={<Page message="Loading dashboard..."><UserDashboard /></Page>} />
+        <Route path="/dashboard/v2" element={<Bare><DashboardV2 /></Bare>} />
 
         {/* Unified Settings Hub */}
         <Route path="/settings" element={<Page><SettingsHub /></Page>} />
