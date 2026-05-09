@@ -16,6 +16,7 @@ jest.mock('../../middleware/auth', () => ({
     req.user = { userId: 'user-1', role: 'END_USER' };
     next();
   },
+  authorize: () => (_req, _res, next) => next(),
 }));
 
 jest.mock('../../services/PaymentService', () => ({

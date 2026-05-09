@@ -29,8 +29,8 @@ export default function PANVerification() {
     }
     setVerifying(true);
     try {
-      const res = await api.post('/auth/verify-pan', { pan: upper });
-      setResult(res.data.data);
+      const res = await api.patch('/auth/pan', { panNumber: upper });
+      setResult(res.data.user);
       refreshProfile?.();
       toast.success(res.data.message || 'PAN verified');
     } catch (e) {
@@ -70,7 +70,7 @@ export default function PANVerification() {
             <CheckCircle size={20} color={P.success} />
             <span style={{ fontSize: 15, fontWeight: 600, color: P.textPrimary }}>PAN Verified</span>
           </div>
-          <div className="ds-summary"><span className="ds-summary__label">PAN</span><span className="ds-summary__value ds-summary__value--bold">{result?.pan || existingPan}</span></div>
+          <div className="ds-summary"><span className="ds-summary__label">PAN</span><span className="ds-summary__value ds-summary__value--bold">{result?.panNumber || result?.pan || existingPan}</span></div>
           {result?.name && (
             <>
               <div className="ds-summary"><span className="ds-summary__label">Name (as per PAN)</span><span className="ds-summary__value">{result.name}</span></div>

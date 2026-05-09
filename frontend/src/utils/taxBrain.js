@@ -34,7 +34,7 @@ export function generateWhispers(payload, computation, selectedRegime) {
   const hp = payload.income?.houseProperty || {};
   const os = payload.income?.otherSources || {};
   const ded = payload.deductions || {};
-  const taxes = payload.taxes || {};
+  const _taxes = payload.taxes || {};
   const comp = computation || {};
   const regime = selectedRegime || 'new';
   const employers = sal.employers || [];
@@ -395,4 +395,5 @@ export function generateRecommendations(payload, comp, regime) {
   return recommendations.sort((a, b) => b.savingsAmount - a.savingsAmount).slice(0, 5);
 }
 
-export default { generateWhispers, getWhispersForSection, generateRecommendations };
+const taxBrainExports = { generateWhispers, getWhispersForSection, generateRecommendations };
+export default taxBrainExports;

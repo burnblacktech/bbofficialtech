@@ -2,8 +2,6 @@
  * BottomNav — Mobile-only bottom tab bar with 5 tabs.
  * Hidden on desktop (≥1024px) and filing flow pages.
  */
-
-import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, FileText, TrendingUp, FolderOpen, Settings } from 'lucide-react';
 

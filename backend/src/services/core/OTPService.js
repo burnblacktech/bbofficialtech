@@ -23,6 +23,14 @@ const { AppError } = require('../../middleware/errorHandler');
 // In-memory fallback when Redis is unavailable
 const memoryStore = new Map();
 
+// Periodic cleanup of expired OTP entries (every 5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of memoryStore) {
+    if (val.expiresAt && val.expiresAt <= now) memoryStore.delete(key);
+  }
+}, 5 * 60 * 1000).unref();
+
 class OTPService {
   static _getRedis() {
     try {

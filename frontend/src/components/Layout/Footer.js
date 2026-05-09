@@ -3,7 +3,6 @@
 // Clean footer with important links and copyright
 // =====================================================
 
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, HelpCircle, FileText, Shield } from 'lucide-react';
 

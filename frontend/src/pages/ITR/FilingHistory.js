@@ -4,9 +4,12 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FileText, ArrowLeft, Clock, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { FileText, ArrowLeft, Clock, CheckCircle, AlertCircle, ArrowRight, Trash2 } from 'lucide-react';
 import { itrService } from '../../services';
+import newFilingService from '../../services/newFilingService';
 import { Card, Button, Spinner } from '../../components/ds';
+import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 
 /* eslint-disable camelcase */
@@ -22,10 +25,24 @@ const STATES = {
 
 export default function FilingHistory() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: filings = [], isLoading } = useQuery({
     queryKey: ['filings'],
     queryFn: async () => (await itrService.getUserITRs()).filings || [],
   });
+
+  const handleDelete = async (e, filing) => {
+    e.stopPropagation();
+    // eslint-disable-next-line no-alert
+    if (!window.confirm(`Delete this ${filing.lifecycleState === 'draft' ? 'draft' : 'failed'} filing for AY ${filing.assessmentYear}?`)) return;
+    try {
+      await newFilingService.deleteFiling(filing.id);
+      toast.success('Filing deleted');
+      qc.invalidateQueries({ queryKey: ['filings'] });
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to delete');
+    }
+  };
 
   return (
     <div style={{ maxWidth: 640, margin: '0 auto' }}>
@@ -61,6 +78,11 @@ export default function FilingHistory() {
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 10px', borderRadius: 12, fontSize: 12, fontWeight: 600, color: st.color, background: `${st.color}12` }}>
                     <st.Icon size={12} /> {st.label}
                   </span>
+                  {['draft', 'eri_failed'].includes(f.lifecycleState) && (
+                    <button onClick={(e) => handleDelete(e, f)} title="Delete filing" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: P.textLight, borderRadius: 4 }}>
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                   <ArrowRight size={14} color={P.borderMedium} />
                 </div>
               </div>

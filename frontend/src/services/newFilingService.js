@@ -4,7 +4,12 @@ import api from './api';
 const newFilingService = {
   createFiling: (data) => api.post('/filings', data),
   getFiling: (id) => api.get(`/filings/${id}`),
-  updateFiling: (id, data) => api.put(`/filings/${id}`, data),
+  updateFiling: (id, data) => {
+    if (data.version === undefined && data.version !== 0) {
+      console.warn('[newFilingService] updateFiling called without version field — request will be rejected by backend');
+    }
+    return api.put(`/filings/${id}`, data);
+  },
   getFilings: () => api.get('/filings'),
   submitFiling: (id) => api.post(`/filings/${id}/submit`),
   getReadiness: (id) => api.get(`/filings/${id}/readiness`),

@@ -16,7 +16,7 @@ class CouponService {
    * @param {number} baseAmountPaise - Base amount before discount, in paise
    * @returns {{ valid: boolean, discount: number, couponId: string|null, reason?: string }}
    */
-  static async applyCoupon(code, baseAmountPaise) {
+  static async applyCoupon(code, baseAmountPaise, userId = null) {
     if (!code) {
       return { valid: false, discount: 0, couponId: null, reason: 'No coupon code provided' };
     }
@@ -40,6 +40,17 @@ class CouponService {
 
     if (coupon.maxUses !== null && coupon.currentUses >= coupon.maxUses) {
       return { valid: false, discount: 0, couponId: null, reason: 'Coupon usage limit reached' };
+    }
+
+    // Per-user usage check
+    if (userId) {
+      const { Order } = require('../models');
+      const userUsage = await Order.count({
+        where: { userId, couponCode: code.toUpperCase(), status: 'paid' },
+      });
+      if (userUsage > 0) {
+        return { valid: false, discount: 0, couponId: null, reason: 'You have already used this coupon' };
+      }
     }
 
     let discount = 0;

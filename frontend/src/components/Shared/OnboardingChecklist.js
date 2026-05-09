@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronRight, X, Sparkles } from 'lucide-react';
 import useOnboardingStore from '../../store/useOnboardingStore';

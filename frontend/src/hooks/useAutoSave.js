@@ -74,6 +74,7 @@ export default function useAutoSave(onSave, buildPayload, delay = 1000) {
           await result;
         }
         retryCountRef.current = 0;
+        toast.dismiss('autosave-error');
         return true; // success
       } catch (err) {
         lastError = err;
@@ -89,7 +90,7 @@ export default function useAutoSave(onSave, buildPayload, delay = 1000) {
     // All retries exhausted or non-retryable error
     retryCountRef.current = 0;
     if (isNetworkError(lastError)) {
-      toast.error('Unsaved changes — check your connection', { duration: Infinity, id: 'autosave-fail' });
+      toast.error('Unsaved changes — check your connection', { duration: Infinity, id: 'autosave-error' });
     }
     return false; // failure
   }, [isNetworkError]);

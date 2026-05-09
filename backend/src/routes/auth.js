@@ -14,7 +14,7 @@ const emailService = require('../services/integration/EmailService');
 const { authenticateToken, authRateLimit } = require('../middleware/auth');
 const { setRefreshTokenCookie, clearRefreshTokenCookie, handleTokenRefresh } = require('../middleware/cookieAuth');
 const { auditAuthEvents, auditFailedAuth } = require('../middleware/auditLogger');
-const { progressiveRateLimit, recordFailedAttempt } = require('../middleware/progressiveRateLimit');
+const { progressiveRateLimit, recordFailedAttempt, clearFailedAttempts } = require('../middleware/progressiveRateLimit');
 const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
@@ -122,8 +122,8 @@ router.post('/register',
         return res.status(400).json({ success: false, error: 'Invalid email format' });
       }
 
-      if (password.length < 8) {
-        return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long' });
+      if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+        return res.status(400).json({ success: false, error: 'Password must be at least 8 characters with uppercase, lowercase, and a number' });
       }
 
       let normalizedPhone = null;
@@ -172,10 +172,9 @@ router.post('/register',
 
       enterpriseLogger.info('User registered', { userId: newUser.id, email: newUser.email });
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
-        message: 'User registered successfully',
-        user: { id: newUser.id, email: newUser.email, fullName: newUser.fullName, role: newUser.role, status: newUser.status, createdAt: newUser.createdAt },
+        message: 'Registration successful. Please check your email to verify your account.',
       });
     } catch (error) {
       enterpriseLogger.error('Registration failed', { error: error.message, stack: error.stack });
@@ -187,7 +186,7 @@ router.post('/register',
 // EMAIL VERIFICATION
 // =====================================================
 
-router.post('/verify-email', async (req, res) => {
+router.post('/verify-email', authRateLimit, async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) {
@@ -244,7 +243,6 @@ router.post('/resend-verification', authenticateToken, async (req, res) => {
 
 router.post('/login',
   progressiveRateLimit(),
-  recordFailedAttempt,
   auditFailedAuth('login'),
   async (req, res) => {
     try {
@@ -259,7 +257,13 @@ router.post('/login',
 
       if (!user) {
         enterpriseLogger.warn('Login failed: user not found', { email: email.toLowerCase(), ip: req.ip });
+        await recordFailedAttempt(req, res, () => {});
         return res.status(401).json({ success: false, error: 'Invalid email or password' });
+      }
+
+      if (user.status !== 'active') {
+        enterpriseLogger.warn('Login attempt by disabled user', { userId: user.id, status: user.status });
+        return res.status(403).json({ success: false, error: 'Account is disabled. Please contact support.' });
       }
 
       if (!user.passwordHash) {
@@ -269,6 +273,7 @@ router.post('/login',
       const isValid = await bcrypt.compare(password, user.passwordHash);
       if (!isValid) {
         enterpriseLogger.warn('Login failed: invalid password', { userId: user.id, ip: req.ip });
+        await recordFailedAttempt(req, res, () => {});
         return res.status(401).json({ success: false, error: 'Invalid email or password' });
       }
 
@@ -283,6 +288,8 @@ router.post('/login',
 
       enterpriseLogger.info('User logged in', { userId: user.id });
       setSessionCookies(res, sessionResult);
+
+      await clearFailedAttempts(req, res, () => {});
 
       res.json({
         success: true,
@@ -447,6 +454,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
     enterpriseLogger.info('Profile updated', { userId, updatedFields: Object.keys(req.body) });
 
     res.json({
+      success: true,
       message: 'Profile updated successfully',
       user: {
         id: user.id, email: user.email, fullName: user.fullName, phone: user.phone,
@@ -520,60 +528,7 @@ router.patch('/pan', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/verify-pan', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const { pan } = req.body;
 
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    if (!pan || !panRegex.test(pan.toUpperCase())) {
-      return res.status(400).json({ success: false, message: 'Invalid PAN format. Expected format: ABCDE1234F' });
-    }
-
-    const user = await User.findByPk(userId);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-
-    // Call SurePass API (falls back to mock if FEATURE_PAN_VERIFICATION_LIVE !== 'true')
-    const panService = require('../services/common/PANVerificationService');
-    const result = await panService.verifyPAN(pan.toUpperCase(), userId);
-
-    if (!result.isValid) {
-      return res.status(400).json({ success: false, message: 'PAN verification failed. Please check the PAN number.' });
-    }
-
-    // Save verified PAN + name + DOB to user (SurePass data is authoritative)
-    user.panNumber = result.pan;
-    user.panVerified = result.isValid;
-    user.panVerifiedAt = new Date();
-    if (result.name) user.fullName = result.name; // Always use PAN-verified name
-    if (result.dateOfBirth) user.dateOfBirth = result.dateOfBirth; // Always use PAN-verified DOB
-    await user.save();
-
-    enterpriseLogger.info('PAN verified via SurePass', { userId, pan: result.pan, source: result.source });
-    res.json({
-      success: true,
-      message: 'PAN verified successfully',
-      data: {
-        pan: result.pan,
-        name: result.name,
-        dateOfBirth: result.dateOfBirth,
-        verified: true,
-        source: result.source,
-      },
-    });
-  } catch (error) {
-    enterpriseLogger.error('PAN verification failed', { error: error.message, userId: req.user?.userId });
-    // If SurePass is down, allow manual save with a warning
-    if (error.statusCode === 503 || error.code === 'SERVICE_UNAVAILABLE') {
-      return res.status(200).json({
-        success: true,
-        message: 'PAN saved (verification service unavailable — will verify later)',
-        data: { pan: req.body.pan?.toUpperCase(), verified: false, source: 'MANUAL' },
-      });
-    }
-    res.status(error.statusCode || 500).json({ success: false, message: error.message || 'PAN verification failed' });
-  }
-});
 
 // =====================================================
 // AADHAAR VERIFICATION (eAadhaar PDF upload)
@@ -720,8 +675,8 @@ router.put('/set-password', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     const { currentPassword, newPassword } = req.body;
 
-    if (!newPassword || newPassword.length < 8) {
-      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long' });
+    if (!newPassword || newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters with uppercase, lowercase, and a number' });
     }
 
     const user = await User.findByPk(userId);
@@ -887,8 +842,8 @@ router.post('/reset-password',
       if (!token || !newPassword) {
         return res.status(400).json({ success: false, error: 'Token and new password are required' });
       }
-      if (newPassword.length < 8) {
-        return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long' });
+      if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+        return res.status(400).json({ success: false, error: 'Password must be at least 8 characters with uppercase, lowercase, and a number' });
       }
 
       const tokenValidation = await PasswordResetToken.validateToken(token);
@@ -1009,6 +964,13 @@ router.get('/google/callback',
   async (req, res) => {
     try {
       const user = req.user;
+
+      if (user.status !== 'active') {
+        enterpriseLogger.warn('OAuth login attempt by disabled user', { userId: user.id, status: user.status });
+        const frontendUrl = getOAuthFrontendUrl(req);
+        return res.redirect(`${frontendUrl}/auth/google/error?message=${encodeURIComponent('Account is disabled. Please contact support.')}`);
+      }
+
       const token = signAccessToken(user);
       const sessionResult = await createSession(user, req);
 
@@ -1022,8 +984,13 @@ router.get('/google/callback',
       setSessionCookies(res, sessionResult);
 
       const frontendUrl = getOAuthFrontendUrl(req);
-      const userData = encodeURIComponent(JSON.stringify(userResponse(user)));
-      res.redirect(`${frontendUrl}/auth/google/success?user=${userData}`);
+      const oauthUserData = encodeURIComponent(JSON.stringify({
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+      }));
+      res.redirect(`${frontendUrl}/auth/google/success?user=${oauthUserData}`);
     } catch (error) {
       enterpriseLogger.error('Google OAuth callback error', { error: error.message });
       const frontendUrl = getOAuthFrontendUrl(req);
@@ -1077,7 +1044,7 @@ router.get('/sessions', authenticateToken, async (req, res) => {
       };
     });
 
-    res.json({ success: true, sessions: formattedSessions });
+    res.json({ success: true, data: formattedSessions });
   } catch (error) {
     enterpriseLogger.error('Get sessions failed', { error: error.message, userId: req.user?.userId });
     res.status(500).json({ success: false, error: 'Internal server error' });

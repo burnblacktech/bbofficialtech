@@ -53,6 +53,7 @@ const authenticateToken = (req, res, next) => {
         });
 
         return res.status(401).json({
+          success: false,
           status: 'error',
           message: 'Invalid or expired token',
           code: 'AUTH_TOKEN_INVALID',
@@ -62,6 +63,7 @@ const authenticateToken = (req, res, next) => {
       // Enforce read-only scope for impersonation tokens
       if (user.scope === 'read-only' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
         return res.status(403).json({
+          success: false,
           status: 'error',
           message: 'Impersonation tokens are read-only',
           code: 'IMPERSONATION_READ_ONLY',
@@ -130,7 +132,7 @@ const authorize = (allowedRoles = []) => {
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
         enterpriseLogger.warn('Unauthorized access attempt', {
-          userId: req.user.id,
+          userId: req.user.userId,
           userRole,
           allowedRoles,
           path: req.path,
@@ -151,6 +153,7 @@ const authorize = (allowedRoles = []) => {
       });
 
       res.status(500).json({
+        success: false,
         status: 'error',
         message: 'Authorization service error',
         code: 'AUTH_SERVICE_ERROR',

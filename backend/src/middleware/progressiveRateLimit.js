@@ -11,6 +11,17 @@ const redisService = require('../services/core/RedisService');
 const failedAttempts = new Map();
 const lockouts = new Map();
 
+// Periodic cleanup of expired entries (every 5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of failedAttempts) {
+    if (now - val.firstAttempt > 15 * 60 * 1000) failedAttempts.delete(key);
+  }
+  for (const [key, expiry] of lockouts) {
+    if (expiry <= now) lockouts.delete(key);
+  }
+}, 5 * 60 * 1000).unref();
+
 /**
  * Progressive rate limiting based on failed attempts
  */

@@ -96,7 +96,7 @@ const NavGroup = ({ label, children, isCollapsed }) => (
         {label}
       </p>
     )}
-    <ul className="space-y-0.5" role="list">{children}</ul>
+    <ul className="space-y-0.5">{children}</ul>
   </div>
 );
 

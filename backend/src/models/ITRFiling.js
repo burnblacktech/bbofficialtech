@@ -50,6 +50,7 @@ const ITRFiling = sequelize.define('ITRFiling', {
   lifecycleState: {
     type: DataTypes.ENUM(
       'draft',
+      'ready_for_submission',
       'review_pending',
       'reviewed',
       'approved_by_ca',
@@ -347,16 +348,6 @@ const ITRFiling = sequelize.define('ITRFiling', {
 });
 
 enterpriseLogger.info('ITRFiling model defined');
-
-ITRFiling.afterFind((result) => {
-  const decryptFiling = (f) => {
-    if (f && f.taxpayerPan) f.setDataValue('taxpayerPan', decrypt(f.taxpayerPan));
-  };
-  if (Array.isArray(result)) result.forEach(decryptFiling);
-  else decryptFiling(result);
-});
-
-module.exports = ITRFiling;
 
 // =====================================================
 // INSTANCE METHODS

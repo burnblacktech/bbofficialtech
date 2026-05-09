@@ -1,5 +1,3 @@
-import React from 'react';
-
 // ── Field: label + input + hint/error ──
 export function Field({ label, value, onChange, onBlur, error, hint, type = 'text', disabled, locked, placeholder, className = '', style, children, ...rest }) {
   const isNumeric = type === 'number' || rest.inputMode === 'numeric';
@@ -81,7 +79,7 @@ export function Button({ children, variant = 'secondary', size = 'md', disabled,
   return (
     <button
       type={type}
-      className={`ds-btn ds-btn-${size} ds-btn-${variant} ${className}`}
+      className={`ds-btn ds-btn--${size} ds-btn--${variant} ${className}`}
       style={style}
       disabled={disabled}
       onClick={onClick}
@@ -122,14 +120,12 @@ export function LockIcon({ size = 13 }) {
 
 // ── Spinner ──
 export function Spinner({ size = 16 }) {
-  return <span style={{ width: size, height: size, border: '2px solid rgba(0,0,0,0.1)', borderTopColor: 'var(--c-brand)', borderRadius: '50%', animation: 'spin 0.6s linear infinite', display: 'inline-block' }} />;
+  return <span className="ds-spinner" style={{ width: size, height: size }} />;
 }
 
 // ── Alert ──
-export function Alert({ children, variant = 'info', className = '' }) {
-  const colors = { info: { bg: '#f0fdfa', border: '#99f6e4', color: 'var(--c-info)' }, warning: { bg: '#fffbeb', border: '#fde68a', color: 'var(--c-warning)' }, error: { bg: '#fef2f2', border: '#fecaca', color: 'var(--c-error)' }, success: { bg: '#f0fdf4', border: '#bbf7d0', color: 'var(--c-success)' } };
-  const c = colors[variant] || colors.info;
-  return <div className={className} style={{ padding: '8px 12px', background: c.bg, border: `1px solid ${c.border}`, borderRadius: 'var(--r-lg)', fontSize: 'var(--fs-sm)', color: c.color, lineHeight: 1.4 }}>{children}</div>;
+export function Alert({ children, variant = 'info', className = '', ...rest }) {
+  return <div className={`ds-alert ds-alert--${variant} ${className}`} {...rest}>{children}</div>;
 }
 
 // ── Input: alias for Field (backward compat) ──

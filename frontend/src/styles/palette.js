@@ -1,7 +1,10 @@
 /**
- * PALETTE — Central color control for JS inline styles.
- * Must stay in sync with theme.css variables.
+ * @deprecated Prefer CSS variables (var(--xxx)) via className over inline styles.
+ * This file exists for backward compatibility with inline-styled components.
+ * Values are LIGHT MODE ONLY — components using these won't adapt to dark mode.
+ * New code should use ds/ components or Tailwind classes that reference CSS variables.
  *
+ * PALETTE — Central color control for JS inline styles.
  * BurnBlack: Gold + Black primary. Teal secondary. Warm neutrals.
  */
 

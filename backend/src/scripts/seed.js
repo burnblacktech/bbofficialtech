@@ -10,6 +10,11 @@ const enterpriseLogger = require('../utils/logger');
 // Load environment variables
 require('dotenv').config();
 
+if (process.env.NODE_ENV === 'production') {
+  console.error('ERROR: Cannot run seed script in production environment.');
+  process.exit(1);
+}
+
 // Database configuration — supports DATABASE_URL (Neon/cloud) or individual vars
 const dbConfig = process.env.DATABASE_URL
   ? {

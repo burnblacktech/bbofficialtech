@@ -2,8 +2,6 @@
 // RECOMMENDATIONS PANEL — Tax-saving recommendations
 // Top 5 sorted by savingsAmount, with navigate links
 // =====================================================
-
-import React from 'react';
 import { Lightbulb, ArrowRight } from 'lucide-react';
 import { Card } from '../ds';
 

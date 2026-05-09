@@ -17,7 +17,7 @@ const router = express.Router();
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
-  message: { error: 'Too many requests, please try again later.' },
+  message: { success: false, error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -25,7 +25,7 @@ const generalLimiter = rateLimit({
 const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { error: 'Too many requests, please try again later.' },
+  message: { success: false, error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -88,13 +88,8 @@ router.get('/status', (req, res) => {
 
 // Auth (register, login, profile, password, Google OAuth)
 router.use('/auth', strictLimiter, require('./auth'));
-router.use('/user', strictLimiter, require('./auth')); // backward compat alias
-
 // Filing CRUD + submission + financial story screens
 router.use('/filings', generalLimiter, require('./filings'));
-
-// Tax computation + regime comparison
-router.use('/tax', generalLimiter, require('./tax'));
 
 // ITR determination + PAN verification
 router.use('/itr', generalLimiter, require('./itr'));
@@ -104,9 +99,6 @@ router.use('/eri', strictLimiter, require('./eri'));
 
 // Payments + billing
 router.use('/payments', generalLimiter, require('./payments'));
-
-// OTP verification
-router.use('/otp', strictLimiter, require('./otp'));
 
 // Account management (audit trail, export, deletion, notification prefs)
 router.use('/account', generalLimiter, require('./account'));

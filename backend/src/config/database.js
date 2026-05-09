@@ -105,7 +105,13 @@ const testConnection = async () => {
 const initializeDatabase = async () => {
   try {
     const ok = await testConnection();
-    if (ok) { await sequelize.sync({ alter: false }); enterpriseLogger.info('Database initialized'); return true; }
+    if (ok) {
+      if (process.env.NODE_ENV !== 'production') {
+        await sequelize.sync({ alter: false });
+      }
+      enterpriseLogger.info('Database initialized');
+      return true;
+    }
     return false;
   } catch (error) {
     enterpriseLogger.error('Database init error', { error: error.message });

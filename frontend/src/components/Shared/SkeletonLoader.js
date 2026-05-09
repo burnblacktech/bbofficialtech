@@ -1,5 +1,3 @@
-import React from 'react';
-
 const shimmerClass =
   'animate-pulse bg-gradient-to-r from-[var(--bg-muted)] via-[var(--bg-card-hover)] to-[var(--bg-muted)] bg-[length:200%_100%] rounded-[var(--radius-md)]';
 

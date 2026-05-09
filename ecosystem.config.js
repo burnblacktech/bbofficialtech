@@ -13,13 +13,13 @@ module.exports = {
       exec_mode: 'cluster',
       env: {
         NODE_ENV: 'production',
-        PORT: 3001,
+        PORT: 3002,
         FRONTEND_URL: 'https://burnblack.com',
         ADMIN_URL: 'https://admin.burnblack.com'
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3001,
+        PORT: 3002,
         FRONTEND_URL: 'https://burnblack.com',
         ADMIN_URL: 'https://admin.burnblack.com'
       },

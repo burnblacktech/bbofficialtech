@@ -24,11 +24,10 @@ class ReviewRequirementService {
         });
 
         // Mandatory CA if:
-        // - Capital gains present
         // - Business income present
         // - High-value salary (> 50L)
         if (income.capitalGains?.transactions?.length > 0) {
-            return 'mandatory';
+            return 'optional';
         }
 
         if (income.business) {
@@ -99,6 +98,9 @@ class ReviewRequirementService {
 
         // Add specific reasons for optional
         if (requirement === 'optional') {
+            if (income.capitalGains?.transactions?.length > 0) {
+                result.reasons.push('Capital gains present — CA review recommended');
+            }
             if (income.salary?.employers?.length > 1) {
                 result.reasons.push('Multiple employers detected');
             }
@@ -109,9 +111,6 @@ class ReviewRequirementService {
 
         // Add specific reasons for mandatory
         if (requirement === 'mandatory') {
-            if (income.capitalGains?.transactions?.length > 0) {
-                result.reasons.push('Capital gains transactions present');
-            }
             if (income.business) {
                 result.reasons.push('Business income present');
             }

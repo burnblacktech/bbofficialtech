@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 const PaymentService = require('../services/PaymentService');
 const InvoiceService = require('../services/InvoiceService');
 const { PLANS, getRequiredPlan } = require('../constants/pricingPlans');
@@ -65,7 +65,7 @@ router.get('/plans', (req, res) => {
  * GET /api/payments/required-plan?itrType=ITR-1&grossIncome=800000
  * Returns which plan the user needs based on their filing
  */
-router.get('/required-plan', authenticateToken, (req, res) => {
+router.get('/required-plan', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), (req, res) => {
   const { itrType, grossIncome } = req.query;
   const plan = getRequiredPlan(itrType || 'ITR-1', grossIncome || 0);
   res.json({ success: true, data: { plan: { id: plan.id, name: plan.name, price: plan.price, priceWithGst: plan.priceWithGst } } });
@@ -75,7 +75,7 @@ router.get('/required-plan', authenticateToken, (req, res) => {
  * GET /api/payments/status/:filingId
  * Check if a filing has been paid for
  */
-router.get('/status/:filingId', authenticateToken, async (req, res, next) => {
+router.get('/status/:filingId', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const { ITRFiling } = require('../models');
     const filing = await ITRFiling.findByPk(req.params.filingId);
@@ -89,7 +89,7 @@ router.get('/status/:filingId', authenticateToken, async (req, res, next) => {
  * POST /api/payments/create-order
  * Create a Razorpay order for a filing
  */
-router.post('/create-order', authenticateToken, async (req, res, next) => {
+router.post('/create-order', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const { filingId, itrType, grossIncome, couponCode } = req.body;
     if (!filingId) return res.status(400).json({ success: false, error: 'filingId is required' });
@@ -120,7 +120,7 @@ router.post('/create-order', authenticateToken, async (req, res, next) => {
  * POST /api/payments/verify
  * Verify Razorpay payment and unlock filing
  */
-router.post('/verify', authenticateToken, async (req, res, next) => {
+router.post('/verify', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
@@ -147,7 +147,7 @@ router.post('/verify', authenticateToken, async (req, res, next) => {
  * GET /api/payments/history
  * Payment history for authenticated user
  */
-router.get('/history', authenticateToken, async (req, res, next) => {
+router.get('/history', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const orders = await PaymentService.getPaymentHistory(req.user.userId);
     res.json({ success: true, data: orders });
@@ -160,7 +160,7 @@ router.get('/history', authenticateToken, async (req, res, next) => {
  * GET /api/payments/:orderId/receipt
  * Download PDF receipt for a paid order
  */
-router.get('/:orderId/receipt', authenticateToken, async (req, res, next) => {
+router.get('/:orderId/receipt', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const order = await PaymentService.getOrderForReceipt(req.params.orderId, req.user.userId);
 
@@ -183,6 +183,17 @@ router.get('/:orderId/receipt', authenticateToken, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+/**
+ * POST /api/payments/:orderId/refund
+ * Initiate a refund for a paid order
+ */
+router.post('/:orderId/refund', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
+  try {
+    const result = await PaymentService.processRefund(req.params.orderId, req.user.userId, req.body.reason);
+    res.json({ success: true, data: result });
+  } catch (err) { next(err); }
 });
 
 module.exports = router;

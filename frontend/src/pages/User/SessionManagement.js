@@ -14,7 +14,7 @@ export default function SessionManagement() {
   const fetchSessions = async () => {
     try {
       const res = await api.get('/auth/sessions');
-      setSessions(res.data.sessions || []);
+      setSessions(res.data.data || []);
     } catch { toast.error('Failed to load sessions'); }
     finally { setLoading(false); }
   };

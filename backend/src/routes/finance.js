@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 const { Op, fn, col, literal } = require('sequelize');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 const { AppError } = require('../middleware/errorHandler');
 const {
   IncomeEntry,
@@ -80,7 +80,7 @@ const incomeUpdateSchema = Joi.object({
 }).min(1);
 
 // GET /income?fy=2024-25
-router.get('/income', authenticateToken, async (req, res, next) => {
+router.get('/income', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const limit = Math.min(parseInt(req.query.limit) || 100, 500);
@@ -98,7 +98,7 @@ router.get('/income', authenticateToken, async (req, res, next) => {
 });
 
 // GET /income/summary?fy=2024-25
-router.get('/income/summary', authenticateToken, async (req, res, next) => {
+router.get('/income/summary', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const entries = await IncomeEntry.findAll({
@@ -131,7 +131,7 @@ router.get('/income/summary', authenticateToken, async (req, res, next) => {
 });
 
 // POST /income
-router.post('/income', authenticateToken, async (req, res, next) => {
+router.post('/income', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const data = validate(incomeCreateSchema, req.body);
     const entry = await IncomeEntry.create({
@@ -145,7 +145,7 @@ router.post('/income', authenticateToken, async (req, res, next) => {
 });
 
 // PUT /income/:id
-router.put('/income/:id', authenticateToken, async (req, res, next) => {
+router.put('/income/:id', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const entry = await IncomeEntry.findOne({
       where: { id: req.params.id, userId: req.user.userId },
@@ -163,7 +163,7 @@ router.put('/income/:id', authenticateToken, async (req, res, next) => {
 });
 
 // DELETE /income/:id
-router.delete('/income/:id', authenticateToken, async (req, res, next) => {
+router.delete('/income/:id', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const entry = await IncomeEntry.findOne({
       where: { id: req.params.id, userId: req.user.userId },
@@ -208,7 +208,7 @@ const expenseUpdateSchema = Joi.object({
 }).min(1);
 
 // GET /expenses?fy=2024-25
-router.get('/expenses', authenticateToken, async (req, res, next) => {
+router.get('/expenses', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const limit = Math.min(parseInt(req.query.limit) || 100, 500);
@@ -226,7 +226,7 @@ router.get('/expenses', authenticateToken, async (req, res, next) => {
 });
 
 // GET /expenses/summary?fy=2024-25
-router.get('/expenses/summary', authenticateToken, async (req, res, next) => {
+router.get('/expenses/summary', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const entries = await ExpenseEntry.findAll({
@@ -264,7 +264,7 @@ router.get('/expenses/summary', authenticateToken, async (req, res, next) => {
 });
 
 // POST /expenses
-router.post('/expenses', authenticateToken, async (req, res, next) => {
+router.post('/expenses', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const data = validate(expenseCreateSchema, req.body);
     const deductionSection = EXPENSE_TO_DEDUCTION[data.category] || null;
@@ -280,7 +280,7 @@ router.post('/expenses', authenticateToken, async (req, res, next) => {
 });
 
 // PUT /expenses/:id
-router.put('/expenses/:id', authenticateToken, async (req, res, next) => {
+router.put('/expenses/:id', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const entry = await ExpenseEntry.findOne({
       where: { id: req.params.id, userId: req.user.userId },
@@ -302,7 +302,7 @@ router.put('/expenses/:id', authenticateToken, async (req, res, next) => {
 });
 
 // DELETE /expenses/:id
-router.delete('/expenses/:id', authenticateToken, async (req, res, next) => {
+router.delete('/expenses/:id', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const entry = await ExpenseEntry.findOne({
       where: { id: req.params.id, userId: req.user.userId },
@@ -347,7 +347,7 @@ const investmentUpdateSchema = Joi.object({
 }).min(1);
 
 // GET /investments?fy=2024-25
-router.get('/investments', authenticateToken, async (req, res, next) => {
+router.get('/investments', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const limit = Math.min(parseInt(req.query.limit) || 100, 500);
@@ -374,7 +374,7 @@ router.get('/investments', authenticateToken, async (req, res, next) => {
 });
 
 // GET /investments/summary?fy=2024-25
-router.get('/investments/summary', authenticateToken, async (req, res, next) => {
+router.get('/investments/summary', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const entries = await InvestmentEntry.findAll({
@@ -419,7 +419,7 @@ router.get('/investments/summary', authenticateToken, async (req, res, next) => 
 });
 
 // POST /investments
-router.post('/investments', authenticateToken, async (req, res, next) => {
+router.post('/investments', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const data = validate(investmentCreateSchema, req.body);
     const deductionSection = INVESTMENT_TO_DEDUCTION[data.investmentType];
@@ -438,7 +438,7 @@ router.post('/investments', authenticateToken, async (req, res, next) => {
 });
 
 // PUT /investments/:id
-router.put('/investments/:id', authenticateToken, async (req, res, next) => {
+router.put('/investments/:id', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const entry = await InvestmentEntry.findOne({
       where: { id: req.params.id, userId: req.user.userId },
@@ -463,7 +463,7 @@ router.put('/investments/:id', authenticateToken, async (req, res, next) => {
 });
 
 // DELETE /investments/:id
-router.delete('/investments/:id', authenticateToken, async (req, res, next) => {
+router.delete('/investments/:id', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const entry = await InvestmentEntry.findOne({
       where: { id: req.params.id, userId: req.user.userId },
@@ -505,7 +505,7 @@ const READINESS_ACTIONS = {
 };
 
 // GET /readiness?fy=2024-25
-router.get('/readiness', authenticateToken, async (req, res, next) => {
+router.get('/readiness', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const userId = req.user.userId;
@@ -592,7 +592,7 @@ function fyToDateRange(fy) {
 }
 
 // GET /dashboard-summary?fy=2024-25
-router.get('/dashboard-summary', authenticateToken, async (req, res, next) => {
+router.get('/dashboard-summary', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { fy } = validate(fyQuerySchema, req.query);
     const userId = req.user.userId;
@@ -811,7 +811,7 @@ const tipContextSchema = Joi.object({
 });
 
 // GET /tax-tips?context=income&fy=2024-25
-router.get('/tax-tips', authenticateToken, async (req, res, next) => {
+router.get('/tax-tips', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { context, fy } = validate(tipContextSchema, req.query);
     const userId = req.user.userId;
@@ -870,7 +870,7 @@ router.get('/tax-tips', authenticateToken, async (req, res, next) => {
 });
 
 // POST /tax-tips/:tipId/dismiss
-router.post('/tax-tips/:tipId/dismiss', authenticateToken, async (req, res, next) => {
+router.post('/tax-tips/:tipId/dismiss', authenticateToken, authorize(['END_USER']), async (req, res, next) => {
   try {
     const { tipId } = req.params;
     const userId = req.user.userId;

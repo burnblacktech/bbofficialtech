@@ -36,11 +36,10 @@ class ERIIntegrationService {
    * @param {string} digitalSignature - Digital signature
    * @returns {Promise<object>} - Submission result with acknowledgement
    */
-  async uploadFiling(itrJson, digitalSignature, itrType, assessmentYear, userId) {
+  async uploadFiling(itrJson, digitalSignature, itrType, assessmentYear, pan) {
     try {
       enterpriseLogger.info('Uploading ITR filing via ERI Gateway');
-      // ERIGateway.submitReturn signature: (payload, itrType, assessmentYear, userId)
-      const result = await this.gateway.submitReturn(itrJson, itrType, assessmentYear, userId);
+      const result = await this.gateway.submitReturn(pan, itrType, assessmentYear, itrJson, 'O');
 
       enterpriseLogger.info('ITR filing uploaded successfully', {
         ackNumber: result.ackNumber,

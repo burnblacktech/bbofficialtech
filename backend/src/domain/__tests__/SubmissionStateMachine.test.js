@@ -9,6 +9,10 @@ jest.mock('../../services/itr/FilingSnapshotService', () => ({
   createSnapshot: jest.fn().mockResolvedValue({}),
 }));
 
+jest.mock('../../services/core/AuditService', () => ({
+  logEvent: jest.fn().mockResolvedValue(null),
+}));
+
 jest.mock('../../config/database', () => ({
   sequelize: {
     transaction: jest.fn((cb) => cb({ /* mock transaction */ })),

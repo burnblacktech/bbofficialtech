@@ -18,6 +18,7 @@ import { motion } from 'framer-motion';
 import api from '../../../services/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import useUnsavedWarning from '../../../hooks/useUnsavedWarning';
+import useNetworkStatus from '../../../hooks/useNetworkStatus';
 import useThemeStore from '../../../store/useThemeStore';
 import { validateBankAccount } from '../../../utils/itrValidation';
 import { generateWhispers, getWhispersForSection } from '../../../utils/taxBrain';
@@ -398,6 +399,7 @@ export default function ITR1Flow() {
   const location = useLocation();
   const qc = useQueryClient();
   const { user, profile } = useAuth();
+  const { isOnline } = useNetworkStatus();
   const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
 
   // Guard: if filingId is missing or literally "undefined", redirect to start
@@ -405,7 +407,7 @@ export default function ITR1Flow() {
     return <Navigate to="/filing/start" replace />;
   }
 
-  const { data: filing, isLoading, isError } = useQuery({
+  const { data: filing, isLoading, isError, error } = useQuery({
     queryKey: ['filing', filingId],
     queryFn: async () => (await api.get(`/filings/${filingId}`)).data.data,
     enabled: !!filingId && filingId !== 'undefined',
@@ -429,6 +431,7 @@ export default function ITR1Flow() {
   const [showAutoFill, setShowAutoFill] = useState(false);
   const [showRegimeConfirm, setShowRegimeConfirm] = useState(null);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [isComputing, setIsComputing] = useState(false);
 
   // Focus management refs
   const cardRefs = useRef({});
@@ -483,6 +486,8 @@ export default function ITR1Flow() {
     }
   }, [filing]);
 
+  const computeTimeoutRef = useRef(null);
+
   const saveMut = useMutation({
     mutationFn: async (updates) => {
       const currentPayload = filing?.jsonPayload || {};
@@ -511,34 +516,36 @@ export default function ITR1Flow() {
           throw err;
         }
       }
-
-      try {
-        const itr = getITRType(active, filing?.jsonPayload);
-        const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
-        setComp(r.data.data);
-      } catch (compErr) {
-        // Computation failure is non-blocking but logged
-        console.warn('Tax computation failed:', compErr.response?.data?.error || compErr.message);
-      }
     },
     onMutate: () => { setGlobalDirty(true); },
-    onSuccess: () => { setGlobalDirty(false); qc.invalidateQueries({ queryKey: ['filing', filingId] }); },
-    onError: (e) => {
+    onSuccess: () => {
       setGlobalDirty(false);
-      if (e.response?.status === 409) {
-        toast.error('Save conflict — please refresh');
-      } else {
-        toast.error(e.response?.data?.error || 'Save failed');
+      // Debounce recompute — prevents rapid saves from firing multiple compute calls
+      if (computeTimeoutRef.current) clearTimeout(computeTimeoutRef.current);
+      computeTimeoutRef.current = setTimeout(() => recompute(), 800);
+      qc.invalidateQueries({ queryKey: ['filing', filingId] });
+      qc.invalidateQueries({ queryKey: ['filings'] });
+      qc.invalidateQueries({ queryKey: ['dashboard-summary'] });
+    },
+    onError: (e) => {
+      // Don't clear dirty flag — data is still unsaved
+      const msg = e?.response?.status === 409
+        ? 'This filing was updated elsewhere. Reloading latest version...'
+        : (e?.userMessage || e?.response?.data?.error || 'Save failed');
+      toast.error(msg, { id: 'save-error' });
+      if (e?.response?.status === 409) {
+        qc.invalidateQueries({ queryKey: ['filing', filingId] });
       }
     },
   });
 
   const recompute = useCallback(async () => {
     try {
+      setIsComputing(true);
       const itr = getITRType(active, filing?.jsonPayload);
       const r = await api.post(`/filings/${filingId}/${EP_MAP[itr] || 'itr1'}/compute`);
       setComp(r.data.data);
-    } catch { /* silent */ }
+    } catch { /* silent */ } finally { setIsComputing(false); }
   }, [filingId, active]); // eslint-disable-line
 
   // Initial computation on first load only (not on every filing refetch)
@@ -897,19 +904,25 @@ export default function ITR1Flow() {
 
   if (isLoading) return <div className="story-loading"><Loader2 size={28} className="animate-spin" /></div>;
 
-  if (isError || !filing) return (
-    <div className="story-loading" style={{ flexDirection: 'column', gap: 12 }}>
-      <AlertTriangle size={32} style={{ color: 'var(--color-error)' }} />
-      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Filing not found</div>
-      <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>This filing may have been deleted or the link is invalid.</div>
-      <button
-        onClick={() => navigate('/dashboard')}
-        style={{ marginTop: 8, padding: '8px 16px', background: 'var(--brand-primary)', color: 'var(--brand-black)', border: 'none', borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-      >
-        Go to Dashboard
-      </button>
-    </div>
-  );
+  if (isError || !filing) {
+    const status = error?.response?.status;
+    const msg = status === 404 ? 'This filing was not found or may have been deleted.'
+      : status === 403 ? 'You don\'t have access to this filing.'
+      : 'Something went wrong loading this filing. Please check your connection.';
+    return (
+      <div className="story-loading" style={{ flexDirection: 'column', gap: 12 }}>
+        <AlertTriangle size={32} style={{ color: 'var(--color-error)' }} />
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{status === 403 ? 'Access denied' : 'Filing not found'}</div>
+        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{msg}</div>
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{ marginTop: 8, padding: '8px 16px', background: 'var(--brand-primary)', color: 'var(--brand-black)', border: 'none', borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+        >
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   const completedCount = cardSections.filter(s => getCompletionStatus(s.id, payload, comp) === 'complete').length;
   const isSubmitted = filing?.lifecycleState && filing.lifecycleState !== 'draft';
@@ -931,6 +944,13 @@ export default function ITR1Flow() {
 
   return (
     <div className="story-dashboard">
+      {/* ── Offline Banner ── */}
+      {!isOnline && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 16px', marginBottom: 12, fontSize: 13, color: '#991b1b', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>📴</span> You're offline. Changes will be saved when you reconnect.
+        </div>
+      )}
+
       {/* ── Top Bar ── */}
       <div className="story-top-bar">
         <button onClick={() => navigate('/dashboard')} className="story-top-bar__back">
@@ -1102,6 +1122,7 @@ export default function ITR1Flow() {
                 <TrendingUp size={14} style={{ color: '#6366f1' }} />
               </div>
               <span className="story-flow__card-title">Tax</span>
+              {isComputing && <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 8 }}>↻ Computing...</span>}
               <span className="story-flow__card-amount">
                 {bestRegime?.totalTax ? <CountingNumber value={bestRegime.totalTax} /> : '—'}
               </span>

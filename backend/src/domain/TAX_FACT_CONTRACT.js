@@ -148,7 +148,7 @@ const TAX_FACT_CONTRACT = {
      */
     taxSlabs: {
         oldRegime: {
-            ay2024_25: [
+            ay2026_27: [
                 { min: 0, max: 250000, rate: 0 },
                 { min: 250000, max: 500000, rate: 5 },
                 { min: 500000, max: 1000000, rate: 20 },
@@ -167,13 +167,14 @@ const TAX_FACT_CONTRACT = {
             ]
         },
         newRegime: {
-            ay2024_25: [
-                { min: 0, max: 300000, rate: 0 },
-                { min: 300000, max: 600000, rate: 5 },
-                { min: 600000, max: 900000, rate: 10 },
-                { min: 900000, max: 1200000, rate: 15 },
-                { min: 1200000, max: 1500000, rate: 20 },
-                { min: 1500000, max: Infinity, rate: 30 }
+            ay2026_27: [
+                { min: 0, max: 400000, rate: 0 },
+                { min: 400000, max: 800000, rate: 5 },
+                { min: 800000, max: 1200000, rate: 10 },
+                { min: 1200000, max: 1600000, rate: 15 },
+                { min: 1600000, max: 2000000, rate: 20 },
+                { min: 2000000, max: 2400000, rate: 25 },
+                { min: 2400000, max: Infinity, rate: 30 }
             ]
         }
     },
@@ -182,14 +183,8 @@ const TAX_FACT_CONTRACT = {
      * Rebate 87A
      */
     rebate87A: {
-        oldRegime: {
-            incomeLimit: 500000,
-            rebateAmount: 12500
-        },
-        newRegime: {
-            incomeLimit: 700000,
-            rebateAmount: 25000  // FY 2023-24 onwards
-        }
+        oldRegime: { incomeLimit: 500000, rebateAmount: 12500 },
+        newRegime: { incomeLimit: 1200000, rebateAmount: 60000 }
     },
 
     /**

@@ -2,8 +2,6 @@
  * KeyboardShortcutsHelp — Modal triggered by pressing `?` key.
  * Displays all keyboard shortcuts categorized.
  */
-
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 

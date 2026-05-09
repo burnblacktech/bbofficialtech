@@ -4,6 +4,7 @@
 
 import axios from 'axios';
 import { tokenStore } from './tokenStore';
+import { mapApiError } from '../utils/errorCopy';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL
   || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api');
@@ -54,8 +55,13 @@ api.interceptors.response.use(
         refreshPromise = null;
         tokenStore.clear();
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = '/login?reason=session_expired';
       }
+    }
+
+    // Map raw backend errors to user-friendly messages
+    if (error.response?.data) {
+      error.userMessage = mapApiError(error);
     }
 
     return Promise.reject(error);

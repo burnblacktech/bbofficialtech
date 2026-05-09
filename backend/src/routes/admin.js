@@ -167,6 +167,25 @@ router.post('/users/:userId/reactivate', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+router.patch('/users/:userId/role', async (req, res, next) => {
+  try {
+    const { role } = req.body;
+    const validRoles = ['END_USER', 'CA', 'PREPARER', 'SUPER_ADMIN', 'GSTIN_ADMIN'];
+    if (!role || !validRoles.includes(role)) {
+      return res.status(400).json({ success: false, error: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
+    }
+    const user = await User.findByPk(req.params.userId);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+    if (user.id === req.user.userId && role !== 'SUPER_ADMIN') {
+      return res.status(400).json({ success: false, error: 'Cannot demote yourself' });
+    }
+    const oldRole = user.role;
+    await user.update({ role });
+    enterpriseLogger.info('Admin changed user role', { adminId: req.user.userId, targetUserId: user.id, oldRole, newRole: role });
+    res.json({ success: true, message: `Role changed from ${oldRole} to ${role}`, data: { userId: user.id, role } });
+  } catch (err) { next(err); }
+});
+
 router.post('/users/:userId/reset-password', async (req, res, next) => {
   try {
     const result = await AdminUserService.triggerPasswordReset(req.params.userId, req.user.userId);

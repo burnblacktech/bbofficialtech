@@ -222,7 +222,7 @@ class TaxRegimeAssembly {
      */
     static _getSlabStructure(regime, taxpayerAge = 'below60') {
         if (regime === 'new') {
-            return TAX_FACT_CONTRACT.taxSlabs.newRegime.ay2024_25;
+            return TAX_FACT_CONTRACT.taxSlabs.newRegime.ay2026_27;
         }
 
         // Old regime: Age-dependent slabs
@@ -232,7 +232,7 @@ class TaxRegimeAssembly {
             return TAX_FACT_CONTRACT.taxSlabs.oldRegime.seniorCitizen;
         }
 
-        return TAX_FACT_CONTRACT.taxSlabs.oldRegime.ay2024_25;
+        return TAX_FACT_CONTRACT.taxSlabs.oldRegime.ay2026_27;
     }
 
     /**

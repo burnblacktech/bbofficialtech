@@ -87,65 +87,61 @@ const PasswordResetToken = sequelize.define('PasswordResetToken', {
 PasswordResetToken.createResetToken = async function(userId, token, expiresAt, ipAddress, userAgent) {
   try {
     const bcrypt = require('bcryptjs');
+    const crypto = require('crypto');
     const tokenHash = await bcrypt.hash(token, 12);
+    const tokenLookup = crypto.createHash('sha256').update(token).digest('hex');
 
     return await PasswordResetToken.create({
       userId,
-      token,
+      token: tokenLookup,
       tokenHash,
       expiresAt,
       ipAddress,
       userAgent,
     });
   } catch (error) {
-    enterpriseLogger.error('Create reset token error', {
-      userId,
-      error: error.message,
-    });
+    enterpriseLogger.error('Create reset token error', { userId, error: error.message });
     throw error;
   }
 };
 
 PasswordResetToken.validateToken = async function(token) {
   try {
+    const crypto = require('crypto');
+    const bcrypt = require('bcryptjs');
+    const tokenLookup = crypto.createHash('sha256').update(token).digest('hex');
+
     const resetToken = await PasswordResetToken.findOne({
       where: {
-        token,
+        token: tokenLookup,
         used: false,
-        expiresAt: {
-          [sequelize.Sequelize.Op.gt]: new Date(),
-        },
+        expiresAt: { [sequelize.Sequelize.Op.gt]: new Date() },
       },
     });
 
-    if (!resetToken) {
-      return { valid: false, token: null };
-    }
+    if (!resetToken) return { valid: false, token: null };
+
+    const isValid = await bcrypt.compare(token, resetToken.tokenHash);
+    if (!isValid) return { valid: false, token: null };
 
     return { valid: true, token: resetToken };
   } catch (error) {
-    enterpriseLogger.error('Validate reset token error', {
-      error: error.message,
-    });
+    enterpriseLogger.error('Validate reset token error', { error: error.message });
     throw error;
   }
 };
 
 PasswordResetToken.markAsUsed = async function(token) {
   try {
+    if (!token || typeof token !== 'string') return [0];
+    const crypto = require('crypto');
+    const tokenLookup = crypto.createHash('sha256').update(token).digest('hex');
     return await PasswordResetToken.update(
-      {
-        used: true,
-        usedAt: new Date(),
-      },
-      {
-        where: { token },
-      },
+      { used: true, usedAt: new Date() },
+      { where: { token: tokenLookup } },
     );
   } catch (error) {
-    enterpriseLogger.error('Mark reset token as used error', {
-      error: error.message,
-    });
+    enterpriseLogger.error('Mark reset token as used error', { error: error.message });
     throw error;
   }
 };
@@ -168,3 +164,4 @@ PasswordResetToken.cleanupExpiredTokens = async function() {
 };
 
 module.exports = PasswordResetToken;
+rts = PasswordResetToken;

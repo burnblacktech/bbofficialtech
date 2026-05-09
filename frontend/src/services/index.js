@@ -60,6 +60,26 @@ export const authService = {
     const res = await api.post('/auth/register', data);
     return res.data;
   },
+
+  async requestPasswordReset(email) {
+    const res = await api.post('/auth/forgot-password', { email });
+    return res.data;
+  },
+
+  async resetPassword(token, password) {
+    const res = await api.post('/auth/reset-password', { token, newPassword: password });
+    return res.data;
+  },
+
+  async verifyEmail(token) {
+    const res = await api.post('/auth/verify-email', { token });
+    return res.data;
+  },
+
+  async resendVerificationEmail() {
+    const res = await api.post('/auth/resend-verification');
+    return res.data;
+  },
 };
 
 // ── ITR / Filing Service ──
@@ -80,6 +100,9 @@ export const itrService = {
   },
 
   async updateITR(filingId, updates) {
+    if (updates.version === undefined && updates.version !== 0) {
+      console.warn('[itrService] updateITR called without version field — request will be rejected by backend');
+    }
     const res = await api.put(`/filings/${filingId}`, updates);
     return { success: true, filing: res.data.data };
   },

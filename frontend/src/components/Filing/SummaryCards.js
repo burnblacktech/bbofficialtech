@@ -1,8 +1,6 @@
 /**
  * SummaryCards — 4-up metric cards showing key filing numbers.
  */
-import React from 'react';
-
 const fmt = (v) => `₹${Math.round(Math.abs(Number(v) || 0)).toLocaleString('en-IN')}`;
 
 export default function SummaryCards({ computation, selectedRegime, tds }) {

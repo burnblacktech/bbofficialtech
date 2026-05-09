@@ -191,10 +191,12 @@ class ITR2ComputationService {
     ITR1ComputationService._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
 
-    // Normal income (taxed at slab rates) — exclude VDA which is taxed at flat 30%
+    // Normal income (taxed at slab rates) — exclude VDA and winnings which are taxed at flat 30%
     const vdaGain = income.otherSources?.vdaGain || 0;
     const vdaTax = income.otherSources?.vdaTax || 0;
-    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain) + income.capitalGains.stcg.other + income.foreignIncome.totalIncome;
+    const winnings = income.otherSources?.winnings || 0;
+    const winningsTax = Math.round(winnings * 0.30);
+    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain - winnings) + income.capitalGains.stcg.other + income.foreignIncome.totalIncome;
     const taxableNormal = Math.max(0, normalIncome - deductions.total);
 
     // Special rate incomes
@@ -245,6 +247,8 @@ class ITR2ComputationService {
     else if (grossTotal > 20000000) surchargeRate = 25;
     else if (grossTotal > 10000000) surchargeRate = 15;
     else if (grossTotal > 5000000) surchargeRate = 10;
+    // AY 2025-26: New regime caps surcharge at 25%
+    if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
     // Cap surcharge on LTCG equity at 15%
     const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
 
@@ -320,8 +324,9 @@ class ITR2ComputationService {
       }
     }
 
-    if (!payload.bankAccount?.accountNumber) {
-      errors.push({ field: 'bankAccount', message: 'Bank account is required for refund' });
+    const bank = payload.bankDetails || payload.bankAccount || {};
+    if (!bank.accountNumber) {
+      errors.push({ field: 'bankDetails', message: 'Bank account is required for refund' });
     }
 
     return { valid: errors.length === 0, errors };

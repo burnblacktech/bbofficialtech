@@ -58,6 +58,7 @@ const authenticateWithCookies = async (req, res, next) => {
     const user = await User.findByPk(validSession.userId);
     if (!user || user.status !== 'active') {
       return res.status(401).json({
+        success: false,
         error: 'User not found or inactive',
       });
     }

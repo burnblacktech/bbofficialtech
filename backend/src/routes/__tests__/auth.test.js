@@ -44,6 +44,7 @@ jest.mock('../../middleware/auditLogger', () => ({
 jest.mock('../../middleware/progressiveRateLimit', () => ({
   progressiveRateLimit: () => (_req, _res, next) => next(),
   recordFailedAttempt: (_req, _res, next) => next(),
+  clearFailedAttempts: (_req, _res, next) => next(),
 }));
 
 jest.mock('../../middleware/auth', () => ({
@@ -134,9 +135,9 @@ describe('POST /api/auth/register', () => {
       .post('/api/auth/register')
       .send({ email: 'new@example.com', password: 'Password123', fullName: 'New User' });
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.user.email).toBe('new@example.com');
+    expect(res.body.message).toContain('Registration successful');
   });
 
   it('should return 200 (no reveal) for duplicate email', async () => {

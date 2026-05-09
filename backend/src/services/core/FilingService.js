@@ -35,7 +35,7 @@ class FilingService {
                 throw new Error('Invalid PAN format. Expected: AAAAA9999A');
             }
 
-            // Check for duplicate filing
+            // Check for duplicate filing (with row lock to prevent race condition)
             const existingFiling = await ITRFiling.findOne({
                 where: {
                     createdBy: user.userId,
@@ -43,6 +43,7 @@ class FilingService {
                     taxpayerPan,
                 },
                 transaction,
+                lock: transaction.LOCK.UPDATE,
             });
 
             if (existingFiling) {

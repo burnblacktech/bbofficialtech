@@ -59,7 +59,7 @@ class ITR1ComputationService {
       salary,
       houseProperty: hp,
       otherSources: other,
-      grossTotal: salary.netTaxable + hp.netIncome + other.total,
+      grossTotal: salary.netTaxable + Math.max(hp.netIncome, -200000) + other.total,
     };
   }
 
@@ -110,7 +110,7 @@ class ITR1ComputationService {
       entertainmentAllowanceDeduction = Math.max(0, entertainmentAllowanceDeduction);
     }
 
-    const standardDeduction = 75000; // AY 2025-26
+    const standardDeduction = 75000; // AY 2026-27
     const netTaxable = Math.max(0, grossSalary - exemptAllowances - salaryExemptions - standardDeduction - professionalTax - entertainmentAllowanceDeduction);
 
     return { grossSalary, exemptAllowances, salaryExemptions, standardDeduction, professionalTax, entertainmentAllowanceDeduction, netTaxable, employers, tds };
@@ -166,12 +166,12 @@ class ITR1ComputationService {
     const winnings = n(otherData.winnings);
     const gifts = n(otherData.gifts);
     const other = n(otherData.otherIncome);
-    const total = savings + fd + div + (fpGross - fpExempt) + itRefund + winnings + gifts + other;
+    const total = savings + fd + div + (fpGross - fpExempt) + itRefund + gifts + other;
 
     // VDA (crypto) gain is added to other income total
     const vda = this.computeVDA(otherData);
 
-    return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, interestOnITRefund: itRefund, winnings, gifts, other, vdaGain: vda.gain, vdaTax: vda.tax, total: total + vda.gain };
+    return { savingsInterest: savings, fdInterest: fd, dividends: div, familyPension: fpGross, familyPensionExempt: fpExempt, interestOnITRefund: itRefund, winnings, winningsTax: Math.round(winnings * 0.30), gifts, other, vdaGain: vda.gain, vdaTax: vda.tax, total: total + vda.gain + winnings };
   }
 
   static computeVDA(otherData) {
@@ -287,9 +287,16 @@ class ITR1ComputationService {
     // If HRA is claimed by any employer, 80GG cannot be claimed
     const hasHRA = (payload?.income?.salary?.employers || []).some(e => n(e.allowances?.hra?.exempt) > 0);
     let s80gg = 0;
-    if (!hasHRA) {
-      s80gg = Math.min(n(d.rentPaid), 60000); // 80GG: max ₹5000/month
-    } else if (n(d.rentPaid) > 0) {
+    if (!hasHRA && n(d.rentPaid) > 0) {
+      const ati = ITR1ComputationService._lastGrossTotal || 0;
+      const rentPaid = n(d.rentPaid);
+      s80gg = Math.min(
+        Math.max(0, rentPaid - Math.round(ati * 0.10)),
+        Math.round(ati * 0.25),
+        60000
+      );
+      s80gg = Math.max(0, s80gg);
+    } else if (n(d.rentPaid) > 0 && hasHRA) {
       deductionWarnings.push('80GG rent deduction not available when HRA is claimed from employer');
     }
 
@@ -353,10 +360,14 @@ class ITR1ComputationService {
     // VDA income is taxed at flat 30% separately from slab computation
     const vdaGain = income.otherSources?.vdaGain || 0;
     const vdaTax = income.otherSources?.vdaTax || 0;
-    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain);
+    const winnings = income.otherSources?.winnings || 0;
+    const winningsTax = income.otherSources?.winningsTax || 0;
+    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain - winnings);
 
-    const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
-    const basicExemption = regime === 'old' ? 250000 : 300000;
+    const dob = payload?.personalInfo?.dateOfBirth || payload?.personalDetails?.dateOfBirth;
+    const ay = payload?.assessmentYear;
+    const slabs = regime === 'old' ? getOldRegimeSlabs(dob, ay) : NEW_SLABS;
+    const basicExemption = regime === 'old' ? (slabs[0].max) : 400000;
 
     // Agricultural income partial integration method (Section 2(1A) + Rule 8)
     // Applies when: agri income > ₹5,000 AND non-agri income > basic exemption
@@ -387,12 +398,12 @@ class ITR1ComputationService {
     }
 
     // Add VDA tax (flat 30%) to slab tax
-    tax += vdaTax;
+    tax += vdaTax + winningsTax;
 
-    const rebateLimit = regime === 'old' ? 500000 : 700000;
-    const rebateMax = regime === 'old' ? 12500 : 25000;
+    const rebateLimit = regime === 'old' ? 500000 : 1200000;
+    const rebateMax = regime === 'old' ? 12500 : 60000;
     // Rebate applies only to non-VDA slab tax; check against non-VDA taxable income
-    const slabTax = tax - vdaTax;
+    const slabTax = tax - vdaTax - winningsTax;
     const rebate = nonVdaTaxableIncome <= rebateLimit ? Math.min(slabTax, rebateMax) : 0;
 
     const taxAfterRebate = tax - rebate;
@@ -402,6 +413,8 @@ class ITR1ComputationService {
     if (taxableIncome > 10000000) surchargeRate = 15;
     if (taxableIncome > 20000000) surchargeRate = 25;
     if (taxableIncome > 50000000) surchargeRate = 37;
+    // AY 2026-27: New regime caps surcharge at 25%
+    if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
     // ITR-1 cap: income ≤ 50L, so surcharge is max 10%
     const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
 
@@ -506,7 +519,7 @@ class ITR1ComputationService {
   }
 }
 
-// ── Tax Slabs AY 2025-26 ──
+// ── Tax Slabs AY 2026-27 ──
 
 const OLD_SLABS = [
   { min: 0, max: 250000, rate: 0 },
@@ -516,14 +529,51 @@ const OLD_SLABS = [
 ];
 
 const NEW_SLABS = [
+  { min: 0, max: 400000, rate: 0 },
+  { min: 400000, max: 800000, rate: 5 },
+  { min: 800000, max: 1200000, rate: 10 },
+  { min: 1200000, max: 1600000, rate: 15 },
+  { min: 1600000, max: 2000000, rate: 20 },
+  { min: 2000000, max: 2400000, rate: 25 },
+  { min: 2400000, max: Infinity, rate: 30 },
+];
+
+const OLD_SLABS_SENIOR = [
   { min: 0, max: 300000, rate: 0 },
-  { min: 300000, max: 700000, rate: 5 },
-  { min: 700000, max: 1000000, rate: 10 },
-  { min: 1000000, max: 1200000, rate: 15 },
-  { min: 1200000, max: 1500000, rate: 20 },
-  { min: 1500000, max: Infinity, rate: 30 },
+  { min: 300000, max: 500000, rate: 5 },
+  { min: 500000, max: 1000000, rate: 20 },
+  { min: 1000000, max: Infinity, rate: 30 },
+];
+
+const OLD_SLABS_SUPER_SENIOR = [
+  { min: 0, max: 500000, rate: 0 },
+  { min: 500000, max: 1000000, rate: 20 },
+  { min: 1000000, max: Infinity, rate: 30 },
 ];
 
 function n(val) { return Number(val) || 0; }
+
+/**
+ * Get appropriate old regime slabs based on taxpayer age.
+ * Senior citizen (60-80): ₹3L exemption
+ * Super senior citizen (80+): ₹5L exemption
+ * New regime slabs are age-independent.
+ */
+function getOldRegimeSlabs(dateOfBirth, assessmentYear) {
+  if (!dateOfBirth) return OLD_SLABS;
+  const ayStart = parseInt(assessmentYear?.split('-')[0]) || 2025;
+  const fyEnd = new Date(`${ayStart - 1}-03-31`);
+  const birth = new Date(dateOfBirth);
+  const ageAtFYEnd = Math.floor((fyEnd - birth) / (365.25 * 24 * 60 * 60 * 1000));
+  if (ageAtFYEnd >= 80) return OLD_SLABS_SUPER_SENIOR;
+  if (ageAtFYEnd >= 60) return OLD_SLABS_SENIOR;
+  return OLD_SLABS;
+}
+
+ITR1ComputationService.getOldRegimeSlabs = getOldRegimeSlabs;
+ITR1ComputationService.OLD_SLABS = OLD_SLABS;
+ITR1ComputationService.OLD_SLABS_SENIOR = OLD_SLABS_SENIOR;
+ITR1ComputationService.OLD_SLABS_SUPER_SENIOR = OLD_SLABS_SUPER_SENIOR;
+ITR1ComputationService.NEW_SLABS = NEW_SLABS;
 
 module.exports = ITR1ComputationService;

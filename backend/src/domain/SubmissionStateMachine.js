@@ -8,6 +8,7 @@ const STATES = require('./SubmissionStates');
 const enterpriseLogger = require('../utils/logger');
 const FilingSnapshotService = require('../services/itr/FilingSnapshotService');
 const { AppError } = require('../middleware/errorHandler');
+const AuditService = require('../services/core/AuditService');
 
 // Valid Transitions Graph (Canonical)
 // Aligned with 03_state_machine_and_lifecycle.md
@@ -279,6 +280,16 @@ class SubmissionStateMachine {
             service: 'SubmissionStateMachine',
             timestamp: new Date().toISOString(),
         });
+
+        // Audit trail for state transitions
+        AuditService.logEvent({
+          actorId: actorContext?.userId,
+          actorRole: actorContext?.role,
+          action: 'FILING_STATE_TRANSITION',
+          entityType: 'ITRFiling',
+          entityId: filing.id,
+          metadata: { fromState: previousState, toState: targetState },
+        }).catch(() => {});
 
         return filing;
     }

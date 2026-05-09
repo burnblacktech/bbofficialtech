@@ -101,6 +101,21 @@ class FamilyService {
   }
 
   /**
+   * Update a family member's details (name, relationship, dob — NOT pan).
+   */
+  static async updateMember(userId, memberId, { name, relationship, dob }) {
+    const member = await FamilyMember.findOne({ where: { id: memberId, userId, isActive: true } });
+    if (!member) throw new AppError(ErrorCodes.FAMILY_MEMBER_NOT_FOUND, 'Family member not found', 404);
+
+    if (name) member.fullName = name;
+    if (relationship) member.relationship = relationship;
+    if (dob !== undefined) member.dateOfBirth = dob;
+    await member.save();
+
+    return member;
+  }
+
+  /**
    * Remove (soft-delete) a family member.
    */
   static async removeMember(userId, memberId) {

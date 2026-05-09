@@ -42,7 +42,6 @@ const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
 const FilingStart = lazy(() => import('./pages/Filing/FilingStart'));
 const SubmissionStatus = lazy(() => import('./pages/Filing/SubmissionStatus'));
 const ITR1Flow = lazy(() => import('./pages/Filing/ITR1/ITR1Flow'));
-const FilingPage = lazy(() => import('./pages/Filing/FilingPage'));
 
 // ITR
 const PANVerification = lazy(() => import('./pages/ITR/PANVerification'));
@@ -50,10 +49,7 @@ const FilingHistory = lazy(() => import('./pages/ITR/FilingHistory'));
 const EVerification = lazy(() => import('./pages/ITR/EVerification'));
 
 // User
-const ProfileSettings = lazy(() => import('./pages/User/ProfileSettings'));
-const SessionManagement = lazy(() => import('./pages/User/SessionManagement'));
 const AuditTrailPage = lazy(() => import('./pages/User/AuditTrailPage'));
-const DataExportPage = lazy(() => import('./pages/User/DataExportPage'));
 const Acknowledgment = lazy(() => import('./pages/Acknowledgment'));
 
 // Family + Vault + Post-Filing
@@ -131,8 +127,8 @@ const AppContent = () => {
     <Routes>
       {/* ── Public ── */}
       <Route path="/" element={<Bare><LandingPage /></Bare>} />
-      <Route path="/login" element={<Navigate to="/" replace />} />
-      <Route path="/signup" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={<Bare><LoginPage /></Bare>} />
+      <Route path="/signup" element={<Bare><SignupPage /></Bare>} />
       <Route path="/tax-calculator" element={<Bare message="Loading..."><TaxCalculator /></Bare>} />
       <Route path="/terms" element={<Bare><TermsPage /></Bare>} />
       <Route path="/privacy" element={<Bare><PrivacyPage /></Bare>} />
@@ -186,7 +182,6 @@ const AppContent = () => {
 
         {/* Orbital Filing Engine (new UX) */}
         <Route path="/filing/:filingId" element={<Page message="Loading..."><ITR1Flow /></Page>} />
-        <Route path="/filing/:filingId/v2" element={<Bare><FilingPage /></Bare>} />
 
         {/* ITR filing — legacy HUD (kept for backward compat) */}
         <Route path="/filing/:filingId/itr1" element={<Page message="Loading..."><ITR1Flow /></Page>} />

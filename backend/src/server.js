@@ -4,6 +4,9 @@
 
 require('dotenv').config();
 
+const { validateEnv } = require('./config/envValidation');
+validateEnv();
+
 if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'development') {
   console.warn(`[WARNING] NODE_ENV is "${process.env.NODE_ENV || 'undefined'}". Set to "production" or "development".`);
 }

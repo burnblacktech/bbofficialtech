@@ -2,8 +2,6 @@
  * AchievementBadges — Horizontal scrollable row of achievement badges.
  * Earned badges are full-color, unearned are greyed with lock.
  */
-
-import React from 'react';
 import { Lock, FileText, FolderOpen, PiggyBank, Activity, Zap, CheckCircle } from 'lucide-react';
 
 const BADGES = [

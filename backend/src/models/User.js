@@ -117,6 +117,17 @@ const User = sequelize.define('User', {
     allowNull: false,
     field: 'email_verified',
   },
+  lastLoginAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'last_login_at',
+  },
+  aadhaarVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+    field: 'aadhaar_verified',
+  },
   verificationToken: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -173,21 +184,6 @@ const User = sequelize.define('User', {
   ],
 });
 
-// Instance methods
-User.prototype.validatePassword = async function (password) {
-  try {
-    return await bcrypt.compare(password, this.passwordHash);
-  } catch (error) {
-    enterpriseLogger.error('Password validation error', {
-      userId: this.id,
-      error: error.message,
-    });
-    return false;
-  }
-};
-
-
-
 User.prototype.toJSON = function () {
   const values = Object.assign({}, this.get());
   delete values.passwordHash;
@@ -238,88 +234,7 @@ User.findActiveUsers = async function () {
   }
 };
 
-// Instance methods for assignments
-User.prototype.getAssignedClients = async function () {
-  try {
-    const { Assignment, FamilyMember } = require('./index');
-    const assignments = await Assignment.findAll({
-      where: {
-        userId: this.id,
-        status: 'active',
-        role: ['preparer', 'reviewer'],
-      },
-      include: [{
-        model: FamilyMember,
-        as: 'client',
-        where: { clientType: 'ca_client' },
-      }],
-    });
-    return assignments.map(a => a.client);
-  } catch (error) {
-    enterpriseLogger.error('Get assigned clients error', {
-      userId: this.id,
-      error: error.message,
-    });
-    throw error;
-  }
-};
 
-User.prototype.canAccessClient = async function (clientId) {
-  try {
-    // PlatformAdmin/SUPER_ADMIN can access (with audit)
-    if (['SUPER_ADMIN', 'PLATFORM_ADMIN'].includes(this.role)) {
-      return { allowed: true, reason: 'platform_admin' };
-    }
-
-    // FirmAdmin can access clients in their firm
-    if (this.role === 'CA_FIRM_ADMIN' && this.caFirmId) {
-      const { FamilyMember } = require('./index');
-      const client = await FamilyMember.findByPk(clientId);
-      if (client && client.firmId === this.caFirmId) {
-        return { allowed: true, reason: 'firm_admin' };
-      }
-    }
-
-    // Preparer/Reviewer can access assigned clients
-    if (['PREPARER', 'REVIEWER', 'CA'].includes(this.role)) {
-      const { Assignment } = require('./index');
-      const assignment = await Assignment.findOne({
-        where: {
-          userId: this.id,
-          clientId,
-          status: 'active',
-        },
-      });
-      if (assignment) {
-        return { allowed: true, reason: 'assigned', assignment };
-      }
-    }
-
-    // Client can access their own data
-    if (this.role === 'END_USER' && this.id === clientId) {
-      return { allowed: true, reason: 'self' };
-    }
-
-    return { allowed: false, reason: 'no_access' };
-  } catch (error) {
-    enterpriseLogger.error('Check client access error', {
-      userId: this.id,
-      clientId,
-      error: error.message,
-    });
-    return { allowed: false, reason: 'error' };
-  }
-};
-
-User.prototype.getFirmContext = function () {
-  return {
-    firmId: this.caFirmId,
-    role: this.role,
-    isPlatformAdmin: ['SUPER_ADMIN', 'PLATFORM_ADMIN'].includes(this.role),
-    isFirmAdmin: this.role === 'CA_FIRM_ADMIN',
-    isStaff: ['CA', 'PREPARER', 'REVIEWER'].includes(this.role),
-  };
-};
 
 // =====================================================
 // FIELD ENCRYPTION HOOKS (PAN at rest)

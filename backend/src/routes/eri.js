@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 const eriGateway = require('../services/eri/ERIGatewayService');
 const enterpriseLogger = require('../utils/logger');
 const Joi = require('joi');
@@ -62,7 +62,7 @@ const validateRegOtpSchema = Joi.object({
  * @route POST /api/eri/add-client
  * @desc Initiate adding a registered taxpayer as ERI client. Sends OTP.
  */
-router.post('/add-client', authenticateToken, async (req, res, next) => {
+router.post('/add-client', authenticateToken, authorize(['CA', 'SUPER_ADMIN']), async (req, res, next) => {
   try {
     const { error, value } = addClientSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, error: error.details[0].message });
@@ -91,7 +91,7 @@ router.post('/add-client', authenticateToken, async (req, res, next) => {
  * @route POST /api/eri/validate-client-otp
  * @desc Validate OTP to confirm adding registered taxpayer as client.
  */
-router.post('/validate-client-otp', authenticateToken, async (req, res, next) => {
+router.post('/validate-client-otp', authenticateToken, authorize(['CA', 'SUPER_ADMIN']), async (req, res, next) => {
   try {
     const { error, value } = validateOtpSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, error: error.details[0].message });
@@ -120,7 +120,7 @@ router.post('/validate-client-otp', authenticateToken, async (req, res, next) =>
  * @route POST /api/eri/register-client
  * @desc Register an unregistered taxpayer on e-Filing + add as ERI client. Sends OTP.
  */
-router.post('/register-client', authenticateToken, async (req, res, next) => {
+router.post('/register-client', authenticateToken, authorize(['CA', 'SUPER_ADMIN']), async (req, res, next) => {
   try {
     const { error, value } = registerClientSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, error: error.details[0].message });
@@ -147,7 +147,7 @@ router.post('/register-client', authenticateToken, async (req, res, next) => {
  * @route POST /api/eri/validate-reg-otp
  * @desc Validate OTP to confirm registering + adding unregistered taxpayer.
  */
-router.post('/validate-reg-otp', authenticateToken, async (req, res, next) => {
+router.post('/validate-reg-otp', authenticateToken, authorize(['CA', 'SUPER_ADMIN']), async (req, res, next) => {
   try {
     const { error, value } = validateRegOtpSchema.validate(req.body);
     if (error) return res.status(400).json({ success: false, error: error.details[0].message });
@@ -187,6 +187,96 @@ router.get('/status', authenticateToken, async (req, res) => {
       hasClientCredentials: !!(eriGateway.clientId && eriGateway.clientSecret),
     },
   });
+});
+
+// ══════════════════════════════════════════════════════
+// E-VERIFICATION
+// ══════════════════════════════════════════════════════
+
+const eVerifySchema = Joi.object({
+  pan: Joi.string().pattern(/^[A-Z]{5}[0-9]{4}[A-Z]$/).required(),
+  ackNumber: Joi.string().required(),
+  assessmentYear: Joi.string().pattern(/^\d{4}-\d{2}$/).required(),
+  formCode: Joi.string().default('ITR1'),
+  verMode: Joi.string().valid('AADHAR', 'NETBANKING', 'DEMAT', 'BANKACCOUNT', 'ATM', 'DSC').required(),
+});
+
+const eVerifyOtpSchema = Joi.object({
+  pan: Joi.string().pattern(/^[A-Z]{5}[0-9]{4}[A-Z]$/).required(),
+  ackNumber: Joi.string().required(),
+  assessmentYear: Joi.string().pattern(/^\d{4}-\d{2}$/).required(),
+  formCode: Joi.string().default('ITR1'),
+  verMode: Joi.string().required(),
+  transactionId: Joi.string().required(),
+  otp: Joi.string().length(6).required(),
+});
+
+/**
+ * POST /api/eri/everify/initiate
+ * Set verification mode and generate EVC/OTP
+ */
+router.post('/everify/initiate', authenticateToken, async (req, res, next) => {
+  try {
+    const { error, value } = eVerifySchema.validate(req.body);
+    if (error) return res.status(400).json({ success: false, error: error.details[0].message });
+
+    await eriGateway.updateVerMode(value.pan, value.ackNumber, value.assessmentYear, value.formCode, value.verMode);
+    const result = await eriGateway.generateEvc(value.pan, value.ackNumber, value.assessmentYear, value.formCode, value.verMode);
+
+    res.json({ success: true, data: { transactionId: result.transactionId, message: 'OTP/EVC generated' } });
+  } catch (err) { next(err); }
+});
+
+/**
+ * POST /api/eri/everify/verify
+ * Submit OTP/EVC to complete e-verification
+ */
+router.post('/everify/verify', authenticateToken, async (req, res, next) => {
+  try {
+    const { error, value } = eVerifyOtpSchema.validate(req.body);
+    if (error) return res.status(400).json({ success: false, error: error.details[0].message });
+
+    // Verify PAN ownership
+    const { ITRFiling } = require('../models');
+    const filing = await ITRFiling.findOne({ where: { taxpayerPan: value.pan, createdBy: req.user.userId } });
+    if (!filing) {
+      return res.status(403).json({ success: false, error: 'Not authorized to e-verify this PAN' });
+    }
+
+    const result = await eriGateway.verifyEvc(
+      value.pan, value.ackNumber, value.assessmentYear, value.formCode,
+      value.verMode, value.transactionId, value.otp, null
+    );
+
+    res.json({ success: true, data: { verified: true, message: 'E-verification successful' } });
+  } catch (err) { next(err); }
+});
+
+// ══════════════════════════════════════════════════════
+// ACKNOWLEDGMENT DOWNLOAD
+// ══════════════════════════════════════════════════════
+
+/**
+ * GET /api/eri/acknowledgment/:ackNumber
+ * Download ITR-V acknowledgment PDF
+ */
+router.get('/acknowledgment/:ackNumber', authenticateToken, async (req, res, next) => {
+  try {
+    const { ackNumber } = req.params;
+    if (!ackNumber) return res.status(400).json({ success: false, error: 'Acknowledgment number required' });
+
+    const result = await eriGateway.getAcknowledgement(null, ackNumber);
+
+    if (result.pdf) {
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="ITR-V-${ackNumber}.pdf"`,
+      });
+      return res.send(Buffer.from(result.pdf, 'base64'));
+    }
+
+    res.json({ success: true, data: result });
+  } catch (err) { next(err); }
 });
 
 module.exports = router;

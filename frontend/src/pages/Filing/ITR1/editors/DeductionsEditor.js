@@ -9,7 +9,6 @@ import { validateDonation80G } from '../../../../utils/itrValidation';
 import { validateDeductionLimit } from '../../../../utils/smartDefaults';
 import useAutoSave from '../../../../hooks/useAutoSave';
 import { getExpensesSummary } from '../../../../services/financeService';
-import api from '../../../../services/api';
 import { Field, Select, Grid, Card, Section, Button, Badge, Money, Divider } from '../../../../components/ds';
 
 /* ─── helpers ─── */
@@ -135,12 +134,7 @@ export default function DeductionsEditor({
 
   const getFieldSource = (fieldName) => fieldSources[`deductions.${fieldName}`] || null;
 
-  const handleManualOverride = (fieldPath, previousValue, newValue, previousSource) => {
-    api.post('/audit/events', {
-      action: 'FIELD_MANUAL_OVERRIDE',
-      metadata: { fieldPath, previousValue, newValue, previousSource, newSource: 'manual' },
-    }).catch(() => {});
-  };
+  const handleManualOverride = () => {};
 
   const [form, setForm] = useState({
     ppf: d.ppf || '', elss: d.elss || '', lic: d.lic || '',
@@ -377,7 +371,6 @@ export default function DeductionsEditor({
           onClick={() => toggleCard(cat.id)}
           onKeyDown={(e) => handleCardKeyDown(e, cat.id)}
           aria-expanded={isExpanded}
-          role="button"
           tabIndex={0}
         >
           <div className="ds-section" style={{ background: cat.id === 'invest' ? '#f0fdf4' : cat.id === 'health' ? '#fef2f2' : cat.id === 'home' ? '#f5f3ff' : cat.id === 'education' ? '#eff6ff' : '#fdf2f8' }}>

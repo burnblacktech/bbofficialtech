@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import useCountUp from '../../hooks/useCountUp';
 import { formatCurrency, formatCompact } from '../../utils/formatCurrency';

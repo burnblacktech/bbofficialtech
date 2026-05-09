@@ -18,7 +18,7 @@ import {
 } from '../../services/financeService';
 import { formatCurrency } from '../../utils/formatCurrency';
 import BottomSheet from '../../components/Shared/BottomSheet';
-import TaxWhisper from '../../components/Shared/TaxWhisper';
+import TaxWhisper from '../../components/common/TaxWhisper';
 import SkeletonLoader from '../../components/Shared/SkeletonLoader';
 import DocumentImport from '../../components/Shared/DocumentImport';
 

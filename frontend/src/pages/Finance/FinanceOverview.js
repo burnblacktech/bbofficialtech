@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { TrendingUp, Receipt, PiggyBank, ArrowRight, Calendar } from 'lucide-react';
@@ -41,6 +40,10 @@ function ChartTooltipContent({ active, payload, label }) {
 export default function FinanceOverview() {
   const { selectedFY } = useFinanceFilterStore();
 
+  // Individual summaries provide totalIncome, totalExpenses, and per-section investment breakdowns
+  // used for the summary cards and deduction progress. dashboard-summary provides monthlyOverview
+  // for the chart but does NOT include totalExpenses (only totalDeductions which differs).
+  // Both are needed — they serve different purposes.
   const { data: incomeSummary, isLoading: incomeLoading } = useQuery({
     queryKey: ['income-summary', selectedFY],
     queryFn: () => getIncomeSummary(selectedFY),

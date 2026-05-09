@@ -7,7 +7,7 @@
 const express = require('express');
 const router = express.Router();
 const FilingService = require('../services/core/FilingService');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorize } = require('../middleware/auth');
 const { ITRFiling, IncomeEntry, ExpenseEntry, InvestmentEntry, AuditEvent } = require('../models');
 const SubmissionStateMachine = require('../domain/SubmissionStateMachine');
 const STATES = require('../domain/SubmissionStates');
@@ -26,6 +26,7 @@ const paymentGateMiddleware = require('../middleware/paymentGate');
 const deepMerge = require('../utils/deepMerge');
 const computationCache = require('../services/itr/ComputationCache');
 const { ComputationCache } = require('../services/itr/ComputationCache');
+const AuditService = require('../services/core/AuditService');
 const enterpriseLogger = require('../utils/logger');
 
 /**
@@ -111,7 +112,7 @@ function mapTrackedDataToPayload(incomeEntries, expenseEntries, investmentEntrie
  * @body {string} assessmentYear - e.g., "2024-25"
  * @body {string} taxpayerPan - Required
  */
-router.post('/', authenticateToken, async (req, res, next) => {
+router.post('/', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { assessmentYear, taxpayerPan, itrType, filingType, originalAckNumber } = req.body;
 
@@ -211,7 +212,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
  * @body {string} pan - PAN number
  * @body {string} assessmentYear - e.g., "2024-25"
  */
-router.post('/prefill', authenticateToken, async (req, res, next) => {
+router.post('/prefill', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { pan, assessmentYear, dob } = req.body;
         const userId = req.user.userId;
@@ -243,7 +244,7 @@ router.post('/prefill', authenticateToken, async (req, res, next) => {
  * GET /api/filings/:id
  * Supports txnOffset and txnLimit query params for capital gains pagination
  */
-router.get('/:id', authenticateToken, async (req, res, next) => {
+router.get('/:id', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { id } = req.params;
         const userId = req.user.userId;
@@ -291,7 +292,7 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
  * GET /api/filings/:id/snapshots
  * Query params: page (default 1), limit (default 20)
  */
-router.get('/:id/snapshots', authenticateToken, async (req, res, next) => {
+router.get('/:id/snapshots', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { id } = req.params;
         const userId = req.user.userId;
@@ -331,7 +332,7 @@ router.get('/:id/snapshots', authenticateToken, async (req, res, next) => {
  * List all filings for current user
  * GET /api/filings
  */
-router.get('/', authenticateToken, async (req, res, next) => {
+router.get('/', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const userId = req.user.userId;
 
@@ -376,7 +377,7 @@ function deriveITRType(payload) {
  * PUT /api/filings/:id
  * Body size limit: 2MB (route-level override)
  */
-router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req, res, next) => {
+router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { id } = req.params;
         const userId = req.user.userId;
@@ -508,20 +509,38 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
             }
         }
 
-        // Persist
-        if (jsonPayload !== undefined) {
-            filing.jsonPayload = mergedPayload;
-        }
-        if (selectedRegime !== undefined) {
-            filing.selectedRegime = selectedRegime;
+        // Atomic version-checked update (prevents concurrent overwrites)
+        const updateFields = { version: filing.version + 1 };
+        if (jsonPayload !== undefined) updateFields.jsonPayload = mergedPayload;
+        if (selectedRegime !== undefined) updateFields.selectedRegime = selectedRegime;
+        if (itrTypeChanged) updateFields.itrType = filing.itrType;
+
+        const [affectedRows] = await ITRFiling.update(updateFields, {
+          where: { id: id, version: version },
+          validate: false,
+        });
+
+        if (affectedRows === 0) {
+          return res.status(409).json({
+            success: false,
+            error: 'Filing was modified by another request. Please reload and try again.',
+            code: 'VERSION_CONFLICT',
+            currentVersion: (await ITRFiling.findByPk(id, { attributes: ['version'] }))?.version,
+          });
         }
 
-        // Increment version if optimistic lock was used
-        if (version !== undefined) {
-            filing.version = filing.version + 1;
-        }
+        // Reload to get updated instance for response
+        await filing.reload();
 
-        await filing.save();
+        // Audit the update
+        AuditService.logEvent({
+          actorId: userId,
+          actorRole: req.user.role,
+          action: 'FILING_UPDATED',
+          entityType: 'ITRFiling',
+          entityId: id,
+          metadata: { version: filing.version, sectionsUpdated: jsonPayload ? Object.keys(jsonPayload) : [], itrTypeChanged },
+        }).catch(err => enterpriseLogger.error('Audit failed', { error: err.message }));
 
         // Invalidate computation cache for this filing on payload change
         if (jsonPayload !== undefined) {
@@ -545,7 +564,7 @@ router.put('/:id', express.json({ limit: '2mb' }), authenticateToken, async (req
  * DELETE /api/filings/:id
  * Allowed states: draft, eri_failed
  */
-router.delete('/:id', authenticateToken, async (req, res, next) => {
+router.delete('/:id', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.id);
 
@@ -582,25 +601,10 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
 });
 
 /**
- * Validate filing completeness (pre-submission check)
- * GET /api/filings/:filingId/validate
- */
-router.get('/:filingId/validate', authenticateToken, async (req, res, next) => {
-    try {
-        const filing = await ITRFiling.findByPk(req.params.filingId);
-        if (!filing) throw new AppError('Filing not found', 404);
-        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
-
-        const result = FilingCompletenessService.validate(filing);
-        res.json({ success: true, data: result });
-    } catch (error) { next(error); }
-});
-
-/**
  * Submit filing to ERI (S20.A: Direct submission)
  * POST /api/filings/:filingId/submit
  */
-router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async (req, res, next) => {
+router.post('/:filingId/submit', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), paymentGateMiddleware, async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const { sequelize } = require('../config/database');
@@ -615,6 +619,13 @@ router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async
             }
             return f;
         });
+
+        // Enforce email verification before submission
+        const { User } = require('../models');
+        const submitter = await User.findByPk(req.user.userId, { attributes: ['emailVerified'] });
+        if (!submitter || !submitter.emailVerified) {
+          throw new AppError('Email verification required before filing submission. Please verify your email.', 403, 'EMAIL_NOT_VERIFIED');
+        }
 
         // S22: Filing completeness gate
         const completeness = FilingCompletenessService.validate(filing);
@@ -682,7 +693,48 @@ router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async
 
         // filing.save() is handled inside transition() within a DB transaction
 
-        // TODO: Trigger ERI submission worker (Ring 3)
+        // Notify user of submission
+        const InAppNotificationService = require('../services/core/InAppNotificationService');
+        InAppNotificationService.notifyFilingStateChange(req.user.userId, filing.id, 'submitted_to_eri');
+
+        // Fire ERI submission asynchronously (non-blocking)
+        const ERIIntegrationService = require('../services/eri/ERIIntegrationService');
+        const { ERISubmissionAttempt } = require('../models');
+
+        setImmediate(async () => {
+          try {
+            const attempt = await ERISubmissionAttempt.getOrCreateActive(filing.id);
+            const itrType = filing.itrType || 'ITR1';
+            const ay = filing.assessmentYear;
+            const pan = filing.taxpayerPan;
+            const result = await ERIIntegrationService.uploadFiling(
+              filing.jsonPayload, null, itrType, ay, pan
+            );
+            await attempt.recordResult({ outcome: 'SUCCESS', referenceId: result.ackNumber });
+            await SubmissionStateMachine.transition(filing, STATES.ERI_IN_PROGRESS, {
+              userId: req.user.userId, role: 'SYSTEM', caFirmId: null,
+            });
+            if (result.ackNumber) {
+              await filing.update({ ackNumber: result.ackNumber });
+              await SubmissionStateMachine.transition(filing, STATES.ERI_SUCCESS, {
+                userId: req.user.userId, role: 'SYSTEM', caFirmId: null,
+              });
+              await InAppNotificationService.notifyFilingStateChange(filing.createdBy, filing.id, 'eri_success');
+            }
+          } catch (err) {
+            enterpriseLogger.error('ERI submission failed', { filingId: filing.id, error: err.message });
+            try {
+              const attempt = await ERISubmissionAttempt.getOrCreateActive(filing.id);
+              await attempt.recordResult({ outcome: 'RETRYABLE_FAILURE', errorCode: err.code, errorMessage: err.message });
+              await SubmissionStateMachine.transition(filing, STATES.ERI_IN_PROGRESS, {
+                userId: req.user.userId, role: 'SYSTEM', caFirmId: null,
+              });
+              await InAppNotificationService.notifyFilingStateChange(filing.createdBy, filing.id, 'eri_failed');
+            } catch (innerErr) {
+              enterpriseLogger.error('ERI submission state update failed', { filingId: filing.id, error: innerErr.message });
+            }
+          }
+        });
 
         res.status(200).json({
             success: true,
@@ -704,7 +756,7 @@ router.post('/:filingId/submit', authenticateToken, paymentGateMiddleware, async
  * GET /api/filings/:filingId/overview
  * Screen 1: Your Financial Year at a Glance
  */
-router.get('/:filingId/overview', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/overview', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -757,7 +809,7 @@ router.get('/:filingId/overview', authenticateToken, async (req, res, next) => {
  * GET /api/filings/:filingId/income-story
  * Screen 2: Your Income Story
  */
-router.get('/:filingId/income-story', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/income-story', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -792,7 +844,7 @@ router.get('/:filingId/income-story', authenticateToken, async (req, res, next) 
  * GET /api/filings/:filingId/tax-breakdown
  * Screen 3: How Your Tax Was Calculated
  */
-router.get('/:filingId/tax-breakdown', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/tax-breakdown', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -805,8 +857,7 @@ router.get('/:filingId/tax-breakdown', authenticateToken, async (req, res, next)
             throw new AppError('Not authorized to view this filing', 403);
         }
 
-        const snapshot = await FilingSnapshotService.getLatestSnapshot(filingId);
-        const jsonPayload = snapshot?.jsonPayload || {};
+        const jsonPayload = filing.jsonPayload || {};
         const selectedRegime = filing.selectedRegime || 'old';
 
         // S24: Use formal comparison engine to get both regimes
@@ -860,7 +911,7 @@ router.get('/:filingId/tax-breakdown', authenticateToken, async (req, res, next)
  * GET /api/filings/:filingId/readiness
  * Screen 5: Is Your Filing Ready?
  */
-router.get('/:filingId/readiness', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/readiness', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -916,7 +967,7 @@ router.get('/:filingId/readiness', authenticateToken, async (req, res, next) => 
  * GET /api/filings/:filingId/export/json
  * S23: Snapshot-based canonical export
  */
-router.get('/:filingId/export/json', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/export/json', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -949,7 +1000,7 @@ router.get('/:filingId/export/json', authenticateToken, async (req, res, next) =
  * GET /api/filings/:filingId/submission-status
  * Read-only projection of ERI submission outcome
  */
-router.get('/:filingId/submission-status', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/submission-status', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -979,7 +1030,7 @@ router.get('/:filingId/submission-status', authenticateToken, async (req, res, n
  * GET /api/filings/:filingId/computation-pdf
  * Generates and returns ITD-style tax computation sheet as PDF
  */
-router.get('/:filingId/computation-pdf', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/computation-pdf', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1009,7 +1060,7 @@ router.get('/:filingId/computation-pdf', authenticateToken, async (req, res, nex
  * POST /api/filings/:filingId/itr1/compute
  * Returns full tax computation for both regimes
  */
-router.post('/:filingId/itr1/compute', authenticateToken, async (req, res, next) => {
+router.post('/:filingId/itr1/compute', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -1048,33 +1099,11 @@ router.post('/:filingId/itr1/compute', authenticateToken, async (req, res, next)
 });
 
 /**
- * ITR-1 Validation
- * GET /api/filings/:filingId/itr1/validate
- * Returns field-level validation errors
- */
-router.get('/:filingId/itr1/validate', authenticateToken, async (req, res, next) => {
-    try {
-        const { filingId } = req.params;
-        const filing = await ITRFiling.findByPk(filingId);
-
-        if (!filing) throw new AppError('Filing not found', 404);
-        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
-
-        const ITR1ComputationService = require('../services/itr/ITR1ComputationService');
-        const validation = ITR1ComputationService.validate(filing.jsonPayload || {});
-
-        res.status(200).json({ success: true, data: validation });
-    } catch (error) {
-        next(error);
-    }
-});
-
-/**
  * ITR-1 JSON Export (ITD format)
  * GET /api/filings/:filingId/itr1/json
  * Downloads ITD-format JSON for manual upload
  */
-router.get('/:filingId/itr1/json', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/itr1/json', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const filing = await ITRFiling.findByPk(filingId);
@@ -1116,7 +1145,7 @@ router.get('/:filingId/itr1/json', authenticateToken, async (req, res, next) => 
  * ITR-2 Computation
  * POST /api/filings/:filingId/itr2/compute
  */
-router.post('/:filingId/itr2/compute', authenticateToken, async (req, res, next) => {
+router.post('/:filingId/itr2/compute', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1139,26 +1168,10 @@ router.post('/:filingId/itr2/compute', authenticateToken, async (req, res, next)
 });
 
 /**
- * ITR-2 Validation
- * GET /api/filings/:filingId/itr2/validate
- */
-router.get('/:filingId/itr2/validate', authenticateToken, async (req, res, next) => {
-    try {
-        const filing = await ITRFiling.findByPk(req.params.filingId);
-        if (!filing) throw new AppError('Filing not found', 404);
-        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
-
-        const ITR2ComputationService = require('../services/itr/ITR2ComputationService');
-        const validation = ITR2ComputationService.validate(filing.jsonPayload || {});
-        res.json({ success: true, data: validation });
-    } catch (error) { next(error); }
-});
-
-/**
  * ITR-2 JSON Export
  * GET /api/filings/:filingId/itr2/json
  */
-router.get('/:filingId/itr2/json', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/itr2/json', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1182,7 +1195,7 @@ router.get('/:filingId/itr2/json', authenticateToken, async (req, res, next) => 
 // ITR-3 SPECIFIC ENDPOINTS
 // =====================================================
 
-router.post('/:filingId/itr3/compute', authenticateToken, async (req, res, next) => {
+router.post('/:filingId/itr3/compute', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1204,17 +1217,7 @@ router.post('/:filingId/itr3/compute', authenticateToken, async (req, res, next)
     } catch (error) { next(error); }
 });
 
-router.get('/:filingId/itr3/validate', authenticateToken, async (req, res, next) => {
-    try {
-        const filing = await ITRFiling.findByPk(req.params.filingId);
-        if (!filing) throw new AppError('Filing not found', 404);
-        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
-        const ITR3 = require('../services/itr/ITR3ComputationService');
-        res.json({ success: true, data: ITR3.validate(filing.jsonPayload || {}) });
-    } catch (error) { next(error); }
-});
-
-router.get('/:filingId/itr3/json', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/itr3/json', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1235,7 +1238,7 @@ router.get('/:filingId/itr3/json', authenticateToken, async (req, res, next) => 
 // ITR-4 SPECIFIC ENDPOINTS
 // =====================================================
 
-router.post('/:filingId/itr4/compute', authenticateToken, async (req, res, next) => {
+router.post('/:filingId/itr4/compute', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1257,17 +1260,7 @@ router.post('/:filingId/itr4/compute', authenticateToken, async (req, res, next)
     } catch (error) { next(error); }
 });
 
-router.get('/:filingId/itr4/validate', authenticateToken, async (req, res, next) => {
-    try {
-        const filing = await ITRFiling.findByPk(req.params.filingId);
-        if (!filing) throw new AppError('Filing not found', 404);
-        if (filing.createdBy !== req.user.userId) throw new AppError('Not authorized', 403);
-        const ITR4 = require('../services/itr/ITR4ComputationService');
-        res.json({ success: true, data: ITR4.validate(filing.jsonPayload || {}) });
-    } catch (error) { next(error); }
-});
-
-router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => {
+router.get('/:filingId/itr4/json', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const filing = await ITRFiling.findByPk(req.params.filingId);
         if (!filing) throw new AppError('Filing not found', 404);
@@ -1290,7 +1283,7 @@ router.get('/:filingId/itr4/json', authenticateToken, async (req, res, next) => 
  * Maps IncomeEntry, ExpenseEntry, InvestmentEntry for the filing's FY
  * into the filing's jsonPayload via mapTrackedDataToPayload.
  */
-router.post('/:filingId/prefill-from-tracked', authenticateToken, async (req, res, next) => {
+router.post('/:filingId/prefill-from-tracked', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
     try {
         const { filingId } = req.params;
         const userId = req.user.userId;
@@ -1386,7 +1379,7 @@ const { AutoFillService } = require('../services/import/AutoFillService');
  * Fetches 26AS + AIS via SurePass, maps to filing payload, detects conflicts.
  * Requirements: 1.1, 1.5, 1.6, 1.7
  */
-router.post('/:id/auto-fill', authenticateToken, async (req, res, next) => {
+router.post('/:id/auto-fill', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
@@ -1436,7 +1429,7 @@ router.post('/:id/auto-fill', authenticateToken, async (req, res, next) => {
  * Applies user-chosen resolutions to the filing's jsonPayload.
  * Requirements: 1.7
  */
-router.post('/:id/auto-fill/resolve', authenticateToken, async (req, res, next) => {
+router.post('/:id/auto-fill/resolve', authenticateToken, authorize(['END_USER', 'CA', 'PREPARER']), async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;

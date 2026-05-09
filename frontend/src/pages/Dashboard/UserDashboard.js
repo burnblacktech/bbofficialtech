@@ -152,7 +152,7 @@ export default function UserDashboard() {
   const firstName = (user?.fullName || 'User').split(' ')[0];
 
   // Dashboard summary data
-  const { data: summary, isLoading: summaryLoading, error: summaryError } = useQuery({
+  const { data: summary, isLoading: summaryLoading, error: _summaryError } = useQuery({
     queryKey: ['dashboard-summary', currentFY],
     queryFn: () => getDashboardSummary(currentFY),
     staleTime: 30000,
@@ -237,6 +237,13 @@ export default function UserDashboard() {
     <div className="space-y-4">
       {/* Deadline Banner */}
       <DeadlineBanner dl={dl} />
+
+      {/* Email verification banner */}
+      {user && user.emailVerified === false && (
+        <div style={{ background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: 8, padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13 }}>
+          <span>⚠️ Please verify your email to enable filing submission. <a href="/email-verification" style={{ color: '#d97706', fontWeight: 600 }}>Verify now</a></span>
+        </div>
+      )}
 
       {/* Greeting + Readiness */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">

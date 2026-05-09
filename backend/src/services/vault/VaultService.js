@@ -70,7 +70,12 @@ class VaultService {
 
     if (expiryDate) this._scheduleExpiryReminder(userId, doc.id, doc.fileName, category, expiryDate).catch(() => {});
     enterpriseLogger.info('Vault document uploaded', { userId, docId: doc.id, category, fy, storage: getS3() ? 'r2' : 'local' });
-    return doc;
+
+    const result = doc.toJSON();
+    if (result.ocrStatus === 'pending') {
+      result.ocrNote = 'OCR processing is not yet available. Document stored for manual review.';
+    }
+    return result;
   }
 
   /**

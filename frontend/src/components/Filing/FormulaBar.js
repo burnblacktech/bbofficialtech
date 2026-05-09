@@ -2,8 +2,6 @@
  * FormulaBar — Live tax computation equation strip.
  * Shows: GROSS − DEDUCTIONS = TAXABLE → TAX + CESS − TDS = REFUND/PAYABLE
  */
-import React from 'react';
-
 const fmt = (v) => `₹${Math.round(Math.abs(Number(v) || 0)).toLocaleString('en-IN')}`;
 
 export default function FormulaBar({ computation, selectedRegime }) {

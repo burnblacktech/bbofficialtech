@@ -16,6 +16,7 @@ const { PLANS, getRequiredPlan, generateInvoiceNumber } = require('../constants/
 const Order = require('../models/Order');
 const CouponService = require('./CouponService');
 const { sequelize } = require('../config/database');
+const { Op } = require('sequelize');
 
 let Razorpay;
 let razorpayInstance;
@@ -81,7 +82,7 @@ class PaymentService {
 
     // Apply coupon via CouponService (database-driven)
     if (couponCode) {
-      const couponResult = await CouponService.applyCoupon(couponCode, basePaise);
+      const couponResult = await CouponService.applyCoupon(couponCode, basePaise, userId);
       discount = couponResult.discount;
     }
 
@@ -143,7 +144,7 @@ class PaymentService {
     const body = `${razorpayOrderId}|${razorpayPaymentId}`;
     const expectedSig = crypto.createHmac('sha256', secret).update(body).digest('hex');
 
-    if (expectedSig !== razorpaySignature) {
+    if (!crypto.timingSafeEqual(Buffer.from(expectedSig, 'hex'), Buffer.from(razorpaySignature, 'hex'))) {
       order.status = 'failed';
       await order.save();
       throw new AppError('Payment verification failed — signature mismatch', 400);
@@ -197,7 +198,7 @@ class PaymentService {
       .update(rawBody || JSON.stringify(payload))
       .digest('hex');
 
-    if (expectedSig !== signature) {
+    if (!crypto.timingSafeEqual(Buffer.from(expectedSig, 'hex'), Buffer.from(signature, 'hex'))) {
       enterpriseLogger.warn('Invalid webhook signature', { eventType });
       throw new AppError('Invalid webhook signature', 400, 'INVALID_WEBHOOK_SIGNATURE');
     }
@@ -335,6 +336,12 @@ class PaymentService {
    * Get payment status for a filing
    */
   static async getPaymentStatus(filingId) {
+    // Expire stale orders (Razorpay orders expire after ~15 min)
+    await Order.update(
+      { status: 'expired' },
+      { where: { filingId, status: 'created', createdAt: { [Op.lt]: new Date(Date.now() - 15 * 60 * 1000) } } },
+    );
+
     const order = await Order.findOne({
       where: { filingId },
       order: [['createdAt', 'DESC']],
@@ -351,12 +358,44 @@ class PaymentService {
     };
   }
 
+  /**
+   * Process a refund for a paid order
+   */
+  static async processRefund(orderId, userId, reason) {
+    const ITRFiling = require('../models/ITRFiling');
+    const order = await Order.findByPk(orderId);
+    if (!order) throw new AppError('Order not found', 404);
+    if (order.userId !== userId) throw new AppError('Not authorized', 403);
+    if (order.status === 'refunded') throw new AppError('Order already refunded', 400);
+    if (order.status !== 'paid') throw new AppError('Only paid orders can be refunded', 400);
+
+    if (order.filingId) {
+      const filing = await ITRFiling.findByPk(order.filingId);
+      if (filing && ['submitted_to_eri', 'eri_in_progress', 'eri_success'].includes(filing.lifecycleState)) {
+        throw new AppError('Cannot refund after filing submission', 400);
+      }
+    }
+
+    const rz = getRazorpay();
+    if (order.razorpayPaymentId && rz) {
+      await rz.payments.refund(order.razorpayPaymentId, {
+        amount: order.totalAmount,
+        notes: { reason: reason || 'User requested refund', orderId },
+      });
+    }
+
+    await order.update({ status: 'refunded', metadata: { ...order.metadata, refundReason: reason, refundedAt: new Date() } });
+    enterpriseLogger.info('Payment refunded', { orderId, userId, amount: order.totalAmount });
+
+    return { refunded: true, amount: order.totalAmount / 100 };
+  }
+
   static async _nextInvoiceSeq() {
     try {
       const [result] = await sequelize.query(
-        'SELECT COUNT(*) as cnt FROM orders WHERE invoice_number IS NOT NULL',
+        `SELECT COALESCE(MAX(CAST(SUBSTRING(invoice_number FROM '[0-9]+$') AS INTEGER)), 0) + 1 AS next_seq FROM orders WHERE invoice_number IS NOT NULL`,
       );
-      return (Number(result[0]?.cnt) || 0) + 1;
+      return Number(result[0]?.next_seq) || 1;
     } catch { return Date.now() % 100000; }
   }
 }

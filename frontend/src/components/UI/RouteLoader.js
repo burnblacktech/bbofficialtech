@@ -2,7 +2,6 @@
 // ROUTE LOADER - Loading fallback for lazy-loaded routes
 // =====================================================
 
-import React from 'react';
 import { Loader } from 'lucide-react';
 
 const RouteLoader = ({ message = 'Loading...' }) => {

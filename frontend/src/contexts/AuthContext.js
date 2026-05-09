@@ -55,7 +55,11 @@ export const AuthProvider = ({ children }) => {
       const profileData = await authService.getProfile();
       setProfile(profileData);
       const userData = profileData?.user || profileData; if (userData?.id || userData?.email) {
-        setUser(prevUser => ({ ...prevUser, ...userData }));
+        setUser(prevUser => {
+          const merged = { ...prevUser, ...userData };
+          localStorage.setItem('user', JSON.stringify(merged));
+          return merged;
+        });
       }
       return profileData;
     } catch (error) {

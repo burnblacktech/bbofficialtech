@@ -98,10 +98,14 @@ class ITR4ComputationService {
     // VDA income taxed at flat 30% separately
     const vdaGain = income.otherSources?.vdaGain || 0;
     const vdaTax = income.otherSources?.vdaTax || 0;
-    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain);
+    const winnings = income.otherSources?.winnings || 0;
+    const winningsTax = income.otherSources?.winningsTax || 0;
+    const nonVdaTaxableIncome = Math.max(0, taxableIncome - vdaGain - winnings);
 
-    const slabs = regime === 'old' ? OLD_SLABS : NEW_SLABS;
-    const basicExemption = regime === 'old' ? 250000 : 300000;
+    const dob = payload?.personalInfo?.dateOfBirth || payload?.personalDetails?.dateOfBirth;
+    const ay = payload?.assessmentYear;
+    const slabs = regime === 'old' ? ITR1ComputationService.getOldRegimeSlabs(dob, ay) : NEW_SLABS;
+    const basicExemption = regime === 'old' ? (slabs[0].max) : 300000;
 
     // Agricultural income partial integration
     let tax = 0;
@@ -118,16 +122,18 @@ class ITR4ComputationService {
     }
 
     // Add VDA flat tax
-    tax += vdaTax;
+    tax += vdaTax + winningsTax;
 
     const rebateLimit = regime === 'old' ? 500000 : 700000;
     const rebateMax = regime === 'old' ? 12500 : 25000;
-    const slabTax = tax - vdaTax;
+    const slabTax = tax - vdaTax - winningsTax;
     const rebate = nonVdaTaxableIncome <= rebateLimit ? Math.min(slabTax, rebateMax) : 0;
     const taxAfterRebate = tax - rebate;
 
     let surchargeRate = 0;
     if (income.grossTotal > 5000000) surchargeRate = 10;
+    // AY 2025-26: New regime caps surcharge at 25%
+    if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
     const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
     const cess = Math.round((taxAfterRebate + surcharge) * 4 / 100);
 
@@ -146,7 +152,19 @@ class ITR4ComputationService {
     if (!payload.income?.presumptive?.entries?.length) {
       errors.push({ field: 'income.presumptive', message: 'At least one presumptive income entry required for ITR-4' });
     }
-    // Turnover limit
+    // 44AD threshold validation
+    for (const entry of (payload.income?.presumptive?.entries || [])) {
+      if (entry.section === '44AD') {
+        const totalReceipts = n(entry.grossReceipts) || n(entry.turnover) || 0;
+        const digitalReceipts = n(entry.digitalReceipts) || 0;
+        const digitalRatio = totalReceipts > 0 ? digitalReceipts / totalReceipts : 0;
+        const threshold = digitalRatio >= 0.95 ? 30000000 : 20000000;
+        if (totalReceipts > threshold) {
+          errors.push({ field: 'presumptive', message: `44AD not applicable: turnover ₹${(totalReceipts/100000).toFixed(0)}L exceeds ₹${threshold/10000000}Cr threshold` });
+        }
+      }
+    }
+    // Turnover limit (aggregate)
     const totalReceipts = (payload.income?.presumptive?.entries || []).reduce((s, e) => s + n(e.grossReceipts), 0);
     if (totalReceipts > 20000000) {
       errors.push({ field: 'income.presumptive', message: 'Total receipts exceed ₹2Cr — ITR-3 required instead of ITR-4' });
@@ -156,8 +174,9 @@ class ITR4ComputationService {
     if (income.grossTotal > 5000000) {
       errors.push({ field: 'income', message: 'Total income exceeds ₹50L — ITR-4 limit' });
     }
-    if (!payload.bankAccount?.accountNumber) {
-      errors.push({ field: 'bankAccount', message: 'Bank account required' });
+    const bank = payload.bankDetails || payload.bankAccount || {};
+    if (!bank.accountNumber) {
+      errors.push({ field: 'bankDetails', message: 'Bank account required' });
     }
     return { valid: errors.length === 0, errors };
   }

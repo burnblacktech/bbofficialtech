@@ -8,7 +8,6 @@ import { detectEmployerCategory } from '../../../../utils/smartDefaults';
 import TaxWhisper from '../../../../components/common/TaxWhisper';
 import { getIncomeSummary } from '../../../../services/financeService';
 import { formatCurrency } from '../../../../utils/formatCurrency';
-import api from '../../../../services/api';
 import P from '../../../../styles/palette';
 import { Field, Select, Grid, Card, Button } from '../../../../components/ds';
 
@@ -79,14 +78,7 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
     return fieldSources[path] || null;
   };
 
-  // Handle manual override of a warn-locked field
-  const handleManualOverride = (fieldPath, previousValue, newValue, previousSource) => {
-    // Best-effort audit log
-    api.post('/audit/events', {
-      action: 'FIELD_MANUAL_OVERRIDE',
-      metadata: { fieldPath, previousValue, newValue, previousSource, newSource: 'manual' },
-    }).catch(() => { /* best-effort */ });
-  };
+  const handleManualOverride = () => {};
 
   // Task 10.4: Full HRA calculator integration
   const hraResult = useMemo(() => {

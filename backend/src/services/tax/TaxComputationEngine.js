@@ -40,7 +40,7 @@ class TaxComputationEngine {
         for (const employer of salaryFacts.employers) {
             const gross = employer.grossSalary || 0;
             const professionalTax = employer.professionalTax || 0;
-            const standardDeduction = employer.standardDeduction || 50000; // FY 2023-24 onwards
+            const standardDeduction = employer.standardDeduction || 75000; // FY 2024-25 onwards
 
             totalGross += gross;
             totalDeductions += (professionalTax + standardDeduction);

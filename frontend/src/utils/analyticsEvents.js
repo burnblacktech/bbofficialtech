@@ -3,7 +3,7 @@
 // Lightweight event emitter to backend /api/analytics/events
 // =====================================================
 
-import apiClient from '../services/core/APIClient';
+// Analytics disabled - no backend endpoint
 
 const SESSION_ID_KEY = 'bb_session_id_v1';
 const JOURNEY_ID_KEY = 'itr_journey_id_v1';
@@ -65,25 +65,7 @@ export function msSinceJourneyStart() {
 }
 
 export async function trackEvent(name, properties = {}) {
-  try {
-    const payload = {
-      name,
-      timestamp: new Date().toISOString(),
-      sessionId: getSessionId(),
-      journeyId: getJourneyId(),
-      properties: {
-        msSinceJourneyStart: msSinceJourneyStart(),
-        page: window.location.pathname,
-        ...properties,
-      },
-    };
-
-    // Fire-and-forget; do not block UI flows
-    // Silently ignore if analytics endpoint doesn't exist
-    await apiClient.post('/analytics/events', payload, { timeout: 3000 }).catch(() => {
-      // Analytics endpoint not implemented yet - silently ignore
-    });
-  } catch {
-    // never throw from analytics
-  }
+  // Analytics endpoint not implemented — no-op
+  void name;
+  void properties;
 }

@@ -44,8 +44,9 @@ const ITRDeterminationWizard = () => {
   const [wantsPresumptive, setWantsPresumptive] = useState(false);
   const [panError, setPanError] = useState('');
   const [checkingExisting, setCheckingExisting] = useState(true);
+  const [existingDraft, setExistingDraft] = useState(null);
 
-  // Check if a filing already exists for this AY — if so, go straight to it
+  // Check if a filing already exists for this AY — if so, offer a choice
   React.useEffect(() => {
     if (!panFromProfile) { setCheckingExisting(false); return; }
     const checkExisting = async () => {
@@ -56,9 +57,7 @@ const ITRDeterminationWizard = () => {
         const existing = filings.find(f => f.assessmentYear === currentAY && f.lifecycleState === 'draft');
         if (existing) {
           const route = { 'ITR-1': 'itr1', 'ITR-2': 'itr2', 'ITR-3': 'itr3', 'ITR-4': 'itr4' }[existing.itrType] || 'itr1';
-          toast.success('Resuming your existing filing');
-          navigate(`/filing/${existing.id}/${route}`, { replace: true });
-          return;
+          setExistingDraft({ ...existing, route });
         }
       } catch { /* ignore — show the wizard */ }
       setCheckingExisting(false);
@@ -227,6 +226,18 @@ const ITRDeterminationWizard = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
           <Loader2 size={28} className="animate-spin" style={{ color: '#6b7280' }} />
         </div>
+      ) : existingDraft ? (
+        <div style={{ padding: 24, textAlign: 'center' }}>
+          <p style={{ marginBottom: 16, fontSize: 15 }}>You have an existing draft for AY {existingDraft.assessmentYear}.</p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <button onClick={() => navigate(`/filing/${existingDraft.id}/${existingDraft.route}`)} style={{ padding: '10px 20px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }}>
+              Continue Existing
+            </button>
+            <button onClick={() => setExistingDraft(null)} style={{ padding: '10px 20px', background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: 8, cursor: 'pointer', fontWeight: 500 }}>
+              Start New Filing
+            </button>
+          </div>
+        </div>
       ) : (
       <div className="ds-content" style={{ maxWidth: 640 }}>
         <h1 className="step-title" style={{ fontSize: 26, marginBottom: 8 }}>File Your ITR</h1>
@@ -264,6 +275,10 @@ const ITRDeterminationWizard = () => {
               return (
                 <Card key={src.id} active={selected}
                   onClick={() => toggleSource(src.id)}
+                  role="checkbox"
+                  aria-checked={selected}
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSource(src.id); } }}
                   style={{ display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', padding: '12px 16px', cursor: 'pointer' }}>
                   <div style={{ width: 36, height: 36, borderRadius: 8, background: selected ? '#D4AF37' : '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Icon size={18} color={selected ? '#0F0F0F' : '#6b7280'} />

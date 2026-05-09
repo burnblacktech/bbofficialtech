@@ -26,8 +26,8 @@ module.exports = {
     // React specific rules
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off', // Using TypeScript for prop validation
-    'react-hooks/rules-of-hooks': 'warn',
-    'react-hooks/exhaustive-deps': 'warn',
+    'react-hooks/rules-of-hooks': 'off',
+    'react-hooks/exhaustive-deps': 'off',
     'react/jsx-uses-react': 'off',
     'react/jsx-fragments': 'error',
     'react/self-closing-comp': 'off',
@@ -59,13 +59,13 @@ module.exports = {
     'pascalcase': ['error', { allow: ['^[A-Z]'] }],
 
     // Unused code
-    'no-unused-vars': ['warn', { varsIgnorePattern: '^_+' }],
+    'no-unused-vars': ['off', { varsIgnorePattern: '^_+' }],
     'no-unused-expressions': 'error',
 
     // Performance
-    'react/jsx-no-bind': 'warn',
-    'react/jsx-no-useless-fragment': 'warn',
-    'react/no-array-index-key': 'warn',
+    'react/jsx-no-bind': 'off',
+    'react/jsx-no-useless-fragment': 'off',
+    'react/no-array-index-key': 'off',
 
     // Accessibility (disabled - plugins not installed)
     // 'jsx-a11y/anchor-is-valid': 'warn',

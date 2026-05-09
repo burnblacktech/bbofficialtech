@@ -80,9 +80,9 @@ class CompletionChecklistService {
         items.push({
             section: 'otherIncome',
             name: 'Other Income',
-            completed: !!payload.income?.other,
+            completed: !!(payload.income?.otherSources || payload.income?.other),
             required: false,
-            details: payload.income?.other ? 'Added' : 'Not started',
+            details: (payload.income?.otherSources || payload.income?.other) ? 'Added' : 'Not started',
             order: 3
         });
 
@@ -113,9 +113,9 @@ class CompletionChecklistService {
         items.push({
             section: 'personalDetails',
             name: 'Personal Details',
-            completed: !!payload.personalDetails,
+            completed: !!(payload.personalInfo || payload.personalDetails),
             required: false,
-            details: payload.personalDetails ? 'Complete' : 'Not started',
+            details: (payload.personalInfo || payload.personalDetails) ? 'Complete' : 'Not started',
             order: 6
         });
 

@@ -50,6 +50,16 @@ export default function SignupPage() {
     } finally { setLoading(false); }
   };
 
+  const getStrength = (pw) => {
+    if (!pw) return 0;
+    let s = 0;
+    if (pw.length >= 8) s++;
+    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
+    if (/\d/.test(pw)) s++;
+    if (/[^A-Za-z0-9]/.test(pw)) s++;
+    return s;
+  };
+
   const PwIcon = showPw ? EyeOff : Eye;
 
   return (
@@ -64,7 +74,7 @@ export default function SignupPage() {
           <h2 style={S.title}>Create Account</h2>
           <p style={S.subtitle}>Start filing your ITR in minutes</p>
 
-          {error && <Alert variant="error" className="ds-mb-sm"><AlertCircle size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> {error}</Alert>}
+          {error && <Alert variant="error" className="ds-mb-sm" role="alert" aria-live="assertive"><AlertCircle size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> {error}</Alert>}
 
           <form onSubmit={handleSubmit}>
             <Field label="Full Name *" type="text" value={form.fullName} onChange={v => set('fullName', v)} placeholder="As per PAN card" />
@@ -75,14 +85,24 @@ export default function SignupPage() {
             <Grid cols={2}>
               <Field label="Password *" type={showPw ? 'text' : 'password'} style={{ position: 'relative' }}>
                 <input className="ds-input" type={showPw ? 'text' : 'password'} value={form.password} onChange={e => set('password', e.target.value)} placeholder="Min 8 characters" />
-                <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}><PwIcon size={16} /></button>
+                <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn} aria-label={showPw ? 'Hide password' : 'Show password'}><PwIcon size={16} /></button>
               </Field>
               <Field label="Confirm *" type={showPw ? 'text' : 'password'} value={form.confirmPassword} onChange={v => set('confirmPassword', v)} placeholder="Repeat" />
             </Grid>
+            {form.password && (
+              <div style={{ marginTop: -8, marginBottom: 8, fontSize: 11 }}>
+                <div style={{ display: 'flex', gap: 4, marginBottom: 2 }}>
+                  {[1,2,3,4].map(i => (
+                    <div key={i} style={{ height: 3, flex: 1, borderRadius: 2, background: getStrength(form.password) >= i ? ['','#ef4444','#f59e0b','#22c55e','#16a34a'][getStrength(form.password)] : '#e5e7eb' }} />
+                  ))}
+                </div>
+                <span style={{ color: '#6b7280' }}>{['','Weak','Fair','Good','Strong'][getStrength(form.password)]}</span>
+              </div>
+            )}
 
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, color: P.textMuted, marginBottom: 14, cursor: 'pointer', lineHeight: 1.4 }}>
               <input type="checkbox" checked={form.agreeTerms} onChange={e => set('agreeTerms', e.target.checked)} style={{ marginTop: 2, accentColor: P.brand, minWidth: 16, minHeight: 16 }} />
-              <span>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: P.brand, fontWeight: 500 }}>Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: P.brand, fontWeight: 500 }}>Privacy Policy</a></span>
+              <span>I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: P.brand, fontWeight: 500 }}>Terms of Service</a> and <a href="/privacy" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: P.brand, fontWeight: 500 }}>Privacy Policy</a></span>
             </label>
 
             <Button variant="primary" type="submit" disabled={loading} style={S.fullBtn}>

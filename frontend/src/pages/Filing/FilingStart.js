@@ -27,16 +27,27 @@ export default function FilingStart() {
       return;
     }
 
-    const body = { assessmentYear: ay, taxpayerPan: pan, itrType: 'ITR-1' };
-    if (state.revised) {
-      body.filingType = 'revised';
-      body.originalAckNumber = state.originalAckNumber || '';
-    }
+    api.get('/filings')
+      .then(({ data }) => {
+        const existing = data.data?.find(f => f.assessmentYear === ay && !['eri_success'].includes(f.lifecycleState));
+        if (existing) {
+          navigate(`/filing/${existing.id}`, { replace: true });
+          return;
+        }
 
-    api.post('/filings', body)
+        const body = { assessmentYear: ay, taxpayerPan: pan, itrType: 'ITR-1' };
+        if (state.revised) {
+          body.filingType = 'revised';
+          body.originalAckNumber = state.originalAckNumber || '';
+        }
+
+        return api.post('/filings', body);
+      })
       .then((res) => {
-        const filing = res.data.data;
-        navigate(`/filing/${filing.id}`, { replace: true });
+        if (res) {
+          const filing = res.data.data;
+          navigate(`/filing/${filing.id}`, { replace: true });
+        }
       })
       .catch((err) => {
         toast.error(err.response?.data?.error || 'Failed to create filing');

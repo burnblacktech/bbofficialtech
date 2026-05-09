@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * ActionCard — Quick action button card for the dashboard.
  *

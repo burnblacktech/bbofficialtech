@@ -16,6 +16,12 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const { user, login, loginWithOAuth } = useAuth();
   const [tab, setTab] = useState('login');
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   // If already logged in, redirect to appropriate dashboard
   useEffect(() => {
@@ -40,11 +46,11 @@ export default function LandingPage() {
 
       {/* Hero */}
       <main style={S.hero}>
-        <div style={S.heroInner}>
+        <div style={{ ...S.heroInner, gridTemplateColumns: isMobile ? '1fr' : '1fr 420px', gap: isMobile ? 24 : 48 }}>
           {/* Left: Value prop */}
-          <div style={S.heroLeft}>
+          <div style={{ ...S.heroLeft, maxWidth: isMobile ? '100%' : 520 }}>
             <div style={S.badge}><Shield size={14} /> Built by Tax Professionals</div>
-            <h1 style={S.h1}>File Your ITR<br />Like a CA Would</h1>
+            <h1 style={{ ...S.h1, fontSize: isMobile ? 28 : 38 }}>File Your ITR<br />Like a CA Would</h1>
             <p style={S.heroDesc}>
               Upload your documents, verify the numbers, download your filing.
               Real-time computation, old vs new regime comparison, CA-grade accuracy.
@@ -296,11 +302,3 @@ const S = {
   dividerText: { position: 'relative', top: -9, background: P.bgCard, padding: '0 10px', fontSize: 11, color: P.textLight },
   footer: { padding: '16px 24px', borderTop: `1px solid ${P.borderLight}`, display: 'flex', justifyContent: 'space-between', fontSize: 12, color: P.textMuted },
 };
-
-// Mobile responsive
-if (typeof window !== 'undefined' && window.innerWidth < 768) {
-  S.heroInner.gridTemplateColumns = '1fr';
-  S.heroInner.gap = 24;
-  S.h1.fontSize = 28;
-  S.heroLeft.maxWidth = '100%';
-}

@@ -109,10 +109,12 @@ class ITR3ComputationService {
     ITR1ComputationService._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
 
-    // Normal income — exclude VDA (flat 30% separately)
+    // Normal income — exclude VDA and winnings (flat 30% separately)
     const vdaGain = income.otherSources?.vdaGain || 0;
     const vdaTax = income.otherSources?.vdaTax || 0;
-    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain) +
+    const winnings = income.otherSources?.winnings || 0;
+    const winningsTax = Math.round(winnings * 0.30);
+    const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain - winnings) +
       income.capitalGains.stcg.other + income.foreignIncome.totalIncome + income.business.netProfit;
     const taxableNormal = Math.max(0, normalIncome - deductions.total);
 
@@ -154,6 +156,8 @@ class ITR3ComputationService {
     else if (income.grossTotal > 20000000) surchargeRate = 25;
     else if (income.grossTotal > 10000000) surchargeRate = 15;
     else if (income.grossTotal > 5000000) surchargeRate = 10;
+    // AY 2025-26: New regime caps surcharge at 25%
+    if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
     const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
     const cess = Math.round((taxAfterRebate + surcharge) * 4 / 100);
 
@@ -189,8 +193,9 @@ class ITR3ComputationService {
       const bsCheck = this.validateBalanceSheet(payload.income.business.balanceSheet);
       errors.push(...bsCheck.errors);
     }
-    if (!payload.bankAccount?.accountNumber) {
-      errors.push({ field: 'bankAccount', message: 'Bank account required' });
+    const bank = payload.bankDetails || payload.bankAccount || {};
+    if (!bank.accountNumber) {
+      errors.push({ field: 'bankDetails', message: 'Bank account required' });
     }
     return { valid: errors.length === 0, errors };
   }

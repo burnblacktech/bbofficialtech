@@ -17,13 +17,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPw, setShowPw] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
 
   useEffect(() => {
     const err = searchParams.get('error');
     const msg = searchParams.get('message');
-    if (err === 'oauth_rate_limit') setError('Too many requests. Please wait.');
+    const reason = searchParams.get('reason');
+    if (reason === 'session_expired') setError('Your session has expired. Please log in again to continue.');
+    else if (err === 'oauth_rate_limit') setError('Too many requests. Please wait.');
     else if (err === 'oauth_failed') setError(msg || 'Google login failed.');
     else if (msg) setError(decodeURIComponent(msg));
   }, [searchParams]);
@@ -49,6 +52,15 @@ export default function LoginPage() {
     } finally { setLoading(false); }
   };
 
+  const validateField = (field, value) => {
+    const errs = { ...fieldErrors };
+    if (field === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) errs.email = 'Enter a valid email';
+    else if (field === 'email') delete errs.email;
+    if (field === 'password' && value && value.length < 8) errs.password = 'Min 8 characters';
+    else if (field === 'password') delete errs.password;
+    setFieldErrors(errs);
+  };
+
   const PwIcon = showPw ? EyeOff : Eye;
 
   return (
@@ -65,16 +77,16 @@ export default function LoginPage() {
           <p style={S.subtitle}>Sign in to your account</p>
 
           {error && (
-            <Alert variant="error" className="ds-mb-sm">
+            <Alert variant="error" className="ds-mb-sm" role="alert" aria-live="assertive">
               <AlertCircle size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> {error}
             </Alert>
           )}
 
           <form onSubmit={handleSubmit}>
-            <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" />
-            <Field label="Password" type={showPw ? 'text' : 'password'} value={password} onChange={setPassword} placeholder="Enter your password" style={{ position: 'relative' }}>
-              <input className="ds-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" autoComplete="current-password" />
-              <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn}><PwIcon size={16} /></button>
+            <Field label="Email" type="email" value={email} onChange={setEmail} onBlur={() => validateField('email', email)} error={fieldErrors.email} placeholder="you@example.com" />
+            <Field label="Password" type={showPw ? 'text' : 'password'} value={password} onChange={setPassword} error={fieldErrors.password} placeholder="Enter your password" style={{ position: 'relative' }}>
+              <input className="ds-input" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} onBlur={() => validateField('password', password)} placeholder="Enter your password" autoComplete="current-password" />
+              <button type="button" onClick={() => setShowPw(!showPw)} style={S.eyeBtn} aria-label={showPw ? 'Hide password' : 'Show password'}><PwIcon size={16} /></button>
             </Field>
 
             <div style={S.row}>
