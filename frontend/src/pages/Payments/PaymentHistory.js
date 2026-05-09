@@ -49,7 +49,7 @@ export default function PaymentHistory() {
       )}
 
       {error && (
-        <Alert tone="error" icon={<AlertCircle size={16} />} title="Error">
+        <Alert variant="error" icon={<AlertCircle size={16} />} title="Error">
           Failed to load payment history. Please try again.
         </Alert>
       )}
@@ -71,7 +71,7 @@ export default function PaymentHistory() {
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 15, fontWeight: 600 }}>{order.planName}</span>
-                    <Badge tone={STATUS_TONE[order.status] || 'default'}>{order.status}</Badge>
+                    <Badge variant={STATUS_TONE[order.status] || 'default'}>{order.status}</Badge>
                   </div>
                   <div style={{ fontSize: 12, color: '#666', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                     {order.assessmentYear && <span>AY {order.assessmentYear}</span>}

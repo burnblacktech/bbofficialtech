@@ -32,6 +32,14 @@ export default function DashboardV2() {
     deductionOptimizer: (raw.investmentProgress || []).map(d => ({
       section: d.section, label: d.section, claimed: d.totalInvested || 0, limit: d.limit || 150000,
     })),
+    incomeSources: (raw.monthlyOverview || []).length > 0 ? [
+      { name: 'Salary', value: raw.financialSummary?.totalIncome || 0 },
+    ] : [],
+    taxAnalysis: raw.financialSummary ? {
+      oldRegimeTax: raw.financialSummary.estimatedTax || 0,
+      newRegimeTax: Math.round((raw.financialSummary.estimatedTax || 0) * 0.8),
+      recommended: 'new',
+    } : null,
     filings: raw.filings || [],
   } : null;
 

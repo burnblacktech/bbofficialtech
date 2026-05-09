@@ -23,7 +23,7 @@ export default function FilingStart() {
     const pan = state.taxpayerPan || user.panNumber || user.verifiedPans?.[0]?.pan;
 
     if (!pan) {
-      navigate('/pan-verification', { replace: true });
+      navigate('/itr/pan-verification', { replace: true });
       return;
     }
 
