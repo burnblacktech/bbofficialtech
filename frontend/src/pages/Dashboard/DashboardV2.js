@@ -19,6 +19,8 @@ export default function DashboardV2() {
   const { data: raw, isLoading, isError } = useQuery({
     queryKey: ['dashboard-summary', fy],
     queryFn: () => getDashboardSummary(fy),
+    retry: 1,
+    retryDelay: 1000,
   });
 
   // Fetch real regime comparison from the latest draft filing (if one exists)
@@ -82,17 +84,36 @@ export default function DashboardV2() {
   }, [raw, filingComp]);
 
   if (isLoading) {
-    return <Page><div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}><Spinner size="lg" /></div></Page>;
+    return (
+      <div className="dash-v2">
+        <div className="dash-v2__header">
+          <div>
+            <h1 className="dash-v2__greeting">FY {fy} at a Glance</h1>
+            <p className="dash-v2__subtitle">Loading your financial data...</p>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Spinner size="lg" /></div>
+      </div>
+    );
   }
 
   if (isError) {
     return (
-      <Page>
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ fontSize: 15, color: 'var(--bb-fg-muted)', marginBottom: 12 }}>Couldn't load your dashboard. Check your connection and try again.</p>
-          <button className="ds-btn ds-btn-md ds-btn-primary" onClick={() => window.location.reload()}>Retry</button>
+      <div className="dash-v2">
+        <div className="dash-v2__header">
+          <div>
+            <h1 className="dash-v2__greeting">FY {fy} at a Glance</h1>
+            <p className="dash-v2__subtitle">Something went wrong loading your data.</p>
+          </div>
         </div>
-      </Page>
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <p style={{ fontSize: 14, color: 'var(--bb-fg-muted)', marginBottom: 12 }}>This could be a temporary issue. You can still file your ITR.</p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <button className="ds-btn ds-btn-md ds-btn-primary" onClick={() => window.location.href = '/filing/start'}>File ITR</button>
+            <button className="ds-btn ds-btn-md ds-btn-secondary" onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        </div>
+      </div>
     );
   }
 
