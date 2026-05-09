@@ -122,13 +122,18 @@ class ITR2ComputationService {
       const sale = n(txn.saleValue);
       const cost = isShortTerm ? n(txn.purchaseValue) : n(txn.indexedCost || txn.purchaseValue);
       const expenses = n(txn.expenses);
-      const gain = sale - cost - expenses;
+      const gain = n(txn.gain) || (sale - cost - expenses);
       const exemption = n(txn.exemption);
       // Allow negative gains (losses) — they offset within the same category
       const taxableGain = gain - exemption;
       totalExemptions += exemption;
 
-      if (isShortTerm) {
+      // Route by explicit section if provided
+      if (txn.section === '111A') { stcgEquity += taxableGain; }
+      else if (txn.section === '112A') { ltcgEquity += taxableGain; }
+      else if (txn.section === '112') { ltcgProperty += taxableGain; }
+      else if (txn.section === 'slab') { stcgOther += taxableGain; }
+      else if (isShortTerm) {
         if (txn.assetType === 'equity' || txn.assetType === 'equity_mf' || txn.assetType === 'mutualFund') {
           stcgEquity += taxableGain;
         } else {
@@ -147,6 +152,13 @@ class ITR2ComputationService {
       transactions.push({ ...txn, gain, exemption, taxableGain });
       }
     }
+
+    // Apply brought-forward losses
+    const bf = cgData.broughtForwardLosses || {};
+    const bfStcl = n(bf.stcl111A || bf.stcl);
+    const bfLtcl = n(bf.ltcl112A || bf.ltcl);
+    stcgEquity = Math.max(0, stcgEquity - bfStcl);
+    ltcgEquity = Math.max(0, ltcgEquity - bfLtcl);
 
     const stcgTotal = stcgEquity + stcgOther;
     const ltcgTotal = ltcgEquity + ltcgProperty + ltcgOther;
@@ -191,13 +203,20 @@ class ITR2ComputationService {
     ITR1ComputationService._lastGrossTotal = income.grossTotal;
     const deductions = regime === 'old' ? ITR1ComputationService.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
 
+    // In new regime, 80CCD(2) employer NPS is still allowed
+    let newRegime80CCD2 = 0;
+    if (regime === 'new' && deductionData) {
+      const d = deductionData;
+      newRegime80CCD2 = n(d.section80CCD2?.employerNps || d.employerNps);
+    }
+
     // Normal income (taxed at slab rates) — exclude VDA and winnings which are taxed at flat 30%
     const vdaGain = income.otherSources?.vdaGain || 0;
     const vdaTax = income.otherSources?.vdaTax || 0;
     const winnings = income.otherSources?.winnings || 0;
     const winningsTax = Math.round(winnings * 0.30);
     const normalIncome = income.salary.netTaxable + income.houseProperty.netIncome + (income.otherSources.total - vdaGain - winnings) + income.capitalGains.stcg.other + income.foreignIncome.totalIncome;
-    const taxableNormal = Math.max(0, normalIncome - deductions.total);
+    const taxableNormal = Math.max(0, normalIncome - deductions.total - newRegime80CCD2);
 
     // Special rate incomes
     const stcgEquity = income.capitalGains.stcg.equity; // 20% (AY 2025-26)
@@ -229,13 +248,13 @@ class ITR2ComputationService {
     // Tax on special rate incomes
     const stcgEquityTax = Math.round(stcgEquity * 20 / 100); // 20% for AY 2025-26
     const ltcgEquityTax = Math.round(ltcgEquity * 12.5 / 100); // 12.5% for AY 2025-26
-    const ltcgOtherTax = Math.round(ltcgOther * 20 / 100); // 20%
+    const ltcgOtherTax = Math.round(ltcgOther * 12.5 / 100); // 12.5% (Budget 2024)
 
-    const totalTaxOnIncome = normalTax + stcgEquityTax + ltcgEquityTax + ltcgOtherTax + vdaTax;
+    const totalTaxOnIncome = normalTax + stcgEquityTax + ltcgEquityTax + ltcgOtherTax + vdaTax + winningsTax;
 
     // Rebate 87A — not available if special rate income exists (for new regime, only on normal income ≤ ₹7L)
-    const rebateLimit = regime === 'old' ? 500000 : 700000;
-    const rebateMax = regime === 'old' ? 12500 : 25000;
+    const rebateLimit = regime === 'old' ? 500000 : 1200000;
+    const rebateMax = regime === 'old' ? 12500 : 60000;
     const rebateEligibleIncome = taxableNormal; // Rebate only on normal income
     const rebate = (stcgEquity + ltcgEquity + ltcgOther === 0 && rebateEligibleIncome <= rebateLimit) ? Math.min(normalTax, rebateMax) : 0;
 
@@ -243,10 +262,10 @@ class ITR2ComputationService {
 
     // Surcharge
     let surchargeRate = 0;
-    if (grossTotal > 50000000) surchargeRate = 37;
-    else if (grossTotal > 20000000) surchargeRate = 25;
-    else if (grossTotal > 10000000) surchargeRate = 15;
-    else if (grossTotal > 5000000) surchargeRate = 10;
+    if (taxableIncome > 50000000) surchargeRate = 37;
+    else if (taxableIncome > 20000000) surchargeRate = 25;
+    else if (taxableIncome > 10000000) surchargeRate = 15;
+    else if (taxableIncome > 5000000) surchargeRate = 10;
     // AY 2025-26: New regime caps surcharge at 25%
     if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
     // Cap surcharge on LTCG equity at 15%
@@ -341,12 +360,13 @@ const OLD_SLABS = [
 ];
 
 const NEW_SLABS = [
-  { min: 0, max: 300000, rate: 0 },
-  { min: 300000, max: 700000, rate: 5 },
-  { min: 700000, max: 1000000, rate: 10 },
-  { min: 1000000, max: 1200000, rate: 15 },
-  { min: 1200000, max: 1500000, rate: 20 },
-  { min: 1500000, max: Infinity, rate: 30 },
+  { min: 0, max: 400000, rate: 0 },
+  { min: 400000, max: 800000, rate: 5 },
+  { min: 800000, max: 1200000, rate: 10 },
+  { min: 1200000, max: 1600000, rate: 15 },
+  { min: 1600000, max: 2000000, rate: 20 },
+  { min: 2000000, max: 2400000, rate: 25 },
+  { min: 2400000, max: Infinity, rate: 30 },
 ];
 
 function n(val) { return Number(val) || 0; }
