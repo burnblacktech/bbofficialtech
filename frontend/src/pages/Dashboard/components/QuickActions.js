@@ -4,7 +4,7 @@ import { Card } from '../../../design-system';
 import { FileText, Calculator, Upload, Clock, ArrowRight } from 'lucide-react';
 
 const ACTIONS = [
-  { icon: FileText, label: 'File ITR', desc: 'Start your return filing', path: '/filing/determine', primary: true },
+  { icon: FileText, label: 'File ITR', desc: 'Start your return filing', path: '/filing/start', primary: true },
   { icon: Calculator, label: 'Tax Calculator', desc: 'Estimate your liability', path: '/finance' },
   { icon: Upload, label: 'Upload Form 16', desc: 'Import salary details', path: '/vault' },
   { icon: Clock, label: 'View History', desc: 'Past filings & status', path: '/filings/history' },

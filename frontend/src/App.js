@@ -147,7 +147,7 @@ const AppContent = () => {
         <Route path="/home" element={<Bare><HomeRedirect /></Bare>} />
 
         {/* Dashboard */}
-        <Route path="/dashboard" element={<Bare><DashboardV2 /></Bare>} />
+        <Route path="/dashboard" element={<Page message="Loading dashboard..."><DashboardV2 /></Page>} />
         <Route path="/dashboard/classic" element={<Page message="Loading dashboard..."><UserDashboard /></Page>} />
 
         {/* Unified Settings Hub */}
