@@ -21,8 +21,8 @@ module.exports = async (req, res) => {
         const { sequelize } = require('../src/config/database');
         require('../src/models');
         await sequelize.authenticate();
-        // Ensure all model tables exist (safe: creates missing tables, doesn't alter existing)
-        await sequelize.sync({ alter: false });
+        // Ensure all model tables + columns exist (adds missing columns, doesn't drop)
+        await sequelize.sync({ alter: true });
         dbReady = true;
         console.log('DB connected and synced');
       } catch (dbErr) {
