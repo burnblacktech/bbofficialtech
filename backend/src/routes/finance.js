@@ -40,7 +40,7 @@ const fyQuerySchema = Joi.object({
  * Throws AppError(400) on failure.
  */
 function validate(schema, data) {
-  const { error, value } = schema.validate(data, { abortEarly: false });
+  const { error, value } = schema.validate(data, { abortEarly: false, stripUnknown: true });
   if (error) {
     throw new AppError(
       error.details.map((d) => d.message).join('; '),
