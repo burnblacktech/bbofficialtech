@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../../../design-system';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
@@ -10,12 +11,14 @@ function formatINR(v) {
 }
 
 export default function IncomeBreakdown({ data = [] }) {
+  const navigate = useNavigate();
   const total = data.reduce((s, d) => s + (d.value || 0), 0);
 
   return (
     <Card className="dash-v2__chart-card">
       <div className="dash-v2__chart-header">
         <span className="dash-v2__chart-title">Income Sources</span>
+        <button onClick={() => navigate('/finance/income')} style={{ background: 'none', border: 'none', fontSize: 11, color: 'var(--bb-brand)', cursor: 'pointer' }}>View all →</button>
       </div>
       <div className="dash-v2__donut-wrapper">
         <div style={{ width: 160, height: 160, position: 'relative', flexShrink: 0 }}>

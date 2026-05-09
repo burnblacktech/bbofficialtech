@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Progress } from '../../../design-system';
 import { Zap } from 'lucide-react';
 
@@ -16,6 +17,7 @@ const EMPTY_DEDUCTIONS = [
 ];
 
 export default function DeductionOptimizer({ data }) {
+  const navigate = useNavigate();
   const deductions = data?.length ? data : EMPTY_DEDUCTIONS;
   const totalClaimed = deductions.reduce((s, d) => s + d.claimed, 0);
   const totalLimit = deductions.reduce((s, d) => s + d.limit, 0);
@@ -25,6 +27,8 @@ export default function DeductionOptimizer({ data }) {
     <Card className="dash-v2__chart-card">
       <div className="dash-v2__chart-header">
         <span className="dash-v2__chart-title">Deduction Optimizer</span>
+        <button onClick={() => navigate('/finance/investments')} style={{ background: 'none', border: 'none', fontSize: 11, color: 'var(--bb-brand)', cursor: 'pointer' }}>Manage →</button>
+      </div>
         <span style={{ fontSize: 'var(--bb-fs-xs)', color: 'var(--bb-fg-muted)' }}>
           <Zap size={12} color="var(--bb-brand)" style={{ display: 'inline', marginRight: 4 }} />
           <span style={{ color: 'var(--bb-brand)', fontWeight: 500 }}>₹{formatK(potential)}</span> potential savings
