@@ -29,7 +29,9 @@ export default function DashboardV2() {
       taxLiability: raw.financialSummary?.estimatedTax || 0,
     },
     monthlyTrend: raw.monthlyOverview || [],
-    deductions: raw.investmentProgress || [],
+    deductionOptimizer: (raw.investmentProgress || []).map(d => ({
+      section: d.section, label: d.section, claimed: d.totalInvested || 0, limit: d.limit || 150000,
+    })),
     filings: raw.filings || [],
   } : null;
 

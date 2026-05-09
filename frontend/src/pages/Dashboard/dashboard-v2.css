@@ -1,9 +1,6 @@
 /* Dashboard V2 — Dark theme styles using BurnBlack design tokens */
 
 .dash-v2 {
-  min-height: 100vh;
-  background: var(--bb-bg-page);
-  color: var(--bb-fg-primary);
   padding: var(--bb-space-6);
 }
 

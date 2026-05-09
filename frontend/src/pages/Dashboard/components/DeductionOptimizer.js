@@ -8,15 +8,15 @@ function formatK(v) {
   return v;
 }
 
-const DEFAULT_DEDUCTIONS = [
-  { section: '80C', label: 'Investments & Insurance', claimed: 150000, limit: 150000 },
-  { section: '80D', label: 'Health Insurance', claimed: 25000, limit: 50000 },
-  { section: '80CCD(1B)', label: 'NPS Contribution', claimed: 35000, limit: 50000 },
+const EMPTY_DEDUCTIONS = [
+  { section: '80C', label: 'Investments & Insurance', claimed: 0, limit: 150000 },
+  { section: '80D', label: 'Health Insurance', claimed: 0, limit: 50000 },
+  { section: '80CCD(1B)', label: 'NPS Contribution', claimed: 0, limit: 50000 },
   { section: '24(b)', label: 'Home Loan Interest', claimed: 0, limit: 200000 },
 ];
 
 export default function DeductionOptimizer({ data }) {
-  const deductions = data?.deductions || DEFAULT_DEDUCTIONS;
+  const deductions = data?.length ? data : EMPTY_DEDUCTIONS;
   const totalClaimed = deductions.reduce((s, d) => s + d.claimed, 0);
   const totalLimit = deductions.reduce((s, d) => s + d.limit, 0);
   const potential = totalLimit - totalClaimed;
