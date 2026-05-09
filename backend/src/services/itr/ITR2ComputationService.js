@@ -23,10 +23,17 @@ class ITR2ComputationService {
 
     oldRegime.tdsCredit = tds.total;
     oldRegime.foreignTaxCredit = foreignTaxCredit.credit;
-    oldRegime.netPayable = oldRegime.totalTax - tds.total - foreignTaxCredit.credit;
+    oldRegime.totalTaxAfterCredits = Math.max(0, oldRegime.totalTax - foreignTaxCredit.credit);
+    oldRegime.netPayable = oldRegime.totalTaxAfterCredits - tds.total;
     newRegime.tdsCredit = tds.total;
     newRegime.foreignTaxCredit = foreignTaxCredit.credit;
-    newRegime.netPayable = newRegime.totalTax - tds.total - foreignTaxCredit.credit;
+    newRegime.totalTaxAfterCredits = Math.max(0, newRegime.totalTax - foreignTaxCredit.credit);
+    newRegime.netPayable = newRegime.totalTaxAfterCredits - tds.total;
+
+    // Interest u/s 234A/234B/234C (simplified estimation)
+    const interest = this.computeInterest(oldRegime, tds, safePayload.taxes);
+    oldRegime.interest234 = interest;
+    newRegime.interest234 = this.computeInterest(newRegime, tds, safePayload.taxes);
 
     const recommended = oldRegime.totalTax <= newRegime.totalTax ? 'old' : 'new';
     const savings = Math.abs(oldRegime.totalTax - newRegime.totalTax);
@@ -123,6 +130,15 @@ class ITR2ComputationService {
       const cost = isShortTerm ? n(txn.purchaseValue) : n(txn.indexedCost || txn.purchaseValue);
       const expenses = n(txn.expenses);
       const gain = n(txn.gain) || (sale - cost - expenses);
+
+      // SGB maturity — fully exempt u/s 47(viic)
+      const isSGBMaturity = txn.assetType === 'sgb' || txn.assetType === 'sovereign_gold_bond' || txn.exempt === '47viic' || txn.section === '47viic';
+      if (isSGBMaturity) {
+        totalExemptions += gain;
+        transactions.push({ ...txn, gain, exemption: gain, taxableGain: 0, note: 'Exempt u/s 47(viic) — SGB maturity' });
+        continue;
+      }
+
       const exemption = n(txn.exemption);
       // Allow negative gains (losses) — they offset within the same category
       const taxableGain = gain - exemption;
@@ -280,6 +296,7 @@ class ITR2ComputationService {
       taxableIncome, taxableNormal, stcgEquity, ltcgEquity, ltcgOther,
       slabBreakdown, normalTax, stcgEquityTax, ltcgEquityTax, ltcgOtherTax,
       taxOnIncome: totalTaxOnIncome, rebate, surcharge, surchargeRate, cess, totalTax,
+      winningsTax,
     };
   }
 
@@ -289,8 +306,18 @@ class ITR2ComputationService {
     const base = ITR1ComputationService.computeTDS(payload);
     // Add TDS on capital gains (from broker statements)
     const fromCG = n(payload.taxes?.tds?.fromCapitalGains);
+    // Add TDS on property sale u/s 194IA
+    const fromProperty = n(payload.taxes?.tds?.fromPropertySale);
+    // Advance tax paid (all quarters)
+    const advanceTax = n(payload.taxes?.advanceTax?.q1) + n(payload.taxes?.advanceTax?.q2) + n(payload.taxes?.advanceTax?.q3) + n(payload.taxes?.advanceTax?.q4) + n(payload.taxes?.advanceTax?.total);
+    // Self-assessment tax
+    const selfAssessment = n(payload.taxes?.selfAssessmentTax);
+
     base.fromCapitalGains = fromCG;
-    base.total += fromCG;
+    base.fromPropertySale = fromProperty;
+    base.advanceTax = advanceTax;
+    base.selfAssessmentTax = selfAssessment;
+    base.total += fromCG + fromProperty + advanceTax + selfAssessment;
     return base;
   }
 
@@ -313,6 +340,29 @@ class ITR2ComputationService {
     }
 
     return { credit: totalCredit, breakdown };
+  }
+
+  // ── Interest u/s 234A/234B/234C ──
+
+  static computeInterest(regimeResult, tds, taxesPaid) {
+    const totalTax = regimeResult.totalTaxAfterCredits || regimeResult.totalTax;
+    const totalPaid = tds.total + n(taxesPaid?.advanceTax?.total);
+    const shortfall = Math.max(0, totalTax - totalPaid);
+    if (shortfall === 0) return { s234A: 0, s234B: 0, s234C: 0, total: 0 };
+
+    // 234B: Interest on shortfall of advance tax (1% per month)
+    // If advance tax paid < 90% of assessed tax, interest applies
+    const advanceTax = n(taxesPaid?.advanceTax?.total);
+    const s234B = advanceTax < (totalTax * 0.9) ? Math.round(shortfall * 0.01 * 3) : 0; // ~3 months avg
+
+    // 234C: Interest on deferment of advance tax (1% per month per quarter shortfall)
+    // Simplified: if no advance tax paid at all, ~4 months interest
+    const s234C = advanceTax === 0 && totalTax > 10000 ? Math.round(totalTax * 0.01 * 4) : 0;
+
+    // 234A: Interest for late filing (1% per month from due date) — only if filed late
+    const s234A = 0; // Cannot compute without actual filing date
+
+    return { s234A, s234B, s234C, total: s234A + s234B + s234C };
   }
 
   // ── Validation ──
