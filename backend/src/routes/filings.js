@@ -1060,7 +1060,7 @@ router.get('/:filingId/computation-pdf', authenticateToken, authorize(['END_USER
         const computeMap = { 'ITR-1': 'ITR1ComputationService', 'ITR-2': 'ITR2ComputationService', 'ITR-3': 'ITR3ComputationService', 'ITR-4': 'ITR4ComputationService' };
         const ServiceName = computeMap[itrType] || 'ITR1ComputationService';
         const ComputeService = require(`../services/itr/${ServiceName}`);
-        const computation = ComputeService.compute(filing.jsonPayload || {});
+        const computation = ComputeService.compute({ ...(filing.jsonPayload || {}), assessmentYear: filing.assessmentYear });
 
         const ComputationPDFService = require('../services/itr/ComputationPDFService');
         const pdfData = ComputationPDFService.assemblePDFData(filing, computation);

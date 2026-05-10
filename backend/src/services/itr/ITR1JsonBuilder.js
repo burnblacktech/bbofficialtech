@@ -26,7 +26,7 @@ function genderCode(g) {
 class ITR1JsonBuilder {
 
   static build(payload, assessmentYear) {
-    const computation = ITR1ComputationService.compute(payload);
+    const computation = ITR1ComputationService.compute({ ...payload, assessmentYear });
     const regime = payload.selectedRegime || computation.recommended;
     const result = regime === 'old' ? computation.oldRegime : computation.newRegime;
     const pi = payload.personalInfo || {};
