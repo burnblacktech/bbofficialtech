@@ -92,17 +92,27 @@ export default function DashboardV2() {
         <div className="dash-v2__header">
           <div>
             <h1 className="dash-v2__greeting">FY {fy} at a Glance</h1>
-            <p className="dash-v2__subtitle">Loading your financial data...</p>
+            <p className="dash-v2__subtitle" style={{ color: 'var(--text-light)' }}>Loading...</p>
           </div>
           <select className="dash-v2__fy-select" value={fy} onChange={(e) => setFy(e.target.value)}>
             {FY_OPTIONS.map((y) => <option key={y} value={y}>FY {y}</option>)}
           </select>
         </div>
-        <Stack gap="lg">
-          <div className="dash-v2__grid-4">
-            {[1,2,3,4].map(i => <div key={i} style={{ height: 80, borderRadius: 'var(--bb-radius-md)', background: 'var(--bb-bg-elevated)', animation: 'pulse 1.5s infinite' }} />)}
+        <div className="dash-v2__layout">
+          <div className="dash-v2__main">
+            <div className="dash-v2__grid-4">
+              {[1,2,3,4].map(i => <div key={i} style={{ height: 80, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.1}s` }} />)}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
+              <div style={{ height: 200, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.3s' }} />
+              <div style={{ height: 200, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.4s' }} />
+            </div>
+            <div style={{ height: 120, borderRadius: 12, background: 'var(--bg-muted)', marginTop: 16, animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.5s' }} />
           </div>
-        </Stack>
+          <aside className="dash-v2__sidebar">
+            {[1,2,3].map(i => <div key={i} style={{ height: 100, borderRadius: 12, background: 'var(--bg-muted)', marginBottom: 12, animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.15}s` }} />)}
+          </aside>
+        </div>
       </div>
     );
   }
