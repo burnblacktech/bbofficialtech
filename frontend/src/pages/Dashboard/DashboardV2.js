@@ -8,7 +8,6 @@ import IncomeBreakdown from './components/IncomeBreakdown';
 import MonthlyTrend from './components/MonthlyTrend';
 import TaxInsights from './components/TaxInsights';
 import DeductionOptimizer from './components/DeductionOptimizer';
-import QuickActions from './components/QuickActions';
 import './dashboard-v2.css';
 
 const FY_OPTIONS = (() => {
@@ -103,7 +102,6 @@ export default function DashboardV2() {
           <div className="dash-v2__grid-4">
             {[1,2,3,4].map(i => <div key={i} style={{ height: 80, borderRadius: 'var(--bb-radius-md)', background: 'var(--bb-bg-elevated)', animation: 'pulse 1.5s infinite' }} />)}
           </div>
-          <QuickActions />
         </Stack>
       </div>
     );
@@ -128,7 +126,6 @@ export default function DashboardV2() {
             <button className="ds-btn ds-btn-md ds-btn-secondary" onClick={() => window.location.reload()}>Retry</button>
           </div>
         </div>
-        <QuickActions />
       </div>
     );
   }
@@ -173,10 +170,38 @@ export default function DashboardV2() {
           </Stack>
         </div>
 
-        {/* Right sidebar — stacks on mobile */}
+        {/* Right sidebar — insights + optimization */}
         <aside className="dash-v2__sidebar">
+          {/* Filing readiness */}
+          {data?.filings?.length > 0 && (
+            <div className="dash-v2__readiness-card">
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>Filing Readiness</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ fontSize: 24, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
+                  {data.filings[0]?.progress || 0}%
+                </div>
+                <div style={{ flex: 1, height: 6, background: 'var(--border-light)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${data.filings[0]?.progress || 0}%`, height: '100%', background: 'var(--brand-primary)', borderRadius: 3, transition: 'width 0.3s' }} />
+                </div>
+              </div>
+              <button className="ds-btn ds-btn--sm ds-btn--primary" style={{ width: '100%', marginTop: 10 }} onClick={() => window.location.href = `/filing/${data.filings[0]?.id}`}>
+                Continue Filing
+              </button>
+            </div>
+          )}
           <DeductionOptimizer data={data?.deductionOptimizer} />
-          <QuickActions />
+          {/* Tax savings tips */}
+          <div className="dash-v2__tips-card">
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>💡 Tax Savings Tips</div>
+            {(data?.deductionOptimizer || []).filter(d => d.claimed < d.limit).slice(0, 3).map(d => (
+              <div key={d.section} style={{ fontSize: 12, color: 'var(--text-secondary)', padding: '6px 0', borderBottom: '1px solid var(--border-light)' }}>
+                <span style={{ fontWeight: 600 }}>{d.section}</span>: Invest ₹{((d.limit - d.claimed) / 1000).toFixed(0)}K more to save ~₹{(Math.round((d.limit - d.claimed) * 0.3) / 1000).toFixed(0)}K in tax
+              </div>
+            ))}
+            {(!data?.deductionOptimizer || data.deductionOptimizer.every(d => d.claimed >= d.limit)) && (
+              <div style={{ fontSize: 12, color: 'var(--color-success)' }}>✓ All deduction limits maximized!</div>
+            )}
+          </div>
         </aside>
       </div>
     </div>

@@ -267,3 +267,11 @@
     min-width: unset;
   }
 }
+
+.dash-v2__readiness-card,
+.dash-v2__tips-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg, 12px);
+  padding: 14px 16px;
+}
