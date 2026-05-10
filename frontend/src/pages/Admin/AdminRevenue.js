@@ -12,10 +12,14 @@ import P from '../../styles/palette';
 const fmt = (v) => `₹${Number(v || 0).toLocaleString('en-IN')}`;
 
 export default function AdminRevenue() {
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-revenue'],
     queryFn: () => adminService.getRevenue().then((r) => r.data),
+    retry: 1,
   });
+
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: P.textMuted }}>Loading revenue data...</div>;
+  if (isError) return <div style={{ padding: 40, textAlign: 'center', color: P.error }}>Failed to load revenue. <button onClick={() => window.location.reload()} style={{ color: P.brand, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Retry</button></div>;
 
   return (
     <div>

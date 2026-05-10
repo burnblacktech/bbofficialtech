@@ -13,7 +13,11 @@ import adminService from '../../services/adminService';
 import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 
-const AY_OPTIONS = ['', '2024-25', '2025-26', '2026-27'];
+const AY_OPTIONS = (() => {
+  const now = new Date();
+  const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  return ['', `${y + 1}-${String(y + 2).slice(-2)}`, `${y}-${String(y + 1).slice(-2)}`, `${y - 1}-${String(y).slice(-2)}`];
+})();
 const ITR_OPTIONS = ['', 'ITR-1', 'ITR-2', 'ITR-3', 'ITR-4'];
 const STATE_OPTIONS = [
   '', 'draft', 'review_pending', 'reviewed', 'approved_by_ca',

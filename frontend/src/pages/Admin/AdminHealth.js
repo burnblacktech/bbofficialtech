@@ -21,11 +21,15 @@ const REFRESH_OPTIONS = [
 export default function AdminHealth() {
   const [refreshInterval, setRefreshInterval] = useState(15000);
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-health'],
     queryFn: () => adminService.getHealth().then((r) => r.data),
     refetchInterval: refreshInterval || false,
+    retry: 1,
   });
+
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: P.textMuted }}>Checking platform health...</div>;
+  if (isError) return <div style={{ padding: 40, textAlign: 'center', color: P.error }}>Health check failed. <button onClick={() => window.location.reload()} style={{ color: P.brand, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Retry</button></div>;
 
   return (
     <div>

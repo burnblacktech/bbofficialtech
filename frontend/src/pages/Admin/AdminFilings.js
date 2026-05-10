@@ -27,14 +27,16 @@ const STATE_COLORS = {
 export default function AdminFilings() {
   const [period, setPeriod] = useState('daily');
 
-  const { data: stats } = useQuery({
+  const { data: stats, isLoading, isError } = useQuery({
     queryKey: ['admin-filing-stats'],
     queryFn: () => adminService.getFilingStats().then((r) => r.data),
+    retry: 1,
   });
 
   const { data: trends } = useQuery({
     queryKey: ['admin-filing-trends', period],
     queryFn: () => adminService.getFilingTrends(period).then((r) => r.data),
+    retry: 1,
   });
 
   const totalFilings = stats?.byState?.reduce((s, r) => s + parseInt(r.count), 0) || 0;
@@ -43,6 +45,9 @@ export default function AdminFilings() {
     label: new Date(t.period).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }),
     count: parseInt(t.count),
   }));
+
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: P.textMuted }}>Loading filing statistics...</div>;
+  if (isError) return <div style={{ padding: 40, textAlign: 'center', color: P.error }}>Failed to load statistics. <button onClick={() => window.location.reload()} style={{ color: P.brand, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Retry</button></div>;
 
   return (
     <div>

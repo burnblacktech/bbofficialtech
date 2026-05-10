@@ -13,7 +13,11 @@ import P from '../../styles/palette';
 import { useNavigate } from 'react-router-dom';
 
 const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-const AY_OPTIONS = ['2024-25', '2025-26', '2026-27'];
+const AY_OPTIONS = (() => {
+  const now = new Date();
+  const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  return [`${y + 1}-${String(y + 2).slice(-2)}`, `${y}-${String(y + 1).slice(-2)}`, `${y - 1}-${String(y).slice(-2)}`];
+})();
 const ITR_OPTIONS = ['ITR-1', 'ITR-2', 'ITR-3', 'ITR-4'];
 
 export default function AdminFilingCreate() {

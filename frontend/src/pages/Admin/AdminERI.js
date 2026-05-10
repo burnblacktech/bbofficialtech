@@ -11,11 +11,15 @@ import adminService from '../../services/adminService';
 import P from '../../styles/palette';
 
 export default function AdminERI() {
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-eri'],
     queryFn: () => adminService.getERIData().then((r) => r.data),
     refetchInterval: 30000,
+    retry: 1,
   });
+
+  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: P.textMuted }}>Loading ERI monitor...</div>;
+  if (isError) return <div style={{ padding: 40, textAlign: 'center', color: P.error }}>Failed to load ERI data. <button onClick={() => window.location.reload()} style={{ color: P.brand, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Retry</button></div>;
 
   const errorChartData = (data?.errorCodeFrequency || []).map((ec) => ({
     code: ec.error_code || ec.errorCode || 'UNKNOWN',

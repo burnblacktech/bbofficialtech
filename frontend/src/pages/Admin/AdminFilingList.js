@@ -12,7 +12,11 @@ import toast from 'react-hot-toast';
 import P from '../../styles/palette';
 import { useNavigate } from 'react-router-dom';
 
-const AY_OPTIONS = ['', '2024-25', '2025-26', '2026-27'];
+const AY_OPTIONS = (() => {
+  const now = new Date();
+  const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  return ['', `${y + 1}-${String(y + 2).slice(-2)}`, `${y}-${String(y + 1).slice(-2)}`, `${y - 1}-${String(y).slice(-2)}`];
+})();
 const ITR_OPTIONS = ['', 'ITR-1', 'ITR-2', 'ITR-3', 'ITR-4'];
 const STATE_OPTIONS = [
   '',
@@ -64,9 +68,10 @@ export default function AdminFilingList() {
     ...(filters.includeDeleted && { includeDeleted: true }),
   };
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-filing-mgmt', queryParams],
     queryFn: () => adminService.getAdminFilings(queryParams).then((r) => r.data || r),
+    retry: 1,
   });
 
   const filings = data?.filings || [];
@@ -186,6 +191,10 @@ export default function AdminFilingList() {
         {isLoading ? (
           <div style={{ padding: 20, textAlign: 'center' }}>
             <Loader2 size={20} className="animate-spin" color={P.textMuted} />
+          </div>
+        ) : isError ? (
+          <div style={{ padding: 16, textAlign: 'center', color: P.error }}>
+            Failed to load filings. <button onClick={() => window.location.reload()} style={{ color: P.brand, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Retry</button>
           </div>
         ) : filings.length === 0 ? (
           <div style={{ padding: 16, textAlign: 'center', color: P.textMuted }}>
