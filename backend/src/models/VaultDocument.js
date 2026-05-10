@@ -41,7 +41,7 @@ const VaultDocument = sequelize.define('VaultDocument', {
     field: 'mime_type',
   },
   category: {
-    type: DataTypes.ENUM('salary', 'investments', 'insurance', 'rent', 'donations', 'medical', 'capital_gains', 'business', 'other'),
+    type: DataTypes.STRING(20),
     allowNull: false,
   },
   financialYear: {
@@ -56,7 +56,7 @@ const VaultDocument = sequelize.define('VaultDocument', {
     field: 'expiry_date',
   },
   ocrStatus: {
-    type: DataTypes.ENUM('pending', 'completed', 'failed', 'not_applicable'),
+    type: DataTypes.STRING(20),
     defaultValue: 'not_applicable',
     field: 'ocr_status',
   },

@@ -30,7 +30,7 @@ const FilingSnapshot = sequelize.define('FilingSnapshot', {
         allowNull: false,
     },
     snapshotType: {
-        type: DataTypes.ENUM('auto', 'manual', 'pre-submission', 'post-submission', 'restored'),
+        type: DataTypes.STRING(20),
         defaultValue: 'auto',
         field: 'snapshot_type',
     },

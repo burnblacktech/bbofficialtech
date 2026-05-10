@@ -32,7 +32,7 @@ const Order = sequelize.define('Order', {
     defaultValue: 'INR',
   },
   status: {
-    type: DataTypes.ENUM('created', 'paid', 'failed', 'refunded', 'expired'),
+    type: DataTypes.STRING(10),
     defaultValue: 'created',
   },
   razorpayOrderId: {
