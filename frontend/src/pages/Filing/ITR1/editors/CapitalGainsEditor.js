@@ -179,7 +179,7 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
 
           <Alert variant="info" style={{ marginTop: 8 }}>
             <Info size={14} style={{ flexShrink: 0, verticalAlign: -2, marginRight: 4 }} />
-            STCG equity: 20% · LTCG equity: 12.5% (first ₹1.25L exempt) · LTCG property/other: 20% with indexation · STCG other: taxed at slab rates · Losses can offset gains of same type
+            STCG equity: 20% · LTCG equity: 12.5% (first ₹1.25L exempt) · LTCG property/other: 12.5% (no indexation from AY 2025-26) · STCG other: taxed at slab rates · Losses can offset gains of same type
           </Alert>
         </Card>
       )}

@@ -58,7 +58,7 @@ class ITR4ComputationService {
       switch (entry.section) {
         case '44AD':
           // 8% for cash, 6% for digital receipts
-          rate = entry.digitalReceipts ? 6 : 8;
+          rate = (entry.digitalReceipts || entry.isDigital) ? 6 : 8;
           income = Math.max(n(entry.declaredIncome), Math.round(receipts * rate / 100));
           break;
         case '44ADA':
@@ -82,7 +82,7 @@ class ITR4ComputationService {
       entries.push({
         section: entry.section, businessName: entry.businessName || '',
         grossReceipts: receipts, rate, declaredIncome: income,
-        digitalReceipts: !!entry.digitalReceipts,
+        digitalReceipts: !!(entry.digitalReceipts || entry.isDigital),
         vehicles: n(entry.vehicles), monthsOwned: n(entry.monthsOwned || 12),
       });
     }
@@ -163,11 +163,16 @@ class ITR4ComputationService {
     for (const entry of (payload.income?.presumptive?.entries || [])) {
       if (entry.section === '44AD') {
         const totalReceipts = n(entry.grossReceipts) || n(entry.turnover) || 0;
-        const digitalReceipts = n(entry.digitalReceipts) || 0;
-        const digitalRatio = totalReceipts > 0 ? digitalReceipts / totalReceipts : 0;
-        const threshold = digitalRatio >= 0.95 ? 30000000 : 20000000;
+        const isDigital = entry.isDigital || entry.digitalReceipts;
+        const threshold = isDigital ? 30000000 : 20000000;
         if (totalReceipts > threshold) {
           errors.push({ field: 'presumptive', message: `44AD not applicable: turnover ₹${(totalReceipts/100000).toFixed(0)}L exceeds ₹${threshold/10000000}Cr threshold` });
+        }
+      }
+      if (entry.section === '44ADA') {
+        const totalReceipts = n(entry.grossReceipts) || n(entry.turnover) || 0;
+        if (totalReceipts > 7500000) {
+          errors.push({ field: 'presumptive', message: `44ADA not applicable: professional receipts ₹${(totalReceipts/100000).toFixed(0)}L exceeds ₹75L limit. Use ITR-3.` });
         }
       }
     }

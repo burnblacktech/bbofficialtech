@@ -251,7 +251,7 @@ class ITR1ComputationService {
 
   // ── Deductions ──
 
-  static computeDeductions(deductionData, payload) {
+  static computeDeductions(deductionData, payload, grossTotal = 0) {
     if (!deductionData) return { total: 0, breakdown: {}, warnings: [] };
 
     const d = deductionData;
@@ -290,12 +290,12 @@ class ITR1ComputationService {
     let s80g = 0;
     const donations80G = d.donations80G;
     if (Array.isArray(donations80G) && donations80G.length > 0) {
-      const grossTotal = this._lastGrossTotal || 0;
+      const grossTotal80G = grossTotal;
       const sum100NoLimit = donations80G.filter(e => e.category === '100_no_limit').reduce((s, e) => s + n(e.amount), 0);
       const sum100WithLimit = donations80G.filter(e => e.category === '100_with_limit').reduce((s, e) => s + n(e.amount), 0);
       const sum50NoLimit = donations80G.filter(e => e.category === '50_no_limit').reduce((s, e) => s + n(e.amount), 0);
       const sum50WithLimit = donations80G.filter(e => e.category === '50_with_limit').reduce((s, e) => s + n(e.amount), 0);
-      const tenPercentATI = Math.round(grossTotal * 0.10);
+      const tenPercentATI = Math.round(grossTotal80G * 0.10);
       s80g = sum100NoLimit + Math.min(sum100WithLimit, tenPercentATI) + Math.round(0.5 * sum50NoLimit) + Math.round(0.5 * Math.min(sum50WithLimit, tenPercentATI));
     } else {
       s80g = n(d.section80G?.total || d.donations);
@@ -327,7 +327,7 @@ class ITR1ComputationService {
     const hasHRA = (payload?.income?.salary?.employers || []).some(e => n(e.allowances?.hra?.exempt) > 0);
     let s80gg = 0;
     if (!hasHRA && n(d.rentPaid) > 0) {
-      const ati = ITR1ComputationService._lastGrossTotal || 0;
+      const ati = grossTotal;
       const rentPaid = n(d.rentPaid);
       s80gg = Math.min(
         Math.max(0, rentPaid - Math.round(ati * 0.10)),
@@ -395,9 +395,7 @@ class ITR1ComputationService {
   // ── Tax Computation ──
 
   static computeRegime(income, deductionData, regime, agriculturalIncome = 0, payload = null) {
-    // Store gross total for 80G adjusted total income computation (v1 simplification)
-    this._lastGrossTotal = income.grossTotal;
-    const deductions = regime === 'old' ? this.computeDeductions(deductionData, payload) : { total: 0, breakdown: {}, warnings: [] };
+    const deductions = regime === 'old' ? this.computeDeductions(deductionData, payload, income.grossTotal) : { total: 0, breakdown: {}, warnings: [] };
 
     // In new regime, 80CCD(2) employer NPS is still allowed
     let newRegime80CCD2 = 0;
