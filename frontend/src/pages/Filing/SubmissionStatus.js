@@ -148,7 +148,7 @@ export default function SubmissionStatus() {
           <ArrowLeft size={14} /> Dashboard
         </Button>
         {(state === 'draft' || state === 'eri_failed') && data?.filingId && (
-          <Button variant="outline" onClick={() => navigate(`/filing/${filingId}/edit`)}>
+          <Button variant="outline" onClick={() => navigate(`/filing/${filingId}`)}>
             Edit Filing
           </Button>
         )}

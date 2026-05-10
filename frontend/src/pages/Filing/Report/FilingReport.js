@@ -75,7 +75,7 @@ export default function FilingReport() {
         <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, color: 'var(--fr-fg, #111)' }}>Your filing is ready to fill</p>
         <p style={{ fontSize: 13, color: '#888', marginBottom: 16, maxWidth: 360, margin: '0 auto 16px' }}>Add your personal info and income sources to generate your tax computation report.</p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          <Link to={`/filing/${filingId}/edit`} style={{ padding: '10px 20px', background: 'var(--fr-gold, #D4AF37)', color: '#0F0F0F', borderRadius: 6, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Get Started →</Link>
+          <Link to={`/filing/${filingId}`} style={{ padding: '10px 20px', background: 'var(--fr-gold, #D4AF37)', color: '#0F0F0F', borderRadius: 6, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Get Started →</Link>
           <Link to="/dashboard" style={{ padding: '10px 20px', background: 'var(--fr-secondary, #f3f4f6)', border: '1px solid var(--fr-border, #e5e7eb)', borderRadius: 6, fontSize: 14, textDecoration: 'none', color: 'var(--fr-fg, #111)' }}>← Dashboard</Link>
         </div>
       </div>
@@ -169,10 +169,10 @@ export default function FilingReport() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <Link to={`/filing/${filingId}/edit?import=true`} style={{ padding: '8px 16px', background: 'var(--fr-secondary)', color: 'var(--fr-fg)', borderRadius: 6, fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--fr-border)' }}>
+                  <Link to={`/filing/${filingId}?import=true`} style={{ padding: '8px 16px', background: 'var(--fr-secondary)', color: 'var(--fr-fg)', borderRadius: 6, fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--fr-border)' }}>
                     Import Data
                   </Link>
-                  <Link to={`/filing/${filingId}/edit`} style={{ padding: '8px 16px', background: 'var(--fr-gold)', color: 'var(--fr-bg)', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                  <Link to={`/filing/${filingId}`} style={{ padding: '8px 16px', background: 'var(--fr-gold)', color: 'var(--fr-bg)', borderRadius: 6, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                     Edit Filing
                   </Link>
                 </div>
@@ -184,7 +184,7 @@ export default function FilingReport() {
             ) : (
               <div className="fr-band fr-band--empty" style={{ padding: '12px 16px', border: '1px dashed var(--fr-border, #e5e7eb)', borderRadius: 8, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, color: 'var(--fr-muted, #888)' }}>Income — not added yet</span>
-                <Link to={`/filing/${filingId}/edit`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
+                <Link to={`/filing/${filingId}`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
               </div>
             )}
             {deductions.length > 0 ? (
@@ -192,7 +192,7 @@ export default function FilingReport() {
             ) : (
               <div className="fr-band fr-band--empty" style={{ padding: '12px 16px', border: '1px dashed var(--fr-border, #e5e7eb)', borderRadius: 8, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, color: 'var(--fr-muted, #888)' }}>Deductions — none claimed</span>
-                <Link to={`/filing/${filingId}/edit`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
+                <Link to={`/filing/${filingId}`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
               </div>
             )}
             {selectedComp?.totalTax != null && <ComputationBand computation={selectedComp || {}} regime={regime} onRegimeChange={handleRegimeChange} />}
@@ -201,7 +201,7 @@ export default function FilingReport() {
             ) : (
               <div className="fr-band fr-band--empty" style={{ padding: '12px 16px', border: '1px dashed var(--fr-border, #e5e7eb)', borderRadius: 8, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, color: 'var(--fr-muted, #888)' }}>Tax Paid / TDS — none recorded</span>
-                <Link to={`/filing/${filingId}/edit`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
+                <Link to={`/filing/${filingId}`} style={{ fontSize: 12, color: 'var(--fr-gold, #D4AF37)', textDecoration: 'none', fontWeight: 500 }}>+ Add</Link>
               </div>
             )}
             <BankBand bankAccount={bankAccount} onSave={(updates) => handleBandSave('bankDetails', updates)} filingId={filingId} />

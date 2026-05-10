@@ -76,7 +76,7 @@ export default function DeductionsBand({ deductions, regime, onSave, filingId })
       {deductions.length === 0 && (
         <div style={{ fontSize: 13, color: 'var(--fr-muted)', padding: '8px 0' }}>No deductions claimed</div>
       )}
-      <a href={`/filing/${filingId}/edit`} className="fr-add-link" style={{ textDecoration: 'none' }}><Plus size={12} /> Add deduction</a>
+      <a href={`/filing/${filingId}`} className="fr-add-link" style={{ textDecoration: 'none' }}><Plus size={12} /> Add deduction</a>
     </div>
   );
 }

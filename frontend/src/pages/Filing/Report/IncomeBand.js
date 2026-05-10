@@ -54,7 +54,7 @@ export default function IncomeBand({ incomes, onSave, filingId }) {
       {incomes.length === 0 && (
         <div style={{ fontSize: 13, color: 'var(--fr-muted)', padding: '8px 0' }}>No income sources added</div>
       )}
-      <a href={`/filing/${filingId}/edit`} className="fr-add-link" style={{ textDecoration: 'none' }}><Plus size={12} /> Add income source</a>
+      <a href={`/filing/${filingId}`} className="fr-add-link" style={{ textDecoration: 'none' }}><Plus size={12} /> Add income source</a>
     </div>
   );
 }

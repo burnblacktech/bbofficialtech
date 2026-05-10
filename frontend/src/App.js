@@ -177,9 +177,9 @@ const AppContent = () => {
         {/* Filing: start */}
         <Route path="/filing/start" element={<Page message="Loading..."><FilingStart /></Page>} />
 
-        {/* Filing: Report view (default) + Editor view */}
-        <Route path="/filing/:filingId" element={<Bare><FilingReport /></Bare>} />
-        <Route path="/filing/:filingId/edit" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        {/* Filing: Editor is the default view. Report is post-submission summary. */}
+        <Route path="/filing/:filingId" element={<Page message="Loading..."><ITR1Flow /></Page>} />
+        <Route path="/filing/:filingId/report" element={<Bare><FilingReport /></Bare>} />
         <Route path="/filing/:filingId/submission-status" element={<Page><SubmissionStatus /></Page>} />
 
         {/* ITR utilities */}
