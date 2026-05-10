@@ -22,8 +22,11 @@ module.exports = async (req, res) => {
         require('../src/models');
         await sequelize.authenticate();
         dbReady = true;
-        // Sync schema in background (non-blocking) — adds missing tables/columns
-        sequelize.sync({ alter: true }).catch(e => console.error('DB sync error (non-blocking):', e.message));
+        // Sync schema in background (non-blocking)
+        sequelize.sync({ alter: true }).catch(e => console.error('DB sync error:', e.message));
+        // Init Redis (non-blocking)
+        const redisService = require('../src/services/core/RedisService');
+        redisService.initialize().catch(e => console.error('Redis init error:', e.message));
         console.log('DB connected');
       } catch (dbErr) {
         console.error('DB init failed:', dbErr.message);
