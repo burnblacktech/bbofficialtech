@@ -201,13 +201,13 @@
 /* Force 2-column layout for all form grids inside editor */
 .filing-editor__body .ds-grid-2 {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 240px));
-  gap: 8px 16px;
+  grid-template-columns: repeat(2, minmax(140px, 250px));
+  gap: 6px 14px;
 }
 .filing-editor__body .ds-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(120px, 220px));
-  gap: 8px 16px;
+  gap: 6px 14px;
 }
 /* 2x2 card grid for income items and deductions */
 .filing-editor__body .ds-card-grid {
@@ -253,18 +253,20 @@
 }
 /* Inputs never stretch full width */
 .filing-editor__body .ds-field {
-  max-width: 240px;
-  margin-bottom: 8px;
+  max-width: 260px;
+  margin-bottom: 6px;
 }
 .filing-editor__body .ds-input,
 .filing-editor__body .ds-select {
-  max-width: 220px;
-  padding: 7px 10px;
-  font-size: 13px;
+  max-width: 240px;
+  padding: 8px 11px;
+  font-size: 14px;
 }
 .filing-editor__body .ds-label {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   margin-bottom: 3px;
+  color: var(--text-secondary);
 }
 .filing-editor__footer {
   flex-shrink: 0;
