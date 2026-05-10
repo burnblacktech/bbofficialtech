@@ -10,14 +10,14 @@
  */
 
 const TYPES = {
-  text: { maxWidth: 200, inputMode: undefined },
-  currency: { maxWidth: 180, inputMode: 'numeric', prefix: '₹', mono: true },
-  code: { maxWidth: 160, inputMode: undefined, mono: true, uppercase: true },
-  phone: { maxWidth: 160, inputMode: 'tel' },
-  email: { maxWidth: 220, inputMode: 'email' },
-  date: { maxWidth: 150, inputMode: undefined },
-  select: { maxWidth: 200 },
-  wide: { maxWidth: 280 },
+  text: { maxWidth: 220, inputMode: undefined },
+  currency: { maxWidth: 200, inputMode: 'numeric', prefix: '₹', mono: true },
+  code: { maxWidth: 180, inputMode: undefined, mono: true, uppercase: true },
+  phone: { maxWidth: 180, inputMode: 'tel' },
+  email: { maxWidth: 240, inputMode: 'email' },
+  date: { maxWidth: 170, inputMode: undefined },
+  select: { maxWidth: 240 },
+  wide: { maxWidth: 300 },
 };
 
 export default function FilingField({
@@ -32,7 +32,7 @@ export default function FilingField({
       {label && (
         <label style={{
           display: 'block',
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 700,
           color: 'var(--text-secondary)',
           marginBottom: 4,
@@ -51,7 +51,7 @@ export default function FilingField({
             width: '100%',
             maxWidth: config.maxWidth,
             padding: '8px 10px',
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: 500,
             fontFamily: 'var(--font-primary)',
             border: `1px solid ${error ? 'var(--color-error)' : 'var(--border-light)'}`,
@@ -91,7 +91,7 @@ export default function FilingField({
               width: '100%',
               maxWidth: config.maxWidth,
               padding: config.prefix ? '8px 10px 8px 24px' : '8px 10px',
-              fontSize: 15,
+              fontSize: 16,
               fontWeight: 500,
               fontFamily: config.mono ? 'var(--font-mono)' : 'var(--font-primary)',
               fontVariantNumeric: config.mono ? 'tabular-nums' : undefined,
@@ -106,8 +106,8 @@ export default function FilingField({
           />
         </div>
       )}
-      {error && <div style={{ fontSize: 11, color: 'var(--color-error)', marginTop: 2 }}>{error}</div>}
-      {hint && !error && <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>{hint}</div>}
+      {error && <div style={{ fontSize: 12, color: 'var(--color-error)', marginTop: 2 }}>{error}</div>}
+      {hint && !error && <div style={{ fontSize: 12, color: 'var(--text-light)', marginTop: 2 }}>{hint}</div>}
     </div>
   );
 }
@@ -149,7 +149,7 @@ export function FilingSection({ title, children, badge }) {
         borderBottom: '1px solid var(--border-light)',
       }}>
         <span style={{
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
