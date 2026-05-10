@@ -400,7 +400,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         {/* Address sub-section */}
         <div className="bordered-subsection">
           <div className="bordered-subsection__header">Address {aadhaarLocked && <span style={{ fontSize: 10, color: 'var(--color-success)', marginLeft: 6 }}>✓ Aadhaar verified</span>}</div>
-          <div className="bordered-subsection__body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px' }}>
+          <div className="bordered-subsection__body" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '6px 14px' }}>
             <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} locked={isAddressLocked('flatDoorBuilding')} />
             <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} locked={isAddressLocked('city')} />
             <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
@@ -485,7 +485,7 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         <Section icon={FileText} title="Filing Details" />
         <p className="ds-hint" style={{ marginTop: -8, marginBottom: 8 }}>Most salaried individuals can use the defaults below.</p>
 
-        <div className="unit-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(180px, 260px))', gap: '8px 16px' }}>
         {/* Residential Status */}
         <Select label="Residential Status *" value={form.residentialStatus} onChange={v => updateField('residentialStatus', v)} options={RES_STATUS_OPTIONS} hint="Lived in India 182+ days? → Resident" />
 

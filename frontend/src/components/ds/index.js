@@ -31,9 +31,9 @@ export function Field({ label, value, onChange, onBlur, error, hint, type = 'tex
 // ── Select: label + select + hint/error ──
 export function Select({ label, value, onChange, onBlur, error, hint, options = [], disabled, placeholder, className = '', style }) {
   return (
-    <div className={`ds-field ${className}`} style={style}>
+    <div className={`ds-field ${className}`} style={{ ...style, minWidth: 200, maxWidth: 'none' }}>
       {label && <label className="ds-label">{label}</label>}
-      <select className={`ds-select ${error ? 'error' : ''}`} value={value ?? ''} onChange={e => onChange?.(e.target.value)} onBlur={onBlur} disabled={disabled}>
+      <select className={`ds-select ${error ? 'error' : ''}`} value={value ?? ''} onChange={e => onChange?.(e.target.value)} onBlur={onBlur} disabled={disabled} style={{ width: '100%', minWidth: 180, fontSize: 16 }}>
         {placeholder && <option value="">{placeholder}</option>}
         {options.map(o => typeof o === 'string' ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
