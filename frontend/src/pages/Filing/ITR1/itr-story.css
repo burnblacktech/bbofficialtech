@@ -938,3 +938,47 @@
 :root {
   --readiness-track: var(--border-light, #e5e7eb);
 }
+
+/* ── Sticky Computation Bar ── */
+.story-computation-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  font-size: 13px;
+  z-index: 10;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+.story-computation-bar__regime {
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+.story-computation-bar__tax {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.story-computation-bar__total {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.story-computation-bar__computing {
+  font-size: 11px;
+  color: var(--text-light);
+  animation: pulse 1.5s infinite;
+}
+
+/* ── Computation expanded view (when no editor selected) ── */
+.story-editor__computation {
+  padding: 8px 0;
+}

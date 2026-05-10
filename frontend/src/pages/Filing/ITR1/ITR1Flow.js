@@ -527,6 +527,8 @@ export default function ITR1Flow() {
       qc.invalidateQueries({ queryKey: ['filing', filingId] });
       qc.invalidateQueries({ queryKey: ['filings'] });
       qc.invalidateQueries({ queryKey: ['dashboard-summary'] });
+      // Auto-collapse editor after save — shows computation bar
+      setSelected(null);
     },
     onError: (e) => {
       // Don't clear dirty flag — data is still unsaved
@@ -1335,8 +1337,20 @@ export default function ITR1Flow() {
               {renderDocInlineBlock(selected)}
             </div>
           ) : (
-            <div className="story-editor__empty">
-              {isSubmitted ? 'Select a section to view details' : 'Select a section from the story to start editing'}
+            <div className="story-editor__computation">
+              <TaxComputationCard computation={comp} selectedRegime={selectedRegime} tds={comp?.tds} onRegimeChange={handleRegimeSwitch} />
+              <ReadinessChecklist items={readiness} onNavigate={handleReadinessNavigate} />
+            </div>
+          )}
+          {/* Sticky computation bar — visible when editor is open */}
+          {selected && bestRegime && (
+            <div className="story-computation-bar">
+              <span className="story-computation-bar__regime">{selectedRegime === 'old' ? 'Old' : 'New'} Regime</span>
+              <span className="story-computation-bar__tax" style={{ color: bestRegime.netPayable > 0 ? 'var(--color-error)' : 'var(--color-success)' }}>
+                {bestRegime.netPayable > 0 ? `Pay ₹${Math.abs(bestRegime.netPayable).toLocaleString('en-IN')}` : `Refund ₹${Math.abs(bestRegime.netPayable).toLocaleString('en-IN')}`}
+              </span>
+              <span className="story-computation-bar__total">Tax: ₹{(bestRegime.totalTax || 0).toLocaleString('en-IN')}</span>
+              {isComputing && <span className="story-computation-bar__computing">Computing...</span>}
             </div>
           )}
         </main>
