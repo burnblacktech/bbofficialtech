@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
-import { Field, Select, Grid, Card, Section, Button, Money, Alert } from '../../../../components/ds';
+import { Button, Alert } from '../../../../components/ds';
+import FilingField, { FilingGrid, FilingSection } from '../../../../components/Filing/FilingField';
 
 const n = (v) => Number(v) || 0;
 const P_EMPTY = { section: '44AD', grossReceipts: '', isDigital: true, declaredIncome: '' };
@@ -54,83 +55,74 @@ export default function BusinessEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Business or Freelance Income</h2>
-      <p className="step-desc">Presumptive or regular business income</p>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[['presumptive', 'Simple Estimate (Presumptive)'], ['regular', 'Full Accounts (Regular Books)']].map(([k, label]) => (
-          <div key={k} className={`ds-option${mode === k ? ' selected' : ''}`} onClick={() => setMode(k)}>
-            <div className="ds-option__label">{label}</div>
-          </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        {[['presumptive', 'Presumptive (Simple)'], ['regular', 'Regular Books']].map(([k, label]) => (
+          <button key={k} onClick={() => setMode(k)} style={{ padding: '6px 14px', fontSize: 12, fontWeight: mode === k ? 700 : 500, border: `1px solid ${mode === k ? 'var(--brand-primary)' : 'var(--border-light)'}`, borderRadius: 6, background: mode === k ? 'var(--brand-primary-light)' : 'var(--bg-card)', color: mode === k ? 'var(--brand-primary-dark)' : 'var(--text-secondary)', cursor: 'pointer' }}>
+            {label}
+          </button>
         ))}
       </div>
 
       {items.map((item, i) => editing === i ? null : (
-        <Card key={i}>
-          <div className="ds-item">
-            <div>
-              <div className="ds-item__name">{mode === 'presumptive' ? `${item.section} — ₹${n(item.grossReceipts).toLocaleString('en-IN')}` : item.name}</div>
-              <div className="ds-item__detail">{mode === 'presumptive' ? `Declared: ₹${n(item.declaredIncome).toLocaleString('en-IN')}` : `Turnover: ₹${n(item.turnover).toLocaleString('en-IN')}`}</div>
-            </div>
-            <div className="ds-item__actions">
-              <Button variant="ghost" size="sm" onClick={() => { setForm({ ...item }); setEditing(i); }}><Edit2 size={15} /></Button>
-              <Button variant="danger" size="sm" onClick={() => remove(mode === 'presumptive' ? pList : rList, mode === 'presumptive' ? setPList : setRList, mode === 'presumptive' ? 'presumptive' : 'business', i)}><Trash2 size={15} /></Button>
-            </div>
+        <FilingSection key={i} title={mode === 'presumptive' ? item.section : item.name} badge={<span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>₹{n(mode === 'presumptive' ? item.declaredIncome : item.grossProfit).toLocaleString('en-IN')}</span>}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button variant="ghost" onClick={() => { setForm({ ...item }); setEditing(i); }}><Edit2 size={13} /> Edit</Button>
+            <Button variant="danger" onClick={() => remove(mode === 'presumptive' ? pList : rList, mode === 'presumptive' ? setPList : setRList, mode === 'presumptive' ? 'presumptive' : 'business', i)}><Trash2 size={13} /></Button>
           </div>
-        </Card>
+        </FilingSection>
       ))}
 
       {form && mode === 'presumptive' && (
-        <Card active>
-          <Select label="Section" value={form.section} onChange={v => setForm({ ...form, section: v })} options={SECTION_OPTIONS} />
-          <Field label="Gross Receipts (₹)" type="number" value={form.grossReceipts} onChange={v => setForm({ ...form, grossReceipts: v })} placeholder="0" />
-          <label className="ds-check"><input type="checkbox" checked={form.isDigital} onChange={e => setForm({ ...form, isDigital: e.target.checked })} /> Digital receipts ({'>'} 95%)</label>
-          <Field label="Declared Income (₹)" type="number" value={form.declaredIncome} onChange={v => setForm({ ...form, declaredIncome: v })} hint={`Min ${minRate(form)}% of receipts = ₹${Math.round(n(form.grossReceipts) * minRate(form) / 100).toLocaleString('en-IN')}`} placeholder="0" />
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <Button variant="primary" onClick={saveP} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
-            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
+        <FilingSection title="Presumptive Entry">
+          <FilingGrid cols={2}>
+            <FilingField label="Section" type="select" value={form.section} onChange={v => setForm({ ...form, section: v })} options={SECTION_OPTIONS} />
+            <FilingField label="Gross Receipts" type="currency" value={form.grossReceipts} onChange={v => setForm({ ...form, grossReceipts: v })} required />
+          </FilingGrid>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, margin: '6px 0', cursor: 'pointer' }}>
+            <input type="checkbox" checked={form.isDigital} onChange={e => setForm({ ...form, isDigital: e.target.checked })} /> Digital receipts ({'>'}95%)
+          </label>
+          <FilingGrid cols={2}>
+            <FilingField label="Declared Income" type="currency" value={form.declaredIncome} onChange={v => setForm({ ...form, declaredIncome: v })} hint={`Min ${minRate(form)}%: ₹${Math.round(n(form.grossReceipts) * minRate(form) / 100).toLocaleString('en-IN')}`} />
+          </FilingGrid>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <Button variant="primary" onClick={saveP} disabled={isSaving} style={{ maxWidth: 120 }}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }} style={{ maxWidth: 100 }}>Cancel</Button>
           </div>
-        </Card>
+        </FilingSection>
       )}
 
       {form && mode === 'regular' && (
-        <Card active>
-          <Grid cols={3}>
-            <Field label="Business Name *" value={form.name} onChange={v => setForm({ ...form, name: v })} />
-            <Field label="Turnover (₹)" type="number" value={form.turnover} onChange={v => setForm({ ...form, turnover: v })} placeholder="0" />
-          </Grid>
-          <Field label="Gross Profit (₹)" type="number" value={form.grossProfit} onChange={v => setForm({ ...form, grossProfit: v })} placeholder="0" />
-          <Section title="Expenses" />
-          <Grid cols={3}>
-            <Field label="Rent" type="number" value={form.expenses?.rent} onChange={v => setForm({ ...form, expenses: { ...form.expenses, rent: v } })} placeholder="0" />
-            <Field label="Salary" type="number" value={form.expenses?.salary} onChange={v => setForm({ ...form, expenses: { ...form.expenses, salary: v } })} placeholder="0" />
-            <Field label="Interest" type="number" value={form.expenses?.interest} onChange={v => setForm({ ...form, expenses: { ...form.expenses, interest: v } })} placeholder="0" />
-            <Field label="Other" type="number" value={form.expenses?.other} onChange={v => setForm({ ...form, expenses: { ...form.expenses, other: v } })} placeholder="0" />
-          </Grid>
-          <Field label="Depreciation (₹)" type="number" value={form.depreciation} onChange={v => setForm({ ...form, depreciation: v })} placeholder="0" />
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <Button variant="primary" onClick={saveR} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
-            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
+        <FilingSection title="Business Details">
+          <FilingGrid cols={3}>
+            <FilingField label="Business Name" type="wide" value={form.name} onChange={v => setForm({ ...form, name: v })} required />
+            <FilingField label="Turnover" type="currency" value={form.turnover} onChange={v => setForm({ ...form, turnover: v })} />
+            <FilingField label="Gross Profit" type="currency" value={form.grossProfit} onChange={v => setForm({ ...form, grossProfit: v })} />
+          </FilingGrid>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', margin: '10px 0 6px' }}>Expenses</div>
+          <FilingGrid cols={3}>
+            <FilingField label="Rent" type="currency" value={form.expenses?.rent} onChange={v => setForm({ ...form, expenses: { ...form.expenses, rent: v } })} />
+            <FilingField label="Salary" type="currency" value={form.expenses?.salary} onChange={v => setForm({ ...form, expenses: { ...form.expenses, salary: v } })} />
+            <FilingField label="Interest" type="currency" value={form.expenses?.interest} onChange={v => setForm({ ...form, expenses: { ...form.expenses, interest: v } })} />
+            <FilingField label="Other" type="currency" value={form.expenses?.other} onChange={v => setForm({ ...form, expenses: { ...form.expenses, other: v } })} />
+            <FilingField label="Depreciation" type="currency" value={form.depreciation} onChange={v => setForm({ ...form, depreciation: v })} />
+          </FilingGrid>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <Button variant="primary" onClick={saveR} disabled={isSaving} style={{ maxWidth: 120 }}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }} style={{ maxWidth: 100 }}>Cancel</Button>
           </div>
-        </Card>
+        </FilingSection>
       )}
 
       {!form && (
-        <Button variant="secondary" onClick={() => { setForm(mode === 'presumptive' ? { ...P_EMPTY } : { ...R_EMPTY }); setEditing(items.length); setErrors({}); }} style={{ marginTop: 8 }}>
-          <Plus size={15} /> Add {mode === 'presumptive' ? 'Entry' : 'Business'}
+        <Button variant="secondary" onClick={() => { setForm(mode === 'presumptive' ? { ...P_EMPTY } : { ...R_EMPTY }); setEditing(items.length); setErrors({}); }} style={{ marginTop: 8, maxWidth: 180 }}>
+          <Plus size={13} /> Add {mode === 'presumptive' ? 'Entry' : 'Business'}
         </Button>
       )}
 
       {Object.keys(errors).length > 0 && (
-        <Alert variant="error" style={{ marginTop: 8 }}>
-          <AlertCircle size={14} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
-        </Alert>
-      )}
-
-      {items.length > 0 && (
-        <Card muted>
-          <Money label="Total Income" value={`₹${(mode === 'presumptive' ? pList.reduce((s, e) => s + n(e.declaredIncome), 0) : rList.reduce((s, b) => s + n(b.grossProfit) - netExp(b) - n(b.depreciation), 0)).toLocaleString('en-IN')}`} bold />
-        </Card>
+        <div style={{ marginTop: 8, padding: '8px 12px', background: 'var(--color-error-bg)', border: '1px solid var(--color-error-border)', borderRadius: 6, fontSize: 12, color: 'var(--color-error)' }}>
+          <AlertCircle size={12} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
+        </div>
       )}
     </div>
   );

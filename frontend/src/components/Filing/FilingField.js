@@ -50,7 +50,7 @@ export default function FilingField({
           style={{
             width: '100%',
             maxWidth: config.maxWidth,
-            padding: '8px 10px',
+            padding: '9px 12px',
             fontSize: 16,
             fontWeight: 500,
             fontFamily: 'var(--font-primary)',
@@ -90,7 +90,7 @@ export default function FilingField({
             style={{
               width: '100%',
               maxWidth: config.maxWidth,
-              padding: config.prefix ? '8px 10px 8px 24px' : '8px 10px',
+              padding: config.prefix ? '9px 12px 9px 28px' : '9px 12px',
               fontSize: 16,
               fontWeight: 500,
               fontFamily: config.mono ? 'var(--font-mono)' : 'var(--font-primary)',
