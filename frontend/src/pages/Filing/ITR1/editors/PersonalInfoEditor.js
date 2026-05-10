@@ -381,11 +381,9 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
           <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile" />
         </Grid>
         <Grid cols={2} style={{ marginTop: 4 }}>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-            <div style={{ flex: 1 }}>
-              <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v)} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
-            </div>
-            <AadhaarUploadButton onVerified={(data) => {
+          <div>
+            <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
+            <AadhaarUploadButton aadhaarValue={form.aadhaar} onVerified={(data) => {
               if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
               if (data.name && !form.firstName) {
                 const parsed = parseFullName(data.name);
@@ -651,20 +649,19 @@ function TrendingUpIcon({ size, ...props }) {
  * Step 2: Enter OTP → Get verified profile data → auto-fill fields
  * Fallback: Upload eAadhaar PDF if OTP not available
  */
-function AadhaarUploadButton({ onVerified }) {
+function AadhaarUploadButton({ onVerified, aadhaarValue }) {
   const fileRef = useRef(null);
   const [mode, setMode] = useState('idle'); // idle | otp-sent | uploading | pdf-password
-  const [aadhaarInput, setAadhaarInput] = useState('');
   const [otpInput, setOtpInput] = useState('');
   const [clientId, setClientId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [pendingFile, setPendingFile] = useState(null);
 
-  // Step 1: Send OTP
+  // Step 1: Send OTP using parent's aadhaar value
   const handleSendOTP = async () => {
-    const cleaned = aadhaarInput.replace(/\s/g, '');
-    if (!/^\d{12}$/.test(cleaned)) { toast.error('Enter a valid 12-digit Aadhaar number'); return; }
+    const cleaned = (aadhaarValue || '').replace(/\s/g, '');
+    if (!/^\d{12}$/.test(cleaned)) { toast.error('Enter a valid 12-digit Aadhaar number in the field above'); return; }
     setLoading(true);
     try {
       const res = await api.post('/auth/aadhaar/generate-otp', { aadhaarNumber: cleaned });
@@ -685,7 +682,6 @@ function AadhaarUploadButton({ onVerified }) {
       const data = res.data?.data || {};
       toast.success('Aadhaar verified — details auto-filled');
       setMode('idle');
-      setAadhaarInput('');
       setOtpInput('');
       setClientId(null);
       onVerified({
@@ -732,32 +728,25 @@ function AadhaarUploadButton({ onVerified }) {
   };
 
   if (mode === 'idle') {
+    const hasAadhaar = (aadhaarValue || '').replace(/\s/g, '').length === 12;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
-          <div style={{ flex: 1 }}>
-            <input
-              className="ds-input"
-              type="text"
-              value={aadhaarInput}
-              onChange={(e) => setAadhaarInput(e.target.value.replace(/[^\d\s]/g, '').slice(0, 14))}
-              placeholder="Enter 12-digit Aadhaar"
-              maxLength={14}
-              style={{ fontSize: 13 }}
-            />
-          </div>
-          <Button
-            variant="primary"
-            onClick={handleSendOTP}
-            disabled={loading || aadhaarInput.replace(/\s/g, '').length !== 12}
-            style={{ padding: '8px 14px', fontSize: 12, whiteSpace: 'nowrap' }}
-          >
-            {loading ? <><Loader2 size={12} className="animate-spin" /> Sending...</> : 'Verify via OTP'}
-          </Button>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>
-          OTP will be sent to your Aadhaar-linked mobile number
-        </div>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 4 }}>
+        <Button
+          variant="primary"
+          onClick={handleSendOTP}
+          disabled={loading || !hasAadhaar}
+          style={{ padding: '7px 12px', fontSize: 12, whiteSpace: 'nowrap' }}
+        >
+          {loading ? <><Loader2 size={12} className="animate-spin" /> Sending...</> : <><Shield size={12} /> Verify via OTP</>}
+        </Button>
+        <span style={{ fontSize: 11, color: 'var(--text-light)' }}>or</span>
+        <button
+          onClick={() => fileRef.current?.click()}
+          style={{ fontSize: 11, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', padding: 0, minHeight: 'auto' }}
+        >
+          Upload eAadhaar PDF
+        </button>
+        <input ref={fileRef} type="file" accept=".pdf" hidden onChange={(e) => { if (e.target.files[0]) handleFile(e.target.files[0]); }} />
       </div>
     );
   }
