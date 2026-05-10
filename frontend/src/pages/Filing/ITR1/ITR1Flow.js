@@ -921,14 +921,24 @@ export default function ITR1Flow() {
   }, [user, filing]);
 
   if (isLoading) return (
-    <div className="story-dashboard" style={{ opacity: 0.6 }}>
-      <div className="story-top-bar" style={{ height: 48, background: 'var(--bg-card)' }} />
-      <div style={{ display: 'flex', gap: 16, padding: 16 }}>
-        <div style={{ width: 260, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[1,2,3].map(i => <div key={i} style={{ height: 100, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.15}s` }} />)}
-        </div>
-        <div style={{ flex: 1, height: 400, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.3s' }} />
+    <div className="filing-layout">
+      <div className="filing-topbar" style={{ background: 'var(--bg-card)' }}>
+        <div style={{ width: 60, height: 14, borderRadius: 4, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite' }} />
+        <div style={{ width: 140, height: 14, borderRadius: 4, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.1s' }} />
       </div>
+      <nav className="filing-nav">
+        {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 32, borderRadius: 6, background: 'var(--bg-muted)', margin: '4px 0', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.08}s` }} />)}
+      </nav>
+      <div className="filing-editor">
+        <div className="filing-editor__header"><div style={{ width: 160, height: 18, borderRadius: 4, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite' }} /></div>
+        <div className="filing-editor__body">
+          {[1,2,3].map(i => <div key={i} style={{ height: 60, borderRadius: 8, background: 'var(--bg-muted)', marginBottom: 12, animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.12}s` }} />)}
+        </div>
+      </div>
+      <aside className="filing-sidebar">
+        {[1,2,3,4,5].map(i => <div key={i} style={{ height: 20, borderRadius: 4, background: 'var(--bg-muted)', marginBottom: 8, animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.1}s` }} />)}
+        <div style={{ marginTop: 'auto', height: 40, borderRadius: 8, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.6s' }} />
+      </aside>
     </div>
   );
 

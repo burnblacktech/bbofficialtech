@@ -56,10 +56,16 @@ export default function FilingStart() {
   }, [user, navigate, location.state]);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div className="ds-spinner" style={{ width: 24, height: 24, margin: '0 auto 12px' }} />
-        <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Setting up your filing...</p>
+    <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr 280px', height: '80vh', gap: 1, background: 'var(--border-light)' }}>
+      <div style={{ background: 'var(--bg-card)', padding: 12 }}>
+        {[1,2,3,4].map(i => <div key={i} style={{ height: 28, borderRadius: 6, background: 'var(--bg-muted)', margin: '6px 0', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.1}s` }} />)}
+      </div>
+      <div style={{ background: 'var(--bg-page)', padding: 24 }}>
+        <div style={{ width: 180, height: 18, borderRadius: 4, background: 'var(--bg-muted)', marginBottom: 16, animation: 'skeleton-pulse 1.5s ease-in-out infinite' }} />
+        {[1,2,3].map(i => <div key={i} style={{ height: 52, borderRadius: 8, background: 'var(--bg-muted)', marginBottom: 10, animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.12}s` }} />)}
+      </div>
+      <div style={{ background: 'var(--bg-card)', padding: 14 }}>
+        {[1,2,3,4].map(i => <div key={i} style={{ height: 16, borderRadius: 4, background: 'var(--bg-muted)', marginBottom: 8, animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.1}s` }} />)}
       </div>
     </div>
   );
