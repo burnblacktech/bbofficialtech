@@ -169,7 +169,7 @@
 }
 
 .story-flow__card-amount {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -506,7 +506,7 @@
 }
 
 /* Compact editor overrides inside .story-editor */
-.story-editor .step-title { font-size: 16px; margin-bottom: 2px; }
+.story-editor .step-title { font-size: 18px; margin-bottom: 2px; }
 .story-editor .step-desc { font-size: 12px; margin-bottom: 12px; }
 .story-editor .step-card { padding: 12px; margin-bottom: 10px; border-radius: var(--radius-md); }
 .story-editor .step-card.editing { border-width: 1px; }
@@ -823,7 +823,7 @@
   .story-flow__result-actions { display: none; }
 
   .story-flow__card-title { font-size: 11px; }
-  .story-flow__card-amount { font-size: 13px; }
+  .story-flow__card-amount { font-size: 15px; }
   .story-flow__result-hero { font-size: 14px; }
 
   /* Editor fills remaining space */
