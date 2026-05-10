@@ -38,28 +38,28 @@ class RedisService {
     }
     
     try {
-      const redisConfig = {
+      const redisUrl = process.env.REDIS_URL;
+      const redisConfig = redisUrl ? redisUrl : {
         host: process.env.REDIS_HOST || 'localhost',
         port: parseInt(process.env.REDIS_PORT) || 6379,
         password: process.env.REDIS_PASSWORD || undefined,
         db: parseInt(process.env.REDIS_DB) || 0,
+        tls: process.env.REDIS_TLS === 'true' ? {} : undefined,
         retryStrategy: (times) => {
           const delay = Math.min(times * 50, 2000);
           this.reconnectAttempts = times;
           if (times > this.maxReconnectAttempts) {
             enterpriseLogger.error('Redis max reconnection attempts reached');
-            return null; // Stop retrying
+            return null;
           }
-          enterpriseLogger.warn(`Redis reconnecting (attempt ${times})...`, { delay });
           return delay;
         },
-        maxRetriesPerRequest: null, // Don't retry on individual commands (will use retryStrategy)
+        maxRetriesPerRequest: null,
         enableReadyCheck: true,
-        enableOfflineQueue: false, // Don't queue commands when offline
+        enableOfflineQueue: false,
         connectTimeout: 10000,
-        lazyConnect: true, // Use lazy connect to avoid immediate connection attempts
+        lazyConnect: true,
         showFriendlyErrorStack: false,
-        retryOnFailover: true,
       };
 
       // Main client for general operations
