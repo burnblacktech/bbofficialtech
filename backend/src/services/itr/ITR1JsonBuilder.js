@@ -78,6 +78,7 @@ class ITR1JsonBuilder {
         ReturnFileSec: regime === 'new' ? 115 : 11,
         FilingDueDate: '31/07/' + (assessmentYear ? assessmentYear.split('-')[0] : '2025'),
         OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
+        SeventhProvisio139: 'N',
         ItrFilingType: pi.filingStatus === 'R' ? 'R' : pi.filingStatus === 'U' ? 'U' : pi.filingStatus === 'B' ? 'B' : 'O',
         ...(pi.filingStatus === 'R' ? { OrigReturnAckNo: pi.originalAckNumber || '' } : {}),
         ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason || '' } : {}),
@@ -306,7 +307,32 @@ class ITR1JsonBuilder {
     // Remove undefined/null top-level keys
     Object.keys(json).forEach(k => { if (json[k] === undefined || json[k] === null) delete json[k]; });
 
-    return json;
+    // Rename IncomeDeductions to ITR1_IncomeDeductions (ITD requirement)
+    if (json.IncomeDeductions) {
+      json.ITR1_IncomeDeductions = json.IncomeDeductions;
+      delete json.IncomeDeductions;
+    }
+
+    // Fix UseForRefund: ITD expects "Yes" not "true"
+    if (json.BankAccountDtls?.AddtnlBankDetails?.[0]) {
+      json.BankAccountDtls.AddtnlBankDetails[0].UseForRefund = 'Yes';
+    }
+
+    // Wrap in ITD-required structure
+    return {
+      ITR: {
+        ITR1: {
+          CreationInfo: {
+            SWVersionNo: '1.0',
+            SWCreatedBy: 'SW',
+            JSONCreatedBy: 'SW',
+            IntermediaryCity: pi.address?.city || 'Bengaluru',
+            Aboression: 'I',
+          },
+          Form_ITR1: json,
+        },
+      },
+    };
   }
 }
 
