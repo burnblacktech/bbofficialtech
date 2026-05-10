@@ -1,0 +1,385 @@
+/* ═══════════════════════════════════════════════════════
+   ITR Filing Editor — 3-Panel Contained Layout
+   Left Nav (220px) + Editor (flex) + Right Sidebar (280px)
+   Page NEVER scrolls. Only editor panel scrolls internally.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Root Grid ── */
+.filing-layout {
+  display: grid;
+  grid-template-rows: 48px 1fr;
+  grid-template-columns: 220px 1fr 280px;
+  grid-template-areas:
+    "topbar topbar topbar"
+    "nav editor sidebar";
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-page);
+}
+
+/* ── Top Bar ── */
+.filing-topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  z-index: 10;
+}
+.filing-topbar__back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+}
+.filing-topbar__back:hover { background: var(--bg-muted); }
+.filing-topbar__context {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.filing-topbar__itr {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.filing-topbar__sep { color: var(--border-light); }
+.filing-topbar__spacer { flex: 1; }
+.filing-topbar__save {
+  font-size: 11px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.filing-topbar__save-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+.filing-topbar__save.saving .filing-topbar__save-dot {
+  background: var(--color-warning);
+  animation: pulse 1s infinite;
+}
+
+/* ── Left Navigation ── */
+.filing-nav {
+  grid-area: nav;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px 10px;
+  border-right: 1px solid var(--border-light);
+  background: var(--bg-card);
+}
+.filing-nav__section {
+  margin-bottom: 4px;
+}
+.filing-nav__section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-light);
+  padding: 8px 8px 4px;
+}
+.filing-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.12s;
+}
+.filing-nav__item:hover { background: var(--bg-muted); }
+.filing-nav__item.active {
+  background: var(--brand-primary-light);
+  color: var(--brand-primary-dark);
+  font-weight: 600;
+  border-left: 3px solid var(--brand-primary);
+  padding-left: 7px;
+}
+.filing-nav__item-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.filing-nav__item-dot--complete { background: var(--color-success); }
+.filing-nav__item-dot--partial { border: 2px solid var(--color-warning); background: transparent; }
+.filing-nav__item-dot--none { border: 2px solid var(--border-medium); background: transparent; }
+.filing-nav__item-amount {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.filing-nav__add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--brand-text);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius-sm);
+}
+.filing-nav__add:hover { background: var(--brand-primary-light); }
+
+/* Progress bar at bottom of nav */
+.filing-nav__progress {
+  margin-top: auto;
+  padding: 12px 8px 4px;
+  border-top: 1px solid var(--border-light);
+}
+.filing-nav__progress-bar {
+  display: flex;
+  gap: 2px;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.filing-nav__progress-seg {
+  flex: 1;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.filing-nav__progress-text {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ── Editor Panel (contained, scrolls internally) ── */
+.filing-editor {
+  grid-area: editor;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-page);
+}
+.filing-editor__header {
+  flex-shrink: 0;
+  padding: 16px 24px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.filing-editor__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.filing-editor__body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24px 24px;
+}
+.filing-editor__footer {
+  flex-shrink: 0;
+  padding: 10px 24px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+}
+.filing-editor__footer-nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Field width constraints ── */
+.filing-editor__body input,
+.filing-editor__body select {
+  max-width: 320px;
+}
+.filing-editor__body .field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 280px));
+  gap: 10px 20px;
+}
+.filing-editor__body .field-grid--narrow input { max-width: 200px; }
+.filing-editor__body .field-grid--mono input {
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  max-width: 180px;
+}
+
+/* ── Right Sidebar ── */
+.filing-sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px 14px;
+  border-left: 1px solid var(--border-light);
+  background: var(--bg-card);
+}
+.filing-sidebar__computation {
+  margin-bottom: 12px;
+}
+.filing-sidebar__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 12px;
+}
+.filing-sidebar__row-label { color: var(--text-muted); }
+.filing-sidebar__row-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.filing-sidebar__divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 8px 0;
+}
+.filing-sidebar__result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+.filing-sidebar__result-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.filing-sidebar__result-value--refund { color: var(--color-success); }
+.filing-sidebar__result-value--payable { color: var(--color-error); }
+
+.filing-sidebar__regime {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin: 10px 0;
+}
+.filing-sidebar__regime-btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.filing-sidebar__regime-btn.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Final actions — pinned to bottom */
+.filing-sidebar__actions {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.filing-sidebar__submit {
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  background: var(--brand-primary);
+  color: var(--brand-black);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.filing-sidebar__submit:hover { background: var(--brand-primary-hover); }
+.filing-sidebar__submit:disabled { opacity: 0.4; cursor: not-allowed; }
+.filing-sidebar__secondary {
+  display: flex;
+  gap: 6px;
+}
+.filing-sidebar__secondary button {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+}
+.filing-sidebar__secondary button:hover { background: var(--bg-card-hover); }
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .filing-layout {
+    grid-template-columns: 180px 1fr 240px;
+  }
+}
+@media (max-width: 1024px) {
+  .filing-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 48px auto 1fr;
+    grid-template-areas:
+      "topbar"
+      "nav"
+      "editor";
+  }
+  .filing-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+    padding: 8px 12px;
+    gap: 4px;
+  }
+  .filing-nav__section-label { display: none; }
+  .filing-nav__item { white-space: nowrap; padding: 6px 10px; }
+  .filing-nav__progress { display: none; }
+  .filing-sidebar {
+    position: fixed;
+    right: 0;
+    top: 48px;
+    width: 280px;
+    height: calc(100vh - 48px);
+    transform: translateX(100%);
+    transition: transform 0.2s;
+    z-index: 50;
+    box-shadow: -4px 0 16px rgba(0,0,0,0.1);
+  }
+  .filing-sidebar.open { transform: translateX(0); }
+}
