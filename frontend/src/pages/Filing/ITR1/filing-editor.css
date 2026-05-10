@@ -256,21 +256,37 @@
 }
 /* Inputs never stretch full width */
 .filing-editor__body .ds-field {
-  max-width: 260px;
+  max-width: 280px;
   margin-bottom: 6px;
 }
-.filing-editor__body .ds-input,
-.filing-editor__body .ds-select {
-  max-width: 240px;
-  padding: 9px 12px;
-  font-size: 15px;
-  font-weight: 500;
+.filing-editor__body .ds-field .ds-input,
+.filing-editor__body .ds-field input,
+.filing-editor__body .ds-card .ds-input,
+.filing-editor__body .ds-card input {
+  max-width: 260px !important;
+  width: 100% !important;
+  padding: 9px 12px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
 }
-.filing-editor__body .ds-label {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--text-secondary);
+.filing-editor__body .ds-field .ds-select,
+.filing-editor__body .ds-field select,
+.filing-editor__body .ds-card .ds-select,
+.filing-editor__body .ds-card select {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 9px 12px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+}
+.filing-editor__body .ds-field .ds-label,
+.filing-editor__body .ds-field > label,
+.filing-editor__body .ds-card .ds-label,
+.filing-editor__body .ds-card > label {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+  color: var(--text-secondary) !important;
 }
 .filing-editor__footer {
   flex-shrink: 0;
