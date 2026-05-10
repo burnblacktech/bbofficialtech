@@ -416,7 +416,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     enterpriseLogger.error('Profile fetch failed', { error: error.message, userId: req.user?.userId });
-    res.status(500).json({ success: false, error: 'Internal server error', _debug: error.message });
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 

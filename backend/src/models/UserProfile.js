@@ -98,63 +98,32 @@ const UserProfile = sequelize.define('UserProfile', {
     defaultValue: {},
   },
   // Deterministic HMAC hashes for indexed lookups on encrypted fields
-  panNumberHash: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'pan_number_hash',
-  },
-  aadhaarNumberHash: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'aadhaar_number_hash',
-  },
-
-  createdAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-    field: 'created_at',
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-    field: 'updated_at',
-  },
+  // NOTE: These columns are added via migration. If missing, the model still works.
 }, {
   tableName: 'user_profiles',
   timestamps: true,
   underscored: true,
   indexes: [
     { fields: ['user_id'], unique: true },
-    { fields: ['pan_number_hash'], unique: true },
-    { fields: ['aadhaar_number_hash'], unique: true },
   ],
 });
 
 // =====================================================
 // FIELD ENCRYPTION HOOKS (PAN, Aadhaar, bank account at rest)
 // =====================================================
-const { encrypt, decrypt, hmacHash } = require('../utils/fieldEncryption');
+const { encrypt, decrypt } = require('../utils/fieldEncryption');
 
 const SENSITIVE_FIELDS = ['panNumber', 'aadhaarNumber', 'accountNumber'];
-const HASH_FIELDS = { panNumber: 'panNumberHash', aadhaarNumber: 'aadhaarNumberHash' };
 
 UserProfile.beforeCreate((profile) => {
   for (const field of SENSITIVE_FIELDS) {
-    if (profile[field]) {
-      if (HASH_FIELDS[field]) profile[HASH_FIELDS[field]] = hmacHash(profile[field]);
-      profile[field] = encrypt(profile[field]);
-    }
+    if (profile[field]) profile[field] = encrypt(profile[field]);
   }
 });
 
 UserProfile.beforeUpdate((profile) => {
   for (const field of SENSITIVE_FIELDS) {
-    if (profile.changed(field) && profile[field]) {
-      if (HASH_FIELDS[field]) profile[HASH_FIELDS[field]] = hmacHash(profile[field]);
-      profile[field] = encrypt(profile[field]);
-    }
+    if (profile.changed(field) && profile[field]) profile[field] = encrypt(profile[field]);
   }
 });
 
