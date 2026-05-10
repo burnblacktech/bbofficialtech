@@ -259,6 +259,11 @@
   max-width: 280px;
   margin-bottom: 6px;
 }
+/* Selects need more room — override field max-width */
+.filing-editor__body .ds-field:has(select),
+.filing-editor__body .ds-field:has(.ds-select) {
+  max-width: 320px;
+}
 .filing-editor__body .ds-field .ds-input,
 .filing-editor__body .ds-field input,
 .filing-editor__body .ds-card .ds-input,

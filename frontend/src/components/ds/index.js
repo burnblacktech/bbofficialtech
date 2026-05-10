@@ -6,17 +6,21 @@ export function Field({ label, value, onChange, onBlur, error, hint, type = 'tex
     <div className={`ds-field ${className}`} style={style}>
       {label && <label className="ds-label">{label}</label>}
       {children || (
-        <input
-          className={`ds-input ${error ? 'error' : ''}`}
-          type={type === 'number' ? 'text' : type}
-          inputMode={isNumeric ? 'numeric' : undefined}
-          value={value ?? ''}
-          onChange={e => onChange?.(isNumeric ? e.target.value.replace(/[^0-9.]/g, '') : e.target.value)}
-          onBlur={onBlur}
-          disabled={disabled || locked}
-          placeholder={placeholder}
-          {...rest}
-        />
+        <div style={{ position: 'relative' }}>
+          {isNumeric && <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#9CA3AF', fontFamily: 'var(--font-mono)' }}>₹</span>}
+          <input
+            className={`ds-input ${error ? 'error' : ''}`}
+            type={type === 'number' ? 'text' : type}
+            inputMode={isNumeric ? 'numeric' : undefined}
+            value={value ?? ''}
+            onChange={e => onChange?.(isNumeric ? e.target.value.replace(/[^0-9.]/g, '') : e.target.value)}
+            onBlur={onBlur}
+            disabled={disabled || locked}
+            placeholder={placeholder}
+            style={isNumeric ? { paddingLeft: 28, fontFamily: 'var(--font-mono)' } : undefined}
+            {...rest}
+          />
+        </div>
       )}
       {error && <div className="ds-error-hint">{error}</div>}
       {hint && !error && <div className="ds-hint">{hint}</div>}

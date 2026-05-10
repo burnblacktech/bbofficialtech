@@ -207,7 +207,7 @@
 }
 
 .ds-select {
-  width: 100%;
+  width: 100%; min-width: 180px;
   padding: 8px 12px;
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
