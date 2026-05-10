@@ -48,21 +48,14 @@ const ITRFiling = sequelize.define('ITRFiling', {
   // STATE MACHINE & STATUS
   // =====================================================
   lifecycleState: {
-    type: DataTypes.ENUM(
-      'draft',
-      'ready_for_submission',
-      'review_pending',
-      'reviewed',
-      'approved_by_ca',
-      'submitted_to_eri',
-      'eri_in_progress',
-      'eri_success',
-      'eri_failed'
-    ),
+    type: DataTypes.STRING(30),
     allowNull: false,
     defaultValue: 'draft',
     field: 'lifecycle_state',
     comment: 'Authoritative state - only SubmissionStateMachine can mutate',
+    validate: {
+      isIn: [['draft', 'ready_for_submission', 'review_pending', 'reviewed', 'approved_by_ca', 'submitted_to_eri', 'eri_in_progress', 'eri_success', 'eri_failed']],
+    },
   },
   status: {
     type: DataTypes.STRING,
@@ -306,10 +299,8 @@ const ITRFiling = sequelize.define('ITRFiling', {
   underscored: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
-  defaultScope: {
-    where: { deletedAt: { [Op.is]: null } },
-  },
   scopes: {
+    active: { where: { deletedAt: { [Op.is]: null } } },
     withDeleted: { where: {} },
     onlyDeleted: { where: { deletedAt: { [Op.not]: null } } },
   },

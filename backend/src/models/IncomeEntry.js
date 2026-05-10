@@ -19,9 +19,10 @@ const IncomeEntry = sequelize.define('IncomeEntry', {
     field: 'user_id',
   },
   sourceType: {
-    type: DataTypes.ENUM('salary', 'freelance', 'rental', 'interest', 'dividend', 'capital_gain', 'other'),
+    type: DataTypes.STRING(20),
     allowNull: false,
     field: 'source_type',
+    validate: { isIn: [['salary', 'freelance', 'rental', 'interest', 'dividend', 'capital_gain', 'other']] },
   },
   amount: {
     type: DataTypes.DECIMAL(15, 2),
@@ -55,7 +56,6 @@ const IncomeEntry = sequelize.define('IncomeEntry', {
   tableName: 'income_entries',
   timestamps: true,
   underscored: true,
-  paranoid: true,
   indexes: [
     { fields: ['user_id', 'financial_year'] },
     { fields: ['user_id', 'source_type'] },

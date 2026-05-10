@@ -39,7 +39,7 @@ const User = sequelize.define('User', {
     field: 'password_hash',
   },
   authProvider: {
-    type: DataTypes.ENUM('local', 'google'),
+    type: DataTypes.STRING(10),
     defaultValue: 'local',
     allowNull: false,
     field: 'auth_provider',
@@ -49,7 +49,7 @@ const User = sequelize.define('User', {
   // AUTHORIZATION
   // =====================================================
   role: {
-    type: DataTypes.ENUM('SUPER_ADMIN', 'GSTIN_ADMIN', 'CA', 'PREPARER', 'END_USER'),
+    type: DataTypes.STRING(15),
     defaultValue: 'END_USER',
     allowNull: false,
   },
@@ -107,7 +107,7 @@ const User = sequelize.define('User', {
   // LIFECYCLE
   // =====================================================
   status: {
-    type: DataTypes.ENUM('active', 'disabled'),
+    type: DataTypes.STRING(10),
     defaultValue: 'active',
     allowNull: false,
   },

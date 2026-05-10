@@ -19,8 +19,9 @@ const ExpenseEntry = sequelize.define('ExpenseEntry', {
     field: 'user_id',
   },
   category: {
-    type: DataTypes.ENUM('rent', 'medical', 'donations', 'education_loan', 'insurance', 'other'),
+    type: DataTypes.STRING(25),
     allowNull: false,
+    validate: { isIn: [['rent', 'medical', 'donations', 'education_loan', 'insurance', 'other']] },
   },
   amount: {
     type: DataTypes.DECIMAL(15, 2),
@@ -60,7 +61,6 @@ const ExpenseEntry = sequelize.define('ExpenseEntry', {
   tableName: 'expense_entries',
   timestamps: true,
   underscored: true,
-  paranoid: true,
   indexes: [
     { fields: ['user_id', 'financial_year'] },
     { fields: ['user_id', 'category'] },

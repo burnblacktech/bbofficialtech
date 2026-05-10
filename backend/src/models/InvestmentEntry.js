@@ -19,12 +19,10 @@ const InvestmentEntry = sequelize.define('InvestmentEntry', {
     field: 'user_id',
   },
   investmentType: {
-    type: DataTypes.ENUM(
-      'ppf', 'elss', 'nps', 'lic', 'sukanya',
-      'tax_fd', 'ulip', 'other_80c', '80ccd_1b_nps'
-    ),
+    type: DataTypes.STRING(20),
     allowNull: false,
     field: 'investment_type',
+    validate: { isIn: [['ppf', 'elss', 'nps', 'lic', 'sukanya', 'tax_fd', 'ulip', 'other_80c', '80ccd_1b_nps']] },
   },
   amount: {
     type: DataTypes.DECIMAL(15, 2),
@@ -65,7 +63,6 @@ const InvestmentEntry = sequelize.define('InvestmentEntry', {
   tableName: 'investment_entries',
   timestamps: true,
   underscored: true,
-  paranoid: true,
   indexes: [
     { fields: ['user_id', 'financial_year'] },
     { fields: ['user_id', 'deduction_section'] },

@@ -35,7 +35,7 @@ const ERISubmissionAttempt = sequelize.define('ERISubmissionAttempt', {
         allowNull: true
     },
     status: {
-        type: DataTypes.ENUM('pending', 'success', 'retryable_failure', 'terminal_failure'),
+        type: DataTypes.STRING(20),
         allowNull: false,
         defaultValue: 'pending'
     },
