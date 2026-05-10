@@ -55,7 +55,16 @@ export function buildInitialState(user, userProfile, savedPI, payload) {
     phone: user?.phone || '',
     residentialStatus: 'RES',
     employerCategory: hasSalary ? 'OTH' : 'NA',
-    filingStatus: 'O',
+    filingStatus: (() => {
+      // Auto-detect belated: if current date > July 31 of AY start year
+      const ay = payload?.assessmentYear || savedPI?.assessmentYear;
+      if (ay) {
+        const ayStart = parseInt(ay.split('-')[0]);
+        const dueDate = new Date(ayStart, 6, 31); // July 31
+        if (new Date() > dueDate) return 'B'; // Belated
+      }
+      return 'O';
+    })(),
     originalAckNumber: '',
     originalFilingDate: '',
     updatedReturnReason: '',
