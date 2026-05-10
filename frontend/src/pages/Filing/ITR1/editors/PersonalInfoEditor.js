@@ -373,17 +373,15 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         </>
       )}
 
-      {/* ── Section 2: Contact ── */}
+      {/* ── Section 2: Contact & Address (horizontal) ── */}
       <Card active>
-        <Section title="Contact" />
-        <Grid cols={2}>
+        <Section title="Contact & Address" />
+        <Grid cols={3}>
           <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here" />
           <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile" />
+          <Field label="Aadhaar" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
         </Grid>
-        <Grid cols={2} style={{ marginTop: 4 }}>
-          <div>
-            <Field label="Aadhaar Number" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
-            <AadhaarUploadButton aadhaarValue={form.aadhaar} onVerified={(data) => {
+        <AadhaarUploadButton aadhaarValue={form.aadhaar} onVerified={(data) => {
               if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
               if (data.name && !form.firstName) {
                 const parsed = parseFullName(data.name);
@@ -449,14 +447,6 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                 }
               }
             }} />
-          </div>
-          <div />
-        </Grid>
-      </Card>
-
-      {/* ── Section 3: Address ── */}
-      <Card active>
-        <Section icon={MapPin} title="Address" />
         <Grid cols={3}>
           <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
           <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
@@ -471,8 +461,8 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
 
       {/* ── Section 4: Filing Metadata ── */}
       <Card active>
-        <Section icon={FileText} title="Filing Metadata" />
-        <p className="ds-hint" style={{ marginTop: -8, marginBottom: 12 }}>These fields are required by the Income Tax Department. Most salaried individuals can use the defaults below.</p>
+        <Section icon={FileText} title="Filing Details" />
+        <p className="ds-hint" style={{ marginTop: -8, marginBottom: 12 }}>Most salaried individuals can use the defaults below.</p>
 
         <Grid cols={3}>
         {/* Residential Status */}
