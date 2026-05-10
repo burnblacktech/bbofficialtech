@@ -71,3 +71,4 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 /* Animate spin utility (used by Loader2 icon) */
 .animate-spin { animation: _spin 1s linear infinite; }
 @keyframes _spin { to { transform: rotate(360deg); } }
+@keyframes skeleton-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }

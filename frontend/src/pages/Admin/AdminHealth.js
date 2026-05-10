@@ -28,7 +28,7 @@ export default function AdminHealth() {
     retry: 1,
   });
 
-  if (isLoading) return <div style={{ padding: 40, textAlign: 'center', color: P.textMuted }}>Checking platform health...</div>;
+  if (isLoading) return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, padding: 20 }}>{[1,2,3].map(i => <div key={i} style={{ height: 80, borderRadius: 12, background: 'var(--bb-bg-elevated, #f3f4f6)', animation: 'skeleton-pulse 1.5s ease-in-out infinite' }} />)}</div>;
   if (isError) return <div style={{ padding: 40, textAlign: 'center', color: P.error }}>Health check failed. <button onClick={() => window.location.reload()} style={{ color: P.brand, background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Retry</button></div>;
 
   return (

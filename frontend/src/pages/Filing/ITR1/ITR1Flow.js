@@ -903,7 +903,17 @@ export default function ITR1Flow() {
     return !filing?.jsonPayload?._onboarding?.welcomeDismissed && !filing?.jsonPayload?._defaultsApplied;
   }, [user, filing]);
 
-  if (isLoading) return <div className="story-loading"><Loader2 size={28} className="animate-spin" /></div>;
+  if (isLoading) return (
+    <div className="story-dashboard" style={{ opacity: 0.6 }}>
+      <div className="story-top-bar" style={{ height: 48, background: 'var(--bg-card)' }} />
+      <div style={{ display: 'flex', gap: 16, padding: 16 }}>
+        <div style={{ width: 260, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[1,2,3].map(i => <div key={i} style={{ height: 100, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: `${i*0.15}s` }} />)}
+        </div>
+        <div style={{ flex: 1, height: 400, borderRadius: 12, background: 'var(--bg-muted)', animation: 'skeleton-pulse 1.5s ease-in-out infinite', animationDelay: '0.3s' }} />
+      </div>
+    </div>
+  );
 
   if (isError || !filing) {
     const status = error?.response?.status;
