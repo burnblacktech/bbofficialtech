@@ -160,25 +160,25 @@ export default function DashboardV2() {
         </div>
       )}
 
-      <Stack gap="lg">
-        {/* Financial Overview */}
-        <FinancialOverview data={data?.overview} />
-
-        {/* Charts */}
-        <div className="dash-v2__grid-2">
-          <IncomeBreakdown data={data?.incomeSources} />
-          <MonthlyTrend data={data?.monthlyTrend} />
+      <div className="dash-v2__layout">
+        {/* Main content */}
+        <div className="dash-v2__main">
+          <Stack gap="lg">
+            <FinancialOverview data={data?.overview} />
+            <div className="dash-v2__grid-2">
+              <IncomeBreakdown data={data?.incomeSources} />
+              <MonthlyTrend data={data?.monthlyTrend} />
+            </div>
+            <TaxInsights data={data?.taxAnalysis} />
+          </Stack>
         </div>
 
-        {/* Tax Insights */}
-        <TaxInsights data={data?.taxAnalysis} />
-
-        {/* Deductions + Quick Actions */}
-        <div className="dash-v2__grid-2">
+        {/* Right sidebar — stacks on mobile */}
+        <aside className="dash-v2__sidebar">
           <DeductionOptimizer data={data?.deductionOptimizer} />
           <QuickActions />
-        </div>
-      </Stack>
+        </aside>
+      </div>
     </div>
   );
 }
