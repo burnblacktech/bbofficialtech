@@ -270,7 +270,9 @@
 .filing-editor__body .ds-card input {
   max-width: 260px !important;
   width: 100% !important;
-  padding: 9px 12px !important;
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+  padding-right: 12px !important;
   font-size: 16px !important;
   font-weight: 500 !important;
 }
@@ -283,6 +285,7 @@
   padding: 9px 12px !important;
   font-size: 16px !important;
   font-weight: 500 !important;
+  min-width: 200px !important;
 }
 .filing-editor__body .ds-field .ds-label,
 .filing-editor__body .ds-field > label,
