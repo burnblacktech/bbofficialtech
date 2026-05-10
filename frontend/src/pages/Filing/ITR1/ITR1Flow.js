@@ -74,8 +74,8 @@ const SOURCES = [
 // ITR type based on active sources
 function getITRType(active, payload) {
   if (active.includes('business')) {
-    // Distinguish ITR-3 (full business) from ITR-4 (presumptive)
-    // If user has presumptive entries but NO full business entries → ITR-4
+    // Capital gains or foreign income disqualifies ITR-4 → must be ITR-3
+    if (active.includes('capital_gains') || active.includes('foreign')) return 'ITR-3';
     const hasPresumptive = (payload?.income?.presumptive?.entries || []).length > 0;
     const hasFullBusiness = (payload?.income?.business?.businesses || []).length > 0;
     if (hasPresumptive && !hasFullBusiness) return 'ITR-4';

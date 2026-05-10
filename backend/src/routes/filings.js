@@ -362,12 +362,12 @@ function deriveITRType(payload) {
     const hasCapitalGains = (income.capitalGains?.transactions || []).length > 0 || sources.includes('capital_gains');
     const hasForeignIncome = (income.foreignIncome?.incomes || []).length > 0 || sources.includes('foreign');
 
-    if (hasBusiness) {
-        // If presumptive entries exist but no full business data, it's ITR-4
+    if (hasBusiness || hasPresumptive) {
+        // Capital gains or foreign income disqualifies ITR-4 → must be ITR-3
+        if (hasCapitalGains || hasForeignIncome) return 'ITR-3';
         if (hasPresumptive && !(income.business?.businesses || []).length) return 'ITR-4';
         return 'ITR-3';
     }
-    if (hasPresumptive) return 'ITR-4';
     if (hasCapitalGains || hasForeignIncome) return 'ITR-2';
     return 'ITR-1';
 }

@@ -87,7 +87,7 @@ class ITR3JsonBuilder {
     };
 
     Object.keys(json).forEach(k => { if (json[k] === undefined || json[k] === null) delete json[k]; });
-    return json;
+    Object.keys(json).forEach(k => { if (json[k] === undefined || json[k] === null) delete json[k]; }); if (json.IncomeDeductions) { json.ITR3_IncomeDeductions = json.IncomeDeductions; delete json.IncomeDeductions; } return { ITR: { ITR3: { CreationInfo: { SWVersionNo: "1.0", SWCreatedBy: "SW", JSONCreatedBy: "SW", IntermediaryCity: "Bengaluru", Aboression: "I" }, Form_ITR3: json } } };
   }
 }
 
