@@ -52,6 +52,7 @@ function buildFilingStatus(pi, regime, assessmentYear) {
     ReturnFileSec: regime === 'new' ? 115 : 11,
     FilingDueDate: '31/07/' + (assessmentYear ? assessmentYear.split('-')[0] : '2025'),
     OptOutNewTaxRegime: regime === 'old' ? 'Y' : 'N',
+    SeventhProvisio139: 'N',
     ItrFilingType: pi.filingStatus === 'R' ? 'R' : pi.filingStatus === 'U' ? 'U' : pi.filingStatus === 'B' ? 'B' : 'O',
     ...(pi.filingStatus === 'R' ? { OrigReturnAckNo: pi.originalAckNumber || '' } : {}),
     ...(pi.filingStatus === 'U' ? { ReasonForUpdatedReturn: pi.updatedReturnReason || '' } : {}),
@@ -95,7 +96,7 @@ function buildBankDetails(payload) {
       IFSCCode: bank.ifsc || '',
       BankName: bank.bankName || '',
       BankAccountNo: bank.accountNumber || '',
-      UseForRefund: 'true',
+      UseForRefund: 'Yes',
     }],
   };
 }
