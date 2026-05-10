@@ -221,3 +221,62 @@
 | Spinner for loading | Skeleton placeholders |
 | Alert/confirm dialogs | Inline confirmation with undo |
 | Decorative icons | Functional icons only (status, navigation) |
+
+---
+
+## 11. Viewport-First Design Rules (MANDATORY)
+
+> Every section must fit in a single viewport. No scrolling to reveal content.
+
+### The Rule
+**Target viewport: 1280×720px.** If a section doesn't fit at this resolution, redesign it — don't add scroll.
+
+### How to Design a Section (Top-Down)
+
+1. **Start with the viewport budget:**
+   - Total height: 720px
+   - Minus top bar: -48px
+   - Minus editor header: -36px
+   - Minus editor footer: -40px
+   - **Available for content: 596px**
+
+2. **Calculate field rows needed:**
+   - Each field row: ~44px (label 14px + input 32px + gap 8px)
+   - Available rows: 596 / 44 = **13 rows max**
+
+3. **If section has >13 fields:**
+   - Use 3-column grid → 13 rows × 3 cols = 39 fields
+   - Or use 2×2 card grid → 13 rows × 2 cols = 26 cards
+   - Or group into collapsible sub-sections
+
+4. **If it still doesn't fit:** The section has too many fields. Split into sub-sections in the left nav.
+
+### Field Density Rules
+
+| Columns | Max field width | Use when |
+|---------|----------------|----------|
+| 3 cols | 220px | Personal info, address, metadata |
+| 2 cols | 240px | Salary, income amounts |
+| 2×2 cards | 50% each | Other income, deductions |
+| 1 col | 480px | Only for tables (capital gains transactions) |
+
+### Component Height Budget
+
+| Component | Max Height | Notes |
+|-----------|-----------|-------|
+| Top bar | 48px | Fixed |
+| Left nav | 100vh - 48px | Scrolls only if >12 items |
+| Editor header | 36px | Section title only |
+| Editor body | calc(100vh - 132px) | THE content area |
+| Editor footer | 40px | Prev/Next + inline tax |
+| Right sidebar | 100vh - 48px | Computation + actions, scrolls if needed |
+| Sidebar actions | ~80px | Submit + PDF/JSON, always visible |
+
+### Anti-Scroll Checklist
+
+Before shipping any section, verify:
+- [ ] Submit button visible without scroll at 1280×720
+- [ ] All fields visible without scroll (or in 2nd column)
+- [ ] Right sidebar computation fully visible
+- [ ] Left nav progress bar visible
+- [ ] No horizontal overflow on any element
