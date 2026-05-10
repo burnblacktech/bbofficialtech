@@ -25,6 +25,7 @@ import { generateWhispers, getWhispersForSection } from '../../../utils/taxBrain
 import toast from 'react-hot-toast';
 import P from '../../../styles/palette';
 import './itr-story.css';
+import './filing-editor.css';
 
 import SalaryEditor from './editors/SalaryEditor';
 import HousePropertyEditor from './editors/HousePropertyEditor';
@@ -521,14 +522,26 @@ export default function ITR1Flow() {
     onMutate: () => { setGlobalDirty(true); },
     onSuccess: () => {
       setGlobalDirty(false);
-      // Debounce recompute — prevents rapid saves from firing multiple compute calls
       if (computeTimeoutRef.current) clearTimeout(computeTimeoutRef.current);
       computeTimeoutRef.current = setTimeout(() => recompute(), 800);
       qc.invalidateQueries({ queryKey: ['filing', filingId] });
       qc.invalidateQueries({ queryKey: ['filings'] });
       qc.invalidateQueries({ queryKey: ['dashboard-summary'] });
-      // Auto-collapse editor after save — shows computation bar
-      setSelected(null);
+      // Auto-advance: if current section is complete, move to next incomplete
+      if (selected) {
+        const idx = cardSections.findIndex(s => s.id === selected);
+        if (idx >= 0 && idx < cardSections.length - 1) {
+          // Small delay to let the query invalidation update payload
+          setTimeout(() => {
+            const freshPayload = qc.getQueryData(['filing', filingId])?.jsonPayload || payload;
+            if (isSectionComplete(selected, freshPayload, comp)) {
+              setSelected(cardSections[idx + 1].id);
+            }
+          }, 300);
+        } else {
+          setSelected(null); // Last section — collapse to show computation
+        }
+      }
     },
     onError: (e) => {
       // Don't clear dirty flag — data is still unsaved
@@ -958,499 +971,182 @@ export default function ITR1Flow() {
   const MotionOrDiv = reducedMotion ? 'div' : motion.div;
 
   return (
-    <div className="story-dashboard">
+    <div className="filing-layout">
       {/* ── Offline Banner ── */}
       {!isOnline && (
-        <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 16px', marginBottom: 12, fontSize: 13, color: '#991b1b', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span>📴</span> You're offline. Changes will be saved when you reconnect.
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: '#fef2f2', border: '1px solid #fca5a5', padding: '6px 16px', fontSize: 12, color: '#991b1b', textAlign: 'center' }}>
+          📴 You're offline. Changes will be saved when you reconnect.
         </div>
       )}
 
       {/* ── Top Bar ── */}
-      <div className="story-top-bar">
-        <button onClick={() => navigate('/dashboard')} className="story-top-bar__back">
-          <ArrowLeft size={16} /> Back
+      <div className="filing-topbar">
+        <button onClick={() => navigate('/dashboard')} className="filing-topbar__back">
+          <ArrowLeft size={14} /> Back
         </button>
-        <div className="story-top-bar__context">
-          <span className="story-top-bar__itr">{itrType} ({ITR_NAMES[itrType]})</span>
-          <span className="story-top-bar__separator">·</span>
-          <span className="story-top-bar__ay">AY {filing?.assessmentYear}</span>
+        <div className="filing-topbar__context">
+          <span className="filing-topbar__itr">{itrType}</span>
+          <span className="filing-topbar__sep">·</span>
+          <span>AY {filing?.assessmentYear}</span>
+          {maskedPan && <><span className="filing-topbar__sep">·</span><span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>{maskedPan}</span></>}
         </div>
-        <div className="story-top-bar__user">
-          <span className="story-top-bar__name">{[payload?.personalInfo?.firstName, payload?.personalInfo?.lastName].filter(Boolean).join(' ')}</span>
-          <span className="story-top-bar__pan">{maskedPan}</span>
-        </div>
-        <button
-          onClick={() => {
-            const { resolvedTheme: rt, setTheme: st } = useThemeStore.getState();
-            st(rt === 'dark' ? 'light' : 'dark');
-          }}
-          className="story-top-bar__theme-toggle"
-          title="Toggle dark/light mode"
-          aria-label="Toggle theme"
-        >
-          ◐
-        </button>
-        <div className={`story-top-bar__save ${saveMut.isPending ? 'saving' : ''}`}>
-          <span className="story-top-bar__save-dot" />
-          {saveMut.isPending ? 'Saving...' : 'All changes saved'}
+        <div className="filing-topbar__spacer" />
+        <div className={`filing-topbar__save ${saveMut.isPending ? 'saving' : ''}`}>
+          <span className="filing-topbar__save-dot" />
+          {saveMut.isPending ? 'Saving...' : 'Saved'}
         </div>
       </div>
 
-      {/* ── Split-Screen: Story Flow + Editor ── */}
-      <div className="story-panels">
-
-        {/* LEFT: The Financial Story Flow */}
-        <nav className="story-flow">
-          <MotionOrDiv
-            {...(!reducedMotion ? { variants: staggerContainer, initial: 'hidden', animate: 'visible' } : {})}
-          >
-
-          {/* ── Card 1: INCOME ── */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div
-            className={`story-flow__card ${['personalInfo', ...active].includes(selected) ? 'active' : ''}`}
-            ref={(el) => { cardRefs.current.incomeCard = el; }}
-          >
-            <div className="story-flow__card-header">
-              <div className="story-flow__card-icon" style={{ background: '#f0fdf4' }}>
-                <DollarSign size={14} style={{ color: '#059669' }} />
-              </div>
-              <span className="story-flow__card-title">Income</span>
-              <span className="story-flow__card-amount">
-                {income?.grossTotal ? <CountingNumber value={income.grossTotal} /> : '—'}
-              </span>
-            </div>
-            {!income?.grossTotal && (
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>Add income sources below</div>
-            )}
-            <div style={{ fontSize: 10, color: 'var(--text-light)', marginTop: 4 }}>
-              {itrType} ({ITR_NAMES[itrType]}) · auto-detected from sources
-            </div>
-            <div className="story-flow__card-items">
-              {incomeSubItems.map(item => {
-                const summary = getCardSummary(item.id, payload, comp, income, selectedRegime);
-                const status = getCompletionStatus(item.id, payload, comp);
-                const isSource = item.id !== 'personalInfo';
-                const canRemove = isSource && active.length > 1;
-                return (
-                  <div key={item.id} className={`story-flow__card-item ${selected === item.id ? 'active' : ''}`}>
-                    <button
-                      className="story-flow__card-item-btn"
-                      onClick={() => setSelected(item.id)}
-                      ref={(el) => { cardRefs.current[item.id] = el; }}
-                    >
-                      <div className="story-flow__card-item-icon" style={{ background: item.bg }}>
-                        <item.icon size={10} style={{ color: item.color }} />
-                      </div>
-                      <span className="story-flow__card-item-label">{item.label}</span>
-                      {summary.number && (
-                        <span className="story-flow__card-item-amount">{summary.number}</span>
-                      )}
-                      <span className={`story-flow__card-item-status story-flow__card-item-status--${status}`}>
-                        {status === 'complete' && <Check size={7} />}
-                      </span>
-                      {status !== 'complete' && (
-                        <span className="story-flow__card-item-status-text">
-                          {status === 'partial' ? 'In progress' : 'Not started'}
-                        </span>
-                      )}
-                    </button>
-                    {canRemove && (
-                      <button
-                        className="story-flow__card-item-remove"
-                        onClick={(e) => { e.stopPropagation(); toggleSource(item.id); }}
-                        title={`Remove ${item.label}`}
-                        aria-label={`Remove ${item.label}`}
-                      >
-                        <X size={10} />
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-              {/* Inactive sources — toggle to add */}
-              {SOURCES.filter(src => !active.includes(src.id)).length > 0 && (
-                <div style={{ fontSize: 9, color: 'var(--text-light)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, padding: '6px 0 2px', borderTop: '1px dashed var(--border-light)', marginTop: 4 }}>
-                  + Add income source
-                </div>
+      {/* ── Left Navigation ── */}
+      <nav className="filing-nav">
+        <div className="filing-nav__section">
+          <div className="filing-nav__section-label">Income</div>
+          {[{ id: 'personalInfo', label: 'Personal Info' }, ...SOURCES.filter(s => active.includes(s.id)).map(s => ({ id: s.id, label: s.label }))].map(item => (
+            <button key={item.id} className={`filing-nav__item ${selected === item.id ? 'active' : ''}`} onClick={() => setSelected(item.id)}>
+              <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus(item.id, payload, comp)}`} />
+              <span>{item.label}</span>
+              {getCardSummary(item.id, payload, comp, income, selectedRegime).number && (
+                <span className="filing-nav__item-amount">{getCardSummary(item.id, payload, comp, income, selectedRegime).number}</span>
               )}
-              {SOURCES.filter(src => !active.includes(src.id)).map(src => (
-                <button
-                  key={src.id}
-                  className="story-flow__card-item story-flow__card-item--add"
-                  onClick={() => toggleSource(src.id)}
-                >
-                  <div className="story-flow__card-item-icon" style={{ background: 'var(--bg-muted)' }}>
-                    <Plus size={10} style={{ color: 'var(--text-light)' }} />
-                  </div>
-                  <span className="story-flow__card-item-label" style={{ color: 'var(--text-light)' }}>{src.label}</span>
+            </button>
+          ))}
+          {SOURCES.filter(s => !active.includes(s.id)).length > 0 && (
+            <button className="filing-nav__add" onClick={() => setSelected('addSource')}>+ Add source</button>
+          )}
+        </div>
+
+        <div className="filing-nav__section">
+          <div className="filing-nav__section-label">Deductions</div>
+          {[
+            { id: 'ded_80c', label: '80C · Investments', key: 'ppf' },
+            { id: 'ded_80d', label: '80D · Health', key: 'healthSelf' },
+            { id: 'ded_80g', label: '80G · Donations', key: 'donations80G' },
+            { id: 'ded_nps', label: '80CCD · NPS', key: 'nps' },
+          ].filter(d => {
+            const ded = payload?.deductions || {};
+            return Number(ded[d.key]) > 0 || (Array.isArray(ded[d.key]) && ded[d.key].length > 0);
+          }).map(d => (
+            <button key={d.id} className={`filing-nav__item ${selected === 'deductions' ? 'active' : ''}`} onClick={() => setSelected('deductions')}>
+              <span className="filing-nav__item-dot filing-nav__item-dot--complete" />
+              <span>{d.label}</span>
+            </button>
+          ))}
+          <button className={`filing-nav__item ${selected === 'deductions' ? 'active' : ''}`} onClick={() => setSelected('deductions')}>
+            <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus('deductions', payload, comp)}`} />
+            <span>{(payload?.deductions && Object.values(payload.deductions).some(v => Number(v) > 0 || (Array.isArray(v) && v.length > 0))) ? 'All Deductions' : '+ Add Deductions'}</span>
+          </button>
+        </div>
+
+        <div className="filing-nav__section">
+          <div className="filing-nav__section-label">Finalize</div>
+          <button className={`filing-nav__item ${selected === 'bank' ? 'active' : ''}`} onClick={() => setSelected('bank')}>
+            <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus('bank', payload, comp)}`} />
+            <span>Bank & Verify</span>
+          </button>
+        </div>
+
+        <div className="filing-nav__progress">
+          <div className="filing-nav__progress-bar">
+            {cardSections.map(s => (
+              <div key={s.id} className="filing-nav__progress-seg" style={{ background: getCompletionStatus(s.id, payload, comp) === 'complete' ? 'var(--color-success)' : getCompletionStatus(s.id, payload, comp) === 'partial' ? 'var(--color-warning)' : 'var(--border-light)' }} />
+            ))}
+          </div>
+          <div className="filing-nav__progress-text">{completedCount}/{cardSections.length} complete</div>
+        </div>
+      </nav>
+
+      {/* ── Editor Panel (contained, scrolls internally) ── */}
+      <div className="filing-editor">
+        <div className="filing-editor__header">
+          <span className="filing-editor__title">
+            {selected === 'addSource' ? 'Add Income Source' : selected ? cardSections.find(s => s.id === selected)?.label || 'Deductions' : 'Select a section'}
+          </span>
+        </div>
+        <div className="filing-editor__body">
+          {selected && selected !== 'addSource' ? (
+            <ErrorBoundary name={selected}>{renderEditor(selected)}</ErrorBoundary>
+          ) : selected === 'addSource' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {SOURCES.filter(s => !active.includes(s.id)).map(src => (
+                <button key={src.id} className="ds-card" onClick={() => { toggleSource(src.id); setSelected(src.id); }} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer', textAlign: 'left' }}>
+                  <src.icon size={18} style={{ color: src.color }} />
+                  <span style={{ fontWeight: 600, fontSize: 14 }}>{src.label}</span>
                 </button>
               ))}
-            </div>
-          </div>
-          </MotionOrDiv>
-
-          {/* Connector */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div className="story-flow__connector">▼</div>
-          </MotionOrDiv>
-
-          {/* ── Card 2: DEDUCTIONS ── */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div
-            className={`story-flow__card ${selected === 'deductions' ? 'active' : ''}`}
-            onClick={() => setSelected('deductions')}
-            ref={(el) => { cardRefs.current.deductions = el; }}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelected('deductions'); }}
-          >
-            <div className="story-flow__card-header">
-              <div className="story-flow__card-icon" style={{ background: '#f0fdf4' }}>
-                <CheckCircle size={14} style={{ color: '#059669' }} />
-              </div>
-              <span className="story-flow__card-title">Deductions</span>
-              <span className="story-flow__card-amount" style={{ color: 'var(--color-success)' }}>
-                {bestRegime?.deductions ? <CountingNumber value={bestRegime.deductions} prefix="-₹" /> : '—'}
-              </span>
-            </div>
-            {!bestRegime?.deductions && (
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>Click to claim deductions</div>
-            )}
-          </div>
-          </MotionOrDiv>
-
-          {/* Connector */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div className="story-flow__connector">▼</div>
-          </MotionOrDiv>
-
-          {/* ── Card 3: TAX COMPUTATION ── */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div
-            className="story-flow__card"
-            ref={(el) => { cardRefs.current.taxCard = el; }}
-          >
-            <div className="story-flow__card-header">
-              <div className="story-flow__card-icon" style={{ background: '#eef2ff' }}>
-                <TrendingUp size={14} style={{ color: '#6366f1' }} />
-              </div>
-              <span className="story-flow__card-title">Tax</span>
-              {isComputing && <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 8 }}>↻ Computing...</span>}
-              <span className="story-flow__card-amount">
-                {bestRegime?.totalTax ? <CountingNumber value={bestRegime.totalTax} /> : '—'}
-              </span>
-            </div>
-            <div className="story-flow__regime">
-              {['old', 'new'].map(r => (
-                <button
-                  key={r}
-                  className={`story-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-                  onClick={() => handleRegimeSwitch(r)}
-                >
-                  {r === 'old' ? 'Old' : 'New'}
-                </button>
-              ))}
-            </div>
-            {comp?.savings > 0 && comp.recommended !== selectedRegime && (
-              <div className="story-flow__savings">
-                Switch to {comp.recommended === 'old' ? 'Old' : 'New'} to save {fmtShort(comp.savings)}
-              </div>
-            )}
-          </div>
-          </MotionOrDiv>
-
-          {/* Connector */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div className="story-flow__connector">▼</div>
-          </MotionOrDiv>
-
-          {/* ── Card 4: RESULT ── */}
-          <MotionOrDiv {...(!reducedMotion ? { variants: fadeInUp } : {})}>
-          <div
-            className={`story-flow__card result ${!isRefund && bestRegime ? 'payable' : ''} ${selected === 'bank' ? 'active' : ''}`}
-            ref={(el) => { cardRefs.current.resultCard = el; }}
-          >
-            <div className="story-flow__card-header">
-              <span className="story-flow__card-title">
-                {bestRegime ? (isRefund ? 'Refund Due' : 'Tax Payable') : 'Result'}
-              </span>
-            </div>
-            {bestRegime ? (
-              <>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                  {isRefund ? 'Refund Due' : 'Tax Payable'}
-                </div>
-                <div className={`story-flow__result-hero ${isRefund ? 'refund' : 'payable'}`}>
-                  <CountingNumber value={Math.abs(bestRegime.netPayable)} className="story-flow__result-hero" />
-                </div>
-              </>
-            ) : (
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-                Add income to see result
-              </div>
-            )}
-            <div className="story-flow__result-actions">
-              <SmartButton label="Submit" icon={Send} onClick={handleSubmit} completeness={completeness} variant="submit" isLoading={isSubmitting} />
-              <button className="story-flow__result-icon-btn" onClick={downloadPDF} title="Download PDF" aria-label="Download PDF">
-                <Download size={13} />
-              </button>
-              <button className="story-flow__result-icon-btn" onClick={downloadJSON} title="Export ITD JSON (Advanced)" aria-label="Export ITD JSON" disabled={!completeness.complete} style={{ opacity: completeness.complete ? 0.5 : 0.3, fontSize: 9 }}>
-                <FileText size={11} />
-              </button>
-            </div>
-            {/* Bank & Submit sub-item */}
-            <div className="story-flow__card-items">
-              <button
-                className={`story-flow__card-item ${selected === 'bank' ? 'active' : ''}`}
-                onClick={() => setSelected('bank')}
-                ref={(el) => { cardRefs.current.bank = el; }}
-              >
-                <div className="story-flow__card-item-icon" style={{ background: 'var(--bg-muted)' }}>
-                  <Landmark size={10} style={{ color: '#6b7280' }} />
-                </div>
-                <span className="story-flow__card-item-label">Bank & Submit</span>
-                <span className={`story-flow__card-item-status story-flow__card-item-status--${getCompletionStatus('bank', payload, comp)}`}>
-                  {getCompletionStatus('bank', payload, comp) === 'complete' && <Check size={7} />}
-                </span>
-              </button>
-            </div>
-          </div>
-          </MotionOrDiv>
-
-          </MotionOrDiv>{/* end stagger container */}
-
-          {/* Task 10.2: Readiness Checklist — below RESULT card */}
-          <ReadinessChecklist
-            items={readiness.items}
-            summaryText={readiness.summaryText}
-            allBlockersResolved={readiness.allBlockersResolved}
-            onNavigate={handleReadinessNavigate}
-          />
-
-          {/* Task 10.5: Recommendations Panel — collapsible section */}
-          {recommendations.length > 0 && (
-            <div style={{ marginTop: 8 }}>
-              <button
-                onClick={() => setShowRecommendations(p => !p)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0', fontFamily: 'inherit',
-                  fontSize: 12, fontWeight: 600, color: 'var(--text-muted)',
-                }}
-                aria-expanded={showRecommendations}
-                aria-label="Toggle tax-saving recommendations"
-              >
-                <span>💡 {recommendations.length} tax-saving tip{recommendations.length > 1 ? 's' : ''}</span>
-                <span style={{ fontSize: 10 }}>{showRecommendations ? '▲' : '▼'}</span>
-              </button>
-              {showRecommendations && (
-                <RecommendationsPanel
-                  recommendations={recommendations}
-                  onNavigate={(section) => setSelected(section)}
-                />
-              )}
-            </div>
-          )}
-
-          {/* Task 10.7: ITR-1 applicability warning */}
-          {!itr1Check.applicable && itrType === 'ITR-1' && (
-            <div style={{
-              padding: '8px 12px', marginTop: 8, borderRadius: 'var(--radius-md)',
-              background: 'var(--color-warning-bg)', border: '1px solid var(--color-warning-border)',
-              fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6,
-            }}>
-              <AlertTriangle size={14} style={{ color: 'var(--color-warning)', flexShrink: 0 }} />
-              <span>{itr1Check.message}</span>
-            </div>
-          )}
-
-          {/* Delete confirmation */}
-          {showDeleteConfirm && (
-            <div className="story-flow__delete-confirm">
-              <span>Delete this filing?</span>
-              <div className="story-flow__delete-confirm-actions">
-                <button className="story-flow__delete-btn story-flow__delete-btn--cancel" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
-                <button className="story-flow__delete-btn story-flow__delete-btn--confirm" onClick={handleDelete}>Delete</button>
-              </div>
-            </div>
-          )}
-
-          {/* Import History Panel */}
-          {showImportHistory && (
-            <div style={{ marginTop: 8 }}>
-              <ImportHistoryPanel filingId={filingId} />
-            </div>
-          )}
-
-          {/* ── Flow Footer: Import + Progress ── */}
-          <div className="story-flow__footer">
-            <div className="story-overflow">
-              <button className="story-flow__footer-btn" onClick={() => openImport(null)} aria-label="Import documents">
-                <Upload size={12} /> Import
-              </button>
-              <button
-                className="story-flow__footer-btn"
-                onClick={() => setShowOverflowMenu(p => !p)}
-                style={{ marginLeft: 4 }}
-                title="More"
-                aria-label="More options"
-              >
-                <MoreHorizontal size={12} />
-              </button>
-              {showOverflowMenu && (
-                <div className="story-overflow__menu">
-                  <button className="story-overflow__item" onClick={() => { setShowImportHistory(prev => !prev); setShowOverflowMenu(false); }}>
-                    <Clock size={14} /> Import History
-                  </button>
-                  <button className="story-overflow__item danger" onClick={() => { setShowDeleteConfirm(true); setShowOverflowMenu(false); }}>
-                    <Trash2 size={14} /> Delete Filing
-                  </button>
-                </div>
-              )}
-            </div>
-            {/* Task 10.1: ProgressRing replaces text counter */}
-            <ProgressRing
-              percentage={progress.percentage}
-              color={progress.color}
-              sections={progress.sections}
-              onClickNext={handleProgressClick}
-            />
-          </div>
-
-        </nav>
-
-        {/* RIGHT: Editor Panel — only scrollable area */}
-        <main className="story-editor">
-          <FormulaBar computation={comp} selectedRegime={selectedRegime} />
-          <SummaryCards computation={comp} selectedRegime={selectedRegime} tds={comp?.tds} />
-          {isSubmitted && (
-            <div style={{ padding: '10px 14px', marginBottom: 16, background: 'var(--color-info-bg)', border: '1px solid var(--color-info-border)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
-              <CheckCircle size={14} style={{ color: 'var(--color-info)', flexShrink: 0 }} />
-              This filing has been submitted and is read-only. You can view details and download JSON/PDF.
-            </div>
-          )}
-          {selected ? (
-            <div style={isSubmitted ? { pointerEvents: 'none', opacity: 0.7 } : {}}>
-              <ErrorBoundary name={selected}>{renderEditor(selected)}</ErrorBoundary>
-              {renderDocInlineBlock(selected)}
             </div>
           ) : (
-            <div className="story-editor__computation">
+            <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>
               <TaxComputationCard computation={comp} selectedRegime={selectedRegime} tds={comp?.tds} onRegimeChange={handleRegimeSwitch} />
               <ReadinessChecklist items={readiness} onNavigate={handleReadinessNavigate} />
             </div>
           )}
-          {/* Sticky computation bar — visible when editor is open */}
-          {selected && bestRegime && (
-            <div className="story-computation-bar">
-              <span className="story-computation-bar__regime">{selectedRegime === 'old' ? 'Old' : 'New'} Regime</span>
-              <span className="story-computation-bar__tax" style={{ color: bestRegime.netPayable > 0 ? 'var(--color-error)' : 'var(--color-success)' }}>
+        </div>
+        {selected && selected !== 'addSource' && (
+          <div className="filing-editor__footer">
+            <div className="filing-editor__footer-nav">
+              {cardSections.findIndex(s => s.id === selected) > 0 && (
+                <button className="ds-btn ds-btn--sm ds-btn--outline" onClick={() => { const idx = cardSections.findIndex(s => s.id === selected); if (idx > 0) setSelected(cardSections[idx - 1].id); }}>
+                  ← Prev
+                </button>
+              )}
+              {cardSections.findIndex(s => s.id === selected) < cardSections.length - 1 && (
+                <button className="ds-btn ds-btn--sm ds-btn--outline" onClick={() => { const idx = cardSections.findIndex(s => s.id === selected); if (idx < cardSections.length - 1) setSelected(cardSections[idx + 1].id); }}>
+                  Next →
+                </button>
+              )}
+            </div>
+            {bestRegime && (
+              <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: bestRegime.netPayable > 0 ? 'var(--color-error)' : 'var(--color-success)' }}>
                 {bestRegime.netPayable > 0 ? `Pay ₹${Math.abs(bestRegime.netPayable).toLocaleString('en-IN')}` : `Refund ₹${Math.abs(bestRegime.netPayable).toLocaleString('en-IN')}`}
               </span>
-              <span className="story-computation-bar__total">Tax: ₹{(bestRegime.totalTax || 0).toLocaleString('en-IN')}</span>
-              {isComputing && <span className="story-computation-bar__computing">Computing...</span>}
-            </div>
-          )}
-        </main>
-
-        {/* RIGHT: Insights Panel — tax cockpit */}
-        <aside className="story-insights">
-          {/* Tax Computation */}
-          <div className="insight-card">
-            <div className="insight-card__title">Tax Summary</div>
-            <div className="insight-regime">
-              {['old', 'new'].map((r) => (
-                <button key={r} className={`insight-regime__btn ${selectedRegime === r ? 'insight-regime__btn--active' : ''}`} onClick={() => handleRegimeSwitch(r)}>
-                  {r === 'old' ? 'Old' : 'New'}
-                </button>
-              ))}
-            </div>
-            {bestRegime ? (
-              <>
-                <div className="insight-card__row"><span className="insight-card__label">Gross Income</span><span className="insight-card__value">{fmt(bestRegime.grossTotalIncome)}</span></div>
-                <div className="insight-card__row"><span className="insight-card__label">Deductions</span><span className="insight-card__value">{fmt(bestRegime.deductions)}</span></div>
-                <div className="insight-card__row"><span className="insight-card__label">Taxable</span><span className="insight-card__value" style={{ fontWeight: 700 }}>{fmt(bestRegime.taxableIncome)}</span></div>
-                <hr className="insight-card__divider" />
-                <div className="insight-card__row"><span className="insight-card__label">Tax</span><span className="insight-card__value">{fmt(bestRegime.totalTax)}</span></div>
-                <div className="insight-card__row"><span className="insight-card__label">TDS</span><span className="insight-card__value">{fmt(bestRegime.tdsCredit)}</span></div>
-                <hr className="insight-card__divider" />
-                <div className={`insight-card__result ${isRefund ? 'insight-card__result--refund' : 'insight-card__result--payable'}`}>
-                  {isRefund ? 'Refund' : 'Payable'}: {fmt(Math.abs(bestRegime.netPayable))}
-                </div>
-                {comp?.savings > 0 && (
-                  <div style={{ fontSize: 11, textAlign: 'center', color: 'var(--color-success)', fontWeight: 600, marginTop: 2 }}>
-                    Save {fmt(comp.savings)} with {comp.recommended === 'old' ? 'Old' : 'New'} Regime
-                  </div>
-                )}
-              </>
-            ) : (
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', padding: '8px 0' }}>Fill data to see computation</div>
             )}
           </div>
+        )}
+      </div>
 
-          {/* Readiness */}
-          <div className="insight-card">
-            <div className="insight-card__title">Filing Readiness</div>
-            <div className="insight-readiness">
-              {cardSections.map((s) => {
-                const done = isSectionComplete(s.id, payload, comp);
-                return (
-                  <div key={s.id} className="insight-readiness__item" onClick={() => setSelected(s.id)} style={{ cursor: 'pointer' }}>
-                    <span className={`insight-readiness__dot insight-readiness__dot--${done ? 'done' : 'pending'}`} />
-                    <span style={selected === s.id ? { fontWeight: 600, color: 'var(--text-primary)' } : undefined}>{s.label}</span>
-                  </div>
-                );
-              })}
-            </div>
+      {/* ── Right Sidebar: Computation + Actions ── */}
+      <aside className="filing-sidebar">
+        <div className="filing-sidebar__computation">
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginBottom: 8 }}>Tax Computation</div>
+          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Gross Income</span><span className="filing-sidebar__row-value">₹{(income?.grossTotal || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Deductions</span><span className="filing-sidebar__row-value" style={{ color: 'var(--color-success)' }}>-₹{(bestRegime?.deductions || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Taxable Income</span><span className="filing-sidebar__row-value">₹{(bestRegime?.taxableIncome || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-sidebar__divider" />
+          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Tax</span><span className="filing-sidebar__row-value">₹{(bestRegime?.totalTax || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">TDS Paid</span><span className="filing-sidebar__row-value">₹{(tds?.total || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-sidebar__divider" />
+          <div className="filing-sidebar__result">
+            <span>{bestRegime?.netPayable > 0 ? 'Tax Payable' : 'Refund'}</span>
+            <span className={`filing-sidebar__result-value ${bestRegime?.netPayable > 0 ? 'filing-sidebar__result-value--payable' : 'filing-sidebar__result-value--refund'}`}>
+              ₹{Math.abs(bestRegime?.netPayable || 0).toLocaleString('en-IN')}
+            </span>
           </div>
-
-          {/* Tax Whispers */}
-          {whispers.length > 0 && (
-            <div className="insight-card">
-              <div className="insight-card__title">Tax Tips</div>
-              {whispers.slice(0, 3).map((w, i) => (
-                <div key={i} className="insight-whisper" style={{ marginBottom: i < 2 ? 4 : 0 }}>{w.message || w}</div>
-              ))}
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="insight-actions">
-            <button className="insight-actions__btn insight-actions__btn--secondary" onClick={downloadPDF}>Download PDF</button>
-            <button className="insight-actions__btn" onClick={downloadJSON} style={{ fontSize: 11, opacity: 0.7 }}>Export ITD JSON</button>
-            {!isSubmitted && <button className="insight-actions__btn insight-actions__btn--primary" onClick={handleSubmit}>Submit Filing</button>}
-          </div>
-        </aside>
-
-      </div>{/* end story-panels */}
-
-      {/* ── Mobile Bottom Bar — visible on mobile ── */}
-      {bestRegime && (
-        <div className="story-mobile-bar">
-          <div>
-            <div className={`story-mobile-bar__amount ${isRefund ? 'refund' : 'payable'}`}>
-              {fmt(Math.abs(bestRegime.netPayable))}
-            </div>
-            <div className="story-mobile-bar__label">
-              {isRefund ? 'Refund Due' : 'Tax Payable'}
-            </div>
-          </div>
-          <div className="story-mobile-bar__regime">
-            {['old', 'new'].map(r => (
-              <button key={r} className={`story-regime-btn ${selectedRegime === r ? 'active' : ''}`}
-                onClick={() => handleRegimeSwitch(r)}>
-                {r === 'old' ? 'Old' : 'New'}
-              </button>
-            ))}
-          </div>
-          <button className="story-mobile-bar__submit" onClick={handleSubmit}>
-            <Send size={13} /> Submit
-          </button>
         </div>
-      )}
 
+        <div className="filing-sidebar__regime">
+          {['old', 'new'].map(r => (
+            <button key={r} className={`filing-sidebar__regime-btn ${selectedRegime === r ? 'active' : ''}`} onClick={() => handleRegimeSwitch(r)}>
+              {r === 'old' ? 'Old Regime' : 'New Regime'}
+            </button>
+          ))}
+        </div>
+
+        {comp?.savings > 0 && (
+          <div style={{ fontSize: 11, color: 'var(--color-success)', textAlign: 'center', padding: '4px 0' }}>
+            ✓ {comp.recommended === selectedRegime ? 'Optimal' : `Switch to ${comp.recommended} to save ₹${comp.savings.toLocaleString('en-IN')}`}
+          </div>
+        )}
+
+        <div className="filing-sidebar__actions">
+          <button className="filing-sidebar__submit" onClick={handleSubmit} disabled={!completeness.complete || isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Submit Filing'}
+          </button>
+          <div className="filing-sidebar__secondary">
+            <button onClick={downloadPDF}>⬇ PDF</button>
+            <button onClick={downloadJSON}>⬇ JSON</button>
+          </div>
+        </div>
+      </aside>
       {/* ── Import Modal Overlay ── */}
       {showImportModal && !importReviewData && (
         <ImportDocumentModal
