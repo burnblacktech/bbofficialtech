@@ -12,6 +12,7 @@
   --brand-primary-hover: #C4A030;
   --brand-primary-light: #FBF5E4;
   --brand-primary-dark: #A68B2A;
+  --brand-text: #A68B2A;
   --brand-black: #0F0F0F;
   --brand-black-soft: #1A1A1A;
   --brand-gradient: linear-gradient(135deg, #D4AF37 0%, #B8941F 50%, #D4AF37 100%);
@@ -22,22 +23,22 @@
   --secondary-light: #F0FDFA;
   --secondary-dark: #115E59;
 
-  /* ── Text (warm neutrals) ── */
+  /* ── Text (warm neutrals — WCAG AA compliant) ── */
   --text-primary: #111111;
-  --text-secondary: #333333;
-  --text-muted: #666666;
-  --text-light: #999999;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
   --text-white: #ffffff;
 
   /* ── Backgrounds (warm white) ── */
   --bg-page: #FAFAF8;
   --bg-card: #ffffff;
   --bg-card-hover: #F9F9F7;
-  --bg-muted: #F3F3F0;
+  --bg-muted: #F3F4F6;
 
-  /* ── Borders (warm) ── */
-  --border-light: #D8D8D4;
-  --border-medium: #C0C0BC;
+  /* ── Borders (subtle) ── */
+  --border-light: #E5E7EB;
+  --border-medium: #D1D5DB;
   --border-focus: #D4AF37;
 
   /* ── Semantic ── */

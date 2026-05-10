@@ -118,26 +118,27 @@
 .ds-btn--primary:hover:not(:disabled) { background: var(--brand-primary-hover); }
 
 .ds-btn--outline {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-medium);
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
 }
 .ds-btn--outline:hover:not(:disabled) {
   background: var(--bg-card-hover);
-  border-color: var(--text-light);
+  border-color: var(--border-medium);
 }
 
 .ds-btn--ghost {
   background: transparent;
-  color: var(--brand-primary);
+  color: var(--brand-text);
   padding-left: 8px;
   padding-right: 8px;
 }
-.ds-btn--ghost:hover:not(:disabled) { background: var(--brand-primary-light); }
+.ds-btn--ghost:hover:not(:disabled) { background: var(--brand-primary-light); text-decoration: underline; text-underline-offset: 2px; }
 
 .ds-btn--danger {
-  background: transparent;
+  background: var(--color-error-bg);
   color: var(--color-error);
+  border: 1px solid var(--color-error-border);
 }
 .ds-btn--danger:hover:not(:disabled) { background: var(--color-error-bg); }
 

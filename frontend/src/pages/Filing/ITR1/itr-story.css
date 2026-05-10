@@ -208,7 +208,7 @@
   background: var(--bg-card-hover);
 }
 .story-flow__card-item.active {
-  background: var(--brand-primary-light);
+  background: var(--brand-primary-light); border-left: 3px solid var(--brand-primary);
   color: var(--brand-primary);
   font-weight: 600;
 }
