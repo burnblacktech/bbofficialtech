@@ -1,0 +1,10 @@
+{
+  "test": "Salary 10L + LTCG 2L equity, AY 2026-27",
+  "grossTotal": 1125000,
+  "ltcgEquity": 200000,
+  "ltcgExemption": "1.25L",
+  "taxableLTCG": 200000,
+  "newRegimeTax": 43550,
+  "oldRegimeTax": 111150,
+  "recommended": "new"
+}

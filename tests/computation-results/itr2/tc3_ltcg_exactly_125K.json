@@ -1,0 +1,7 @@
+{
+  "test": "LTCG exactly 1.25L (exempt), AY 2026-27",
+  "ltcgEquity": 125000,
+  "ltcgTax": 0,
+  "newRegimeTax": 0,
+  "note": "LTCG 1.25L should be fully exempt"
+}

@@ -578,8 +578,6 @@ const OLD_SLABS = [
 ];
 
 const NEW_SLABS = [
-// AY 2026-27 (Budget 2025) new regime slabs
-const NEW_SLABS_2026 = [
   { min: 0, max: 400000, rate: 0 },
   { min: 400000, max: 800000, rate: 5 },
   { min: 800000, max: 1200000, rate: 10 },
@@ -588,6 +586,9 @@ const NEW_SLABS_2026 = [
   { min: 2000000, max: 2400000, rate: 25 },
   { min: 2400000, max: Infinity, rate: 30 },
 ];
+
+// AY 2026-27 (Budget 2025) new regime slabs
+const NEW_SLABS_2026 = NEW_SLABS;
 
 // AY 2025-26 new regime slabs
 const NEW_SLABS_2025 = [
@@ -611,8 +612,6 @@ function getNewRegimeRebate(assessmentYear) {
   return { limit: 1200000, max: 60000 };
 }
 
-// Default for backward compat
-const NEW_SLABS = NEW_SLABS_2026;
 
 const OLD_SLABS_SENIOR = [
   { min: 0, max: 300000, rate: 0 },

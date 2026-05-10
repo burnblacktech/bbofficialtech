@@ -1,0 +1,10 @@
+{
+  "test": "Salary 12L, 80C 1.5L + 80D 25K, AY 2026-27",
+  "netTaxable": 1125000,
+  "oldDeductions": 175000,
+  "oldTaxableIncome": 950000,
+  "oldRegimeTax": 106600,
+  "newRegimeTax": 0,
+  "recommended": "new",
+  "savings": 106600
+}

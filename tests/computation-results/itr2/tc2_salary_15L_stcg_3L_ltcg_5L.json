@@ -1,0 +1,10 @@
+{
+  "test": "Salary 15L + STCG 3L + LTCG 5L, AY 2026-27",
+  "grossTotal": 2225000,
+  "stcgEquity": 300000,
+  "ltcgEquity": 500000,
+  "newRegimeTax": 208650,
+  "oldRegimeTax": 313950,
+  "recommended": "new",
+  "savings": 105300
+}

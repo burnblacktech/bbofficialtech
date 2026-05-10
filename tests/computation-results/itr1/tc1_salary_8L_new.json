@@ -1,0 +1,10 @@
+{
+  "test": "Salary 8L, New Regime, AY 2026-27",
+  "expected": "Zero tax (rebate)",
+  "netTaxable": 725000,
+  "newRegimeTax": 0,
+  "oldRegimeTax": 59800,
+  "recommended": "new",
+  "tds": 40000,
+  "newRegimeRefund": 40000
+}

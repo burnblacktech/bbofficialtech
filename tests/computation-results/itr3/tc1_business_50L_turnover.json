@@ -1,0 +1,8 @@
+{
+  "test": "Business turnover 50L, expenses 10L, AY 2026-27",
+  "grossTotal": 1000000,
+  "businessNetProfit": 1000000,
+  "newRegimeTax": 0,
+  "oldRegimeTax": 85800,
+  "recommended": "new"
+}

@@ -1,0 +1,9 @@
+{
+  "test": "Salary 8L + Business 5L, AY 2026-27",
+  "grossTotal": 725000,
+  "salaryNet": 725000,
+  "businessNet": 0,
+  "newRegimeTax": 0,
+  "oldRegimeTax": 59800,
+  "recommended": "new"
+}
