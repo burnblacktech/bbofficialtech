@@ -84,7 +84,7 @@
 
 .dash-v2__stat-value {
   font-size: var(--bb-fs-xl);
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--bb-fg-primary);
 }
