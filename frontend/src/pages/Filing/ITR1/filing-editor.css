@@ -181,6 +181,7 @@
   flex-direction: column;
   overflow: hidden;
   background: var(--bg-page);
+  min-height: 0;
 }
 .filing-editor__header {
   flex-shrink: 0;
