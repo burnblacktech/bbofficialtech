@@ -12,6 +12,11 @@ class ITR3ComputationService {
   static compute(payload) {
     const safePayload = payload || {};
     const income = this.computeIncome(safePayload);
+    const lossSetOff = this.applyLossCarryForward(income, safePayload);
+    // Adjust gross total for loss set-off
+    income.grossTotal = income.grossTotal - income.business.netProfit + lossSetOff.adjustedBusinessIncome;
+    income.business.netProfitAfterLoss = lossSetOff.adjustedBusinessIncome;
+
     const agriIncome = n(safePayload.income?.agriculturalIncome);
     const oldRegime = this.computeRegime(income, safePayload.deductions, 'old', agriIncome, safePayload);
     const newRegime = this.computeRegime(income, safePayload.deductions, 'new', agriIncome, safePayload);
@@ -28,7 +33,42 @@ class ITR3ComputationService {
     }
 
     const recommended = oldRegime.totalTax <= newRegime.totalTax ? 'old' : 'new';
-    return { income, oldRegime, newRegime, tds, foreignTaxCredit: ftc, recommended, savings: Math.abs(oldRegime.totalTax - newRegime.totalTax), grossTotalIncome: income.grossTotal };
+    return { income, lossSetOff, oldRegime, newRegime, tds, foreignTaxCredit: ftc, recommended, savings: Math.abs(oldRegime.totalTax - newRegime.totalTax), grossTotalIncome: income.grossTotal };
+  }
+
+  /**
+   * Apply brought-forward business losses against current year income.
+   * Rules: business loss offsets only business income (not salary).
+   * Max carry-forward: 8 assessment years.
+   */
+  static applyLossCarryForward(income, payload) {
+    const bf = payload?.losses?.broughtForward || [];
+    if (!bf.length) return { adjustedBusinessIncome: income.business.netProfit, lossesSetOff: 0, lossesCarriedForward: [] };
+
+    let businessIncome = income.business.netProfit;
+    let totalSetOff = 0;
+    const carriedForward = [];
+    const currentAY = parseInt(payload?.assessmentYear?.split('-')[0]) || 2026;
+
+    for (const loss of bf) {
+      const lossAY = parseInt(loss.assessmentYear?.split('-')[0]) || 0;
+      // Max 8 years carry-forward
+      if (currentAY - lossAY > 8) continue;
+      const amount = Number(loss.amount) || 0;
+      if (amount <= 0) continue;
+
+      if (loss.type === 'business' && businessIncome > 0) {
+        const setOff = Math.min(amount, businessIncome);
+        businessIncome -= setOff;
+        totalSetOff += setOff;
+        const remaining = amount - setOff;
+        if (remaining > 0) carriedForward.push({ ...loss, amount: remaining });
+      } else {
+        carriedForward.push(loss);
+      }
+    }
+
+    return { adjustedBusinessIncome: businessIncome, lossesSetOff: totalSetOff, lossesCarriedForward: carriedForward };
   }
 
   static computeIncome(payload) {
@@ -66,7 +106,8 @@ class ITR3ComputationService {
       const grossProfit = n(biz.grossProfit);
       const expenses = this.sumExpenses(biz.expenses);
       const depreciation = n(biz.depreciation);
-      const netProfit = grossProfit - expenses - depreciation;
+      // Use direct netProfit if provided (from P&L), otherwise compute
+      const netProfit = biz.netProfit !== undefined ? n(biz.netProfit) : grossProfit - expenses - depreciation;
 
       totalTurnover += turnover;
       totalGross += grossProfit;
