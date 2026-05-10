@@ -11,7 +11,11 @@ import DeductionOptimizer from './components/DeductionOptimizer';
 import QuickActions from './components/QuickActions';
 import './dashboard-v2.css';
 
-const FY_OPTIONS = ['2024-25', '2023-24', '2022-23'];
+const FY_OPTIONS = (() => {
+  const now = new Date();
+  const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  return [`${y}-${String(y + 1).slice(-2)}`, `${y - 1}-${String(y).slice(-2)}`, `${y - 2}-${String(y - 1).slice(-2)}`];
+})();
 
 export default function DashboardV2() {
   const [fy, setFy] = useState('2024-25');
