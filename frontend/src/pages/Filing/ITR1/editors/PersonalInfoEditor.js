@@ -291,11 +291,15 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
     if (!['firstName', 'middleName', 'lastName', 'dob', 'pan'].includes(field)) return false;
     const val = form[field];
     if (val === undefined || val === null || val === '') return false;
-    // DOB special case: only lock if it matches the verified DOB from PAN
     if (field === 'dob') {
       return panVerifiedDob && val === panVerifiedDob;
     }
     return true;
+  };
+  const aadhaarLocked = !!form.aadhaarLocked;
+  const isAddressLocked = (field) => {
+    if (!aadhaarLocked) return false;
+    return ['flatDoorBuilding', 'city', 'stateCode', 'pincode'].includes(field) && !!form.address?.[field];
   };
   const noSalaryLock = !hasSalary;
 
@@ -386,14 +390,14 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         </div>
         {/* Address sub-section */}
         <div className="bordered-subsection">
-          <div className="bordered-subsection__header">Address</div>
+          <div className="bordered-subsection__header">Address {aadhaarLocked && <span style={{ fontSize: 10, color: 'var(--color-success)', marginLeft: 6 }}>✓ Aadhaar verified</span>}</div>
           <div className="bordered-subsection__body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px' }}>
-            <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
-            <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
+            <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} locked={isAddressLocked('flatDoorBuilding')} />
+            <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} locked={isAddressLocked('city')} />
             <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
-            <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select" />
+            <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select" disabled={isAddressLocked('stateCode')} />
             <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
-            <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
+            <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} locked={isAddressLocked('pincode')} />
           </div>
         </div>
       </div>
@@ -462,6 +466,9 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                   toast.success('Address auto-filled from Aadhaar');
                 }
               }
+              // Lock fields after Aadhaar verification
+              updateField('aadhaarVerifiedAt', new Date().toISOString());
+              updateField('aadhaarLocked', true);
             }} />
 
       {/* ── Section 4: Filing Metadata ── */}

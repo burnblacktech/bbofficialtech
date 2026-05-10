@@ -997,7 +997,7 @@ export default function ITR1Flow() {
         <div className="filing-topbar__context">
           <span className="filing-topbar__itr">{itrType}</span>
           <span className="filing-topbar__sep">·</span>
-          <span>AY {filing?.assessmentYear}</span>
+          <span style={{ background: 'var(--bg-muted)', padding: '2px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>AY {filing?.assessmentYear}</span>
           {maskedPan && <><span className="filing-topbar__sep">·</span><span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>{maskedPan}</span></>}
         </div>
         <div className="filing-sidebar__regime" style={{ margin: 0 }}>
@@ -1079,7 +1079,8 @@ export default function ITR1Flow() {
             {selected === 'addSource' ? 'Add Income Source' : selected ? cardSections.find(s => s.id === selected)?.label || 'Deductions' : 'Select a section'}
           </span>
         </div>
-        <div className="filing-editor__body">
+        <div className="filing-editor__body" style={isSubmitted ? { pointerEvents: 'none', opacity: 0.7 } : undefined}>
+          {isSubmitted && <div style={{ padding: '6px 12px', marginBottom: 8, background: 'var(--color-success-bg)', border: '1px solid var(--color-success-border)', borderRadius: 6, fontSize: 12, color: 'var(--color-success)', fontWeight: 600 }}>✓ This filing has been submitted. View only.</div>}
           {selected && selected !== 'addSource' ? (
             <ErrorBoundary name={selected}>{renderEditor(selected)}</ErrorBoundary>
           ) : selected === 'addSource' ? (
