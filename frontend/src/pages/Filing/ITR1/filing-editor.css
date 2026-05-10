@@ -454,3 +454,26 @@
   }
   .filing-sidebar.open { transform: translateX(0); }
 }
+
+/* ── Hide duplicate headings inside editors (outer header shows title) ── */
+.filing-editor__body .step-title,
+.filing-editor__body > div > h2:first-child {
+  display: none;
+}
+.filing-editor__body .step-desc {
+  display: none;
+}
+
+/* ── Constrain all cards and buttons inside editor ── */
+.filing-editor__body .ds-card {
+  max-width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.filing-editor__body .ds-btn {
+  max-width: 200px;
+}
+.filing-editor__body .ds-btn--primary[style*="width: 100%"],
+.filing-editor__body .ds-btn--primary[style*="width:100%"] {
+  max-width: 180px;
+}
