@@ -128,9 +128,10 @@
 .filing-nav__item-amount {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
+  color: var(--text-primary);
 }
 .filing-nav__add {
   display: flex;
@@ -188,9 +189,10 @@
   justify-content: space-between;
 }
 .filing-editor__title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 900;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 .filing-editor__body {
   flex: 1;
@@ -259,13 +261,14 @@
 .filing-editor__body .ds-input,
 .filing-editor__body .ds-select {
   max-width: 240px;
-  padding: 8px 11px;
-  font-size: 14px;
+  padding: 9px 12px;
+  font-size: 15px;
+  font-weight: 500;
 }
 .filing-editor__body .ds-label {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
   color: var(--text-secondary);
 }
 .filing-editor__footer {
@@ -326,7 +329,8 @@
 .filing-sidebar__row-value {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 13px;
   color: var(--text-primary);
 }
 .filing-sidebar__divider {
@@ -345,6 +349,9 @@
 .filing-sidebar__result-value {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 .filing-sidebar__result-value--refund { color: var(--color-success); }
 .filing-sidebar__result-value--payable { color: var(--color-error); }
