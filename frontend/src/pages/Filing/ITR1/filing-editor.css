@@ -611,3 +611,96 @@
   align-items: center;
   gap: 8px;
 }
+
+/* ═══════════════════════════════════════════════════════
+   FORCE BORDERED LAYOUT ON ALL EDITOR COMPONENTS
+   Every Card inside the editor becomes a bordered section.
+   Every Grid becomes a constrained 2-3 column layout.
+   No component can stretch full-width.
+   ═══════════════════════════════════════════════════════ */
+
+/* All cards inside editor: bordered sections */
+.filing-editor__body .ds-card,
+.filing-editor__body .ds-card--active {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+/* Card section headers (Section component) */
+.filing-editor__body .ds-section-header,
+.filing-editor__body .ds-section {
+  background: var(--bg-muted);
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 0;
+}
+.filing-editor__body .ds-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+/* Card body content (fields inside cards) */
+.filing-editor__body .ds-card > .ds-grid-2,
+.filing-editor__body .ds-card > .ds-grid-3,
+.filing-editor__body .ds-card > .ds-field,
+.filing-editor__body .ds-card > div:not(.ds-section-header):not(.ds-section):not(.bordered-subsection__header) {
+  padding: 10px 14px;
+}
+
+/* Grids inside cards: constrained columns */
+.filing-editor__body .ds-card .ds-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 14px;
+  padding: 10px 14px;
+}
+.filing-editor__body .ds-card .ds-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px 14px;
+  padding: 10px 14px;
+}
+
+/* Fields inside cards: no extra margin */
+.filing-editor__body .ds-card .ds-field {
+  margin-bottom: 4px;
+  max-width: none;
+}
+
+/* Inputs inside bordered cards: full width of their cell */
+.filing-editor__body .ds-card .ds-input,
+.filing-editor__body .ds-card .ds-select {
+  max-width: none;
+  width: 100%;
+}
+
+/* Buttons inside editor: compact, not full-width */
+.filing-editor__body .ds-btn--primary {
+  max-width: 180px;
+  margin-top: 8px;
+}
+
+/* Hints and descriptions: compact */
+.filing-editor__body .ds-hint {
+  font-size: 11px;
+  padding: 0 14px;
+  margin: 4px 0;
+}
+
+/* Checkboxes */
+.filing-editor__body .ds-check {
+  padding: 4px 14px;
+  font-size: 12px;
+}
+
+/* Alerts/warnings inside editor */
+.filing-editor__body [style*="background"] {
+  margin: 0 14px 8px;
+  border-radius: 6px;
+}
