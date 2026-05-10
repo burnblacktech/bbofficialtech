@@ -540,3 +540,26 @@
   color: var(--text-light);
   padding: 4px 0 2px;
 }
+
+/* ── Bordered Sub-sections ── */
+.bordered-subsection {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+.bordered-subsection__header {
+  padding: 6px 14px;
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border-light);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.bordered-subsection__body {
+  padding: 10px 14px;
+}
+.bordered-subsection__body .ds-field {
+  margin-bottom: 6px;
+}

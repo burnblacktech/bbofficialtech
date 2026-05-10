@@ -122,24 +122,24 @@ const GENDER_OPTIONS = [
 ];
 
 const RES_STATUS_OPTIONS = [
-  { value: 'RES', label: 'Resident (RES)' },
+  { value: 'RES', label: 'Resident' },
   { value: 'NRI', label: 'Non-Resident (NRI)' },
-  { value: 'RNOR', label: 'Resident but Not Ordinarily Resident (RNOR)' },
+  { value: 'RNOR', label: 'RNOR' },
 ];
 
 const EMPLOYER_CAT_OPTIONS = [
-  { value: 'GOV', label: 'Government (GOV)' },
-  { value: 'PSU', label: 'Public Sector Undertaking (PSU)' },
-  { value: 'PE', label: 'Pensioner (PE)' },
-  { value: 'OTH', label: 'Private Sector (OTH)' },
-  { value: 'NA', label: 'Not Applicable (NA)' },
+  { value: 'GOV', label: 'Government' },
+  { value: 'PSU', label: 'PSU' },
+  { value: 'PE', label: 'Pensioner' },
+  { value: 'OTH', label: 'Private Sector' },
+  { value: 'NA', label: 'Not Applicable' },
 ];
 
 const FILING_STATUS_OPTIONS = [
-  { value: 'O', label: 'Original (O)' },
-  { value: 'R', label: 'Revised (R)' },
-  { value: 'B', label: 'Belated (B)' },
-  { value: 'U', label: 'Updated (U)' },
+  { value: 'O', label: 'Original' },
+  { value: 'R', label: 'Revised' },
+  { value: 'B', label: 'Belated' },
+  { value: 'U', label: 'Updated' },
 ];
 
 export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, computation, itrType, user, userProfile }) {
@@ -373,21 +373,30 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         </>
       )}
 
-      {/* ── Section 2: Contact & Address (unit grid: 3 cols × 3 rows) ── */}
-      <Card active>
-        <div className="unit-grid">
-          <div className="unit-grid__group-label">Contact</div>
-          <div className="unit-grid__group-label" style={{ gridColumn: '2 / 4' }}>Address</div>
-          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" />
-          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
-          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
-          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" />
-          <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
-          <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} onBlur={() => handleBlur('address.stateCode')} error={errors['address.stateCode']} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select" />
-          <Field label="Aadhaar" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" />
-          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
-          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
+      {/* ── Section 2: Contact & Address (bordered sub-sections) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, marginBottom: 8 }}>
+        {/* Contact sub-section */}
+        <div className="bordered-subsection">
+          <div className="bordered-subsection__header">Contact</div>
+          <div className="bordered-subsection__body">
+            <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" />
+            <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" />
+            <Field label="Aadhaar" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" />
+          </div>
         </div>
+        {/* Address sub-section */}
+        <div className="bordered-subsection">
+          <div className="bordered-subsection__header">Address</div>
+          <div className="bordered-subsection__body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px' }}>
+            <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
+            <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
+            <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
+            <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select" />
+            <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
+            <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
+          </div>
+        </div>
+      </div>
         <AadhaarUploadButton aadhaarValue={form.aadhaar} onVerified={(data) => {
               if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
               if (data.name && !form.firstName) {
@@ -454,23 +463,22 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                 }
               }
             }} />
-      </Card>
 
       {/* ── Section 4: Filing Metadata ── */}
       <Card active>
         <Section icon={FileText} title="Filing Details" />
-        <p className="ds-hint" style={{ marginTop: -8, marginBottom: 12 }}>Most salaried individuals can use the defaults below.</p>
+        <p className="ds-hint" style={{ marginTop: -8, marginBottom: 8 }}>Most salaried individuals can use the defaults below.</p>
 
-        <Grid cols={3}>
+        <div className="unit-grid">
         {/* Residential Status */}
-        <Select label="Residential Status *" value={form.residentialStatus} onChange={v => updateField('residentialStatus', v)} options={RES_STATUS_OPTIONS} hint="Select 'Resident' if you lived in India for 182+ days this year" />
+        <Select label="Residential Status *" value={form.residentialStatus} onChange={v => updateField('residentialStatus', v)} options={RES_STATUS_OPTIONS} hint="Lived in India 182+ days? → Resident" />
 
         {/* Employer Category */}
-        <Select label="Employer Category *" value={form.employerCategory} onChange={v => updateField('employerCategory', v)} options={EMPLOYER_CAT_OPTIONS} disabled={noSalaryLock} hint={noSalaryLock ? 'Not applicable — no salary income added.' : 'Select your employer type (most people: Private Sector)'} />
+        <Select label="Employer Category *" value={form.employerCategory} onChange={v => updateField('employerCategory', v)} options={EMPLOYER_CAT_OPTIONS} disabled={noSalaryLock} hint={noSalaryLock ? 'No salary added' : 'Most: Private Sector'} />
 
         {/* Filing Status */}
-        <Select label="Filing Status *" value={form.filingStatus} onChange={v => updateField('filingStatus', v)} options={FILING_STATUS_OPTIONS} disabled={isRevisedFiling} hint={isRevisedFiling ? 'Filing type is set to Revised from the filing record.' : 'Select Original if this is your first filing for this year'} />
-        </Grid>
+        <Select label="Filing Status *" value={form.filingStatus} onChange={v => updateField('filingStatus', v)} options={FILING_STATUS_OPTIONS} disabled={isRevisedFiling} hint={isRevisedFiling ? 'Set to Revised' : 'First filing? → Original'} />
+        </div>
 
         {(form.residentialStatus === 'NRI' || form.residentialStatus === 'RNOR') && isITR1 && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, padding: '8px 12px', background: P.warningBg, borderRadius: 6, marginBottom: 12, fontSize: 12, color: P.warning }}>
