@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle, Info } from 'lucide-react';
 import { validateCapitalGainsStep } from '../../../../utils/itrValidation';
-import { Field, Select, Grid, Card, Section, Button, Divider, Money, Alert } from '../../../../components/ds';
+import { Button, Card, Grid, Field, Select, Section, Alert, Money, Divider } from '../../../../components/ds';
+import FilingField, { FilingGrid, FilingSection } from '../../../../components/Filing/FilingField';
 
 const n = (v) => Number(v) || 0;
 const fmt = (v) => `₹${n(v).toLocaleString('en-IN')}`;
@@ -80,8 +81,6 @@ export default function CapitalGainsEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Profit or Loss from Selling Assets</h2>
-      <p className="step-desc">Record your asset sales — stocks, property, gold, crypto</p>
 
       {/* Existing transactions */}
       {txns.map((t, i) => editing === i ? null : (

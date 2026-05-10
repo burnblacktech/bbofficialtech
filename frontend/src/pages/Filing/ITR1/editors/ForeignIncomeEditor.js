@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import { validateForeignIncomeStep } from '../../../../utils/itrValidation';
-import { Field, Select, Grid, Card, Button, Money, Alert } from '../../../../components/ds';
+import { Button } from '../../../../components/ds';
+import FilingField, { FilingGrid, FilingSection } from '../../../../components/Filing/FilingField';
 
 const n = (v) => Number(v) || 0;
 const EMPTY = { country: '', incomeType: 'salary', amountINR: '', taxPaidAbroad: '', dtaa: false };
 
 const INCOME_TYPE_OPTIONS = [
-  { value: 'salary', label: 'salary' },
-  { value: 'interest', label: 'interest' },
-  { value: 'dividend', label: 'dividend' },
-  { value: 'capitalGains', label: 'capitalGains' },
-  { value: 'rental', label: 'rental' },
-  { value: 'other', label: 'other' },
+  { value: 'salary', label: 'Salary' },
+  { value: 'interest', label: 'Interest' },
+  { value: 'dividend', label: 'Dividend' },
+  { value: 'capitalGains', label: 'Capital Gains' },
+  { value: 'rental', label: 'Rental' },
+  { value: 'other', label: 'Other' },
 ];
 
 export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
@@ -43,60 +44,51 @@ export default function ForeignIncomeEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Income Earned Outside India</h2>
-      <p className="step-desc">Income earned abroad and DTAA relief</p>
-
       {incomes.map((inc, i) => editing === i ? null : (
-        <Card key={i}>
-          <div className="ds-item">
-            <div>
-              <div className="ds-item__name">{inc.country} — {inc.incomeType}</div>
-              <div className="ds-item__detail">₹{n(inc.amountINR).toLocaleString('en-IN')}{inc.dtaa ? ' · DTAA' : ''}</div>
-            </div>
-            <div className="ds-item__actions">
-              <Button variant="ghost" size="sm" onClick={() => { setForm({ ...inc }); setEditing(i); }}><Edit2 size={15} /></Button>
-              <Button variant="danger" size="sm" onClick={() => remove(i)}><Trash2 size={15} /></Button>
-            </div>
+        <FilingSection key={i} title={`${inc.country} — ${inc.incomeType}`} badge={<span style={{ fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>₹{n(inc.amountINR).toLocaleString('en-IN')}{inc.dtaa ? ' · DTAA' : ''}</span>}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button variant="ghost" onClick={() => { setForm({ ...inc }); setEditing(i); }}><Edit2 size={13} /> Edit</Button>
+            <Button variant="danger" onClick={() => remove(i)}><Trash2 size={13} /></Button>
           </div>
-        </Card>
+        </FilingSection>
       ))}
 
       {form && (
-        <Card active>
-          <Grid cols={3}>
-            <Field label="Country *" value={form.country} onChange={v => setForm({ ...form, country: v })} placeholder="e.g., USA" />
-            <Select label="Income Type" value={form.incomeType} onChange={v => setForm({ ...form, incomeType: v })} options={INCOME_TYPE_OPTIONS} />
-            <Field label="Amount in INR (₹) *" type="number" value={form.amountINR} onChange={v => setForm({ ...form, amountINR: v })} placeholder="0" />
-          </Grid>
-          <Grid cols={3}>
-            <Field label="Tax Paid Abroad (₹)" type="number" value={form.taxPaidAbroad} onChange={v => setForm({ ...form, taxPaidAbroad: v })} placeholder="0" />
-          </Grid>
-          <label className="ds-check"><input type="checkbox" checked={form.dtaa} onChange={e => setForm({ ...form, dtaa: e.target.checked })} /> Claim DTAA relief</label>
-          <div className="ds-hint" style={{ marginTop: 4 }}>If you earned abroad and paid tax there, you may claim DTAA relief to avoid double taxation</div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <Button variant="primary" onClick={save} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</Button>
-            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }}>Cancel</Button>
+        <FilingSection title={editing < incomes.length ? 'Edit Income' : 'Add Foreign Income'}>
+          <FilingGrid cols={3}>
+            <FilingField label="Country" type="text" value={form.country} onChange={v => setForm({ ...form, country: v })} required />
+            <FilingField label="Income Type" type="select" value={form.incomeType} onChange={v => setForm({ ...form, incomeType: v })} options={INCOME_TYPE_OPTIONS} />
+            <FilingField label="Amount (INR)" type="currency" value={form.amountINR} onChange={v => setForm({ ...form, amountINR: v })} required />
+          </FilingGrid>
+          <FilingGrid cols={2}>
+            <FilingField label="Tax Paid Abroad" type="currency" value={form.taxPaidAbroad} onChange={v => setForm({ ...form, taxPaidAbroad: v })} />
+          </FilingGrid>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, margin: '6px 0', cursor: 'pointer' }}>
+            <input type="checkbox" checked={form.dtaa} onChange={e => setForm({ ...form, dtaa: e.target.checked })} /> Claim DTAA relief (avoid double taxation)
+          </label>
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <Button variant="primary" onClick={save} disabled={isSaving} style={{ maxWidth: 120 }}>{isSaving ? 'Saving...' : 'Save'}</Button>
+            <Button variant="secondary" onClick={() => { setForm(null); setEditing(null); }} style={{ maxWidth: 100 }}>Cancel</Button>
           </div>
-        </Card>
+        </FilingSection>
       )}
 
       {!form && (
-        <Button variant="secondary" onClick={() => { setForm({ ...EMPTY }); setEditing(incomes.length); setErrors({}); }} style={{ marginTop: 8 }}>
-          <Plus size={15} /> Add Foreign Income
+        <Button variant="secondary" onClick={() => { setForm({ ...EMPTY }); setEditing(incomes.length); setErrors({}); }} style={{ marginTop: 8, maxWidth: 200 }}>
+          <Plus size={13} /> Add Foreign Income
         </Button>
       )}
 
       {Object.keys(errors).length > 0 && (
-        <Alert variant="error" style={{ marginTop: 8 }}>
-          <AlertCircle size={14} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
-        </Alert>
+        <div style={{ marginTop: 8, padding: '8px 12px', background: 'var(--color-error-bg)', border: '1px solid var(--color-error-border)', borderRadius: 6, fontSize: 12, color: 'var(--color-error)' }}>
+          <AlertCircle size={12} style={{ verticalAlign: -2, marginRight: 4 }} /> {Object.values(errors).join(' · ')}
+        </div>
       )}
 
       {incomes.length > 0 && (
-        <Card muted>
-          <Money label="Total Foreign Income" value={`₹${total.toLocaleString('en-IN')}`} bold />
-          {dtaaCredit > 0 && <Money label="DTAA Credit" value={`₹${dtaaCredit.toLocaleString('en-IN')}`} color="green" />}
-        </Card>
+        <div style={{ marginTop: 10, fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+          Total: ₹{total.toLocaleString('en-IN')}{dtaaCredit > 0 ? ` · DTAA Credit: ₹${dtaaCredit.toLocaleString('en-IN')}` : ''}
+        </div>
       )}
     </div>
   );
