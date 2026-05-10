@@ -778,3 +778,16 @@
     gap: 8px !important;
   }
 }
+
+/* ₹ prefix spacing — numeric inputs need extra left padding */
+.filing-editor__body input[inputmode="numeric"],
+.filing-editor__body input[data-currency="true"] {
+  padding-left: 28px !important;
+  font-family: var(--font-mono) !important;
+}
+
+/* Dropdown containers need full width — no clipping */
+.filing-editor__body .ds-field:has(select),
+.filing-editor__body .ds-field:has(.ds-select) {
+  max-width: none !important;
+}
