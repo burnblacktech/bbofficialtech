@@ -173,8 +173,33 @@ class ITR2ComputationService {
     const bf = cgData.broughtForwardLosses || {};
     const bfStcl = n(bf.stcl111A || bf.stcl);
     const bfLtcl = n(bf.ltcl112A || bf.ltcl);
-    stcgEquity = Math.max(0, stcgEquity - bfStcl);
-    ltcgEquity = Math.max(0, ltcgEquity - bfLtcl);
+    stcgEquity = stcgEquity - bfStcl;
+    ltcgEquity = ltcgEquity - bfLtcl;
+
+    // Inter-category set-off: STCG loss can offset LTCG (per IT Act s.70/71)
+    if (stcgEquity < 0) {
+      const stcgLoss = Math.abs(stcgEquity);
+      // Set off against LTCG equity first, then LTCG other
+      const offsetEquity = Math.min(stcgLoss, Math.max(0, ltcgEquity));
+      ltcgEquity = ltcgEquity - offsetEquity;
+      const remainingLoss = stcgLoss - offsetEquity;
+      const offsetOther = Math.min(remainingLoss, Math.max(0, ltcgOther));
+      ltcgOther = ltcgOther - offsetOther;
+      stcgEquity = 0;
+    }
+    // LTCG loss can offset STCG
+    if (ltcgEquity < 0) {
+      const ltcgLoss = Math.abs(ltcgEquity);
+      const offsetStcg = Math.min(ltcgLoss, Math.max(0, stcgEquity));
+      stcgEquity = stcgEquity - offsetStcg;
+      ltcgEquity = 0;
+    }
+
+    // Floor at zero for tax computation (remaining losses carry forward)
+    stcgEquity = Math.max(0, stcgEquity);
+    stcgOther = Math.max(0, stcgOther);
+    ltcgEquity = Math.max(0, ltcgEquity);
+    ltcgOther = Math.max(0, ltcgOther);
 
     const stcgTotal = stcgEquity + stcgOther;
     const ltcgTotal = ltcgEquity + ltcgProperty + ltcgOther;
@@ -282,10 +307,12 @@ class ITR2ComputationService {
     else if (taxableIncome > 20000000) surchargeRate = 25;
     else if (taxableIncome > 10000000) surchargeRate = 15;
     else if (taxableIncome > 5000000) surchargeRate = 10;
-    // AY 2025-26: New regime caps surcharge at 25%
+    // AY 2025-26+: New regime caps surcharge at 25%
     if (regime === 'new' && surchargeRate > 25) surchargeRate = 25;
-    // Cap surcharge on LTCG equity at 15%
-    const surcharge = Math.round(taxAfterRebate * surchargeRate / 100);
+    // Surcharge on LTCG u/s 112A is capped at 15% regardless of income level
+    const ltcgSurchargeRate = Math.min(surchargeRate, 15);
+    const nonLtcgTax = taxAfterRebate - ltcgEquityTax;
+    const surcharge = Math.round(nonLtcgTax * surchargeRate / 100) + Math.round(ltcgEquityTax * ltcgSurchargeRate / 100);
 
     const cess = Math.round((taxAfterRebate + surcharge) * 4 / 100);
     const totalTax = taxAfterRebate + surcharge + cess;

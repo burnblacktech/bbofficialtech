@@ -414,8 +414,8 @@ class ITR1ComputationService {
 
     const dob = payload?.personalInfo?.dateOfBirth || payload?.personalDetails?.dateOfBirth;
     const ay = payload?.assessmentYear;
-    const slabs = regime === 'old' ? getOldRegimeSlabs(dob, ay) : NEW_SLABS;
-    const basicExemption = regime === 'old' ? (slabs[0].max) : 400000;
+    const slabs = regime === 'old' ? getOldRegimeSlabs(dob, ay) : getNewRegimeSlabs(ay);
+    const basicExemption = regime === 'old' ? (slabs[0].max) : slabs[0].max;
 
     // Agricultural income partial integration method (Section 2(1A) + Rule 8)
     // Applies when: agri income > ₹5,000 AND non-agri income > basic exemption
@@ -448,8 +448,9 @@ class ITR1ComputationService {
     // Add VDA tax (flat 30%) to slab tax
     tax += vdaTax + winningsTax;
 
-    const rebateLimit = regime === 'old' ? 500000 : 1200000;
-    const rebateMax = regime === 'old' ? 12500 : 60000;
+    const newRebate = getNewRegimeRebate(ay);
+    const rebateLimit = regime === 'old' ? 500000 : newRebate.limit;
+    const rebateMax = regime === 'old' ? 12500 : newRebate.max;
     // Rebate applies only to non-VDA slab tax; check against non-VDA taxable income
     const slabTax = tax - vdaTax - winningsTax;
     const rebate = nonVdaTaxableIncome <= rebateLimit ? Math.min(slabTax, rebateMax) : 0;
@@ -577,6 +578,8 @@ const OLD_SLABS = [
 ];
 
 const NEW_SLABS = [
+// AY 2026-27 (Budget 2025) new regime slabs
+const NEW_SLABS_2026 = [
   { min: 0, max: 400000, rate: 0 },
   { min: 400000, max: 800000, rate: 5 },
   { min: 800000, max: 1200000, rate: 10 },
@@ -585,6 +588,31 @@ const NEW_SLABS = [
   { min: 2000000, max: 2400000, rate: 25 },
   { min: 2400000, max: Infinity, rate: 30 },
 ];
+
+// AY 2025-26 new regime slabs
+const NEW_SLABS_2025 = [
+  { min: 0, max: 300000, rate: 0 },
+  { min: 300000, max: 700000, rate: 5 },
+  { min: 700000, max: 1000000, rate: 10 },
+  { min: 1000000, max: 1200000, rate: 15 },
+  { min: 1200000, max: 1500000, rate: 20 },
+  { min: 1500000, max: Infinity, rate: 30 },
+];
+
+function getNewRegimeSlabs(assessmentYear) {
+  const ayStart = parseInt(assessmentYear?.split('-')[0]) || 2026;
+  if (ayStart <= 2025) return NEW_SLABS_2025;
+  return NEW_SLABS_2026;
+}
+
+function getNewRegimeRebate(assessmentYear) {
+  const ayStart = parseInt(assessmentYear?.split('-')[0]) || 2026;
+  if (ayStart <= 2025) return { limit: 700000, max: 25000 };
+  return { limit: 1200000, max: 60000 };
+}
+
+// Default for backward compat
+const NEW_SLABS = NEW_SLABS_2026;
 
 const OLD_SLABS_SENIOR = [
   { min: 0, max: 300000, rate: 0 },

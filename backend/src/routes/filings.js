@@ -1096,7 +1096,7 @@ router.post('/:filingId/itr1/compute', authenticateToken, authorize(['END_USER',
         }
 
         const ITR1ComputationService = require('../services/itr/ITR1ComputationService');
-        const computation = ITR1ComputationService.compute(payload);
+        const computation = ITR1ComputationService.compute({ ...payload, assessmentYear: filing.assessmentYear });
 
         // Save computation result on filing + update taxLiability/refundAmount
         const recommended = computation.recommended || 'new';
