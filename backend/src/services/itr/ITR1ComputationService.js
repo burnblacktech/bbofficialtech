@@ -397,13 +397,17 @@ class ITR1ComputationService {
   static computeRegime(income, deductionData, regime, agriculturalIncome = 0, payload = null) {
     const deductions = regime === 'old' ? this.computeDeductions(deductionData, payload, income.grossTotal) : { total: 0, breakdown: {}, warnings: [] };
 
+    // AY 2025-26 old regime: standard deduction is ₹50K (not ₹75K)
+    const ayStart = parseInt(payload?.assessmentYear?.split('-')[0]) || 2026;
+    const stdDeductionAdjust = (regime === 'old' && ayStart <= 2025) ? 25000 : 0;
+
     // In new regime, 80CCD(2) employer NPS is still allowed
     let newRegime80CCD2 = 0;
     if (regime === 'new' && deductionData) {
       const d = deductionData;
       newRegime80CCD2 = n(d.section80CCD2?.employerNps || d.employerNps);
     }
-    const taxableIncome = Math.max(0, income.grossTotal - deductions.total - newRegime80CCD2);
+    const taxableIncome = Math.max(0, income.grossTotal + stdDeductionAdjust - deductions.total - newRegime80CCD2);
 
     // VDA income is taxed at flat 30% separately from slab computation
     const vdaGain = income.otherSources?.vdaGain || 0;

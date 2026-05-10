@@ -433,11 +433,12 @@
 @media (max-width: 1024px) {
   .filing-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: 48px auto 1fr;
+    grid-template-rows: 48px auto 1fr 52px;
     grid-template-areas:
       "topbar"
       "nav"
-      "editor";
+      "editor"
+      "bottombar";
   }
   .filing-nav {
     flex-direction: row;
@@ -703,4 +704,53 @@
 .filing-editor__body [style*="background"] {
   margin: 0 14px 8px;
   border-radius: 6px;
+}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  .filing-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 48px auto 1fr 52px;
+    grid-template-areas:
+      "topbar"
+      "nav"
+      "editor"
+      "bottombar";
+  }
+  .filing-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+    padding: 6px 10px;
+    gap: 4px;
+  }
+  .filing-nav__section-label { display: none; }
+  .filing-nav__item { white-space: nowrap; padding: 5px 8px; font-size: 11px; }
+  .filing-nav__item-amount { display: none; }
+  .filing-nav__progress { display: none; }
+  .filing-nav__add { display: none; }
+  .filing-sidebar { display: none; }
+  .filing-editor__body {
+    padding: 0 12px 12px;
+  }
+  .filing-editor__body .ds-card .ds-grid-2,
+  .filing-editor__body .ds-card .ds-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .filing-bottombar__numbers {
+    gap: 8px;
+    overflow-x: auto;
+  }
+  .filing-bottombar__item { min-width: 0; }
+  .filing-bottombar__label { font-size: 8px; }
+  .filing-bottombar__value { font-size: 11px; }
+  .filing-topbar__context { font-size: 11px; }
+  .bordered-subsection + .bordered-subsection { margin-top: 8px; }
+  div[style*="grid-template-columns: 1fr 2fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
 }
