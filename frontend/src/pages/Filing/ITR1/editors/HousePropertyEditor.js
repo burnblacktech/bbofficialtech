@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { validateHousePropertyStep } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
-import { Field, Grid, Card, Button, Money, Divider } from '../../../../components/ds';
+import { Button } from '../../../../components/ds';
+import FilingField, { FilingGrid, FilingSection } from '../../../../components/Filing/FilingField';
 
 const n = (v) => Number(v) || 0;
 
@@ -53,48 +54,44 @@ export default function HousePropertyEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">House Property</h2>
-      <p className="step-desc">Income or loss from house property</p>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[['none', "I don't own property"], ['selfOccupied', 'I live in my own house'], ['letOut', 'I rent out my property']].map(([k, label]) => (
-          <div key={k} className={`ds-option${type === k ? ' selected' : ''}`} onClick={() => changeType(k)}>
-            <div className="ds-option__label">{label}</div>
-          </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        {[['none', 'No Property'], ['selfOccupied', 'Self-Occupied'], ['letOut', 'Let Out (Rented)']].map(([k, label]) => (
+          <button key={k} onClick={() => changeType(k)} style={{ padding: '6px 14px', fontSize: 12, fontWeight: type === k ? 700 : 500, border: `1px solid ${type === k ? 'var(--brand-primary)' : 'var(--border-light)'}`, borderRadius: 6, background: type === k ? 'var(--brand-primary-light)' : 'var(--bg-card)', color: type === k ? 'var(--brand-primary-dark)' : 'var(--text-secondary)', cursor: 'pointer' }}>
+            {label}
+          </button>
         ))}
       </div>
 
       {type === 'selfOccupied' && (
-        <Card>
-          <Field label="Home Loan Interest (₹)" type="number" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="Home loan interest paid · Max ₹2,00,000 for self-occupied" error={errors.interest} />
-        </Card>
+        <FilingSection title="Self-Occupied Property">
+          <FilingGrid cols={2}>
+            <FilingField label="Home Loan Interest" type="currency" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="Max ₹2L deduction" error={errors.interest} />
+            <div style={{ display: 'flex', alignItems: 'center', fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--color-success)' }}>
+              Loss: -₹{cap.toLocaleString('en-IN')}
+            </div>
+          </FilingGrid>
+        </FilingSection>
       )}
 
       {type === 'letOut' && (
-        <Card>
-          <Grid cols={3}>
-            <Field label="Annual Rent Received (₹)" type="number" value={form.annualRentReceived} onChange={v => update('annualRentReceived', v)} hint="Total rent collected" error={errors.rent} />
-            <Field label="Municipal Taxes Paid (₹)" type="number" value={form.municipalTaxesPaid} onChange={v => update('municipalTaxesPaid', v)} hint="Property tax paid" error={errors.municipal} />
-            <Field label="Home Loan Interest (₹)" type="number" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="No cap for let-out" error={errors.interest} />
-          </Grid>
-        </Card>
+        <FilingSection title="Let-Out Property">
+          <FilingGrid cols={3}>
+            <FilingField label="Annual Rent" type="currency" value={form.annualRentReceived} onChange={v => update('annualRentReceived', v)} error={errors.rent} />
+            <FilingField label="Municipal Tax" type="currency" value={form.municipalTaxesPaid} onChange={v => update('municipalTaxesPaid', v)} error={errors.municipal} />
+            <FilingField label="Loan Interest" type="currency" value={form.interestOnHomeLoan} onChange={v => update('interestOnHomeLoan', v)} hint="No cap for let-out" error={errors.interest} />
+          </FilingGrid>
+          <div style={{ marginTop: 8, fontSize: 12, fontFamily: 'var(--font-mono)', display: 'flex', gap: 16 }}>
+            <span>NAV: ₹{netAV.toLocaleString('en-IN')}</span>
+            <span>Std Ded: -₹{stdDed.toLocaleString('en-IN')}</span>
+            <span style={{ fontWeight: 700, color: netIncome < 0 ? 'var(--color-success)' : 'var(--text-primary)' }}>Net: {netIncome < 0 ? '-' : ''}₹{Math.abs(netIncome).toLocaleString('en-IN')}</span>
+          </div>
+        </FilingSection>
       )}
 
       {type !== 'none' && (
-        <>
-          <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', marginTop: 14 }}>
-            {isSaving ? 'Saving…' : 'Save House Property'}
-          </Button>
-          <Card muted style={{ marginTop: 14 }}>
-            {type === 'letOut' && <>
-              <Money label="Net Annual Value" value={rs(netAV)} />
-              <Money label="Std Deduction (30%)" value={`-${rs(stdDed)}`} />
-            </>}
-            <Money label="Loan Interest" value={`-${rs(cap)}`} />
-            <Divider />
-            <Money label="Net Income" value={`${netIncome < 0 ? '-' : ''}${rs(netIncome)}`} bold color={netIncome < 0 ? 'red' : undefined} />
-          </Card>
-        </>
+        <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ maxWidth: 160, marginTop: 8 }}>
+          {isSaving ? 'Saving…' : 'Save'}
+        </Button>
       )}
     </div>
   );

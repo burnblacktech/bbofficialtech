@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { validateOtherIncomeStep } from '../../../../utils/itrValidation';
 import useAutoSave from '../../../../hooks/useAutoSave';
-import { Field, Grid, Card, Section, Button, Money, Divider } from '../../../../components/ds';
+import { Button } from '../../../../components/ds';
+import FilingField, { FilingGrid, FilingSection } from '../../../../components/Filing/FilingField';
 import P from '../../../../styles/palette';
 
 const n = (v) => Number(v) || 0;
@@ -56,94 +57,49 @@ export default function OtherIncomeEditor({ payload, onSave, isSaving }) {
 
   return (
     <div>
-      <h2 className="step-title">Other Income</h2>
-      <p className="step-desc">Interest, dividends, pension and other sources</p>
+      <FilingSection title="Interest Income">
+        <FilingGrid cols={3}>
+          <FilingField label="Savings Interest" type="currency" value={form.savingsInterest} onChange={v => update('savingsInterest', v)} />
+          <FilingField label="FD / RD Interest" type="currency" value={form.fdInterest} onChange={v => update('fdInterest', v)} />
+          <FilingField label="IT Refund Interest" type="currency" value={form.interestOnITRefund} onChange={v => update('interestOnITRefund', v)} />
+        </FilingGrid>
+      </FilingSection>
 
-      <Card>
-        <Section title="Interest Income" />
-        <Grid cols={3}>
-          <Field label="Savings Account Interest" type="number" value={form.savingsInterest} onChange={v => update('savingsInterest', v)} hint="From bank passbook" />
-          <Field label="FD / RD Interest" type="number" value={form.fdInterest} onChange={v => update('fdInterest', v)} hint="From bank TDS certificate" />
-          <Field label="Interest on IT Refund" type="number" value={form.interestOnITRefund} onChange={v => update('interestOnITRefund', v)} hint="From ITD intimation order" />
-        </Grid>
-      </Card>
+      <FilingSection title="Other Sources">
+        <FilingGrid cols={3}>
+          <FilingField label="Dividends" type="currency" value={form.dividendIncome} onChange={v => update('dividendIncome', v)} />
+          <FilingField label="Family Pension" type="currency" value={form.familyPension} onChange={v => update('familyPension', v)} hint={fp > 0 ? `Exempt: ₹${fpExempt.toLocaleString('en-IN')}` : undefined} />
+          <FilingField label="Winnings / Lottery" type="currency" value={form.winnings} onChange={v => update('winnings', v)} hint="Flat 30% tax" />
+          <FilingField label="Gifts (taxable)" type="currency" value={form.gifts} onChange={v => update('gifts', v)} />
+          <FilingField label="Other Income" type="currency" value={form.otherIncome} onChange={v => update('otherIncome', v)} />
+        </FilingGrid>
+      </FilingSection>
 
-      <Card>
-        <Section title="Other Sources" />
-        <Grid cols={3}>
-          <Field label="Dividend Income" type="number" value={form.dividendIncome} onChange={v => update('dividendIncome', v)} hint="Shares or MF · Fully taxable" />
-          <Field label="Family Pension" type="number" value={form.familyPension} onChange={v => update('familyPension', v)} hint={fp > 0 ? `1/3 exempt: ₹${fpExempt.toLocaleString('en-IN')} (max ₹15K)` : '1/3 or ₹15K whichever is less'} />
-          <Field label="Lottery / Winnings" type="number" value={form.winnings} onChange={v => update('winnings', v)} hint="Flat 30% tax" />
-        </Grid>
-        <Grid cols={3}>
-          <Field label="Gifts (taxable)" type="number" value={form.gifts} onChange={v => update('gifts', v)} hint="Taxable if > ₹50K/year" />
-          <Field label="Any Other Income" type="number" value={form.otherIncome} onChange={v => update('otherIncome', v)} hint="Commission, royalty, etc." />
-          <div />
-        </Grid>
-      </Card>
+      <FilingSection title="Agricultural Income (Exempt)">
+        <FilingGrid cols={2}>
+          <FilingField label="Agricultural Income" type="currency" value={form.agriculturalIncome} onChange={v => update('agriculturalIncome', v)} hint="Exempt · Affects slab if > ₹5K" />
+        </FilingGrid>
+      </FilingSection>
 
-      {/* Agricultural Income — exempt but affects tax calculation */}
-      <Card style={{ borderLeft: '3px solid var(--color-success)' }}>
-        <Section title="Agricultural Income (Exempt)" />
-        <Field label="Agricultural Income" type="number" value={form.agriculturalIncome} onChange={v => update('agriculturalIncome', v)} hint="Exempt from tax · Affects slab rate if > ₹5,000" />
-        {n(form.agriculturalIncome) > 5000 && (
-          <div className="ds-hint" style={{ color: P.warning, marginTop: 4 }}>
-            Since agricultural income exceeds ₹5,000, it will be partially integrated with your other income for tax slab calculation (higher slabs may apply to non-agricultural income).
+      <FilingSection title="Crypto & Digital Assets (VDA)">
+        <FilingGrid cols={3}>
+          <FilingField label="Sale Value" type="currency" value={form.vdaSaleValue} onChange={v => update('vdaSaleValue', v)} />
+          <FilingField label="Cost of Acquisition" type="currency" value={form.vdaCostOfAcquisition} onChange={v => update('vdaCostOfAcquisition', v)} />
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+            {vdaGain > 0 && <span style={{ color: 'var(--text-primary)' }}>Gain: ₹{vdaGain.toLocaleString('en-IN')}</span>}
+            {vdaLoss && <span style={{ color: 'var(--color-error)' }}>Loss (non-deductible)</span>}
           </div>
-        )}
-        {n(form.agriculturalIncome) > 0 && n(form.agriculturalIncome) <= 5000 && (
-          <div className="ds-hint" style={{ color: P.success, marginTop: 4 }}>
-            Agricultural income up to ₹5,000 has no impact on tax calculation.
-          </div>
-        )}
-      </Card>
+        </FilingGrid>
+      </FilingSection>
 
-      {/* Crypto & Digital Assets (VDA) — flat 30% tax */}
-      <Card>
-        <Section title="Crypto & Digital Assets" />
-        <Grid cols={3}>
-          <Field label="Sale Value" type="number" value={form.vdaSaleValue} onChange={v => update('vdaSaleValue', v)} hint="Total sale proceeds from VDA" />
-          <Field label="Cost of Acquisition" type="number" value={form.vdaCostOfAcquisition} onChange={v => update('vdaCostOfAcquisition', v)} hint="Purchase cost of VDA" />
-          <div style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>
-            {vdaGain > 0 && <span style={{ fontWeight: 600 }}>Gain: ₹{vdaGain.toLocaleString('en-IN')}</span>}
-            {vdaLoss && <span style={{ fontWeight: 600, color: P.error }}>Loss: ₹{(n(form.vdaCostOfAcquisition) - n(form.vdaSaleValue)).toLocaleString('en-IN')}</span>}
-          </div>
-        </Grid>
-        <div className="ds-hint" style={{ marginTop: 4 }}>
-          Flat 30% tax, no deductions except purchase cost, 1% TDS under Section 194S
-        </div>
-        {vdaLoss && (
-          <div className="ds-hint" style={{ color: P.error, marginTop: 4 }}>
-            VDA losses cannot offset other income
-          </div>
-        )}
-        {vdaGain > 0 && (
-          <div className="ds-hint" style={{ color: P.warning, marginTop: 4 }}>
-            Tax: ₹{vdaTax.toLocaleString('en-IN')} (30% flat)
-          </div>
-        )}
-      </Card>
-
-      <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ width: '100%', marginTop: 14 }}>
-        {isSaving ? 'Saving…' : 'Save Other Income'}
-      </Button>
-
-      <Card muted style={{ marginTop: 14 }}>
-        {n(form.savingsInterest) > 0 && <Money label="Savings Interest" value={rs(form.savingsInterest)} />}
-        {n(form.fdInterest) > 0 && <Money label="FD/RD Interest" value={rs(form.fdInterest)} />}
-        {n(form.interestOnITRefund) > 0 && <Money label="IT Refund Interest" value={rs(form.interestOnITRefund)} />}
-        {n(form.dividendIncome) > 0 && <Money label="Dividends" value={rs(form.dividendIncome)} />}
-        {fp > 0 && <Money label="Family Pension (net)" value={rs(fp - fpExempt)} />}
-        {n(form.winnings) > 0 && <Money label="Winnings (30% tax)" value={rs(form.winnings)} />}
-        {n(form.gifts) > 0 && <Money label="Gifts" value={rs(form.gifts)} />}
-        {n(form.otherIncome) > 0 && <Money label="Other" value={rs(form.otherIncome)} />}
-        {vdaGain > 0 && <Money label="VDA Gain (30% flat)" value={rs(vdaGain)} />}
-        <Divider />
-        <Money label="Total Other Income" value={rs(total)} bold />
-        {n(form.agriculturalIncome) > 0 && (
-          <Money label="Agricultural Income (exempt)" value={rs(form.agriculturalIncome)} color="green" />
-        )}
-      </Card>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+        <Button variant="primary" onClick={handleSave} disabled={isSaving} style={{ maxWidth: 160 }}>
+          {isSaving ? 'Saving…' : 'Save'}
+        </Button>
+        <span style={{ fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+          Total: ₹{total.toLocaleString('en-IN')}
+        </span>
+      </div>
     </div>
   );
 }
