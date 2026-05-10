@@ -531,11 +531,13 @@ export default function ITR1Flow() {
     onError: (e) => {
       // Don't clear dirty flag — data is still unsaved
       const msg = e?.response?.status === 409
-        ? 'This filing was updated elsewhere. Reloading latest version...'
+        ? 'Syncing latest changes...'
         : (e?.userMessage || e?.response?.data?.error || 'Save failed');
-      toast.error(msg, { id: 'save-error' });
       if (e?.response?.status === 409) {
+        toast(msg, { id: 'save-sync', icon: '🔄', duration: 2000 });
         qc.invalidateQueries({ queryKey: ['filing', filingId] });
+      } else {
+        toast.error(msg, { id: 'save-error' });
       }
     },
   });
