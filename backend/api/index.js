@@ -21,12 +21,12 @@ module.exports = async (req, res) => {
         const { sequelize } = require('../src/config/database');
         require('../src/models');
         await sequelize.authenticate();
-        await sequelize.sync({ alter: true });
         dbReady = true;
-        console.log('DB connected and synced');
+        // Sync schema in background (non-blocking) — adds missing tables/columns
+        sequelize.sync({ alter: true }).catch(e => console.error('DB sync error (non-blocking):', e.message));
+        console.log('DB connected');
       } catch (dbErr) {
         console.error('DB init failed:', dbErr.message);
-        // Mark ready anyway so we don't retry every request
         dbReady = true;
       }
     }

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Page, Spinner, Stack } from '../../design-system';
+import { Stack } from '../../design-system';
 import { getDashboardSummary } from '../../services/financeService';
 import api from '../../services/api';
 import FinancialOverview from './components/FinancialOverview';
@@ -91,8 +91,16 @@ export default function DashboardV2() {
             <h1 className="dash-v2__greeting">FY {fy} at a Glance</h1>
             <p className="dash-v2__subtitle">Loading your financial data...</p>
           </div>
+          <select className="dash-v2__fy-select" value={fy} onChange={(e) => setFy(e.target.value)}>
+            {FY_OPTIONS.map((y) => <option key={y} value={y}>FY {y}</option>)}
+          </select>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}><Spinner size="lg" /></div>
+        <Stack gap="lg">
+          <div className="dash-v2__grid-4">
+            {[1,2,3,4].map(i => <div key={i} style={{ height: 80, borderRadius: 'var(--bb-radius-md)', background: 'var(--bb-bg-elevated)', animation: 'pulse 1.5s infinite' }} />)}
+          </div>
+          <QuickActions />
+        </Stack>
       </div>
     );
   }
@@ -105,6 +113,9 @@ export default function DashboardV2() {
             <h1 className="dash-v2__greeting">FY {fy} at a Glance</h1>
             <p className="dash-v2__subtitle">Something went wrong loading your data.</p>
           </div>
+          <select className="dash-v2__fy-select" value={fy} onChange={(e) => setFy(e.target.value)}>
+            {FY_OPTIONS.map((y) => <option key={y} value={y}>FY {y}</option>)}
+          </select>
         </div>
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <p style={{ fontSize: 14, color: 'var(--bb-fg-muted)', marginBottom: 12 }}>This could be a temporary issue. You can still file your ITR.</p>
@@ -113,6 +124,7 @@ export default function DashboardV2() {
             <button className="ds-btn ds-btn-md ds-btn-secondary" onClick={() => window.location.reload()}>Retry</button>
           </div>
         </div>
+        <QuickActions />
       </div>
     );
   }
