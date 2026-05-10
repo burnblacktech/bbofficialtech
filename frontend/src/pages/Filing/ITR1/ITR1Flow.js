@@ -1142,7 +1142,11 @@ export default function ITR1Flow() {
         {!payload?.deductions?.healthSelf && <div style={{ fontSize: 11, color: 'var(--text-muted)', padding: '3px 0' }}>💡 Add health insurance (80D) for deduction</div>}
 
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginTop: 14, marginBottom: 6 }}>📄 Documents</div>
-        <button className="filing-nav__add" onClick={() => openImport(null)}>+ Upload Document</button>
+        {selected === 'personalInfo' && <button className="filing-nav__add" onClick={() => openImport(null)}>Upload Aadhaar</button>}
+        {(selected === 'salary' || !selected) && <button className="filing-nav__add" onClick={() => openImport('form16')}>Upload Form 16</button>}
+        {selected === 'bank' && <button className="filing-nav__add" onClick={() => openImport('26as')}>Upload 26AS</button>}
+        {selected === 'other' && <button className="filing-nav__add" onClick={() => openImport('ais')}>Upload AIS</button>}
+        <button className="filing-nav__add" onClick={() => openImport(null)}>+ Other Document</button>
       </aside>
 
       {/* ── Bottom Computation Bar (fixed) ── */}
