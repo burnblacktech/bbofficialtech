@@ -7,11 +7,12 @@
 /* ── Root Grid ── */
 .filing-layout {
   display: grid;
-  grid-template-rows: 48px 1fr;
+  grid-template-rows: 48px 1fr 52px;
   grid-template-columns: 220px 1fr 280px;
   grid-template-areas:
     "topbar topbar topbar"
-    "nav editor sidebar";
+    "nav editor sidebar"
+    "bottombar bottombar bottombar";
   height: 100vh;
   overflow: hidden;
   background: var(--bg-page);
@@ -309,7 +310,7 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px - 52px);
   padding: 12px 14px;
   border-left: 1px solid var(--border-light);
   background: var(--bg-card);
@@ -562,4 +563,51 @@
 }
 .bordered-subsection__body .ds-field {
   margin-bottom: 6px;
+}
+
+/* ── Bottom Computation Bar ── */
+.filing-bottombar {
+  grid-area: bottombar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-light);
+  z-index: 10;
+}
+.filing-bottombar__numbers {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.filing-bottombar__item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.filing-bottombar__item--result {
+  padding-left: 12px;
+  border-left: 2px solid var(--border-light);
+}
+.filing-bottombar__label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-light);
+}
+.filing-bottombar__value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.filing-bottombar__value--refund { color: var(--color-success); }
+.filing-bottombar__value--payable { color: var(--color-error); }
+.filing-bottombar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

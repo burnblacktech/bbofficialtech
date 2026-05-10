@@ -1000,6 +1000,13 @@ export default function ITR1Flow() {
           <span>AY {filing?.assessmentYear}</span>
           {maskedPan && <><span className="filing-topbar__sep">·</span><span style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>{maskedPan}</span></>}
         </div>
+        <div className="filing-sidebar__regime" style={{ margin: 0 }}>
+          {['old', 'new'].map(r => (
+            <button key={r} className={`filing-sidebar__regime-btn ${selectedRegime === r ? 'active' : ''}`} onClick={() => handleRegimeSwitch(r)}>
+              {r === 'old' ? 'Old' : 'New'}
+            </button>
+          ))}
+        </div>
         <div className="filing-topbar__spacer" />
         <div className={`filing-topbar__save ${saveMut.isPending ? 'saving' : ''}`}>
           <span className="filing-topbar__save-dot" />
@@ -1114,49 +1121,51 @@ export default function ITR1Flow() {
         )}
       </div>
 
-      {/* ── Right Sidebar: Computation + Actions ── */}
+      {/* ── Right Sidebar: Checklist + Tips + Documents ── */}
       <aside className="filing-sidebar">
-        <div className="filing-sidebar__computation">
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginBottom: 8 }}>Tax Computation</div>
-          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Gross Income</span><span className="filing-sidebar__row-value">₹{(income?.grossTotal || 0).toLocaleString('en-IN')}</span></div>
-          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Deductions</span><span className="filing-sidebar__row-value" style={{ color: 'var(--color-success)' }}>-₹{(bestRegime?.deductions || 0).toLocaleString('en-IN')}</span></div>
-          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Taxable Income</span><span className="filing-sidebar__row-value">₹{(bestRegime?.taxableIncome || 0).toLocaleString('en-IN')}</span></div>
-          <div className="filing-sidebar__divider" />
-          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">Tax</span><span className="filing-sidebar__row-value">₹{(bestRegime?.totalTax || 0).toLocaleString('en-IN')}</span></div>
-          <div className="filing-sidebar__row"><span className="filing-sidebar__row-label">TDS Paid</span><span className="filing-sidebar__row-value">₹{(tds?.total || 0).toLocaleString('en-IN')}</span></div>
-          <div className="filing-sidebar__divider" />
-          <div className="filing-sidebar__result">
-            <span>{bestRegime?.netPayable > 0 ? 'Tax Payable' : 'Refund'}</span>
-            <span className={`filing-sidebar__result-value ${bestRegime?.netPayable > 0 ? 'filing-sidebar__result-value--payable' : 'filing-sidebar__result-value--refund'}`}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginBottom: 6 }}>Completion</div>
+        {cardSections.map(s => (
+          <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', fontSize: 12 }}>
+            <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus(s.id, payload, comp)}`} />
+            <span style={{ color: getCompletionStatus(s.id, payload, comp) === 'complete' ? 'var(--color-success)' : 'var(--text-secondary)' }}>{s.label}</span>
+          </div>
+        ))}
+
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginTop: 14, marginBottom: 6 }}>💡 Tips</div>
+        {comp?.savings > 0 && comp.recommended !== selectedRegime && (
+          <div style={{ fontSize: 11, color: 'var(--color-success)', padding: '4px 0' }}>
+            Switch to {comp.recommended} regime to save ₹{comp.savings.toLocaleString('en-IN')}
+          </div>
+        )}
+        {!payload?.deductions?.ppf && <div style={{ fontSize: 11, color: 'var(--text-muted)', padding: '3px 0' }}>💡 Add 80C investments to reduce tax</div>}
+        {!payload?.deductions?.healthSelf && <div style={{ fontSize: 11, color: 'var(--text-muted)', padding: '3px 0' }}>💡 Add health insurance (80D) for deduction</div>}
+
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginTop: 14, marginBottom: 6 }}>📄 Documents</div>
+        <button className="filing-nav__add" onClick={() => openImport(null)}>+ Upload Document</button>
+      </aside>
+
+      {/* ── Bottom Computation Bar (fixed) ── */}
+      <div className="filing-bottombar">
+        <div className="filing-bottombar__numbers">
+          <div className="filing-bottombar__item"><span className="filing-bottombar__label">Gross</span><span className="filing-bottombar__value">₹{(income?.grossTotal || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-bottombar__item"><span className="filing-bottombar__label">Deductions</span><span className="filing-bottombar__value" style={{ color: 'var(--color-success)' }}>-₹{(bestRegime?.deductions || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-bottombar__item"><span className="filing-bottombar__label">Taxable</span><span className="filing-bottombar__value">₹{(bestRegime?.taxableIncome || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-bottombar__item"><span className="filing-bottombar__label">Tax + Cess</span><span className="filing-bottombar__value">₹{(bestRegime?.totalTax || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-bottombar__item"><span className="filing-bottombar__label">TDS</span><span className="filing-bottombar__value">₹{(tds?.total || 0).toLocaleString('en-IN')}</span></div>
+          <div className="filing-bottombar__item filing-bottombar__item--result">
+            <span className="filing-bottombar__label">{bestRegime?.netPayable > 0 ? 'Payable' : 'Refund'}</span>
+            <span className={`filing-bottombar__value ${bestRegime?.netPayable > 0 ? 'filing-bottombar__value--payable' : 'filing-bottombar__value--refund'}`}>
               ₹{Math.abs(bestRegime?.netPayable || 0).toLocaleString('en-IN')}
             </span>
           </div>
         </div>
-
-        <div className="filing-sidebar__regime">
-          {['old', 'new'].map(r => (
-            <button key={r} className={`filing-sidebar__regime-btn ${selectedRegime === r ? 'active' : ''}`} onClick={() => handleRegimeSwitch(r)}>
-              {r === 'old' ? 'Old Regime' : 'New Regime'}
-            </button>
-          ))}
-        </div>
-
-        {comp?.savings > 0 && (
-          <div style={{ fontSize: 11, color: 'var(--color-success)', textAlign: 'center', padding: '4px 0' }}>
-            ✓ {comp.recommended === selectedRegime ? 'Optimal' : `Switch to ${comp.recommended} to save ₹${comp.savings.toLocaleString('en-IN')}`}
-          </div>
-        )}
-
-        <div className="filing-sidebar__actions">
+        <div className="filing-bottombar__actions">
           <button className="filing-sidebar__submit" onClick={handleSubmit} disabled={!completeness.complete || isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit Filing'}
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
-          <div className="filing-sidebar__secondary">
-            <button onClick={downloadPDF}>⬇ PDF</button>
-            <button onClick={downloadJSON}>⬇ JSON</button>
-          </div>
+          <button className="filing-sidebar__secondary" onClick={downloadPDF} style={{ padding: '6px 10px', fontSize: 11 }}>⬇ PDF</button>
         </div>
-      </aside>
+      </div>
       {/* ── Import Modal Overlay ── */}
       {showImportModal && !importReviewData && (
         <ImportDocumentModal
