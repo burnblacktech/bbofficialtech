@@ -486,3 +486,57 @@
 .filing-editor__body .ds-btn--primary[style*="width:100%"] {
   max-width: 180px;
 }
+
+/* ═══════════════════════════════════════════════════════
+   UNIT GRID SYSTEM
+   Every form uses a 3-column × N-row grid.
+   1 unit = 200px wide × 56px tall (label + input + gap)
+   Eye flow: left→right per row, then down.
+   ═══════════════════════════════════════════════════════ */
+
+.unit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 200px));
+  gap: 4px 14px;
+  align-items: start;
+}
+.unit-grid .ds-field {
+  max-width: 200px;
+  margin-bottom: 0;
+}
+.unit-grid .ds-input,
+.unit-grid .ds-select {
+  max-width: 200px;
+}
+
+/* 2-column variant (for sections with fewer fields) */
+.unit-grid--2col {
+  grid-template-columns: repeat(2, minmax(160px, 220px));
+}
+
+/* Span 2 columns (for address line, employer name) */
+.unit-grid__span-2 {
+  grid-column: span 2;
+}
+.unit-grid__span-2 .ds-input {
+  max-width: 420px;
+}
+
+/* Section divider within a card (visual grouping) */
+.unit-grid__divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--border-light);
+  margin: 6px 0;
+}
+
+/* Section sub-label (e.g., "Contact" / "Address" above columns) */
+.unit-grid__group-label {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-light);
+  padding: 4px 0 2px;
+}

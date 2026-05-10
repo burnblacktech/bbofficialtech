@@ -373,14 +373,21 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
         </>
       )}
 
-      {/* ── Section 2: Contact & Address (horizontal) ── */}
+      {/* ── Section 2: Contact & Address (unit grid: 3 cols × 3 rows) ── */}
       <Card active>
-        <Section title="Contact & Address" />
-        <Grid cols={3}>
-          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" hint="ITD sends notices here" />
-          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" hint="10-digit mobile" />
-          <Field label="Aadhaar" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" hint="12-digit · For e-verification" />
-        </Grid>
+        <div className="unit-grid">
+          <div className="unit-grid__group-label">Contact</div>
+          <div className="unit-grid__group-label" style={{ gridColumn: '2 / 4' }}>Address</div>
+          <Field label="Email *" value={form.email} onChange={v => updateField('email', v)} onBlur={() => handleBlur('email')} error={errors.email} type="text" />
+          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
+          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
+          <Field label="Phone *" value={form.phone} onChange={v => updateField('phone', v)} onBlur={() => handleBlur('phone')} error={errors.phone} type="text" />
+          <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
+          <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} onBlur={() => handleBlur('address.stateCode')} error={errors['address.stateCode']} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select" />
+          <Field label="Aadhaar" value={form.aadhaar} onChange={v => updateField('aadhaar', v.replace(/[^\d]/g, '').slice(0, 12))} onBlur={() => handleBlur('aadhaar')} error={errors.aadhaar} type="text" />
+          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
+          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
+        </div>
         <AadhaarUploadButton aadhaarValue={form.aadhaar} onVerified={(data) => {
               if (data.aadhaarNumber) updateField('aadhaar', data.aadhaarNumber.replace(/\s/g, ''));
               if (data.name && !form.firstName) {
@@ -447,16 +454,6 @@ export default function PersonalInfoEditor({ payload, onSave, isSaving, filing, 
                 }
               }
             }} />
-        <Grid cols={3}>
-          <Field label="Flat/Door/Building *" value={form.address.flatDoorBuilding} onChange={v => updateAddress('flatDoorBuilding', v)} onBlur={() => handleBlur('address.flatDoorBuilding')} error={errors['address.flatDoorBuilding']} />
-          <Field label="Road/Street" value={form.address.roadStreet} onChange={v => updateAddress('roadStreet', v)} />
-          <Field label="City *" value={form.address.city} onChange={v => updateAddress('city', v)} onBlur={() => handleBlur('address.city')} error={errors['address.city']} />
-        </Grid>
-        <Grid cols={3}>
-          <Select label="State *" value={form.address.stateCode} onChange={v => updateAddress('stateCode', v)} onBlur={() => handleBlur('address.stateCode')} error={errors['address.stateCode']} options={INDIAN_STATES.map(s => ({ value: s.code, label: s.name }))} placeholder="Select state" />
-          <Field label="Pincode *" value={form.address.pincode} onChange={v => updateAddress('pincode', v)} onBlur={() => handleBlur('address.pincode')} error={errors['address.pincode']} />
-          <Field label="Area/Locality" value={form.address.areaLocality} onChange={v => updateAddress('areaLocality', v)} />
-        </Grid>
       </Card>
 
       {/* ── Section 4: Filing Metadata ── */}
