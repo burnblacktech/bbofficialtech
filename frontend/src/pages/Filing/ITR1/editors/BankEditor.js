@@ -186,8 +186,6 @@ export default function BankEditor({ payload, onSave, isSaving, computation, fil
 
   return (
     <div>
-      <h2 className="step-title">Taxes Paid, Bank & Submit</h2>
-      <p className="step-desc">Enter taxes already paid, bank details for refund, and download your ITR JSON</p>
 
       {/* Bank Details */}
       <Card active>

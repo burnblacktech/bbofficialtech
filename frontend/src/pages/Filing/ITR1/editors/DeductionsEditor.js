@@ -249,8 +249,6 @@ export default function DeductionsEditor({
   return (
     <div className="ds-content">
       <div className="ds-content">
-        <h2 className="step-title">Deductions</h2>
-        <p className="step-desc">Claim deductions to reduce your taxable income</p>
 
         {/* ── 1. Regime Comparison Banner ── */}
         <Card style={{ marginBottom: 14 }}>
@@ -349,7 +347,7 @@ export default function DeductionsEditor({
             </Card>
 
             {/* ── 8. Save Button ── */}
-            <Button variant="primary" onClick={handleSave} style={{ width: '100%', marginTop: 14 }}>
+            <Button variant="primary" onClick={handleSave} style={{ maxWidth: 180, marginTop: 14 }}>
               <Save size={14} /> Save Deductions
             </Button>
           </>

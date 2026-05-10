@@ -154,8 +154,6 @@ export default function SalaryEditor({ payload, onSave, isSaving, whispers, fili
 
   return (
     <div>
-      <h2 className="step-title">Salary Income</h2>
-      <p className="step-desc">Enter your employer details from Form 16. If you changed jobs this year, add each employer separately.</p>
 
       {/* Tracked data banner */}
       {trackedSalaryTotal > 0 && (
