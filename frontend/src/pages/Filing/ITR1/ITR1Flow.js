@@ -1021,9 +1021,12 @@ export default function ITR1Flow() {
           {[{ id: 'personalInfo', label: 'Personal Info' }, ...SOURCES.filter(s => active.includes(s.id)).map(s => ({ id: s.id, label: s.label }))].map(item => (
             <button key={item.id} className={`filing-nav__item ${selected === item.id ? 'active' : ''}`} onClick={() => setSelected(item.id)}>
               <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus(item.id, payload, comp)}`} />
-              <span>{item.label}</span>
+              <span style={{ flex: 1 }}>{item.label}</span>
               {getCardSummary(item.id, payload, comp, income, selectedRegime).number && (
                 <span className="filing-nav__item-amount">{getCardSummary(item.id, payload, comp, income, selectedRegime).number}</span>
+              )}
+              {item.id !== 'personalInfo' && active.length > 1 && (
+                <span onClick={(e) => { e.stopPropagation(); toggleSource(item.id); }} style={{ marginLeft: 4, fontSize: 11, color: 'var(--text-light)', cursor: 'pointer', padding: '2px 4px', borderRadius: 3 }} title={`Remove ${item.label}`}>×</span>
               )}
             </button>
           ))}
