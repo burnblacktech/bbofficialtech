@@ -1127,29 +1127,68 @@ export default function ITR1Flow() {
 
       {/* ── Right Sidebar: Checklist + Tips + Documents ── */}
       <aside className="filing-sidebar">
-        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginBottom: 6 }}>Completion</div>
-        {cardSections.map(s => (
-          <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0', fontSize: 12 }}>
-            <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus(s.id, payload, comp)}`} />
-            <span style={{ color: getCompletionStatus(s.id, payload, comp) === 'complete' ? 'var(--color-success)' : 'var(--text-secondary)' }}>{s.label}</span>
+        {/* Progress */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', marginBottom: 8 }}>Progress</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{completedCount}/{cardSections.length}</div>
+            <div style={{ flex: 1, height: 6, background: 'var(--border-light)', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ width: `${(completedCount / cardSections.length) * 100}%`, height: '100%', background: completedCount === cardSections.length ? 'var(--color-success)' : 'var(--brand-primary)', borderRadius: 3, transition: 'width 0.3s' }} />
+            </div>
           </div>
-        ))}
+          {cardSections.map(s => (
+            <div key={s.id} onClick={() => setSelected(s.id)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', fontSize: 13, cursor: 'pointer', borderRadius: 4, background: selected === s.id ? 'var(--brand-primary-light)' : 'transparent' }}>
+              <span className={`filing-nav__item-dot filing-nav__item-dot--${getCompletionStatus(s.id, payload, comp)}`} />
+              <span style={{ flex: 1, color: getCompletionStatus(s.id, payload, comp) === 'complete' ? 'var(--color-success)' : 'var(--text-secondary)', fontWeight: selected === s.id ? 600 : 400 }}>{s.label}</span>
+              {getCompletionStatus(s.id, payload, comp) === 'complete' && <span style={{ fontSize: 11, color: 'var(--color-success)' }}>✓</span>}
+            </div>
+          ))}
+        </div>
 
-        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginTop: 14, marginBottom: 6 }}>💡 Tips</div>
-        {comp?.savings > 0 && comp.recommended !== selectedRegime && (
-          <div style={{ fontSize: 11, color: 'var(--color-success)', padding: '4px 0' }}>
-            Switch to {comp.recommended} regime to save ₹{comp.savings.toLocaleString('en-IN')}
+        {/* Tax Saving Tips */}
+        <div style={{ marginBottom: 16, padding: '12px', background: 'var(--bg-muted)', borderRadius: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', marginBottom: 8 }}>💡 Tax Tips</div>
+          {comp?.savings > 0 && comp.recommended !== selectedRegime && (
+            <div style={{ fontSize: 13, color: 'var(--color-success)', padding: '4px 0', fontWeight: 600 }}>
+              Switch to {comp.recommended} regime → save ₹{comp.savings.toLocaleString('en-IN')}
+            </div>
+          )}
+          {comp?.savings > 0 && comp.recommended === selectedRegime && (
+            <div style={{ fontSize: 13, color: 'var(--color-success)', padding: '4px 0' }}>✓ Optimal regime selected</div>
+          )}
+          {selectedRegime === 'old' && !payload?.deductions?.ppf && (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', padding: '4px 0' }}>→ Add 80C (PPF/ELSS) to save up to ₹46,800</div>
+          )}
+          {selectedRegime === 'old' && !payload?.deductions?.healthSelf && (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', padding: '4px 0' }}>→ Add 80D health insurance to save up to ₹15,600</div>
+          )}
+          {selectedRegime === 'old' && !payload?.deductions?.nps && (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', padding: '4px 0' }}>→ Add NPS (80CCD) to save up to ₹15,600</div>
+          )}
+          {selectedRegime === 'new' && (
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', padding: '4px 0' }}>New regime: no deductions needed. Standard deduction ₹75K auto-applied.</div>
+          )}
+        </div>
+
+        {/* Documents */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-muted)', marginBottom: 8 }}>📄 Quick Import</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {selected === 'personalInfo' && <button className="filing-nav__add" onClick={() => openImport(null)} style={{ fontSize: 13 }}>Upload Aadhaar</button>}
+            {(selected === 'salary' || !selected) && <button className="filing-nav__add" onClick={() => openImport('form16')} style={{ fontSize: 13 }}>Upload Form 16</button>}
+            {selected === 'bank' && <button className="filing-nav__add" onClick={() => openImport('26as')} style={{ fontSize: 13 }}>Upload 26AS</button>}
+            {selected === 'other' && <button className="filing-nav__add" onClick={() => openImport('ais')} style={{ fontSize: 13 }}>Upload AIS</button>}
+            {active.includes('capital_gains') && <button className="filing-nav__add" onClick={() => openImport('broker')} style={{ fontSize: 13 }}>Upload Broker Statement</button>}
+            <button className="filing-nav__add" onClick={() => openImport(null)} style={{ fontSize: 13 }}>+ Other Document</button>
           </div>
-        )}
-        {!payload?.deductions?.ppf && <div style={{ fontSize: 11, color: 'var(--text-muted)', padding: '3px 0' }}>💡 Add 80C investments to reduce tax</div>}
-        {!payload?.deductions?.healthSelf && <div style={{ fontSize: 11, color: 'var(--text-muted)', padding: '3px 0' }}>💡 Add health insurance (80D) for deduction</div>}
+        </div>
 
-        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', marginTop: 14, marginBottom: 6 }}>📄 Documents</div>
-        {selected === 'personalInfo' && <button className="filing-nav__add" onClick={() => openImport(null)}>Upload Aadhaar</button>}
-        {(selected === 'salary' || !selected) && <button className="filing-nav__add" onClick={() => openImport('form16')}>Upload Form 16</button>}
-        {selected === 'bank' && <button className="filing-nav__add" onClick={() => openImport('26as')}>Upload 26AS</button>}
-        {selected === 'other' && <button className="filing-nav__add" onClick={() => openImport('ais')}>Upload AIS</button>}
-        <button className="filing-nav__add" onClick={() => openImport(null)}>+ Other Document</button>
+        {/* Filing Info */}
+        <div style={{ fontSize: 12, color: 'var(--text-light)', borderTop: '1px solid var(--border-light)', paddingTop: 10 }}>
+          <div style={{ marginBottom: 4 }}><strong>ITR Type:</strong> {itrType}</div>
+          <div style={{ marginBottom: 4 }}><strong>AY:</strong> {filing?.assessmentYear}</div>
+          <div><strong>Status:</strong> {filing?.lifecycleState === 'draft' ? 'Draft' : filing?.lifecycleState}</div>
+        </div>
       </aside>
 
       {/* ── Bottom Computation Bar (fixed) ── */}

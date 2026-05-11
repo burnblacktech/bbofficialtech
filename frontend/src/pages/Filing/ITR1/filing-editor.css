@@ -277,8 +277,8 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 48px - 52px);
-  padding: 12px 14px;
+  max-height: calc(100vh - 52px - 56px);
+  padding: 16px 18px;
   border-left: 1px solid var(--border-light);
   background: var(--bg-card);
 }
