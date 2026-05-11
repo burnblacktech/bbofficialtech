@@ -49,7 +49,7 @@ export const t = {
   // Labels
   label: {
     display: 'block',
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: 700,
     fontFamily: font.family,
     color: color.textSecondary,
@@ -60,8 +60,8 @@ export const t = {
   // Text inputs
   input: {
     width: '100%',
-    padding: '10px 14px',
-    fontSize: 17,
+    padding: '11px 14px',
+    fontSize: 19,
     fontWeight: 500,
     fontFamily: font.family,
     color: color.text,
@@ -75,8 +75,8 @@ export const t = {
   // Numeric inputs (with ₹ prefix space)
   inputCurrency: {
     width: '100%',
-    padding: '10px 14px 10px 30px',
-    fontSize: 17,
+    padding: '11px 14px 11px 32px',
+    fontSize: 19,
     fontWeight: 500,
     fontFamily: font.mono,
     fontVariantNumeric: 'tabular-nums',
@@ -92,8 +92,8 @@ export const t = {
   select: {
     width: '100%',
     minWidth: 180,
-    padding: '10px 34px 10px 14px',
-    fontSize: 17,
+    padding: '11px 36px 11px 14px',
+    fontSize: 19,
     fontWeight: 500,
     fontFamily: font.family,
     color: color.text,
@@ -105,12 +105,12 @@ export const t = {
     boxSizing: 'border-box',
     backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
     backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 12px center',
+    backgroundPosition: 'right 14px center',
   },
 
   // Hints
   hint: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 400,
     color: color.textLight,
     marginTop: 3,
@@ -118,7 +118,7 @@ export const t = {
 
   // Error hints
   errorHint: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 500,
     color: color.error,
     marginTop: 3,
@@ -130,7 +130,7 @@ export const t = {
     left: 12,
     top: '50%',
     transform: 'translateY(-50%)',
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: font.mono,
     color: color.textLight,
     pointerEvents: 'none',
