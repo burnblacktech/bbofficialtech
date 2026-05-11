@@ -222,6 +222,14 @@ const App = () => {
     return () => document.removeEventListener('wheel', handler);
   }, []);
 
+  // Keep-alive: ping backend every 4 min to prevent cold starts
+  useEffect(() => {
+    const ping = () => fetch('/api/health').catch(() => {});
+    ping();
+    const interval = setInterval(ping, 240000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <ErrorBoundary>
       <AppContent />
