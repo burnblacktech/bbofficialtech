@@ -49,19 +49,19 @@ export const t = {
   // Labels
   label: {
     display: 'block',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 700,
     fontFamily: font.family,
     color: color.textSecondary,
-    marginBottom: 4,
+    marginBottom: 5,
     lineHeight: 1.2,
   },
 
   // Text inputs
   input: {
     width: '100%',
-    padding: '9px 12px',
-    fontSize: 16,
+    padding: '10px 14px',
+    fontSize: 17,
     fontWeight: 500,
     fontFamily: font.family,
     color: color.text,
@@ -75,8 +75,8 @@ export const t = {
   // Numeric inputs (with ₹ prefix space)
   inputCurrency: {
     width: '100%',
-    padding: '9px 12px 9px 28px',
-    fontSize: 16,
+    padding: '10px 14px 10px 30px',
+    fontSize: 17,
     fontWeight: 500,
     fontFamily: font.mono,
     fontVariantNumeric: 'tabular-nums',
@@ -92,8 +92,8 @@ export const t = {
   select: {
     width: '100%',
     minWidth: 180,
-    padding: '9px 32px 9px 12px',
-    fontSize: 16,
+    padding: '10px 34px 10px 14px',
+    fontSize: 17,
     fontWeight: 500,
     fontFamily: font.family,
     color: color.text,
@@ -110,7 +110,7 @@ export const t = {
 
   // Hints
   hint: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 400,
     color: color.textLight,
     marginTop: 3,
@@ -118,7 +118,7 @@ export const t = {
 
   // Error hints
   errorHint: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 500,
     color: color.error,
     marginTop: 3,
@@ -127,10 +127,10 @@ export const t = {
   // ₹ prefix symbol
   currencyPrefix: {
     position: 'absolute',
-    left: 10,
+    left: 12,
     top: '50%',
     transform: 'translateY(-50%)',
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: font.mono,
     color: color.textLight,
     pointerEvents: 'none',
