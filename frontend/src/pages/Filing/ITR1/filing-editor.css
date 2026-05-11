@@ -7,7 +7,7 @@
 /* ── Root Grid ── */
 .filing-layout {
   display: grid;
-  grid-template-rows: 48px 1fr 52px;
+  grid-template-rows: 52px 1fr 56px;
   grid-template-columns: 220px 1fr 280px;
   grid-template-areas:
     "topbar topbar topbar"
@@ -23,8 +23,8 @@
   grid-area: topbar;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px;
+  gap: 16px;
+  padding: 0 20px;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-light);
   z-index: 10;
@@ -198,6 +198,21 @@
 }
 .filing-editor__body {
   flex: 1;
+
+/* ── Editor Footer (Prev/Next) ── */
+.filing-editor__footer {
+  flex-shrink: 0;
+  padding: 12px 24px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+}
+.filing-editor__footer-nav {
+  display: flex;
+  gap: 8px;
+}
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 20px 16px;
@@ -524,7 +539,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 24px;
   background: var(--bg-card);
   border-top: 1px solid var(--border-light);
   z-index: 10;
@@ -532,30 +547,31 @@
 .filing-bottombar__numbers {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
 }
 .filing-bottombar__item {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 .filing-bottombar__item--result {
-  padding-left: 12px;
-  border-left: 2px solid var(--border-light);
+  padding-left: 16px;
+  border-left: 2px solid var(--border-medium, #D1D5DB);
 }
 .filing-bottombar__label {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   color: var(--text-light);
 }
 .filing-bottombar__value {
   font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 .filing-bottombar__value--refund { color: var(--color-success); }
 .filing-bottombar__value--payable { color: var(--color-error); }
