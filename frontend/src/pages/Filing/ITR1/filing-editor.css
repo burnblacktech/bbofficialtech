@@ -33,7 +33,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px 8px;
@@ -46,7 +46,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-secondary);
 }
 .filing-topbar__itr {
@@ -87,7 +87,7 @@
   margin-bottom: 4px;
 }
 .filing-nav__section-label {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -101,7 +101,7 @@
   padding: 6px 8px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
   border: none;
   background: none;
@@ -129,7 +129,7 @@
 .filing-nav__item-amount {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
@@ -139,7 +139,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--brand-text);
   cursor: pointer;
   border: none;
@@ -170,7 +170,7 @@
   transition: background 0.3s;
 }
 .filing-nav__progress-text {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 
