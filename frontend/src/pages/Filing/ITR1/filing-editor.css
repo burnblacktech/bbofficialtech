@@ -255,34 +255,6 @@
   color: var(--border-medium);
   font-weight: 400;
 }
-/* Inputs never stretch full width */
-.filing-editor__body .ds-field {
-  margin-bottom: 6px;
-}
-/* Selects need padding-right for the arrow icon */
-.filing-editor__body .ds-field select,
-.filing-editor__body .ds-field .ds-select {
-  padding-right: 32px !important;
-  text-overflow: ellipsis;
-  font-size: 16px !important;
-}
-/* ── Field width constraints ── */
-.filing-editor__body input,
-.filing-editor__body select {
-  max-width: 320px;
-}
-.filing-editor__body .field-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 280px));
-  gap: 10px 20px;
-}
-.filing-editor__body .field-grid--narrow input { max-width: 200px; }
-.filing-editor__body .field-grid--mono input {
-  font-family: var(--font-mono);
-  letter-spacing: 0.5px;
-  max-width: 180px;
-}
-
 /* ── Right Sidebar ── */
 .filing-sidebar {
   grid-area: sidebar;
@@ -654,12 +626,6 @@
   max-width: none;
 }
 
-/* Inputs inside bordered cards: full width of their cell */
-.filing-editor__body .ds-card .ds-input,
-.filing-editor__body .ds-card .ds-select {
-  max-width: none;
-  width: 100%;
-}
 
 /* Buttons inside editor: compact, not full-width */
 .filing-editor__body .ds-btn--primary {
@@ -733,12 +699,5 @@
     flex-direction: column !important;
     gap: 8px !important;
   }
-}
-
-/* ₹ prefix spacing — numeric inputs need extra left padding */
-.filing-editor__body input[inputmode="numeric"],
-.filing-editor__body input[data-currency="true"] {
-  padding-left: 28px !important;
-  font-family: var(--font-mono) !important;
 }
 

@@ -1,15 +1,16 @@
 import './ds.css';
+import { t } from '../../styles/tokens';
+
 // ── Field: label + input + hint/error ──
 export function Field({ label, value, onChange, onBlur, error, hint, type = 'text', disabled, locked, placeholder, className = '', style, children, ...rest }) {
   const isNumeric = type === 'number' || rest.inputMode === 'numeric';
   return (
-    <div className={`ds-field ${className}`} style={style}>
-      {label && <label className="ds-label">{label}</label>}
+    <div className={className} style={{ ...t.field, ...style }}>
+      {label && <label style={t.label}>{label}</label>}
       {children || (
         <div style={{ position: 'relative' }}>
-          {isNumeric && <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#9CA3AF', fontFamily: 'var(--font-mono)' }}>₹</span>}
+          {isNumeric && <span style={t.currencyPrefix}>₹</span>}
           <input
-            className={`ds-input ${error ? 'error' : ''}`}
             type={type === 'number' ? 'text' : type}
             inputMode={isNumeric ? 'numeric' : undefined}
             value={value ?? ''}
@@ -17,13 +18,17 @@ export function Field({ label, value, onChange, onBlur, error, hint, type = 'tex
             onBlur={onBlur}
             disabled={disabled || locked}
             placeholder={placeholder}
-            style={isNumeric ? { paddingLeft: 28, fontFamily: 'var(--font-mono)' } : undefined}
+            style={{
+              ...(isNumeric ? t.inputCurrency : t.input),
+              ...(disabled || locked ? { background: '#F3F4F6', cursor: 'not-allowed' } : {}),
+              ...(error ? { borderColor: '#DC2626' } : {}),
+            }}
             {...rest}
           />
         </div>
       )}
-      {error && <div className="ds-error-hint">{error}</div>}
-      {hint && !error && <div className="ds-hint">{hint}</div>}
+      {error && <div style={t.errorHint}>{error}</div>}
+      {hint && !error && <div style={t.hint}>{hint}</div>}
     </div>
   );
 }
@@ -31,14 +36,24 @@ export function Field({ label, value, onChange, onBlur, error, hint, type = 'tex
 // ── Select: label + select + hint/error ──
 export function Select({ label, value, onChange, onBlur, error, hint, options = [], disabled, placeholder, className = '', style }) {
   return (
-    <div className={`ds-field ${className}`} style={{ ...style, minWidth: 200, maxWidth: 'none' }}>
-      {label && <label className="ds-label">{label}</label>}
-      <select className={`ds-select ${error ? 'error' : ''}`} value={value ?? ''} onChange={e => onChange?.(e.target.value)} onBlur={onBlur} disabled={disabled} style={{ width: '100%', minWidth: 180, fontSize: 16 }}>
+    <div className={className} style={{ ...t.field, ...style }}>
+      {label && <label style={t.label}>{label}</label>}
+      <select
+        value={value ?? ''}
+        onChange={e => onChange?.(e.target.value)}
+        onBlur={onBlur}
+        disabled={disabled}
+        style={{
+          ...t.select,
+          ...(disabled ? { background: '#F3F4F6', cursor: 'not-allowed', color: '#6B7280' } : {}),
+          ...(error ? { borderColor: '#DC2626' } : {}),
+        }}
+      >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map(o => typeof o === 'string' ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
-      {error && <div className="ds-error-hint">{error}</div>}
-      {hint && !error && <div className="ds-hint">{hint}</div>}
+      {error && <div style={t.errorHint}>{error}</div>}
+      {hint && !error && <div style={t.hint}>{hint}</div>}
     </div>
   );
 }
