@@ -198,6 +198,11 @@
 }
 .filing-editor__body {
   flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 24px;
+  max-width: 720px;
+}
 
 /* ── Editor Footer (Prev/Next) ── */
 .filing-editor__footer {
@@ -213,10 +218,18 @@
   display: flex;
   gap: 8px;
 }
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 20px 16px;
+
+/* ── Uniform alignment for all editor content ── */
+.filing-editor__body > div {
+  max-width: 680px;
 }
+.filing-editor__body .bordered-subsection {
+  max-width: 680px;
+}
+.filing-editor__body .ds-card {
+  max-width: 680px;
+}
+
 /* Force 2-column layout for all form grids inside editor */
 .filing-editor__body .ds-grid-2 {
   display: grid;
