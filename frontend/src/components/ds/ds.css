@@ -208,11 +208,11 @@
 
 .ds-select {
   width: 100%; min-width: 180px;
-  padding: 8px 12px;
+  padding: 9px 32px 9px 12px;
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
   font-family: var(--font-primary);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-primary);
   background: var(--bg-card);
   outline: none;

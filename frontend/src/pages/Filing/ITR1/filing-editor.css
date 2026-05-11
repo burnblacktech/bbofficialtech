@@ -257,60 +257,15 @@
 }
 /* Inputs never stretch full width */
 .filing-editor__body .ds-field {
-  max-width: 280px;
   margin-bottom: 6px;
 }
-/* Selects need more room — override field max-width */
-.filing-editor__body .ds-field:has(select),
-.filing-editor__body .ds-field:has(.ds-select) {
-  max-width: 320px;
-}
-.filing-editor__body .ds-field .ds-input,
-.filing-editor__body .ds-field input,
-.filing-editor__body .ds-card .ds-input,
-.filing-editor__body .ds-card input {
-  max-width: 260px !important;
-  width: 100% !important;
-  padding-top: 9px !important;
-  padding-bottom: 9px !important;
-  padding-right: 12px !important;
-  font-size: 16px !important;
-  font-weight: 500 !important;
-}
-.filing-editor__body .ds-field .ds-select,
+/* Selects need padding-right for the arrow icon */
 .filing-editor__body .ds-field select,
-.filing-editor__body .ds-card .ds-select,
-.filing-editor__body .ds-card select {
-  max-width: none !important;
-  width: 100% !important;
-  padding: 9px 12px !important;
+.filing-editor__body .ds-field .ds-select {
+  padding-right: 32px !important;
+  text-overflow: ellipsis;
   font-size: 16px !important;
-  font-weight: 500 !important;
-  min-width: 200px !important;
 }
-.filing-editor__body .ds-field .ds-label,
-.filing-editor__body .ds-field > label,
-.filing-editor__body .ds-card .ds-label,
-.filing-editor__body .ds-card > label {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  margin-bottom: 4px !important;
-  color: var(--text-secondary) !important;
-}
-.filing-editor__footer {
-  flex-shrink: 0;
-  padding: 8px 20px;
-  border-top: 1px solid var(--border-light);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-card);
-}
-.filing-editor__footer-nav {
-  display: flex;
-  gap: 8px;
-}
-
 /* ── Field width constraints ── */
 .filing-editor__body input,
 .filing-editor__body select {
@@ -787,8 +742,3 @@
   font-family: var(--font-mono) !important;
 }
 
-/* Dropdown containers need full width — no clipping */
-.filing-editor__body .ds-field:has(select),
-.filing-editor__body .ds-field:has(.ds-select) {
-  max-width: none !important;
-}
