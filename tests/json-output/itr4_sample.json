@@ -1,0 +1,119 @@
+{
+  "ITR": {
+    "ITR4": {
+      "CreationInfo": {
+        "SWVersionNo": "1.0",
+        "SWCreatedBy": "SW",
+        "JSONCreatedBy": "SW",
+        "IntermediaryCity": "Bengaluru",
+        "Aboression": "I"
+      },
+      "Form_ITR4": {
+        "Form_ITR4": {
+          "FormName": "ITR-4",
+          "Description": "Sugam — Presumptive Income",
+          "AssessmentYear": "2026-27",
+          "SchemaVer": "Ver1.0",
+          "FormVer": "Ver1.0"
+        },
+        "PersonalInfo": {
+          "AssesseeName": {
+            "FirstName": "VIVEK",
+            "MiddleName": "",
+            "SurNameOrOrgName": "RUNGTA"
+          },
+          "PAN": "AMGPR4243N",
+          "DOB": "05/10/1985",
+          "Gender": "M",
+          "AadhaarCardNo": "123456789012",
+          "Address": {
+            "ResidenceNo": "42 MG Road",
+            "ResidenceName": "",
+            "RoadOrStreet": "",
+            "AreaOrLocality": "",
+            "CityOrTownOrDistrict": "Delhi",
+            "StateCode": "07",
+            "PinCode": "110001",
+            "CountryCode": "91",
+            "MobileNo": "9311011515",
+            "EmailAddress": "vivek@test.com"
+          },
+          "EmployerCategory": "NA",
+          "Status": "RES"
+        },
+        "FilingStatus": {
+          "ReturnFileSec": 115,
+          "FilingDueDate": "31/07/2026",
+          "OptOutNewTaxRegime": "N",
+          "SeventhProvisio139": "N",
+          "ItrFilingType": "O"
+        },
+        "ScheduleS": {
+          "Salaries": 0,
+          "IncomeFromSal": 0
+        },
+        "ScheduleHP": {
+          "IncomeFromHP": 0
+        },
+        "ScheduleOS": {
+          "IncomeFromOtherSources": 0
+        },
+        "ScheduleBP44AD": [
+          {
+            "BusinessName": "",
+            "GrossReceipts": 8000000,
+            "DigitalReceipts": true,
+            "Rate": 6,
+            "PresumptiveIncome": 480000
+          }
+        ],
+        "ScheduleBP44ADA": [],
+        "ScheduleBP44AE": [],
+        "TotalPresumptiveIncome": 480000,
+        "ScheduleTDS1": [],
+        "ScheduleTDS2": [],
+        "ScheduleIT": [],
+        "DeductionUnderChapterVIA": {
+          "Section80CCD2": 0,
+          "TotalChapVIADeductions": 0
+        },
+        "TaxComputation": {
+          "TotalTaxPayable": 4000,
+          "Rebate87A": 4000,
+          "Surcharge25": 0,
+          "EducationCess": 0,
+          "GrossTaxLiability": 0,
+          "TaxPaid": {
+            "TotalTaxesPaid": 0
+          },
+          "BalTaxPayable": 0,
+          "RefundDue": 0
+        },
+        "BankAccountDtls": {
+          "AddtnlBankDetails": [
+            {
+              "IFSCCode": "HDFC0001234",
+              "BankName": "HDFC Bank",
+              "BankAccountNo": "12345678901234",
+              "UseForRefund": "Yes"
+            }
+          ]
+        },
+        "Verification": {
+          "Declaration": {
+            "AssesseeVerName": "VIVEK RUNGTA"
+          },
+          "Place": "Delhi",
+          "Date": "11/05/2026",
+          "Capacity": "S"
+        },
+        "ITR4_IncomeDeductions": {
+          "GrossTotIncome": 480000,
+          "DeductUndChapVIA": 0,
+          "TotalIncome": 480000,
+          "AgriculturalIncome": 0
+        }
+      }
+    }
+  }
+}

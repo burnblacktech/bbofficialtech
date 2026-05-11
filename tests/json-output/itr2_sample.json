@@ -1,0 +1,151 @@
+{
+  "ITR": {
+    "ITR2": {
+      "CreationInfo": {
+        "SWVersionNo": "1.0",
+        "SWCreatedBy": "SW",
+        "JSONCreatedBy": "SW",
+        "IntermediaryCity": "Bengaluru",
+        "Aboression": "I"
+      },
+      "Form_ITR2": {
+        "Form_ITR2": {
+          "FormName": "ITR-2",
+          "AssessmentYear": "2026-27",
+          "SchemaVer": "Ver1.0",
+          "FormVer": "Ver1.0"
+        },
+        "PersonalInfo": {
+          "AssesseeName": {
+            "FirstName": "VIVEK",
+            "MiddleName": "",
+            "SurNameOrOrgName": "RUNGTA"
+          },
+          "PAN": "AMGPR4243N",
+          "DOB": "05/10/1985",
+          "Gender": "M",
+          "AadhaarCardNo": "123456789012",
+          "Address": {
+            "ResidenceNo": "42 MG Road",
+            "ResidenceName": "",
+            "RoadOrStreet": "",
+            "AreaOrLocality": "",
+            "CityOrTownOrDistrict": "Delhi",
+            "StateCode": "07",
+            "PinCode": "110001",
+            "CountryCode": "91",
+            "MobileNo": "9311011515",
+            "EmailAddress": "vivek@test.com"
+          },
+          "EmployerCategory": "OTH",
+          "Status": "RES"
+        },
+        "FilingStatus": {
+          "ReturnFileSec": 115,
+          "FilingDueDate": "31/07/2026",
+          "OptOutNewTaxRegime": "N",
+          "SeventhProvisio139": "N",
+          "ItrFilingType": "O"
+        },
+        "ScheduleS": {
+          "Salaries": 2500000,
+          "AllwncExemptUs10": {
+            "TotalAllwncExemptUs10": 0
+          },
+          "DeductionUs16": 75000,
+          "IncomeFromSal": 2425000
+        },
+        "ScheduleHP": {
+          "Properties": [
+            {
+              "TypeOfHP": "L",
+              "GrossRentReceived": 0,
+              "TaxPaidlocalAuth": 0,
+              "AnnualValue": 0,
+              "StandardDeduction": 0,
+              "InterestPayable": 0,
+              "IncomeFromHP": 0
+            }
+          ],
+          "TotalHPIncome": 0
+        },
+        "ScheduleCG": {
+          "ShortTermCapGain": {
+            "STCGOnEquity111A": 50000,
+            "STCGOnOthAssets": 0,
+            "TotalSTCG": 50000
+          },
+          "LongTermCapGain": {
+            "LTCGOnEquity112A": 300000,
+            "LTCGOnProperty112": 0,
+            "LTCGOnOthAssets": 0,
+            "TotalLTCG": 300000
+          },
+          "TotalCapGains": 350000
+        },
+        "ScheduleOS": {
+          "IntrstFrmSavingBank": 0,
+          "IntrstFrmTermDeposit": 0,
+          "DividendIncome": 0,
+          "FamilyPension": 0,
+          "IncomeFromOtherSources": 0
+        },
+        "ScheduleTDS1": [
+          {
+            "TANOfDeductor": "BANG12345G",
+            "NameOfDeductor": "Google India",
+            "GrossSalary": 2500000,
+            "TDSDeducted": 400000
+          }
+        ],
+        "ScheduleTDS2": [],
+        "ScheduleIT": [],
+        "DeductionUnderChapterVIA": {
+          "Section80CCD2": 0,
+          "TotalChapVIADeductions": 0
+        },
+        "TaxComputation": {
+          "NormalIncomeTax": 307500,
+          "TaxOnSTCGEquity": 10000,
+          "TaxOnLTCGEquity": 21875,
+          "TaxOnLTCGOther": 0,
+          "TotalTaxPayable": 339375,
+          "Rebate87A": 0,
+          "TaxPayableOnRebate": 339375,
+          "Surcharge25": 0,
+          "EducationCess": 13575,
+          "GrossTaxLiability": 352950,
+          "TaxPaid": {
+            "TotalTaxesPaid": 400000
+          },
+          "BalTaxPayable": 0,
+          "RefundDue": 47050
+        },
+        "BankAccountDtls": {
+          "AddtnlBankDetails": [
+            {
+              "IFSCCode": "HDFC0001234",
+              "BankName": "HDFC Bank",
+              "BankAccountNo": "12345678901234",
+              "UseForRefund": "Yes"
+            }
+          ]
+        },
+        "Verification": {
+          "Declaration": {
+            "AssesseeVerName": "VIVEK RUNGTA"
+          },
+          "Place": "Delhi",
+          "Date": "11/05/2026",
+          "Capacity": "S"
+        },
+        "ITR2_IncomeDeductions": {
+          "GrossTotIncome": 2775000,
+          "DeductUndChapVIA": 0,
+          "TotalIncome": 2650000,
+          "AgriculturalIncome": 0
+        }
+      }
+    }
+  }
+}

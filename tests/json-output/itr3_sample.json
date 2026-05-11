@@ -1,0 +1,146 @@
+{
+  "ITR": {
+    "ITR3": {
+      "CreationInfo": {
+        "SWVersionNo": "1.0",
+        "SWCreatedBy": "SW",
+        "JSONCreatedBy": "SW",
+        "IntermediaryCity": "Bengaluru",
+        "Aboression": "I"
+      },
+      "Form_ITR3": {
+        "Form_ITR3": {
+          "FormName": "ITR-3",
+          "AssessmentYear": "2026-27",
+          "SchemaVer": "Ver1.0",
+          "FormVer": "Ver1.0"
+        },
+        "PersonalInfo": {
+          "AssesseeName": {
+            "FirstName": "VIVEK",
+            "MiddleName": "",
+            "SurNameOrOrgName": "RUNGTA"
+          },
+          "PAN": "AMGPR4243N",
+          "DOB": "05/10/1985",
+          "Gender": "M",
+          "AadhaarCardNo": "123456789012",
+          "Address": {
+            "ResidenceNo": "42 MG Road",
+            "ResidenceName": "",
+            "RoadOrStreet": "",
+            "AreaOrLocality": "",
+            "CityOrTownOrDistrict": "Delhi",
+            "StateCode": "07",
+            "PinCode": "110001",
+            "CountryCode": "91",
+            "MobileNo": "9311011515",
+            "EmailAddress": "vivek@test.com"
+          },
+          "EmployerCategory": "NA",
+          "Status": "RES"
+        },
+        "FilingStatus": {
+          "ReturnFileSec": 115,
+          "FilingDueDate": "31/07/2026",
+          "OptOutNewTaxRegime": "N",
+          "SeventhProvisio139": "N",
+          "ItrFilingType": "O"
+        },
+        "ScheduleS": {
+          "Salaries": 0,
+          "IncomeFromSal": 0
+        },
+        "ScheduleHP": {
+          "TotalHPIncome": 0
+        },
+        "ScheduleOS": {
+          "IncomeFromOtherSources": 0
+        },
+        "ScheduleCG": {
+          "STCGOnEquity111A": 0,
+          "STCGOnOthAssets": 0,
+          "LTCGOnEquity112A": 0,
+          "LTCGOnProperty112": 0,
+          "LTCGOnOthAssets": 0,
+          "TotalCapGains": 0
+        },
+        "ScheduleBP": {
+          "Businesses": [
+            {
+              "Name": "Rungta Consulting",
+              "NatureOfBusiness": "",
+              "Turnover": 5000000,
+              "GrossProfit": 2000000,
+              "Expenses": 850000,
+              "Depreciation": 100000,
+              "NetProfit": 1050000
+            }
+          ],
+          "TotalTurnover": 5000000,
+          "TotalNetProfit": 1050000
+        },
+        "ScheduleBS": {
+          "FixedAssets": 0,
+          "CurrentAssets": 0,
+          "Investments": 0,
+          "OtherAssets": 0,
+          "TotalAssets": 0,
+          "Capital": 0,
+          "Reserves": 0,
+          "SecuredLoans": 0,
+          "UnsecuredLoans": 0,
+          "CurrentLiabilities": 0,
+          "TotalLiabilities": 0
+        },
+        "ScheduleTDS1": [],
+        "ScheduleTDS2": [],
+        "ScheduleIT": [],
+        "DeductionUnderChapterVIA": {
+          "Section80CCD2": 0,
+          "TotalChapVIADeductions": 0
+        },
+        "TaxComputation": {
+          "NormalIncomeTax": 45000,
+          "TaxOnSTCGEquity": 0,
+          "TaxOnLTCGEquity": 0,
+          "TaxOnLTCGOther": 0,
+          "TotalTaxPayable": 45000,
+          "Rebate87A": 45000,
+          "Surcharge25": 0,
+          "EducationCess": 0,
+          "GrossTaxLiability": 0,
+          "TaxPaid": {
+            "TotalTaxesPaid": 0
+          },
+          "BalTaxPayable": 0,
+          "RefundDue": 0
+        },
+        "BankAccountDtls": {
+          "AddtnlBankDetails": [
+            {
+              "IFSCCode": "HDFC0001234",
+              "BankName": "HDFC Bank",
+              "BankAccountNo": "12345678901234",
+              "UseForRefund": "Yes"
+            }
+          ]
+        },
+        "Verification": {
+          "Declaration": {
+            "AssesseeVerName": "VIVEK RUNGTA"
+          },
+          "Place": "Delhi",
+          "Date": "11/05/2026",
+          "Capacity": "S"
+        },
+        "ITR3_IncomeDeductions": {
+          "GrossTotIncome": 1050000,
+          "DeductUndChapVIA": 0,
+          "TotalIncome": 1050000,
+          "AgriculturalIncome": 0
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "ITR": {
+    "ITR1": {
+      "CreationInfo": {
+        "SWVersionNo": "1.0",
+        "SWCreatedBy": "SW",
+        "JSONCreatedBy": "SW",
+        "IntermediaryCity": "Delhi",
+        "Aboression": "I"
+      },
+      "Form_ITR1": {
+        "Form_ITR1": {
+          "FormName": "ITR-1",
+          "Description": "For Individuals having Income from Salaries, one house property, other sources (Interest etc.)",
+          "AssessmentYear": "2026-27",
+          "SchemaVer": "Ver1.0",
+          "FormVer": "Ver1.0"
+        },
+        "PersonalInfo": {
+          "AssesseeName": {
+            "FirstName": "VIVEK",
+            "MiddleName": "",
+            "SurNameOrOrgName": "RUNGTA"
+          },
+          "PAN": "AMGPR4243N",
+          "DOB": "05/10/1985",
+          "Gender": "M",
+          "AadhaarCardNo": "123456789012",
+          "Address": {
+            "ResidenceNo": "42 MG Road",
+            "ResidenceName": "",
+            "RoadOrStreet": "",
+            "AreaOrLocality": "",
+            "CityOrTownOrDistrict": "Delhi",
+            "StateCode": "07",
+            "PinCode": "110001",
+            "CountryCode": "91",
+            "Phone": {
+              "STDcode": "",
+              "PhoneNo": ""
+            },
+            "MobileNo": "9311011515",
+            "EmailAddress": "vivek@test.com"
+          },
+          "EmployerCategory": "OTH",
+          "Status": "RES"
+        },
+        "FilingStatus": {
+          "ReturnFileSec": 115,
+          "FilingDueDate": "31/07/2026",
+          "OptOutNewTaxRegime": "N",
+          "SeventhProvisio139": "N",
+          "ItrFilingType": "O"
+        },
+        "ScheduleS": {
+          "Salaries": 1200000,
+          "AllwncExemptUs10": {
+            "TotalAllwncExemptUs10": 120000
+          },
+          "PerquisitesValue": 0,
+          "ProfitsInSalary": 0,
+          "DeductionUs16": 77400,
+          "DeductionUs16ia": 75000,
+          "DeductionUs16ii": 0,
+          "DeductionUs16iii": 2400,
+          "IncomeFromSal": 1002600,
+          "NatureOfEmployment": "OTH"
+        },
+        "ScheduleHP": {
+          "TypeOfHP": "S",
+          "GrossRentReceived": 0,
+          "TaxPaidlocalAuth": 0,
+          "AnnualValue": 0,
+          "StandardDeduction": 0,
+          "InterestPayable": 0,
+          "IncomeFromHP": 0
+        },
+        "ScheduleOS": {
+          "IntrstFrmSavingBank": 15000,
+          "IntrstFrmTermDeposit": 30000,
+          "IntrstFrmIncmTaxRefund": 0,
+          "FamilyPension": 0,
+          "FamilyPensionDeductUs57iia": 0,
+          "DividendIncome": 0,
+          "WinningsFromLotteryEtc": 0,
+          "AnyOtherIncome": 0,
+          "IncomeFromVDA": 0,
+          "IncomeFromOtherSources": 45000
+        },
+        "ScheduleTDS1": [
+          {
+            "TANOfDeductor": "DELT12345E",
+            "NameOfDeductor": "TCS Ltd",
+            "GrossSalary": 1200000,
+            "TDSDeducted": 100000
+          }
+        ],
+        "ScheduleTDS2": [],
+        "ScheduleIT": [],
+        "DeductionUnderChapterVIA": {
+          "Section80CCD2": 0,
+          "TotalChapVIADeductions": 0
+        },
+        "TaxComputation": {
+          "TotalTaxPayable": 44760,
+          "Rebate87A": 44760,
+          "TaxPayableOnRebate": 0,
+          "Surcharge25": 0,
+          "EducationCess": 0,
+          "GrossTaxLiability": 0,
+          "Section89": 0,
+          "NetTaxLiability": 0,
+          "IntrstPay": {
+            "IntrstPayUs234A": 0,
+            "IntrstPayUs234B": 0,
+            "IntrstPayUs234C": 0,
+            "LateFilingFee234F": 0
+          },
+          "TotTaxPlusIntrstPay": 0,
+          "TaxPaid": {
+            "TaxesPaid": {
+              "AdvanceTax": 0,
+              "TDS": 100000,
+              "SelfAssessmentTax": 0,
+              "TotalTaxesPaid": 100000
+            }
+          },
+          "BalTaxPayable": 0,
+          "RefundDue": 100000
+        },
+        "BankAccountDtls": {
+          "AddtnlBankDetails": [
+            {
+              "IFSCCode": "HDFC0001234",
+              "BankName": "HDFC Bank",
+              "BankAccountNo": "12345678901234",
+              "UseForRefund": "Yes"
+            }
+          ]
+        },
+        "Verification": {
+          "Declaration": {
+            "AssesseeVerName": "VIVEK RUNGTA"
+          },
+          "Place": "Delhi",
+          "Date": "11/05/2026",
+          "Capacity": "S"
+        },
+        "ITR1_IncomeDeductions": {
+          "GrossSalary": 1200000,
+          "IncomeFromSal": 1002600,
+          "IncomeFromHP": 0,
+          "IncomeOthSrc": 45000,
+          "GrossTotIncome": 1047600,
+          "DeductUndChapVIA": 0,
+          "TotalIncome": 1047600,
+          "AgriculturalIncome": 0
+        }
+      }
+    }
+  }
+}
