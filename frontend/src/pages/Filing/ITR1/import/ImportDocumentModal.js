@@ -96,6 +96,18 @@ const DOC_TYPES = [
     color: '#6b7280',
     bg: '#f9fafb',
   },
+  {
+    id: 'broker',
+    label: 'Broker CG Statement',
+    desc: 'Capital gains from Zerodha, Angel One, Upstox (PDF/CSV)',
+    format: 'PDF/CSV',
+    accept: '.pdf,.csv',
+    mimeTypes: ['application/pdf', 'text/csv'],
+    maxSizeMB: 10,
+    icon: FileText,
+    color: '#0D9488',
+    bg: '#f0fdfa',
+  },
 ];
 
 // ── Animation variants ──
